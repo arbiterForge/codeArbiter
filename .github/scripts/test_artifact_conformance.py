@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import concurrent.futures
 import hashlib
 import os
 from pathlib import Path
@@ -40,6 +41,8 @@ CURRENT_GOLDEN = {
     },
 }
 
+# Below the 30-minute bridges job limit, so one hung suite reports itself.
+SUITE_TIMEOUT_SECONDS = 1200.0
 EXPECTED_SUITES = {
     "test_artifact_bridge.py": {
         "test_real_cli_draft_and_index", "test_tampered_view_is_not_readable",
@@ -475,14 +478,33 @@ class ArtifactConformanceTest(unittest.TestCase):
         self.assertIsNotNone(INSTALLATION)
         environment = dict(os.environ, ARTIFACT_TEST_INSTALLATION=str(INSTALLATION))
         self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+
+        def run(script: str) -> subprocess.CompletedProcess[str]:
+            print(f"conformance suite start: {script}", flush=True)
+            command = [sys.executable, str(REPO / ".github/scripts" / script)]
+            try:
+                return subprocess.run(
+                    command, cwd=REPO, env=environment, capture_output=True, text=True,
+                    encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS,
+                )
+            except subprocess.TimeoutExpired as expired:
+                # A hung suite fails on its own, with its partial output, below the job limit.
+                partial = [value.decode("utf-8", "replace") if isinstance(value, bytes) else (value or "")
+                           for value in (expired.stdout, expired.stderr)]
+                return subprocess.CompletedProcess(
+                    command, -1, partial[0],
+                    partial[1] + f"\nsuite exceeded {SUITE_TIMEOUT_SECONDS:.0f}s and was terminated\n")
+        # The suites are independent processes over the same read-only candidate;
+        # running them concurrently uses the runner's cores. The candidate's
+        # identity is checked before and after the whole snapshot.
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(EXPECTED_SUITES), os.cpu_count() or 2)) as pool:
+            results = dict(zip(EXPECTED_SUITES, pool.map(run, EXPECTED_SUITES)))
         for script, expected in EXPECTED_SUITES.items():
             with self.subTest(script=script):
-                self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
-                print(f"conformance suite start: {script}", flush=True)
-                result = self.run_checked(
-                    [sys.executable, str(REPO / ".github/scripts" / script)],
-                    env=environment,
-                )
+                result = results[script]
+                if result.returncode != 0:
+                    self.fail(f"{script} exited {result.returncode}\nstdout:\n{result.stdout[-8000:]}\n"
+                              f"stderr:\n{result.stderr[-8000:]}")
                 output = result.stderr + result.stdout
                 matches = re.findall(r"(?m)^(test_[a-z0-9_]+) \([^\r\n]+\) \.\.\. (ok|skipped .+)$", output)
                 names = [name for name, _ in matches]

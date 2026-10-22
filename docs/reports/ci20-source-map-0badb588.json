@@ -1,0 +1,2889 @@
+{
+  "baseline_run_id": 39357341801,
+  "format": "codearbiter.ci20-source-inventory/1",
+  "job_inventory": {
+    "artifact-authority": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Build native candidate for authority tests",
+          "run": "python tools/build-artifacts.py --output \"${{ runner.temp }}/artifact-candidate\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Run exhaustive authority shard",
+          "run": "python .github/scripts/run_artifact_authority_shard.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.artifacts == 'true'",
+      "display_name": "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}> shard ${{ matrix.shard }}",
+      "matrix": {
+        "include": [
+          {
+            "expected_platform": "linux/amd64",
+            "os": "ubuntu-24.04",
+            "shard": 0
+          },
+          {
+            "expected_platform": "linux/amd64",
+            "os": "ubuntu-24.04",
+            "shard": 1
+          },
+          {
+            "expected_platform": "linux/arm64",
+            "os": "ubuntu-24.04-arm",
+            "shard": 0
+          },
+          {
+            "expected_platform": "linux/arm64",
+            "os": "ubuntu-24.04-arm",
+            "shard": 1
+          },
+          {
+            "expected_platform": "windows/amd64",
+            "os": "windows-2025",
+            "shard": 0
+          },
+          {
+            "expected_platform": "windows/amd64",
+            "os": "windows-2025",
+            "shard": 1
+          },
+          {
+            "expected_platform": "windows/arm64",
+            "os": "windows-11-arm",
+            "shard": 0
+          },
+          {
+            "expected_platform": "windows/arm64",
+            "os": "windows-11-arm",
+            "shard": 1
+          },
+          {
+            "expected_platform": "darwin/amd64",
+            "os": "macos-15-intel",
+            "shard": 0
+          },
+          {
+            "expected_platform": "darwin/amd64",
+            "os": "macos-15-intel",
+            "shard": 1
+          },
+          {
+            "expected_platform": "darwin/arm64",
+            "os": "macos-26",
+            "shard": 0
+          },
+          {
+            "expected_platform": "darwin/arm64",
+            "os": "macos-26",
+            "shard": 1
+          }
+        ]
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 12,
+      "observed_skips": 0,
+      "observed_successes": 12,
+      "runner": "${{ matrix.os }}",
+      "timeout": 45
+    },
+    "artifact-browser": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": "Download this run's exact Linux amd64 candidate",
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        },
+        {
+          "name": "Preserve browser qualification views",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Generate the exact structured-artifact review bytes",
+          "run": "chmod +x \"${{ runner.temp }}/artifact-native/artifact-candidate/ca-artifact-linux-amd64\"\npython tools/create-artifact-examples.py \\\n  --binary \"${{ runner.temp }}/artifact-native/artifact-candidate/ca-artifact-linux-amd64\" \\\n  --output \"${{ runner.temp }}/artifact-browser-review\"\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install the reviewed browser-test graph",
+          "run": "npm ci",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit the browser-test dependency graph",
+          "run": "npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Record runner Chrome version",
+          "run": "google-chrome --version",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Qualify the exact structured-artifact review bytes",
+          "run": "npm run test:browser -- artifact-review.spec.ts",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.artifacts == 'true' && needs.artifact-engine.result == 'success'",
+      "display_name": "[CHECK] | [CORE] | Structured artifact browser qualification",
+      "matrix": {},
+      "needs": [
+        "changes",
+        "artifact-engine"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-24.04",
+      "timeout": 15
+    },
+    "artifact-coverage": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        },
+        {
+          "name": "Download this run's native statement profiles",
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        },
+        {
+          "name": "Preserve the statement coverage verdict",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Require successful native execution on every platform",
+          "run": "if [ \"$ENGINE_RESULT\" != success ]; then\n  echo \"::error::native coverage requires every engine platform to succeed: $ENGINE_RESULT\"\n  exit 1\nfi\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify statement collector rejection and merge behavior",
+          "run": "python .github/scripts/test_artifact_coverage.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Require the complete six-platform statement union",
+          "run": "python - <<'PY'\nimport os\nfrom pathlib import Path\nimport subprocess\nimport sys\n\narguments = [\n    sys.executable, \"tools/artifact-coverage.py\", \"summarize\",\n    \"--module-root\", \"core/artifacts\", \"--minimum-statements\", \"70\",\n    \"--require-integration\",\n]\nfor folder in sorted(Path(os.environ[\"COVERAGE_INPUTS\"]).glob(\"artifact-statements-*\")):\n    arguments.extend((\"--input\", str(folder)))\nresult = subprocess.run(arguments, capture_output=True, text=True)\nPath(os.environ[\"COVERAGE_REPORT\"]).write_text(result.stdout, encoding=\"utf-8\")\nprint(result.stdout, end=\"\")\nprint(result.stderr, end=\"\", file=sys.stderr)\nraise SystemExit(result.returncode)\nPY\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}",
+      "display_name": "[CHECK] | [CORE] | Native Go statement coverage",
+      "matrix": {},
+      "needs": [
+        "changes",
+        "artifact-engine"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-24.04",
+      "timeout": 10
+    },
+    "artifact-engine": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        },
+        {
+          "name": "Preserve the native statement profiles",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        },
+        {
+          "name": "Check out the fixed pre-assistive compatibility source",
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": "Preserve the exact native candidate and qualification receipt",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Verify exact Go toolchain",
+          "run": "python -c \"import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Create locked reference-validation environment",
+          "run": "python -c \"import os,pathlib,subprocess,venv; root=pathlib.Path(os.environ['RUNNER_TEMP'])/'artifact-conformance-venv'; venv.EnvBuilder(with_pip=True).create(root); exe=root/('Scripts/python.exe' if os.name=='nt' else 'bin/python'); subprocess.run([str(exe),'-m','pip','install','--isolated','--require-virtualenv','--disable-pip-version-check','--no-input','--no-cache-dir','--only-binary=:all:','--require-hashes','--no-deps','--index-url','https://pypi.org/simple','-r','.github/requirements/artifact-conformance-py314.lock'],check=True); pathlib.Path(os.environ['GITHUB_ENV']).open('a',encoding='utf-8').write('ARTIFACT_CONFORMANCE_PYTHON='+str(exe)+'\\n')\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test artifact engine",
+          "run": "go test -buildvcs=false -timeout=20m ./...",
+          "working_directory": "core/artifacts"
+        },
+        {
+          "condition": "",
+          "name": "Vet artifact engine",
+          "run": "go vet -buildvcs=false ./...",
+          "working_directory": "core/artifacts"
+        },
+        {
+          "condition": "",
+          "name": "Exercise the actual CLI with native statement instrumentation",
+          "run": "python .github/scripts/test_artifact_cli.py --coverage-output \"${{ runner.temp }}/artifact-cli-statements.out\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Collect native unit and executable statement coverage",
+          "run": "python tools/artifact-coverage.py collect --module-root core/artifacts --output \"${{ runner.temp }}/artifact-statements\" --expect-platform \"${{ matrix.expected_platform }}\" --extra-profile \"${{ runner.temp }}/artifact-cli-statements.out\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify named native storage and recovery contract",
+          "run": "python .github/scripts/test_artifact_native.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify the finite context Go test bridge",
+          "run": "python .github/scripts/test_context_verification.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify named context document Go cases",
+          "run": "python .github/scripts/test_context_native.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Reject missing and nonisolated installed context candidates",
+          "run": "python .github/scripts/test_context_installed.py InstalledContextQualification.test_t044_rejects_missing_candidate_identity InstalledContextQualification.test_t044_rejects_nonisolated_environment -v",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify context workflow with the pinned Go toolchain",
+          "run": "python .github/scripts/test_context_workflow.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Build native qualified candidate",
+          "run": "python tools/build-artifacts.py --output \"${{ runner.temp }}/artifact-candidate\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify protected greenfield population with the candidate",
+          "run": "python .github/scripts/test_greenfield_context.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Build the schema 0.3.1 compatibility client",
+          "run": "go build -trimpath -buildvcs=false -o \"${{ runner.temp }}/artifact-legacy\" ./cmd/ca-artifact",
+          "working_directory": ".artifact-legacy/core/artifacts"
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Verify two-client upgrade, complete restore and forward recovery",
+          "run": "python tools/test-artifact-mixed-schema.py --old \"${{ runner.temp }}/artifact-legacy\" --candidate \"${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Generate review examples with the native candidate",
+          "run": "python tools/create-artifact-examples.py --binary \"${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}\" --output \"${{ runner.temp }}/artifact-review\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Race-test Linux persistence paths",
+          "run": "go test -buildvcs=false -race ./...",
+          "working_directory": "core/artifacts"
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Verify generated artifact types",
+          "run": "python tools/generate-artifact-types.py --check",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Verify artifact public-surface baseline",
+          "run": "python .github/scripts/test_artifact_surface.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Verify artifact consumer inventory closure",
+          "run": "python .github/scripts/test_artifact_consumers.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "startsWith(matrix.os, 'ubuntu-')",
+          "name": "Verify SMARTS engine contract by exact test name",
+          "run": "python .github/scripts/test_smarts_engine_contract.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.os == 'ubuntu-24.04'",
+          "name": "Verify ship-set evidence-input behavior",
+          "run": "python .github/scripts/test_ship_set_inputs.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test host-owned artifact approval capture",
+          "run": "python .github/scripts/test_artifact_approval_adapter.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test host-owned artifact prerequisite capture",
+          "run": "python .github/scripts/test_artifact_prerequisite_adapter.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test host-owned artifact reconciliation capture",
+          "run": "python .github/scripts/test_artifact_reconciliation_adapter.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test forgiving authority reply capture and short codes",
+          "run": "python .github/scripts/test_replylib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test cross-kind reference and workflow conformance",
+          "run": "python -c \"import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py'], check=True)\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test debug handoff model against the locked reference interpreter",
+          "run": "python -c \"import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Bind the candidate to this exact-host native result",
+          "run": "python tools/build-artifacts.py --qualify-existing \"${{ runner.temp }}/artifact-candidate\" --qualification-output \"${{ runner.temp }}/artifact-qualification.json\" --context-native-observation \"${{ runner.temp }}/context-native-observation.json\"",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.artifacts == 'true'",
+      "display_name": "[CHECK] | [CORE] | Structured artifact  <${{ matrix.expected_platform }}>",
+      "matrix": {
+        "include": [
+          {
+            "artifact_binary": "ca-artifact-linux-amd64",
+            "expected_platform": "linux/amd64",
+            "os": "ubuntu-24.04"
+          },
+          {
+            "artifact_binary": "ca-artifact-linux-arm64",
+            "expected_platform": "linux/arm64",
+            "os": "ubuntu-24.04-arm"
+          },
+          {
+            "artifact_binary": "ca-artifact-windows-amd64.exe",
+            "expected_platform": "windows/amd64",
+            "os": "windows-2025"
+          },
+          {
+            "artifact_binary": "ca-artifact-windows-arm64.exe",
+            "expected_platform": "windows/arm64",
+            "os": "windows-11-arm"
+          },
+          {
+            "artifact_binary": "ca-artifact-darwin-amd64",
+            "expected_platform": "darwin/amd64",
+            "os": "macos-15-intel"
+          },
+          {
+            "artifact_binary": "ca-artifact-darwin-arm64",
+            "expected_platform": "darwin/arm64",
+            "os": "macos-26"
+          }
+        ]
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 6,
+      "observed_skips": 0,
+      "observed_successes": 6,
+      "runner": "${{ matrix.os }}",
+      "timeout": "${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}"
+    },
+    "artifact-package-assembly": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": "Download this workflow run's exact-host candidates",
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        },
+        {
+          "name": "Preserve the exact multi-host package overlay",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": "Preserve the exact normal release package cohort",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Assemble the provenance-bound host payload overlay",
+          "run": "python - <<'PY'\nimport json\nimport os\nfrom pathlib import Path\nimport subprocess\nimport sys\n\nroot = Path(os.environ[\"CANDIDATE_ROOT\"])\nREQUIRED_PLATFORMS = {\"darwin/amd64\", \"darwin/arm64\", \"linux/amd64\", \"linux/arm64\", \"windows/amd64\", \"windows/arm64\"}\narguments = [\n    sys.executable, \"tools/build-host-packages.py\",\n    \"--artifact-stage\", os.environ[\"STAGE_ROOT\"],\n    \"--trusted-source-commit\", os.environ[\"GITHUB_SHA\"],\n    \"--trusted-workflow\", \".github/workflows/ci.yml\",\n    \"--trusted-workflow-run\", os.environ[\"GITHUB_RUN_ID\"],\n]\nreceipts = sorted(root.glob(\"artifact-native-*/artifact-qualification.json\"))\nif len(receipts) != len(REQUIRED_PLATFORMS):\n    raise SystemExit(\n        f\"expected {len(REQUIRED_PLATFORMS)} exact-host receipts, found {len(receipts)}\"\n    )\ncandidates = []\nobserved_platforms = set()\nfor receipt in receipts:\n    candidate = receipt.parent / \"artifact-candidate\"\n    platform_name = json.loads(receipt.read_text(encoding=\"utf-8\"))[\"platform\"]\n    observed_platforms.add(platform_name)\n    candidates.append((platform_name, candidate, receipt))\nif observed_platforms != REQUIRED_PLATFORMS:\n    raise SystemExit(\n        f\"expected exact release cohort {sorted(REQUIRED_PLATFORMS)}, \"\n        f\"found {sorted(observed_platforms)}\"\n    )\nfor platform_name, candidate, receipt in sorted(candidates):\n    arguments.extend((\"--artifact-candidate\", str(candidate)))\n    arguments.extend((\"--artifact-qualification\", str(receipt)))\nfor platform_name in sorted(REQUIRED_PLATFORMS):\n    arguments.extend((\"--require-platform\", platform_name))\ncompleted = subprocess.run(\n    arguments, check=True, capture_output=True, text=True, encoding=\"utf-8\"\n)\nresult = json.loads(completed.stdout)\nwith Path(os.environ[\"GITHUB_OUTPUT\"]).open(\"a\", encoding=\"utf-8\") as output:\n    output.write(\n        \"promotion-receipt-sha256=\" + result[\"promotion_receipt_sha256\"] + \"\\n\"\n    )\nPY\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Acquire reviewed npm@11.19.1 CLI for Pi assembly",
+          "run": "set -euo pipefail\nnpm_cli_root=\"$(mktemp -d \"$RUNNER_TEMP/npm-cli.XXXXXXXX\")\"\narchive=\"$npm_cli_root/npm.tgz\"\ncurl --disable --fail --show-error --silent --proto '=https' --tlsv1.2 \\\n  --max-redirs 0 \\\n  --output \"$archive\" \\\n  \"https://registry.npmjs.org/npm/-/npm-11.19.1.tgz\"\nACTUAL_INTEGRITY=\"sha512-$(openssl dgst -sha512 -binary \"$archive\" | openssl base64 -A)\"\ntest \"$ACTUAL_INTEGRITY\" = \"$NPM_CLI_INTEGRITY\"\npython3 - \"$archive\" <<'PY'\nimport pathlib\nimport sys\nimport tarfile\n\nwith tarfile.open(sys.argv[1], \"r:gz\") as archive_file:\n    for member in archive_file.getmembers():\n        path = pathlib.PurePosixPath(member.name)\n        if (\n            path.is_absolute()\n            or \"..\" in path.parts\n            or member.issym()\n            or member.islnk()\n            or member.isdev()\n            or member.isfifo()\n        ):\n            raise SystemExit(f\"unsafe npm CLI archive member: {member.name}\")\nPY\ntar --extract --gzip --no-same-owner --no-same-permissions \\\n  --file \"$archive\" --directory \"$npm_cli_root\"\nnpm_cli=\"$npm_cli_root/package/bin/npm-cli.js\"\ntest -f \"$npm_cli\"\ntest ! -L \"$npm_cli\"\nresolved_cli=\"$(realpath \"$npm_cli\")\"\ncase \"$resolved_cli\" in\n  \"$npm_cli_root\"/*) ;;\n  *) echo \"npm CLI escaped its temporary root\" >&2; exit 1 ;;\nesac\ntest \"$(\"$resolved_cli\" --version)\" = \"$NPM_CLI_VERSION\"\necho \"executable=$resolved_cli\" >> \"$GITHUB_OUTPUT\"\necho \"integrity=$NPM_CLI_INTEGRITY\" >> \"$GITHUB_OUTPUT\"\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Build and verify the exact-head normal release packages",
+          "run": "python tools/build-host-packages.py --release-package-stage \"${{ runner.temp }}/artifact-host-payloads\" --release-package-output \"${{ runner.temp }}/artifact-release-packages\" --source-repo . --npm-executable \"${{ steps.npm-cli.outputs.executable }}\" --npm-package-integrity \"${{ steps.npm-cli.outputs.integrity }}\" --trusted-source-commit \"${{ github.sha }}\" --trusted-workflow \".github/workflows/ci.yml\" --trusted-workflow-run \"${{ github.run_id }}\" --promotion-receipt-sha256 \"${{ steps.assemble.outputs.promotion-receipt-sha256 }}\"",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.artifacts == 'true' && needs.artifact-engine.result == 'success'",
+      "display_name": "[CHECK] | [CORE] | Structured artifact package assembly",
+      "matrix": {},
+      "needs": [
+        "changes",
+        "artifact-engine"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": 10
+    },
+    "artifact-package-cold": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": "Download this exact head's promoted host payloads",
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        },
+        {
+          "name": "Download this exact head's normal release package cohort",
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        },
+        {
+          "name": "Preserve the exact cold-execution cell receipt",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Cold-execute the complete exact-package installed-host workflow",
+          "run": "python tools/build-host-packages.py --release-package-stage \"${{ runner.temp }}/artifact-host-payloads\" --cold-package-root \"${{ runner.temp }}/artifact-release-packages\" --source-repo . --cold-host \"${{ matrix.host }}\" --cold-platform \"${{ matrix.platform }}\" --trusted-source-commit \"${{ github.sha }}\" --trusted-workflow \".github/workflows/ci.yml\" --trusted-workflow-run \"${{ github.run_id }}\" --cold-promotion-receipt-sha256 \"${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}\" --cold-receipt \"${{ runner.temp }}/artifact-package-cold.json\"",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.artifacts == 'true' && needs.artifact-package-assembly.result == 'success'",
+      "display_name": "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }} \u00b7 ${{ matrix.host }}>",
+      "matrix": {
+        "include": [
+          {
+            "host": "claude",
+            "os": "ubuntu-24.04",
+            "platform": "linux/amd64",
+            "platform_token": "linux-amd64"
+          },
+          {
+            "host": "codex",
+            "os": "ubuntu-24.04",
+            "platform": "linux/amd64",
+            "platform_token": "linux-amd64"
+          },
+          {
+            "host": "pi",
+            "os": "ubuntu-24.04",
+            "platform": "linux/amd64",
+            "platform_token": "linux-amd64"
+          },
+          {
+            "host": "claude",
+            "os": "ubuntu-24.04-arm",
+            "platform": "linux/arm64",
+            "platform_token": "linux-arm64"
+          },
+          {
+            "host": "codex",
+            "os": "ubuntu-24.04-arm",
+            "platform": "linux/arm64",
+            "platform_token": "linux-arm64"
+          },
+          {
+            "host": "pi",
+            "os": "ubuntu-24.04-arm",
+            "platform": "linux/arm64",
+            "platform_token": "linux-arm64"
+          },
+          {
+            "host": "claude",
+            "os": "windows-2025",
+            "platform": "windows/amd64",
+            "platform_token": "windows-amd64"
+          },
+          {
+            "host": "codex",
+            "os": "windows-2025",
+            "platform": "windows/amd64",
+            "platform_token": "windows-amd64"
+          },
+          {
+            "host": "pi",
+            "os": "windows-2025",
+            "platform": "windows/amd64",
+            "platform_token": "windows-amd64"
+          },
+          {
+            "host": "claude",
+            "os": "windows-11-arm",
+            "platform": "windows/arm64",
+            "platform_token": "windows-arm64"
+          },
+          {
+            "host": "codex",
+            "os": "windows-11-arm",
+            "platform": "windows/arm64",
+            "platform_token": "windows-arm64"
+          },
+          {
+            "host": "pi",
+            "os": "windows-11-arm",
+            "platform": "windows/arm64",
+            "platform_token": "windows-arm64"
+          },
+          {
+            "host": "claude",
+            "os": "macos-15-intel",
+            "platform": "darwin/amd64",
+            "platform_token": "darwin-amd64"
+          },
+          {
+            "host": "codex",
+            "os": "macos-15-intel",
+            "platform": "darwin/amd64",
+            "platform_token": "darwin-amd64"
+          },
+          {
+            "host": "pi",
+            "os": "macos-15-intel",
+            "platform": "darwin/amd64",
+            "platform_token": "darwin-amd64"
+          },
+          {
+            "host": "claude",
+            "os": "macos-26",
+            "platform": "darwin/arm64",
+            "platform_token": "darwin-arm64"
+          },
+          {
+            "host": "codex",
+            "os": "macos-26",
+            "platform": "darwin/arm64",
+            "platform_token": "darwin-arm64"
+          },
+          {
+            "host": "pi",
+            "os": "macos-26",
+            "platform": "darwin/arm64",
+            "platform_token": "darwin-arm64"
+          }
+        ]
+      },
+      "needs": [
+        "changes",
+        "artifact-package-assembly"
+      ],
+      "observed_jobs": 18,
+      "observed_skips": 0,
+      "observed_successes": 18,
+      "runner": "${{ matrix.os }}",
+      "timeout": 10
+    },
+    "auto-release-candidate": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Reject a projected merge that automatic release would reject",
+          "run": "set -euo pipefail\npython3 .github/scripts/test_auto_release_candidate.py\npython3 .github/scripts/check_auto_release_candidate.py \\\n  --candidate \"$GITHUB_SHA\" --run-pre-tag\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[GATE ] | [RELEASE] | Candidate readiness",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": 10
+    },
+    "badge-consistency": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check README badge/core-lane/catalog consistency (ca)",
+          "run": "python3 .github/scripts/check_badge_consistency.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Run complete command-catalog guard tests (ca)",
+          "run": "python3 .github/scripts/test_command_catalog.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca == 'true'",
+      "display_name": "[CHECK] | [CA  ] | Documentation consistency",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "branch-protection": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Audit main's merge policy (read-only; partial without admin rights)",
+          "run": "python .github/scripts/check_branch_protection.py --repo \"$GITHUB_REPOSITORY\" --branch main",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the audit's own logic",
+          "run": "python .github/scripts/test_branch_protection.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | Branch protection",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": 10
+    },
+    "ca-pi-checks": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Resolve the pinned upstream Pi version from repository policy",
+          "run": "policy=\"$(python .github/scripts/pi_promotion.py policy)\"\nversion=\"$(python -c 'import json,sys; print(json.loads(sys.argv[1])[\"last_verified\"])' \"$policy\")\"\necho \"resolved pinned Pi version: $version\"\necho \"version=$version\" >> \"$GITHUB_OUTPUT\"\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install reviewed Pi host graph (isolated, scripts disabled)",
+          "run": "python .github/scripts/pi_host_locks.py install --version ${{ steps.pinned.outputs.version }} --prefix \"$RUNNER_TEMP/pi-host-${{ steps.pinned.outputs.version }}\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install reviewed toolchain (scripts disabled)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit (CVE gate - fail on HIGH)",
+          "run": "npm audit --omit=dev --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit build toolchain (CVE gate - fail on HIGH, dev deps included)",
+          "run": "npm audit --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Check generated root package metadata",
+          "run": "python tools/build-host-packages.py --check",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Typecheck",
+          "run": "npm run typecheck",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the complete Pi adapter suite",
+          "run": "npm test",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test cross-host coverage identity and provenance",
+          "run": "python .github/scripts/test_coverage_union.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test adversarial Pi security promotion contract",
+          "run": "python .github/scripts/test_pi_security.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test three-host enforcement and descriptor parity",
+          "run": "python .github/scripts/test_pi_parity.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Rebuild externalized bundles",
+          "run": "npm run build",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Fail if committed bundles are stale",
+          "run": "if ! git diff --quiet -- plugins/ca-pi/extensions plugins/ca-pi/helpers; then\n  echo \"::error file=plugins/ca-pi/helpers/windows-supervisor.js::Pi bundles or the Windows supervisor are stale. Run npm --prefix plugins/ca-pi/tools run build.\"\n  git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers\n  exit 1\nfi\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test release package contract",
+          "run": "python .github/scripts/test_pi_package.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify reviewed Pi host dependency graph",
+          "run": "python .github/scripts/test_pi_host_locks.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Measure the three-host relative adapter benchmark",
+          "run": "python .github/scripts/pi_benchmark.py --samples 100",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 20
+    },
+    "ca-pi-codeql": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": "Initialize scoped Pi CodeQL database",
+          "uses": "github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d"
+        },
+        {
+          "name": "Analyze Pi without duplicating default code-scanning uploads",
+          "uses": "github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Fail unresolved high-severity findings",
+          "run": "python .github/scripts/test_pi_security.py --sarif codeql-results",
+          "working_directory": "."
+        }
+      ],
+      "condition": "(github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 30
+    },
+    "ca-pi-latest": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install reviewed toolchain and external latest Pi (scripts disabled)",
+          "run": "npm ci --ignore-scripts\nnpm install --global @earendil-works/pi-coding-agent@latest --ignore-scripts\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Report latest version and test installed runtime admission",
+          "run": "pi --version\nnpm test -- test/package.test.ts -t \"installed Pi runtime is admitted by the production boundary\"\nnpm test -- test/package.test.ts\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Run the latest Pi platform contract as a nonblocking canary",
+          "run": "python .github/scripts/test_pi_platform_contract.py --pi-version latest",
+          "working_directory": "."
+        },
+        {
+          "condition": "always()",
+          "name": "Publish the advisory upstream-compatibility receipt",
+          "run": "# `shell: bash` runs with -eo pipefail, so the probe is wrapped: an\n# absent or broken `pi` must degrade to \"unresolved\", never fail the\n# receipt step and turn this advisory check red.\nlatest=\"$({ pi --version 2>/dev/null || true; } | tr -d '\\r' | tail -n 1)\"\n[ -n \"$latest\" ] || latest=\"unresolved\"\n{\n  echo \"## Pi upstream compatibility (advisory)\"\n  echo\n  echo \"This is a WATCH lane. It reports whether npm-latest Pi is inside\"\n  echo \"the validated support window; it never blocks merge.\"\n  echo\n  echo \"| probe | outcome |\"\n  echo \"| --- | --- |\"\n  echo \"| npm latest Pi | \\`$latest\\` |\"\n  echo \"| installed-runtime admission | \\`$ADMISSION\\` |\"\n  echo \"| latest platform contract | \\`$PLATFORM_CONTRACT\\` |\"\n} >> \"$GITHUB_STEP_SUMMARY\"\nif [ \"$ADMISSION\" = success ] && [ \"$PLATFORM_CONTRACT\" = success ]; then\n  echo \"latest Pi ($latest) is inside the validated support window\"\nelse\n  echo \"::warning title=Pi upstream compatibility::latest Pi ($latest) is outside the validated support window (admission=$ADMISSION, platform-contract=$PLATFORM_CONTRACT). Advisory only - run the Pi promotion workflow to validate and promote it.\"\nfi\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 20
+    },
+    "ca-pi-tools": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install reviewed Pi host graph (isolated, scripts disabled)",
+          "run": "python .github/scripts/pi_host_locks.py install --version ${{ matrix.pi-version }} --prefix \"$RUNNER_TEMP/pi-host-${{ matrix.pi-version }}\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install reviewed toolchain (scripts disabled)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test package, module identity, compatibility, and native binding",
+          "run": "npm test -- test/package.test.ts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the sidebar hook probe against the installed Pi runtime",
+          "run": "npm test -- test/sidebar-probe-live.test.ts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the platform-gated adapter suites on this operating system",
+          "run": "npm test -- test/activation.test.ts test/audit-sink.test.ts test/background-jobs.test.ts test/child-env.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test real package RPC activation and aliases",
+          "run": "python .github/scripts/test_pi_package.py --rpc-commands",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test cross-platform paths, encoding, cancellation, process trees, prune, and generation",
+          "run": "python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} \u00b7 runtime: Pi ${{ matrix.pi-version }}>",
+      "matrix": {
+        "os": [
+          "ubuntu-latest",
+          "windows-latest",
+          "macos-latest"
+        ],
+        "pi-version": "${{ fromJSON(needs.changes.outputs.pi-versions) }}"
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "${{ matrix.os }}",
+      "timeout": 25
+    },
+    "ca-sandbox-tools": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install (locked)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit (CVE gate - fail on HIGH)",
+          "run": "npm audit --omit=dev --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit build toolchain (CVE gate - fail on HIGH, dev deps included)",
+          "run": "npm audit --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Typecheck",
+          "run": "npm run typecheck",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Docker preflight (REQUIRED prerequisite - fail, never skip)",
+          "run": "if ! docker info --format '{{.OSType}}'; then\n  echo \"::error::The ca-sandbox contract job requires a working Docker daemon. Without one the real isolation, mount, network, lifecycle and teardown suites cannot run, and this job would otherwise report green having exercised none of the container behaviour that contains an untrusted repository (issue #406).\"\n  exit 1\nfi\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test (Docker required - a missing daemon fails the run)",
+          "run": "npm test",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Assert every real-container layer executed",
+          "run": "python3 .github/scripts/check_sandbox_docker_layers.py --sentinel \"$CA_SANDBOX_DOCKER_SENTINEL\"",
+          "working_directory": "${{ github.workspace }}"
+        },
+        {
+          "condition": "",
+          "name": "Rebuild sandbox.js",
+          "run": "npm run build",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Fail if a committed ca-sandbox artifact is stale",
+          "run": "stale=0\nfor artifact in sandbox.js claude-inside.js; do\n  if ! git diff --quiet -- \"$artifact\"; then\n    echo \"::error file=plugins/ca-sandbox/tools/$artifact::$artifact is out of date with the TypeScript sources. Run 'npm run build' in plugins/ca-sandbox/tools and commit the result - the plugin ships the bundles, not the sources.\"\n    git --no-pager diff -- \"$artifact\"\n    stale=1\n  fi\ndone\n[ \"$stale\" -eq 0 ] || exit 1\necho \"sandbox.js and claude-inside.js are in sync with the TypeScript sources\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-sandbox == 'true'",
+      "display_name": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "changes": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d"
+        },
+        {
+          "name": "Store impact receipt",
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Resolve supported Pi versions from repository policy",
+          "run": "import json\nimport os\nimport subprocess\nimport sys\npolicy = json.loads(subprocess.check_output(\n    [sys.executable, \".github/scripts/pi_promotion.py\", \"policy\"], text=True))\nwith open(os.environ[\"GITHUB_OUTPUT\"], \"a\", encoding=\"utf-8\") as output:\n    output.write(\"versions=\" + json.dumps(policy[\"supported_versions\"], separators=(\",\", \":\")) + \"\\n\")\n    output.write(\"last-verified=\" + policy[\"last_verified\"] + \"\\n\")\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Write impact receipt",
+          "run": "python tools/ci-impact.py \\\n  --map .github/ci-impact-map.json \\\n  --hosts core/hosts.json \\\n  --changed-files \"$CHANGED_FILES\" \\\n  --output impact.json \\\n  --summary \"$GITHUB_STEP_SUMMARY\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | Impact selection",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "ci-impact": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Validate impact-map fallback, receipt, and name contracts",
+          "run": "python .github/scripts/test_ci_impact.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Validate the site CVE gate's accepted-advisory judge",
+          "run": "python .github/scripts/test_npm_audit_gate.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Validate the version gates' shipped-payload scope",
+          "run": "python .github/scripts/test_payload_scope.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Validate the payload-version gate",
+          "run": "python .github/scripts/test_payload_version_gate.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.impact == 'true'",
+      "display_name": "[CHECK] | [REPO] | Impact planner contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "ci-passed": {
+      "actions": [],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Require every required job to have succeeded or been skipped",
+          "run": "required_results=\"${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}\"\nartifact_coverage_required=\"${{ needs.changes.outputs.artifacts }}\"\nartifact_coverage_result=\"${{ needs['artifact-coverage'].result }}\"\ncanary_result=\"${{ needs.ca-pi-latest.result }}\"\nrelease_candidate_result=\"${{ needs['auto-release-candidate'].result }}\"\necho \"upstream required results: $required_results\"\necho \"advisory Pi canary result: $canary_result\"\nif [ \"$artifact_coverage_required\" = true ] && [ \"$artifact_coverage_result\" != success ]; then\n  echo \"::error::required native statement coverage did not succeed: $artifact_coverage_result\"\n  exit 1\nfi\nif [ \"$release_candidate_result\" != success ]; then\n  echo \"::error::release candidate readiness did not succeed: $release_candidate_result\"\n  exit 1\nfi\nfor r in $required_results; do\n  case \"$r\" in\n    success|skipped) ;;\n    *) echo \"::error::a required CI job concluded '$r'\"; exit 1 ;;\n  esac\ndone\necho \"all required CI jobs passed or were skipped\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "always()",
+      "display_name": "[GATE ] | [REPO] | Merge readiness",
+      "matrix": {},
+      "needs": [
+        "documentation-contract",
+        "auto-release-candidate",
+        "branch-protection",
+        "tag-immutability",
+        "changes",
+        "artifact-engine",
+        "artifact-authority",
+        "artifact-browser",
+        "artifact-coverage",
+        "artifact-package-assembly",
+        "artifact-package-cold",
+        "host-descriptors",
+        "ci-impact",
+        "codex-resource-contract",
+        "codex-candidate-provenance",
+        "tools",
+        "ca-sandbox-tools",
+        "ca-pi-checks",
+        "ca-pi-tools",
+        "ca-pi-latest",
+        "coverage-union",
+        "coverage-union-merge",
+        "coverage-union-pi",
+        "coverage-union-pi-merge",
+        "ca-pi-codeql",
+        "hooks",
+        "version-bump",
+        "version-bump-sandbox",
+        "version-bump-codex",
+        "codex-host",
+        "version-bump-pi",
+        "codex-host-latest",
+        "prose",
+        "badge-consistency",
+        "prose-sandbox",
+        "manifests",
+        "license-consistency",
+        "surface",
+        "prose-codex",
+        "secret-scan",
+        "control-bytes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "codex-candidate-provenance": {
+      "actions": [
+        {
+          "name": "Check out the trusted base verifier",
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Materialize the exact candidate as inert data",
+          "run": "set -euo pipefail\ncase \"$HEAD_SHA\" in\n  \"\"|*[!0-9a-f]*) echo \"::error::candidate SHA must be lowercase hexadecimal\"; exit 1 ;;\nesac\nif [ \"${#HEAD_SHA}\" -ne 40 ]; then\n  echo \"::error::candidate SHA must contain exactly 40 hexadecimal characters\"\n  exit 1\nfi\ngit -C trusted fetch --no-tags --depth=1 origin \"$HEAD_SHA\"\ngit -C trusted cat-file -e \"$HEAD_SHA^{commit}\"\ngit -C trusted worktree add --detach ../candidate \"$HEAD_SHA\"\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Verify the exact static Codex candidate",
+          "run": "set -euo pipefail\npython3 trusted/.github/scripts/verify_codex_static_candidate.py \\\n  --repo candidate --final-ref \"$HEAD_SHA\" --json\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "(github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-codex == 'true'",
+      "display_name": "[GATE ] | [CDX ] | Candidate provenance",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "codex-host": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Verify the installed-host checker regression suite",
+          "run": "python3 .github/scripts/test_check_codex_host.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install the pinned Codex runtime",
+          "run": "npm install -g @openai/codex@${{ matrix.codex-version }}",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install ca-codex through the real host and read it back",
+          "run": "python3 .github/scripts/check_codex_host.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-codex == 'true'",
+      "display_name": "[CHECK] | [CDX ] | Real-host install  <codex: ${{ matrix.codex-version }}>",
+      "matrix": {
+        "codex-version": [
+          "0.143.0",
+          "0.145.0"
+        ]
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 15
+    },
+    "codex-host-latest": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install the latest Codex runtime",
+          "run": "npm install -g @openai/codex@latest",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Probe the real host at latest",
+          "run": "python3 .github/scripts/check_codex_host.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "always()",
+          "name": "Publish the advisory receipt",
+          "run": "installed=$(codex --version 2>/dev/null || echo \"unavailable\")\npinned=$(grep -oE '@openai/codex@[0-9]+\\.[0-9]+\\.[0-9]+' .github/workflows/ci.yml                      | head -1 | cut -d@ -f3)\n{\n  echo \"### Codex upstream compatibility (advisory)\"\n  echo \"\"\n  echo \"| | |\"\n  echo \"|---|---|\"\n  echo \"| npm latest, as installed | \\`${installed}\\` |\"\n  echo \"| required lane pins | \\`${pinned}\\` |\"\n  echo \"| install step | \\`${{ steps.install-latest.outcome }}\\` |\"\n  echo \"| host probe | \\`${{ steps.host-probe.outcome }}\\` |\"\n  echo \"\"\n  if [ \"${{ steps.host-probe.outcome }}\" != \"success\" ]; then\n    echo \"The host check FAILED against npm latest. This does not block a merge.\"\n    echo \"Read it as upstream drift until proven otherwise, and reconcile the\"\n    echo \"supported window in the ca-codex manifest before bumping the pin.\"\n  else\n    echo \"npm latest still satisfies the host-install contract.\"\n  fi\n} >> \"$GITHUB_STEP_SUMMARY\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-codex == 'true'",
+      "display_name": "[WATCH] | [CDX ] | Upstream compatibility  <runtime: npm latest>",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 15
+    },
+    "codex-resource-contract": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Test Codex static package and resource contracts",
+          "run": "python .github/scripts/test_codex_skill_resources.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the trusted static Codex package contract",
+          "run": "python .github/scripts/test_codex_static_package.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the trusted static candidate boundary",
+          "run": "python .github/scripts/test_codex_static_candidate.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Build and validate the tracked Codex package without credentials",
+          "run": "git archive --format=zip --output=ca-codex-static.zip HEAD -- plugins/ca-codex\npython .github/scripts/check_codex_static_package.py --candidate-package ca-codex-static.zip\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test exact candidate provenance",
+          "run": "python .github/scripts/test_codex_candidate_provenance.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Validate the tracked fixture without network or credentials",
+          "run": "python .github/scripts/check_codex_skill_resources.py --fixtures-only",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Validate the shipped Codex package without executing it",
+          "run": "python .github/scripts/check_codex_skill_resources.py --candidate-contract-only --candidate-package plugins/ca-codex",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.codex-resources == 'true'",
+      "display_name": "[CHECK] | [CDX ] | Skill resource evidence contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "control-bytes": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Test the control-byte check",
+          "run": "python3 .github/scripts/test_control_bytes.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Reject control bytes in tracked text files",
+          "run": "python3 .github/scripts/check_control_bytes.py .",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | Control bytes",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "coverage-union": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install (locked)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Bind coverage inputs",
+          "run": "python ../../../.github/scripts/coverage_union.py prepare --repo ../../.. --tree plugins/ca/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Coverage (blob)",
+          "run": "npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-inputs/${{ matrix.os }}.json",
+          "working_directory": "."
+        },
+        {
+          "condition": "always()",
+          "name": "Recheck coverage inputs after execution",
+          "run": "python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca == 'true'",
+      "display_name": "Coverage union  <os: ${{ matrix.os }}>",
+      "matrix": {
+        "os": [
+          "ubuntu-latest",
+          "windows-latest"
+        ]
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "${{ matrix.os }}",
+      "timeout": 20
+    },
+    "coverage-union-merge": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install (locked)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Merge and report the union",
+          "run": "echo \"### Coverage union - plugins/ca/tools\" >> \"$GITHUB_STEP_SUMMARY\"\npython ../../../.github/scripts/coverage_union.py verify --repo ../../.. --tree plugins/ca/tools --input coverage-inputs --output coverage-verified\nblobs=$(ls coverage-verified/*.json 2>/dev/null | wc -l)\necho \"blobs merged: $blobs\" | tee -a \"$GITHUB_STEP_SUMMARY\"\nls coverage-verified/ 2>/dev/null | sed 's/^/  - /' >> \"$GITHUB_STEP_SUMMARY\" || true\nif [ \"$blobs\" -eq 0 ]; then\n  echo \"no host produced a blob - nothing to merge (advisory)\" | tee -a \"$GITHUB_STEP_SUMMARY\"\n  exit 0\nfi\nif [ \"$blobs\" -lt 2 ]; then\n  echo \"PARTIAL: only $blobs of 2 hosts reported - this is NOT the union figure\"               | tee -a \"$GITHUB_STEP_SUMMARY\"\nfi\necho '```' >> \"$GITHUB_STEP_SUMMARY\"\nnpx vitest --merge-reports coverage-verified --coverage --coverage.reporter=text-summary             2>&1 | tee -a \"$GITHUB_STEP_SUMMARY\"\necho '```' >> \"$GITHUB_STEP_SUMMARY\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "always() && needs.changes.outputs.ca == 'true'",
+      "display_name": "[CHECK] | [REPO] | Coverage union",
+      "matrix": {},
+      "needs": [
+        "changes",
+        "coverage-union"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 15
+    },
+    "coverage-union-pi": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install reviewed Pi host graph (isolated, scripts disabled)",
+          "run": "python .github/scripts/pi_host_locks.py install --version ${{ needs.changes.outputs.pi-last-verified }} --prefix \"$RUNNER_TEMP/pi-host-${{ needs.changes.outputs.pi-last-verified }}\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Install (locked)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Bind coverage inputs",
+          "run": "python ../../../.github/scripts/coverage_union.py prepare --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Coverage (blob)",
+          "run": "npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-inputs/${{ matrix.os }}.json",
+          "working_directory": "."
+        },
+        {
+          "condition": "always()",
+          "name": "Recheck coverage inputs after execution",
+          "run": "python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "Coverage union (Pi)  <os: ${{ matrix.os }}>",
+      "matrix": {
+        "os": [
+          "ubuntu-latest",
+          "windows-latest"
+        ]
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "${{ matrix.os }}",
+      "timeout": 25
+    },
+    "coverage-union-pi-merge": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        },
+        {
+          "name": null,
+          "uses": "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install (locked)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Merge and report the union",
+          "run": "echo \"### Coverage union - plugins/ca-pi/tools\" >> \"$GITHUB_STEP_SUMMARY\"\npython ../../../.github/scripts/coverage_union.py verify --repo ../../.. --tree plugins/ca-pi/tools --input coverage-inputs --output coverage-verified\nblobs=$(ls coverage-verified/*.json 2>/dev/null | wc -l)\necho \"blobs merged: $blobs\" | tee -a \"$GITHUB_STEP_SUMMARY\"\nls coverage-verified/ 2>/dev/null | sed 's/^/  - /' >> \"$GITHUB_STEP_SUMMARY\" || true\nif [ \"$blobs\" -eq 0 ]; then\n  echo \"no host produced a blob - nothing to merge (advisory)\" | tee -a \"$GITHUB_STEP_SUMMARY\"\n  exit 0\nfi\nif [ \"$blobs\" -lt 2 ]; then\n  echo \"PARTIAL: only $blobs of 2 hosts reported - this is NOT the union figure\"               | tee -a \"$GITHUB_STEP_SUMMARY\"\nfi\necho '```' >> \"$GITHUB_STEP_SUMMARY\"\nnpx vitest --merge-reports coverage-verified --coverage --coverage.reporter=text-summary             2>&1 | tee -a \"$GITHUB_STEP_SUMMARY\"\necho '```' >> \"$GITHUB_STEP_SUMMARY\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "always() && needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "[CHECK] | [PI  ] | Coverage union",
+      "matrix": {},
+      "needs": [
+        "changes",
+        "coverage-union-pi"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 25
+    },
+    "documentation-contract": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check repository documentation contract",
+          "run": "python3 .github/scripts/check_docs_contract.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | Documentation contract",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "hooks": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Validate hook partition coverage",
+          "run": "python .github/scripts/test_hook_ci_partition.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate shared suite observation",
+          "run": "python .github/scripts/test_suite_observation.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Sync-core drift gate (ADR-0011 M1)",
+          "run": "python tools/sync-core.py --check",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run sync-core tool unit tests",
+          "run": "python .github/scripts/test_sync_core.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run codex-parity-fixture tool unit tests",
+          "run": "python .github/scripts/test_codex_parity_fixture.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run surface-generator unit tests",
+          "run": "python .github/scripts/test_build_surface.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run read-only review funnel contract",
+          "run": "python .github/scripts/test_review_funnel.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run \u00a76 routing + post-merge-cleanup surface contract",
+          "run": "python .github/scripts/test_routing_and_cleanup_surface.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Enforce authoritative destructive-operation registry parity",
+          "run": "python .github/scripts/check_destructive_registry.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run mode-plane core contract (ADR-0030)",
+          "run": "python .github/scripts/test_modelib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run composed-persona contract (ADR-0030)",
+          "run": "python .github/scripts/test_persona_composition.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run prompt-seam interceptor contract (ADR-0030)",
+          "run": "python .github/scripts/test_prompt_submit.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run startup-emitter contract (ADR-0030)",
+          "run": "python .github/scripts/test_startup_emitters.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run mode-reader contract (ADR-0030)",
+          "run": "python .github/scripts/test_mode_readers.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run mode compaction-seam contract (ADR-0030)",
+          "run": "python .github/scripts/test_mode_compaction.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run mode-surface and docs-coverage contract (ADR-0030)",
+          "run": "python .github/scripts/test_mode_surface.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run recorded-intent surface contract (ADR-0025)",
+          "run": "python .github/scripts/test_recorded_intent_surface.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run SMARTS design-quality integration contract",
+          "run": "python .github/scripts/test_smarts_integration_surface.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run INDEX/routing-surface parity gate (#592)",
+          "run": "python .github/scripts/check_routing_index_parity.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run INDEX/routing-surface parity gate unit tests",
+          "run": "python .github/scripts/test_check_routing_index_parity.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run cold-install interpreter matrix",
+          "run": "python .github/scripts/test_hooks_cold_install.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run ca-codex host-adapter parity suite",
+          "run": "python .github/scripts/test_codex_adapter.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate public Codex documentation",
+          "run": "python .github/scripts/test_public_codex_docs.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate public Pi documentation",
+          "run": "python .github/scripts/test_public_pi_docs.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run dual-host shared-store contract",
+          "run": "python .github/scripts/test_dual_host_store.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run guard-logic matrix",
+          "run": "python .github/scripts/test_hook_guards.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run repository-qualified cleanup proof evaluator tests",
+          "run": "python .github/scripts/test_cleanuplib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run /ca:preview helper unit tests",
+          "run": "python .github/scripts/test_preview_lib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run UX-conversion-trio structural copy tests",
+          "run": "python .github/scripts/test_ux_conversion.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run cold-miss nudge unit tests",
+          "run": "python .github/scripts/test_prune_nudge.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run H-14 migration backstop tests",
+          "run": "python .github/scripts/test_migration_backstop.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run /ca:metrics helper unit tests",
+          "run": "python .github/scripts/test_metrics_lib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run task-board lifecycle helper unit tests",
+          "run": "python .github/scripts/test_taskboardlib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run task-board writer + harvest unit tests",
+          "run": "python .github/scripts/test_taskwriter.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run release-skill hardening helper unit tests",
+          "run": "python .github/scripts/test_release_lib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run hosted release-workflow contract tests",
+          "run": "python .github/scripts/test_release_workflow.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run Codex immutable marketplace distribution contracts",
+          "run": "python .github/scripts/test_codex_marketplace_distribution.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run per-target release planner and Git channel contracts",
+          "run": "python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run the A-1.11 release resolution-trace suite",
+          "run": "python .github/scripts/test_release_trace.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run the T-73a/T-73b/T-79 consumer-portability smoke suite",
+          "run": "python .github/scripts/test_consumer_smoke.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run the T-79 skill-proof-freshness guard's own unit tests",
+          "run": "python .github/scripts/test_check_skill_proof_fresh.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run the unit tests for CI's own machinery",
+          "run": "python .github/scripts/test_pi_promotion.py\npython .github/scripts/test_sandbox_docker_layers.py\npython .github/scripts/test_license_consistency.py\npython .github/scripts/test_planfilelib.py\npython .github/scripts/test_spike_findings_contract.py\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run provenance-store helper unit tests",
+          "run": "python .github/scripts/test_provenancelib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate deterministic brownfield fixtures",
+          "run": "python .github/scripts/test_context_fixtures.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate closed brownfield reports",
+          "run": "python .github/scripts/test_context_contracts.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate brownfield observation accounting",
+          "run": "python .github/scripts/test_context_evaluation.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate named brownfield test outcomes",
+          "run": "python .github/scripts/test_context_named_output.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate context host containment controls",
+          "run": "python .github/scripts/test_context_host.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Validate scoped context consumers",
+          "run": "python .github/scripts/test_context_consumers.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Test debug workflow contracts",
+          "run": "python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Test debug helper invocation contracts",
+          "run": "python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_helper_invocation.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Test debug package contracts",
+          "run": "python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_package.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Test debug qualification record correspondence",
+          "run": "python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_qualification.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run shipped-skill portability guard",
+          "run": "python .github/scripts/check_skill_portability.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run shipped-skill portability guard unit tests",
+          "run": "python .github/scripts/test_skill_portability.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run README badge-consistency unit tests",
+          "run": "python .github/scripts/test_badge_consistency.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run shared hook-helper unit tests (_hooklib)",
+          "run": "python .github/scripts/test_hooklib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run cleanup integration-proof evaluator unit tests (T-04)",
+          "run": "python .github/scripts/test_cleanuplib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run cleanup operation journal + guarded executor unit tests (T-05)",
+          "run": "python .github/scripts/test_cleanuplib_mutation.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run cleanup authoritative branch/worktree inventory unit tests (T-03)",
+          "run": "python .github/scripts/test_cleanuplib_inventory.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run cleanup shared decision/interaction contract tests (T-02)",
+          "run": "python .github/scripts/test_cleanup_contract.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run commit-gate board-sync structural tests",
+          "run": "python .github/scripts/test_board_sync.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run commit-gate provenance auto-heal wiring tests",
+          "run": "python .github/scripts/test_provenance_wiring.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run file-scoped-context-injection lib unit tests",
+          "run": "python .github/scripts/test_readinjectlib.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run pre-read hook entry-point integration tests",
+          "run": "python .github/scripts/test_pre_read.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'functional'",
+          "name": "Run the hooks/tests unittest suite",
+          "run": "python -m unittest discover -s plugins/ca/hooks/tests -p \"test_*.py\"",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'isolation'",
+          "name": "Enforce suite hermeticity (issues",
+          "run": "python .github/scripts/test_suite_hermeticity.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run ADR identity + supersession contract tests",
+          "run": "python .github/scripts/test_adr_identity.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Run ADR acceptance/delivery lifecycle contract tests",
+          "run": "python .github/scripts/test_adr_lifecycle.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Enforce append-only ADR lifecycle bindings on the live record",
+          "run": "python .github/scripts/check_adr_lifecycle.py --github-event --current-ref HEAD",
+          "working_directory": "."
+        },
+        {
+          "condition": "matrix.partition == 'all' || matrix.partition == 'contracts'",
+          "name": "Enforce the ADR identity contract on the live decision record",
+          "run": "python .github/scripts/check_adr_identity.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.hooks == 'true'",
+      "display_name": "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} \u00b7 partition: ${{ matrix.partition }}>",
+      "matrix": {
+        "exclude": [
+          {
+            "os": "windows-latest",
+            "partition": "all"
+          }
+        ],
+        "include": [
+          {
+            "os": "windows-latest",
+            "partition": "contracts"
+          },
+          {
+            "os": "windows-latest",
+            "partition": "functional"
+          },
+          {
+            "os": "windows-latest",
+            "partition": "isolation"
+          }
+        ],
+        "os": [
+          "ubuntu-latest",
+          "windows-latest",
+          "macos-latest"
+        ],
+        "partition": [
+          "all"
+        ]
+      },
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 5,
+      "observed_skips": 0,
+      "observed_successes": 5,
+      "runner": "${{ matrix.os }}",
+      "timeout": 20
+    },
+    "host-descriptors": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Run the complete host descriptor and generated-only suite",
+          "run": "python .github/scripts/test_host_descriptors.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.host-descriptors == 'true'",
+      "display_name": "[CHECK] | [CORE] | Host descriptor contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "license-consistency": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check license declarations agree across surfaces",
+          "run": "python3 .github/scripts/check_license_consistency.py .",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | License consistency",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "manifests": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Validate every tracked JSON parses",
+          "run": "fail=0\nwhile IFS= read -r f; do\n  [ -L \"$f\" ] && continue   # skip symlinks - a tracked .json must be a real file\n  if ! err=$(node -e \"JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))\" \"$f\" 2>&1); then\n    echo \"::error file=$f::invalid JSON: $err\"\n    fail=1\n  fi\ndone < <(git ls-files '*.json')\nif [ \"$fail\" -eq 0 ]; then echo \"all tracked JSON valid\"; fi\nexit $fail\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Validate ca-codex package against pinned schema",
+          "run": "codex --version 2>/dev/null || echo \"codex CLI not installed; schema baseline is recorded by the validator\"\npython3 .github/scripts/validate_codex_plugin.py\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the pinned ca-codex package validator",
+          "run": "python3 .github/scripts/test_validate_codex_plugin.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.manifests == 'true'",
+      "display_name": "[CHECK] | [REPO] | Manifest contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "prose": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check cross-reference graph (ca)",
+          "run": "python3 .github/scripts/check-plugin-refs.py ca",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca == 'true'",
+      "display_name": "[CHECK] | [CA  ] | Reference graph",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "prose-codex": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check cross-reference graph (ca-codex)",
+          "run": "python3 .github/scripts/check-plugin-refs.py ca-codex",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-codex == 'true'",
+      "display_name": "[CHECK] | [CDX ] | Reference graph",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "prose-sandbox": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check cross-reference graph (ca-sandbox)",
+          "run": "python3 .github/scripts/check-plugin-refs.py ca-sandbox",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca-sandbox == 'true'",
+      "display_name": "[CHECK] | [SBX ] | Reference graph",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "secret-scan": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Prove the allowlist is still narrow before trusting it",
+          "run": "python -m unittest -v \\\n  test_ci_impact.WorkflowContractTest.test_the_secret_scan_allowlist_stays_narrow_and_value_scoped \\\n  test_ci_impact.WorkflowContractTest.test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract\n",
+          "working_directory": ".github/scripts"
+        },
+        {
+          "condition": "",
+          "name": "Materialize the tracked tree",
+          "run": "mkdir -p \"$RUNNER_TEMP/secret-scan\"\ngit archive --format=tar HEAD | tar -x -C \"$RUNNER_TEMP/secret-scan\"\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Scan the tracked tree for credentials",
+          "run": "docker run --rm \\\n  --network none \\\n  --read-only \\\n  --cap-drop ALL \\\n  --security-opt no-new-privileges \\\n  --user \"$(id -u):$(id -g)\" \\\n  --workdir /repo \\\n  --volume \"$RUNNER_TEMP/secret-scan:/repo:ro\" \\\n  \"$GITLEAKS_IMAGE\" \\\n  dir . \\\n    --config /repo/.gitleaks.toml \\\n    --no-banner \\\n    --redact \\\n    --verbose \\\n    --exit-code 1\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "github.event_name == 'pull_request' || github.event_name == 'merge_group'",
+          "name": "Scan the pull request's commit range for credentials",
+          "run": "base=\"$(git merge-base \"$BASE_SHA\" HEAD)\"\necho \"scanning commit range ${base}..HEAD\"\ndocker run --rm \\\n  --network none \\\n  --read-only \\\n  --tmpfs /tmp:rw,noexec,nosuid,size=64m \\\n  --cap-drop ALL \\\n  --security-opt no-new-privileges \\\n  --user \"$(id -u):$(id -g)\" \\\n  --env HOME=/tmp \\\n  --env GIT_CONFIG_COUNT=1 \\\n  --env GIT_CONFIG_KEY_0=safe.directory \\\n  --env GIT_CONFIG_VALUE_0=/repo \\\n  --workdir /repo \\\n  --volume \"$GITHUB_WORKSPACE:/repo:ro\" \\\n  \"$GITLEAKS_IMAGE\" \\\n  git . \\\n    --config /repo/.gitleaks.toml \\\n    --log-opts \"${base}..HEAD\" \\\n    --no-banner \\\n    --redact \\\n    --verbose \\\n    --exit-code 1\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | Secret scan",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": 15
+    },
+    "surface": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Check rendered surfaces match core/surface/ templates (both hosts)",
+          "run": "python3 tools/build-surface.py --check",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Run command-route registry and compatibility contract",
+          "run": "python3 .github/scripts/check_command_route_release_state.py declarations\npython3 .github/scripts/test_command_route_release_state.py\npython3 .github/scripts/test_command_route_compatibility.py\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Classify every active CLAUDE_PLUGIN_ROOT occurrence",
+          "run": "python3 .github/scripts/check-plugin-refs.py --claude-root-inventory\npython3 .github/scripts/test_check_plugin_refs.py\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [CORE] | Generated surface",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "tag-immutability": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Verify publication receipts and legacy baselines still match live refs",
+          "run": "python .github/scripts/check_tag_immutability.py --repo \"$GITHUB_REPOSITORY\" --manifest .github/published-tags.json --legacy-manifest .github/legacy-published-tags.json",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test the audit's own logic",
+          "run": "python .github/scripts/test_tag_immutability.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test publication identity receipt capture",
+          "run": "python .github/scripts/test_tag_publication_receipt.py",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test append-only receipt reconciliation",
+          "run": "python .github/scripts/test_reconcile_tag_receipt.py",
+          "working_directory": "."
+        }
+      ],
+      "condition": "",
+      "display_name": "[CHECK] | [REPO] | Published tag immutability",
+      "matrix": {},
+      "needs": [],
+      "observed_jobs": 1,
+      "observed_skips": 0,
+      "observed_successes": 1,
+      "runner": "ubuntu-latest",
+      "timeout": 10
+    },
+    "tools": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        },
+        {
+          "name": null,
+          "uses": "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Install (locked)",
+          "run": "npm ci --ignore-scripts",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit (CVE gate - fail on HIGH)",
+          "run": "npm audit --omit=dev --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Audit build toolchain (CVE gate - fail on HIGH, dev deps included)",
+          "run": "npm audit --audit-level=high",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Typecheck",
+          "run": "npm run typecheck",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Rebuild farm.js",
+          "run": "npm run build",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Fail if committed farm.js is stale",
+          "run": "if ! git diff --quiet -- farm.js; then\n  echo \"::error file=plugins/ca/tools/farm.js::farm.js is out of date with farm.ts. Run 'npm run build' in plugins/ca/tools and commit the result - the plugin ships farm.js, not farm.ts.\"\n  git --no-pager diff -- farm.js\n  exit 1\nfi\necho \"farm.js is in sync with farm.ts\"\n",
+          "working_directory": "."
+        },
+        {
+          "condition": "",
+          "name": "Test",
+          "run": "npm test",
+          "working_directory": "."
+        }
+      ],
+      "condition": "needs.changes.outputs.ca == 'true'",
+      "display_name": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "version-bump": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Fail if a published version ships a changed payload",
+          "run": "BASE=\"${BASE#refs/heads/}\"\ngit fetch -q origin \"$BASE\" --tags\n# Issue #435 scopes the payload (the plugin MINUS its tools/ BUILD\n# directory, PLUS the committed esbuild artifacts inside it, since\n# TypeScript sources and a lockfile never run on an installed machine).\n# Issue #530 decides what makes a version unusable for a FURTHER\n# payload change. Both rules live in Python so they can be unit-tested\n# against a real repository rather than asserted about shell embedded\n# in YAML - payload_scope.py and payload_version_gate.py, pinned by\n# test_payload_scope.py and test_payload_version_gate.py.\n#\n# #530: this step used to ask \"does tag v$ver exist?\" and allow\n# everything else. A marketplace install populates its cache from the\n# MANIFEST VERSION with no tag involved, so an untagged-but-already-\n# shipped version bought unlimited free payload changes that could\n# reach no installed user. Three merged PRs shipped that way on 2.9.1.\npython3 .github/scripts/payload_version_gate.py --plugin plugins/ca --base \"origin/$BASE\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "(github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca == 'true'",
+      "display_name": "[GATE ] | [CA  ] | Payload version",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "version-bump-codex": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Fail if a published version ships a changed payload",
+          "run": "BASE=\"${BASE#refs/heads/}\"\ngit fetch -q origin \"$BASE\" --tags\n# See the ca guard above. This lane additionally GAINS the #435 payload\n# scope, which it never had: it used to diff `plugins/ca-codex`\n# wholesale. That is behaviour-neutral today because ca-codex has no\n# tools/ directory and ships no committed .js, and it means the tree\n# is already correct the day it grows one.\npython3 .github/scripts/payload_version_gate.py --plugin plugins/ca-codex --base \"origin/$BASE\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "(github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-codex == 'true'",
+      "display_name": "[GATE ] | [CDX ] | Payload version",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    },
+    "version-bump-pi": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Fail if a tagged Pi payload changes without synchronized release metadata",
+          "run": "python tools/build-host-packages.py --check --release-guard-base \"$BASE_COMMIT\"",
+          "working_directory": "."
+        }
+      ],
+      "condition": "(github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-pi == 'true'",
+      "display_name": "[GATE ] | [PI  ] | Payload version",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": 10
+    },
+    "version-bump-sandbox": {
+      "actions": [
+        {
+          "name": null,
+          "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        }
+      ],
+      "commands": [
+        {
+          "condition": "",
+          "name": "Fail if a published version ships a changed payload",
+          "run": "BASE=\"${BASE#refs/heads/}\"\ngit fetch -q origin \"$BASE\" --tags\n# See the ca guard above. Same two rules, same scripts, one plugin\n# argument apart: issue #435 owns the payload scope, issue #530 owns\n# what makes a version unusable for a further payload change. The\n# first-introduction case (no plugin.json on base) and the\n# unresolvable-base case both moved into payload_version_gate.py,\n# where they are unit-tested rather than asserted about shell.\npython3 .github/scripts/payload_version_gate.py --plugin plugins/ca-sandbox --base \"origin/$BASE\"\n",
+          "working_directory": "."
+        }
+      ],
+      "condition": "(github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-sandbox == 'true'",
+      "display_name": "[GATE ] | [SBX ] | Payload version",
+      "matrix": {},
+      "needs": [
+        "changes"
+      ],
+      "observed_jobs": 1,
+      "observed_skips": 1,
+      "observed_successes": 0,
+      "runner": "ubuntu-latest",
+      "timeout": null
+    }
+  },
+  "known_historical_reference": {
+    "head": "16983f5017b39e35de2f90994e30fcd60730e82c",
+    "policy": "review individual improvements; never wholesale copy older workflow",
+    "pr": 993,
+    "state": "closed_unmerged"
+  },
+  "protected_required_contexts": [
+    "[GATE ] | [REPO] | Merge readiness"
+  ],
+  "source_commit": "0badb588dc1179b06e13db1ca5322590962b586a",
+  "workflow_files": {
+    "ci.yml": {
+      "jobs": [
+        "artifact-authority",
+        "artifact-browser",
+        "artifact-coverage",
+        "artifact-engine",
+        "artifact-package-assembly",
+        "artifact-package-cold",
+        "auto-release-candidate",
+        "badge-consistency",
+        "branch-protection",
+        "ca-pi-checks",
+        "ca-pi-codeql",
+        "ca-pi-latest",
+        "ca-pi-tools",
+        "ca-sandbox-tools",
+        "changes",
+        "ci-impact",
+        "ci-passed",
+        "codex-candidate-provenance",
+        "codex-host",
+        "codex-host-latest",
+        "codex-resource-contract",
+        "control-bytes",
+        "coverage-union",
+        "coverage-union-merge",
+        "coverage-union-pi",
+        "coverage-union-pi-merge",
+        "documentation-contract",
+        "hooks",
+        "host-descriptors",
+        "license-consistency",
+        "manifests",
+        "prose",
+        "prose-codex",
+        "prose-sandbox",
+        "secret-scan",
+        "surface",
+        "tag-immutability",
+        "tools",
+        "version-bump",
+        "version-bump-codex",
+        "version-bump-pi",
+        "version-bump-sandbox"
+      ],
+      "sha256": "3f4f3e6ed2c33e12110d44735fa2ce32032c9c9fe1414e2d566c6817b818e525"
+    },
+    "codeql.yml": {
+      "jobs": [
+        "ca-pi-javascript-typescript"
+      ],
+      "sha256": "e44de18bd09bd38c4274e539ff6184458c7fe3e4606a5cfc61213a8ff60b5ddc"
+    },
+    "docs.yml": {
+      "jobs": [
+        "build",
+        "deploy",
+        "site-check"
+      ],
+      "sha256": "4447d46dc7e69619f837f56a76223c82551904ddeb0dc74aafbe9839327a1f42"
+    },
+    "pi-promotion.yml": {
+      "jobs": [
+        "open-pr",
+        "resolve",
+        "validate"
+      ],
+      "sha256": "ad7dbfcff5945276e67449242ebb223b6722694baaa864d36c031e3ac0868d76"
+    },
+    "release.yml": {
+      "jobs": [
+        "eligibility-errors",
+        "preflight",
+        "release-ca",
+        "release-codex",
+        "release-pi",
+        "release-sandbox"
+      ],
+      "sha256": "d338289a6cbe2eb3cdbabdedc8ade62852d966e50ea8b3a32ed4c8db5365382a"
+    }
+  }
+}

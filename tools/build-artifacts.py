@@ -34,8 +34,11 @@ def _unique_object(pairs):
     return value
 
 
-def load_context_observation(path: Path) -> dict:
-    """Bind six real finite Go outcomes to this checkout and pinned Go tool."""
+def load_context_observation(path: Path, go_digest: str | None = None) -> dict:
+    """Bind six real finite Go outcomes to this checkout and pinned Go tool.
+
+    Without `go_digest` the tool is this host's Go executable. An off-host
+    issuer passes the native stamp's recorded Go digest instead."""
     if not path.is_absolute() or path.is_symlink() or not path.is_file():
         raise ValueError("context native observation must be an independent real file")
     raw = path.read_bytes()
@@ -50,10 +53,13 @@ def load_context_observation(path: Path) -> dict:
     finally:
         sys.path.remove(str(scripts))
     module = Path(__file__).resolve().parents[1] / "core" / "artifacts"
-    go_name = shutil.which("go")
-    if go_name is None:
-        raise ValueError("pinned Go executable is unavailable")
-    go_digest = hashlib.sha256(Path(go_name).resolve(strict=True).read_bytes()).hexdigest()
+    if go_digest is None:
+        go_name = shutil.which("go")
+        if go_name is None:
+            raise ValueError("pinned Go executable is unavailable")
+        go_digest = hashlib.sha256(Path(go_name).resolve(strict=True).read_bytes()).hexdigest()
+    elif re.fullmatch(r"[0-9a-f]{64}", go_digest) is None:
+        raise ValueError("recorded Go executable digest is malformed")
     expected = {
         "TestContextRepresentationBoundary": (context_tests.SOURCE, context_tests.SUBTESTS),
         "TestContextDocumentContract": (context_tests.DOCUMENT_SOURCE, context_tests.DOCUMENT_SUBTESTS),
@@ -90,9 +96,28 @@ def load_context_observation(path: Path) -> dict:
     return record
 
 
+def recorded_native_binding(candidate: Path, binding_path: Path, platform_name: str) -> dict:
+    """Check the native builder's same-run stamp for an off-host issuer."""
+    scripts = Path(__file__).resolve().parents[1] / ".github" / "scripts"
+    sys.path.insert(0, str(scripts))
+    try:
+        import ci20_native_binding as binding
+    finally:
+        sys.path.remove(str(scripts))
+    try:
+        return binding.recorded(candidate, binding_path, platform_name)
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+        raise SystemExit(f"recorded native binding refused: {error}") from error
+
+
 def write_qualification(candidate: Path, destination: Path,
-                        context_observation: Path | None = None) -> None:
-    """Emit the exact-host receipt only inside the protected CI matrix job."""
+                        context_observation: Path | None = None,
+                        native_binding: Path | None = None) -> None:
+    """Emit the exact-host receipt only inside the protected CI job.
+
+    On the native host, the host's own `go env` and Go executable bind the
+    receipt. With `native_binding`, a single issuer qualifies each platform
+    from that platform's same-run stamp instead (plan CI20-04b)."""
     source_commit = os.environ.get("GITHUB_SHA", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF", "")
@@ -121,11 +146,20 @@ def write_qualification(candidate: Path, destination: Path,
     if not isinstance(entries, dict) or len(entries) != 1:
         raise SystemExit("qualification requires exactly one native candidate")
     platform_name, entry = next(iter(entries.items()))
-    goos = subprocess.check_output(["go", "env", "GOOS"], text=True).strip()
-    goarch = subprocess.check_output(["go", "env", "GOARCH"], text=True).strip()
-    if (platform_name != expected_platform or platform_name != f"{goos}/{goarch}"
+    if native_binding is None:
+        goos = subprocess.check_output(["go", "env", "GOOS"], text=True).strip()
+        goarch = subprocess.check_output(["go", "env", "GOARCH"], text=True).strip()
+        host_mismatch = platform_name != f"{goos}/{goarch}"
+    elif context_observation is None:
+        raise SystemExit("recorded qualification requires the native context observation")
+    else:
+        # The native builder's stamp stands in for this host's toolchain.
+        host_mismatch = False
+    if (platform_name != expected_platform or host_mismatch
             or entry.get("native_tested") is not True):
         raise SystemExit("candidate platform does not match the exact host")
+    go_digest = (None if native_binding is None
+                 else recorded_native_binding(candidate, native_binding, platform_name)["go_sha256"])
     binary = candidate / entry["file"]
     digest = hashlib.sha256(binary.read_bytes()).hexdigest()
     if digest != entry.get("sha256"):
@@ -146,7 +180,7 @@ def write_qualification(candidate: Path, destination: Path,
         "native_tests": NATIVE_TESTS,
     }
     if context_observation is not None:
-        receipt["context_native"] = load_context_observation(context_observation)
+        receipt["context_native"] = load_context_observation(context_observation, go_digest)
     with destination.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(receipt, stream, indent=2)
         stream.write("\n")
@@ -158,6 +192,8 @@ def main():
     parser.add_argument("--qualify-existing", type=Path)
     parser.add_argument("--qualification-output", type=Path)
     parser.add_argument("--context-native-observation", type=Path)
+    parser.add_argument("--native-binding", type=Path,
+                        help="CI only: qualify off-host from the native builder's same-run stamp")
     args = parser.parse_args()
     if args.qualify_existing is not None or args.qualification_output is not None:
         if args.output is not None or args.skip_tests or args.qualify_existing is None or args.qualification_output is None:
@@ -165,13 +201,15 @@ def main():
         write_qualification(args.qualify_existing.resolve(strict=True),
                             args.qualification_output.absolute(),
                             args.context_native_observation.absolute()
-                            if args.context_native_observation is not None else None)
+                            if args.context_native_observation is not None else None,
+                            args.native_binding.absolute()
+                            if args.native_binding is not None else None)
         print(json.dumps({"qualification": str(args.qualification_output.absolute())}, indent=2))
         return
     if args.output is None:
         parser.error("--output is required when building a candidate")
-    if args.context_native_observation is not None:
-        parser.error("--context-native-observation requires qualification mode")
+    if args.context_native_observation is not None or args.native_binding is not None:
+        parser.error("--context-native-observation and --native-binding require qualification mode")
     repo = Path(__file__).resolve().parents[1]
     module = repo / "core/artifacts"
     output = args.output.resolve()
@@ -187,7 +225,9 @@ def main():
         raise SystemExit("Native qualification requires the actual host target; unset cross-build GOOS/GOARCH or use --skip-tests.")
     if not args.skip_tests:
         # An explicit bound replaces Go's implicit 10-minute per-package default.
-        subprocess.run(["go", "test", "./...", "-count=1", "-timeout=30m"], cwd=module, env=env, check=True)
+        # Every listed test still runs once; isolated processes use the host's cores.
+        subprocess.run([sys.executable, str(repo / "tools/go_test_parallel.py"), "--module", str(module),
+                        "--timeout", "30m"], cwd=module, env=env, check=True)
         subprocess.run(["go", "vet", "./..."], cwd=module, env=env, check=True)
     name = f"ca-artifact-{goos}-{goarch}" + (".exe" if goos == "windows" else "")
     subprocess.run(["go", "build", "-trimpath", "-buildvcs=false", "-ldflags=-s -w", "-o", str(output/name), "./cmd/ca-artifact"], cwd=module, env=env, check=True)
