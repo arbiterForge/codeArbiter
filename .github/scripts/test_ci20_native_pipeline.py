@@ -255,9 +255,9 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("python tools/build-artifacts.py --output", self.jobs["artifact-native-build"])
 
     def test_full_coverage_and_platform_specific_checks_stay_required(self):
-        self.assertIn("go test -buildvcs=false -timeout=20m ./...", self.jobs["artifact-native-default"])
+        self.assertIn("python tools/go_test_parallel.py --module core/artifacts --timeout 20m", self.jobs["artifact-native-default"])
         self.assertIn("go vet -buildvcs=false ./...", self.jobs["artifact-native-default"])
-        self.assertIn("go test -buildvcs=false -race ./...", self.jobs["artifact-native-default"])
+        self.assertIn("python tools/go_test_parallel.py --module core/artifacts --build-flag=-race", self.jobs["artifact-native-default"])
         self.assertIn("test_smarts_engine_contract.py", self.jobs["artifact-native-default"])
         self.assertIn("test_ship_set_inputs.py", self.jobs["artifact-native-default"])
         self.assertIn("test_artifact_cli.py --coverage-output", self.jobs["artifact-native-coverage"])
@@ -282,7 +282,7 @@ class WorkflowContract(unittest.TestCase):
                         final.index("--qualify-existing"))
         self.assertLess(final.index("ci20_native_binding.py verify"),
                         final.index("--qualify-existing"))
-        self.assertIn("artifact-context-", final)
+        self.assertIn("ci20-native-context-", final)
         self.assertIn("--context-native-observation", final)
         for group in binding.REQUIRED_STAGES:
             self.assertIn(group, final.split("    needs:", 1)[1].splitlines()[0])

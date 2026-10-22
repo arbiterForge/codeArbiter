@@ -3725,9 +3725,9 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "go-download-base-url: https://go.dev/dl",
             "GOTOOLCHAIN: local",
             "subprocess.check_output(['go', 'env', 'GOVERSION']",
-            'go test -buildvcs=false -timeout=20m ./...',
+            'python tools/go_test_parallel.py --module core/artifacts --timeout 20m',
             'go vet -buildvcs=false ./...',
-            'go test -buildvcs=false -race ./...',
+            'python tools/go_test_parallel.py --module core/artifacts --build-flag=-race',
             'python .github/scripts/test_artifact_native.py',
             'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
             'python .github/scripts/test_artifact_approval_adapter.py',
@@ -3749,7 +3749,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         qualification_position = jobs["artifact-engine"].index(
             '--qualify-existing "${{ runner.temp }}/artifact-candidate"')
         for proving_step in (
-            "go test -buildvcs=false -timeout=20m ./...",
+            "python tools/go_test_parallel.py --module core/artifacts --timeout 20m",
             "go vet -buildvcs=false ./...",
             "python .github/scripts/test_artifact_native.py",
             "'.github/scripts/test_artifact_conformance.py'",

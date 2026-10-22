@@ -1657,6 +1657,35 @@ class PiHostLocksTest(unittest.TestCase):
                     helper.install(REPO, SUPPORTED_VERSION, destination)
             self.assertEqual(github_path.read_text(encoding="utf-8"), "existing\n")
 
+    def test_install_audit_retries_only_npm_registry_errors(self):
+        helper = load_helper()
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
+        failure = json.dumps({"error": {"code": "ETIMEDOUT", "summary": "bulk advisory request timed out"}})
+        inventory = json.dumps({"dependencies": {PACKAGE: {"version": SUPPORTED_VERSION}}})
+        for label, replies, error, audits in (
+            ("recovers", [failure, clean, clean], None, 3),
+            ("exhausted", [failure] * helper.AUDIT_ATTEMPTS, "registry error after 3 attempts: ETIMEDOUT", 3),
+            ("malformed-is-not-retried", [json.dumps({"auditReportVersion": 2})], "no vulnerability inventory", 1),
+        ):
+            pending, calls = list(replies), []
+
+            def run(command, **_kwargs):
+                if command[1] == "audit" and "--json" in command:
+                    calls.append(command)
+                    return SimpleNamespace(stdout=pending.pop(0), returncode=1)
+                if command[1:3] == ["ls", "--all"]:
+                    return SimpleNamespace(stdout=inventory, returncode=0)
+                return SimpleNamespace(stdout="", returncode=0)
+            with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, \
+                    mock.patch.object(helper.subprocess, "run", side_effect=run):
+                root = Path(raw)
+                if error is None:
+                    helper._audit_install(root, root, SUPPORTED_VERSION)
+                else:
+                    with self.assertRaisesRegex(ValueError, error):
+                        helper._audit_install(root, root, SUPPORTED_VERSION)
+                self.assertEqual(len(calls), audits)
+
     def test_install_audit_rejects_wrong_installed_pi_version(self):
         helper = load_helper()
         clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})

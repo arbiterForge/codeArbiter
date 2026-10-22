@@ -72,6 +72,8 @@ on:
       # required native-host contract even when a change touches no plugin.
       - "docs/artifacts/**"
       - "tools/build-artifacts.py"
+      - "tools/go_test_parallel.py"
+      - "tools/go-test-timings.json"
       - "tools/test-artifact-mixed-schema.py"
       - "tools/artifact-coverage.py"
       - "tools/install-artifact-payload.py"
@@ -329,6 +331,7 @@ jobs:
             impact:
               - '.github/scripts/ci20_native_binding.py'
               - '.github/scripts/test_ci20_native_pipeline.py'
+              - '.github/scripts/test_go_test_parallel.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/scripts/ci20_correspondence.py'
@@ -403,6 +406,7 @@ jobs:
             artifacts:
               - '.github/scripts/ci20_native_binding.py'
               - '.github/scripts/test_ci20_native_pipeline.py'
+              - '.github/scripts/test_go_test_parallel.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/scripts/ci20_correspondence.py'
@@ -455,6 +459,8 @@ jobs:
               - 'site/src/content/docs/**'
               - 'site/src/curated/**'
               - 'tools/build-artifacts.py'
+              - 'tools/go_test_parallel.py'
+              - 'tools/go-test-timings.json'
               - 'tools/test-artifact-mixed-schema.py'
               - 'tools/artifact-coverage.py'
               - 'tools/build-host-packages.py'
@@ -843,15 +849,17 @@ jobs:
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Test artifact engine
-        working-directory: core/artifacts
-        run: go test -buildvcs=false -timeout=20m ./...
+        # Same complete population as `go test ./...`; isolated processes use the runner's cores.
+        run: python tools/go_test_parallel.py --module core/artifacts --timeout 20m
       - name: Vet artifact engine
         working-directory: core/artifacts
         run: go vet -buildvcs=false ./...
+      - name: Verify the parallel Go runner refuses incomplete populations
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_go_test_parallel.py
       - name: Race-test Linux persistence paths
         if: matrix.os == 'ubuntu-24.04'
-        working-directory: core/artifacts
-        run: go test -buildvcs=false -race ./...
+        run: python tools/go_test_parallel.py --module core/artifacts --build-flag=-race
       - name: Verify generated artifact types
         if: matrix.os == 'ubuntu-24.04'
         run: python tools/generate-artifact-types.py --check
