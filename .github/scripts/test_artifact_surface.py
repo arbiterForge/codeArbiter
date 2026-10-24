@@ -23,10 +23,12 @@ POLICY_STARTUP_FIXTURES = (
 # the resident routing body; PR872 reviewed initialized-state parsing and bounded
 # context-coverage notices. PR983 aligns resident sprint guidance with assistive
 # execution. The 2026-10-23 command removal drops the /btw and /commands
-# references from both. Keep current content pins separate from the historical pilot.
+# references from both. The context-and-decomposition conversion gives HTML-knowledge
+# repositories a one-line pointer instead of a Markdown coverage count. Keep
+# current content pins separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
     "core/surface/arbiter.md": "955705504f53800cd5f6626abb2db5a94cbee88d679f1fb8ea4d599a09d699b0",
-    "core/pysrc/session-start.py": "cf2f465e855039929f125d7e816257fdf45a9d780b90faff7f849d1bb9e5c3b8",
+    "core/pysrc/session-start.py": "b604ce3c4cca32123755f8d75937c06dcffa2c4e4c2da92e2e32eb841abb1b36",
 }
 
 HISTORICAL_ATTESTATION_GUIDANCE_PATHS = (

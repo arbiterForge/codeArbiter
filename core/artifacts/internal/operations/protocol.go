@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -243,6 +243,23 @@ func RequestSchema(op string) (object, error) {
 		return request, nil
 	case "eligible", "verification-status":
 		artifact()
+	case "knowledge-context":
+		add("paths", array(object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, 1), true)
+		budget()
+	case "knowledge-initialize":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("expected", closed(object{".codearbiter/CONTEXT.md": digestType()}, ".codearbiter/CONTEXT.md"), true)
+	case "knowledge-merge":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("path", text(), true)
+		add("base", object{"type": "string"}, false)
+		add("ours", text(), true)
+		add("theirs", text(), true)
+		add("expected_current_sha256", digestType(), true)
+	case "knowledge-cutover":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("mode", enum("preview", "apply"), true)
+		add("expected", object{"type": "object", "additionalProperties": object{"oneOf": []any{digestType(), object{"type": "null"}}}}, false)
 	case "task-context":
 		artifact()
 		add("task", idType(), true)

@@ -1,5 +1,12 @@
 # Reference map
 
+For every security policy reference below, follow [includes/knowledge.md](knowledge.md)
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Loaded on a scope-touch: before acting on code in one of these rows, read the governing doc first,
 then route to the owning skill or agent. This map answers *what to read before touching a scope*; for
 *what to invoke or route given a trigger*, use `routing-table.md`. "Read first" paths are under

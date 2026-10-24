@@ -16,19 +16,22 @@ This is how a repository opts into codeArbiter for the first time. It writes the
 directory with the activation flag and a set of empty tracking files — nothing more. The `CONTEXT.md`
 it creates is deliberately a stub, not a finished project doc, so the very next thing that has to
 happen is populating it: an existing codebase routes to bounded brownfield inspection with optional agents that reads the code and
-drafts the real docs, while a from-scratch project routes to the layered architect interview instead.
-Until that populator runs and writes its own completion marker, the rest of the pipeline stays
-blocked — `/ca:feature` and the other lanes need `tech-stack.md` and `security-controls.md` to exist
-before they'll proceed.
+records what it finds, while a from-scratch project routes to the resumable architect interview instead.
+New scaffolds keep that context as native HTML knowledge records under `.codearbiter/context/`;
+`--format markdown` scaffolds the older Markdown documents instead. Until that populator runs and
+writes its own completion marker, the rest of the pipeline stays blocked — `/ca:feature` and the
+other lanes need the tech-stack and security-controls context (`tech-stack.md` and
+`security-controls.md` in the Markdown format) before they'll proceed.
 
 ## Usage
 
 ```
-/ca:init | --stage N | --check
+/ca:init | --stage N | --check | --format markdown
 ```
 
 No arguments runs the scaffold at its default maturity stage; `--stage N` sets an initial maturity
-value other than the default; `--check` reports the current state without writing anything.
+value other than the default; `--check` reports the current state without writing anything;
+`--format markdown` keeps the legacy Markdown context layout.
 
 ## Example
 
@@ -36,8 +39,8 @@ value other than the default; `--check` reports the current state without writin
 > /ca:init
 
 Running the scaffolder against the repo root...
-Created .codearbiter/CONTEXT.md (arbiter: enabled, stage: 1, stub body)
-Created open-tasks.md, open-questions.md, overrides.log, last-checkpoint
+Created .codearbiter/CONTEXT.md (arbiter: enabled, stage: 1, context-format: html, stub body)
+Created open-tasks.md, done-tasks.md, open-questions.md, overrides.log, last-checkpoint, .gitattributes
 Source code detected in this repo — routing to /ca:create-context to populate the stub.
 ```
 

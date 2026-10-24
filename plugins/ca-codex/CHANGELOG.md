@@ -6,6 +6,42 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-10-24
+
+### Added
+
+- Project context can now live as native HTML knowledge records:
+  `.codearbiter/context/<name>.html` for the five context documents and
+  `.codearbiter/decomposition/project.html` for the greenfield interview.
+  Each record has a stable ID, a basis (`user-reported`, `source-observed`,
+  `inferred`, `proposed` or `unknown`), cited sources and the paths it
+  governs. New scaffolds use this format; ``$ca-init` --format markdown` keeps
+  the Markdown layout.
+- `hooks/knowledge.py` reads and changes records: `relevant <paths>` returns
+  only the records that govern those paths, `promote` adds an approved work
+  item to the task board once, `stale` lists records whose cited files
+  changed, and `merge-conflict` resolves a Git conflict record by record.
+- `task-context` now carries the knowledge records relevant to a task's
+  paths, with one explicit link hop. A damaged knowledge document is
+  reported without hiding the others.
+- `knowledge.py convert` prepares empty HTML documents and lists Markdown
+  sources with a fingerprint token. The agent records their meaning; `convert
+  --finish <token>` refuses changed sources or unrecorded content, then switches
+  formats in one journaled transaction that retains the original bytes.
+
+### Changed
+
+- The greenfield interview saves each question and answer as it happens and
+  resumes with the open question that matters most, instead of restarting a
+  fixed sequence. Initialization checks that the documents exist and parse;
+  open questions no longer prevent it.
+- Repositories that keep the Markdown format follow their unchanged
+  `context-creation` and `decompose` procedures, now in each skill's
+  `references/markdown-format.md`. Nothing converts without an explicit
+  `convert` workflow.
+- `knowledge.py promote` and `taskwrite.py add --from` no longer re-promote
+  work that is already done or archived.
+
 ## [0.21.0] - 2026-10-23
 
 ### Removed

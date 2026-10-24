@@ -1,5 +1,12 @@
 # infra — lens mandate
 
+For every security policy reference below, follow `{{PLUGIN_ROOT}}/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Executed by `tribunal-lens-reviewer` under the `infra` assignment.
 
 ## Purpose / failure family

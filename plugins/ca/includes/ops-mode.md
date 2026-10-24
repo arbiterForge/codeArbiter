@@ -79,7 +79,7 @@ mode reads it for you:
 - `tech-stack.md` — languages, frameworks, and the commands that build, test,
   and lint this repo.
 - `coding-standards.md` — the conventions code here is expected to match.
-- `security-controls.md` — the boundaries, banned primitives, and
+- Complete format-selected `security-controls` policy (see `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`) — the boundaries, banned primitives, and
   secret-handling rules.
 - `open-questions.md` — the unresolved `[CONFIRM-NN]` set.
 

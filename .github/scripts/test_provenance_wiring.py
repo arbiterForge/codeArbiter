@@ -188,7 +188,8 @@ def test_commit_gate_heal_phase():
 # ---- AC-17: context-creation emits provenance + code-map (T-18) ---------------
 def test_context_creation_provenance():
     scout = read_repo("plugins/ca/agents/scout.md")
-    skill = read_repo("plugins/ca/skills/context-creation/SKILL.md")
+    # Markdown-format repositories keep the paired v2 provenance procedure.
+    skill = read_repo("plugins/ca/skills/context-creation/references/markdown-format.md")
 
     # --- agents/scout.md: Output Template carries a hash field (AC-17) ----------
     check(
@@ -241,7 +242,7 @@ def test_context_creation_provenance():
 
 
 def test_decompose_native_population():
-    skill = read_repo("core/surface/skills/decompose/SKILL.md")
+    skill = read_repo("core/surface/skills/decompose/references/markdown-format.md")
     for phrase in ("--context-draft", "--context-apply", "--context-finalize",
                    "v2 provenance", "plans/decomposition/", "code-map",
                    "decision-lifecycle", "taskwrite.py"):
@@ -564,6 +565,8 @@ REQUIRED_FILES = [
     "plugins/ca-codex/includes/codex-host-notes.md",
     "plugins/ca/agents/scout.md",
     "plugins/ca/skills/decompose/SKILL.md",
+    "plugins/ca/skills/context-creation/references/markdown-format.md",
+    "core/surface/skills/decompose/references/markdown-format.md",
     "plugins/ca/skills/tdd/SKILL.md",
     "plugins/ca/commands/feature.md",
     "plugins/ca/commands/fix.md",

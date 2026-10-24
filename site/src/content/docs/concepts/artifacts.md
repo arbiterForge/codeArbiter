@@ -47,7 +47,10 @@ a window; it does not retroactively manufacture missing evidence.
 
 ## The three greenfield documents
 
-The [decompose procedure](/guides/plan-a-new-project/) writes these exact files under
+New (HTML-format) projects keep greenfield decomposition as records in one native document,
+`.codearbiter/decomposition/project.html`: capability, component, phase and work-item records
+hold the same architecture, phased plan and backlog with stable IDs. In a Markdown-format
+repository the [decompose procedure](/guides/plan-a-new-project/) writes these exact files under
 `.codearbiter/plans/` before requesting their review:
 
 ### `01-architecture-breakdown.md`

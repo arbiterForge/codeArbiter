@@ -280,6 +280,13 @@ class TestNoDeletedCommandNameStampedIntoOverridesLog(unittest.TestCase):
 # consistent with this file's pre-existing print-directly convention).
 # ---------------------------------------------------------------------------
 class TestEmittersIndividuallyCallable(unittest.TestCase):
+    def test_initialized_markdown_gets_conversion_prompt_only(self):
+        markdown = "---\narbiter: enabled\n---\n<!--INITIALIZED-->\nProject context\n"
+        html = markdown.replace("arbiter: enabled", "arbiter: enabled\ncontext-format: html")
+        self.assertIn("knowledge.py convert", M.context_conversion_line(markdown))
+        self.assertEqual(M.context_conversion_line(html), "")
+        self.assertEqual(M.context_conversion_line(markdown.replace("<!--INITIALIZED-->", "")), "")
+
     def _lines(self, fn, *a, **kw):
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):

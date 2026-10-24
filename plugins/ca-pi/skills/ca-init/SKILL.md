@@ -80,19 +80,25 @@ below remain in force for repositories that already opted in.
    state. Pass `--stage N` to set the initial maturity value (default `1`). Use `--check` to report
    state without creating anything.
 
-2. It creates `.codearbiter/` with: `CONTEXT.md` (`arbiter: enabled`, `stage: N`, stub body),
-   `open-tasks.md`, `open-questions.md`, `overrides.log` (audit header), and `last-checkpoint` (`0`).
+2. It creates `.codearbiter/` with: `CONTEXT.md` (`arbiter: enabled`, `stage: N`,
+   `context-format: html`, stub body), `open-tasks.md`, `done-tasks.md`, `open-questions.md`,
+   `overrides.log` (audit header), `last-checkpoint` (`0`) and a `.gitattributes` that keeps Git
+   from converting the line endings of native HTML artifacts. Narrative context is HTML knowledge
+   under `.codearbiter/context/` (see `<plugin-root>/includes/knowledge.md`); `--format markdown`
+   scaffolds the legacy Markdown documents instead.
 
 3. **Then route to the populator** — the stub is not yet usable:
    - **Source code already exists** in the repo → route to `/ca-create-context` (brownfield: bounded inspection and optional agents
      read the codebase and synthesize the full context, writing the initialization sentinel).
-   - **Greenfield** (no meaningful source) → route to `/ca-decompose` (layered interview).
+   - **Greenfield** (no meaningful source) → route to `/ca-decompose` (resumable interview).
 
    The populator is **mandatory, not optional**: it authors `tech-stack.md`, `coding-standards.md`,
-   and `security-controls.md` (and writes the initialization sentinel). The pipeline gates BLOCK on
-   reading those files — `writing-plans` and `tdd` need `tech-stack.md`, the security gates need
-   `security-controls.md` — so `/ca-feature` run on a freshly-scaffolded stub will STOP at pre-flight
-   until the populator has run. `session-start` surfaces this as `NOT INITIALIZED` every session.
+   and `security-controls.md`, or their HTML knowledge documents (and writes the initialization
+   sentinel). The pipeline reads that context — `writing-plans` and `tdd` need `tech-stack.md`, the
+   security gates need `security-controls.md` — so `/ca-feature` run on a
+   freshly-scaffolded stub will STOP at pre-flight until the populator has run. Unknown facts may
+   stay unknown; population does not need every question answered. `session-start` surfaces this
+   as `NOT INITIALIZED` every session.
 
 4. Report what was created and which populator you are routing to.
 

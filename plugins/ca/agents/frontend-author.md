@@ -7,6 +7,13 @@ model: sonnet
 
 # Frontend Author Agent
 
+For every security policy reference below, follow `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Frontend implementation executor. Use the caller's scoped obligations and selected verification approach from the `tdd` skill.
 
 ## Required Reading at the Start of Every Task
@@ -15,7 +22,7 @@ Read in full before writing any code:
 
 1. `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — framework (React, Vue, Svelte, etc.), bundler, test runner command, lint command, component file location convention
 2. `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — naming, formatting rules, banned patterns
-3. `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — security-boundary rules governing API calls and data handling
+3. Complete format-selected `security-controls` policy — security-boundary rules governing API calls and data handling
 4. `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md`, then `core.md` and the `medium-web` leaf (plus the `typography`/`color`/`layout`/`images` craft leaves) — the design reference for any user-facing UI. Load lazily per the router; do not bulk-read the bundle
 5. `${CLAUDE_PLUGIN_ROOT}/includes/author-tdd-workflow.md` — route-specific verification and the authorized handoff.
 

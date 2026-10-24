@@ -32,7 +32,7 @@ Read scoped project instructions and available context before dependent action:
 
 - `<project-root>/.codearbiter/tech-stack.md` — log paths, trace tooling, test runner conventions. The evidence sources.
 - `<project-root>/.codearbiter/CONTEXT.md` — domain vocabulary, system structure, and the `stage:` frontmatter (the maturity value; higher demands more rigorous evidence before exit).
-- `<project-root>/.codearbiter/security-controls.md` — only when the symptom touches a security boundary (auth, crypto, secrets). Optional; absent on most defects.
+- Complete format-selected `security-controls` policy (see `<plugin-root>/includes/knowledge.md`) — only when the symptom touches a security boundary (auth, crypto, secrets). Optional; absent on most defects.
 - `<project-root>/.codearbiter/code-map.md` — optional coarse map. Use it as a
   search pointer when present, then verify current sources. If absent, the map
   is no prerequisite: inspect relevant source directly. Do not generate it.

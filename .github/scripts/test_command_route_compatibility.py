@@ -100,6 +100,24 @@ OWNER_OPERATIONAL_SHA256.update({
     'context-check': '77a8eb3a8500f46ebd158bd97e356c0564f8a8f8baccbfdaad65969490a3b17a',
 })
 
+# #1023 makes HTML knowledge the default. The create-context and decompose
+# entries now carry the HTML procedure; the reviewed Markdown procedures move
+# byte-for-byte into each owner's references/markdown-format.md and keep their
+# PR #983 fingerprints. init gains the --format choice and .gitattributes.
+LEGACY_FORMAT_REFERENCE_SHA256 = {
+    'create-context': ('context-creation', '## Pre-flight\n',
+                       '406291d45c2f8566d91db595d6c4f97ba8324adfadb6fac6778f19e170e015b1'),
+    'decompose': ('decompose', '## 1. Inspect and resume\n',
+                  'e5952b1ac6cf42a77abbd9048c75a3918d01d413dfa4ff790edb967a688e70a0'),
+}
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': '2055c4fa7eb1ccb62e2721753d33647bf0eda450788140765be7e28dea6a8c18',
+    'decompose': 'b6d7397f84a0b420dca45f5c40353c2421ff6ef296689cd2867dbea82a1d189b',
+})
+EXPECTED_DEFAULT_BODY_SHA256.update({
+    'init': '08746b4ddc731e134857c288fd321ed8072fec5408e05c147001614cc0f9c46d',
+})
+
 # The 2026-10-23 removal of /btw rewrites status's "When NOT to use" pointer
 # for a specific question; nothing else in the body changes.
 EXPECTED_DEFAULT_BODY_SHA256.update({
@@ -229,6 +247,14 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                         self.assertIn("neither stages nor commits", " ".join(body.split()))
                 else:
                     self.assertEqual(digest(NOTICE_RE.sub("", body)), expected)
+
+    def test_markdown_format_procedures_stay_byte_frozen_in_their_references(self):
+        for slug, (owner, heading, expected) in LEGACY_FORMAT_REFERENCE_SHA256.items():
+            with self.subTest(slug=slug):
+                reference = (REPO / "core" / "surface" / "skills" / owner / "references"
+                             / "markdown-format.md").read_text(encoding="utf-8")
+                self.assertEqual(digest(reference.split(heading, 1)[1]), expected)
+                self.assertIn("references/markdown-format.md", command_body(slug))
 
     def test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes(self):
         for slug, expected in EXPECTED_DEFAULT_BODY_SHA256.items():

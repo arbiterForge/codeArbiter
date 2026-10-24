@@ -12,7 +12,7 @@ The banned-primitive gate. Routed to when changed code uses cryptography, hashin
 
 Read these, or STOP and surface the gap — never guess the policy:
 
-- `<project-root>/.codearbiter/security-controls.md` — the project's approved and forbidden primitives, key requirements, and TLS minimum. If this file is unreadable, BLOCK; do not infer the policy.
+- The project's complete `security-controls` policy, selected and read by [includes/knowledge.md](../../includes/knowledge.md) ("Read security policy before a security decision"). This includes exact `CTX-SECURITY-CONTROLS` records in HTML mode and the Markdown controls in Markdown mode. If the required policy is absent or unreadable, BLOCK; do not infer it from scope blocks.
 
 ## Phase 1 — Banned-primitive scan · gate: BLOCK
 
@@ -33,7 +33,7 @@ Gate: no banned or unapproved primitive, no disabled TLS verification, and no ho
 
 ## Hard rules
 
-- MUST read `security-controls.md` before scanning — BLOCK if it cannot be read.
+- MUST read the complete format-selected `security-controls` policy before scanning — BLOCK if it cannot be read.
 - MUST NOT use MD5, SHA1, DES, 3DES, RC4, or RSA below 2048 bits — even for non-security checksums or IDs.
 - MUST NOT set `verify: false` or `rejectUnauthorized: false`, or otherwise disable certificate verification, on any TLS connection.
 - MUST NOT use a home-rolled or userland-reimplemented cryptographic primitive.

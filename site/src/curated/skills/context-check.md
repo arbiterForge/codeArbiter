@@ -10,6 +10,11 @@ changes nothing. A request to refresh named documents or the full context alread
 selection; it does not need repeated per-document approval. Routine commit-gate auto-heal keeps
 its existing role.
 
+In an HTML-knowledge repository, `knowledge.py stale` lists the records whose cited sources
+changed since their document's baseline commit. Update those records, then `knowledge.py
+rebaseline` the document. Staleness is advisory and never blocks other work. The phases below
+apply to Markdown-format repositories.
+
 ## Phases
 
 1. Inspect the actual document/provenance pairs and current source identities. Legacy v1 and

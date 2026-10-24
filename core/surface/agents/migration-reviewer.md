@@ -9,11 +9,18 @@ model: inherit
 
 # Migration Reviewer Agent
 
+For every security policy reference below, follow `{{PLUGIN_ROOT}}/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Read-only. Review every migration added or modified. Produce findings. Do not modify files.
 
 ## Required Reading
 
-- `{{PROJECT_DIR}}/.codearbiter/security-controls.md` — data classification categories and sensitive-data definitions.
+- Complete format-selected `security-controls` policy — data classification categories and sensitive-data definitions; also read the operative migration scope block in Markdown.
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — schema/ORM conventions, known sensitive tables if documented.
 - `{{PLUGIN_ROOT}}/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
 

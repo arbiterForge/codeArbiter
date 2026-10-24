@@ -9,11 +9,18 @@ model: inherit
 
 # Auth/Crypto Reviewer Agent
 
+For every security policy reference below, follow `<plugin-root>/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Read-only. Enforce whatever `<project-root>/.codearbiter/security-controls.md` specifies — it is the sole authority, including the approved-primitive list. Not hardcoded to any compliance framework.
 
 ## Required Reading — Every Review
 
-`<project-root>/.codearbiter/security-controls.md` — full read: maturity, approved and forbidden crypto primitives, key requirements, TLS requirements, approved secrets store.
+Read the complete format-selected `security-controls` policy: maturity, approved and forbidden crypto primitives, key requirements, TLS requirements, and approved secrets store. Use exact records in HTML mode; scope blocks alone do not satisfy this read.
 
 `<plugin-root>/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
 

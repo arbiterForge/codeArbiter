@@ -46,7 +46,8 @@
 #   transition_error(text, target, state) -> str | None
 #                                        actionable error for a found task whose requested
 #                                        transition violates queued -> in-progress -> done
-#   already_promoted(text, origin) -> bool
+#   already_promoted(text, origin, archive_text="") -> bool
+#   promoted_entry(text, origin, archive_text="") -> str | None
 #   extract_needs_triage(text, origin) -> list[Candidate]
 #   extract_deferrable(text, origin) -> list[Candidate]
 #   extract_low_confidence(text, origin) -> list[Candidate]
@@ -976,11 +977,22 @@ def set_state(text, target, state, today, *, assign=None):
     return _join(lines, text)
 
 
-def already_promoted(text, origin):
-    """True iff an OPEN (non-done) entry already carries `(from <origin>)`."""
+def promoted_entry(text, origin, archive_text=""):
+    """The first board or archive entry carrying `(from <origin>)`, or None.
+
+    Every state counts: queued, in progress, done, and archived. A promotion
+    retried after its task finished, or after a crash delayed the back-reference,
+    finds the existing task instead of adding finished work again."""
     needle = f"(from {origin})"
-    return any(_TOP_RE.match(ln) and not _DONE_RE.match(ln) and needle in ln
-               for ln in text.splitlines())
+    for ln in (text or "").splitlines() + (archive_text or "").splitlines():
+        if _TOP_RE.match(ln) and needle in ln:
+            return ln
+    return None
+
+
+def already_promoted(text, origin, archive_text=""):
+    """True iff any board or archive entry already carries `(from <origin>)`."""
+    return promoted_entry(text, origin, archive_text) is not None
 
 
 # ---------------------------------------------------------------------------
@@ -1053,7 +1065,7 @@ def _add_deferred_decision(questions, desc, origin):
     return f"{base}\n## Deferred decisions\n{block}\n"
 
 
-def promote(board, questions, candidates, *, mode, today):
+def promote(board, questions, candidates, *, mode, today, archive=""):
     """Route follow-up candidates: work -> board, decision -> questions. Dedups by
     origin. mode="interactive" returns the fresh candidates WITHOUT mutating
     (caller confirms, then applies); mode="auto" applies and returns an audit.
@@ -1068,7 +1080,7 @@ def promote(board, questions, candidates, *, mode, today):
         )
     fresh = []
     for c in candidates:
-        if c.kind == "work" and already_promoted(board, c.origin):
+        if c.kind == "work" and already_promoted(board, c.origin, archive):
             continue
         if c.kind == "decision" and f"(from {c.origin})" in questions:
             continue

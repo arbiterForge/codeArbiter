@@ -22,6 +22,11 @@ looks complete.
 **Provenance records where a claim came from. Drift detection identifies recorded source bytes
 that no longer match. Neither one proves that the claim was correct in the first place.**
 
+HTML-knowledge repositories record this per claim instead: each source-observed record cites
+its files, each document keeps the commit it was last checked against, and `knowledge.py stale`
+lists exactly the records whose cited files changed since then. That check is advisory and never
+blocks a commit. The rest of this page describes the Markdown-format provenance records.
+
 This is not a promise that every sentence has a provenance record. The mechanism covers the
 entries actually recorded under `.codearbiter/.provenance/`, and routine drift alarms consider
 only entries whose `drift_trigger` is explicitly `true`.

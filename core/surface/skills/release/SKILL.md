@@ -72,8 +72,8 @@ nonzero. The wrapper distinguishes these outcomes without changing that API.
 
 ```sh
 release_require_commit_path() (
-  if [ ! -f "$PROJECT_ROOT/.codearbiter/tech-stack.md" ]; then
-    printf 'STOP — commit-gate requires .codearbiter/tech-stack.md; declare it through context-creation before writing.\n' >&2
+  if [ ! -f "$PROJECT_ROOT/.codearbiter/tech-stack.md" ] && [ ! -f "$PROJECT_ROOT/.codearbiter/context/tech-stack.html" ]; then
+    printf 'STOP — commit-gate requires the tech-stack context (.codearbiter/context/tech-stack.html or .codearbiter/tech-stack.md); declare it through context-creation before writing.\n' >&2
     exit 1
   fi
   if [ -z "${DEFAULT_BRANCH:-}" ]; then
@@ -97,7 +97,7 @@ release_require_commit_path() (
 ```
 
 This pre-write check is only a prerequisite refusal. It does not certify the
-contents of `tech-stack.md`, execute its tests, or waive any later commit-gate
+contents of `tech-stack.md` (or its HTML knowledge document), execute its tests, or waive any later commit-gate
 check. Resolve `$DEFAULT_BRANCH` using the documented fact/remote/user fallback
 before calling it; do not infer a default from the current branch name.
 
