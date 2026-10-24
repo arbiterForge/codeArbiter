@@ -104,8 +104,6 @@ class DeclarationTest(unittest.TestCase):
         return {
             "publishedWithoutMetadata": "2.16.0",
             "firstContainingRelease": "2.17.0",
-            "retainThrough": "2.x",
-            "earliestRemoval": "3.0.0",
         }
 
     def test_first_candidate_accepts_its_initial_manifest(self):
@@ -229,20 +227,14 @@ class ObserveIntegrationTest(unittest.TestCase):
                     "claude": {
                         "publishedWithoutMetadata": "2.16.0",
                         "firstContainingRelease": "2.17.0",
-                        "retainThrough": "2.x",
-                        "earliestRemoval": "3.0.0",
                     },
                     "codex": {
                         "publishedWithoutMetadata": "0.8.0",
                         "firstContainingRelease": "0.9.0",
-                        "retainThrough": "0.x",
-                        "earliestRemoval": "1.0.0",
                     },
                     "pi": {
                         "publishedWithoutMetadata": "0.9.0",
                         "firstContainingRelease": "0.10.0",
-                        "retainThrough": "0.x",
-                        "earliestRemoval": "1.0.0",
                     },
                 },
             },

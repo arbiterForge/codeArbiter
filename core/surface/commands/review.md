@@ -84,4 +84,4 @@ Read-only — MUST NOT modify a file, and MUST NOT check out, merge, or otherwis
 - Opening a PR (reviews dispatch automatically) → `{{CMD:pr}}`.
 - A periodic full-codebase sweep → `{{CMD:checkpoint}}`.
 - A pre-implementation threat model → `{{CMD:threat-model}}`.
-- A question about the code → `{{CMD:btw}}`.
+- A question about the code → ask it directly; no command needed.

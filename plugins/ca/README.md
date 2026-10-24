@@ -6,8 +6,7 @@ decisions go through SMARTS; the audit trail (`overrides.log`, `triage.log`, ADR
 append-only and mechanically guarded.
 
 Full documentation, install instructions, and the command catalog live in the
-[repository README](https://github.com/arbiterForge/codeArbiter) and in [`COMMANDS.md`](./COMMANDS.md)
-(`/ca:commands` in-session).
+[repository README](https://github.com/arbiterForge/codeArbiter) and in [`COMMANDS.md`](./COMMANDS.md).
 
 Typed-plan approval preflight reads bounded task verification definitions, checks
 all declared commands, collects the source snapshot and rechecks plan identity
@@ -25,7 +24,7 @@ declared command or test discovery.
   no behavior: hooks exit immediately, nothing is injected, nothing is blocked.
 - **Drive it:** `/ca:feature` (spec-driven, with a logged small lane for small changes),
   `/ca:fix`, `/ca:chore`, `/ca:spike`, `/ca:sprint` (autonomous, every decision logged),
-  `/ca:commit`, `/ca:audit`. `/ca:commands` lists everything.
+  `/ca:commit`, `/ca:audit`. [`COMMANDS.md`](./COMMANDS.md) lists everything.
 - **What it writes to your repo:** `.codearbiter/` only. Uninstalling the plugin leaves your
   project state intact and yours.
 

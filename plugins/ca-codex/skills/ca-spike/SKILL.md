@@ -45,4 +45,4 @@ merged and the parent may copy only the committed findings file's contents, neve
 
 - You already know what to build → `$ca-feature`.
 - Diagnosing a defect → `$ca-debug` (investigation with a structured exit).
-- A question answerable by reading code or docs → `$ca-btw`.
+- A question answerable by reading code or docs → ask it directly; no command needed.

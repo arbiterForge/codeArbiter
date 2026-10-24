@@ -137,11 +137,29 @@ describe("reference sidebar projection", () => {
     ["mislabeled", (groups: GeneratedGroupsFixture) => {
       groups[0].items[0].label = "Everyday";
     }],
+    ["empty", (groups: GeneratedGroupsFixture) => {
+      groups[0].items[4].items = [];
+    }],
+    ["absent", (groups: GeneratedGroupsFixture) => {
+      groups[0].items = [];
+    }],
   ])("rejects %s command visibility groups", async (_case, mutate) => {
     const project = await loadProjector();
     const groups = commandGroups();
     mutate(groups);
     expect(() => project!(groups)).toThrow(/canonical visibility groups/i);
+  });
+
+  it("projects a catalog that omits an empty visibility tier", async () => {
+    const project = await loadProjector();
+    const groups = commandGroups();
+    groups[0].items.splice(4, 1);
+    groups[0].items.splice(1, 1);
+    expect(project!(groups)[0].items.map((group) => group.label)).toEqual([
+      "Core",
+      "Compatibility aliases",
+      "Internal",
+    ]);
   });
 
   it("rejects command entries whose visibility disagrees with their group", async () => {

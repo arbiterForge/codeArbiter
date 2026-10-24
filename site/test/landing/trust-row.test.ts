@@ -95,8 +95,8 @@ describe("computeLandingStats — floor guard (catches silent under-collection)"
     expect(stats.gateCount).toBeGreaterThanOrEqual(15);
   });
 
-  it("finds exactly 18 core lanes", () => {
-    expect(stats.coreLaneCount).toBe(18);
+  it("finds exactly 17 core lanes", () => {
+    expect(stats.coreLaneCount).toBe(17);
   });
 
   it("finds exactly 5 compatibility aliases", () => {

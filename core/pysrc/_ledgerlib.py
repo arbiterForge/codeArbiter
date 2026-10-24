@@ -12,7 +12,7 @@
 # this module persists, schedules and aggregates. No rendering concern (no ANSI,
 # no box drawing), so the accounting is unit-testable in isolation.
 #
-# Design principles (mirroring _metricslib.py / _taskboardlib.py):
+# Design principles (mirroring _taskboardlib.py / _provenancelib.py):
 #   - Stdlib only; no third-party imports ever — runs on stock Python.
 #   - Zero side effects at import time: no git calls, no file I/O.
 #   - ledger_update(), persist_sess_start() and pi_ledger_update() are the only

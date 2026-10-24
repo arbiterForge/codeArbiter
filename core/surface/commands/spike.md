@@ -44,4 +44,4 @@ merged and the parent may copy only the committed findings file's contents, neve
 
 - You already know what to build → `{{CMD:feature}}`.
 - Diagnosing a defect → `{{CMD:debug}}` (investigation with a structured exit).
-- A question answerable by reading code or docs → `{{CMD:btw}}`.
+- A question answerable by reading code or docs → ask it directly; no command needed.

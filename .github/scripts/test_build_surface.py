@@ -43,25 +43,19 @@ _WORKFLOW_ORDER = [
 ]
 _COMPATIBILITY = {
     "clockStarts": "confirmed-non-draft-github-release",
-    "removalRequires": "separately-approved-major",
+    "removalRequires": "minor-release-with-changelog-notice",
     "targets": {
         "claude": {
             "publishedWithoutMetadata": "2.16.0",
             "firstContainingRelease": "2.17.0",
-            "retainThrough": "2.x",
-            "earliestRemoval": "3.0.0",
         },
         "codex": {
             "publishedWithoutMetadata": "0.8.0",
             "firstContainingRelease": "0.9.0",
-            "retainThrough": "0.x",
-            "earliestRemoval": "1.0.0",
         },
         "pi": {
             "publishedWithoutMetadata": "0.9.0",
             "firstContainingRelease": "0.10.0",
-            "retainThrough": "0.x",
-            "earliestRemoval": "1.0.0",
         },
     },
 }
@@ -947,7 +941,7 @@ class CommandCatalogTest(_RepoCase):
         for version, message in (
             (None, "must declare firstContainingRelease"),
             ("2.16.0", "must follow publishedWithoutMetadata"),
-            ("3.0.0", "outside retainThrough"),
+            ("2.17", "invalid version boundary"),
         ):
             with self.subTest(version=version):
                 document = json.loads(json.dumps(original))
@@ -972,17 +966,17 @@ class CommandCatalogTest(_RepoCase):
         expected = {
             "core": {
                 "add-dep", "adr", "chore", "commit", "doctor", "feature", "fix",
-                "init", "override", "pr", "preview", "refactor", "release", "review",
+                "init", "override", "pr", "refactor", "release", "review",
                 "spike", "sprint", "status", "task",
             },
             "advanced": {
-                "adr-status", "audit", "checkpoint", "commands", "debug", "metrics",
+                "adr-status", "audit", "checkpoint", "debug",
                 "prune", "reconcile", "standup", "statusline",
                 "threat-model", "tribunal",
             },
             "alias": {"cleanup", "context-check", "create-context", "decompose", "watch"},
             "internal": {"conflict"},
-            "deprecated": {"btw"},
+            "deprecated": set(),
         }
         catalogs = {
             host: json.loads(B.render_all(str(REPO_ROOT), host)["generated/command-catalog.json"])

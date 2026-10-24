@@ -12,21 +12,15 @@ loads only when that route is invoked. Never bulk-read the directory.
 
 | Visibility | Count |
 |---|---:|
-| Core | 18 |
-| Advanced | 10 |
-| Canonical total | 28 |
+| Core | 17 |
+| Advanced | 8 |
+| Canonical total | 25 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
-| Deprecated | 1 |
-| **Total** | **35** |
+| Deprecated | 0 |
+| **Total** | **31** |
 
 ## Core lanes
-
-### Evaluate
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `$ca-preview` | _(none)_ | Predict the reviewer fleet and run a state-free secret scan without writing. |
 
 ### Initialize
 
@@ -105,13 +99,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 |---|---|---|
 | `$ca-standup` | _(none)_ | Review repository hygiene, then confirm each safe cleanup action separately. |
 | `$ca-audit` | `[range]` | Assemble a dated governance packet from source records. Read-only. |
-| `$ca-metrics` | `[--window N]` | Report override, small-lane, and low-confidence trends against the prior window. |
-
-### Help
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `$ca-commands` | _(none)_ | Show this grouped catalog. |
 
 </details>
 
@@ -137,7 +124,6 @@ canonical form; each legacy route continues to execute its original workflow.
 | Status | Command | Argument | Purpose |
 |---|---|---|---|
 | Internal protocol | `$ca-conflict` | `"description"` | Stop work when governing rules contradict and surface both sides for the user. |
-| Deprecated | `$ca-btw` | `"question"` | Ask a lightweight project question without state change. Prefer asking the question directly. |
 
 </details>
 

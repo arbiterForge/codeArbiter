@@ -73,7 +73,11 @@ _AGENT_FRONTMATTER_STRIPPERS = {
 _PI_ROLE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
 _MODE_NAME = re.compile(r"^(?:--)?[a-z][a-z0-9-]*$")
 _SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
-_RETAIN_THROUGH = re.compile(r"^(0|[1-9][0-9]*)\.x$")
+# A command may be removed in a minor release when the CHANGELOG records the
+# removal under "Removed". The maintainer replaced the earlier
+# separately-approved-major rule on 2026-10-23: deleting a prose command body
+# does not warrant a major version.
+REMOVAL_POLICY = "minor-release-with-changelog-notice"
 _COMMAND_MODE_MARKER = re.compile(
     r"<!-- command-mode:(?P<mode>(?:--)?[a-z][a-z0-9-]*) "
     r"legacy-route:(?P<route>[a-z][a-z0-9-]*) -->"
@@ -416,9 +420,9 @@ def _validate_compatibility_policy(value, descriptors, where):
             f"{where}: compatibility.clockStarts must be "
             "'confirmed-non-draft-github-release'"
         )
-    if value["removalRequires"] != "separately-approved-major":
+    if value["removalRequires"] != REMOVAL_POLICY:
         raise SurfaceError(
-            f"{where}: compatibility.removalRequires must be 'separately-approved-major'"
+            f"{where}: compatibility.removalRequires must be {REMOVAL_POLICY!r}"
         )
     targets = value["targets"]
     host_names = {descriptor.name for descriptor in descriptors}
@@ -426,12 +430,7 @@ def _validate_compatibility_policy(value, descriptors, where):
         raise SurfaceError(
             f"{where}: compatibility.targets must match hosts {sorted(host_names)!r}"
         )
-    target_keys = {
-        "publishedWithoutMetadata",
-        "firstContainingRelease",
-        "retainThrough",
-        "earliestRemoval",
-    }
+    target_keys = {"publishedWithoutMetadata", "firstContainingRelease"}
     for host in sorted(targets):
         target = targets[host]
         target_where = f"{where}: compatibility.targets.{host}"
@@ -441,8 +440,6 @@ def _validate_compatibility_policy(value, descriptors, where):
             )
         published_without_metadata = target["publishedWithoutMetadata"]
         first_containing_release = target["firstContainingRelease"]
-        retention = target["retainThrough"]
-        removal = target["earliestRemoval"]
         baseline_match = (
             _SEMVER.fullmatch(published_without_metadata)
             if isinstance(published_without_metadata, str)
@@ -453,41 +450,18 @@ def _validate_compatibility_policy(value, descriptors, where):
             if isinstance(first_containing_release, str)
             else None
         )
-        retention_match = (
-            _RETAIN_THROUGH.fullmatch(retention) if isinstance(retention, str) else None
-        )
-        removal_match = _SEMVER.fullmatch(removal) if isinstance(removal, str) else None
-        if (
-            not baseline_match
-            or not first_containing_match
-            or not retention_match
-            or not removal_match
-        ):
+        if not baseline_match or not first_containing_match:
             if first_containing_release is None:
                 raise SurfaceError(
                     f"{target_where} must declare firstContainingRelease"
                 )
             raise SurfaceError(f"{target_where} has an invalid version boundary")
-        retained_major = int(retention_match.group(1))
-        if int(baseline_match.group(1)) != retained_major:
+        baseline_version = tuple(map(int, baseline_match.groups()))
+        first_containing_version = tuple(map(int, first_containing_match.groups()))
+        if first_containing_version <= baseline_version:
             raise SurfaceError(
-                f"{target_where}: publishedWithoutMetadata is outside retainThrough"
-            )
-        if first_containing_match:
-            baseline_version = tuple(map(int, baseline_match.groups()))
-            first_containing_version = tuple(map(int, first_containing_match.groups()))
-            if int(first_containing_match.group(1)) != retained_major:
-                raise SurfaceError(
-                    f"{target_where}: firstContainingRelease is outside retainThrough"
-                )
-            if first_containing_version <= baseline_version:
-                raise SurfaceError(
-                    f"{target_where}: firstContainingRelease must follow "
-                    "publishedWithoutMetadata"
-                )
-        if tuple(map(int, removal_match.groups())) != (retained_major + 1, 0, 0):
-            raise SurfaceError(
-                f"{target_where}: earliestRemoval must be the next major boundary"
+                f"{target_where}: firstContainingRelease must follow "
+                "publishedWithoutMetadata"
             )
 
 

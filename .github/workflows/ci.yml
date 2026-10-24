@@ -2672,12 +2672,6 @@ jobs:
         # but its repository/target/content proof contract must still execute in
         # required CI rather than existing as an orphaned test file.
         run: python .github/scripts/test_cleanuplib.py
-      - name: Run /ca:preview helper unit tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # Unit tests for the /ca:preview diff-collection + secret-scan helpers
-        # (_previewlib): collect_diff over the three change kinds it unions and
-        # the redacting secret scan, including the no-raise edges.
-        run: python .github/scripts/test_preview_lib.py
       - name: Run UX-conversion-trio structural copy tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Content-presence/absence assertions for the #82/#84/#83 prose changes:
@@ -2696,11 +2690,6 @@ jobs:
         # security-controls.md extend/exclude), migration-pass.py content-digest
         # marker, and pre-bash.py H-14 block/admit/edit-reblock/dormant/-a.
         run: python .github/scripts/test_migration_backstop.py
-      - name: Run /ca:metrics helper unit tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # AC-01..AC-07: window tiling, 3-metric collection, empty-source safety,
-        # and read-only enforcement (_metricslib).
-        run: python .github/scripts/test_metrics_lib.py
       - name: Run task-board lifecycle helper unit tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-01..AC-10: in-flight count (excludes done), dotted-ID grammar,
@@ -3379,10 +3368,10 @@ jobs:
   secret-scan:
     name: "[CHECK] | [REPO] | Secret scan"
     # Issue #404: until this job existed the repository had NO independent
-    # secret scanner. Both existing layers are COOPERATIVE - the H-10b commit
-    # hook and /ca:preview's sweep only run inside a contributor's local
-    # Claude/Codex/Pi session. A bot, a fork, a github.com web edit, or a plain
-    # `git push` runs neither, so a real credential could merge and stay in
+    # secret scanner. The existing layer is COOPERATIVE - the H-10b commit
+    # hook only runs inside a contributor's local Claude/Codex/Pi session. A
+    # bot, a fork, a github.com web edit, or a plain `git push` never runs it,
+    # so a real credential could merge and stay in
     # history with every hosted check green.
     #
     # Repo-wide and always-on, like license-consistency and surface: a

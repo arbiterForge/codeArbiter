@@ -23,8 +23,11 @@ HISTORICAL_SOURCE_ROUTES = frozenset({
     "task", "threat-model", "tribunal", "watch",
 })
 
-# Maintainer-approved removal on 2026-09-25; every other route remains frozen.
-EXPECTED_SOURCE_ROUTES = HISTORICAL_SOURCE_ROUTES - {"new-skill"}
+# Maintainer-approved removals: new-skill on 2026-09-25; btw, commands,
+# metrics and preview on 2026-10-23. Every other route remains frozen.
+EXPECTED_SOURCE_ROUTES = HISTORICAL_SOURCE_ROUTES - {
+    "new-skill", "btw", "commands", "metrics", "preview",
+}
 
 EXPECTED_REPLACEMENTS = {
     "cleanup": ("pr", "pr --cleanup"),
@@ -97,6 +100,12 @@ OWNER_OPERATIONAL_SHA256.update({
     'context-check': '77a8eb3a8500f46ebd158bd97e356c0564f8a8f8baccbfdaad65969490a3b17a',
 })
 
+# The 2026-10-23 removal of /btw rewrites status's "When NOT to use" pointer
+# for a specific question; nothing else in the body changes.
+EXPECTED_DEFAULT_BODY_SHA256.update({
+    'status': 'e579801e56c8e36fa6c1ab6db7148f02e999ca27180f3b73ffa4773dd12e0d23',
+})
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:
@@ -157,7 +166,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
         }
         self.assertEqual(
             counts,
-            {"core": 18, "advanced": 12, "alias": 5, "internal": 1, "deprecated": 1},
+            {"core": 17, "advanced": 10, "alias": 5, "internal": 1, "deprecated": 0},
         )
         actual = {
             slug: (entry["canonical"], entry["replacement"])
@@ -251,27 +260,21 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
     def test_compatibility_clock_starts_only_on_independent_publication(self):
         policy = self.registry()["compatibility"]
         self.assertEqual(policy["clockStarts"], "confirmed-non-draft-github-release")
-        self.assertEqual(policy["removalRequires"], "separately-approved-major")
+        self.assertEqual(policy["removalRequires"], "minor-release-with-changelog-notice")
         self.assertEqual(
             policy["targets"],
             {
                 "claude": {
                     "publishedWithoutMetadata": "2.16.0",
                     "firstContainingRelease": "2.17.0",
-                    "retainThrough": "2.x",
-                    "earliestRemoval": "3.0.0",
                 },
                 "codex": {
                     "publishedWithoutMetadata": "0.8.0",
                     "firstContainingRelease": "0.9.0",
-                    "retainThrough": "0.x",
-                    "earliestRemoval": "1.0.0",
                 },
                 "pi": {
                     "publishedWithoutMetadata": "0.9.0",
                     "firstContainingRelease": "0.10.0",
-                    "retainThrough": "0.x",
-                    "earliestRemoval": "1.0.0",
                 },
             },
         )

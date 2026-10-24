@@ -3,7 +3,7 @@
 #
 # Every hook/tool entry file (doctor.py, pre-edit.py, pre-write.py, pre-read.py,
 # git-enforce.py, post-write-edit.py, migration-pass.py, security-pass.py,
-# statusline.py, boardsync.py, metrics.py, preview.py, taskwrite.py, babysit.py,
+# statusline.py, boardsync.py, taskwrite.py, babysit.py,
 # init-codearbiter.py, ...) carries the identically-shaped `run(host, argv=None)`
 # body: wire the process-cached Host live (#257, ADR-0011) via a `set_host`
 # callable BEFORE `main` runs, invoke `main` (with or without `argv`), and either

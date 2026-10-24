@@ -21,6 +21,30 @@
         "name": "skill-author",
         "rationale": "Retire the dedicated skill-authoring workflow without an alias or replacement registration.",
         "approved_by": "Explicit maintainer instruction, 2026-09-25, PR #854"
+      },
+      {
+        "category": "commands",
+        "name": "btw",
+        "rationale": "Retire the deprecated Q&A route; questions are asked directly.",
+        "approved_by": "Explicit maintainer instruction, 2026-10-23"
+      },
+      {
+        "category": "commands",
+        "name": "commands",
+        "rationale": "Retire the catalog-listing route; each host lists its own commands and COMMANDS.md remains.",
+        "approved_by": "Explicit maintainer instruction, 2026-10-23"
+      },
+      {
+        "category": "commands",
+        "name": "metrics",
+        "rationale": "Retire the governance-metrics report, which carried maintenance cost without advancing agentic development.",
+        "approved_by": "Explicit maintainer instruction, 2026-10-23"
+      },
+      {
+        "category": "commands",
+        "name": "preview",
+        "rationale": "Retire the reviewer-fleet dry run, which carried maintenance cost without advancing agentic development.",
+        "approved_by": "Explicit maintainer instruction, 2026-10-23"
       }
     ],
     "reviewed_additions": [

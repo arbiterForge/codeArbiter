@@ -53,7 +53,7 @@ previously green suite is not current evidence; a missing owner is a routing gap
 `hooks/`, `includes/`). Project state: `<project-root>/.codearbiter/`. No vendoring, no dual root.
 
 **Commands.** Pi governance commands ship as generated `ca-` entry skills with top-level aliases: the
-user invokes `/ca-feature`, `/ca-commit`, `/ca-commands`, etc. Bare `/feature` shorthand
+user invokes `/ca-feature`, `/ca-commit`, `/ca-status`, etc. Bare `/feature` shorthand
 means the `ca-feature` skill; when telling the user what to type, use `/ca-<name>` (`/skill:ca-<name>`
 is the host-native fallback). Routine bodies under `routines/` route by path, never user-invoked.
 Before dispatching roles, editing audit files, or using native compaction, load
@@ -134,8 +134,6 @@ alone; the other four members are unchanged.
 batch independent questions. Ask for missing outcomes, facts, or authority, not internal methods.
 
 The orchestrator does not improvise unowned operations: surface a routing gap, never an override.
-
-**`/ca-btw "question"`** remains an explicit Q&A convenience, not a prerequisite for asking.
 
 ---
 

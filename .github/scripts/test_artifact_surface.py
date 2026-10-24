@@ -22,10 +22,11 @@ POLICY_STARTUP_FIXTURES = (
 # Historical artifact-policy baseline is immutable. PR843 separately reviewed
 # the resident routing body; PR872 reviewed initialized-state parsing and bounded
 # context-coverage notices. PR983 aligns resident sprint guidance with assistive
-# execution. Keep current content pins separate from the historical pilot.
+# execution. The 2026-10-23 command removal drops the /btw and /commands
+# references from both. Keep current content pins separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
-    "core/surface/arbiter.md": "a938c8e6e8849c1859c0c56c558c60ede1c7b12ec3a069181a06215ce2072e49",
-    "core/pysrc/session-start.py": "2cc0d575e3f85824a3eba4b21e54cca9d0285f4ce4bf8c41e5331344c18c9c80",
+    "core/surface/arbiter.md": "955705504f53800cd5f6626abb2db5a94cbee88d679f1fb8ea4d599a09d699b0",
+    "core/pysrc/session-start.py": "cf2f465e855039929f125d7e816257fdf45a9d780b90faff7f849d1bb9e5c3b8",
 }
 
 HISTORICAL_ATTESTATION_GUIDANCE_PATHS = (
@@ -201,12 +202,17 @@ class ArtifactSurfaceTest(unittest.TestCase):
     def test_reviewed_removals_are_exact_and_attributed(self) -> None:
         removals = self.baseline.get("reviewed_removals", [])
         self.assertEqual([(r["category"], r["name"]) for r in removals],
-                         [("commands", "new-skill"), ("top_level_skills", "skill-author")])
+                         [("commands", "new-skill"), ("top_level_skills", "skill-author"),
+                          ("commands", "btw"), ("commands", "commands"),
+                          ("commands", "metrics"), ("commands", "preview")])
         for row in removals:
             self.assertEqual(set(row), {"category", "name", "rationale", "approved_by"})
             self.assertTrue(all(isinstance(v, str) and v for v in row.values()))
-            self.assertIn("2026-09-25", row["approved_by"])
-            self.assertIn("PR #854", row["approved_by"])
+            self.assertIn("Explicit maintainer instruction", row["approved_by"])
+        for row in removals[:2]:
+            self.assertIn("2026-09-25, PR #854", row["approved_by"])
+        for row in removals[2:]:
+            self.assertIn("2026-10-23", row["approved_by"])
 
     def test_retired_registration_cannot_silently_return(self) -> None:
         for category, name in (("commands", "new-skill"), ("top_level_skills", "skill-author")):

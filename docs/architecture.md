@@ -137,11 +137,9 @@ flowchart TD
         C_statusline["/ca:statusline"]
         C_doctor["/ca:doctor"]
         C_standup["/ca:standup"]
-        C_btw["/ca:btw"]
         C_override["/ca:override"]
         C_audit["/ca:audit"]
         C_prune["/ca:prune"]
-        C_commands["/ca:commands"]
     end
     subgraph SKILLS["Skills (bodies load only on route)"]
         S_brainstorm["brainstorming"]
@@ -269,8 +267,6 @@ flowchart TD
     C_statusline --> WIREPY["wire-statusline.py"]
     C_status --> STATUSRO([read-only state summary])
     C_audit --> AUDITRO([read-only governance packet])
-    C_commands --> CMDRO([render COMMANDS.md])
-    C_btw --> BTWRO([answer and return, no state change])
     C_override --> OVERLOG["log to overrides.log, proceed"]
 
     INJECT -.-> NOTE["CONTEXT MINIMIZATION:<br/>Only safety-core.md + the current mode body<br/>is loaded, per turn, deduped by (session, mode,<br/>compaction gen). routing-table, reference-map,<br/>every skill body, every agent body, the<br/>anti-slop bundle load ON DEMAND per invoked<br/>entry point. Repos without arbiter:enabled<br/>load nothing. A mode-token flip is friction,<br/>not a command — it never reaches this routing<br/>fan-out."]

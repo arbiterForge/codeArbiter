@@ -120,11 +120,9 @@ python .github/scripts/check_adr_lifecycle.py
 python .github/scripts/check_destructive_registry.py
 python .github/scripts/test_hook_guards.py
 python .github/scripts/test_hooks_cold_install.py
-python .github/scripts/test_preview_lib.py
 python .github/scripts/test_migration_backstop.py
 
 # Tasks, release, provenance, context injection and mode behavior
-python .github/scripts/test_metrics_lib.py
 python .github/scripts/test_taskboardlib.py
 python .github/scripts/test_taskwriter.py
 python .github/scripts/test_release_lib.py

@@ -31,16 +31,16 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 
 | Surface | Claude Code (`ca`) | Codex CLI (`ca-codex`) | Pi (`ca-pi`) | Evidence |
 |---|---|---|---|---|
-| Public entries | 37 `/ca:*` commands | 35 `$ca-*` entry skills | 36 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
+| Public entries | 33 `/ca:*` commands | 31 `$ca-*` entry skills | 32 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
 | Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
 | Role charters | 20 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.9.4 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
-Catalog counts are derived from generated outputs: `ca: 37`, `ca-codex: 35`,
-and `ca-pi: 36`. They differ from the 37-entry shared source catalog under
-`core/surface/commands/` because each host excludes entries it cannot serve
-(`core/hosts.json`), so a source count is never a host count. Pinned by
+Catalog counts are derived from generated outputs: `ca: 33`, `ca-codex: 31`,
+and `ca-pi: 32`. The shared source catalog under `core/surface/commands/` has 33
+entries; Claude serves all of them, while Codex and Pi exclude entries they cannot
+serve (`core/hosts.json`), so a source count is not guaranteed to be a host count. Pinned by
 `.github/scripts/test_pi_parity.py` — nothing else compares this table to the
 surface it describes, and an uncompared count drifts silently.
 

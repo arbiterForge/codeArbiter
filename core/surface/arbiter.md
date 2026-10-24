@@ -60,12 +60,12 @@ vendoring, no dual root.
 
 {{IF:claude}}
 **Commands.** The plugin is named `ca`; every command is namespaced behind it — the user invokes
-`{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:commands}}`, etc. Bare `/feature` shorthand in this document means
+`{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:status}}`, etc. Bare `/feature` shorthand in this document means
 `{{CMD:feature}}`. When you tell the user what to type, use the `/ca:` form.
 {{END}}
 {{IF:codex}}
 **Commands.** Codex has no plugin command namespace, so every governance command ships as a skill
-prefixed `ca-` — the user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:commands}}`, etc. Bare
+prefixed `ca-` — the user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:status}}`, etc. Bare
 `/feature` shorthand means the `ca-feature` skill; when telling the user what to type, use the `$ca-`
 form. Routine bodies under `routines/` route by path, never user-invoked. Before dispatching
 review/author roles, editing audit files, or driving git in a sandbox, load
@@ -73,7 +73,7 @@ review/author roles, editing audit files, or driving git in a sandbox, load
 {{END}}
 {{IF:pi}}
 **Commands.** Pi governance commands ship as generated `ca-` entry skills with top-level aliases: the
-user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:commands}}`, etc. Bare `/feature` shorthand
+user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:status}}`, etc. Bare `/feature` shorthand
 means the `ca-feature` skill; when telling the user what to type, use `/ca-<name>` (`/skill:ca-<name>`
 is the host-native fallback). Routine bodies under `routines/` route by path, never user-invoked.
 Before dispatching roles, editing audit files, or using native compaction, load
@@ -155,8 +155,6 @@ alone; the other four members are unchanged.
 batch independent questions. Ask for missing outcomes, facts, or authority, not internal methods.
 
 The orchestrator does not improvise unowned operations: surface a routing gap, never an override.
-
-**`{{CMD:btw}} "question"`** remains an explicit Q&A convenience, not a prerequisite for asking.
 
 ---
 
