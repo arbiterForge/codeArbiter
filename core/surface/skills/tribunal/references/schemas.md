@@ -162,6 +162,13 @@ lock publication gap; leave that guard in place. Legacy writers did not use
 this guard, so the operator's process check remains essential. Never delete a
 lock manually, recover by elapsed age, or truncate a log.
 
+A writer that cannot acquire the active `.write-guard` returns `run-busy`;
+retry after the writer or recovery finishes. If the guard is free but
+`.write-lock` still exists, a writer returns `run-busy-recovery-required`:
+inspect the writer state and use the confirmed recovery procedure only if no
+writer remains. `recover-lock` returns `run-lock-active` while a writer or
+recovery holds the guard or lock. None of these codes alone authorizes recovery.
+
 Allowed audit events are lens-launched, lens-skipped, lens-completed, wave-flushed,
 wave-triaged, report-written. `start` alone creates run-started; its detail records
 waves, applicability, profile/capabilities, packets and acknowledged budget.

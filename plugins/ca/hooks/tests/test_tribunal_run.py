@@ -537,7 +537,7 @@ class RepositoryTests(unittest.TestCase):
             self.assertTrue(ready.exists(), recovery.stderr.read() if recovery.poll() is not None else "recovery not ready")
             self.assertFalse(lock.exists())
             self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
-                             {"ok": False, "error": "run-busy-recovery-required"})
+                             {"ok": False, "error": "run-busy"})
             self.assertEqual((folder / "run.jsonl").read_bytes(), events_before)
         finally:
             release.write_text("resume", encoding="utf-8")

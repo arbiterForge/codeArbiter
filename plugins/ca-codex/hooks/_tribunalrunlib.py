@@ -422,7 +422,7 @@ def _write(root, path, record, append=False):
 def _lock(root, folder):
     root = _root(root)
     folder = _run_path(root, folder)
-    with _run_guard(root, folder, "run-busy-recovery-required"):
+    with _run_guard(root, folder, "run-busy"):
         path = _contained(root, (folder.relative_to(root) / ".write-lock").as_posix())
         data = _json({"at": _now()}) + b"\n"
         flags = os.O_RDWR | os.O_CREAT | os.O_EXCL
