@@ -24,6 +24,10 @@ for a fix. Return scoped results; stage only when assigned and authorized.
 
 Read in full before writing any infrastructure code:
 
+Select the context format with `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`.
+The Markdown tech-stack path below applies only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 1. `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — IaC tool (OpenTofu, Ansible, Helm, etc.), container runtime, CI/CD system, approved registries
 2. Complete format-selected `security-controls` policy — security boundaries, approved secrets store, compliance requirements affecting infrastructure; also read operative deploy and CI scope blocks
 3. `${CLAUDE_PLUGIN_ROOT}/includes/author-tdd-workflow.md` — route-specific verification and the authorized handoff.

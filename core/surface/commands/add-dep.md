@@ -21,7 +21,8 @@ available version.
 
 The `dependency-reviewer` agent (`{{PLUGIN_ROOT}}/agents/dependency-reviewer.md`). The agent
 reads `{{PROJECT_DIR}}/.codearbiter/security-controls.md` (allowed/denied licenses, provenance
-and supply-chain policy) and `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` (stack fit, dependency
+and supply-chain policy) and the format-selected tech-stack document
+(`{{PLUGIN_ROOT}}/includes/knowledge.md`; stack fit, dependency
 manager) to judge the package.
 
 After the agent clears it, the orchestrator surfaces the install command for confirmation. The lock

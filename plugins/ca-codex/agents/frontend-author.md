@@ -19,6 +19,10 @@ Frontend implementation executor. Use the caller's scoped obligations and select
 
 Read in full before writing any code:
 
+Select the context format with [includes/knowledge.md](../includes/knowledge.md).
+The Markdown document paths below apply only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 1. `<project-root>/.codearbiter/tech-stack.md` — framework (React, Vue, Svelte, etc.), bundler, test runner command, lint command, component file location convention
 2. `<project-root>/.codearbiter/coding-standards.md` — naming, formatting rules, banned patterns
 3. Complete format-selected `security-controls` policy — security-boundary rules governing API calls and data handling

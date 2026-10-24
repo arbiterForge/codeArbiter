@@ -27,6 +27,11 @@ Externally observable behavior before equals after, proven rather than assumed.
 
 Read these, or STOP and surface the gap — never guess a command or a threshold:
 
+Resolve the selected context format through `<plugin-root>/includes/knowledge.md`.
+In HTML mode, read the corresponding tech-stack and coding-standards records
+and use `knowledge.py commands` for declared invocations. The Markdown paths
+below apply only in Markdown mode.
+
 - `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `<project-root>/.codearbiter/tech-stack.md` — the test, coverage, lint, and type-check invocations; file layout.
 - `<plugin-root>/includes/verification-boundary.md` — the required split between focused local parity proof and exhaustive exact-head hosted CI.

@@ -17,6 +17,10 @@ Read-only. Review every migration added or modified. Produce findings. Do not mo
 
 ## Required Reading
 
+Select the context format with [includes/knowledge.md](../includes/knowledge.md).
+The Markdown tech-stack path below applies only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 - Complete format-selected `security-controls` policy — data classification categories and sensitive-data definitions; also read the operative migration scope block in Markdown.
 - `<project-root>/.codearbiter/tech-stack.md` — schema/ORM conventions, known sensitive tables if documented.
 - [includes/reviewer-contract.md](../includes/reviewer-contract.md) — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.

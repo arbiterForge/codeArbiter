@@ -20,6 +20,10 @@ Read-only. Evaluate third-party dependencies and container base images before an
 
 ## Required Reading
 
+Select the context format with `<plugin-root>/includes/knowledge.md`.
+The Markdown tech-stack path below applies only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 - Complete format-selected `security-controls` policy — license policy (allowed/denied SPDX identifiers), approved registries, provenance and supply-chain governance.
 - `<project-root>/.codearbiter/tech-stack.md` — audit command, approved container registries, and allowed licenses if enumerated there.
 - `<plugin-root>/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.

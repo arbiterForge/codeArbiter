@@ -30,6 +30,11 @@ It closes the reproduce, evidence, and regression-test handoff loop through `/fi
 
 Read scoped project instructions and available context before dependent action:
 
+Resolve the selected context format through `{{PLUGIN_ROOT}}/includes/knowledge.md`.
+The document names below denote Markdown files in Markdown mode and the
+corresponding exact knowledge records in HTML mode. Use `knowledge.py commands`
+for declared test commands in HTML mode.
+
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — log paths, trace tooling, test runner conventions. The evidence sources.
 - `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — domain vocabulary, system structure, and the `stage:` frontmatter (the maturity value; higher demands more rigorous evidence before exit).
 - Complete format-selected `security-controls` policy (see `{{PLUGIN_ROOT}}/includes/knowledge.md`) — only when the symptom touches a security boundary (auth, crypto, secrets). Optional; absent on most defects.

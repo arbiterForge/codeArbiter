@@ -112,10 +112,10 @@ export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freez
  * not the diagram routes or gate ownership. */
 export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/pysrc/_readinjectlib.py':'eb9ac0c2ed4516450ec8607327790e3edaab8252',
-  'core/surface/commands/add-dep.md':'4b58a3953f1d018d4f1f817918071b3837c7052e',
+  'core/surface/commands/add-dep.md':'4f39d82c50862c0f16965c1676c8c0a78813362d',
   'core/surface/commands/review.md':'4ead3a713888eeabaa003c3679e02d459a8647ea',
   'core/surface/includes/reference-map.md':'983ed0c26c2bbe14009847017507e871f772e380',
-  'core/surface/skills/debug/SKILL.md':'2cb20399806d873731b9c08e0452cd50d4844834',
+  'core/surface/skills/debug/SKILL.md':'83c3124f046df51e3db67278545260bff93b19d2',
   'core/surface/skills/security-architecture/SKILL.md':'669e8a1d4660a7166d0d3304304bcf322758c111',
   'core/surface/skills/tribunal/SKILL.md':'a549fae64b1bf6243b59ea78aa608c05beeab348',
   'core/artifacts/internal/operations/protocol.go':'f4f4df1562b3ab287fef0251e3a10c31fb3584f5',
@@ -132,10 +132,11 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/context-creation/SKILL.md':'d90dc3f36ccf184e54e89a85ea211b586dfb2a74',
   'core/surface/skills/decompose/SKILL.md':'d48ec8cbeddb60dcd4fd8cd24516943e0ffa92a2',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'5082926a20883837a75994322db5c0b845eae3fd',
-  'core/surface/skills/release/SKILL.md':'12e70c389fdca1848a13845b6ea297a78919f087',
+  'core/surface/skills/release/SKILL.md':'15216183910a201eb5966b741bbb1a8d023927f8',
   'core/surface/skills/subagent-driven-development/SKILL.md':'7c27d8ebb707088636e39a5ce28ca59043745609',
   'core/surface/skills/tdd/SKILL.md':'1246d507b3bc3f46a8b15757b2a74d57207b93f0',
   'core/surface/skills/writing-plans/SKILL.md':'5b47ef521e29bcb9b49db2662d13806a415cd8de',
+  'core/surface/skills/refactor/SKILL.md':'3f96c8640832c34d7fb91d59fd5928b8fa68ecfc',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those

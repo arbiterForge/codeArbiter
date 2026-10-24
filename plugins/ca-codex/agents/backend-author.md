@@ -19,6 +19,10 @@ Backend implementation executor. Use the caller's scoped obligations and selecte
 
 Read in full before writing any code:
 
+Select the context format with [includes/knowledge.md](../includes/knowledge.md).
+The Markdown document paths below apply only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 1. `<project-root>/.codearbiter/tech-stack.md` — language, framework, ORM, test runner command, lint command, test file location convention
 2. `<project-root>/.codearbiter/coding-standards.md` — banned patterns, naming conventions, import style
 3. Complete format-selected `security-controls` policy — security-boundary rules governing this change
