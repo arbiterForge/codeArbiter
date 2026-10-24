@@ -19,6 +19,8 @@ export interface AtlasCommand {
   context: string[]; output: string; gates: string; source_ids: string[]; related: string[];
   modes: string[]; hosts: string; canonical: string;
   replacement?: string; description?: string; source?: {path:string;revision:string}; invocations?: Record<string,string|null>;
+  /** Date a route was retired after this snapshot; no host exposes it. */
+  removed?: string;
 }
 export interface AtlasSourceUpdate { revision:string; title:string; summary:string; changes:{path:string;blob:string;summary:string;nodes:string[]}[] }
 export interface Atlas { sourceUpdate?:AtlasSourceUpdate; repository:string; commit:string; checked_at:string; scope:string; sources:AtlasSource[]; commands:AtlasCommand[]; views:AtlasView[]; caveats:string[]; lensCount?:number }

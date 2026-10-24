@@ -57,10 +57,16 @@ export function buildReferenceSidebar(groups: SidebarGroup[]): ReferenceSidebarG
       if (!group.items.every(isNestedGroup)) {
         throw new Error("Commands sidebar entries must be visibility groups");
       }
-      const hasCanonicalGroups = group.items.length === COMMAND_VISIBILITY_GROUPS.length
-        && group.items.every((item, index) => {
-          const expected = COMMAND_VISIBILITY_GROUPS[index];
-          return item.visibility === expected[0] && item.label === expected[1];
+      // Groups follow the canonical order; an empty tier is omitted, never empty.
+      let next = 0;
+      const hasCanonicalGroups = group.items.length > 0
+        && group.items.every((item) => {
+          while (next < COMMAND_VISIBILITY_GROUPS.length
+            && COMMAND_VISIBILITY_GROUPS[next][0] !== item.visibility) next += 1;
+          const expected = COMMAND_VISIBILITY_GROUPS[next];
+          next += 1;
+          return expected !== undefined && item.label === expected[1]
+            && Array.isArray(item.items) && item.items.length > 0;
         });
       if (!hasCanonicalGroups) {
         throw new Error("Commands sidebar must contain the canonical visibility groups");

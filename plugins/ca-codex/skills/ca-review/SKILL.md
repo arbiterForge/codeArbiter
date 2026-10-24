@@ -85,4 +85,4 @@ Read-only — MUST NOT modify a file, and MUST NOT check out, merge, or otherwis
 - Opening a PR (reviews dispatch automatically) → `$ca-pr`.
 - A periodic full-codebase sweep → `$ca-checkpoint`.
 - A pre-implementation threat model → `$ca-threat-model`.
-- A question about the code → `$ca-btw`.
+- A question about the code → ask it directly; no command needed.

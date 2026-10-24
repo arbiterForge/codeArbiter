@@ -68,12 +68,7 @@ def validate_target_declaration(
     manifest: Path = Path("manifest.json"),
 ) -> Declaration:
     where = f"compatibility.targets.{target}"
-    required = {
-        "publishedWithoutMetadata",
-        "firstContainingRelease",
-        "retainThrough",
-        "earliestRemoval",
-    }
+    required = {"publishedWithoutMetadata", "firstContainingRelease"}
     if not isinstance(metadata, dict) or set(metadata) != required:
         raise ContractError(f"{where} must contain exactly {sorted(required)!r}")
     baseline = strict_version(metadata["publishedWithoutMetadata"], f"{where}.publishedWithoutMetadata")

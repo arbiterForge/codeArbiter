@@ -25,7 +25,7 @@ file change is committed alongside the manifest change — never one without the
 - Removing a dependency → `{{CMD:fix}}` or `{{CMD:feature}}` with the change described.
 - Updating an existing dependency as part of a code change → `{{CMD:feature}}` / `{{CMD:fix}}`; manifest
   changes route to review at `{{CMD:pr}}`.
-- Asking about a package without installing it → `{{CMD:btw}}`.
+- Asking about a package without installing it → ask it directly; no command needed.
 
 ## Ephemeral tool run — one invocation, nothing adopted
 

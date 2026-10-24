@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """CI runner for the cold-miss nudge unit tests.
 
-Mirrors .github/scripts/test_preview_lib.py's sys.path pattern:
-adds plugins/ca/hooks/tests to sys.path so test_prune_nudge can import
+Adds plugins/ca/hooks/tests to sys.path so test_prune_nudge can import
 _prunelib and _helpers without a package install.
 
 Exit 0 = all tests pass; exit 1 = any failure.

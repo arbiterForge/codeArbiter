@@ -116,7 +116,7 @@ Scope suggests useful author skills (`backend-author`, `frontend-author`, `infra
 
 - A known defect with a reproduction → `/fix`.
 - A behavior-preserving restructure → `/refactor`.
-- A question or quick discussion → `/btw`.
+- A question or quick discussion → ask it directly; no command needed.
 - Persisting work already written → `/commit`.
 
 ## Hard gate

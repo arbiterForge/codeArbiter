@@ -12,6 +12,25 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-10-23
+
+### Removed
+
+- Remove the `/ca:btw`, `/ca:commands`, `/ca:metrics` and `/ca:preview` commands.
+  They carried maintenance cost without advancing agentic development. Ask
+  questions directly instead of using `/ca:btw`. The plugin's `COMMANDS.md`
+  still lists every command. The SessionStart briefing no longer points to
+  a catalog command.
+
+### Changed
+
+- The command compatibility policy now allows a command to be removed in a
+  minor release when this changelog records the removal under "Removed". It
+  previously required a separately approved major release. The generated
+  command catalogs publish the new `removalRequires` value and no longer
+  carry the `retainThrough` and `earliestRemoval` fields. This is the
+  maintainer's decision of 2026-10-23.
+
 ## [3.2.7] - 2026-10-21
 
 ### Fixed

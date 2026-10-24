@@ -7,7 +7,7 @@
 # When a tracked source file changes, drift detection (compute_drift) finds the
 # gap; commit-gate auto-heals it (pillar 3 of context-drift-provenance spec).
 #
-# Design invariants (mirroring _taskboardlib.py / _metricslib.py):
+# Design invariants (mirroring _taskboardlib.py / _ledgerlib.py):
 #   - Stdlib only; no third-party imports ever — runs on stock Python.
 #   - Zero side effects at import time: no git calls, no file I/O on import.
 #   - Pure comparisons are testable with synthetic data. The v1 reader/writer,

@@ -8,21 +8,15 @@ skill is invoked — never bulk-read this directory.
 
 | Visibility | Count |
 |---|---:|
-| Core | 18 |
-| Advanced | 10 |
-| Canonical total | 28 |
+| Core | 17 |
+| Advanced | 8 |
+| Canonical total | 25 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
-| Deprecated | 1 |
-| **Total** | **35** |
+| Deprecated | 0 |
+| **Total** | **31** |
 
 ## Core
-
-### Evaluate
-
-| Skill | Purpose |
-|---|---|
-| `$ca-preview` | Zero-onboarding, read-only dry-run of the reviewer fleet against the current uncommitted diff. Predicts reviewers, runs the state-free secret scan, writes nothing. |
 
 ### Initialize
 
@@ -99,14 +93,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `$ca-audit` | Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only. |
-| `$ca-metrics` | Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window. |
 | `$ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
-
-### Help
-
-| Skill | Purpose |
-|---|---|
-| `$ca-commands` | Show the codeArbiter command catalog — the public command list and what each routes to. |
 
 ## Compatibility aliases
 
@@ -137,11 +124,3 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `$ca-conflict` | Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation. |
-
-## Deprecated
-
-### Help
-
-| Skill | Purpose | Replacement |
-|---|---|---|
-| `$ca-btw` | Lightweight Q&A about the project — answer from context and return, no routing, no state change. | ask the question directly |

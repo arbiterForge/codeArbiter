@@ -88,12 +88,14 @@ export function buildIndex(pages: RenderedPage[], catalog?: CommandCatalog): Ind
         if (items.some((item) => item.visibility === undefined)) {
           throw new Error("Every command page needs generated catalog metadata");
         }
-        const visibilityGroups: CommandSidebarGroup[] = catalog!.visibilityOrder.map(
-          (visibility) => ({
-            visibility,
-            label: VISIBILITY_LABEL[visibility],
-            items: items.filter((item) => item.visibility === visibility),
-          }),
+        // An empty visibility tier is omitted, matching the discovery index.
+        const visibilityGroups: CommandSidebarGroup[] = catalog!.visibilityOrder.flatMap(
+          (visibility) => {
+            const members = items.filter((item) => item.visibility === visibility);
+            return members.length === 0
+              ? []
+              : [{ visibility, label: VISIBILITY_LABEL[visibility], items: members }];
+          },
         );
         sidebar.push({ type, label: "Commands", items: visibilityGroups });
       } else {

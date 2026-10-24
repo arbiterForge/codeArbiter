@@ -5,11 +5,12 @@ import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,RETIRED_COMMANDS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 import provenance from './atlas-data/provenance.json';
+import atlasCatalog from './atlas-data/catalog.json';
 const root=new URL('../../../',import.meta.url);
 
 // Each case loads and verifies the whole atlas (dozens of Git reads); under a
@@ -17,9 +18,9 @@ const root=new URL('../../../',import.meta.url);
 describe('atlas source and original-composition regression contract',{timeout:30_000},()=>{
   it('covers the exact catalog, original detail and real host exposure',()=>{
     const a=loadAtlas(),catalog=JSON.parse(readFileSync(new URL('core/surface/command-routes.json',root),'utf8'));
-    expect(a.commands.map(c=>c.name).sort()).toEqual(Object.keys(catalog.commands).sort());expect(validateAtlas(a)).toEqual([]);
+    expect(a.commands.map(c=>c.name).sort()).toEqual([...Object.keys(catalog.commands),...Object.keys(RETIRED_COMMANDS)].sort());expect(validateAtlas(a)).toEqual([]);
     expect(a.commands.find(c=>c.name==='prune')!.invocations!.codex).toBeNull();expect(a.commands.find(c=>c.name==='statusline')!.invocations!.pi).toBeNull();
-    expect(a.commands.find(c=>c.name==='cleanup')!.replacement).toBe('pr --cleanup');expect(a.commands.find(c=>c.name==='conflict')!.visibility).toBe('internal');expect(a.commands.find(c=>c.name==='btw')!.visibility).toBe('deprecated');expect(a.lensCount).toBe(13);
+    expect(a.commands.find(c=>c.name==='cleanup')!.replacement).toBe('pr --cleanup');expect(a.commands.find(c=>c.name==='conflict')!.visibility).toBe('internal');for(const name of Object.keys(RETIRED_COMMANDS)){const retired=a.commands.find(c=>c.name===name)!;expect(name in catalog.commands).toBe(false);expect(retired.removed).toBe('2026-10-23');expect(Object.values(retired.invocations!).every(form=>form===null)).toBe(true);}expect(a.lensCount).toBe(13);
     for(const c of originalAtlas().commands){const current=a.commands.find(x=>x.name===c.name)!;for(const key of ['steps','context','output','gates','source_ids'] as const)expect(current[key]).toEqual(c[key]);}
   });
   it('matches every original box, routed edge, label, route membership and panel',()=>{
@@ -99,7 +100,7 @@ describe('atlas source and original-composition regression contract',{timeout:30
       const git=(args:string[],input?:string):string=>execFileSync('git',args,{cwd:dir,env:fixtureEnv,input,encoding:'utf8'}).trim();
       const atlas=originalAtlas(),lensDir='core/surface/skills/tribunal/references/lenses';
       const inputs=new Set(['core/hosts.json',lensDir,...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path)]);
-      for(const command of atlas.commands)commandMetadata(command.name,path=>{
+      for(const command of atlas.commands)if(!RETIRED_COMMANDS[command.name])commandMetadata(command.name,path=>{
         inputs.add(path);return readFileSync(new URL(path,root),'utf8');
       });
       git(['clone','--quiet','--shared','--no-checkout',fileURLToPath(root),dir]);
@@ -113,7 +114,8 @@ describe('atlas source and original-composition regression contract',{timeout:30
       for(const [path,blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS,...LEGACY_CODE_MAP_SOURCE_BLOBS}))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries(CONTEXT_MAINTENANCE_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries(RUNTIME_COMPATIBILITY_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
-      for(const [path,blob] of Object.entries({...ASSISTIVE_SOURCE_BLOBS,...SMARTS_INTEGRATION_SOURCE_BLOBS})) {
+      writeFileSync(join(dir,'core/surface/command-routes.json'),execFileSync('git',['--no-replace-objects','cat-file','blob',atlasCatalog.catalog_snapshot.verified_current_blob],{cwd:dir,env:fixtureEnv}));
+      for(const [path,blob] of Object.entries({...ASSISTIVE_SOURCE_BLOBS,...SMARTS_INTEGRATION_SOURCE_BLOBS,...COMMAND_REMOVAL_SOURCE_BLOBS})) {
         mkdirSync(dirname(join(dir,path)),{recursive:true});
         writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       }

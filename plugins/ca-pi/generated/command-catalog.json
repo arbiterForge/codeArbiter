@@ -20,25 +20,19 @@
   ],
   "compatibility": {
     "clockStarts": "confirmed-non-draft-github-release",
-    "removalRequires": "separately-approved-major",
+    "removalRequires": "minor-release-with-changelog-notice",
     "targets": {
       "claude": {
         "publishedWithoutMetadata": "2.16.0",
-        "firstContainingRelease": "2.17.0",
-        "retainThrough": "2.x",
-        "earliestRemoval": "3.0.0"
+        "firstContainingRelease": "2.17.0"
       },
       "codex": {
         "publishedWithoutMetadata": "0.8.0",
-        "firstContainingRelease": "0.9.0",
-        "retainThrough": "0.x",
-        "earliestRemoval": "1.0.0"
+        "firstContainingRelease": "0.9.0"
       },
       "pi": {
         "publishedWithoutMetadata": "0.9.0",
-        "firstContainingRelease": "0.10.0",
-        "retainThrough": "0.x",
-        "earliestRemoval": "1.0.0"
+        "firstContainingRelease": "0.10.0"
       }
     }
   },
@@ -79,14 +73,6 @@
       "canonical": "audit",
       "legacyRoutes": []
     },
-    "btw": {
-      "name": "btw",
-      "description": "Lightweight Q&A about the project — answer from context and return, no routing, no state change.",
-      "skillPath": "skills/ca-btw/SKILL.md",
-      "visibility": "deprecated",
-      "workflow": "help",
-      "replacement": "ask the question directly"
-    },
     "checkpoint": {
       "name": "checkpoint",
       "description": "Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report.",
@@ -113,15 +99,6 @@
       "workflow": "ship",
       "canonical": "pr",
       "replacement": "pr --cleanup"
-    },
-    "commands": {
-      "name": "commands",
-      "description": "Show the codeArbiter command catalog — the public command list and what each routes to.",
-      "skillPath": "skills/ca-commands/SKILL.md",
-      "visibility": "advanced",
-      "workflow": "help",
-      "canonical": "commands",
-      "legacyRoutes": []
     },
     "commit": {
       "name": "commit",
@@ -216,15 +193,6 @@
         "decompose"
       ]
     },
-    "metrics": {
-      "name": "metrics",
-      "description": "Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window.",
-      "skillPath": "skills/ca-metrics/SKILL.md",
-      "visibility": "advanced",
-      "workflow": "operate",
-      "canonical": "metrics",
-      "legacyRoutes": []
-    },
     "override": {
       "name": "override",
       "description": "Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed.",
@@ -245,15 +213,6 @@
         "cleanup",
         "watch"
       ]
-    },
-    "preview": {
-      "name": "preview",
-      "description": "Zero-onboarding, read-only dry-run of the reviewer fleet against the current uncommitted diff. Predicts reviewers, runs the state-free secret scan, writes nothing.",
-      "skillPath": "skills/ca-preview/SKILL.md",
-      "visibility": "core",
-      "workflow": "evaluate",
-      "canonical": "preview",
-      "legacyRoutes": []
     },
     "prune": {
       "name": "prune",

@@ -449,7 +449,7 @@ else must match.
 
 | # | Step | Ask / action | Expected (both hosts) |
 |---|------|--------------|------------------------|
-| O1 | Surface discovery | Invoke the catalog: `$ca-commands` / `/ca:commands` | The full command catalog renders. Every generated entry resolves; `prune` and `statusline` are absent on Codex **by design** (§6) |
+| O1 | Surface discovery | Open the catalog: `COMMANDS.md` in the installed plugin | The full command catalog is listed. Every generated entry resolves; `prune` and `statusline` are absent on Codex **by design** (§6) |
 | O2 | Dormant diagnosis | Invoke `$ca-doctor` / `/ca:doctor` | Reports the repo is dormant and points at the host-native init spelling (`$ca-init` on Codex, `/ca:init` on Claude — the `cmd_ref` runtime seam, M3/D6) |
 | O3 | Opt in | Invoke `$ca-init` / `/ca:init` | `.codearbiter/` scaffolded: stub `CONTEXT.md` (`arbiter: enabled`, no init sentinel), `open-tasks.md`, `open-questions.md`, `overrides.log`, `last-checkpoint`; routes you toward the populator |
 | O4 | Activation | Restart the session in the same directory | The `=== codeArbiter startup state ===` banner now injects, reports **NOT INITIALIZED**, and routes to `$ca-decompose` / `$ca-create-context` |

@@ -27,13 +27,6 @@ CI_WORKFLOW = REPO / ".github" / "workflows" / "ci.yml"
 # so this is a live hazard, not a theoretical one.
 CODEQL_PIN = re.compile(r"github/codeql-action/(init|analyze)@([0-9a-f]{40})\b")
 SCHEMA = "codearbiter-pi-security-v1"
-PREVIEW_ENTRYPOINTS = (
-    REPO / "core" / "pysrc" / "preview.py",
-    REPO / "plugins" / "ca" / "hooks" / "preview.py",
-    REPO / "plugins" / "ca-codex" / "hooks" / "preview.py",
-    REPO / "plugins" / "ca-pi" / "hooks" / "preview.py",
-)
-PREVIEW_LIBRARY = REPO / "core" / "pysrc" / "_previewlib.py"
 PI_BRIDGE = REPO / "plugins" / "ca-pi" / "hooks" / "pi-bridge.py"
 PI_BRIDGE_CLIENT = REPO / "plugins" / "ca-pi" / "tools" / "src" / "bridge.ts"
 
@@ -89,22 +82,6 @@ def workflow_results() -> list[dict[str, object]]:
         result("PI-SEC-CODEQL-SCOPE", scope),
         result("PI-SEC-CODEQL-PR-JOB", pr_job),
     ]
-
-
-def preview_output_result() -> dict[str, object]:
-    """Preview findings are a redacted stdout protocol, never a logging sink."""
-    try:
-        sources = [path.read_text(encoding="utf-8") for path in PREVIEW_ENTRYPOINTS]
-        library = PREVIEW_LIBRARY.read_text(encoding="utf-8")
-    except (OSError, UnicodeError):
-        return result("PI-SEC-PREVIEW-OUTPUT", False)
-    safe = all(
-        "json.dump(result, sys.stdout)" in source
-        and 'sys.stdout.write("\\n")' in source
-        and "print(json.dumps(result))" not in source
-        for source in sources
-    ) and "SECRET_RE.sub(_SECRET_MASK, line)" in library
-    return result("PI-SEC-PREVIEW-OUTPUT", safe)
 
 
 def footer_bridge_results() -> list[dict[str, object]]:
@@ -249,7 +226,7 @@ def main() -> int:
     parser.add_argument("--sarif", type=Path)
     parser.add_argument("--evidence", type=Path)
     args = parser.parse_args()
-    rows = [*workflow_results(), preview_output_result(), *footer_bridge_results()]
+    rows = [*workflow_results(), *footer_bridge_results()]
     if args.sarif is not None:
         rows.append(sarif_result(args.sarif))
     elif args.evidence is not None:

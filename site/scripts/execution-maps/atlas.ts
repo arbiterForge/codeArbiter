@@ -102,6 +102,27 @@ export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freez
   Object.fromEntries(assistiveUpdate.changes.map(change=>[change.path,change.blob])),
 );
 
+// The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
+// owners and drops their catalog rows. These files only lose pointers to those
+// routes (or record the new catalog counts); every remaining route, gate and
+// owner is unchanged. Bind the reviewed bytes so a squash does not need a branch.
+export const RETIRED_COMMANDS:Readonly<Record<string,string>>=Object.freeze({
+  btw:'2026-10-23', commands:'2026-10-23', metrics:'2026-10-23', preview:'2026-10-23',
+});
+export const COMMAND_REMOVAL_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_provenancelib.py':'a37a5c9503fdcb40c8828d5e77960b787fbae443',
+  'core/surface/COMMANDS.md':'c0c448861c4dfcaa97ed73fc5be42315a932828c',
+  'core/surface/arbiter.md':'a762089e480bfc9fab9706a700a7cc3ab04e8e13',
+  'core/surface/commands/add-dep.md':'53e90d4995356d2a9b7e8247d6ed508bf27feb56',
+  'core/surface/commands/feature.md':'b794da0756ed7fdb103da5533112769f0adcee04',
+  'core/surface/commands/fix.md':'8b41d39a90ef2ddce57b23e11b793362d8ed36f8',
+  'core/surface/commands/review.md':'987a2df9227a19a54fdd85e8fc31dee62c6924bb',
+  'core/surface/commands/spike.md':'390283c8c09ae6f68a25c5787e333baebd0f8836',
+  'core/surface/commands/status.md':'e4359c41c5352062c34dbcdd44f3294af06d2995',
+  'core/surface/includes/routing-table.md':'036424b8c9ca6c5cfa74bd3b8f5f3db5f7f0ae2c',
+  'docs/parity.md':'ecbe44a7d870d53a22dc4fb2fa4c934413dccd45',
+});
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -195,26 +216,40 @@ export function originalAtlas():Atlas {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
-    ['core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha],['core/hosts.json',undefined],
+    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);
   for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
-    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...atlas.commands.map(command=>`core/surface/commands/${command.name}.md`)
+    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
   ])if(!requests.has(path))requests.set(path,pinFor(path));
   const checked=checkedSources(root,requests);
   const read=(path:string,pin?:string):string=>{
     if(!checked.has(path))checked.set(path,checkedSources(root,new Map([[path,pinFor(path,pin)]])).get(path)!);
     return checked.get(path)!;
   };
-  const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
+  const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
-  if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
+  const retired=Object.keys(RETIRED_COMMANDS);
+  if(retired.some(name=>name in registry.commands))throw new Error('A retired atlas route is still registered');
+  if(JSON.stringify([...Object.keys(registry.commands),...retired].sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
+  // A retired route keeps its historical box; its owner text comes from the
+  // revalidated revision because the working-tree file no longer exists.
+  const historical=(path:string):string=>execFileSync('git',['--no-replace-objects','--no-lazy-fetch','cat-file','blob',`${REVALIDATED_AT}:${path}`],
+    {cwd:root,env:rootBoundGitEnv(),encoding:'utf8'});
   // Product owners must still match. Site-design pointers are historical
   // integration evidence, not product claims; this PR intentionally changes them.
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
   for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,blob);
   for(const command of atlas.commands) {
+    if(RETIRED_COMMANDS[command.name]) {
+      const owner=commandMetadata(command.name,historical);
+      command.description=owner.description;
+      command.source={path:owner.path,revision:REVALIDATED_AT};
+      command.invocations=Object.fromEntries(hosts.map(host=>[host.name,null]));
+      command.removed=RETIRED_COMMANDS[command.name];
+      continue;
+    }
     const meta=registry.commands[command.name];
     if(meta.visibility!==command.visibility || (meta.canonical??command.name)!==command.canonical)throw new Error(`Atlas catalog classification changed: ${command.name}`);
     const owner=commandMetadata(command.name,read);

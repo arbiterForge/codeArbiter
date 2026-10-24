@@ -59,7 +59,7 @@ review, progress and recovery boundaries.
 | `reports/` | `/ca:tribunal` and named handoff/evidence workflows | the owning workflow on resume, humans | Yes, but not while an owning run is in flight |
 | `sprint-log.md` | `/ca:sprint` | `/ca:status`, `/ca:audit` | No: append-only, guarded (H-05) |
 | `overrides.log` | `/ca:override`, the mode-plane flip (`mode --dangerous`/`--ops`/`--arbiter`, `MODE: <name> enter/exit`) | statusline, `/ca:status`, `/ca:audit`, staleness-warn | No: append-only, guarded (H-05) |
-| `triage.log` | `/ca:feature` small-lane triage | `/ca:metrics`, `/ca:audit` | No: append-only, guarded (H-05) |
+| `triage.log` | `/ca:feature` small-lane triage | `/ca:audit` | No: append-only, guarded (H-05) |
 | `gate-events.log` | every `block()`/`remind()`/`warn()` call in the hooks | (durable sink; no reader ships yet) | No: append-only, guarded (H-05) |
 | `.markers/` | `security-pass.py`, `migration-pass.py`, `prompt-submit.py` (mode marker), `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No: guarded, and hand-writing one is friction and an audit trail, not a proof (see below) |
 | `.provenance/*.json` | `context-creation`, `decompose`, `context-check` (re-scout/re-baseline) | `SessionStart` (drift line), `commit-gate` (auto-heal) | Not by hand: regenerate via `/ca:context-check` |
@@ -354,12 +354,11 @@ does not recover.
 
 The append-only record of every small-lane classification `/ca:feature` makes (the SMARTS
 reasoning behind routing a change to the lighter lane instead of the full spec-to-plan pipeline).
-`/ca:metrics` reads it to compute the small-lane rate trend.
 
-**Writers:** `/ca:feature` (small-lane triage step). **Readers:** `/ca:metrics`, `/ca:audit`.
+**Writers:** `/ca:feature` (small-lane triage step). **Readers:** `/ca:audit`.
 **Editable by hand?** No: H-05 guarded, same append-only contract as the other three logs.
-**Delete it:** the small-lane classification history is gone; `/ca:metrics`' small-lane-rate trend
-has nothing to compare against until new entries accumulate.
+**Delete it:** the small-lane classification history is gone, and `/ca:audit` has nothing to
+report for that period.
 
 ## gate-events.log
 

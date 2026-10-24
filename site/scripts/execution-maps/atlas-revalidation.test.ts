@@ -1,10 +1,10 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -39,6 +39,11 @@ beforeAll(() => {
     'core/surface/command-routes.json',
   ]);
 });
+
+// Owners of routes retired after the snapshot stay in the historical input
+// inventory but no longer exist in the working tree.
+const retiredOwners = new Set(Object.keys(RETIRED_COMMANDS).map(name => `core/surface/commands/${name}.md`));
+const live = (path: string): boolean => !retiredOwners.has(path);
 
 function changedProductInputs(from: string, to: string): string[] {
   return git('diff', '--name-only', from, to, '--')
@@ -229,17 +234,21 @@ describe('atlas source compatibility revalidation', () => {
 
   it('binds the exact draft-preview documents and the complete combined product input set', () => {
     const inputs = new Set(productInputs);
-    for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
+    for (const command of originalAtlas().commands) if (!RETIRED_COMMANDS[command.name]) commandMetadata(command.name, path => {
       inputs.add(path);
       return readFileSync(resolve(root, path), 'utf8');
     });
+    for (const path of retiredOwners) {
+      expect(existsSync(resolve(root, path))).toBe(false);
+      expect(git('cat-file', '-t', `${nativeV2Review}:${path}`).trim()).toBe('blob');
+    }
     const current = (path: string): string => readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n');
     // One Git object query for the complete current set and one for its
     // reviewed baseline. Spawning a separate Git process per source grew
     // past Vitest's 5s limit on Windows as the real input set expanded.
     // Hashes are Git's own object identities; the exact pinned blob probes
     // below remain independently byte-strict.
-    const paths = [...inputs].sort();
+    const paths = [...inputs].filter(live).sort();
     const observed = git('hash-object', '--', ...paths).trim().split('\n');
     const reviewed = git('rev-parse', ...paths.map(path => `${nativeV2Review}:${path}`)).trim().split('\n');
     expect(observed).toHaveLength(paths.length);
@@ -249,9 +258,11 @@ describe('atlas source compatibility revalidation', () => {
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
       'core/pysrc/_readinjectlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
+      'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
+      'core/surface/commands/spike.md',
       'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
@@ -285,7 +296,7 @@ describe('atlas source compatibility revalidation', () => {
   it('binds the reviewed unittest collector and exact combined source changes', () => {
     expect(UNITTEST_COLLECTOR_BLOB).toBe('76a2998f4bd5b6f441f5fd162bbe810b2de2ee93');
     expect(productInputs.size).toBe(71);
-    const paths = [...productInputs];
+    const paths = [...productInputs].filter(live);
     const current = git('hash-object', '--', ...paths).trim().split('\n');
     const reviewed = git('rev-parse', ...paths.map(path => `${nativeV2Review}:${path}`)).trim().split('\n');
     expect(current).toHaveLength(paths.length);
@@ -295,9 +306,11 @@ describe('atlas source compatibility revalidation', () => {
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
       'core/pysrc/_readinjectlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
+      'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
+      'core/surface/commands/spike.md',
       'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
@@ -440,12 +453,16 @@ describe('atlas source compatibility revalidation', () => {
 
   it('binds the complete current input set to the reviewed historical and runtime compatibility owners', () => {
     const inputs = new Set(productInputs);
-    for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
+    for (const command of originalAtlas().commands) if (!RETIRED_COMMANDS[command.name]) commandMetadata(command.name, path => {
       inputs.add(path);
       return readFileSync(resolve(root, path), 'utf8');
     });
+    for (const path of retiredOwners) {
+      expect(existsSync(resolve(root, path))).toBe(false);
+      expect(git('cat-file', '-t', `${nativeV2Review}:${path}`).trim()).toBe('blob');
+    }
     const current = (path: string): string => readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n');
-    const ordered = [...inputs].sort();
+    const ordered = [...inputs].filter(live).sort();
     const reviewed = execFileSync('git', ['--no-replace-objects', 'cat-file', '--batch'], {
       cwd: root, input: ordered.map(path => `${nativeV2Review}:${path}\n`).join(''), maxBuffer: 4 * 1024 * 1024,
     });
@@ -469,9 +486,11 @@ describe('atlas source compatibility revalidation', () => {
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
       'core/pysrc/_readinjectlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
+      'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
+      'core/surface/commands/spike.md',
       'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
@@ -499,7 +518,8 @@ describe('atlas source compatibility revalidation', () => {
     const owners = Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
-      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS});
+      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS,
+      ...COMMAND_REMOVAL_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

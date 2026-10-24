@@ -1,6 +1,6 @@
 ---
 entity: commands/doctor
-related: [statusline, preview]
+related: [statusline]
 ---
 
 ## What it does
