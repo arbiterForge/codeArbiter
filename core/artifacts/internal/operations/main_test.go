@@ -1,6 +1,7 @@
 package operations
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -25,7 +26,21 @@ func TestMain(m *testing.M) {
 }
 
 func run(m *testing.M) int {
+	openStore = func(root string) (*store.FS, error) {
+		f, err := store.Open(root)
+		if err == nil {
+			if hook, ok := storeHooks.Load(root); ok {
+				hook.(func(*store.FS))(f)
+			}
+		}
+		return f, err
+	}
 	git, err := exec.LookPath("git")
+	if errors.Is(err, exec.ErrNotFound) {
+		// The bounded named-test bridge intentionally supplies a PATH with
+		// only Go. Its selected tests do not use Git fixtures.
+		return m.Run()
+	}
 	if err == nil {
 		git, err = filepath.Abs(git)
 	}
@@ -49,15 +64,6 @@ func run(m *testing.M) int {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
 		}
-	}
-	openStore = func(root string) (*store.FS, error) {
-		f, err := store.Open(root)
-		if err == nil {
-			if hook, ok := storeHooks.Load(root); ok {
-				hook.(func(*store.FS))(f)
-			}
-		}
-		return f, err
 	}
 	return m.Run()
 }

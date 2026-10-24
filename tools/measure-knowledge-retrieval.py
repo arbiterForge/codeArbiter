@@ -93,10 +93,11 @@ def measure(plugin, knowledge, size):
         # Old: the agent reads all five Markdown documents in full.
         legacy = root / "legacy"
         legacy.mkdir()
-        old_bytes, started = 0, time.perf_counter()
+        old_bytes = 0
         for doc, records in corpus.items():
             path = legacy / LEGACY[doc]
             path.write_text(markdown(doc, records), encoding="utf-8")
+        started = time.perf_counter()
         for doc in DOCS:
             old_bytes += len((legacy / LEGACY[doc]).read_bytes())
         old_latency = time.perf_counter() - started
