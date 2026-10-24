@@ -325,13 +325,13 @@ class TestEmittersIndividuallyCallable(unittest.TestCase):
         lines = self._lines(M.emit_trailer, _FakeHost())
         self.assertEqual(len(lines), 1)
         self.assertIn("fake-command", lines[0])
-        self.assertNotIn("for the catalog", lines[0])
+        self.assertNotIn("$$fake-commands", lines[0])
 
     def test_emit_not_initialized_is_mode_aware_arbiter_names_commands(self):
         with tempfile.TemporaryDirectory() as tmp:
             lines = self._lines(M.emit_not_initialized, tmp, _FakeHost(), "arbiter")
         self.assertTrue(any("$$fake-decompose" in ln or "$$fake-create-context" in ln for ln in lines))
-        self.assertFalse(any("for the catalog" in ln for ln in lines))
+        self.assertFalse(any("$$fake-commands" in ln for ln in lines))
 
     def test_emit_not_initialized_non_arbiter_names_no_command(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -453,7 +453,7 @@ class TestNonArbiterOmitsTrailerCatalogAndStandup(unittest.TestCase):
             "trailer must not turn a resume or compact boundary into a pause",
         )
         self.assertNotIn("Present this state, then await a", joined)
-        self.assertNotIn("for the catalog", joined, "the catalog command was removed")
+        self.assertNotIn("$$fake-commands", joined, "the catalog command was removed")
         self.assertIn("host: claude", joined)
         self.assertIn("stage: 3", joined)
         self.assertIn("mode: arbiter", joined)

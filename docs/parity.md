@@ -38,9 +38,9 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
 Catalog counts are derived from generated outputs: `ca: 33`, `ca-codex: 31`,
-and `ca-pi: 32`. They differ from the 33-entry shared source catalog under
-`core/surface/commands/` because each host excludes entries it cannot serve
-(`core/hosts.json`), so a source count is never a host count. Pinned by
+and `ca-pi: 32`. The shared source catalog under `core/surface/commands/` has 33
+entries; Claude serves all of them, while Codex and Pi exclude entries they cannot
+serve (`core/hosts.json`), so a source count is not guaranteed to be a host count. Pinned by
 `.github/scripts/test_pi_parity.py` — nothing else compares this table to the
 surface it describes, and an uncompared count drifts silently.
 

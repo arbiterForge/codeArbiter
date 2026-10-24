@@ -119,7 +119,7 @@ export const COMMAND_REMOVAL_SOURCE_BLOBS:Readonly<Record<string,string>>=Object
   'core/surface/commands/spike.md':'390283c8c09ae6f68a25c5787e333baebd0f8836',
   'core/surface/commands/status.md':'e4359c41c5352062c34dbcdd44f3294af06d2995',
   'core/surface/includes/routing-table.md':'036424b8c9ca6c5cfa74bd3b8f5f3db5f7f0ae2c',
-  'docs/parity.md':'ecbe44a7d870d53a22dc4fb2fa4c934413dccd45',
+  'docs/parity.md':'ea25f8681bcd2c4d5be27ea79fc9f365aee175fc',
 });
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
