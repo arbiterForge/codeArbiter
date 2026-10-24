@@ -335,17 +335,21 @@
       "task_refs": ["T-012", "T-013", "T-021"],
       "canonical_paths": [
         "core/pysrc/_artifactlib.py",
-        "core/pysrc/_approvallib.py"
+        "core/pysrc/_approvallib.py",
+        "core/pysrc/knowledge.py"
       ],
       "generated_paths": [
         "plugins/ca/hooks/_artifactlib.py",
         "plugins/ca/hooks/_approvallib.py",
+        "plugins/ca/hooks/knowledge.py",
         "plugins/ca-codex/hooks/_artifactlib.py",
         "plugins/ca-codex/hooks/_approvallib.py",
+        "plugins/ca-codex/hooks/knowledge.py",
         "plugins/ca-pi/hooks/_artifactlib.py",
-        "plugins/ca-pi/hooks/_approvallib.py"
+        "plugins/ca-pi/hooks/_approvallib.py",
+        "plugins/ca-pi/hooks/knowledge.py"
       ],
-      "reason": "The binary bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. On Claude Code and Codex, the approval bridge binds a host-observed exact prompt to current artifact identity before capture and approval. Pi prompt authority, publication read-back and non-user authority adapters remain separate gates."
+      "reason": "The binary bridge and knowledge CLI pin the package-owned payload and manifest, perform exact-format routing and typed operations without PATH or network fallback, and normal host packages carry the candidate payload. On Claude Code and Codex, the approval bridge binds a host-observed exact prompt to current artifact identity before capture and approval. Pi prompt authority, publication read-back and non-user authority adapters remain separate gates."
     },
     {
       "id": "context-writer-protected-state",
