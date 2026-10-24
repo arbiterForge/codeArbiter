@@ -29,17 +29,17 @@
       "info": 0,
       "low": 0,
       "moderate": 0,
-      "high": 0,
+      "high": 1,
       "critical": 0,
-      "total": 0
+      "total": 1
     },
     "all": {
       "info": 0,
       "low": 0,
       "moderate": 0,
-      "high": 0,
+      "high": 1,
       "critical": 0,
-      "total": 0
+      "total": 1
     }
   },
   "lifecycle_scripts": {
@@ -54,5 +54,34 @@
   "provenance": {
     "result": "PASS",
     "attestations_verified": 61
-  }
+  },
+  "accepted_advisories": [
+    {
+      "ghsa": "GHSA-xjj6-f33q-929c",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "high",
+      "reason": "Content-encoding error DoS. Published 2026-10-23 after this review. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-4qv8-2p9j-2685",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "moderate",
+      "reason": "EventSource-parser memory DoS. Published 2026-10-23 after this review. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-f72v-6w45-q472",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "moderate",
+      "reason": "Subresource Integrity token bypass. Published 2026-10-23 after this review. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    }
+  ]
 }
