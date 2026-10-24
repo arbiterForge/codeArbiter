@@ -21,18 +21,33 @@ func New(r object, c *repository.Catalog) (*model.Document, error) {
 	if _, ok := c.Entries[id]; ok {
 		return nil, fault.New("ALREADY_EXISTS", "artifact ID already exists")
 	}
+	if kind == "knowledge" || kind == "decomposition" {
+		// The ID is derived from the slug so links resolve by identity.
+		if prefix := map[string]string{"knowledge": "CTX-", "decomposition": "DECOMP-"}[kind]; id != prefix+strings.ToUpper(slug) {
+			return nil, fault.New("INVALID_ID", "knowledge artifact ID must be "+prefix+" followed by the upper-case slug")
+		}
+	}
 	baseline := r["baseline"]
 	if baseline == nil {
 		baseline = object{"repository": nil, "commit": nil, "observed_date": time.Now().UTC().Format("2006-01-02")}
 	}
 	n := object{"title": r["title"], "summary": r["summary"], "baseline": baseline, "sections": empty(), "sources": empty(), "retired_symbols": empty()}
 	comp := "../plans/" + slug + ".html"
+	if kind != "spec" && kind != "plan" {
+		// Knowledge has no companion; cross-document links resolve by identity.
+		comp = ""
+	}
 	v := object{"format": model.Format, "format_version": model.FormatVersion, "kind": kind, "schema_version": model.SchemaVersion, "artifact_id": id, "slug": slug, "revision": int64(1), "governance": object{"state": "draft", "approvals": empty(), "review_notes": empty()}, "presentation": render.Presentation(comp), "normative": n}
 	if kind == "spec" {
 		n["intent"] = object{"id": "INTENT-01"}
 		n["approach"] = object{"id": "APPROACH-01"}
 		for _, k := range []string{"constraints", "scope", "non_goals", "decisions", "criteria", "governs", "open_decisions"} {
 			n[k] = empty()
+		}
+	} else if kind == "knowledge" || kind == "decomposition" {
+		n["records"] = empty()
+		if kind == "knowledge" {
+			n["notes"] = empty()
 		}
 	} else {
 		if model.S(r["spec_id"]) == "" {
@@ -108,8 +123,30 @@ func syncExecution(v object) {
 		ex["scopes"] = object{}
 	}
 }
+
+// recordPrefix names knowledge and decomposition records by their type, so a
+// command reads as CMD-001 rather than a positional RECORD-001.
+var recordPrefix = map[string]string{"identity": "IDENT", "goal": "GOAL", "scope": "SCOPE", "exclusion": "EXCL", "fact": "FACT", "command": "CMD", "convention": "CONV", "constraint": "CON", "observation": "OBS", "component": "COMP", "interface": "IFACE", "dependency": "DEP", "question": "Q", "capability": "CAP", "phase": "PHASE", "work_item": "WORK", "decision": "DEC"}
+
+func nextRecordID(idx *symbol.Index, collection string, record map[string]any) string {
+	if collection == "records" {
+		if p := recordPrefix[model.S(record["type"])]; p != "" {
+			return nextPrefixed(idx, p)
+		}
+	}
+	return nextID(idx, collection)
+}
+func nextPrefixed(idx *symbol.Index, p string) string {
+	for i := 1; i <= symbol.MaxSymbols; i++ {
+		id := fmt.Sprintf("%s-%03d", p, i)
+		if _, exists := idx.ByID[id]; !exists {
+			return id
+		}
+	}
+	return ""
+}
 func nextID(idx *symbol.Index, collection string) string {
-	p := map[string]string{"criteria": "AC", "scenarios": "SCN", "scope": "SCOPE", "non_goals": "NON-GOAL", "sections": "SEC", "sources": "SRC", "decisions": "DEC", "constraints": "CONSTRAINT", "open_decisions": "CONFIRM", "tasks": "T", "checkpoints": "CP", "prerequisites": "GATE"}[collection]
+	p := map[string]string{"criteria": "AC", "scenarios": "SCN", "scope": "SCOPE", "non_goals": "NON-GOAL", "sections": "SEC", "sources": "SRC", "decisions": "DEC", "constraints": "CONSTRAINT", "open_decisions": "CONFIRM", "tasks": "T", "checkpoints": "CP", "prerequisites": "GATE", "notes": "NOTE"}[collection]
 	if p == "" {
 		p = "RECORD"
 	}
@@ -124,6 +161,20 @@ func nextID(idx *symbol.Index, collection string) string {
 
 var specCollections = map[string]bool{"criteria": true, "scope": true, "non_goals": true, "sections": true, "sources": true, "decisions": true, "constraints": true, "open_decisions": true}
 var planCollections = map[string]bool{"tasks": true, "checkpoints": true, "prerequisites": true, "sections": true, "sources": true, "criterion_dispositions": true}
+var knowledgeCollections = map[string]bool{"records": true, "notes": true, "sections": true, "sources": true}
+var decompositionCollections = map[string]bool{"records": true, "sections": true, "sources": true}
+
+func mutableCollections(kind string) map[string]bool {
+	switch kind {
+	case "plan":
+		return planCollections
+	case "knowledge":
+		return knowledgeCollections
+	case "decomposition":
+		return decompositionCollections
+	}
+	return specCollections
+}
 
 func RemoveRecord(v any, id string) bool {
 	switch x := v.(type) {
@@ -202,11 +253,7 @@ func Changes(d *model.Document, changes []any) (*model.Document, []string, error
 				}
 				parent = r.Value
 			} else {
-				allowed := specCollections
-				if copy.Kind() == "plan" {
-					allowed = planCollections
-				}
-				if !allowed[collection] {
+				if !mutableCollections(copy.Kind())[collection] {
 					return nil, nil, fault.New("INVALID_COLLECTION", "collection is not mutable through record.add")
 				}
 			}
@@ -218,7 +265,7 @@ func Changes(d *model.Document, changes []any) (*model.Document, []string, error
 							idx.ByID[rid] = symbol.Record{ID: rid, Retired: true}
 						}
 					}
-					record["id"] = nextID(idx, collection)
+					record["id"] = nextRecordID(idx, collection, record)
 				}
 				rid := model.S(record["id"])
 				if _, ok := idx.ByID[rid]; ok || reserved[rid] {
@@ -248,11 +295,7 @@ func Changes(d *model.Document, changes []any) (*model.Document, []string, error
 			}
 		case "record.reorder":
 			collection := model.S(change["collection"])
-			allowed := specCollections
-			if copy.Kind() == "plan" {
-				allowed = planCollections
-			}
-			if !allowed[collection] || collection == "criterion_dispositions" {
+			if !mutableCollections(copy.Kind())[collection] || collection == "criterion_dispositions" {
 				return nil, nil, fault.New("INVALID_COLLECTION", "collection is not an ordered symbol collection")
 			}
 			current := model.A(n[collection])

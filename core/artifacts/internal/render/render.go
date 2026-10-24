@@ -13,6 +13,7 @@ import (
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
@@ -85,7 +86,10 @@ func (w *writer) link(s string) {
 	if a, b, e := symbol.Split(s); e == nil {
 		base := ""
 		if a != w.d.ID() {
-			base = model.S(model.M(w.d.Data["presentation"])["companion_path"])
+			base = IdentityPath(a)
+			if base == "" {
+				base = model.S(model.M(w.d.Data["presentation"])["companion_path"])
+			}
 		}
 		if a == w.d.ID() || base != "" {
 			w.raw(`<a href="` + esc(base+"#"+b) + `">`)
@@ -95,6 +99,20 @@ func (w *writer) link(s string) {
 		}
 	}
 	w.text(s)
+}
+
+// IdentityPath returns the document-relative location of a knowledge or
+// decomposition artifact. Their IDs are derived from their slug, so a link
+// follows the identity the model read rather than one fixed companion file.
+func IdentityPath(id string) string {
+	name := kind.ForID(id)
+	if !kind.Knowledge(name) {
+		return ""
+	}
+	contract, _ := kind.Lookup(name)
+	codec := kind.Codecs()[name]
+	slug := strings.ToLower(strings.TrimPrefix(id, codec.IDPrefix))
+	return "../" + contract.Directory[strings.LastIndex(contract.Directory, "/")+1:] + "/" + slug + codec.Extension
 }
 func (w *writer) value(v any, k string) {
 	switch x := v.(type) {
@@ -212,6 +230,19 @@ func (w *writer) record(m map[string]any, k string) {
 		w.text(ob)
 		w.raw(`</span>`)
 	}
+	skip := map[string]bool{"id": true, "title": true, "topic": true, "obligation": true}
+	if r.Kind == "records" {
+		// Knowledge records state what kind of claim they are and its basis;
+		// neither badge marks the record as approved policy or a passed check.
+		for _, field := range []string{"type", "basis", "status"} {
+			if badge := model.S(m[field]); badge != "" {
+				w.raw(`<span class="badge">`)
+				w.text(strings.ReplaceAll(badge, "_", " "))
+				w.raw(`</span>`)
+				skip[field] = true
+			}
+		}
+	}
 	if r.Kind == "tasks" {
 		state := model.S(model.M(model.M(model.M(w.d.Data["execution"])["tasks"])[id])["state"])
 		w.raw(`<span class="badge">`)
@@ -226,7 +257,7 @@ func (w *writer) record(m map[string]any, k string) {
 		w.raw(`<span class="badge">Retired</span>`)
 	}
 	w.raw(`</div>`)
-	w.fields(m, map[string]bool{"id": true, "title": true, "topic": true, "obligation": true})
+	w.fields(m, skip)
 	if r.Kind == "tasks" {
 		w.raw(`<details><summary>Execution record</summary>`)
 		w.value(model.M(model.M(w.d.Data["execution"])["tasks"])[id], "execution")
@@ -328,7 +359,7 @@ func Render(d *model.Document) ([]byte, error) {
 	w.raw(`" alt="` + esc(model.S(p["brand_name"])) + `"><p class="identity">`)
 	w.text(d.ID())
 	w.raw(`</p><h2>In this document</h2><nav aria-label="Document sections">`)
-	order := []string{"intent", "scope", "non_goals", "approach", "constraints", "decisions", "criteria", "spec_ref", "prerequisites", "tasks", "checkpoints", "open_decisions", "sections", "sources", "baseline", "retired_symbols"}
+	order := []string{"intent", "scope", "non_goals", "approach", "constraints", "decisions", "criteria", "spec_ref", "prerequisites", "tasks", "checkpoints", "open_decisions", "records", "notes", "sections", "sources", "baseline", "retired_symbols"}
 	for _, k := range order {
 		if _, ok := d.Norm()[k]; ok {
 			w.raw(`<a href="#group-` + k + `">`)

@@ -30,13 +30,23 @@ var contracts = []Contract{
 	{Name: "spec", Directory: ".codearbiter/specs", Schema: "spec"},
 	{Name: "plan", Directory: ".codearbiter/plans", Schema: "plan"},
 	{Name: "context", Directory: ".codearbiter", Schema: "context"},
+	{Name: "knowledge", Directory: ".codearbiter/context", Schema: "knowledge"},
+	{Name: "decomposition", Directory: ".codearbiter/decomposition", Schema: "decomposition"},
 }
 
 var codecs = map[string]Codec{
 	"spec":    {Representation: HTML, Extension: ".html", IDPrefix: "SPEC-"},
 	"plan":    {Representation: HTML, Extension: ".html", IDPrefix: "PLAN-"},
 	"context": {Representation: Markdown, Extension: ".md", Optional: true, IDPrefix: "CONTEXT-"},
+	// Repository knowledge and decomposition are optional HTML kinds: a spec or
+	// plan read never scans them, so a damaged knowledge page cannot veto it.
+	"knowledge":     {Representation: HTML, Extension: ".html", Optional: true, IDPrefix: "CTX-"},
+	"decomposition": {Representation: HTML, Extension: ".html", Optional: true, IDPrefix: "DECOMP-"},
 }
+
+// Knowledge reports whether a kind holds descriptive repository knowledge
+// rather than an executable specification or plan.
+func Knowledge(name string) bool { return name == "knowledge" || name == "decomposition" }
 
 // Codecs returns a copy so callers cannot mutate the registered dispatch.
 func Codecs() map[string]Codec {

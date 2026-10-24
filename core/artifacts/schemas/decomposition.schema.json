@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codearbiter:artifact:decomposition:0.3.2",
+  "title": "codeArbiter decomposition reference schema 0.3.2",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "codearbiter.artifact"
+    },
+    "format_version": {
+      "const": "0.1.0"
+    },
+    "kind": {
+      "const": "decomposition"
+    },
+    "schema_version": {
+      "const": "0.3.2"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "governance": {
+      "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/governance"
+    },
+    "presentation": {
+      "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/presentation"
+    },
+    "integrity": {
+      "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/integrity"
+    },
+    "normative": {
+      "type": "object",
+      "properties": {
+        "retired_symbols": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/retired"
+          },
+          "minItems": 0
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/baseline"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/section"
+          },
+          "minItems": 0
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/source"
+          },
+          "minItems": 0
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:decomposition:0.3.2#/$defs/record"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "baseline",
+        "records",
+        "retired_symbols",
+        "sections",
+        "sources",
+        "summary",
+        "title"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "format",
+    "format_version",
+    "kind",
+    "schema_version",
+    "artifact_id",
+    "slug",
+    "revision",
+    "governance",
+    "presentation",
+    "integrity",
+    "normative"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "basis": {
+      "enum": [
+        "user-reported",
+        "source-observed",
+        "inferred",
+        "proposed",
+        "unknown"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "type": {
+          "enum": [
+            "question",
+            "capability",
+            "component",
+            "phase",
+            "work_item",
+            "decision"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        },
+        "basis": {
+          "$ref": "urn:codearbiter:artifact:decomposition:0.3.2#/$defs/basis"
+        },
+        "scope": {
+          "$ref": "urn:codearbiter:artifact:decomposition:0.3.2#/$defs/scope"
+        },
+        "related_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}(?:#[A-Z][A-Z0-9-]{1,79})?$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "open",
+            "answered",
+            "deferred"
+          ]
+        },
+        "answer": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 16384
+        },
+        "promotion": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "board_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "origin": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "board_id",
+            "origin"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title",
+        "statement",
+        "basis",
+        "scope",
+        "related_refs",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

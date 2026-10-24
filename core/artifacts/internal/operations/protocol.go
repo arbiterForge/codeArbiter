@@ -33,7 +33,7 @@ func activeArtifactKinds() []string {
 	out := []string{}
 	for _, contract := range kind.All() {
 		codec, ok := codecs[contract.Name]
-		if ok && !codec.Optional && codec.Representation == kind.HTML && codec.Extension == ".html" {
+		if ok && codec.Representation == kind.HTML && codec.Extension == ".html" {
 			out = append(out, contract.Name)
 		}
 	}
