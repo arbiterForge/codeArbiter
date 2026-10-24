@@ -1,0 +1,378 @@
+{
+  "format": "codearbiter.planning-bundle-validation/1",
+  "date": "2026-10-22",
+  "source": {
+    "repository": "arbiterForge/codeArbiter",
+    "commit": "0badb588dc1179b06e13db1ca5322590962b586a",
+    "renderer_path": "core/artifacts/internal/render"
+  },
+  "generator": {
+    "go_version": "go version go1.27.1 windows/amd64",
+    "binary_sha256": "18d5658e660990953680ec1adbbaaf15c02a0901b79c5416eab19215cc27ca0b",
+    "native_execution": "Windows/amd64, isolated temporary Git repository"
+  },
+  "document_checks": [
+    {
+      "operation": "create",
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "identity",
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "create",
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "identity",
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "validate",
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "validate",
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "identity",
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "validate",
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "validate",
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "read",
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "read",
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "operation": "eligible",
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "reports": {
+    "SPEC-CONTEXT-DECOMPOSITION": {
+      "identity": {
+        "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "kind": "spec",
+        "model_sha256": "8863e1d4533de9dc554b97054c9953bf99c8a992adbe2d708fe2645d3feae99f",
+        "normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+        "path": ".codearbiter/specs/context-decomposition.html",
+        "revision": 1,
+        "symbol_count": 78
+      },
+      "structural": {
+        "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "structural",
+        "kind": "spec",
+        "model_sha256": "8863e1d4533de9dc554b97054c9953bf99c8a992adbe2d708fe2645d3feae99f",
+        "normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+        "path": ".codearbiter/specs/context-decomposition.html",
+        "revision": 1,
+        "symbol_count": 78,
+        "valid": true
+      },
+      "ready": {
+        "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "spec",
+        "model_sha256": "8863e1d4533de9dc554b97054c9953bf99c8a992adbe2d708fe2645d3feae99f",
+        "normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+        "path": ".codearbiter/specs/context-decomposition.html",
+        "revision": 1,
+        "symbol_count": 78,
+        "valid": true
+      }
+    },
+    "PLAN-CONTEXT-DECOMPOSITION": {
+      "identity": {
+        "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "kind": "plan",
+        "model_sha256": "b0c138971f1ebd3219888904bae54680c36b9a270629e4b4857998d5da35dd62",
+        "normative_sha256": "5358294ca378638e1305b26ca3f65bbe2687d7e25df69c05ba23a3283144ef47",
+        "path": ".codearbiter/plans/context-decomposition.html",
+        "revision": 1,
+        "symbol_count": 27
+      },
+      "structural": {
+        "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "structural",
+        "kind": "plan",
+        "model_sha256": "b0c138971f1ebd3219888904bae54680c36b9a270629e4b4857998d5da35dd62",
+        "normative_sha256": "5358294ca378638e1305b26ca3f65bbe2687d7e25df69c05ba23a3283144ef47",
+        "path": ".codearbiter/plans/context-decomposition.html",
+        "revision": 1,
+        "symbol_count": 27,
+        "valid": true
+      },
+      "ready": {
+        "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "plan",
+        "model_sha256": "b0c138971f1ebd3219888904bae54680c36b9a270629e4b4857998d5da35dd62",
+        "normative_sha256": "5358294ca378638e1305b26ca3f65bbe2687d7e25df69c05ba23a3283144ef47",
+        "path": ".codearbiter/plans/context-decomposition.html",
+        "revision": 1,
+        "symbol_count": 27,
+        "valid": true
+      }
+    }
+  },
+  "model_counts": {
+    "acceptance_criteria": 16,
+    "implementation_tasks": 8,
+    "findings": 12,
+    "modification_groups": 10,
+    "source_paths": 83
+  },
+  "proof_boundary": "Only document generation, structural/ready validation, exact-symbol readback and advisory scheduling were run. The conversion feature and its planned tests are not implemented or verified by this bundle. No real model host, release, migration or repository change occurred.",
+  "no_authority_receipts": true,
+  "plan_prerequisites": 0,
+  "eligible": {
+    "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+    "assessment": "advisory",
+    "binding_current": true,
+    "context_complete": false,
+    "detail_read": "Use outline for symbol IDs and read with mode exact for prerequisite details, task definitions and reported checks. Use task-context for state and reason; an indivisible oversized record may return RECORD_TOO_LARGE.",
+    "evidence_assessed": false,
+    "model_sha256": "b0c138971f1ebd3219888904bae54680c36b9a270629e4b4857998d5da35dd62",
+    "next_task": "T-001",
+    "omitted_context": [
+      "prerequisite titles, requirements and observations",
+      "task or prerequisite rows that exceed the response budget"
+    ],
+    "prerequisites": [],
+    "prerequisites_omitted": 0,
+    "prerequisites_total": 0,
+    "tasks": [
+      {
+        "eligible": true,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-001",
+        "waiting_on": [],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-002",
+        "waiting_on": [
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-003",
+        "waiting_on": [
+          "T-002",
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-004",
+        "waiting_on": [
+          "T-002",
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-005",
+        "waiting_on": [
+          "T-003",
+          "T-004",
+          "T-002",
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-006",
+        "waiting_on": [
+          "T-004",
+          "T-005",
+          "T-002",
+          "T-003",
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-007",
+        "waiting_on": [
+          "T-005",
+          "T-006",
+          "T-003",
+          "T-004",
+          "T-002",
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      },
+      {
+        "diagnostic": "DEPENDENCY_PENDING",
+        "eligible": false,
+        "evidence_assessed": false,
+        "reason": null,
+        "state": "PENDING",
+        "task": "T-008",
+        "waiting_on": [
+          "T-003",
+          "T-006",
+          "T-007",
+          "T-002",
+          "T-004",
+          "T-005",
+          "T-001"
+        ],
+        "waiting_prerequisites": []
+      }
+    ],
+    "tasks_omitted": 0,
+    "tasks_total": 8
+  },
+  "files": {
+    ".codearbiter/specs/context-decomposition.html": {
+      "sha256": "ff9562a4884e2f10720427410700b8bdf6d376ea6bbf3b48d90d37a396bf6087",
+      "bytes": 183085,
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "embedded_model_sha256": "8863e1d4533de9dc554b97054c9953bf99c8a992adbe2d708fe2645d3feae99f",
+      "normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c"
+    },
+    ".codearbiter/plans/context-decomposition.html": {
+      "sha256": "d162858648daa485efe526597582b86b373628571420f9052576627ae7d7c3f4",
+      "bytes": 159227,
+      "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+      "embedded_model_sha256": "b0c138971f1ebd3219888904bae54680c36b9a270629e4b4857998d5da35dd62",
+      "normative_sha256": "5358294ca378638e1305b26ca3f65bbe2687d7e25df69c05ba23a3283144ef47"
+    }
+  },
+  "browser_checks": {
+    "engine": "Chromium headless, original native HTML loaded into a local isolated page",
+    "desktop_viewport": [
+      1440,
+      1000
+    ],
+    "mobile_viewport": [
+      390,
+      844
+    ],
+    "horizontal_overflow": false,
+    "duplicate_anchor_ids": false,
+    "broken_local_links": false,
+    "external_resource_requests": 0,
+    "scripts": "Only the inert native JSON model; no executable script",
+    "screenshots_inspected": [
+      "spec overview",
+      "plan task detail"
+    ],
+    "canonical_html_modified": false,
+    "note": "Visual/readability and link checks only; these do not test the proposed conversion implementation."
+  }
+}
