@@ -376,7 +376,7 @@ class TestIntentRoutingAndDelegatedMethods(unittest.TestCase):
                 self.assertIn("Explicit commands are optional entry points", text)
                 self.assertNotIn("Every user intent flows through", text)
                 self.assertNotIn("All intent flows through", text)
-                self.assertIn("not a prerequisite for asking", text)
+                self.assertIn("not prerequisites for understanding a request", text)
 
     def test_methods_do_not_create_another_approval_question(self):
         for rel, text in self.surfaces("arbiter.md"):

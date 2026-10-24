@@ -110,7 +110,6 @@ export const RETIRED_COMMANDS:Readonly<Record<string,string>>=Object.freeze({
   btw:'2026-10-23', commands:'2026-10-23', metrics:'2026-10-23', preview:'2026-10-23',
 });
 export const COMMAND_REMOVAL_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_provenancelib.py':'a37a5c9503fdcb40c8828d5e77960b787fbae443',
   'core/surface/COMMANDS.md':'c0c448861c4dfcaa97ed73fc5be42315a932828c',
   'core/surface/arbiter.md':'a762089e480bfc9fab9706a700a7cc3ab04e8e13',
   'core/surface/commands/add-dep.md':'53e90d4995356d2a9b7e8247d6ed508bf27feb56',
