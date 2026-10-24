@@ -6,7 +6,7 @@
 # that both readers — session-start.py and statusline.py — route through, so the
 # "in-flight tasks" number is computed in exactly one place.
 #
-# Design principles (mirroring _metricslib.py / _previewlib.py):
+# Design principles (mirroring _ledgerlib.py / _provenancelib.py):
 #   - Stdlib only; no third-party imports ever — runs on stock Python.
 #   - Zero side effects at import time: no git calls, no file I/O.
 #   - Pure functions are fully testable with synthetic board text (no real file

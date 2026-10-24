@@ -13,12 +13,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 
 ## Core lanes
 
-### Evaluate
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `{{CMD:preview}}` | _(none)_ | Predict the reviewer fleet and run a state-free secret scan without writing. |
-
 ### Initialize
 
 | Command | Argument | Purpose |
@@ -96,7 +90,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 |---|---|---|
 | `{{CMD:standup}}` | _(none)_ | Review repository hygiene, then confirm each safe cleanup action separately. |
 | `{{CMD:audit}}` | `[range]` | Assemble a dated governance packet from source records. Read-only. |
-| `{{CMD:metrics}}` | `[--window N]` | Report override, small-lane, and low-confidence trends against the prior window. |
 {{IF:claude}}
 | `{{CMD:statusline}}` | `install \| uninstall \| status` | Install, remove, or inspect the Claude Code statusline. |
 | `{{CMD:prune}}` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Inspect or trim transcript bulk; gains apply after resume or compaction. |
@@ -104,12 +97,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 {{IF:pi}}
 | `{{CMD:prune}}` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Select shared prune policy and use Pi native compaction without rewriting the active session. |
 {{END}}
-
-### Help
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `{{CMD:commands}}` | _(none)_ | Show this grouped catalog. |
 
 </details>
 
@@ -135,7 +122,6 @@ canonical form; each legacy route continues to execute its original workflow.
 | Status | Command | Argument | Purpose |
 |---|---|---|---|
 | Internal protocol | `{{CMD:conflict}}` | `"description"` | Stop work when governing rules contradict and surface both sides for the user. |
-| Deprecated | `{{CMD:btw}}` | `"question"` | Ask a lightweight project question without state change. Prefer asking the question directly. |
 
 </details>
 

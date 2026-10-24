@@ -861,7 +861,7 @@ class GenerationContractTest(unittest.TestCase):
         }
         self.assertEqual(
             counts,
-            {"core": 18, "advanced": 11, "alias": 5, "internal": 1, "deprecated": 1},
+            {"core": 17, "advanced": 9, "alias": 5, "internal": 1, "deprecated": 0},
         )
         init_frontmatter = expected["skills/ca-init/SKILL.md"].split("\n---\n", 1)[0]
         self.assertEqual(

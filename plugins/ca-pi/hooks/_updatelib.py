@@ -56,9 +56,9 @@ import time
 import urllib.parse
 import urllib.request
 
-# Reuse the ONE atomic-write helper defined in _hooklib.py (same rationale as
-# _previewlib.py: _hooklib sits beside this file; mount its dir on sys.path the
-# same way the test harness does before importing by reference).
+# Reuse the ONE atomic-write helper defined in _hooklib.py: _hooklib sits
+# beside this file; mount its dir on sys.path the same way the test harness
+# does before importing by reference.
 _HOOKS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)

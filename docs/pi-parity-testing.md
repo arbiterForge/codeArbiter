@@ -39,9 +39,9 @@ verifies against.
 
 The generated public catalog counts are:
 
-- `ca: 37` Claude Code commands
-- `ca-codex: 35` Codex CLI entry skills
-- `ca-pi: 36` Pi entry skills
+- `ca: 33` Claude Code commands
+- `ca-codex: 31` Codex CLI entry skills
+- `ca-pi: 32` Pi entry skills
 
 The source catalogs are [Claude](../plugins/ca/COMMANDS.md),
 [Codex](../plugins/ca-codex/COMMANDS.md), and

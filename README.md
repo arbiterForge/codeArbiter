@@ -10,8 +10,8 @@ and durable project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 3.2.7" src="https://img.shields.io/badge/version-3.2.7-2b7489">
-<img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
+<img alt="version 3.3.0" src="https://img.shields.io/badge/version-3.3.0-2b7489">
+<img alt="core lanes" src="https://img.shields.io/badge/core_lanes-17-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
@@ -313,7 +313,6 @@ compatibility routes remain available in the complete reference.
 <!-- core-lane-chooser:start -->
 | Workflow | Choose | Use it for |
 |---|---|---|
-| Evaluate | `/ca:preview` | Predict reviewers and run a read-only secret scan |
 | Initialize | `/ca:init` | Create or inspect the repository-owned state store |
 | Change | `/ca:feature`, `/ca:sprint`, `/ca:fix`, `/ca:refactor`, `/ca:chore`, `/ca:spike`, `/ca:add-dep` | Build, repair, restructure, explore, or change the supply chain through the owning gate |
 | Review | `/ca:review` | Run the reviewer fleet over a diff or bounded path |

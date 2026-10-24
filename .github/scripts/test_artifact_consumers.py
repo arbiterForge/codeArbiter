@@ -502,7 +502,7 @@ class TestContextConsumerClosure(unittest.TestCase):
                              if row["category"] == "commands"}
         self.assertEqual(set(routes),
                          set(inventory["registrations"]["commands"]) - reviewed_removals)
-        self.assertEqual(reviewed_removals, {"new-skill"})
+        self.assertEqual(reviewed_removals, {"new-skill", "btw", "commands", "metrics", "preview"})
         protected = next(row for row in load_inventory()["consumers"]
                          if row["id"] == "context-writer-protected-state")
         self.assertEqual(protected["treatment"], "partial")

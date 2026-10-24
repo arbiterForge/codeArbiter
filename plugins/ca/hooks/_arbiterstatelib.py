@@ -175,10 +175,8 @@ def arbiter_state(root, count_in_flight=None, read_board=None, frontmatter_enabl
 # bookkeeping (the #437 mode-plane audit trail), not overrides — they must not
 # inflate the statusline's "over:" counter. Mode transitions are about to
 # become routine traffic in overrides.log, so an uncorrected counter would
-# turn from noisy into actively WRONG. Mirrors _metricslib._MODE_TRANSITION_RE's
-# exact matched fragment (kept as an independent literal, not an import: this
-# module has no other reason to depend on _metricslib, and one small regex
-# fragment is cheaper to duplicate than to add a cross-module coupling for).
+# turn from noisy into actively WRONG. The fragment matches exactly those
+# MODE:/DEV: transition rows.
 _MODE_TRANSITION_FRAGMENT = (
     r"\|\s*(?:MODE:\s*\S+\s+(?:enter|exit)|DEV:\s*(?:enter|exit))\s*(?:\||$)"
 )

@@ -642,9 +642,10 @@ describe("generated Pi command aliases", () => {
     expect(catalog.find((entry) => entry.name === "cleanup")).toMatchObject({
       visibility: "alias", workflow: "ship", canonical: "pr", replacement: "pr --cleanup",
     });
-    expect(catalog.find((entry) => entry.name === "btw")).toMatchObject({
-      visibility: "deprecated", workflow: "help", replacement: "ask the question directly",
-    });
+    // btw, commands, metrics and preview were removed on 2026-10-23.
+    for (const removed of ["btw", "commands", "metrics", "preview"]) {
+      expect(catalog.find((entry) => entry.name === removed)).toBeUndefined();
+    }
   });
 
   test("catalog parser rejects the retired array shape and malformed keyed entries", () => {

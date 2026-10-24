@@ -1035,7 +1035,6 @@ def emit_not_initialized(root, host, mode):
               f"Run {host.cmd_ref('create-context')} before any other command.")
     else:
         print(f"NOT INITIALIZED: empty project. Run {host.cmd_ref('decompose')} to begin.")
-    print(f"Type {host.cmd_ref('commands')} for the catalog.")
 
 
 def emit_stage(ctx_text):
@@ -1093,12 +1092,10 @@ def emit_update_notice(update_line):
 
 
 def emit_trailer(host):
-    """AC-32: the continue-or-await trailer + catalog reference. ARBITER-ONLY —
-    the caller omits this emitter entirely for a non-arbiter startup (a mode
-    with no commands has no command catalog to reference)."""
+    """AC-32: the continue-or-await trailer. ARBITER-ONLY — the caller omits
+    this emitter entirely for a non-arbiter startup."""
     print("Present this state. Continue any active authorized work or accompanying "
-          f"user request; otherwise await a {host.command_noun}. "
-          f"Type {host.cmd_ref('commands')} for the catalog.")
+          f"user request; otherwise await a {host.command_noun}.")
 
 
 def emit_daily_briefing(root, summary, date_iso, marker_present, ctx_text=None,

@@ -1,6 +1,6 @@
 ---
 entity: commands/status
-related: [metrics, audit, task]
+related: [audit, task]
 ---
 
 ## What it does
@@ -41,4 +41,4 @@ Overrides since last checkpoint: 2
 ## When to reach for it
 
 A quick glance at where things stand right now. For a full cross-cutting review, use
-`/ca:checkpoint`; for a specific question about the project, use `/ca:btw`.
+`/ca:checkpoint`; for a specific question about the project, ask it directly.

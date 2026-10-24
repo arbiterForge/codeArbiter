@@ -77,7 +77,7 @@ Consume the validated symptom, observed behavior, expected behavior and expectat
 
 - New behavior → `{{CMD:feature}}`.
 - A behavior-preserving restructure → `{{CMD:refactor}}`.
-- "Why does it do this?" → `{{CMD:btw}}`.
+- "Why does it do this?" → ask it directly; no command needed.
 - Persisting fix code already written → `{{CMD:commit}}` (the gates still apply).
 
 ## Hard gate

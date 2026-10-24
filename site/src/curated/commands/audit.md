@@ -1,6 +1,6 @@
 ---
 entity: commands/audit
-related: [status, metrics, checkpoint]
+related: [status, checkpoint]
 ---
 
 ## What it does

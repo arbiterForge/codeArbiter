@@ -732,7 +732,7 @@ export default function registerCaptureProvider(pi: any) {
                             else "exercise the write tool once"
                             if invoke_enforcement_fault
                             else "/ca-doctor" if invoke_doctor
-                            else "/ca-btw  __CA_ALIAS_SENTINEL__  "
+                            else "/ca-status  __CA_ALIAS_SENTINEL__  "
                         )
                     ),
                 }
@@ -1822,17 +1822,17 @@ class PiPackageTests(unittest.TestCase):
         self.assertTrue(captured.startswith("CA_PI_CAPTURE:"), captured)
         import base64
         expanded = base64.b64decode(captured.removeprefix("CA_PI_CAPTURE:"), validate=True).decode("utf-8")
-        skill_path = (PLUGIN / "skills" / "ca-btw" / "SKILL.md").resolve()
+        skill_path = (PLUGIN / "skills" / "ca-status" / "SKILL.md").resolve()
         raw_skill = skill_path.read_text(encoding="utf-8")
         self.assertTrue(raw_skill.startswith("---\n"))
         body = raw_skill.split("\n---\n", 1)[1].strip()
         expected = (
-            f'<skill name="ca-btw" location="{skill_path}">\n'
+            f'<skill name="ca-status" location="{skill_path}">\n'
             f"References are relative to {skill_path.parent}.\n\n"
             f"{body}\n</skill>\n\n __CA_ALIAS_SENTINEL__  "
         )
         self.assertEqual(expanded, expected)
-        self.assertNotIn("/skill:ca-btw", expanded)
+        self.assertNotIn("/skill:ca-status", expanded)
 
         doctor_captures = [record for record in doctor_records if record.get("id") == "capture"]
         self.assertEqual(len(doctor_captures), 1, doctor_records)

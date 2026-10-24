@@ -400,9 +400,9 @@ def _gate_commands() -> tuple[tuple[str, tuple[str, ...]], ...]:
     py, npm = sys.executable, _npm()
     scripts = (
         ("hook-guards", "test_hook_guards.py"), ("hooks-cold-install", "test_hooks_cold_install.py"),
-        ("preview-lib", "test_preview_lib.py"), ("ux-conversion", "test_ux_conversion.py"),
+        ("ux-conversion", "test_ux_conversion.py"),
         ("prune-nudge", "test_prune_nudge.py"), ("migration-backstop", "test_migration_backstop.py"),
-        ("metrics-lib", "test_metrics_lib.py"), ("taskboard-lib", "test_taskboardlib.py"),
+        ("taskboard-lib", "test_taskboardlib.py"),
         ("taskwriter", "test_taskwriter.py"), ("release-lib", "test_release_lib.py"),
         ("board-sync", "test_board_sync.py"), ("provenance-lib", "test_provenancelib.py"),
         ("provenance-wiring", "test_provenance_wiring.py"), ("readinject-lib", "test_readinjectlib.py"),

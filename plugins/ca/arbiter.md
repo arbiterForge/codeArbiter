@@ -53,7 +53,7 @@ previously green suite is not current evidence; a missing owner is a routing gap
 vendoring, no dual root.
 
 **Commands.** The plugin is named `ca`; every command is namespaced behind it — the user invokes
-`/ca:feature`, `/ca:commit`, `/ca:commands`, etc. Bare `/feature` shorthand in this document means
+`/ca:feature`, `/ca:commit`, `/ca:status`, etc. Bare `/feature` shorthand in this document means
 `/ca:feature`. When you tell the user what to type, use the `/ca:` form.
 
 **Loaded fully on invocation, never acted on from memory:**
@@ -131,8 +131,6 @@ alone; the other four members are unchanged.
 batch independent questions. Ask for missing outcomes, facts, or authority, not internal methods.
 
 The orchestrator does not improvise unowned operations: surface a routing gap, never an override.
-
-**`/ca:btw "question"`** remains an explicit Q&A convenience, not a prerequisite for asking.
 
 ---
 

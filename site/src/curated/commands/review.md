@@ -1,6 +1,6 @@
 ---
 entity: commands/review
-related: [skills/dispatching-parallel-agents, pr, preview, checkpoint]
+related: [skills/dispatching-parallel-agents, pr, checkpoint]
 gates:
   - gate: severity block
     when: a CRITICAL or HIGH finding surfaces on your own change
@@ -69,5 +69,4 @@ Verdict: 1 HIGH, 1 LOW — HIGH must be resolved before /ca:pr.
 
 `/ca:pr` already dispatches this automatically when opening a PR, so a manual run is for checking
 before that point; a periodic full-codebase sweep is `/ca:checkpoint`'s job, and a
-pre-implementation threat model is `/ca:threat-model`'s. A read-only look before onboarding at all
-is `/ca:preview`.
+pre-implementation threat model is `/ca:threat-model`'s.

@@ -48,7 +48,6 @@ describe('composed assistive workflow references', () => {
       }
     }
     const pages = [reference('command', 'sprint').guidance,
-      reference('command', 'commands').guidance,
       read('src/content/docs/glossary.md'), read('src/content/docs/concepts/smarts.mdx')];
     for (const text of pages) {
       expect(text).not.toMatch(/every auto-decision|every non-hard-gate decision|spec and plan must be approved|delegate-methods|smarts-apply/);

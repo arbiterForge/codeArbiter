@@ -20,25 +20,19 @@
   ],
   "compatibility": {
     "clockStarts": "confirmed-non-draft-github-release",
-    "removalRequires": "separately-approved-major",
+    "removalRequires": "minor-release-with-changelog-notice",
     "targets": {
       "claude": {
         "publishedWithoutMetadata": "2.16.0",
-        "firstContainingRelease": "2.17.0",
-        "retainThrough": "2.x",
-        "earliestRemoval": "3.0.0"
+        "firstContainingRelease": "2.17.0"
       },
       "codex": {
         "publishedWithoutMetadata": "0.8.0",
-        "firstContainingRelease": "0.9.0",
-        "retainThrough": "0.x",
-        "earliestRemoval": "1.0.0"
+        "firstContainingRelease": "0.9.0"
       },
       "pi": {
         "publishedWithoutMetadata": "0.9.0",
-        "firstContainingRelease": "0.10.0",
-        "retainThrough": "0.x",
-        "earliestRemoval": "1.0.0"
+        "firstContainingRelease": "0.10.0"
       }
     }
   },
@@ -67,11 +61,6 @@
       "canonical": "audit",
       "legacyRoutes": []
     },
-    "btw": {
-      "visibility": "deprecated",
-      "workflow": "help",
-      "replacement": "ask the question directly"
-    },
     "checkpoint": {
       "visibility": "advanced",
       "workflow": "review",
@@ -89,12 +78,6 @@
       "workflow": "ship",
       "canonical": "pr",
       "replacement": "pr --cleanup"
-    },
-    "commands": {
-      "visibility": "advanced",
-      "workflow": "help",
-      "canonical": "commands",
-      "legacyRoutes": []
     },
     "commit": {
       "visibility": "core",
@@ -163,12 +146,6 @@
         "--greenfield"
       ]
     },
-    "metrics": {
-      "visibility": "advanced",
-      "workflow": "operate",
-      "canonical": "metrics",
-      "legacyRoutes": []
-    },
     "override": {
       "visibility": "core",
       "workflow": "operate",
@@ -187,12 +164,6 @@
         "--cleanup",
         "--watch"
       ]
-    },
-    "preview": {
-      "visibility": "core",
-      "workflow": "evaluate",
-      "canonical": "preview",
-      "legacyRoutes": []
     },
     "prune": {
       "visibility": "advanced",

@@ -1,9 +1,9 @@
 # Hosted secret-scan configuration (issue #404).
 #
-# codeArbiter's own secret gates are COOPERATIVE: H-10b blocks a commit whose
-# diff touches a secret line, and /ca:preview sweeps the working diff. Both run
-# locally, inside the contributor's Claude/Codex/Pi session. A bot, a fork, a
-# web edit, or a plain `git push` runs neither. The `secret-scan` job in
+# codeArbiter's own secret gate is COOPERATIVE: H-10b blocks a commit whose
+# diff touches a secret line. It runs locally, inside the contributor's
+# Claude/Codex/Pi session. A bot, a fork, a web edit, or a plain `git push`
+# never runs it. The `secret-scan` job in
 # .github/workflows/ci.yml is the independent hosted backstop, and this file is
 # the only thing standing between it and a false positive.
 #
