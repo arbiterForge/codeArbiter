@@ -18,6 +18,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 from types import SimpleNamespace
 import unittest
 from unittest import mock
@@ -304,6 +305,385 @@ class RepositoryTests(unittest.TestCase):
         self.assertNotEqual(fresh, old)
         self.assertEqual((old / "report.md").read_bytes(), b"keep this exact prior report")
         self.assertEqual(list(old.iterdir()), [old / "report.md"])
+
+    def test_stranded_lock_has_explicit_recovery_without_rewriting_run_records(self):
+        folder = self.start()
+        stamp = "2026-10-24T05:24:37.963439Z"
+        stranded = (json.dumps({"at": stamp}, sort_keys=True, separators=(",", ":")) + "\n").encode()
+        lock = folder / ".write-lock"
+        lock.write_bytes(stranded)
+        source_before = (folder / "source.json").read_bytes()
+        events_before = (folder / "run.jsonl").read_bytes()
+        self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                         {"ok": False, "error": "run-busy-recovery-required"})
+
+        result = subprocess.run(
+            [sys.executable, str(CLI), "--root", str(self.root), "recover-lock", str(folder),
+             "--expected-sha256", hashlib.sha256(stranded).hexdigest(), "--confirm-no-writer"],
+            capture_output=True, text=True, shell=False)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertTrue(json.loads(result.stdout)["ok"])
+        self.assertFalse(lock.exists())
+        self.assertEqual((folder / "source.json").read_bytes(), source_before)
+        self.assertEqual((folder / "run.jsonl").read_bytes(), events_before)
+        recovered = list(folder.glob(".write-lock.recovered-*.json"))
+        self.assertEqual(len(recovered), 1)
+        self.assertEqual(recovered[0].read_bytes(), stranded)
+        guard = folder / ".write-guard"
+        self.assertTrue(guard.is_file())
+        guard_identity = (guard.stat().st_dev, guard.stat().st_ino)
+        self.success(run.append_event(self.root, folder, "lens-launched", lens="appsec"))
+        self.assertEqual((guard.stat().st_dev, guard.stat().st_ino), guard_identity)
+
+    def test_lock_recovery_refuses_a_live_writer_and_unconfirmed_or_changed_lock(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        stamp = "2026-10-24T05:24:37.963439Z"
+        with mock.patch.object(run, "_now", return_value=stamp):
+            with run._lock(self.root, folder):
+                digest = hashlib.sha256((json.dumps({"at": stamp}, sort_keys=True,
+                                                    separators=(",", ":")) + "\n").encode()).hexdigest()
+                self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                                 {"ok": False, "error": "run-lock-active"})
+                self.assertTrue(lock.exists())
+        lock.write_bytes(b'{"at":"interrupted"}\n')
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        self.assertEqual(run.recover_lock(self.root, folder, digest),
+                         {"ok": False, "error": "lock-recovery-confirmation-required"})
+        self.assertEqual(run.recover_lock(self.root, folder, "0" * 64, True),
+                         {"ok": False, "error": "run-lock-changed"})
+        self.assertTrue(lock.exists())
+        self.assertTrue(run.recover_lock(self.root, folder, digest, True)["ok"])
+
+    def test_lock_recovery_refuses_another_process_holding_the_lock(self):
+        folder = self.start()
+        stamp = "2026-10-24T05:24:37.963439Z"
+        ready = Path(self.temp.name) / "writer-ready"
+        script = ("import sys\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  f"run._now = lambda: {stamp!r}\n"
+                  f"with run._lock(Path({str(self.root)!r}), Path({str(folder)!r})):\n"
+                  f"    Path({str(ready)!r}).write_text('ready')\n"
+                  "    sys.stdin.readline()\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            raw = (json.dumps({"at": stamp}, sort_keys=True, separators=(",", ":")) + "\n").encode()
+            digest = hashlib.sha256(raw).hexdigest()
+            self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue((folder / ".write-lock").exists())
+        finally:
+            if writer.poll() is None:
+                writer.stdin.write("\n")
+                writer.stdin.flush()
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_lock_recovery_refuses_legacy_writer_without_guard(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"legacy live lock")
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        ready = Path(self.temp.name) / "legacy-writer-ready"
+        script = ("import os, sys\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  f"fd = os.open(Path({str(lock)!r}), os.O_RDWR | getattr(os, 'O_BINARY', 0))\n"
+                  "run._acquire_file_lock(fd)\n"
+                  f"Path({str(ready)!r}).write_text('ready')\n"
+                  "sys.stdin.readline()\n"
+                  "run._release_file_lock(fd)\n"
+                  "os.close(fd)\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue(lock.exists())
+        finally:
+            if writer.poll() is None:
+                writer.stdin.write("\n")
+                writer.stdin.flush()
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertEqual(lock.read_bytes(), b"legacy live lock")
+
+    def test_lock_recovery_refuses_writer_during_lock_publication(self):
+        folder = self.start()
+        stamp = "2026-10-24T05:24:37.963439Z"
+        ready = Path(self.temp.name) / "publication-paused"
+        release = Path(self.temp.name) / "publication-release"
+        script = ("import sys, time\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  f"run._now = lambda: {stamp!r}\n"
+                  "original_fsync = run.os.fsync\n"
+                  "def pause(fd):\n"
+                  f"    Path({str(ready)!r}).write_text('ready')\n"
+                  f"    while not Path({str(release)!r}).exists(): time.sleep(0.01)\n"
+                  "    original_fsync(fd)\n"
+                  "run.os.fsync = pause\n"
+                  f"with run._lock(Path({str(self.root)!r}), Path({str(folder)!r})):\n"
+                  "    pass\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            raw = (json.dumps({"at": stamp}, sort_keys=True, separators=(",", ":")) + "\n").encode()
+            digest = hashlib.sha256(raw).hexdigest()
+            self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue((folder / ".write-lock").exists())
+        finally:
+            release.write_text("resume", encoding="utf-8")
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_lock_recovery_refuses_writer_before_lock_contents_are_published(self):
+        folder = self.start()
+        ready = Path(self.temp.name) / "lock-created"
+        release = Path(self.temp.name) / "lock-creation-release"
+        script = ("import os, sys, time\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  "original_open = run.os.open\n"
+                  "def pause_open(path, flags, *args, **kwargs):\n"
+                  "    fd = original_open(path, flags, *args, **kwargs)\n"
+                  "    if Path(path).name == '.write-lock':\n"
+                  f"        Path({str(ready)!r}).write_text('ready')\n"
+                  f"        while not Path({str(release)!r}).exists(): time.sleep(0.01)\n"
+                  "    return fd\n"
+                  "run.os.open = pause_open\n"
+                  f"with run._lock(Path({str(self.root)!r}), Path({str(folder)!r})):\n"
+                  "    pass\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            self.assertEqual(run.recover_lock(self.root, folder, hashlib.sha256(b"").hexdigest(), True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue((folder / ".write-lock").exists())
+        finally:
+            release.write_text("resume", encoding="utf-8")
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_recovery_holds_guard_after_archive_until_return(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        events_before = (folder / "run.jsonl").read_bytes()
+        ready = Path(self.temp.name) / "archive-paused"
+        release = Path(self.temp.name) / "archive-release"
+        script = ("import json, sys, time\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  "original_rename = Path.rename\n"
+                  "def pause_rename(self, target):\n"
+                  "    result = original_rename(self, target)\n"
+                  "    if self.name == '.write-lock':\n"
+                  f"        Path({str(ready)!r}).write_text('ready')\n"
+                  f"        while not Path({str(release)!r}).exists(): time.sleep(0.01)\n"
+                  "    return result\n"
+                  "Path.rename = pause_rename\n"
+                  f"print(json.dumps(run.recover_lock(Path({str(self.root)!r}), Path({str(folder)!r}), {digest!r}, True)))\n")
+        recovery = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or recovery.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), recovery.stderr.read() if recovery.poll() is not None else "recovery not ready")
+            self.assertFalse(lock.exists())
+            self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                             {"ok": False, "error": "run-busy-recovery-required"})
+            self.assertEqual((folder / "run.jsonl").read_bytes(), events_before)
+        finally:
+            release.write_text("resume", encoding="utf-8")
+            stdout, stderr = recovery.communicate(timeout=10)
+        self.assertEqual(recovery.returncode, 0, stderr)
+        self.assertTrue(json.loads(stdout)["ok"])
+        self.success(run.append_event(self.root, folder, "lens-launched", lens="appsec"))
+
+    def test_lock_recovery_preserves_a_run_with_malformed_records(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"interrupted lock write")
+        with (folder / "run.jsonl").open("ab") as handle:
+            handle.write(b'{"event":')
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertEqual(lock.read_bytes(), b"interrupted lock write")
+
+    def test_lock_recovery_preserves_runs_with_malformed_auxiliary_records(self):
+        valid_triage = {**triage(), "root_cause_key": "queue-owner",
+                        "related_lenses": ["reliability"], "corroborates": [],
+                        "verification": verification()}
+        invalid_triage = (
+            {**valid_triage, "root_cause_key": []},
+            {**valid_triage, "related_lenses": "reliability"},
+            {**valid_triage, "corroborates": "reliability"},
+            {**valid_triage, "verification": {"schema": "verification/v1", "id": "other",
+                                             "outcome": "confirmed", "evidence": "mismatched",
+                                             "verification_independence": "independent"}},
+            {**valid_triage, "verification": None},
+            {**valid_triage, "verification": verification(verification_independence="limited")},
+            {**valid_triage, "verification": verification(outcome="inconclusive")},
+        )
+        cases = (
+            ("triage.jsonl", b'{"partial":'),
+            ("lead-dispositions.jsonl", b'{"partial":'),
+            ("leads/reliability/lead-001.json", b'{"partial":'),
+            ("triage.jsonl", b'{"schema":"triage/v1","id":"lead-001","decision":"unknown",'
+             b'"final_severity":"high","final_confidence":0.9,"rationale":"invalid"}\n'),
+            ("lead-dispositions.jsonl", b'{"schema":"lead-disposition/v1","id":"missing",'
+             b'"disposition":"routed","rationale":"unknown lead"}\n'),
+            ("leads/reliability/lead-001.json", b'{"schema":"lead/v1","id":"lead-001",'
+             b'"source_lens":"reliability","disposition":"open"}'),
+            *(("triage.jsonl", (json.dumps(record) + "\n").encode()) for record in invalid_triage),
+        )
+        for relative, malformed in cases:
+            with self.subTest(relative=relative, malformed=malformed):
+                folder = self.start()
+                lock = folder / ".write-lock"
+                lock.write_bytes(b"stranded lock")
+                record = folder / relative
+                record.parent.mkdir(parents=True, exist_ok=True)
+                record.write_bytes(malformed)
+                digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+                self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                                 {"ok": False, "error": "run-not-recoverable"})
+                self.assertEqual(lock.read_bytes(), b"stranded lock")
+
+    def test_lock_recovery_accepts_valid_persisted_triage(self):
+        folder = self.start()
+        self.success(run.append_triage(self.root, folder, finding(), triage(), verification()))
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        result = run.recover_lock(self.root, folder, hashlib.sha256(lock.read_bytes()).hexdigest(), True)
+        self.assertTrue(result.get("ok"), result)
+
+    def test_lock_recovery_detects_lock_change_after_initial_digest(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        original = lock.read_bytes()
+        identity = lock.stat()
+        original_release = run._release_file_lock
+        mutated = False
+
+        def mutate_at_unlock(fd):
+            nonlocal mutated
+            original_release(fd)
+            current = os.fstat(fd)
+            if not mutated and (current.st_dev, current.st_ino) == (identity.st_dev, identity.st_ino):
+                os.lseek(fd, 0, os.SEEK_SET)
+                os.write(fd, b"changed lock!")
+                os.fsync(fd)
+                mutated = True
+
+        with mock.patch.object(run, "_release_file_lock", side_effect=mutate_at_unlock):
+            result = run.recover_lock(self.root, folder, hashlib.sha256(original).hexdigest(), True)
+        self.assertTrue(mutated)
+        self.assertEqual(result, {"ok": False, "error": "run-lock-changed"})
+        self.assertTrue(lock.exists())
+        self.assertEqual(lock.read_bytes(), b"changed lock!")
+        self.assertEqual(list(folder.glob(".write-lock.recovered-*.json")), [])
+
+    def test_lock_recovery_refuses_source_drift_and_invalid_binding(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        self.write("src/app.py", b"print('changed after review')\n")
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertTrue(lock.exists())
+        self.write("src/app.py", b"print('reviewed')\n")
+        source = folder / "source.json"
+        binding = json.loads(source.read_text(encoding="utf-8"))
+        binding["fingerprint"]["digest"] = "0" * 64
+        source.write_text(json.dumps(binding), encoding="utf-8")
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertTrue(lock.exists())
+
+    def test_lock_recovery_allows_follow_up_but_refuses_unbound_history(self):
+        folder = self.start()
+        self.success(run.append_event(self.root, folder, "report-written"))
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"follow-up lock")
+        result = run.recover_lock(self.root, folder, hashlib.sha256(lock.read_bytes()).hexdigest(), True)
+        self.assertTrue(result.get("ok"), result)
+        self.assertEqual(result["state"], "follow-up")
+        self.success(run.append_event(self.root, folder, "filing-skipped", detail="No filing."))
+
+        legacy = self.start()
+        (legacy / "source.json").unlink()
+        old_lock = legacy / ".write-lock"
+        old_lock.write_bytes(b"unbound lock")
+        self.assertEqual(run.recover_lock(self.root, legacy, hashlib.sha256(old_lock.read_bytes()).hexdigest(), True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertEqual(old_lock.read_bytes(), b"unbound lock")
+
+    def test_lock_recovery_refuses_a_linked_guard_without_touching_its_target(self):
+        folder = self.start()
+        external = Path(self.temp.name) / "outside-guard.txt"
+        external.write_bytes(b"outside stays intact")
+        guard = folder / ".write-guard"
+        self.assertFalse(guard.exists())
+        try:
+            guard.symlink_to(external)
+        except (OSError, NotImplementedError):
+            self.skipTest("file symlink creation unavailable")
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        self.assertEqual(run.recover_lock(self.root, folder, hashlib.sha256(lock.read_bytes()).hexdigest(), True),
+                         {"ok": False, "error": "linked-path-refused"})
+        self.assertEqual(external.read_bytes(), b"outside stays intact")
+        self.assertEqual(lock.read_bytes(), b"stranded lock")
+
+    def test_lock_recovery_refuses_a_linked_lock_without_touching_its_target(self):
+        folder = self.start()
+        external = Path(self.temp.name) / "outside.txt"
+        external.write_bytes(b"outside stays intact")
+        lock = folder / ".write-lock"
+        try:
+            lock.symlink_to(external)
+        except (OSError, NotImplementedError):
+            self.skipTest("file symlink creation unavailable")
+        digest = hashlib.sha256(external.read_bytes()).hexdigest()
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "linked-path-refused"})
+        self.assertEqual(external.read_bytes(), b"outside stays intact")
 
     def test_report_followup_dispositions_and_terminal_state(self):
         folder = self.start(detail={"waves": [["reliability"], ["appsec"]]})

@@ -8,7 +8,8 @@
 # Explicit evidence_paths name represented file/gitlink inputs, not directories.
 # Ignored or otherwise unrepresented declarations are refused, never omitted.
 # The coordinator owns log writes. Exclusive per-run locks reject concurrent
-# writers; a stranded lock requires explicit operator recovery, never takeover.
+# writers; a stranded lock requires hash-bound, operator-confirmed recovery,
+# never an automatic age-based takeover.
 # Existing records are never rewritten. These are cooperative audit records,
 # not cryptographically authenticated attestations (ADR-0010).
 #
@@ -19,6 +20,7 @@
 #             target_digest=None, detail=None, evidence_paths=None) -> dict
 #   resume_status(root, run_dir, scope=None, target_digest=None, evidence_paths=None) -> dict
 #   read_run(root, run_dir) -> dict
+#   recover_lock(root, run_dir, expected_sha256, confirm_no_writer=False) -> dict
 #   append_event(root, run_dir, event, **fields) -> dict
 #   write_lead(root, run_dir, record) -> dict
 #   dispose_lead(root, run_dir, lead_id, disposition, rationale) -> dict
@@ -30,6 +32,7 @@
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from functools import wraps
+import errno
 import hashlib
 import json
 import math
@@ -417,15 +420,144 @@ def _write(root, path, record, append=False):
 
 @contextmanager
 def _lock(root, folder):
-    path = folder / ".write-lock"
+    with _run_guard(root, folder, "run-busy-recovery-required"):
+        path = _contained(root, (folder.relative_to(root) / ".write-lock").as_posix())
+        data = _json({"at": _now()}) + b"\n"
+        flags = os.O_RDWR | os.O_CREAT | os.O_EXCL
+        flags |= getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+        try:
+            fd = os.open(path, flags, 0o600)
+        except FileExistsError:
+            raise _Invalid("run-busy-recovery-required") from None
+        owner = os.fstat(fd)
+        try:
+            with os.fdopen(fd, "w+b") as handle:
+                handle.write(data)
+                handle.flush()
+                os.fsync(handle.fileno())
+                _acquire_file_lock(handle.fileno())
+                try:
+                    yield
+                finally:
+                    _release_file_lock(handle.fileno())
+        finally:
+            try:
+                current = path.lstat()
+            except FileNotFoundError:
+                pass
+            else:
+                if not _linked(current) and (current.st_dev, current.st_ino) == (owner.st_dev, owner.st_ino):
+                    path.unlink()
+
+
+def _acquire_file_lock(fd):
+    if os.name == "nt":
+        import msvcrt
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+    else:
+        import fcntl
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _release_file_lock(fd):
+    if os.name == "nt":
+        import msvcrt
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+    else:
+        import fcntl
+        fcntl.flock(fd, fcntl.LOCK_UN)
+
+
+@contextmanager
+def _run_guard(root, folder, busy_error):
+    """Hold a persistent per-run inode before publication through cleanup."""
+    path = _contained(root, (folder.relative_to(root) / ".write-guard").as_posix())
+    flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        _write(root, path, {"at": _now()})
-    except FileExistsError:
-        raise _Invalid("run-busy-recovery-required") from None
+        fd = os.open(path, flags, 0o600)
+    except PermissionError:
+        raise _Invalid(busy_error) from None
+    with os.fdopen(fd, "r+b") as handle:
+        info = os.fstat(handle.fileno())
+        _require(stat.S_ISREG(info.st_mode) and not _linked(info), "invalid-run-guard")
+        try:
+            _acquire_file_lock(handle.fileno())
+        except OSError as exc:
+            if exc.errno in {errno.EACCES, errno.EAGAIN}:
+                raise _Invalid(busy_error) from None
+            raise
+        try:
+            current = path.lstat()
+            _require(not _linked(current) and (current.st_dev, current.st_ino) == (info.st_dev, info.st_ino),
+                     "run-guard-changed")
+            yield
+        finally:
+            _release_file_lock(handle.fileno())
+
+
+@_public
+def recover_lock(root, run_dir, expected_sha256, confirm_no_writer=False):
+    """Archive one observed stranded lock after an operator verifies no writer exists.
+
+    The expected digest binds the operation to the exact lock bytes the operator
+    inspected. This is deliberately not an age-based or automatic takeover.
+    """
+    _require(confirm_no_writer is True, "lock-recovery-confirmation-required")
+    _require(isinstance(expected_sha256, str) and _DIGEST.fullmatch(expected_sha256),
+             "invalid-lock-digest")
+    root = _root(root)
+    folder = _run_path(root, run_dir)
+    with _run_guard(root, folder, "run-lock-active"):
+        return _recover_lock_guarded(root, folder, expected_sha256)
+
+
+def _recover_lock_guarded(root, folder, expected_sha256):
+    lock = _contained(root, (folder.relative_to(root) / ".write-lock").as_posix())
+    flags = os.O_RDWR | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        yield
-    finally:
-        path.unlink()
+        fd = os.open(lock, flags)
+    except FileNotFoundError:
+        raise _Invalid("run-lock-absent") from None
+    except PermissionError:
+        raise _Invalid("run-lock-active") from None
+    with os.fdopen(fd, "r+b") as handle:
+        info = os.fstat(handle.fileno())
+        _require(stat.S_ISREG(info.st_mode) and not _linked(info), "invalid-run-lock")
+        try:
+            _acquire_file_lock(handle.fileno())
+        except OSError as exc:
+            if exc.errno in {errno.EACCES, errno.EAGAIN}:
+                raise _Invalid("run-lock-active") from None
+            raise
+        try:
+            handle.seek(0)
+            raw = handle.read(4097)
+            _require(len(raw) <= 4096, "run-lock-over-limit")
+            _require(hashlib.sha256(raw).hexdigest() == expected_sha256, "run-lock-changed")
+            status = _status(root, folder)
+            _require(status.get("ok") and status["state"] in {"audit", "follow-up"},
+                     "run-not-recoverable")
+            try:
+                for record in _records(root, folder / "triage.jsonl"):
+                    _stored_triage(record)
+                _read_leads(root, folder)
+            except (OSError, ValueError, TypeError, KeyError):
+                raise _Invalid("run-not-recoverable") from None
+        finally:
+            _release_file_lock(handle.fileno())
+    current = lock.lstat()
+    _require((current.st_dev, current.st_ino, current.st_size, current.st_mtime_ns)
+             == (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+             and _read_bytes(root, lock) == raw, "run-lock-changed")
+    archive = _contained(root, (folder.relative_to(root) /
+                                (".write-lock.recovered-" + secrets.token_hex(8) + ".json")).as_posix())
+    _require(not archive.exists(), "recovery-archive-exists")
+    lock.rename(archive)
+    return {"ok": True, "state": status["state"],
+            "archived_lock": archive.relative_to(root).as_posix(),
+            "lock_sha256": expected_sha256}
 
 
 def _writable(root, folder, followup=False):
@@ -579,6 +711,36 @@ def dispose_lead(root, run_dir, lead_id, disposition, rationale):
 
 def _confidence(value):
     return type(value) in {int, float} and math.isfinite(value) and 0 <= value <= 1
+
+
+def _stored_triage(record):
+    """Check persisted fields that do not require the original finding."""
+    _require(record.get("schema") == "triage/v1" and _name(record.get("id"))
+             and record.get("decision") in DECISIONS
+             and record.get("final_severity") in SEVERITIES
+             and _confidence(record.get("final_confidence"))
+             and _text(record.get("rationale")) and _text(record.get("root_cause_key")),
+             "invalid-triage-record")
+    if record["final_severity"] in {"critical", "high"}:
+        _require(_text(record.get("counter_argument")), "invalid-triage-record")
+    related = record.get("related_lenses")
+    corroborates = record.get("corroborates")
+    _require(isinstance(related, list) and bool(related)
+             and all(_name(value) for value in related) and related == sorted(set(related))
+             and isinstance(corroborates, list) and all(_name(value) for value in corroborates),
+             "invalid-triage-record")
+    _require("verification" in record, "invalid-triage-record")
+    verification = record["verification"]
+    if verification is not None:
+        _require(isinstance(verification, dict) and verification.get("schema") == "verification/v1"
+                 and verification.get("id") == record["id"]
+                 and verification.get("outcome") in {"confirmed", "narrowed", "refuted", "inconclusive"}
+                 and _text(verification.get("evidence"))
+                 and verification.get("verification_independence") in {"independent", "limited"},
+                 "invalid-triage-record")
+    if record["decision"] in {"keep", "combine"} and record["final_severity"] in {"critical", "high"}:
+        _require(verification is not None and verification["outcome"] in {"confirmed", "narrowed"}
+                 and verification["verification_independence"] == "independent", "invalid-triage-record")
 
 
 def _finding(record):

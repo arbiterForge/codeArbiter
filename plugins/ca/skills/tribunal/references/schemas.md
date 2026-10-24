@@ -15,6 +15,7 @@ On Codex/Pi derive the bundle root from the loaded routine path.
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" start --scope "$SCOPE" --target-digest "$TARGET_DIGEST" --evidence-path contract.txt --detail "$DETAIL_JSON"
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" resume-status "$RUN" --scope "$SCOPE" --target-digest "$TARGET_DIGEST" --evidence-path contract.txt
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" read-run "$RUN"
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" recover-lock "$RUN" --expected-sha256 "$LOCK_SHA256" --confirm-no-writer
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN" --record "$LEAD_JSON"
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN" --id reliability-lead-001 --disposition promoted --rationale "Owned by reliability-001"
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN"
@@ -150,8 +151,16 @@ Never infer current evidence from a manifest or the last timestamp.
 
 `read-run` returns historical events and triage without migration. A missing or
 invalid binding cannot be repaired by editing old records. `manifest.yaml` is a
-convenience snapshot only. Bounded helper reads can refuse oversized logs or a
-stranded write lock; report that condition, never force unlock or truncate.
+convenience snapshot only. If a writer dies with `.write-lock` in place, verify
+that no writer is running and compute SHA-256 over the exact lock bytes. After
+explicit operator confirmation, `recover-lock` accepts that digest and
+`--confirm-no-writer`; it checks the source-bound run and all helper-managed
+record files, refuses an active writer or changed bytes, and archives the
+original lock inside the run without editing source.json or append-only
+records. Writers and recovery use a persistent `.write-guard` file to close the
+lock publication gap; leave that guard in place. Legacy writers did not use
+this guard, so the operator's process check remains essential. Never delete a
+lock manually, recover by elapsed age, or truncate a log.
 
 Allowed audit events are lens-launched, lens-skipped, lens-completed, wave-flushed,
 wave-triaged, report-written. `start` alone creates run-started; its detail records
