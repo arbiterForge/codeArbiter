@@ -19,9 +19,10 @@ Start with `AC-001` and `T-001`; continue via task dependencies.
 Do not hand-edit the generated HTML or invent verified outcomes.
 
 Supporting evidence: [83-path owner and consumer inventory](modification-map.json)
-and [native document-validation record](validation.json). Both documents
-passed structural and readiness validation as **draft planning artifacts**;
-that is not implementation, release, installed-host, or migration proof.
+and [native document-validation record](validation.json). The specification
+and the plan passed structural and readiness validation as **draft planning
+artifacts**; the two JSON files are records, not validated artifacts. That is
+not implementation, release, installed-host, or migration proof.
 Revalidated using the native binary built from this PR base
 (`main@3d806a1575b4c21d787d7cbbc8dcd2b36c186395`, Windows/amd64,
 SHA-256 `94c2db08108ec7aeecbe495210e5f7567e94676c803551a085ad9c0f8711e542`):
