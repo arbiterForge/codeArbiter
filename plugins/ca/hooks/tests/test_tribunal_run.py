@@ -335,6 +335,20 @@ class RepositoryTests(unittest.TestCase):
         self.success(run.append_event(self.root, folder, "lens-launched", lens="appsec"))
         self.assertEqual((guard.stat().st_dev, guard.stat().st_ino), guard_identity)
 
+    def test_lock_normalizes_equivalent_root_and_run_paths(self):
+        folder = self.start()
+        alias_segment = self.root.parent / "alias-segment"
+        alias_segment.mkdir()
+        alternate_root = alias_segment / ".." / self.root.name
+        alternate_folder = alternate_root / ".codearbiter" / "reports" / folder.name
+
+        with run._lock(alternate_root, folder):
+            self.assertTrue((folder / ".write-lock").is_file())
+        self.assertFalse((folder / ".write-lock").exists())
+        with run._lock(self.root, alternate_folder):
+            self.assertTrue((folder / ".write-lock").is_file())
+        self.assertFalse((folder / ".write-lock").exists())
+
     def test_lock_recovery_refuses_a_live_writer_and_unconfirmed_or_changed_lock(self):
         folder = self.start()
         lock = folder / ".write-lock"

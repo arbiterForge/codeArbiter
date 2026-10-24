@@ -94,7 +94,7 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // cost, dispatch and completion routes keep their existing geometry and gates.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/skills/tribunal/SKILL.md':'1d11adf29758ccbd9d7ded876ecbaa65fb598c3a',
-  'core/pysrc/_tribunalrunlib.py':'284f916e8966e4696c466f49cd8b67ca0a27415c',
+  'core/pysrc/_tribunalrunlib.py':'88c5ae98ccf7d4c0ea624a0b30313b023df3808c',
 });
 
 // PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
