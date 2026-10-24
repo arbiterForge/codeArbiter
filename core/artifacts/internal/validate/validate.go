@@ -14,6 +14,7 @@ import (
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
 )
@@ -213,6 +214,9 @@ func Structural(d *model.Document) []fault.Error {
 			}
 		}
 		es = append(es, planStructure(d)...)
+	}
+	if kind.Knowledge(d.Kind()) {
+		es = append(es, knowledgeStructure(d)...)
 	}
 	// Deterministic diagnostics independent of map iteration.
 	sortErrors(es)
@@ -513,7 +517,7 @@ func Ready(d, spec *model.Document) []fault.Error {
 				add(&es, "UNCOVERED_SCOPE", model.S(r["id"]), "", "scope item has no criterion")
 			}
 		}
-	} else {
+	} else if d.Kind() == "plan" {
 		need(n, "tasks", "checkpoints")
 		es = append(es, InputPolicyErrors(n)...)
 		for _, v := range model.A(n["tasks"]) {
