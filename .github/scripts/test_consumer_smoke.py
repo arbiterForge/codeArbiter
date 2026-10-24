@@ -3704,28 +3704,27 @@ def _extract_protected_branch_names(lane_text):
 
 
 _PREREQUISITE_PATH_RE = re.compile(r'\$PROJECT_ROOT/\.codearbiter/tech-stack\.md')
+_HTML_PREREQUISITE_PATH_RE = re.compile(
+    r'\$PROJECT_ROOT/\.codearbiter/context/tech-stack\.html')
 
 
-def _extract_prerequisite_path(lane_text):
-    """The literal, project-relative `tech-stack.md` path template the
-    installed release skill's prerequisite-check prose names in
-    `lane_text` (a `## Back-fill` or `## Pre-flight` section slice) --
-    extracted from the actual rendered text via a direct literal-pattern
-    search, never hardcoded blindly and never via a generic single-
-    backtick-pairing scan: this section contains a fenced ```sh``` block
-    ahead of the checked bullet, and an unnested `` `([^`]+)` `` regex
-    mismatches code-span boundaries across a fence (the fence's own triple
-    backticks desynchronize backtick pairing for everything after them),
-    silently fusing or truncating unrelated inline-code spans. Anchoring on
-    the known literal path shape sidesteps that fence-parity trap
-    entirely, while still failing loudly if a prose edit renames or
-    removes the checked path."""
-    m = _PREREQUISITE_PATH_RE.search(lane_text)
-    if m is None:
+def _extract_prerequisite_path(lane_text, skill_text):
+    """Return the Markdown fixture path from the helper each lane invokes.
+
+    The helper must declare both format paths. Extract them from its own
+    source, rather than treating a historical Markdown path in a lane's
+    explanatory prose as the executable prerequisite check.
+    """
+    if "release_require_commit_path" not in lane_text:
         raise RuntimeError(
-            "no $PROJECT_ROOT/.codearbiter/tech-stack.md path token "
-            "found in this lane's prose -- the T-12 prerequisite check's "
-            "own path is missing or reworded")
+            "release lane does not invoke release_require_commit_path")
+    definition = skill_text[
+        skill_text.index("release_require_commit_path() ("):
+        skill_text.index("\n)\n```", skill_text.index("release_require_commit_path() ("))]
+    m = _PREREQUISITE_PATH_RE.search(definition)
+    html = _HTML_PREREQUISITE_PATH_RE.search(definition)
+    if m is None or html is None:
+        raise RuntimeError("release prerequisite helper must check both context formats")
     return m.group(0)
 
 
@@ -3759,8 +3758,8 @@ class PrerequisiteRefusalTest(unittest.TestCase):
             cls.skill_text.index("## Back-fill"): cls.skill_text.index("## Pre-flight")]
         preflight = cls.skill_text[
             cls.skill_text.index("## Pre-flight"): cls.skill_text.index("## Phase 1")]
-        cls.backfill_path_template = _extract_prerequisite_path(backfill)
-        cls.preflight_path_template = _extract_prerequisite_path(preflight)
+        cls.backfill_path_template = _extract_prerequisite_path(backfill, cls.skill_text)
+        cls.preflight_path_template = _extract_prerequisite_path(preflight, cls.skill_text)
 
         cls.plugin_root = os.path.join(cls.scratch, "plugin-root")
         os.makedirs(os.path.join(cls.plugin_root, "hooks"))
@@ -4033,7 +4032,7 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
             cls.skill_text = fh.read()
         backfill = cls.skill_text[
             cls.skill_text.index("## Back-fill"): cls.skill_text.index("## Pre-flight")]
-        cls.prerequisite_path_template = _extract_prerequisite_path(backfill)
+        cls.prerequisite_path_template = _extract_prerequisite_path(backfill, cls.skill_text)
         cls.protected_branch_names = _extract_protected_branch_names(backfill)
         cls.backfill_invocation = _capture_invocation_after_anchor(
             cls.skill_text, _BACKFILL_DETECT_ANCHOR)
