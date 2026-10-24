@@ -1,0 +1,1653 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Context and decomposition — assistive HTML specification · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-CONTEXT-DECOMPOSITION</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/context-decomposition.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Context and decomposition — assistive HTML specification</h1><p class="deck">Reviewed replacement for the Markdown plan: granular knowledge, bounded reads and human-readable native HTML. No second permission system. Current-source design only; implementation and release verification remain future work.</p><div class="meta"><span>SPEC-CONTEXT-DECOMPOSITION</span><span>Revision 1 · schema 0.3.2</span><span>78 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>Greenfield/brownfield context, planning and task execution under existing user authorization.</div><div class="field"><span class="label">Outcome</span>A model obtains only needed facts and updates them; a human sees the same canonical information in readable HTML; no added permission ceremony.</div><div class="field"><span class="label">Problem</span>Project context and decomposition are mostly Markdown or whole-document context fields; selecting useful facts can force large reads and reuse admission-like machinery.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-USER">SRC-USER</a></li><li><a href="#SRC-INPUT">SRC-INPUT</a></li></ul></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-01 -->
+<article class="record" id="SCOPE-01" data-ca-symbol="SCOPE-01" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-01">SCOPE-01</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Five logical narrative context documents and one decomposition artifact with real cross-record retrieval; all affected native, Python, TypeScript, skill and derivative consumers.</div></article>
+<!-- CA:END:SCOPE-01 -->
+
+<!-- CA:BEGIN:SCOPE-02 -->
+<article class="record" id="SCOPE-02" data-ca-symbol="SCOPE-02" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-02">SCOPE-02</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Selected migration, old-format compatibility, exact retries, origin-based promotion and the practical validation needed to prevent data loss or a permission backslide.</div></article>
+<!-- CA:END:SCOPE-02 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NON-GOAL-01 -->
+<article class="record" id="NON-GOAL-01" data-ca-symbol="NON-GOAL-01" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-01">NON-GOAL-01</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>New authorization/admission service, approvals, context receipts, generic graph/database, semantic scorer, vector retrieval, daemon or mandatory reviewer network.</div></article>
+<!-- CA:END:NON-GOAL-01 -->
+
+<!-- CA:BEGIN:NON-GOAL-02 -->
+<article class="record" id="NON-GOAL-02" data-ca-symbol="NON-GOAL-02" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-02">NON-GOAL-02</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Convert global task/question boards or ADRs, change host security, enable HTML farm/Pi plan controller, or publish a release as part of this review.</div></article>
+<!-- CA:END:NON-GOAL-02 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Choice</span>Extend the native HTML artifact kernel and bounded read path, keep two tiny existing operative config exceptions, and convert actual readers/writers as one coherent PR.</div><div class="field"><span class="label">Tradeoff</span>Do not convert every Markdown file or build a policy cache/graph service. Compatibility import remains explicit; broad dependency inference remains outside scope.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CONSTRAINT-01 -->
+<article class="record" id="CONSTRAINT-01" data-ca-symbol="CONSTRAINT-01" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-01">CONSTRAINT-01</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-001</li><li>AC-004</li><li>AC-005</li><li>AC-006</li><li>AC-008</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-USER">SRC-USER</a></li><li><a href="#SRC-M03">SRC-M03</a></li></ul></div><div class="field"><span class="label">Statement</span>Data errors stay local to the selected operation. Missing optional context, partial relevance, unverified commands or draft knowledge never become global execution-permission gates.</div></article>
+<!-- CA:END:CONSTRAINT-01 -->
+
+<!-- CA:BEGIN:CONSTRAINT-02 -->
+<article class="record" id="CONSTRAINT-02" data-ca-symbol="CONSTRAINT-02" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-02">CONSTRAINT-02</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-002</li><li>AC-008</li><li>AC-012</li><li>AC-013</li><li>AC-014</li><li>AC-015</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-USER">SRC-USER</a></li><li><a href="#SRC-M05">SRC-M05</a></li></ul></div><div class="field"><span class="label">Statement</span>Preserve actual user denials, existing host security, root/path integrity, CAS/journals and independent repository/publication controls; do not reinterpret source text as authority.</div></article>
+<!-- CA:END:CONSTRAINT-02 -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2>
+<!-- CA:BEGIN:DECISION-01 -->
+<article class="record" id="DECISION-01" data-ca-symbol="DECISION-01" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DECISION-01">DECISION-01</a><h3>Operative settings</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Keep configuration-only CONTEXT.md and security-controls.md; move narrative to HTML and do not build a generated policy mirror.</div><div class="field"><span class="label">Rationale</span>Small direct readers already implement these genuine control boundaries; changing narrative does not need another cache authority protocol.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-M05">SRC-M05</a></div></article>
+<!-- CA:END:DECISION-01 -->
+
+<!-- CA:BEGIN:DECISION-02 -->
+<article class="record" id="DECISION-02" data-ca-symbol="DECISION-02" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DECISION-02">DECISION-02</a><h3>Retrieval semantics</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Native bounded information reads with one explicit hop, no normal context admission status or read proof.</div><div class="field"><span class="label">Rationale</span>Facts and omissions support judgment; permission belongs to actual user/host controls.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-M03">SRC-M03</a></div></article>
+<!-- CA:END:DECISION-02 -->
+</section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-001 -->
+<article class="record" id="AC-001" data-ca-symbol="AC-001" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-001">AC-001</a><h3>No context permission overlay</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Read relevant facts and continue independent work without a new question or blocked state.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-001 -->
+<article class="record" id="SCN-AC-001" data-ca-symbol="SCN-AC-001" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-001">SCN-AC-001</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A normal task has an unresolved optional record.</div><div class="field"><span class="label">Then</span>Read relevant facts and continue independent work without a new question or blocked state.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-001 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M06">SRC-M06</a></li></ul></div><div class="field"><span class="label">Statement</span>Ordinary read, draft, update and task-context operations do not issue or require approval codes, reviewer receipts, read tickets, context admission or semantic completeness acknowledgments.</div><div class="field"><span class="label">Trigger</span>A normal task has an unresolved optional record.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-001 -->
+<article class="record" id="VER-AC-001" data-ca-symbol="VER-AC-001" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-001">VER-AC-001</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A helper emits requires_actor_check as mandatory permission.</div><div class="field"><span class="label">Oracle</span>Read relevant facts and continue independent work without a new question or blocked state.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-001 -->
+</div></article>
+<!-- CA:END:AC-001 -->
+
+<!-- CA:BEGIN:AC-002 -->
+<article class="record" id="AC-002" data-ca-symbol="AC-002" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-002">AC-002</a><h3>Preserve real controls without a new policy view</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Store it as proposed knowledge; unchanged configured scope and host decisions still govern.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-002 -->
+<article class="record" id="SCN-AC-002" data-ca-symbol="SCN-AC-002" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-002">SCN-AC-002</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>An imported README proposes a relaxed scope rule.</div><div class="field"><span class="label">Then</span>Store it as proposed knowledge; unchanged configured scope and host decisions still govern.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-002 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M04">SRC-M04</a></li><li><a href="#SRC-M05">SRC-M05</a></li></ul></div><div class="field"><span class="label">Statement</span>Keep operative activation and path-scope configuration under existing owners; inferred/proposed HTML content cannot authorize a command, disable a stop, or expand a security boundary. No generated runtime policy store is introduced.</div><div class="field"><span class="label">Trigger</span>An imported README proposes a relaxed scope rule.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-002 -->
+<article class="record" id="VER-AC-002" data-ca-symbol="VER-AC-002" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-002">VER-AC-002</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Treat the imported text as a new effective policy.</div><div class="field"><span class="label">Oracle</span>Store it as proposed knowledge; unchanged configured scope and host decisions still govern.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-002 -->
+</div></article>
+<!-- CA:END:AC-002 -->
+
+<!-- CA:BEGIN:AC-003 -->
+<article class="record" id="AC-003" data-ca-symbol="AC-003" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-003">AC-003</a><h3>Granular lossless HTML kinds</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Their IDs and references survive; HTML and structured reads show the same content.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>interface</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-003 -->
+<article class="record" id="SCN-AC-003" data-ca-symbol="SCN-AC-003" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-003">SCN-AC-003</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Rename or reorder a capability, command and component.</div><div class="field"><span class="label">Then</span>Their IDs and references survive; HTML and structured reads show the same content.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-003 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M01">SRC-M01</a></li><li><a href="#SRC-M09">SRC-M09</a></li></ul></div><div class="field"><span class="label">Statement</span>Five logical context identities and one decomposition artifact kind use official native model/rendering with stable records and no editable duplicate narrative store.</div><div class="field"><span class="label">Trigger</span>Rename or reorder a capability, command and component.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-003 -->
+<article class="record" id="VER-AC-003" data-ca-symbol="VER-AC-003" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-003">VER-AC-003</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Regenerate IDs from section order or keep two writable mirrors.</div><div class="field"><span class="label">Oracle</span>Their IDs and references survive; HTML and structured reads show the same content.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-003 -->
+</div></article>
+<!-- CA:END:AC-003 -->
+
+<!-- CA:BEGIN:AC-004 -->
+<article class="record" id="AC-004" data-ca-symbol="AC-004" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-004">AC-004</a><h3>Truthful draft knowledge and structural initialization</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Save and resume it, preserve activation/stage, and label the database unresolved.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-004 -->
+<article class="record" id="SCN-AC-004" data-ca-symbol="SCN-AC-004" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-004">SCN-AC-004</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Create a supported greenfield skeleton with an undecided database.</div><div class="field"><span class="label">Then</span>Save and resume it, preserve activation/stage, and label the database unresolved.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-004 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M06">SRC-M06</a></li></ul></div><div class="field"><span class="label">Statement</span>Unknown and proposed fields are saveable without fabricated evidence; initialization cannot require complete interviews, verified commands or a blanket provenance ceremony.</div><div class="field"><span class="label">Trigger</span>Create a supported greenfield skeleton with an undecided database.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-004 -->
+<article class="record" id="VER-AC-004" data-ca-symbol="VER-AC-004" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-004">VER-AC-004</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Demand a source receipt or user code for a valid unknown draft.</div><div class="field"><span class="label">Oracle</span>Save and resume it, preserve activation/stage, and label the database unresolved.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-004 -->
+</div></article>
+<!-- CA:END:AC-004 -->
+
+<!-- CA:BEGIN:AC-005 -->
+<article class="record" id="AC-005" data-ca-symbol="AC-005" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-005">AC-005</a><h3>One-hop relevant retrieval</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Return cited criterion, auth component, command/cwd and relevant known constraints; omit unrelated billing interview.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-005 -->
+<article class="record" id="SCN-AC-005" data-ca-symbol="SCN-AC-005" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-005">SCN-AC-005</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>An auth task touches src/auth/session.ts.</div><div class="field"><span class="label">Then</span>Return cited criterion, auth component, command/cwd and relevant known constraints; omit unrelated billing interview.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-005 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M03">SRC-M03</a></li></ul></div><div class="field"><span class="label">Statement</span>Reuse native index/read-batch/task-context for bounded same-repository relevant records with deterministic selection and explicit omissions, not a second selector service.</div><div class="field"><span class="label">Trigger</span>An auth task touches src/auth/session.ts.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-005 -->
+<article class="record" id="VER-AC-005" data-ca-symbol="VER-AC-005" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-005">VER-AC-005</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Load all six interviews or refuse because billing is incomplete.</div><div class="field"><span class="label">Oracle</span>Return cited criterion, auth component, command/cwd and relevant known constraints; omit unrelated billing interview.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-005 -->
+</div></article>
+<!-- CA:END:AC-005 -->
+
+<!-- CA:BEGIN:AC-006 -->
+<article class="record" id="AC-006" data-ca-symbol="AC-006" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-006">AC-006</a><h3>Selected error isolation and honest overflow</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Read the auth task and report any requested missing data without falsely claiming total completeness.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-006 -->
+<article class="record" id="SCN-AC-006" data-ca-symbol="SCN-AC-006" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-006">SCN-AC-006</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A billing decomposition record is malformed while the auth spec is intact.</div><div class="field"><span class="label">Then</span>Read the auth task and report any requested missing data without falsely claiming total completeness.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-006 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M01">SRC-M01</a></li><li><a href="#SRC-M03">SRC-M03</a></li></ul></div><div class="field"><span class="label">Statement</span>Unrelated malformed artifacts do not veto target reads; selected corruption, missing refs, uncertainty and whole-record overflow remain explicit and never become a permission verdict.</div><div class="field"><span class="label">Trigger</span>A billing decomposition record is malformed while the auth spec is intact.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-006 -->
+<article class="record" id="VER-AC-006" data-ca-symbol="VER-AC-006" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-006">VER-AC-006</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Global catalog scan blocks all work or silently removes a required constraint.</div><div class="field"><span class="label">Oracle</span>Read the auth task and report any requested missing data without falsely claiming total completeness.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-006 -->
+</div></article>
+<!-- CA:END:AC-006 -->
+
+<!-- CA:BEGIN:AC-007 -->
+<article class="record" id="AC-007" data-ca-symbol="AC-007" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-007">AC-007</a><h3>Small hot-path overhead</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Retain small configuration reads and current output; context extraction occurs only when requested.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>performance</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-007 -->
+<article class="record" id="SCN-AC-007" data-ca-symbol="SCN-AC-007" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-007">SCN-AC-007</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Repeat representative ordinary hooks on a large project.</div><div class="field"><span class="label">Then</span>Retain small configuration reads and current output; context extraction occurs only when requested.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-007 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M04">SRC-M04</a></li><li><a href="#SRC-M05">SRC-M05</a></li></ul></div><div class="field"><span class="label">Statement</span>No additional native subprocess, full HTML scan, source snapshot or reviewer is introduced in ordinary activation, pre-tool or statusline paths. Report measured bytes/calls/latency, not an invented fixed saving.</div><div class="field"><span class="label">Trigger</span>Repeat representative ordinary hooks on a large project.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-007 -->
+<article class="record" id="VER-AC-007" data-ca-symbol="VER-AC-007" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-007">VER-AC-007</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Spawn the engine or scan all documents on every tool call.</div><div class="field"><span class="label">Oracle</span>Retain small configuration reads and current output; context extraction occurs only when requested.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-007 -->
+</div></article>
+<!-- CA:END:AC-007 -->
+
+<!-- CA:BEGIN:AC-008 -->
+<article class="record" id="AC-008" data-ca-symbol="AC-008" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-008">AC-008</a><h3>Record-specific changes, concurrent writers and honest freshness</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>No overwritten new work, duplicate operation or silent stale decision; relevant conflicts are explicit.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-008 -->
+<article class="record" id="SCN-AC-008" data-ca-symbol="SCN-AC-008" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-008">SCN-AC-008</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Two writers edit different drafts and one retries a lost response.</div><div class="field"><span class="label">Then</span>No overwritten new work, duplicate operation or silent stale decision; relevant conflicts are explicit.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-008 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M08">SRC-M08</a></li></ul></div><div class="field"><span class="label">Statement</span>CAS, stable operation IDs and record relevance preserve unrelated results and real decisions; no whole-project reviewer rerun is triggered by unrelated edits.</div><div class="field"><span class="label">Trigger</span>Two writers edit different drafts and one retries a lost response.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-008 -->
+<article class="record" id="VER-AC-008" data-ca-symbol="VER-AC-008" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-008">VER-AC-008</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A title edit requires new global approval or resets all task checks.</div><div class="field"><span class="label">Oracle</span>No overwritten new work, duplicate operation or silent stale decision; relevant conflicts are explicit.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-008 -->
+</div></article>
+<!-- CA:END:AC-008 -->
+
+<!-- CA:BEGIN:AC-009 -->
+<article class="record" id="AC-009" data-ca-symbol="AC-009" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-009">AC-009</a><h3>Resumable interview and desired-versus-observed separation</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Resume the relevant unresolved integration choice without re-asking auth approval or claiming planned code exists.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-009 -->
+<article class="record" id="SCN-AC-009" data-ca-symbol="SCN-AC-009" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-009">SCN-AC-009</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The user returns after answering auth choices while integrations remain unknown.</div><div class="field"><span class="label">Then</span>Resume the relevant unresolved integration choice without re-asking auth approval or claiming planned code exists.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-009 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M06">SRC-M06</a></li></ul></div><div class="field"><span class="label">Statement</span>Resume needed answers without a compulsory six-stage gauntlet; link actual user choices once. Desired roadmap and observed code remain distinct.</div><div class="field"><span class="label">Trigger</span>The user returns after answering auth choices while integrations remain unknown.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-009 -->
+<article class="record" id="VER-AC-009" data-ca-symbol="VER-AC-009" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-009">VER-AC-009</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Restart the whole interview or overwrite observed code-map with intended components.</div><div class="field"><span class="label">Oracle</span>Resume the relevant unresolved integration choice without re-asking auth approval or claiming planned code exists.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-009 -->
+</div></article>
+<!-- CA:END:AC-009 -->
+
+<!-- CA:BEGIN:AC-010 -->
+<article class="record" id="AC-010" data-ca-symbol="AC-010" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-010">AC-010</a><h3>Idempotent promotion and ownership</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Retry returns the existing board identity and does not add another task.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-010 -->
+<article class="record" id="SCN-AC-010" data-ca-symbol="SCN-AC-010" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-010">SCN-AC-010</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A promoted item is archived; a crash delayed its back-reference.</div><div class="field"><span class="label">Then</span>Retry returns the existing board identity and does not add another task.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-010 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M07">SRC-M07</a></li></ul></div><div class="field"><span class="label">Statement</span>Reuse board origins and deduplicate across open/done/archive on retry; never maintain independent execution status in decomposition or auto-create external issues.</div><div class="field"><span class="label">Trigger</span>A promoted item is archived; a crash delayed its back-reference.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-010 -->
+<article class="record" id="VER-AC-010" data-ca-symbol="VER-AC-010" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-010">VER-AC-010</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>already_promoted ignores done rows and duplicates finished work.</div><div class="field"><span class="label">Oracle</span>Retry returns the existing board identity and does not add another task.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-010 -->
+</div></article>
+<!-- CA:END:AC-010 -->
+
+<!-- CA:BEGIN:AC-011 -->
+<article class="record" id="AC-011" data-ca-symbol="AC-011" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-011">AC-011</a><h3>Complete consumer conversion and negative controls</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>No active narrative reader still assumes old files; retained config and compatibility readers are explicitly scoped.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-011 -->
+<article class="record" id="SCN-AC-011" data-ca-symbol="SCN-AC-011" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-011">SCN-AC-011</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A converted repository runs an ordinary supported host workflow.</div><div class="field"><span class="label">Then</span>No active narrative reader still assumes old files; retained config and compatibility readers are explicitly scoped.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-011 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M01">SRC-M01</a></li><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M04">SRC-M04</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M06">SRC-M06</a></li><li><a href="#SRC-M07">SRC-M07</a></li><li><a href="#SRC-M08">SRC-M08</a></li><li><a href="#SRC-M09">SRC-M09</a></li></ul></div><div class="field"><span class="label">Statement</span>Every mapped producer/consumer is modified, generated or demonstrated unchanged, including separate Pi TS activation, selector/report/snapshot code, context conflict resolution and current tests.</div><div class="field"><span class="label">Trigger</span>A converted repository runs an ordinary supported host workflow.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-011 -->
+<article class="record" id="VER-AC-011" data-ca-symbol="VER-AC-011" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-011">VER-AC-011</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Only rename the writer output and leave independent readers using Markdown regexes.</div><div class="field"><span class="label">Oracle</span>No active narrative reader still assumes old files; retained config and compatibility readers are explicitly scoped.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-011 -->
+</div></article>
+<!-- CA:END:AC-011 -->
+
+<!-- CA:BEGIN:AC-012 -->
+<article class="record" id="AC-012" data-ca-symbol="AC-012" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-012">AC-012</a><h3>Explicit safe repository migration</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Preserve disabled/stage values and scope semantics; recover interrupted cutover without two active narratives.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-012 -->
+<article class="record" id="SCN-AC-012" data-ca-symbol="SCN-AC-012" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-012">SCN-AC-012</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Migrate a partially initialized repo with custom frontmatter and scope blocks.</div><div class="field"><span class="label">Then</span>Preserve disabled/stage values and scope semantics; recover interrupted cutover without two active narratives.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-012 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M08">SRC-M08</a></li></ul></div><div class="field"><span class="label">Statement</span>Read or package update does not auto-migrate; selected import preserves bytes, settings and unknown content, and publishes one unambiguous canonical representation.</div><div class="field"><span class="label">Trigger</span>Migrate a partially initialized repo with custom frontmatter and scope blocks.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-012 -->
+<article class="record" id="VER-AC-012" data-ca-symbol="VER-AC-012" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-012">VER-AC-012</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Flip activation, discard unknown text, or silently serve an old shadow after cutover.</div><div class="field"><span class="label">Oracle</span>Preserve disabled/stage values and scope semantics; recover interrupted cutover without two active narratives.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-012 -->
+</div></article>
+<!-- CA:END:AC-012 -->
+
+<!-- CA:BEGIN:AC-013 -->
+<article class="record" id="AC-013" data-ca-symbol="AC-013" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-013">AC-013</a><h3>Newer work survives recovery and export</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The newer state remains; export contains later content and old writes fail safely.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-013 -->
+<article class="record" id="SCN-AC-013" data-ca-symbol="SCN-AC-013" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-013">SCN-AC-013</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Edit after migration and retry the original operation.</div><div class="field"><span class="label">Then</span>The newer state remains; export contains later content and old writes fail safely.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-013 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M08">SRC-M08</a></li></ul></div><div class="field"><span class="label">Statement</span>Repeated operations and forward export preserve post-cutover edits. Incompatible old clients do not silently write or read missing controls; no universal downgrade promise.</div><div class="field"><span class="label">Trigger</span>Edit after migration and retry the original operation.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-013 -->
+<article class="record" id="VER-AC-013" data-ca-symbol="VER-AC-013" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-013">VER-AC-013</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Restore a before-image over later committed work.</div><div class="field"><span class="label">Oracle</span>The newer state remains; export contains later content and old writes fail safely.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-013 -->
+</div></article>
+<!-- CA:END:AC-013 -->
+
+<!-- CA:BEGIN:AC-014 -->
+<article class="record" id="AC-014" data-ca-symbol="AC-014" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-014">AC-014</a><h3>Safe offline HTML and accurate deep links</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Text remains inert; the human opens the same intended record that structured read returned.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-014 -->
+<article class="record" id="SCN-AC-014" data-ca-symbol="SCN-AC-014" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-014">SCN-AC-014</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Open a record with malicious markup and follow a context reference.</div><div class="field"><span class="label">Then</span>Text remains inert; the human opens the same intended record that structured read returned.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-014 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M09">SRC-M09</a></li></ul></div><div class="field"><span class="label">Statement</span>Official static renderer and inert model escape source text, preserve anchors and resolve cross-kind links by identity; no network scripts/commands or automatic external source fetches.</div><div class="field"><span class="label">Trigger</span>Open a record with malicious markup and follow a context reference.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-014 -->
+<article class="record" id="VER-AC-014" data-ca-symbol="VER-AC-014" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-014">VER-AC-014</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Execute source markup or route all references to the feature companion file.</div><div class="field"><span class="label">Oracle</span>Text remains inert; the human opens the same intended record that structured read returned.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-014 -->
+</div></article>
+<!-- CA:END:AC-014 -->
+
+<!-- CA:BEGIN:AC-015 -->
+<article class="record" id="AC-015" data-ca-symbol="AC-015" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-015">AC-015</a><h3>Specific source, privacy and authority semantics</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Label the command unrun, do not retain forbidden content, and preserve actual source/user precedence.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-015 -->
+<article class="record" id="SCN-AC-015" data-ca-symbol="SCN-AC-015" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-015">SCN-AC-015</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A command is planned but not run and an import contains a secret-looking field.</div><div class="field"><span class="label">Then</span>Label the command unrun, do not retain forbidden content, and preserve actual source/user precedence.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-015 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M08">SRC-M08</a></li></ul></div><div class="field"><span class="label">Statement</span>Store descriptive basis and selected source provenance without making user-reported, imported, inferred or stale data authenticated policy or test proof. Existing secret/ignore/root boundaries remain.</div><div class="field"><span class="label">Trigger</span>A command is planned but not run and an import contains a secret-looking field.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-015 -->
+<article class="record" id="VER-AC-015" data-ca-symbol="VER-AC-015" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-015">VER-AC-015</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Create an evidence receipt or mark a planned command passed merely to save a field.</div><div class="field"><span class="label">Oracle</span>Label the command unrun, do not retain forbidden content, and preserve actual source/user precedence.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-015 -->
+</div></article>
+<!-- CA:END:AC-015 -->
+
+<!-- CA:BEGIN:AC-016 -->
+<article class="record" id="AC-016" data-ca-symbol="AC-016" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-016">AC-016</a><h3>One coherent integration and release boundary</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to this conversion implementation; not a runtime approval condition.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Report implementation-ready status without declaring npm/marketplace/Academy or deployed bytes qualified.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>operational</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Existing user authorization applies; no conversion feature is yet implemented by this document.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-016 -->
+<article class="record" id="SCN-AC-016" data-ca-symbol="SCN-AC-016" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-016">SCN-AC-016</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The candidate passes the relevant existing suites.</div><div class="field"><span class="label">Then</span>Report implementation-ready status without declaring npm/marketplace/Academy or deployed bytes qualified.</div><div class="field"><span class="label">When</span>Exercise the new ordinary path or requested migration.</div></article>
+<!-- CA:END:SCN-AC-016 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M09">SRC-M09</a></li><li><a href="#SRC-M10">SRC-M10</a></li></ul></div><div class="field"><span class="label">Statement</span>Ship only after all new-format consumers and actual candidate checks align; merge readiness is separate from later authorized publication and distributed-byte readback.</div><div class="field"><span class="label">Trigger</span>The candidate passes the relevant existing suites.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-016 -->
+<article class="record" id="VER-AC-016" data-ca-symbol="VER-AC-016" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-016">VER-AC-016</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Publish intermediate incompatible formats or invent a version/support guarantee.</div><div class="field"><span class="label">Oracle</span>Report implementation-ready status without declaring npm/marketplace/Academy or deployed bytes qualified.</div><div class="field"><span class="label">Planned target</span>Extend the owning existing suites identified in the implementation plan.</div></article>
+<!-- CA:END:VER-AC-016 -->
+</div></article>
+<!-- CA:END:AC-016 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-VERDICT -->
+<article class="record" id="SEC-VERDICT" data-ca-symbol="SEC-VERDICT" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-VERDICT">SEC-VERDICT</a><h3>Review conclusion</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>The original direction is sound, but the first plan is not safe to implement literally. It leaves admission-like selector behavior, whole-document finalization and a new runtime policy view insufficiently constrained. This revised proposal converts knowledge and retrieval, not authorization. It is a DRAFT spec/plan; no feature, migration, host test or release is claimed complete.</p><div class="refs">References: <a href="#SRC-INPUT">SRC-INPUT</a> <a href="#SRC-USER">SRC-USER</a> </div></div><div class="block"><p>This review is tied to current main at 0badb588dc1179b06e13db1ca5322590962b586a and the separately inspected open #1016 at 8c16bb1116c76ca0cbe69851d9f3d323764727fd. The Project registry references older heads; those remain historical. No GitHub source or Project registry was changed to produce this bundle. It supersedes the earlier Markdown plan for implementation guidance.</p><div class="refs">References: <a href="#SRC-PR">SRC-PR</a> </div></div><div class="block"><div class="table-wrap"><table><thead><tr><th scope="col">Disposition</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Keep</td><td>Native HTML; stable record IDs; five logical context documents; a distinct decomposition kind; existing journal, typed edits and bounded reads.</td></tr><tr><td>Simplify</td><td>No generated policy cache or second selection service. Keep two tiny existing operative config files, and use existing storage/read APIs.</td></tr><tr><td>Remove from normal work</td><td>Approval codes, context admission status, verification receipts, mandatory reviewers/scouts, semantic completeness gates and automatic whole-workspace rescans.</td></tr><tr><td>Preserve</td><td>Real user stops; host permissions; safe paths/escaping; unknown facts; stale-write conflicts; actual test failures; independent Git/release controls.</td></tr></tbody></table></div></div></div></article>
+<!-- CA:END:SEC-VERDICT -->
+
+<!-- CA:BEGIN:SEC-REVIEW -->
+<article class="record" id="SEC-REVIEW" data-ca-symbol="SEC-REVIEW" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-REVIEW">SEC-REVIEW</a><h3>What the deep review changed</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><div class="table-wrap"><table><thead><tr><th scope="col">ID / severity</th><th scope="col">Finding</th><th scope="col">Required correction</th></tr></thead><tbody><tr><td>R01 / High</td><td>An existing selector can become a second permission system — _contextselectlib.py: compose_actor_input/check_task_context expose blocked and requires_actor_check and stop mutation for packet gaps.</td><td>New HTML ordinary reads return records, omissions and unresolved facts, never admission/authorized/permission fields. Known real user stops and host rules remain independent. The actual action owner handles an actually required unresolved choice; unrelated tasks continue.</td></tr><tr><td>R02 / High</td><td>A generated runtime policy view adds unnecessary authority and staleness machinery — The proposed runtime view must be both cheap and trustworthy while source can change. The existing scope reader already has a small config contract.</td><td>Do not add it. Keep activation in CONTEXT.md and the three operative path-scope blocks in a configuration-only security-controls.md. Move their narrative to HTML, and render any policy display as a derived read-only view. Two tiny operational exceptions, no duplicate editable policy.</td></tr><tr><td>R03 / High</td><td>Blanket initialization and evidence requirements can re-create an always-ask loop — Current context finalization expects thirteen outputs and valid provenance; current typed entries require evidence_refs even for drafts.</td><td>New initialization checks structural availability and preserves disabled/stage settings; it does not demand completed interviews, every question answered, verified commands, receipts or thirteen semantically complete files. New draft entries accept explicit unknown/proposed provenance without invented evidence.</td></tr><tr><td>R04 / High</td><td>Old catalog scope can let unrelated corruption stop every task — repository/catalog.go scans all registered spec/plan files strictly, while kinds and cross-reads remain partially hard-coded.</td><td>Targeted discovery/read loads only explicitly required kinds/artifacts under bounded limits. An unrelated broken decomposition page cannot prevent a valid feature task read. A targeted unreadable artifact is an honest read error, not a new permission decision.</td></tr><tr><td>R05 / High</td><td>Board promotion can duplicate completed work — _taskboardlib.already_promoted checks OPEN entries only, and the previous plan proposed origin support as though it might not exist.</td><td>Reuse the existing origin syntax and owner lock. Deduplicate across active and archived items; attach the board reference after the board write with retry by origin. Do not add a generic cross-store transaction framework.</td></tr><tr><td>R06 / High</td><td>Simply giving new names to .md paths misses active runtime consumers — Python selectors/snapshots/reports, the Pi TS activation reader, init finalization, version-aware code-map repair and source-bound site captures all need disposition.</td><td>Use the explicit owner map and fresh literal plus semantic call-graph scan; classify each modify/verify/generate/retain. Do not treat canonical Python generation as coverage of independent TypeScript or metadata.</td></tr><tr><td>R07 / High</td><td>Planned architecture must not become observed code or executable policy — Interview choices, brownfield discoveries, test results and configured rules have different owners and evidence.</td><td>Use a small basis vocabulary: user-reported, source-observed, inferred, proposed, unknown. Declared commands are unrun. Decomposition owns desired architecture; code-map owns observed structure; link deviations without rewriting feature criteria or promoting narrative into policy.</td></tr><tr><td>R08 / Medium</td><td>Cross-artifact references need both a resolver and real HTML navigation — Current read and renderer commonly assume the one companion spec/plan; a generalized label is not an implemented codec.</td><td>Add bounded same-repo one-hop resolution and root-relative identity-aware links. No network dereference, arbitrary depth, embeddings, database, or persistent retrieval ticket.</td></tr><tr><td>R09 / Medium</td><td>Unclassified imported prose can disappear or flood every response — Imported context may lack paths, record types or trusted origin. Mandatory full inclusion makes selective retrieval pointless.</td><td>Keep raw source bytes in the migration before-image; represent unresolved material as bounded notes with source offsets. Return pointers/counts and scoped uncertainty. Never call an omitted note nonexistent; expand the relevant note only when useful.</td></tr><tr><td>R10 / Medium</td><td>One fixed percentage saving or complete-context flag can turn into a new runtime gate — The initial 60% and 8 KiB targets are unmeasured and the model could be required to read all pages to satisfy completeness.</td><td>Use 8 KiB as a selectable default within existing ceilings, not a success threshold. Benchmark representative small/large fixtures and report results. No proof-of-read, completeness score, forced extra model call, or blocked implementation because a packet is partial.</td></tr><tr><td>R11 / Medium</td><td>Migration can be accidentally triggered by package updates or ordinary reads — Old clients do not understand new canonical kinds; activation, scopes, Git worktrees and crash boundaries cross ownership seams.</td><td>Only an already-authorized explicit repository migration changes layout. Commit canonical mapping/format choice at the existing journal boundary; retain original bytes. Newer edits require forward recovery. If the installed cohort is incompatible, leave the project in its old readable format.</td></tr><tr><td>R12 / Medium</td><td>The first plan conflated merge completion with later publication evidence — CD-08 requires actual published bytes to declare the implementation task complete, although publication requires separate authorization.</td><td>Separate ready-to-merge from ready-to-release and deployed verification. One normal required CI decision, not a new gate per task. No invented release/version/Academy support claims.</td></tr></tbody></table></div><div class="refs">References: <a href="#SRC-M01">SRC-M01</a> <a href="#SRC-M02">SRC-M02</a> <a href="#SRC-M03">SRC-M03</a> <a href="#SRC-M04">SRC-M04</a> <a href="#SRC-M05">SRC-M05</a> <a href="#SRC-M07">SRC-M07</a> <a href="#SRC-M08">SRC-M08</a> <a href="#SRC-M09">SRC-M09</a> </div></div></div></article>
+<!-- CA:END:SEC-REVIEW -->
+
+<!-- CA:BEGIN:SEC-SYSTEM -->
+<article class="record" id="SEC-SYSTEM" data-ca-symbol="SEC-SYSTEM" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-SYSTEM">SEC-SYSTEM</a><h3>Simple target design</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><pre><code>.codearbiter/
+  CONTEXT.md                 # activation/stage/format/bootstrap only
+  security-controls.md       # existing operative +/- scope blocks only
+  context/
+    project.html             # identity, goal, scope, exclusions
+    tech-stack.html          # facts and declared commands
+    coding-standards.html    # relevant conventions and source references
+    security-controls.html  # narrative observations/constraints, not policy authority
+    code-map.html            # observed components and interfaces
+  decomposition/
+    project.html             # interview, intended architecture, phases, proposed work
+  .provenance/               # existing descriptive source metadata
+  .artifacts/                # existing journal and recovery data</code></pre></div><div class="block"><p>The two Markdown exceptions contain operational settings, not a narrative mirror. CONTEXT.md remains the actual activation/stage owner. security-controls.md retains the existing migration-paths, ci-paths and deploy-paths blocks and their exact precedence. Move explanations into HTML; do not infer new enforceable controls from text. Existing custom/unknown settings are preserved, not truncated to meet a size target. HTML may show current config as a derived view, never as a second editable authority. This replaces the earlier proposed generated runtime view.</p><div class="refs">References: <a href="#SRC-M04">SRC-M04</a> <a href="#SRC-M05">SRC-M05</a> </div></div><div class="block"><p>Use one small common record envelope: stable ID, kind, title, content, optional scope/references and descriptive basis. Specific command/component/work-item shapes extend it only where needed. Empty/unknown references are allowed for proposals and user-reported statements; sources become mandatory only for an actual source-backed claim. No generic graph store or per-field approval lifecycle. Existing HTML model/rendering is authoritative, never a manually synchronized JSON and Markdown copy.</p><div class="refs">References: <a href="#SRC-M01">SRC-M01</a> <a href="#SRC-M02">SRC-M02</a> </div></div><div class="block"><p>Start with the native context and decomposition kinds plus an old-format read/import adapter. New projects use the complete supported format; old projects remain readable until an explicit selected conversion. Do not mix unsupported old clients into converted state and silently omit rules. This is one coherent PR with useful vertical slices, not a series of published partial formats.</p></div></div></article>
+<!-- CA:END:SEC-SYSTEM -->
+
+<!-- CA:BEGIN:SEC-RETRIEVAL -->
+<article class="record" id="SEC-RETRIEVAL" data-ca-symbol="SEC-RETRIEVAL" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-RETRIEVAL">SEC-RETRIEVAL</a><h3>Retrieve what the work needs, not permission</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Known task: use task-context with current task identity and applicable path/component references; add selected criteria, explicitly linked context, effective relevant configuration pointers and directly linked decomposition intent. Unfamiliar topic: a bounded index/outline then one read-batch. Follow only requested same-repository records plus one explicit hop; deeper expansion is requested, not recursively fetched. Prioritize known global exclusions and relevant user instructions; do not reload all questions, provenance chains or renderer markup.</p><div class="refs">References: <a href="#SRC-M03">SRC-M03</a> </div></div><div class="block"><div class="table-wrap"><table><thead><tr><th scope="col">Return</th><th scope="col">Do not return or create</th></tr></thead><tbody><tr><td>Records, selection reason, record identities and source basis</td><td>admission, permission_granted, approved_to_execute or a read receipt</td></tr><tr><td>Selected paths and unresolved/conflicting/omitted reference summaries</td><td>An assertion that unknown scope means no constraints</td></tr><tr><td>Whole records with snapshot-bound continuation when necessary</td><td>Persistent delivery tickets or an obligation to consume every page</td></tr><tr><td>Current facts alongside explicit intended/proposed alternatives</td><td>Automatically overwritten accepted criteria or claimed test success</td></tr><tr><td>Relevant unknown imported-note pointers</td><td>Every imported paragraph on every task or silent loss of unmatched prose</td></tr></tbody></table></div></div><div class="block"><p>Do not feed the new normal route through _contextselectlib admission checks. Return a factual missing/uncertain record result; the caller resolves an actual task-critical uncertainty through ordinary reads or a targeted question. No unrelated work is blocked. No file scan, reviewer, verification run or durable new record is triggered simply by retrieval. Existing genuine host/user security boundaries stay outside this information API.</p><div class="refs">References: <a href="#SRC-M03">SRC-M03</a> </div></div><div class="block"><p>Use existing response bounds with a suggested 8 KiB task-context default and small startup pointer budget, not an arbitrary 60% release law. Measure cold/warm returned bytes, actual tokenizer counts if available, reads/calls and latency against the same old/new fixtures. Do not add a native process to routine hooks or statusline. If a relevant record cannot fit, report the limit and retrieve that record explicitly; never truncate governing text.</p></div></div></article>
+<!-- CA:END:SEC-RETRIEVAL -->
+
+<!-- CA:BEGIN:SEC-LIFECYCLE -->
+<article class="record" id="SEC-LIFECYCLE" data-ca-symbol="SEC-LIFECYCLE" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-LIFECYCLE">SEC-LIFECYCLE</a><h3>Author, resume and refresh without a ceremony</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>A greenfield draft can be saved with unanswered questions and proposed commands. The interview resumes the relevant unresolved choice, not a rigid first-unfinished phase that blocks independent work. Material choices reflect actual user statements; editing an implementation method or title does not ask again. If user confirmation is genuinely missing for a consequential outcome, ask that question once in ordinary language. Never make up user confirmation or a receipt.</p><div class="refs">References: <a href="#SRC-M06">SRC-M06</a> </div></div><div class="block"><p>Ordinary typed edits use current revision/CAS and a unique operation ID. The engine may prepare a diff internally, but the caller does not have to paste a digest or secure a separate preview approval. Retry the identical request after an uncertain response; a conflicting write is a data-integrity error, not a permission problem. Preserve existing journal before-images and scope mutations to touched records.</p><div class="refs">References: <a href="#SRC-M02">SRC-M02</a> <a href="#SRC-M08">SRC-M08</a> </div></div><div class="block"><p>Initialization means a supported structure is available, not that six interviews, all provenance, every proposed command and all human choices are complete. Disabled settings, explicit stops, actual host checks and stage remain unchanged during format conversion. Context freshness is advisory and record-specific. Unrelated source/title edits neither invalidate every packet nor restart reviewers. Do not turn context-check into mandatory six-domain reinspection.</p><div class="refs">References: <a href="#SRC-M02">SRC-M02</a> <a href="#SRC-M03">SRC-M03</a> </div></div><div class="block"><p>Decomposition owns intended architecture/candidate work; code-map owns observed architecture; the board/execution plan owns actual task state; ADRs own accepted architecture decisions. Promotion uses existing origin markers and the board owner. Retry searches both open and archived rows; a crash after board creation but before adding its back-reference cannot duplicate the task. No automatic issue publishing, all-store lock or new task authority is added.</p><div class="refs">References: <a href="#SRC-M07">SRC-M07</a> </div></div></div></article>
+<!-- CA:END:SEC-LIFECYCLE -->
+
+<!-- CA:BEGIN:SEC-CUTOVER -->
+<article class="record" id="SEC-CUTOVER" data-ca-symbol="SEC-CUTOVER" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-CUTOVER">SEC-CUTOVER</a><h3>Migration and damaged-state behavior</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Migration is a selected repository operation under existing authorization, not a background package-update side effect or permission check on ordinary reads. Preview the old-to-new ID/path mapping; preserve original bytes and unknown frontmatter. Commit the new authoritative state, descriptive provenance and format choice using the existing journal/lock primitives. Do not build a new migration service. Config-only scope blocks and activation stay readable through cutover.</p><div class="refs">References: <a href="#SRC-M08">SRC-M08</a> </div></div><div class="block"><p>A missing requested record is a missing record, not an authorization refusal. An unrelated malformed artifact must not poison every catalog read. A damaged control file continues to use its existing host safety semantics; do not silently remove operative rules or invent a global context-denial policy. A current artifact with invalid checksum is an honest failed read/write, not a claim that the context is safe or complete.</p><div class="refs">References: <a href="#SRC-M01">SRC-M01</a> <a href="#SRC-M05">SRC-M05</a> </div></div><div class="block"><p>Unclassified prose is retained as bounded note(s) with old-file/offset identity and unknown basis. Old raw bytes remain recovery evidence. Protect secrets and ignored paths with existing source-selection boundaries; generated HTML has no executable commands, network resources or external fetches. Scope matching normalizes worktree-relative paths and handles Windows case/Unicode, renames and missing files.</p><div class="refs">References: <a href="#SRC-M08">SRC-M08</a> <a href="#SRC-M09">SRC-M09</a> </div></div><div class="block"><p>Prove restart after every relevant transaction boundary and idempotent repeated migration. Old incompatible clients are never promised compatible by a new marker. Prefer leaving existing projects on the old format until their intended cohort is supported. Before later writes, exact rollback can restore originals; after later edits, preserve current work through forward recovery/export, not a stale backup overwrite.</p></div></div></article>
+<!-- CA:END:SEC-CUTOVER -->
+
+<!-- CA:BEGIN:SEC-PROOF -->
+<article class="record" id="SEC-PROOF" data-ca-symbol="SEC-PROOF" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-PROOF">SEC-PROOF</a><h3>Acceptance is a developer check, not another runtime gate</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><div class="table-wrap"><table><thead><tr><th scope="col">Fixture</th><th scope="col">What must hold</th></tr></thead><tbody><tr><td>Ordinary greenfield and brownfield</td><td>Drafts with unknowns persist; no coded approval, required reviewer or proof-of-read is issued. Brownfield facts do not pretend a greenfield roadmap exists.</td></tr><tr><td>A relevant task and independent task</td><td>The first gets its direct criteria/command/component/known constraints. Missing or stale unrelated context does not block the second.</td></tr><tr><td>Scoped refresh and page boundaries</td><td>Unrelated edits preserve unrelated records/results. Large or unclassified material is discoverable without silently dropped constraints or forced full reading.</td></tr><tr><td>Real stops and malicious/invalid input</td><td>Actual user stops and existing host safety still apply; source text cannot install policy or execute code. Malformed selected state fails truthfully.</td></tr><tr><td>Import and interrupted promotion</td><td>Old content/settings and pending work survive; origin deduplication includes archived tasks; retry causes no duplicate records/tasks.</td></tr><tr><td>Installed candidate and model canary</td><td>Run the existing platform/adapter suite and one representative authorized ordinary workflow; distinguish synthetic test fixtures from actual model behavior. No prescribed reviewer count.</td></tr></tbody></table></div></div><div class="block"><p>One targeted check set per touched workstream during development; one existing full relevant exact-candidate matrix before merge readiness. Fix failures without restoring obsolete approval phrases. Publication and exact distributed-byte readback are later, separately authorized release work, not a reason to leave a correct implementation task permanently pending.</p></div></div></article>
+<!-- CA:END:SEC-PROOF -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-INPUT -->
+<article class="record" id="SRC-INPUT" data-ca-symbol="SRC-INPUT" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-INPUT">SRC-INPUT</a><h3>Original user plan</h3></div><div class="field"><span class="label">Locator</span>CODEARBITER-CONTEXT-DECOMPOSITION-HTML-PLAN.md</div><div class="field"><span class="label">Note</span>SHA-256 4c995aa2ce83fc713e158e6f3fa0efcd16b37b07b436ee3ae12d83bdaede8215; replaced by this reviewed draft, not silently treated as implemented.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-INPUT -->
+
+<!-- CA:BEGIN:SRC-USER -->
+<article class="record" id="SRC-USER" data-ca-symbol="SRC-USER" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-USER">SRC-USER</a><h3>Current product instruction</h3></div><div class="field"><span class="label">Locator</span>Conversation, 2026-10-22</div><div class="field"><span class="label">Note</span>Keep assistance simple, no secondary permission system; deliver native codeArbiter-style HTML spec and plan.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-USER -->
+
+<!-- CA:BEGIN:SRC-PR -->
+<article class="record" id="SRC-PR" data-ca-symbol="SRC-PR" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-PR">SRC-PR</a><h3>Existing hook cleanup</h3></div><div class="field"><span class="label">Locator</span>PR #1016 at 8c16bb1116c76ca0cbe69851d9f3d323764727fd</div><div class="field"><span class="label">Note</span>Inspected open; preserve its ordinary input, verifier selection and safe diagnostic behavior. Re-resolve before implementation; not a release prerequisite for reading these documents.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/pull/1016</div></article>
+<!-- CA:END:SRC-PR -->
+
+<!-- CA:BEGIN:SRC-M01 -->
+<article class="record" id="SRC-M01" data-ca-symbol="SRC-M01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M01">SRC-M01</a><h3>Native kinds, schema and identity</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/kind/contracts.go</div><div class="field"><span class="label">Note</span>Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/kind/contracts.go</div></article>
+<!-- CA:END:SRC-M01 -->
+
+<!-- CA:BEGIN:SRC-M02 -->
+<article class="record" id="SRC-M02" data-ca-symbol="SRC-M02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M02">SRC-M02</a><h3>Context writing, provenance and finalization</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextwriterlib.py</div><div class="field"><span class="label">Note</span>The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextwriterlib.py</div></article>
+<!-- CA:END:SRC-M02 -->
+
+<!-- CA:BEGIN:SRC-M03 -->
+<article class="record" id="SRC-M03" data-ca-symbol="SRC-M03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M03">SRC-M03</a><h3>Existing selector and freshness machinery</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextselectlib.py</div><div class="field"><span class="label">Note</span>Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextselectlib.py</div></article>
+<!-- CA:END:SRC-M03 -->
+
+<!-- CA:BEGIN:SRC-M04 -->
+<article class="record" id="SRC-M04" data-ca-symbol="SRC-M04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M04">SRC-M04</a><h3>Activation, initialization and hot-path access</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_activationlib.py</div><div class="field"><span class="label">Note</span>Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_activationlib.py</div></article>
+<!-- CA:END:SRC-M04 -->
+
+<!-- CA:BEGIN:SRC-M05 -->
+<article class="record" id="SRC-M05" data-ca-symbol="SRC-M05" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M05">SRC-M05</a><h3>Actual control configuration and protected-state recognition</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_scopelib.py</div><div class="field"><span class="label">Note</span>Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_scopelib.py</div></article>
+<!-- CA:END:SRC-M05 -->
+
+<!-- CA:BEGIN:SRC-M06 -->
+<article class="record" id="SRC-M06" data-ca-symbol="SRC-M06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M06">SRC-M06</a><h3>Planning, interview and execution callers</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/decompose/SKILL.md</div><div class="field"><span class="label">Note</span>Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/surface/skills/decompose/SKILL.md</div></article>
+<!-- CA:END:SRC-M06 -->
+
+<!-- CA:BEGIN:SRC-M07 -->
+<article class="record" id="SRC-M07" data-ca-symbol="SRC-M07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M07">SRC-M07</a><h3>Board promotion and single-owner references</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_taskboardlib.py</div><div class="field"><span class="label">Note</span>Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_taskboardlib.py</div></article>
+<!-- CA:END:SRC-M07 -->
+
+<!-- CA:BEGIN:SRC-M08 -->
+<article class="record" id="SRC-M08" data-ca-symbol="SRC-M08" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M08">SRC-M08</a><h3>Merge, worktrees, sources and recovery</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextmergelib.py</div><div class="field"><span class="label">Note</span>code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextmergelib.py</div></article>
+<!-- CA:END:SRC-M08 -->
+
+<!-- CA:BEGIN:SRC-M09 -->
+<article class="record" id="SRC-M09" data-ca-symbol="SRC-M09" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M09">SRC-M09</a><h3>Native presentation and generated delivery</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/render.go</div><div class="field"><span class="label">Note</span>Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/render/render.go</div></article>
+<!-- CA:END:SRC-M09 -->
+
+<!-- CA:BEGIN:SRC-M10 -->
+<article class="record" id="SRC-M10" data-ca-symbol="SRC-M10" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M10">SRC-M10</a><h3>Training, site and current claims</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/capture-context-examples.py</div><div class="field"><span class="label">Note</span>Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/site/scripts/capture-context-examples.py</div></article>
+<!-- CA:END:SRC-M10 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>0badb588dc1179b06e13db1ca5322590962b586a</div><div class="field"><span class="label">Observed date</span>2026-10-22</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>core/artifacts/**</li><li>core/pysrc/**</li><li>core/surface/**</li><li>plugins/ca*/**</li><li>tools/**</li><li>site/**</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c<br>Model SHA-256: 8863e1d4533de9dc554b97054c9953bf99c8a992adbe2d708fe2645d3feae99f</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "8863e1d4533de9dc554b97054c9953bf99c8a992adbe2d708fe2645d3feae99f",
+    "normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+    "symbol_count": 78
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [],
+      "choice": "Extend the native HTML artifact kernel and bounded read path, keep two tiny existing operative config exceptions, and convert actual readers/writers as one coherent PR.",
+      "id": "APPROACH-01",
+      "tradeoff": "Do not convert every Markdown file or build a policy cache/graph service. Compatibility import remains explicit; broad dependency inference remains outside scope."
+    },
+    "baseline": {
+      "commit": "0badb588dc1179b06e13db1ca5322590962b586a",
+      "observed_date": "2026-10-22",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "AC-001",
+          "AC-004",
+          "AC-005",
+          "AC-006",
+          "AC-008"
+        ],
+        "id": "CONSTRAINT-01",
+        "source_refs": [
+          "SRC-USER",
+          "SRC-M03"
+        ],
+        "statement": "Data errors stay local to the selected operation. Missing optional context, partial relevance, unverified commands or draft knowledge never become global execution-permission gates."
+      },
+      {
+        "applies_to": [
+          "AC-002",
+          "AC-008",
+          "AC-012",
+          "AC-013",
+          "AC-014",
+          "AC-015"
+        ],
+        "id": "CONSTRAINT-02",
+        "source_refs": [
+          "SRC-USER",
+          "SRC-M05"
+        ],
+        "statement": "Preserve actual user denials, existing host security, root/path integrity, CAS/journals and independent repository/publication controls; do not reinterpret source text as authority."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Read relevant facts and continue independent work without a new question or blocked state."
+        ],
+        "id": "AC-001",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "A normal task has an unresolved optional record.",
+            "id": "SCN-AC-001",
+            "then": "Read relevant facts and continue independent work without a new question or blocked state.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M02",
+          "SRC-M03",
+          "SRC-M06"
+        ],
+        "statement": "Ordinary read, draft, update and task-context operations do not issue or require approval codes, reviewer receipts, read tickets, context admission or semantic completeness acknowledgments.",
+        "title": "No context permission overlay",
+        "trigger": "A normal task has an unresolved optional record.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-001",
+          "method": "automated",
+          "negative_control": "A helper emits requires_actor_check as mandatory permission.",
+          "oracle": "Read relevant facts and continue independent work without a new question or blocked state.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Store it as proposed knowledge; unchanged configured scope and host decisions still govern."
+        ],
+        "id": "AC-002",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "An imported README proposes a relaxed scope rule.",
+            "id": "SCN-AC-002",
+            "then": "Store it as proposed knowledge; unchanged configured scope and host decisions still govern.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M04",
+          "SRC-M05"
+        ],
+        "statement": "Keep operative activation and path-scope configuration under existing owners; inferred/proposed HTML content cannot authorize a command, disable a stop, or expand a security boundary. No generated runtime policy store is introduced.",
+        "title": "Preserve real controls without a new policy view",
+        "trigger": "An imported README proposes a relaxed scope rule.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-002",
+          "method": "automated",
+          "negative_control": "Treat the imported text as a new effective policy.",
+          "oracle": "Store it as proposed knowledge; unchanged configured scope and host decisions still govern.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Their IDs and references survive; HTML and structured reads show the same content."
+        ],
+        "id": "AC-003",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "interface",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Rename or reorder a capability, command and component.",
+            "id": "SCN-AC-003",
+            "then": "Their IDs and references survive; HTML and structured reads show the same content.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M01",
+          "SRC-M09"
+        ],
+        "statement": "Five logical context identities and one decomposition artifact kind use official native model/rendering with stable records and no editable duplicate narrative store.",
+        "title": "Granular lossless HTML kinds",
+        "trigger": "Rename or reorder a capability, command and component.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-003",
+          "method": "automated",
+          "negative_control": "Regenerate IDs from section order or keep two writable mirrors.",
+          "oracle": "Their IDs and references survive; HTML and structured reads show the same content.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Save and resume it, preserve activation/stage, and label the database unresolved."
+        ],
+        "id": "AC-004",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Create a supported greenfield skeleton with an undecided database.",
+            "id": "SCN-AC-004",
+            "then": "Save and resume it, preserve activation/stage, and label the database unresolved.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M02",
+          "SRC-M06"
+        ],
+        "statement": "Unknown and proposed fields are saveable without fabricated evidence; initialization cannot require complete interviews, verified commands or a blanket provenance ceremony.",
+        "title": "Truthful draft knowledge and structural initialization",
+        "trigger": "Create a supported greenfield skeleton with an undecided database.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-004",
+          "method": "automated",
+          "negative_control": "Demand a source receipt or user code for a valid unknown draft.",
+          "oracle": "Save and resume it, preserve activation/stage, and label the database unresolved.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Return cited criterion, auth component, command/cwd and relevant known constraints; omit unrelated billing interview."
+        ],
+        "id": "AC-005",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "An auth task touches src/auth/session.ts.",
+            "id": "SCN-AC-005",
+            "then": "Return cited criterion, auth component, command/cwd and relevant known constraints; omit unrelated billing interview.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M03"
+        ],
+        "statement": "Reuse native index/read-batch/task-context for bounded same-repository relevant records with deterministic selection and explicit omissions, not a second selector service.",
+        "title": "One-hop relevant retrieval",
+        "trigger": "An auth task touches src/auth/session.ts.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-005",
+          "method": "automated",
+          "negative_control": "Load all six interviews or refuse because billing is incomplete.",
+          "oracle": "Return cited criterion, auth component, command/cwd and relevant known constraints; omit unrelated billing interview.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Read the auth task and report any requested missing data without falsely claiming total completeness."
+        ],
+        "id": "AC-006",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "A billing decomposition record is malformed while the auth spec is intact.",
+            "id": "SCN-AC-006",
+            "then": "Read the auth task and report any requested missing data without falsely claiming total completeness.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M01",
+          "SRC-M03"
+        ],
+        "statement": "Unrelated malformed artifacts do not veto target reads; selected corruption, missing refs, uncertainty and whole-record overflow remain explicit and never become a permission verdict.",
+        "title": "Selected error isolation and honest overflow",
+        "trigger": "A billing decomposition record is malformed while the auth spec is intact.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-006",
+          "method": "automated",
+          "negative_control": "Global catalog scan blocks all work or silently removes a required constraint.",
+          "oracle": "Read the auth task and report any requested missing data without falsely claiming total completeness.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Retain small configuration reads and current output; context extraction occurs only when requested."
+        ],
+        "id": "AC-007",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "performance",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Repeat representative ordinary hooks on a large project.",
+            "id": "SCN-AC-007",
+            "then": "Retain small configuration reads and current output; context extraction occurs only when requested.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M04",
+          "SRC-M05"
+        ],
+        "statement": "No additional native subprocess, full HTML scan, source snapshot or reviewer is introduced in ordinary activation, pre-tool or statusline paths. Report measured bytes/calls/latency, not an invented fixed saving.",
+        "title": "Small hot-path overhead",
+        "trigger": "Repeat representative ordinary hooks on a large project.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-007",
+          "method": "automated",
+          "negative_control": "Spawn the engine or scan all documents on every tool call.",
+          "oracle": "Retain small configuration reads and current output; context extraction occurs only when requested.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "No overwritten new work, duplicate operation or silent stale decision; relevant conflicts are explicit."
+        ],
+        "id": "AC-008",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Two writers edit different drafts and one retries a lost response.",
+            "id": "SCN-AC-008",
+            "then": "No overwritten new work, duplicate operation or silent stale decision; relevant conflicts are explicit.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M02",
+          "SRC-M03",
+          "SRC-M08"
+        ],
+        "statement": "CAS, stable operation IDs and record relevance preserve unrelated results and real decisions; no whole-project reviewer rerun is triggered by unrelated edits.",
+        "title": "Record-specific changes, concurrent writers and honest freshness",
+        "trigger": "Two writers edit different drafts and one retries a lost response.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-008",
+          "method": "automated",
+          "negative_control": "A title edit requires new global approval or resets all task checks.",
+          "oracle": "No overwritten new work, duplicate operation or silent stale decision; relevant conflicts are explicit.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Resume the relevant unresolved integration choice without re-asking auth approval or claiming planned code exists."
+        ],
+        "id": "AC-009",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "The user returns after answering auth choices while integrations remain unknown.",
+            "id": "SCN-AC-009",
+            "then": "Resume the relevant unresolved integration choice without re-asking auth approval or claiming planned code exists.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M06"
+        ],
+        "statement": "Resume needed answers without a compulsory six-stage gauntlet; link actual user choices once. Desired roadmap and observed code remain distinct.",
+        "title": "Resumable interview and desired-versus-observed separation",
+        "trigger": "The user returns after answering auth choices while integrations remain unknown.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-009",
+          "method": "automated",
+          "negative_control": "Restart the whole interview or overwrite observed code-map with intended components.",
+          "oracle": "Resume the relevant unresolved integration choice without re-asking auth approval or claiming planned code exists.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Retry returns the existing board identity and does not add another task."
+        ],
+        "id": "AC-010",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "A promoted item is archived; a crash delayed its back-reference.",
+            "id": "SCN-AC-010",
+            "then": "Retry returns the existing board identity and does not add another task.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M07"
+        ],
+        "statement": "Reuse board origins and deduplicate across open/done/archive on retry; never maintain independent execution status in decomposition or auto-create external issues.",
+        "title": "Idempotent promotion and ownership",
+        "trigger": "A promoted item is archived; a crash delayed its back-reference.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-010",
+          "method": "automated",
+          "negative_control": "already_promoted ignores done rows and duplicates finished work.",
+          "oracle": "Retry returns the existing board identity and does not add another task.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "No active narrative reader still assumes old files; retained config and compatibility readers are explicitly scoped."
+        ],
+        "id": "AC-011",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "A converted repository runs an ordinary supported host workflow.",
+            "id": "SCN-AC-011",
+            "then": "No active narrative reader still assumes old files; retained config and compatibility readers are explicitly scoped.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M01",
+          "SRC-M02",
+          "SRC-M03",
+          "SRC-M04",
+          "SRC-M05",
+          "SRC-M06",
+          "SRC-M07",
+          "SRC-M08",
+          "SRC-M09"
+        ],
+        "statement": "Every mapped producer/consumer is modified, generated or demonstrated unchanged, including separate Pi TS activation, selector/report/snapshot code, context conflict resolution and current tests.",
+        "title": "Complete consumer conversion and negative controls",
+        "trigger": "A converted repository runs an ordinary supported host workflow.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-011",
+          "method": "automated",
+          "negative_control": "Only rename the writer output and leave independent readers using Markdown regexes.",
+          "oracle": "No active narrative reader still assumes old files; retained config and compatibility readers are explicitly scoped.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Preserve disabled/stage values and scope semantics; recover interrupted cutover without two active narratives."
+        ],
+        "id": "AC-012",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Migrate a partially initialized repo with custom frontmatter and scope blocks.",
+            "id": "SCN-AC-012",
+            "then": "Preserve disabled/stage values and scope semantics; recover interrupted cutover without two active narratives.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M02",
+          "SRC-M05",
+          "SRC-M08"
+        ],
+        "statement": "Read or package update does not auto-migrate; selected import preserves bytes, settings and unknown content, and publishes one unambiguous canonical representation.",
+        "title": "Explicit safe repository migration",
+        "trigger": "Migrate a partially initialized repo with custom frontmatter and scope blocks.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-012",
+          "method": "automated",
+          "negative_control": "Flip activation, discard unknown text, or silently serve an old shadow after cutover.",
+          "oracle": "Preserve disabled/stage values and scope semantics; recover interrupted cutover without two active narratives.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "The newer state remains; export contains later content and old writes fail safely."
+        ],
+        "id": "AC-013",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Edit after migration and retry the original operation.",
+            "id": "SCN-AC-013",
+            "then": "The newer state remains; export contains later content and old writes fail safely.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M08"
+        ],
+        "statement": "Repeated operations and forward export preserve post-cutover edits. Incompatible old clients do not silently write or read missing controls; no universal downgrade promise.",
+        "title": "Newer work survives recovery and export",
+        "trigger": "Edit after migration and retry the original operation.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-013",
+          "method": "automated",
+          "negative_control": "Restore a before-image over later committed work.",
+          "oracle": "The newer state remains; export contains later content and old writes fail safely.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Text remains inert; the human opens the same intended record that structured read returned."
+        ],
+        "id": "AC-014",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "Open a record with malicious markup and follow a context reference.",
+            "id": "SCN-AC-014",
+            "then": "Text remains inert; the human opens the same intended record that structured read returned.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M09"
+        ],
+        "statement": "Official static renderer and inert model escape source text, preserve anchors and resolve cross-kind links by identity; no network scripts/commands or automatic external source fetches.",
+        "title": "Safe offline HTML and accurate deep links",
+        "trigger": "Open a record with malicious markup and follow a context reference.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-014",
+          "method": "automated",
+          "negative_control": "Execute source markup or route all references to the feature companion file.",
+          "oracle": "Text remains inert; the human opens the same intended record that structured read returned.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Label the command unrun, do not retain forbidden content, and preserve actual source/user precedence."
+        ],
+        "id": "AC-015",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "A command is planned but not run and an import contains a secret-looking field.",
+            "id": "SCN-AC-015",
+            "then": "Label the command unrun, do not retain forbidden content, and preserve actual source/user precedence.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M02",
+          "SRC-M03",
+          "SRC-M05",
+          "SRC-M08"
+        ],
+        "statement": "Store descriptive basis and selected source provenance without making user-reported, imported, inferred or stale data authenticated policy or test proof. Existing secret/ignore/root boundaries remain.",
+        "title": "Specific source, privacy and authority semantics",
+        "trigger": "A command is planned but not run and an import contains a secret-looking field.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-015",
+          "method": "automated",
+          "negative_control": "Create an evidence receipt or mark a planned command passed merely to save a field.",
+          "oracle": "Label the command unrun, do not retain forbidden content, and preserve actual source/user precedence.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to this conversion implementation; not a runtime approval condition."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Report implementation-ready status without declaring npm/marketplace/Academy or deployed bytes qualified."
+        ],
+        "id": "AC-016",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02"
+        ],
+        "kind": "operational",
+        "obligation": "must",
+        "preconditions": [
+          "Existing user authorization applies; no conversion feature is yet implemented by this document."
+        ],
+        "scenarios": [
+          {
+            "given": "The candidate passes the relevant existing suites.",
+            "id": "SCN-AC-016",
+            "then": "Report implementation-ready status without declaring npm/marketplace/Academy or deployed bytes qualified.",
+            "when": "Exercise the new ordinary path or requested migration."
+          }
+        ],
+        "source_refs": [
+          "SRC-M09",
+          "SRC-M10"
+        ],
+        "statement": "Ship only after all new-format consumers and actual candidate checks align; merge readiness is separate from later authorized publication and distributed-byte readback.",
+        "title": "One coherent integration and release boundary",
+        "trigger": "The candidate passes the relevant existing suites.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-016",
+          "method": "automated",
+          "negative_control": "Publish intermediate incompatible formats or invent a version/support guarantee.",
+          "oracle": "Report implementation-ready status without declaring npm/marketplace/Academy or deployed bytes qualified.",
+          "planned_target": "Extend the owning existing suites identified in the implementation plan."
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "authority": "proposed",
+        "choice": "Keep configuration-only CONTEXT.md and security-controls.md; move narrative to HTML and do not build a generated policy mirror.",
+        "id": "DECISION-01",
+        "rationale": "Small direct readers already implement these genuine control boundaries; changing narrative does not need another cache authority protocol.",
+        "source_ref": "SRC-M05",
+        "topic": "Operative settings"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Native bounded information reads with one explicit hop, no normal context admission status or read proof.",
+        "id": "DECISION-02",
+        "rationale": "Facts and omissions support judgment; permission belongs to actual user/host controls.",
+        "source_ref": "SRC-M03",
+        "topic": "Retrieval semantics"
+      }
+    ],
+    "governs": [
+      "core/artifacts/**",
+      "core/pysrc/**",
+      "core/surface/**",
+      "plugins/ca*/**",
+      "tools/**",
+      "site/**"
+    ],
+    "intent": {
+      "caller": "Greenfield/brownfield context, planning and task execution under existing user authorization.",
+      "id": "INTENT-01",
+      "outcome": "A model obtains only needed facts and updates them; a human sees the same canonical information in readable HTML; no added permission ceremony.",
+      "problem": "Project context and decomposition are mostly Markdown or whole-document context fields; selecting useful facts can force large reads and reuse admission-like machinery.",
+      "source_refs": [
+        "SRC-USER",
+        "SRC-INPUT"
+      ]
+    },
+    "non_goals": [
+      {
+        "id": "NON-GOAL-01",
+        "statement": "New authorization/admission service, approvals, context receipts, generic graph/database, semantic scorer, vector retrieval, daemon or mandatory reviewer network."
+      },
+      {
+        "id": "NON-GOAL-02",
+        "statement": "Convert global task/question boards or ADRs, change host security, enable HTML farm/Pi plan controller, or publish a release as part of this review."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "Five logical narrative context documents and one decomposition artifact with real cross-record retrieval; all affected native, Python, TypeScript, skill and derivative consumers."
+      },
+      {
+        "id": "SCOPE-02",
+        "statement": "Selected migration, old-format compatibility, exact retries, origin-based promotion and the practical validation needed to prevent data loss or a permission backslide."
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-INPUT",
+              "SRC-USER"
+            ],
+            "text": "The original direction is sound, but the first plan is not safe to implement literally. It leaves admission-like selector behavior, whole-document finalization and a new runtime policy view insufficiently constrained. This revised proposal converts knowledge and retrieval, not authorization. It is a DRAFT spec/plan; no feature, migration, host test or release is claimed complete.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-PR"
+            ],
+            "text": "This review is tied to current main at 0badb588dc1179b06e13db1ca5322590962b586a and the separately inspected open #1016 at 8c16bb1116c76ca0cbe69851d9f3d323764727fd. The Project registry references older heads; those remain historical. No GitHub source or Project registry was changed to produce this bundle. It supersedes the earlier Markdown plan for implementation guidance.",
+            "type": "paragraph"
+          },
+          {
+            "columns": [
+              "Disposition",
+              "Meaning"
+            ],
+            "refs": [],
+            "rows": [
+              [
+                "Keep",
+                "Native HTML; stable record IDs; five logical context documents; a distinct decomposition kind; existing journal, typed edits and bounded reads."
+              ],
+              [
+                "Simplify",
+                "No generated policy cache or second selection service. Keep two tiny existing operative config files, and use existing storage/read APIs."
+              ],
+              [
+                "Remove from normal work",
+                "Approval codes, context admission status, verification receipts, mandatory reviewers/scouts, semantic completeness gates and automatic whole-workspace rescans."
+              ],
+              [
+                "Preserve",
+                "Real user stops; host permissions; safe paths/escaping; unknown facts; stale-write conflicts; actual test failures; independent Git/release controls."
+              ]
+            ],
+            "type": "table"
+          }
+        ],
+        "id": "SEC-VERDICT",
+        "title": "Review conclusion"
+      },
+      {
+        "blocks": [
+          {
+            "columns": [
+              "ID / severity",
+              "Finding",
+              "Required correction"
+            ],
+            "refs": [
+              "SRC-M01",
+              "SRC-M02",
+              "SRC-M03",
+              "SRC-M04",
+              "SRC-M05",
+              "SRC-M07",
+              "SRC-M08",
+              "SRC-M09"
+            ],
+            "rows": [
+              [
+                "R01 / High",
+                "An existing selector can become a second permission system — _contextselectlib.py: compose_actor_input/check_task_context expose blocked and requires_actor_check and stop mutation for packet gaps.",
+                "New HTML ordinary reads return records, omissions and unresolved facts, never admission/authorized/permission fields. Known real user stops and host rules remain independent. The actual action owner handles an actually required unresolved choice; unrelated tasks continue."
+              ],
+              [
+                "R02 / High",
+                "A generated runtime policy view adds unnecessary authority and staleness machinery — The proposed runtime view must be both cheap and trustworthy while source can change. The existing scope reader already has a small config contract.",
+                "Do not add it. Keep activation in CONTEXT.md and the three operative path-scope blocks in a configuration-only security-controls.md. Move their narrative to HTML, and render any policy display as a derived read-only view. Two tiny operational exceptions, no duplicate editable policy."
+              ],
+              [
+                "R03 / High",
+                "Blanket initialization and evidence requirements can re-create an always-ask loop — Current context finalization expects thirteen outputs and valid provenance; current typed entries require evidence_refs even for drafts.",
+                "New initialization checks structural availability and preserves disabled/stage settings; it does not demand completed interviews, every question answered, verified commands, receipts or thirteen semantically complete files. New draft entries accept explicit unknown/proposed provenance without invented evidence."
+              ],
+              [
+                "R04 / High",
+                "Old catalog scope can let unrelated corruption stop every task — repository/catalog.go scans all registered spec/plan files strictly, while kinds and cross-reads remain partially hard-coded.",
+                "Targeted discovery/read loads only explicitly required kinds/artifacts under bounded limits. An unrelated broken decomposition page cannot prevent a valid feature task read. A targeted unreadable artifact is an honest read error, not a new permission decision."
+              ],
+              [
+                "R05 / High",
+                "Board promotion can duplicate completed work — _taskboardlib.already_promoted checks OPEN entries only, and the previous plan proposed origin support as though it might not exist.",
+                "Reuse the existing origin syntax and owner lock. Deduplicate across active and archived items; attach the board reference after the board write with retry by origin. Do not add a generic cross-store transaction framework."
+              ],
+              [
+                "R06 / High",
+                "Simply giving new names to .md paths misses active runtime consumers — Python selectors/snapshots/reports, the Pi TS activation reader, init finalization, version-aware code-map repair and source-bound site captures all need disposition.",
+                "Use the explicit owner map and fresh literal plus semantic call-graph scan; classify each modify/verify/generate/retain. Do not treat canonical Python generation as coverage of independent TypeScript or metadata."
+              ],
+              [
+                "R07 / High",
+                "Planned architecture must not become observed code or executable policy — Interview choices, brownfield discoveries, test results and configured rules have different owners and evidence.",
+                "Use a small basis vocabulary: user-reported, source-observed, inferred, proposed, unknown. Declared commands are unrun. Decomposition owns desired architecture; code-map owns observed structure; link deviations without rewriting feature criteria or promoting narrative into policy."
+              ],
+              [
+                "R08 / Medium",
+                "Cross-artifact references need both a resolver and real HTML navigation — Current read and renderer commonly assume the one companion spec/plan; a generalized label is not an implemented codec.",
+                "Add bounded same-repo one-hop resolution and root-relative identity-aware links. No network dereference, arbitrary depth, embeddings, database, or persistent retrieval ticket."
+              ],
+              [
+                "R09 / Medium",
+                "Unclassified imported prose can disappear or flood every response — Imported context may lack paths, record types or trusted origin. Mandatory full inclusion makes selective retrieval pointless.",
+                "Keep raw source bytes in the migration before-image; represent unresolved material as bounded notes with source offsets. Return pointers/counts and scoped uncertainty. Never call an omitted note nonexistent; expand the relevant note only when useful."
+              ],
+              [
+                "R10 / Medium",
+                "One fixed percentage saving or complete-context flag can turn into a new runtime gate — The initial 60% and 8 KiB targets are unmeasured and the model could be required to read all pages to satisfy completeness.",
+                "Use 8 KiB as a selectable default within existing ceilings, not a success threshold. Benchmark representative small/large fixtures and report results. No proof-of-read, completeness score, forced extra model call, or blocked implementation because a packet is partial."
+              ],
+              [
+                "R11 / Medium",
+                "Migration can be accidentally triggered by package updates or ordinary reads — Old clients do not understand new canonical kinds; activation, scopes, Git worktrees and crash boundaries cross ownership seams.",
+                "Only an already-authorized explicit repository migration changes layout. Commit canonical mapping/format choice at the existing journal boundary; retain original bytes. Newer edits require forward recovery. If the installed cohort is incompatible, leave the project in its old readable format."
+              ],
+              [
+                "R12 / Medium",
+                "The first plan conflated merge completion with later publication evidence — CD-08 requires actual published bytes to declare the implementation task complete, although publication requires separate authorization.",
+                "Separate ready-to-merge from ready-to-release and deployed verification. One normal required CI decision, not a new gate per task. No invented release/version/Academy support claims."
+              ]
+            ],
+            "type": "table"
+          }
+        ],
+        "id": "SEC-REVIEW",
+        "title": "What the deep review changed"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": ".codearbiter/\n  CONTEXT.md                 # activation/stage/format/bootstrap only\n  security-controls.md       # existing operative +/- scope blocks only\n  context/\n    project.html             # identity, goal, scope, exclusions\n    tech-stack.html          # facts and declared commands\n    coding-standards.html    # relevant conventions and source references\n    security-controls.html  # narrative observations/constraints, not policy authority\n    code-map.html            # observed components and interfaces\n  decomposition/\n    project.html             # interview, intended architecture, phases, proposed work\n  .provenance/               # existing descriptive source metadata\n  .artifacts/                # existing journal and recovery data",
+            "type": "code"
+          },
+          {
+            "refs": [
+              "SRC-M04",
+              "SRC-M05"
+            ],
+            "text": "The two Markdown exceptions contain operational settings, not a narrative mirror. CONTEXT.md remains the actual activation/stage owner. security-controls.md retains the existing migration-paths, ci-paths and deploy-paths blocks and their exact precedence. Move explanations into HTML; do not infer new enforceable controls from text. Existing custom/unknown settings are preserved, not truncated to meet a size target. HTML may show current config as a derived view, never as a second editable authority. This replaces the earlier proposed generated runtime view.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-M01",
+              "SRC-M02"
+            ],
+            "text": "Use one small common record envelope: stable ID, kind, title, content, optional scope/references and descriptive basis. Specific command/component/work-item shapes extend it only where needed. Empty/unknown references are allowed for proposals and user-reported statements; sources become mandatory only for an actual source-backed claim. No generic graph store or per-field approval lifecycle. Existing HTML model/rendering is authoritative, never a manually synchronized JSON and Markdown copy.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Start with the native context and decomposition kinds plus an old-format read/import adapter. New projects use the complete supported format; old projects remain readable until an explicit selected conversion. Do not mix unsupported old clients into converted state and silently omit rules. This is one coherent PR with useful vertical slices, not a series of published partial formats.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-SYSTEM",
+        "title": "Simple target design"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-M03"
+            ],
+            "text": "Known task: use task-context with current task identity and applicable path/component references; add selected criteria, explicitly linked context, effective relevant configuration pointers and directly linked decomposition intent. Unfamiliar topic: a bounded index/outline then one read-batch. Follow only requested same-repository records plus one explicit hop; deeper expansion is requested, not recursively fetched. Prioritize known global exclusions and relevant user instructions; do not reload all questions, provenance chains or renderer markup.",
+            "type": "paragraph"
+          },
+          {
+            "columns": [
+              "Return",
+              "Do not return or create"
+            ],
+            "refs": [],
+            "rows": [
+              [
+                "Records, selection reason, record identities and source basis",
+                "admission, permission_granted, approved_to_execute or a read receipt"
+              ],
+              [
+                "Selected paths and unresolved/conflicting/omitted reference summaries",
+                "An assertion that unknown scope means no constraints"
+              ],
+              [
+                "Whole records with snapshot-bound continuation when necessary",
+                "Persistent delivery tickets or an obligation to consume every page"
+              ],
+              [
+                "Current facts alongside explicit intended/proposed alternatives",
+                "Automatically overwritten accepted criteria or claimed test success"
+              ],
+              [
+                "Relevant unknown imported-note pointers",
+                "Every imported paragraph on every task or silent loss of unmatched prose"
+              ]
+            ],
+            "type": "table"
+          },
+          {
+            "refs": [
+              "SRC-M03"
+            ],
+            "text": "Do not feed the new normal route through _contextselectlib admission checks. Return a factual missing/uncertain record result; the caller resolves an actual task-critical uncertainty through ordinary reads or a targeted question. No unrelated work is blocked. No file scan, reviewer, verification run or durable new record is triggered simply by retrieval. Existing genuine host/user security boundaries stay outside this information API.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Use existing response bounds with a suggested 8 KiB task-context default and small startup pointer budget, not an arbitrary 60% release law. Measure cold/warm returned bytes, actual tokenizer counts if available, reads/calls and latency against the same old/new fixtures. Do not add a native process to routine hooks or statusline. If a relevant record cannot fit, report the limit and retrieve that record explicitly; never truncate governing text.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-RETRIEVAL",
+        "title": "Retrieve what the work needs, not permission"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-M06"
+            ],
+            "text": "A greenfield draft can be saved with unanswered questions and proposed commands. The interview resumes the relevant unresolved choice, not a rigid first-unfinished phase that blocks independent work. Material choices reflect actual user statements; editing an implementation method or title does not ask again. If user confirmation is genuinely missing for a consequential outcome, ask that question once in ordinary language. Never make up user confirmation or a receipt.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-M02",
+              "SRC-M08"
+            ],
+            "text": "Ordinary typed edits use current revision/CAS and a unique operation ID. The engine may prepare a diff internally, but the caller does not have to paste a digest or secure a separate preview approval. Retry the identical request after an uncertain response; a conflicting write is a data-integrity error, not a permission problem. Preserve existing journal before-images and scope mutations to touched records.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-M02",
+              "SRC-M03"
+            ],
+            "text": "Initialization means a supported structure is available, not that six interviews, all provenance, every proposed command and all human choices are complete. Disabled settings, explicit stops, actual host checks and stage remain unchanged during format conversion. Context freshness is advisory and record-specific. Unrelated source/title edits neither invalidate every packet nor restart reviewers. Do not turn context-check into mandatory six-domain reinspection.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-M07"
+            ],
+            "text": "Decomposition owns intended architecture/candidate work; code-map owns observed architecture; the board/execution plan owns actual task state; ADRs own accepted architecture decisions. Promotion uses existing origin markers and the board owner. Retry searches both open and archived rows; a crash after board creation but before adding its back-reference cannot duplicate the task. No automatic issue publishing, all-store lock or new task authority is added.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-LIFECYCLE",
+        "title": "Author, resume and refresh without a ceremony"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-M08"
+            ],
+            "text": "Migration is a selected repository operation under existing authorization, not a background package-update side effect or permission check on ordinary reads. Preview the old-to-new ID/path mapping; preserve original bytes and unknown frontmatter. Commit the new authoritative state, descriptive provenance and format choice using the existing journal/lock primitives. Do not build a new migration service. Config-only scope blocks and activation stay readable through cutover.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-M01",
+              "SRC-M05"
+            ],
+            "text": "A missing requested record is a missing record, not an authorization refusal. An unrelated malformed artifact must not poison every catalog read. A damaged control file continues to use its existing host safety semantics; do not silently remove operative rules or invent a global context-denial policy. A current artifact with invalid checksum is an honest failed read/write, not a claim that the context is safe or complete.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-M08",
+              "SRC-M09"
+            ],
+            "text": "Unclassified prose is retained as bounded note(s) with old-file/offset identity and unknown basis. Old raw bytes remain recovery evidence. Protect secrets and ignored paths with existing source-selection boundaries; generated HTML has no executable commands, network resources or external fetches. Scope matching normalizes worktree-relative paths and handles Windows case/Unicode, renames and missing files.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Prove restart after every relevant transaction boundary and idempotent repeated migration. Old incompatible clients are never promised compatible by a new marker. Prefer leaving existing projects on the old format until their intended cohort is supported. Before later writes, exact rollback can restore originals; after later edits, preserve current work through forward recovery/export, not a stale backup overwrite.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-CUTOVER",
+        "title": "Migration and damaged-state behavior"
+      },
+      {
+        "blocks": [
+          {
+            "columns": [
+              "Fixture",
+              "What must hold"
+            ],
+            "refs": [],
+            "rows": [
+              [
+                "Ordinary greenfield and brownfield",
+                "Drafts with unknowns persist; no coded approval, required reviewer or proof-of-read is issued. Brownfield facts do not pretend a greenfield roadmap exists."
+              ],
+              [
+                "A relevant task and independent task",
+                "The first gets its direct criteria/command/component/known constraints. Missing or stale unrelated context does not block the second."
+              ],
+              [
+                "Scoped refresh and page boundaries",
+                "Unrelated edits preserve unrelated records/results. Large or unclassified material is discoverable without silently dropped constraints or forced full reading."
+              ],
+              [
+                "Real stops and malicious/invalid input",
+                "Actual user stops and existing host safety still apply; source text cannot install policy or execute code. Malformed selected state fails truthfully."
+              ],
+              [
+                "Import and interrupted promotion",
+                "Old content/settings and pending work survive; origin deduplication includes archived tasks; retry causes no duplicate records/tasks."
+              ],
+              [
+                "Installed candidate and model canary",
+                "Run the existing platform/adapter suite and one representative authorized ordinary workflow; distinguish synthetic test fixtures from actual model behavior. No prescribed reviewer count."
+              ]
+            ],
+            "type": "table"
+          },
+          {
+            "refs": [],
+            "text": "One targeted check set per touched workstream during development; one existing full relevant exact-candidate matrix before merge readiness. Fix failures without restoring obsolete approval phrases. Publication and exact distributed-byte readback are later, separately authorized release work, not a reason to leave a correct implementation task permanently pending.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PROOF",
+        "title": "Acceptance is a developer check, not another runtime gate"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-INPUT",
+        "locator": "CODEARBITER-CONTEXT-DECOMPOSITION-HTML-PLAN.md",
+        "note": "SHA-256 4c995aa2ce83fc713e158e6f3fa0efcd16b37b07b436ee3ae12d83bdaede8215; replaced by this reviewed draft, not silently treated as implemented.",
+        "title": "Original user plan",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-USER",
+        "locator": "Conversation, 2026-10-22",
+        "note": "Keep assistance simple, no secondary permission system; deliver native codeArbiter-style HTML spec and plan.",
+        "title": "Current product instruction",
+        "type": "user_request",
+        "url": null
+      },
+      {
+        "id": "SRC-PR",
+        "locator": "PR #1016 at 8c16bb1116c76ca0cbe69851d9f3d323764727fd",
+        "note": "Inspected open; preserve its ordinary input, verifier selection and safe diagnostic behavior. Re-resolve before implementation; not a release prerequisite for reading these documents.",
+        "title": "Existing hook cleanup",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/pull/1016"
+      },
+      {
+        "id": "SRC-M01",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/kind/contracts.go",
+        "note": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target. All group paths are in modification-map.json.",
+        "title": "Native kinds, schema and identity",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/kind/contracts.go"
+      },
+      {
+        "id": "SRC-M02",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextwriterlib.py",
+        "note": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts. All group paths are in modification-map.json.",
+        "title": "Context writing, provenance and finalization",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextwriterlib.py"
+      },
+      {
+        "id": "SRC-M03",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextselectlib.py",
+        "note": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads. All group paths are in modification-map.json.",
+        "title": "Existing selector and freshness machinery",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextselectlib.py"
+      },
+      {
+        "id": "SRC-M04",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_activationlib.py",
+        "note": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call. All group paths are in modification-map.json.",
+        "title": "Activation, initialization and hot-path access",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_activationlib.py"
+      },
+      {
+        "id": "SRC-M05",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_scopelib.py",
+        "note": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path. All group paths are in modification-map.json.",
+        "title": "Actual control configuration and protected-state recognition",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_scopelib.py"
+      },
+      {
+        "id": "SRC-M06",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/decompose/SKILL.md",
+        "note": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact. All group paths are in modification-map.json.",
+        "title": "Planning, interview and execution callers",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/surface/skills/decompose/SKILL.md"
+      },
+      {
+        "id": "SRC-M07",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_taskboardlib.py",
+        "note": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation. All group paths are in modification-map.json.",
+        "title": "Board promotion and single-owner references",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_taskboardlib.py"
+      },
+      {
+        "id": "SRC-M08",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextmergelib.py",
+        "note": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs. All group paths are in modification-map.json.",
+        "title": "Merge, worktrees, sources and recovery",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextmergelib.py"
+      },
+      {
+        "id": "SRC-M09",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/render.go",
+        "note": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies. All group paths are in modification-map.json.",
+        "title": "Native presentation and generated delivery",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/render/render.go"
+      },
+      {
+        "id": "SRC-M10",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/capture-context-examples.py",
+        "note": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change. All group paths are in modification-map.json.",
+        "title": "Training, site and current claims",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/site/scripts/capture-context-examples.py"
+      }
+    ],
+    "summary": "Reviewed replacement for the Markdown plan: granular knowledge, bounded reads and human-readable native HTML. No second permission system. Current-source design only; implementation and release verification remain future work.",
+    "title": "Context and decomposition — assistive HTML specification"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/context-decomposition.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 1,
+  "schema_version": "0.3.2",
+  "slug": "context-decomposition"
+}
+</script>
+</body></html>
