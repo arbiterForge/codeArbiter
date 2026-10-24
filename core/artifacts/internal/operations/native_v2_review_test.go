@@ -42,6 +42,7 @@ func nativeV2ReviewSource(t *testing.T, h *farmHarness, record, kind string, con
 }
 
 func TestCodexNativeV2CaptureAndPublication(t *testing.T) {
+	t.Parallel()
 	nativeReviewCaptureAndPublication(t, nativeV2ReviewSource)
 }
 
@@ -60,6 +61,7 @@ func nativeProtocolReviewSource(t *testing.T, h *farmHarness, record, kind strin
 }
 
 func TestCodexNativeProtocolCaptureAndPublication(t *testing.T) {
+	t.Parallel()
 	nativeReviewCaptureAndPublication(t, nativeProtocolReviewSource)
 }
 
@@ -107,6 +109,7 @@ func nativeReviewCaptureAndPublication(t *testing.T, sourceFor func(*testing.T, 
 
 // Substantive completion fixtures retain real immutable contexts and exact selected facts.
 func TestCodexNativeV2CompletionCapturePublicationAndScope(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	material := filepath.Join(testutil.Root(t), "matrix.txt")
 	if err := os.WriteFile(material, []byte("Task completion evidence matrix\n"), 0600); err != nil {
@@ -172,6 +175,7 @@ func TestCodexNativeV2CompletionCapturePublicationAndScope(t *testing.T) {
 }
 
 func TestCodexNativeV2CompletionRejectsSelectedEvidenceDrift(t *testing.T) {
+	t.Parallel()
 	for _, mode := range []string{"mapped-before-capture", "material-before-capture", "mapped-before-consume", "material-before-consume", "mapped-after-publish", "material-after-publish"} {
 		t.Run(mode, func(t *testing.T) {
 			h, linked := completionHarness(t)

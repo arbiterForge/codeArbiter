@@ -27,22 +27,7 @@ func completionGit(t *testing.T, root string, args ...string) string {
 
 func completionHarness(t *testing.T) (*farmHarness, string) {
 	t.Helper()
-	config := filepath.Join(testutil.Root(t), "gitconfig")
-	if err := os.WriteFile(config, nil, 0600); err != nil {
-		t.Fatal(err)
-	}
-	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
-	t.Setenv("GIT_CONFIG_GLOBAL", config)
-	git, gitErr := exec.LookPath("git")
-	if gitErr != nil {
-		t.Fatal(gitErr)
-	}
-	git, gitErr = filepath.Abs(git)
-	if gitErr != nil {
-		t.Fatal(gitErr)
-	}
-	t.Setenv("CODEARBITER_GIT_EXECUTABLE", git)
-
+	// TestMain sets the Git environment once for the whole package.
 	h := newFarmHarness(t)
 	completionGit(t, h.root, "init")
 	writeFixture(t, h.root, ".gitignore", []byte(".codearbiter/.artifacts/\n"))

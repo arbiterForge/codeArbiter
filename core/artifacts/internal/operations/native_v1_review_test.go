@@ -109,6 +109,7 @@ func startNativeV1FixtureTask(t *testing.T, h *farmHarness, id string) {
 }
 
 func TestCodexNativeV1CaptureAndPublication(t *testing.T) {
+	t.Parallel()
 	h := newFarmHarness(t)
 	h.createPair()
 	for _, id := range []string{"T-001", "T-002"} {
