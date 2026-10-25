@@ -318,10 +318,11 @@ func (e *Engine) knowledgeCutover(r object) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		cursor := int(model.I(r["cursor"]))
-		if cursor < 0 || cursor > len(sections) {
+		requestedCursor := model.I(r["cursor"])
+		if requestedCursor < 0 || requestedCursor > int64(len(sections)) {
 			return nil, fault.New("INVALID_CURSOR", "section cursor is outside the inventory")
 		}
+		cursor := int(requestedCursor)
 		listed := []any{}
 		out := object{"mode": "sections", "sources": sources, "sections": listed, "next_cursor": nil}
 		for i := cursor; i < len(sections); i++ {

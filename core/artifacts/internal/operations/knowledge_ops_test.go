@@ -251,6 +251,16 @@ func TestKnowledgeCutoverPagesLargeSectionInventory(t *testing.T) {
 	}
 }
 
+func TestKnowledgeCutoverRejectsCursorBeyondNativeInt(t *testing.T) {
+	r := newLegacyRepo(t)
+	_, err := r.request("knowledge-cutover", object{
+		"operation_id": r.next(), "mode": "sections", "cursor": int64(1 << 32),
+	})
+	if fault.Code(err) != "INVALID_CURSOR" {
+		t.Fatalf("large cursor must be rejected before int conversion: %v", err)
+	}
+}
+
 func TestKnowledgeCutoverRetryKeepsLaterWorkAndStaleApplyFails(t *testing.T) {
 	r := newLegacyRepo(t)
 	r.prepare()
