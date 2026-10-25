@@ -2825,10 +2825,9 @@ class NpmPublishContractTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 helper.validate_project_registry(repo)
 
-    def test_release_readback_gates_integrity_but_attestation_is_advisory(self):
-        # ADR-0040: a published version with the expected integrity but no
-        # matching attestation is present-unattested (warn), never a hard stop;
-        # a version or integrity mismatch still raises.
+    def test_lookup_can_mark_attestation_pending_while_readback_retries(self):
+        # Readback may classify a same-integrity version without attestation as
+        # pending. The Pi action waits for "present" and fails on timeout.
         helper = self._helper()
         unattested = json.dumps({"version": "0.10.0", "dist": {"integrity": "sha512-ok"}})
         self.assertEqual(
@@ -3157,6 +3156,47 @@ class NpmPublishContractTest(unittest.TestCase):
             ),
             trusted_sha,
         )
+        self.assertEqual(
+            helper.validate_attestation_document(
+                document(statement), version, integrity, trusted_sha,
+                source_workflows=helper.PI_RELEASE_WORKFLOWS,
+            ),
+            trusted_sha,
+        )
+        wrong_workflow = json.loads(json.dumps(statement))
+        wrong_workflow["predicate"]["buildDefinition"]["externalParameters"]["workflow"]["path"] = (
+            ".github/workflows/npm-publish.yml"
+        )
+        with self.assertRaisesRegex(ValueError, "workflow identity"):
+            helper.validate_attestation_document(
+                document(wrong_workflow), version, integrity, trusted_sha,
+                source_workflows=helper.PI_RELEASE_WORKFLOWS,
+            )
+        self.assertEqual(
+            helper.validate_publication_attestation(
+                document(statement), version, integrity,
+                release_source_sha=trusted_sha, trusted_sha=trusted_sha,
+                trusted_repo=Path("."), allow_continuation=False,
+                source_workflows=helper.PI_RELEASE_WORKFLOWS,
+            ),
+            trusted_sha,
+        )
+        prior_commit = json.loads(json.dumps(statement))
+        prior_commit["predicate"]["buildDefinition"]["resolvedDependencies"][0]["digest"]["gitCommit"] = "b" * 40
+        with self.assertRaisesRegex(ValueError, "trusted workflow commit"):
+            helper.validate_publication_attestation(
+                document(prior_commit), version, integrity,
+                release_source_sha=trusted_sha, trusted_sha=trusted_sha,
+                trusted_repo=Path("."), allow_continuation=False,
+                source_workflows=helper.PI_RELEASE_WORKFLOWS,
+            )
+        with self.assertRaisesRegex(ValueError, "workflow identity"):
+            helper.validate_publication_attestation(
+                document(wrong_workflow), version, integrity,
+                release_source_sha=trusted_sha, trusted_sha=trusted_sha,
+                trusted_repo=Path("."), allow_continuation=False,
+                source_workflows=helper.PI_RELEASE_WORKFLOWS,
+            )
         mutations = []
         for path, replacement in (
             (("subject", 0, "name"), "pkg:npm/%40attacker/other@0.10.0"),
@@ -3730,13 +3770,12 @@ class NpmPublishContractTest(unittest.TestCase):
         action = self.ACTION.read_text(encoding="utf-8")
         self.assertIn("### ca-pi npm publication boundary", policy)
         for claim in (
-            "NPMJS_TOKEN",
-            "organization Actions secret",
-            "NODE_AUTH_TOKEN",
+            "trusted publisher",
+            "release.yml",
+            "short-lived",
             "@arbiterforge/ca-pi",
             "OIDC provenance",
             "npm audit signatures",
-            "rotation",
             "npm@11.19.1",
             "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz",
             "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==",
@@ -3748,23 +3787,23 @@ class NpmPublishContractTest(unittest.TestCase):
 
     def _assert_npm_secret_boundary(self, workflow, action):
         self.assertNotIn("secrets: inherit", workflow)
-        # The npm credential enters exactly one job (ca-pi) ...
-        self.assertEqual(workflow.count("secrets.NPMJS_TOKEN"), 1)
+        self.assertNotIn("secrets.NPMJS_TOKEN", workflow)
         pi_job = workflow.split("\n  release-pi:\n", 1)[1].split("\n  release-sandbox:\n", 1)[0]
-        self.assertIn("npm-token: ${{ secrets.NPMJS_TOKEN }}", pi_job)
+        self.assertIn("id-token: write", pi_job)
+        self.assertNotIn("npm-token:", pi_job)
         self.assertNotRegex(workflow, r"(?m)^env:")
         self.assertNotRegex(workflow, r"(?m)^defaults:")
         self.assertNotIn("self-hosted", workflow)
         self.assertNotIn("persist-credentials: true", workflow)
         self.assertEqual(workflow.count("uses: actions/checkout@"),
                          workflow.count("persist-credentials: false"))
-        # ... and exactly one step of the publish action.
-        self.assertEqual(action.count("NODE_AUTH_TOKEN:"), 1)
-        self.assertEqual(action.count("inputs.npm-token"), 1)
+        self.assertNotIn("NODE_AUTH_TOKEN:", action)
+        self.assertNotIn("inputs.npm-token", action)
+        self.assertNotIn("npm-token:", action)
+        self.assertIn("node-version: '22.19.0'", action)
         publish_step = action.split("    - name: Publish @arbiterforge/ca-pi to npm", 1)[1].split(
             "\n    - name: ", 1
         )[0]
-        self.assertIn("NODE_AUTH_TOKEN: ${{ inputs.npm-token }}", publish_step)
         self.assertIn("--ignore-scripts", publish_step)
         self.assertIn("--provenance", publish_step)
         # The reviewed npm CLI is fetched without redirects and pinned by integrity.
@@ -3777,8 +3816,8 @@ class NpmPublishContractTest(unittest.TestCase):
         action = self.ACTION.read_text(encoding="utf-8")
         workflow_mutations = (
             workflow.replace("  release-sandbox:\n", "  release-sandbox:\n    secrets: inherit\n", 1),
-            workflow.replace("permissions:\n  contents: read\n",
-                             "permissions:\n  contents: read\nenv:\n  T: ${{ secrets.NPMJS_TOKEN }}\n", 1),
+            workflow.replace("  release-sandbox:\n",
+                             "  release-sandbox:\n    env:\n      T: ${{ secrets.NPMJS_TOKEN }}\n", 1),
             workflow.replace("persist-credentials: false", "persist-credentials: true", 1),
             workflow.replace("runs-on: ubuntu-latest", "runs-on: self-hosted", 1),
             workflow.replace("\npermissions:\n", "\ndefaults:\n  run:\n    shell: evil\npermissions:\n", 1),

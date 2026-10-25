@@ -123,7 +123,7 @@ class IndependenceTest(unittest.TestCase):
     def test_no_cohort_machinery_remains(self):
         for text in (release_text(), action_text()):
             self.assertNotIn("cohort-reconciliation", text)
-            self.assertNotIn("continuation", text)
+            self.assertNotIn("allow_continuation=True", text)
             self.assertNotIn("cohort-marker", text)
 
     def test_each_release_job_serializes_only_with_itself(self):
@@ -201,11 +201,14 @@ class ConsumerSafetyGateTest(unittest.TestCase):
 
     def test_npm_readback_requires_the_ci_built_integrity(self):
         readback = action_step("Read back the npm publication")
-        self.assertIn('state.startswith("present")', readback)
+        self.assertIn('state == "present"', readback)
         self.assertIn("classify_registry_lookup", readback)
-        # Integrity is the gate; attestation shape is advisory (ADR-0040).
-        self.assertIn("require_attestation=False", readback)
-        self.assertIn("require_attestation=False", action_step("Select the exact Pi npm tarball"))
+        self.assertIn("verify_registry_authenticity", readback)
+        self.assertIn("validate_publication_attestation", readback)
+        self.assertIn("PI_RELEASE_WORKFLOWS", readback)
+        self.assertIn("allow_continuation=False, source_workflows=lib.PI_RELEASE_WORKFLOWS", readback)
+        self.assertNotIn("::warning::npm provenance", readback)
+        self.assertNotIn("require_attestation=False", action_step("Select the exact Pi npm tarball"))
 
     def test_release_goes_public_only_after_every_channel(self):
         publish = step_index("Publish the Release")
@@ -228,8 +231,10 @@ class AdvisoryCheckTest(unittest.TestCase):
         self.assertIn("continue-on-error: true", audit)
         self.assertIn("::warning::", audit)
 
-    def test_npm_provenance_is_advisory(self):
-        self.assertIn("::warning::npm provenance", action_step("Read back the npm publication"))
+    def test_pi_npm_provenance_is_blocking(self):
+        readback = action_step("Read back the npm publication")
+        self.assertIn("validate_publication_attestation", readback)
+        self.assertNotIn("::warning::npm provenance", readback)
 
     def test_pre_tag_checks_are_advisory(self):
         self.assertIn("run-pre-tag", jobs()["preflight"])

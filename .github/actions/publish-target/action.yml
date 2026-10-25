@@ -8,7 +8,7 @@ description: >
 # Hard gates (consumer safety): manifest = tag = CHANGELOG version; the CI
 # package cohort verifies (payload digests + cold-install receipts); an
 # existing tag must name this commit; published bytes read back exactly.
-# Provenance extras (npm attestation, Codex ruleset audit) only warn.
+# Pi npm provenance is a completion gate (ADR-0044); Codex ruleset audit warns.
 
 inputs:
   target:
@@ -48,10 +48,6 @@ inputs:
   github-token:
     description: "Token with contents:write for tag, Release and channel refs"
     required: true
-  npm-token:
-    description: "npm automation token (ca-pi only)"
-    required: false
-    default: ""
   codex-ruleset-verifier-token:
     description: "Optional read-only token for the advisory Codex ruleset audit"
     required: false
@@ -98,6 +94,14 @@ runs:
         merge-multiple: false
         run-id: ${{ inputs.ci-run-id }}
         github-token: ${{ inputs.github-token }}
+
+    - name: Configure Node and npm registry for Pi trusted publishing
+      if: ${{ inputs.host == 'pi' }}
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: '22.19.0'
+        registry-url: https://registry.npmjs.org
+        scope: '@arbiterforge'
 
     - name: Acquire reviewed npm@11.19.1 CLI
       id: npm-cli
@@ -386,29 +390,16 @@ runs:
             cohort, root / name, version=os.environ["VERSION"],
             expected_sha=os.environ["SOURCE_COMMIT"], ci_run_id=os.environ["CI_RUN_ID"])
         lookup = lib.registry_lookup(os.environ["NPM_CLI"], os.environ["VERSION"])
-        # Hard gate: version + integrity. Attestation shape only warns (ADR-0040).
         state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,
-                                             os.environ["VERSION"], integrity,
-                                             require_attestation=False)
-        if state == "present-unattested":
-            print("::warning::npm version is published with the expected integrity but without "
-                  "a matching provenance attestation", file=sys.stderr)
+                                             os.environ["VERSION"], integrity)
         print(f"tarball={tarball}"); print(f"integrity={integrity}")
-        print(f"skip={'true' if state.startswith('present') else 'false'}")
+        print(f"skip={'true' if state == 'present' else 'false'}")
         PY
-
-    - name: Configure npm authentication
-      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
-      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-      with:
-        registry-url: https://registry.npmjs.org
-        scope: '@arbiterforge'
 
     - name: Publish @arbiterforge/ca-pi to npm
       if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
         NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
         TARBALL: ${{ steps.pi.outputs.tarball }}
       run: '"$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/'
@@ -421,6 +412,7 @@ runs:
         VERSION: ${{ steps.v.outputs.version }}
         INTEGRITY: ${{ steps.pi.outputs.integrity }}
         NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
       run: |
         set -euo pipefail
         python3 - <<'PY'
@@ -437,17 +429,16 @@ runs:
                                                      require_attestation=False)
             except lib.RegistryUnavailable:
                 state = "unavailable"
-            if state.startswith("present"):
-                if state == "present-unattested":
-                    print("::warning::npm provenance attestation is missing or unmatched (advisory)")
+            if state == "present":
                 print(f"read back {lib.PACKAGE}@{version} with the expected integrity"); break
             if time.monotonic() > deadline:
                 raise SystemExit(f"npm publication not observable with expected integrity (last: {state})")
             time.sleep(15)
-        try:
-            lib.verify_registry_authenticity(npm, version)
-        except Exception as exc:  # provenance is advisory (ADR-0040)
-            print(f"::warning::npm provenance/signature check did not pass: {exc}")
+        evidence = lib.verify_registry_authenticity(npm, version)
+        lib.validate_publication_attestation(
+            evidence, version, integrity, release_source_sha=os.environ["SOURCE_COMMIT"],
+            trusted_sha=os.environ["SOURCE_COMMIT"], trusted_repo=lib.Path.cwd(),
+            allow_continuation=False, source_workflows=lib.PI_RELEASE_WORKFLOWS)
         PY
 
     - name: Publish the Release
