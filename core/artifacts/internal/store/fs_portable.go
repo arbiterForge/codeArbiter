@@ -497,6 +497,11 @@ func (f *FS) replace(stage, dest string, createOnly bool) error {
 	}
 	if createOnly {
 		if e = f.root.Link(native(stage), native(dest)); e == nil {
+			if strings.HasPrefix(dest, meta+"/transactions/") && strings.HasSuffix(dest, ".json") {
+				if e = f.step("during-journal-publish"); e != nil {
+					return e
+				}
+			}
 			e = f.root.Remove(native(stage))
 		}
 	} else {

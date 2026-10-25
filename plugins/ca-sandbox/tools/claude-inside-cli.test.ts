@@ -126,6 +126,15 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     expect([...out, ...err].join("\n")).not.toContain("DUMMY-NOT-A-REAL-TOKEN");
   });
 
+  it("redacts the token if Docker includes it in a failure message", async () => {
+    const { out, err, sinks } = collect();
+    await runClaudeInsideCli(ARGV, ENV, {
+      ...sinks,
+      run: () => { throw new Error(`docker failed: ${ENV[TOKEN_ENV_VAR]}`); },
+    });
+    expect([...out, ...err].join("\n")).not.toContain(ENV[TOKEN_ENV_VAR]);
+  });
+
   it("returns 1 and names the co-mount guard when it fires", async () => {
     const { err, sinks } = collect();
     const code = await runClaudeInsideCli(ARGV, ENV, {

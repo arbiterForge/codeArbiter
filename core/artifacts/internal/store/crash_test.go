@@ -3,7 +3,9 @@
 package store
 
 import (
+	"errors"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"os"
 	"os/exec"
@@ -92,5 +94,93 @@ func TestProcessDeathRecovery(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestJournalPublicationCrash(t *testing.T) {
+	if root := os.Getenv("CA_ARTIFACT_JOURNAL_CRASH_FIXTURE"); root != "" {
+		f, e := Open(root)
+		if e != nil {
+			os.Exit(90)
+		}
+		defer f.Close()
+		f.Inject = func(point string) error {
+			if point == os.Getenv("CA_ARTIFACT_JOURNAL_CRASH_AT") {
+				os.Exit(99)
+			}
+			return nil
+		}
+		_, e = f.Commit("journal-crash-001", canonical.BytesHash([]byte("fixture")),
+			[]Edit{{Path: "a.txt", Before: []byte("old"), After: []byte("new")}})
+		if e != nil {
+			os.Exit(92)
+		}
+		os.Exit(0)
+	}
+	for _, point := range []string{"before-journal-publish", "during-journal-publish", "after-journal-publish"} {
+		t.Run(point, func(t *testing.T) {
+			root := testutil.Root(t)
+			if e := os.WriteFile(filepath.Join(root, "a.txt"), []byte("old"), 0644); e != nil {
+				t.Fatal(e)
+			}
+			command := exec.Command(os.Args[0], "-test.run=^TestJournalPublicationCrash$")
+			command.Env = append(os.Environ(), "CA_ARTIFACT_JOURNAL_CRASH_FIXTURE="+root,
+				"CA_ARTIFACT_JOURNAL_CRASH_AT="+point)
+			if e := command.Run(); e == nil || command.ProcessState.ExitCode() != 99 {
+				t.Fatalf("expected publication crash at %s: %v", point, e)
+			}
+			final := filepath.Join(root, ".codearbiter", ".artifacts", "transactions", "journal-crash-001.json")
+			_, e := os.Stat(final)
+			if point == "before-journal-publish" && !os.IsNotExist(e) {
+				t.Fatalf("final journal published too early: %v", e)
+			}
+			if point != "before-journal-publish" && e != nil {
+				t.Fatal(e)
+			}
+			f, e := Open(root)
+			if e != nil {
+				t.Fatal(e)
+			}
+			defer f.Close()
+			if point == "before-journal-publish" {
+				stage := final + ".next"
+				witness := filepath.Join(root, "journal-stage-witness")
+				if e := os.Link(stage, witness); e != nil {
+					t.Fatal(e)
+				}
+				f.Inject = func(step string) error {
+					if step == "after-journal-publish" {
+						return errors.New("pause retry after publication")
+					}
+					return nil
+				}
+				_, e = f.Commit("journal-crash-001", canonical.BytesHash([]byte("fixture")),
+					[]Edit{{Path: "a.txt", Before: []byte("old"), After: []byte("new")}})
+				if fault.Code(e) != "COMMIT_OUTCOME_UNKNOWN" {
+					t.Fatalf("expected paused retry, got %v", e)
+				}
+				f.Inject = nil
+				oldInfo, e := os.Stat(witness)
+				if e != nil {
+					t.Fatal(e)
+				}
+				newInfo, e := os.Stat(final)
+				if e != nil {
+					t.Fatal(e)
+				}
+				if os.SameFile(oldInfo, newInfo) {
+					t.Fatal("retry published the pre-crash journal inode without a fresh sync")
+				}
+				if _, e := f.Recover("journal-crash-001", "complete"); e != nil {
+					t.Fatal(e)
+				}
+			} else if _, e := f.Recover("journal-crash-001", "complete"); e != nil {
+				t.Fatal(e)
+			}
+			b, e := os.ReadFile(filepath.Join(root, "a.txt"))
+			if e != nil || string(b) != "new" {
+				t.Fatalf("retry/recovery failed: %q %v", b, e)
+			}
+		})
 	}
 }

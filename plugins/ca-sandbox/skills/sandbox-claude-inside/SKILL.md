@@ -95,7 +95,8 @@ Source the OAuth token and confirm it is injected as ENV, never bound from the h
 
 - The token comes from the approved secret store as `CLAUDE_CODE_OAUTH_TOKEN`
   (auth-precedence #5, from `claude setup-token`). It is env-injected
-  (`-e CLAUDE_CODE_OAUTH_TOKEN=…`) — this IS the auth path; no host bind of
+  (`-e CLAUDE_CODE_OAUTH_TOKEN`), with its value in the scoped Docker client
+  process environment — this IS the auth path; no host bind of
   `~/.claude` is required or permitted.
 - The token MUST NOT be echoed to logs, written to a file the source volume can
   read, or passed into any LLM prompt. Prefer a scoped/short-lived setup-token.

@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 )
@@ -47,6 +48,28 @@ func TestTransactionalCAS(t *testing.T) {
 	b, _ := f.Read(p, 100)
 	if string(b) != "old" {
 		t.Fatal("failed CAS changed bytes")
+	}
+}
+
+func TestPartialJournalStageRequiresManualReconciliation(t *testing.T) {
+	f := fs(t)
+	if e := f.Mkdir(meta + "/transactions"); e != nil {
+		t.Fatal(e)
+	}
+	stage := filepath.Join(f.Root, ".codearbiter", ".artifacts", "transactions", "partial-stage-001.json.next")
+	if e := os.WriteFile(stage, []byte(`{"format":`), 0600); e != nil {
+		t.Fatal(e)
+	}
+	_, e := f.Commit("partial-stage-001", canonical.BytesHash([]byte("request")),
+		[]Edit{{Path: "a.txt", After: []byte("new")}})
+	if fault.Code(e) != "RECOVERY_REQUIRED" || !strings.Contains(e.Error(), "orphan journal stage") {
+		t.Fatalf("expected precise manual reconciliation state, got %v", e)
+	}
+	if _, e := os.Stat(filepath.Join(f.Root, "a.txt")); !os.IsNotExist(e) {
+		t.Fatalf("canonical target changed: %v", e)
+	}
+	if b, e := os.ReadFile(stage); e != nil || string(b) != `{"format":` {
+		t.Fatalf("orphan stage was not preserved: %q %v", b, e)
 	}
 }
 func TestReplaceRecovery(t *testing.T) {
