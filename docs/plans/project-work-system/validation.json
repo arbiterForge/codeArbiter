@@ -1,0 +1,209 @@
+{
+  "status": "planning-documents-only",
+  "repository": "arbiterForge/codeArbiter",
+  "base_commit": "cdb0448d292ca9e65eb1127cf4e0c92dab803994",
+  "date": "2026-10-25",
+  "native_engine_sha256": "f410bdf1034c21b2b205c07ef0919a1b1d34e001388f4db72a7b2ce9221d3f4d",
+  "native_engine_source": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts",
+  "native_environment": {
+    "os": "Windows",
+    "architecture": "amd64",
+    "toolchain": "go version go1.27.1 windows/amd64"
+  },
+  "checks": {
+    "SPEC-PROJECT-WORK-SYSTEM": {
+      "identity": {
+        "artifact_id": "SPEC-PROJECT-WORK-SYSTEM",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "kind": "spec",
+        "model_sha256": "74f54a1153fac79558729da4fe646ab483d2ce621f0de50e5239e77bf37c1c31",
+        "normative_sha256": "1831c153906669b842de67ca6bcc771916628dd09d2498f57c3386e0752e198a",
+        "path": ".codearbiter/specs/project-work-system.html",
+        "revision": 1,
+        "symbol_count": 111
+      },
+      "structural": {
+        "artifact_id": "SPEC-PROJECT-WORK-SYSTEM",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "structural",
+        "kind": "spec",
+        "model_sha256": "74f54a1153fac79558729da4fe646ab483d2ce621f0de50e5239e77bf37c1c31",
+        "normative_sha256": "1831c153906669b842de67ca6bcc771916628dd09d2498f57c3386e0752e198a",
+        "path": ".codearbiter/specs/project-work-system.html",
+        "revision": 1,
+        "symbol_count": 111,
+        "valid": true
+      },
+      "ready": {
+        "artifact_id": "SPEC-PROJECT-WORK-SYSTEM",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "spec",
+        "model_sha256": "74f54a1153fac79558729da4fe646ab483d2ce621f0de50e5239e77bf37c1c31",
+        "normative_sha256": "1831c153906669b842de67ca6bcc771916628dd09d2498f57c3386e0752e198a",
+        "path": ".codearbiter/specs/project-work-system.html",
+        "revision": 1,
+        "symbol_count": 111,
+        "valid": true
+      }
+    },
+    "PLAN-PROJECT-WORK-SYSTEM": {
+      "identity": {
+        "artifact_id": "PLAN-PROJECT-WORK-SYSTEM",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "kind": "plan",
+        "model_sha256": "4ee21db41f45585c155f36540b7e67b5a0e869c0cc5f58b608f99f03258f401c",
+        "normative_sha256": "a03fff8421c4207b70295fbee6b35db7394511d3b65e4e5205bb8d6b79eba55e",
+        "path": ".codearbiter/plans/project-work-system.html",
+        "revision": 2,
+        "symbol_count": 38
+      },
+      "structural": {
+        "artifact_id": "PLAN-PROJECT-WORK-SYSTEM",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "structural",
+        "kind": "plan",
+        "model_sha256": "4ee21db41f45585c155f36540b7e67b5a0e869c0cc5f58b608f99f03258f401c",
+        "normative_sha256": "a03fff8421c4207b70295fbee6b35db7394511d3b65e4e5205bb8d6b79eba55e",
+        "path": ".codearbiter/plans/project-work-system.html",
+        "revision": 2,
+        "symbol_count": 38,
+        "valid": true
+      },
+      "ready": {
+        "artifact_id": "PLAN-PROJECT-WORK-SYSTEM",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "plan",
+        "model_sha256": "4ee21db41f45585c155f36540b7e67b5a0e869c0cc5f58b608f99f03258f401c",
+        "normative_sha256": "a03fff8421c4207b70295fbee6b35db7394511d3b65e4e5205bb8d6b79eba55e",
+        "path": ".codearbiter/plans/project-work-system.html",
+        "revision": 2,
+        "symbol_count": 38,
+        "valid": true
+      }
+    }
+  },
+  "artifact_sha256": {
+    ".codearbiter/specs/project-work-system.html": "50ea3ff982dbc4786e51d239bc1b490d967f0646fd1a80a9c32f29a5b38f8900",
+    ".codearbiter/plans/project-work-system.html": "111aaf5cefa08624a44e71b62740e420038e8f334e930d22233d30ae963b7cb8"
+  },
+  "acceptance_criteria": 20,
+  "implementation_tasks": 9,
+  "task_state": "all PENDING",
+  "approval_prerequisites": 0,
+  "approvals_issued": 0,
+  "exact_reads": [
+    "AC-001",
+    "AC-014",
+    "SEC-COMMITS",
+    "T-001",
+    "T-007"
+  ],
+  "eligible": {
+    "assessment": "advisory",
+    "next_task": "T-001",
+    "evidence_assessed": false
+  },
+  "feature_tests_executed": false,
+  "provider_calls_performed": false,
+  "repositories_migrated": 0,
+  "limits": "Native structural/readiness checks and exact reads validate these planning documents only. Proposed implementation, planned tests, installed hosts, external providers and released artifacts are not qualified by this report.",
+  "self_review": {
+    "criteria_fully_mapped": true,
+    "task_dependencies_acyclic": true,
+    "all_source_blobs_verified": 121,
+    "planned_test_filter_corrected": "Brownfield tests included in the proposed run filter",
+    "installed_runner_parameters": "explicit manifest-derived placeholders; no --help treated as qualification",
+    "hot_readers": "bounded in-process summary; no network/new subprocess per refresh",
+    "fork_destination": "changed destination suspends remote effects only"
+  },
+  "document_browser_checks": {
+    "engine": "Chromium headless",
+    "checks": [
+      {
+        "path": ".codearbiter/specs/project-work-system.html",
+        "viewport": [
+          1440,
+          1000
+        ],
+        "horizontal_overflow": false,
+        "duplicate_anchor_ids": false,
+        "local_links_valid": true,
+        "external_requests": 0,
+        "inert_model_only": true
+      },
+      {
+        "path": ".codearbiter/specs/project-work-system.html",
+        "viewport": [
+          390,
+          844
+        ],
+        "horizontal_overflow": false,
+        "duplicate_anchor_ids": false,
+        "local_links_valid": true,
+        "external_requests": 0,
+        "inert_model_only": true
+      },
+      {
+        "path": ".codearbiter/plans/project-work-system.html",
+        "viewport": [
+          1440,
+          1000
+        ],
+        "horizontal_overflow": false,
+        "duplicate_anchor_ids": false,
+        "local_links_valid": true,
+        "external_requests": 0,
+        "inert_model_only": true
+      },
+      {
+        "path": ".codearbiter/plans/project-work-system.html",
+        "viewport": [
+          390,
+          844
+        ],
+        "horizontal_overflow": false,
+        "duplicate_anchor_ids": false,
+        "local_links_valid": true,
+        "external_requests": 0,
+        "inert_model_only": true
+      }
+    ],
+    "note": "Checks this planning pair only, not proposed future combined work/project views."
+  }
+}

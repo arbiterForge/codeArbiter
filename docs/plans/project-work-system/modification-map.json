@@ -1,0 +1,1033 @@
+{
+  "format": "codearbiter.planning-impact-map/1",
+  "status": "planning-only",
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "cdb0448d292ca9e65eb1127cf4e0c92dab803994",
+  "scan_scope": [
+    "core/pysrc",
+    "core/surface",
+    "plugins/ca-pi/tools/src",
+    "plugins/ca/tools"
+  ],
+  "note": "Exact path/blob inventory plus direct-reference sweep; not a proof of implementation or exhaustive dynamic dependency closure. Reinspect semantic consumers at implementation base.",
+  "files": [
+    {
+      "path": "core/artifacts/internal/kind/contracts.go",
+      "git_blob": "a89447b12ea8e254b29c0dfd9d6188d4cda729cf",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/kind/contracts.go"
+    },
+    {
+      "path": "core/artifacts/internal/operations/protocol.go",
+      "git_blob": "3b09bf4c71dcdc9f8e9d2bfa18732c8c82b0b48f",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/operations/protocol.go"
+    },
+    {
+      "path": "core/artifacts/internal/operations/engine.go",
+      "git_blob": "dc7bc6149c01ded93e121f27720c2ca5df40d95f",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/operations/engine.go"
+    },
+    {
+      "path": "core/artifacts/internal/model/artifact.go",
+      "git_blob": "7f707d1ba46d506c4eb223f06df6f9f6e4f46e78",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/model/artifact.go"
+    },
+    {
+      "path": "core/artifacts/internal/model/assistive.go",
+      "git_blob": "36e672682e209a5e0b9cfc67b3fdfaff7166b912",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/model/assistive.go"
+    },
+    {
+      "path": "core/artifacts/internal/operations/assistive.go",
+      "git_blob": "887bed0f0972b68855a18cb3d0d34a4e9e8af767",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/operations/assistive.go"
+    },
+    {
+      "path": "core/artifacts/internal/operations/task_context.go",
+      "git_blob": "9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/operations/task_context.go"
+    },
+    {
+      "path": "core/artifacts/internal/operations/task_knowledge.go",
+      "git_blob": "cb73584efa84438ecd28c9996fcbc00fe4ba54ae",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/operations/task_knowledge.go"
+    },
+    {
+      "path": "core/artifacts/internal/operations/mutations.go",
+      "git_blob": "2dd6e5a2cf1188ab9269eb74b3be7770af90cd58",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/operations/mutations.go"
+    },
+    {
+      "path": "core/artifacts/internal/repository/catalog.go",
+      "git_blob": "a9a501e63e4b75f7470cc65f5518a114a8cea0d2",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/repository/catalog.go"
+    },
+    {
+      "path": "core/artifacts/internal/repository/knowledge.go",
+      "git_blob": "43d18902b5a5dd97f48295c920d92285b54c4c46",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/repository/knowledge.go"
+    },
+    {
+      "path": "core/artifacts/internal/validate/validate.go",
+      "git_blob": "23adf57cc4ce66a8890b1c41d82982dbadc1386c",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/validate/validate.go"
+    },
+    {
+      "path": "core/artifacts/internal/symbol/index.go",
+      "git_blob": "62baf5db0dd92c5e17aae71c918a990e4a2c46ea",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/symbol/index.go"
+    },
+    {
+      "path": "core/artifacts/internal/read/read.go",
+      "git_blob": "0f8d47a56cf2753b99141b43db466e76210c185a",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/read/read.go"
+    },
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "git_blob": "b407f8a48f4ae9603db1419eac9f266b3eddd74d",
+      "group": "native-kernel",
+      "disposition": "modify",
+      "reason": "Extend closed work operations/kind without replacing the journal, bounded reads or renderer.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/store/transaction.go"
+    },
+    {
+      "path": "core/pysrc/knowledge.py",
+      "git_blob": "aae59fd2c01e00f8c6d0303337ef51e50c4c6a68",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/knowledge.py"
+    },
+    {
+      "path": "core/pysrc/_knowledgelib.py",
+      "git_blob": "5248c4c87fdf47d9587a82abab876b60a10f011c",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_knowledgelib.py"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "git_blob": "31e33fee194cd55a706983e00be157dbe6b198ac",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/taskwrite.py"
+    },
+    {
+      "path": "core/pysrc/_taskboardlib.py",
+      "git_blob": "bebb40cfe89626950d12107b82d946fe9e05c190",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_taskboardlib.py"
+    },
+    {
+      "path": "core/pysrc/boardsync.py",
+      "git_blob": "78ce006ff7076592326dc9006d20b86c82cf494f",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/boardsync.py"
+    },
+    {
+      "path": "core/pysrc/_taskexcludelib.py",
+      "git_blob": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_taskexcludelib.py"
+    },
+    {
+      "path": "core/pysrc/_artifactlib.py",
+      "git_blob": "a3228472bddc2d095e0abeef64e9a60c352e70e7",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_artifactlib.py"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "git_blob": "5b88d6e66c7f41f251a822d5238a62e2ce991427",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_intentlib.py"
+    },
+    {
+      "path": "core/pysrc/_standuplib.py",
+      "git_blob": "0906f3eb5087ba0d15182581cbe3d24c319b1ef7",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_standuplib.py"
+    },
+    {
+      "path": "core/pysrc/babysit.py",
+      "git_blob": "bd3b7612bbf233112cae9a23c3d551a24494830d",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/babysit.py"
+    },
+    {
+      "path": "core/pysrc/_cleanuplib.py",
+      "git_blob": "4d92635ec4245ad0b9c77bf275f704b909fee9ca",
+      "group": "work-and-existing-writers",
+      "disposition": "modify",
+      "reason": "Common work facade, stable identity, legacy compatibility and structured promotion results.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_cleanuplib.py"
+    },
+    {
+      "path": "core/pysrc/session-start.py",
+      "git_blob": "9fae4f99cf2c11b0d9fd062ab65ce94c8cacb935",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/session-start.py"
+    },
+    {
+      "path": "core/pysrc/statusline.py",
+      "git_blob": "997de3d6840075259936636ce64d376be5c0f986",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/statusline.py"
+    },
+    {
+      "path": "core/pysrc/_arbiterstatelib.py",
+      "git_blob": "6cb730a1cf68f150ab31416c9c0a088e5ab3df24",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_arbiterstatelib.py"
+    },
+    {
+      "path": "core/pysrc/_readinjectlib.py",
+      "git_blob": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_readinjectlib.py"
+    },
+    {
+      "path": "core/pysrc/_provenancelib.py",
+      "git_blob": "790ec8470991180dacace9455d22da59fb16faec",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_provenancelib.py"
+    },
+    {
+      "path": "core/pysrc/_protectedstatelib.py",
+      "git_blob": "e0ae38cba3608656a0b7f1e3d34d305edc1bf458",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_protectedstatelib.py"
+    },
+    {
+      "path": "core/pysrc/_protectedlib.py",
+      "git_blob": "9daeaf94103e8fb6d935eccbd55347d45818da6c",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_protectedlib.py"
+    },
+    {
+      "path": "core/pysrc/_bashguardlib.py",
+      "git_blob": "6b7c4222ad8393f9df8f21240583230b595ec1f7",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_bashguardlib.py"
+    },
+    {
+      "path": "core/pysrc/_hooklib.py",
+      "git_blob": "118169ff1b88ad98b40230354dd21501676263b2",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_hooklib.py"
+    },
+    {
+      "path": "core/pysrc/_entrylib.py",
+      "git_blob": "14f5b7f68a60430df9c87a0395be1ca47d9aa70c",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_entrylib.py"
+    },
+    {
+      "path": "core/pysrc/_ledgerlib.py",
+      "git_blob": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_ledgerlib.py"
+    },
+    {
+      "path": "core/pysrc/_modelib.py",
+      "git_blob": "eecd013470e3d1db430b1686214f3d3aa02f9004",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_modelib.py"
+    },
+    {
+      "path": "core/pysrc/_updatelib.py",
+      "git_blob": "7de5c411dd17a443d57ad7df13d8c6e6309e601b",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_updatelib.py"
+    },
+    {
+      "path": "core/pysrc/doctor.py",
+      "git_blob": "47e2f066aef8e8f02103cc93cad2477828d88159",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/doctor.py"
+    },
+    {
+      "path": "core/pysrc/pre-read.py",
+      "git_blob": "08f4467a9895d81eff1a71b9a1c57b5682a311f8",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/pre-read.py"
+    },
+    {
+      "path": "core/pysrc/pre-write.py",
+      "git_blob": "c866cdbdc89b6cbe21ff3060893c2b081fa5a1ea",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/pre-write.py"
+    },
+    {
+      "path": "core/pysrc/pre-edit.py",
+      "git_blob": "c7d0bfe009d5d70d2a8a13b116c6a50a0805a899",
+      "group": "hot-readers-and-protection",
+      "disposition": "inspect-and-modify-where-needed",
+      "reason": "Select the owner consistently, preserve true protected-state boundaries; no new network/engine process in hot hooks.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/pre-edit.py"
+    },
+    {
+      "path": "core/pysrc/init-codearbiter.py",
+      "git_blob": "ab47257f03a0bdd2cbd249cc00478cdbeeea4f39",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/init-codearbiter.py"
+    },
+    {
+      "path": "core/pysrc/_contextwriterlib.py",
+      "git_blob": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_contextwriterlib.py"
+    },
+    {
+      "path": "core/pysrc/_contextselectlib.py",
+      "git_blob": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_contextselectlib.py"
+    },
+    {
+      "path": "core/pysrc/_contextmergelib.py",
+      "git_blob": "b4fd6fe36b38e9821b3c65888392b9df67a88f11",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_contextmergelib.py"
+    },
+    {
+      "path": "core/pysrc/_contextsnapshotlib.py",
+      "git_blob": "cc89a71aa784b109fbdfe123a787b30dab957134",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_contextsnapshotlib.py"
+    },
+    {
+      "path": "core/pysrc/_contextreportlib.py",
+      "git_blob": "000a03764987f7bb45db3093b1ae9c0da713650a",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_contextreportlib.py"
+    },
+    {
+      "path": "core/surface/commands/init.md",
+      "git_blob": "d00ab436b525ad86d0e9f95fb106833c9a297006",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/init.md"
+    },
+    {
+      "path": "core/surface/commands/reconcile.md",
+      "git_blob": "6ed56d2b2ea5b99ffc67e1d20632dfc2f3af3a65",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/reconcile.md"
+    },
+    {
+      "path": "core/surface/skills/decompose/SKILL.md",
+      "git_blob": "891a4ed873bbe2a8cbfd5ccb5315e6ef7ece1e02",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/decompose/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "git_blob": "9f28e5f8c9dbb903abee8e2264f60069c5128487",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/context-creation/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "git_blob": "10814dbe261c9ecd98be83716a03fd9699715018",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/context-check/SKILL.md"
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "git_blob": "89f24a75100b8c8a45256fa14071a541847c8448",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/includes/knowledge.md"
+    },
+    {
+      "path": "core/artifacts/internal/schema/knowledge.schema.json",
+      "git_blob": "29eb9454cd396d4d7aab85c6fc9698fe948c6fd2",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/schema/knowledge.schema.json"
+    },
+    {
+      "path": "core/artifacts/internal/schema/decomposition.schema.json",
+      "git_blob": "5f8a23c31848bad5fa34dc5538117ecf06af9811",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/schema/decomposition.schema.json"
+    },
+    {
+      "path": "core/artifacts/schemas/knowledge.schema.json",
+      "git_blob": "29eb9454cd396d4d7aab85c6fc9698fe948c6fd2",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/schemas/knowledge.schema.json"
+    },
+    {
+      "path": "core/artifacts/schemas/decomposition.schema.json",
+      "git_blob": "5f8a23c31848bad5fa34dc5538117ecf06af9811",
+      "group": "brownfield-and-context",
+      "disposition": "modify",
+      "reason": "Existing-project decomposition and scoped refresh without reinitialization or another ownership model.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/schemas/decomposition.schema.json"
+    },
+    {
+      "path": "core/surface/commands/task.md",
+      "git_blob": "a76737a05c1fa6750be259c4a91211cbaaf155a5",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/task.md"
+    },
+    {
+      "path": "core/surface/commands/status.md",
+      "git_blob": "e4359c41c5352062c34dbcdd44f3294af06d2995",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/status.md"
+    },
+    {
+      "path": "core/surface/commands/standup.md",
+      "git_blob": "d44c8365eca329f15b198e69de5fc4b56703ac53",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/standup.md"
+    },
+    {
+      "path": "core/surface/commands/feature.md",
+      "git_blob": "ebb6047b0ec2f7040c60c6847535bb1f65f6cd10",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/feature.md"
+    },
+    {
+      "path": "core/surface/commands/fix.md",
+      "git_blob": "03fbef8fef446eb3c40f8f7ea5207352e587ba0f",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/fix.md"
+    },
+    {
+      "path": "core/surface/commands/sprint.md",
+      "git_blob": "47ee0bd1fe815bd3137c923bdcf64476d91eb094",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/sprint.md"
+    },
+    {
+      "path": "core/surface/commands/chore.md",
+      "git_blob": "745a67e8a2a8fc239867f8b1b47bea85a1d535a7",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/chore.md"
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "git_blob": "fc392105511c9664ed4d8868c1fd66a999cf4bc8",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/checkpoint.md"
+    },
+    {
+      "path": "core/surface/commands/doctor.md",
+      "git_blob": "e3328cdfc172ba50210f3961275b99a992ec88ba",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/doctor.md"
+    },
+    {
+      "path": "core/surface/commands/pr.md",
+      "git_blob": "f36d003981fc06774cb5a2cf184aea42750210bf",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/commands/pr.md"
+    },
+    {
+      "path": "core/surface/SPRINT.md",
+      "git_blob": "20a20c4a12212cabf9849e521e0b0d885827fb2a",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/SPRINT.md"
+    },
+    {
+      "path": "core/surface/includes/harvest.md",
+      "git_blob": "db51df45e2d0aa838a0c55eaf7c2d38ecd1a2572",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/includes/harvest.md"
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "git_blob": "bf9c2763348344f983bd492c0bc48cd531aee965",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/includes/artifacts.md"
+    },
+    {
+      "path": "core/surface/includes/helper-invocation.md",
+      "git_blob": "96db0ccbd2bfa5df477904a9ec2c04d186e77897",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/includes/helper-invocation.md"
+    },
+    {
+      "path": "core/surface/includes/reference-map.md",
+      "git_blob": "983ed0c26c2bbe14009847017507e871f772e380",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/includes/reference-map.md"
+    },
+    {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "git_blob": "159e0f1d0746c26006e4d12a4f28429fb0c023b6",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/commit-gate/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "git_blob": "5082926a20883837a75994322db5c0b845eae3fd",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/finishing-a-development-branch/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "git_blob": "5b47ef521e29bcb9b49db2662d13806a415cd8de",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/writing-plans/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "git_blob": "7565e41307fc398ffca8be0839f4d9b373c60467",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/executing-plans/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "git_blob": "7c27d8ebb707088636e39a5ce28ca59043745609",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/subagent-driven-development/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+      "git_blob": "73a1f7ab66489cedd20faeb4dcb77a9ad2d17f4a",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/using-git-worktrees/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "git_blob": "1246d507b3bc3f46a8b15757b2a74d57207b93f0",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/tdd/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "git_blob": "83c3124f046df51e3db67278545260bff93b19d2",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/debug/SKILL.md"
+    },
+    {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "git_blob": "383e8310c380a84970a0811965f85c9fe0669d96",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/agents/checkpoint-aggregator.md"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/issue-filing.md",
+      "git_blob": "58d68867005242d74e6b85de5e935b0d11f14ed0",
+      "group": "commands-and-skills",
+      "disposition": "modify",
+      "reason": "Replace direct file/helper choreography with the work facade and source-bound record references.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/tribunal/references/issue-filing.md"
+    },
+    {
+      "path": "core/artifacts/internal/render/render.go",
+      "git_blob": "2be6970d8ac51fcf6c8a4908441d94421e0bf921",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/render/render.go"
+    },
+    {
+      "path": "core/artifacts/internal/render/assets/artifact.css",
+      "git_blob": "3b6f6dd0a299d342baa34ee84e7ad55594c83e46",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/render/assets/artifact.css"
+    },
+    {
+      "path": "core/artifacts/internal/render/brand.go",
+      "git_blob": "43bdd5a9d0ff6516429b03a5c2b1940ff5c0b6fa",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/render/brand.go"
+    },
+    {
+      "path": "core/artifacts/internal/render/render_test.go",
+      "git_blob": "3b4f2565838612b9105e1099c5503747373b2fef",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/render/render_test.go"
+    },
+    {
+      "path": "core/artifacts/internal/render/review_compat_test.go",
+      "git_blob": "6556b870d84bdc803836c6d1bf16f2a277978843",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/render/review_compat_test.go"
+    },
+    {
+      "path": "site/src/components/ArtifactWorkbench.astro",
+      "git_blob": "ff339a37a9b4319b1d503fbc4a7acf339a093cd7",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:site/src/components/ArtifactWorkbench.astro"
+    },
+    {
+      "path": "site/src/components/ProjectBlueprint.astro",
+      "git_blob": "d32b50bab21e045b4a5db040c3895619555f0ab2",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:site/src/components/ProjectBlueprint.astro"
+    },
+    {
+      "path": "site/src/content/docs/codearbiter-directory.md",
+      "git_blob": "d4b3267cf3051e2d2a36eafbbbb6074f0bbabb3b",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:site/src/content/docs/codearbiter-directory.md"
+    },
+    {
+      "path": "site/src/content/docs/concepts/artifacts.md",
+      "git_blob": "ff519d7aede65bf6d93b9f9b7f4904e3fc2b5379",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:site/src/content/docs/concepts/artifacts.md"
+    },
+    {
+      "path": "site/src/content/docs/guides/plan-a-new-project.mdx",
+      "git_blob": "782203dd1a026096c92c0c0b2a338ad087b18266",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:site/src/content/docs/guides/plan-a-new-project.mdx"
+    },
+    {
+      "path": "site/src/content/docs/guides/understand-an-existing-project.md",
+      "git_blob": "5c12d127328d3106adb30ede0fc480466c365cc0",
+      "group": "human-rendering",
+      "disposition": "modify",
+      "reason": "Derived work/project/cycle entry views; preserve inert native detail pages and existing flat artifact discovery.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:site/src/content/docs/guides/understand-an-existing-project.md"
+    },
+    {
+      "path": "core/hosts.json",
+      "git_blob": "4ee02473d7560ff1c6c90943ed28be9da741ab7f",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/hosts.json"
+    },
+    {
+      "path": "tools/sync-core.py",
+      "git_blob": "d59a9546e70499a41145d88d3635ccd5858fe0b1",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:tools/sync-core.py"
+    },
+    {
+      "path": "tools/build-surface.py",
+      "git_blob": "b9130f335f1deaeed3120de20c5810f78b5cf60a",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:tools/build-surface.py"
+    },
+    {
+      "path": "tools/build-host-packages.py",
+      "git_blob": "955430a404bd61cea6e66536c905dc6b967d0d00",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:tools/build-host-packages.py"
+    },
+    {
+      "path": "tools/generate-artifact-types.py",
+      "git_blob": "b4006749d1cc33522e642a9f2aa5942717e3ad79",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:tools/generate-artifact-types.py"
+    },
+    {
+      "path": "tools/build-artifacts.py",
+      "git_blob": "79cb0744d00ae9733e484431ff057096ed74c554",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:tools/build-artifacts.py"
+    },
+    {
+      "path": "core/artifacts/internal/model/types_generated.go",
+      "git_blob": "4a74b4d0eb398ff0284cfed9cbd858a7be66f75b",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/artifacts/internal/model/types_generated.go"
+    },
+    {
+      "path": "core/surface/command-routes.json",
+      "git_blob": "fd6ae79b90425f0d7a97c29711274939f17c3edf",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/command-routes.json"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "git_blob": "2897ef473a6d7c965b7bfa3bb22cab8efaf3eae9",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/activation.ts"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "git_blob": "5bc15e9cee1cad2360849eb4c22245b13b34082c",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/bridge.ts"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "git_blob": "2c9e1fec1655d4ccb4d38afec662cc1df28eaa18",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/status.ts"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "git_blob": "e16b1678060857d7e10a729b2e201661220e6fcc",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/footer-state.ts"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "git_blob": "833f950a6b0924fde21ba705b6e2697de9794b02",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/sidebar-data.ts"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "git_blob": "025576315d5120c52453c51c675a851bcac0bfaa",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/native-plan.ts"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "git_blob": "0d4f977f31dcecf0ec5f2355a7bce4e3be4db85a",
+      "group": "generated-and-independent-hosts",
+      "disposition": "generate-or-verify",
+      "reason": "Canonical source fanout, independent Pi readers, package contents and schema/type generation.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:plugins/ca-pi/tools/src/commands.ts"
+    },
+    {
+      "path": ".codearbiter/decisions/0008-commit-gate-board-sync-chokepoint.md",
+      "git_blob": "458e991181fad28462c466e21581cd80fcdfe47b",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:.codearbiter/decisions/0008-commit-gate-board-sync-chokepoint.md"
+    },
+    {
+      "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+      "git_blob": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:.codearbiter/decisions/0043-assistive-state-engine.md"
+    },
+    {
+      "path": "core/pysrc/_scopelib.py",
+      "git_blob": "53994a0d077cba7ec461a3b103766c5f077704d1",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_scopelib.py"
+    },
+    {
+      "path": "core/pysrc/_activationlib.py",
+      "git_blob": "3e3875a454941317efb1f172d2861e407b1c6b4c",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_activationlib.py"
+    },
+    {
+      "path": "core/pysrc/_adrlifecycle.py",
+      "git_blob": "249bb6ff21a7861c1438db8edb2634f0ba3fc4b1",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/pysrc/_adrlifecycle.py"
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+      "git_blob": "82b791ba561ad1cf0e267855503f4f05546e7e12",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/decision-lifecycle/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "git_blob": "0d183c9ab24195f5826d4af255b038afa1cbeb46",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/decision-variance/SKILL.md"
+    },
+    {
+      "path": "core/surface/skills/decompose/references/markdown-format.md",
+      "git_blob": "043ee6979cae2b7ebc40b9b64438034be640e502",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/decompose/references/markdown-format.md"
+    },
+    {
+      "path": "core/surface/skills/context-creation/references/markdown-format.md",
+      "git_blob": "a270e5c1db7ff1db946d0699ad17d6b665809822",
+      "group": "compatibility-decisions",
+      "disposition": "preserve-and-document-scoped-extension",
+      "reason": "Keep accepted intent and clarify remote-effect timing; no silent ADR acceptance or license/policy change.",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/context-creation/references/markdown-format.md"
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "git_blob": "036424b8c9ca6c5cfa74bd3b8f5f3db5f7f0ae2c",
+      "group": "additional-direct-consumers",
+      "disposition": "inspect-and-classify",
+      "reason": "Direct references: taskwrite.py, _taskboardlib",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/includes/routing-table.md"
+    },
+    {
+      "path": "core/surface/skills/tribunal/SKILL.md",
+      "git_blob": "aebf7129fdb9aa93f04a50fb3d652d3810ee257a",
+      "group": "additional-direct-consumers",
+      "disposition": "inspect-and-classify",
+      "reason": "Direct references: open-tasks.md",
+      "source_ref": "arbiterForge/codeArbiter@cdb0448d292ca9e65eb1127cf4e0c92dab803994:core/surface/skills/tribunal/SKILL.md"
+    }
+  ],
+  "planned_files": [
+    {
+      "path": "core/pysrc/work.py",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": "core/pysrc/_workgithub.py",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": "core/artifacts/schemas/work.schema.json",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": "core/artifacts/internal/schema/work.schema.json",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": ".github/scripts/test_work_interface.py",
+      "state": "proposed-not-present"
+    },
+    {
+      "path": ".github/scripts/test_work_github.py",
+      "state": "proposed-not-present"
+    }
+  ],
+  "generated_derivatives": [
+    "plugins/ca/hooks",
+    "plugins/ca-codex/hooks",
+    "plugins/ca-pi/hooks",
+    "plugins/ca/skills",
+    "plugins/ca-codex/routines",
+    "plugins/ca-pi/routines",
+    "site generated commands, guides and source-bound examples"
+  ],
+  "separate_owner_followups": [
+    {
+      "repository": "arbiterForge/arbiter-academy",
+      "action": "Inspect live affected lessons/verifier/compatibility at implementation; do not infer or edit from the codeArbiter submodule snapshot alone."
+    }
+  ],
+  "test_coverage_note": "Extend current suites by changed behavior; suggested new work fixtures are not asserted to exist or pass."
+}
