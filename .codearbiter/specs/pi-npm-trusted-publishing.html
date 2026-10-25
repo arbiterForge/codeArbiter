@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Pi npm trusted publishing · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-PI-TRUSTED-PUBLISH</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/pi-npm-trusted-publishing.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Pi npm trusted publishing</h1><p class="deck">Use npm OIDC trusted publishing and require the published tarball provenance to identify the intended repository, workflow, and source commit.</p><div class="meta"><span>SPEC-PI-TRUSTED-PUBLISH</span><span>Revision 3 · schema 0.3.2</span><span>14 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>Owner release finding and accepted ADR-0044</div><div class="field"><span class="label">Outcome</span>Use trusted publisher OIDC and require exact Pi tarball origin before release completion.</div><div class="field"><span class="label">Problem</span>Long-lived npm publish token and advisory provenance allow an unverifiable Pi release to complete.</div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-PI-TRUST -->
+<article class="record" id="SCOPE-PI-TRUST" data-ca-symbol="SCOPE-PI-TRUST" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-PI-TRUST">SCOPE-PI-TRUST</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Pi npm authentication, provenance readback, focused tests and release security documentation.</div></article>
+<!-- CA:END:SCOPE-PI-TRUST -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NONGOAL-PI-TRUST -->
+<article class="record" id="NONGOAL-PI-TRUST" data-ca-symbol="NONGOAL-PI-TRUST" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NONGOAL-PI-TRUST">NONGOAL-PI-TRUST</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Other plugins, tag movement, immediate release publication, or unverified claims about npm account settings.</div></article>
+<!-- CA:END:NONGOAL-PI-TRUST -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Choice</span>Retain the independent Pi release job and existing npm verifier, remove token wiring, require signed attestation identity at selection and readback.</div><div class="field"><span class="label">Tradeoff</span>Registry or Sigstore failures can leave an immutable npm version with a draft GitHub Release.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2><span class="missing">None recorded</span></section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:CRIT-OIDC -->
+<article class="record" id="CRIT-OIDC" data-ca-symbol="CRIT-OIDC" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#CRIT-OIDC">CRIT-OIDC</a><h3>OIDC only Pi publication</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required for every Pi npm release.</div></div></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>npm publishes with OIDC and no long-lived token</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-PI-TRUST">SCOPE-PI-TRUST</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCEN-OIDC -->
+<article class="record" id="SCEN-OIDC" data-ca-symbol="SCEN-OIDC" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCEN-OIDC">SCEN-OIDC</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>the Pi release job runs</div><div class="field"><span class="label">Then</span>npm publishes with OIDC and no long-lived token</div><div class="field"><span class="label">When</span>the package is absent and publish is needed</div></article>
+<!-- CA:END:SCEN-OIDC -->
+</div><div class="field"><span class="label">Statement</span>Pi publishing has id-token: write and no reusable npm token input or fallback.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VERIFY-OIDC -->
+<article class="record" id="VERIFY-OIDC" data-ca-symbol="VERIFY-OIDC" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VERIFY-OIDC">VERIFY-OIDC</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Inject NODE_AUTH_TOKEN and observe rejection.</div><div class="field"><span class="label">Oracle</span>Structural checks enforce token-free publish and OIDC permission.</div><div class="field"><span class="label">Planned target</span>test_pi_package.py and test_release_workflow.py</div></article>
+<!-- CA:END:VERIFY-OIDC -->
+</div></article>
+<!-- CA:END:CRIT-OIDC -->
+
+<!-- CA:BEGIN:CRIT-IDENTITY -->
+<article class="record" id="CRIT-IDENTITY" data-ca-symbol="CRIT-IDENTITY" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#CRIT-IDENTITY">CRIT-IDENTITY</a><h3>Blocking provenance identity</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required for every Pi npm release.</div></div></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>wrong or missing identity stops Release publication</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-PI-TRUST">SCOPE-PI-TRUST</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCEN-IDENTITY -->
+<article class="record" id="SCEN-IDENTITY" data-ca-symbol="SCEN-IDENTITY" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCEN-IDENTITY">SCEN-IDENTITY</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>the Pi version is present or newly published</div><div class="field"><span class="label">Then</span>wrong or missing identity stops Release publication</div><div class="field"><span class="label">When</span>the release validates npm readback</div></article>
+<!-- CA:END:SCEN-IDENTITY -->
+</div><div class="field"><span class="label">Statement</span>Fresh and existing Pi versions require exact integrity, signature verification and an attestation naming arbiterForge/codeArbiter release.yml at the intended source commit before GitHub Release publication.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VERIFY-IDENTITY -->
+<article class="record" id="VERIFY-IDENTITY" data-ca-symbol="VERIFY-IDENTITY" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VERIFY-IDENTITY">VERIFY-IDENTITY</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Validly shaped attestation from another workflow is rejected.</div><div class="field"><span class="label">Oracle</span>Wrong source, workflow, missing attestation or signature failure blocks release.</div><div class="field"><span class="label">Planned target</span>test_pi_package.py and test_release_workflow.py</div></article>
+<!-- CA:END:VERIFY-IDENTITY -->
+</div></article>
+<!-- CA:END:CRIT-IDENTITY -->
+
+<!-- CA:BEGIN:CRIT-ACCOUNT -->
+<article class="record" id="CRIT-ACCOUNT" data-ca-symbol="CRIT-ACCOUNT" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#CRIT-ACCOUNT">CRIT-ACCOUNT</a><h3>Account-side trust qualification</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required for every Pi npm release.</div></div></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>the exact workflow publishes through OIDC and is observed</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-PI-TRUST">SCOPE-PI-TRUST</a></li></ul></div><div class="field"><span class="label">Kind</span>operational</div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCEN-ACCOUNT -->
+<article class="record" id="SCEN-ACCOUNT" data-ca-symbol="SCEN-ACCOUNT" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCEN-ACCOUNT">SCEN-ACCOUNT</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>the npm trusted publisher is configured</div><div class="field"><span class="label">Then</span>the exact workflow publishes through OIDC and is observed</div><div class="field"><span class="label">When</span>an owner qualifies a hosted release</div></article>
+<!-- CA:END:SCEN-ACCOUNT -->
+</div><div class="field"><span class="label">Statement</span>The npm package trusted-publisher setting permits npm publish from the exact GitHub release.yml workflow; live OIDC publication is qualified separately.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VERIFY-ACCOUNT -->
+<article class="record" id="VERIFY-ACCOUNT" data-ca-symbol="VERIFY-ACCOUNT" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VERIFY-ACCOUNT">VERIFY-ACCOUNT</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>inspection</div><div class="field"><span class="label">Negative control</span>A missing or mismatched trusted publisher leaves the release unqualified.</div><div class="field"><span class="label">Oracle</span>Owner-visible configuration and a successful exact-head OIDC publish are observed.</div><div class="field"><span class="label">Planned target</span>npm package settings and hosted release run</div></article>
+<!-- CA:END:VERIFY-ACCOUNT -->
+</div></article>
+<!-- CA:END:CRIT-ACCOUNT -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-SMARTS -->
+<article class="record" id="SEC-SMARTS" data-ca-symbol="SEC-SMARTS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-SMARTS">SEC-SMARTS</a><h3>Design rationale</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Use the current publisher and verifier. A second publisher adds a path without improving identity; token fallback defeats the security boundary. ADR-0044 records the accepted outage tradeoff.</p></div></div></article>
+<!-- CA:END:SEC-SMARTS -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2><span class="missing">None recorded</span></section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Observed date</span>2026-10-25</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 334cdb91f1e02b6dee86c3eb579fbf50e81cf6825ffe4d60c1a74c1642b34a2d<br>Model SHA-256: d702f6b0545cdb9b6105796af7780888f88a8176fd8b3143b5c3c6a1a38837df</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-PI-TRUSTED-PUBLISH",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "d702f6b0545cdb9b6105796af7780888f88a8176fd8b3143b5c3c6a1a38837df",
+    "normative_sha256": "334cdb91f1e02b6dee86c3eb579fbf50e81cf6825ffe4d60c1a74c1642b34a2d",
+    "symbol_count": 14
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "choice": "Retain the independent Pi release job and existing npm verifier, remove token wiring, require signed attestation identity at selection and readback.",
+      "id": "APPROACH-01",
+      "tradeoff": "Registry or Sigstore failures can leave an immutable npm version with a draft GitHub Release."
+    },
+    "baseline": {
+      "commit": null,
+      "observed_date": "2026-10-25",
+      "repository": null
+    },
+    "constraints": [],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required for every Pi npm release."
+        },
+        "guarantees": [
+          "npm publishes with OIDC and no long-lived token"
+        ],
+        "id": "CRIT-OIDC",
+        "intent_refs": [
+          "SCOPE-PI-TRUST"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "scenarios": [
+          {
+            "given": "the Pi release job runs",
+            "id": "SCEN-OIDC",
+            "then": "npm publishes with OIDC and no long-lived token",
+            "when": "the package is absent and publish is needed"
+          }
+        ],
+        "statement": "Pi publishing has id-token: write and no reusable npm token input or fallback.",
+        "title": "OIDC only Pi publication",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VERIFY-OIDC",
+          "method": "automated",
+          "negative_control": "Inject NODE_AUTH_TOKEN and observe rejection.",
+          "oracle": "Structural checks enforce token-free publish and OIDC permission.",
+          "planned_target": "test_pi_package.py and test_release_workflow.py"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required for every Pi npm release."
+        },
+        "guarantees": [
+          "wrong or missing identity stops Release publication"
+        ],
+        "id": "CRIT-IDENTITY",
+        "intent_refs": [
+          "SCOPE-PI-TRUST"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "scenarios": [
+          {
+            "given": "the Pi version is present or newly published",
+            "id": "SCEN-IDENTITY",
+            "then": "wrong or missing identity stops Release publication",
+            "when": "the release validates npm readback"
+          }
+        ],
+        "statement": "Fresh and existing Pi versions require exact integrity, signature verification and an attestation naming arbiterForge/codeArbiter release.yml at the intended source commit before GitHub Release publication.",
+        "title": "Blocking provenance identity",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VERIFY-IDENTITY",
+          "method": "automated",
+          "negative_control": "Validly shaped attestation from another workflow is rejected.",
+          "oracle": "Wrong source, workflow, missing attestation or signature failure blocks release.",
+          "planned_target": "test_pi_package.py and test_release_workflow.py"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required for every Pi npm release."
+        },
+        "guarantees": [
+          "the exact workflow publishes through OIDC and is observed"
+        ],
+        "id": "CRIT-ACCOUNT",
+        "intent_refs": [
+          "SCOPE-PI-TRUST"
+        ],
+        "kind": "operational",
+        "obligation": "must",
+        "scenarios": [
+          {
+            "given": "the npm trusted publisher is configured",
+            "id": "SCEN-ACCOUNT",
+            "then": "the exact workflow publishes through OIDC and is observed",
+            "when": "an owner qualifies a hosted release"
+          }
+        ],
+        "statement": "The npm package trusted-publisher setting permits npm publish from the exact GitHub release.yml workflow; live OIDC publication is qualified separately.",
+        "title": "Account-side trust qualification",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VERIFY-ACCOUNT",
+          "method": "inspection",
+          "negative_control": "A missing or mismatched trusted publisher leaves the release unqualified.",
+          "oracle": "Owner-visible configuration and a successful exact-head OIDC publish are observed.",
+          "planned_target": "npm package settings and hosted release run"
+        }
+      }
+    ],
+    "decisions": [],
+    "governs": [],
+    "intent": {
+      "caller": "Owner release finding and accepted ADR-0044",
+      "id": "INTENT-01",
+      "outcome": "Use trusted publisher OIDC and require exact Pi tarball origin before release completion.",
+      "problem": "Long-lived npm publish token and advisory provenance allow an unverifiable Pi release to complete."
+    },
+    "non_goals": [
+      {
+        "id": "NONGOAL-PI-TRUST",
+        "statement": "Other plugins, tag movement, immediate release publication, or unverified claims about npm account settings."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-PI-TRUST",
+        "statement": "Pi npm authentication, provenance readback, focused tests and release security documentation."
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Use the current publisher and verifier. A second publisher adds a path without improving identity; token fallback defeats the security boundary. ADR-0044 records the accepted outage tradeoff.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-SMARTS",
+        "title": "Design rationale"
+      }
+    ],
+    "sources": [],
+    "summary": "Use npm OIDC trusted publishing and require the published tarball provenance to identify the intended repository, workflow, and source commit.",
+    "title": "Pi npm trusted publishing"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/pi-npm-trusted-publishing.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 3,
+  "schema_version": "0.3.2",
+  "slug": "pi-npm-trusted-publishing"
+}
+</script>
+</body></html>
