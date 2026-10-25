@@ -128,7 +128,7 @@ function runDocker(args, extra = {}, options = {}, call = {}) {
   return new Promise((resolve) => {
     let child;
     try {
-      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra, ...call.env ? { env: call.env } : {} });
     } catch (e) {
       resolve({ code: 1, stdout: "", stderr: String(e) });
       return;

@@ -293,12 +293,30 @@ func (f *FS) Commit(id, requestHash string, edits []Edit, result ...map[string]a
 	if e != nil {
 		return Outcome{}, e
 	}
-	if e = f.create(journalPath(id), jb, 0600); e != nil {
+	// A final .json is authoritative to Pending and Recover. Prepare complete,
+	// synced bytes under a non-authoritative name before publishing that name.
+	journalStage := journalPath(id) + ".next"
+	if e = f.createOrCompare(journalStage, jb, 0600); e != nil {
+		if fault.Code(e) == "OPERATION_ID_REUSE" {
+			return Outcome{}, &fault.Error{Code: "RECOVERY_REQUIRED", Message: "orphan journal stage differs from this operation; preserve it for manual reconciliation", OperationID: id}
+		}
 		return Outcome{}, e
+	}
+	if e = f.step("before-journal-publish"); e != nil {
+		return Outcome{}, e
+	}
+	if e = f.replace(journalStage, journalPath(id), true); e != nil {
+		// Publication may have succeeded before a later unlink or sync failed.
+		// Retain the stages for explicit recovery or an exact same-ID retry.
+		durable = true
+		return Outcome{}, &fault.Error{Code: "COMMIT_OUTCOME_UNKNOWN", Message: "journal publication needs reconciliation; do not resubmit under a new ID", OperationID: id}
 	}
 	durable = true
 	uncertain := func(e error) (Outcome, error) {
 		return outcome(j, false), &fault.Error{Code: "COMMIT_OUTCOME_UNKNOWN", Message: "durable operation needs reconciliation; do not resubmit under a new ID", OperationID: id}
+	}
+	if e = f.step("after-journal-publish"); e != nil {
+		return uncertain(e)
 	}
 	if e = f.step("after-journal"); e != nil {
 		return uncertain(e)
@@ -472,18 +490,21 @@ func (f *FS) PutReceipt(name string, b []byte) error {
 }
 
 // A process death before the durable journal can leave immutable staging bytes.
-// Reusing exactly those bytes is safe because no target replacement is possible
-// before the journal. Different bytes under the same operation ID are rejected.
+// Matching bytes establish retry identity, but an orphan could have been left
+// before its file sync. Recreate it through the synced create path before the
+// journal can become authoritative. Different bytes are never removed.
 func (f *FS) createOrCompare(p string, b []byte, mode uint32) error {
 	old, e := f.current(p)
 	if e != nil {
 		return e
 	}
 	if old != nil {
-		if bytes.Equal(old, b) {
-			return nil
+		if !bytes.Equal(old, b) {
+			return fault.New("OPERATION_ID_REUSE", "orphan staging bytes differ from the retry")
 		}
-		return fault.New("OPERATION_ID_REUSE", "orphan staging bytes differ from the retry")
+		if e := f.remove(p); e != nil {
+			return e
+		}
 	}
 	return f.create(p, b, mode)
 }

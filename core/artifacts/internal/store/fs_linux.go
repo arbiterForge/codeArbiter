@@ -456,6 +456,11 @@ func (f *FS) replace(stage, dest string, createOnly bool) error {
 	if createOnly {
 		e = linkat(int(a.Fd()), an, int(b.Fd()), bn)
 		if e == nil {
+			if strings.HasPrefix(dest, meta+"/transactions/") && strings.HasSuffix(dest, ".json") {
+				if e = f.step("during-journal-publish"); e != nil {
+					return e
+				}
+			}
 			e = syscall.Unlinkat(int(a.Fd()), an)
 		}
 	} else {
