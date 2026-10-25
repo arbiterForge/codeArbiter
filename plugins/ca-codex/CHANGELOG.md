@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.22.2] - 2026-10-24
+
+### Fixed
+
+- Recover a stranded Tribunal write lock only after confirming the exact lock
+  digest and that no writer holds the run guard. Preserve the old lock as an
+  archive and refuse recovery when the source-bound audit state has drifted.
 ## [0.22.1] - 2026-10-24
 
 ### Fixed

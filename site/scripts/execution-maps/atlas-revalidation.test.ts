@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -256,7 +256,7 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
     expect(changed).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
-      'core/pysrc/_readinjectlib.py',
+      'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
@@ -305,7 +305,7 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
-      'core/pysrc/_readinjectlib.py',
+      'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
@@ -445,6 +445,27 @@ describe('atlas source compatibility revalidation', () => {
     }
   });
 
+  it('binds guarded tribunal lock recovery to the existing resume and history route', () => {
+    expect(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS).toEqual({
+      'core/surface/skills/tribunal/SKILL.md': 'aebf7129fdb9aa93f04a50fb3d652d3810ee257a',
+      'core/pysrc/_tribunalrunlib.py': '6dc04cc4d6728cd3e1d4abe381f7f9cdd6125866',
+    });
+    for (const [path, blob] of Object.entries(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS)) {
+      expect(git('hash-object', '--', path).trim()).toBe(blob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n'));
+    }
+    const sources = new Map(atlas.sources.map(source => [source.id, source]));
+    expect(sources.get('S29')!.note).toContain('guarded hash-bound stranded-lock recovery');
+    expect(sources.get('S29')!.revalidation).toContain('operator-confirmed exact-digest recovery');
+    expect(sources.get('S30')!.note).toContain('per-run writer guard');
+    expect(sources.get('S30')!.revalidation).toContain('Active writers');
+    const route = atlas.views.find(view => view.id === 'tribunal-lifecycle')!;
+    for (const id of ['t-resume', 't-history', 't-continue']) {
+      expect(route.nodes.find(node => node.id === id)!.source_ids).toContain('S29');
+    }
+    expect(route.nodes.find(node => node.id === 't-account')!.source_ids).toContain('S30');
+  });
+
   it('retains the exact historical legacy delivery documents separately from current maintenance', () => {
     for (const [path, blob] of Object.entries(LEGACY_CODE_MAP_SOURCE_BLOBS)) {
       expect(git('rev-parse', `${legacyDeliveryReview}:${path}`).trim()).toBe(blob);
@@ -486,7 +507,7 @@ describe('atlas source compatibility revalidation', () => {
     expect(offset).toBe(reviewed.length);
     expect(changed).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
-      'core/pysrc/_readinjectlib.py',
+      'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
@@ -522,7 +543,7 @@ describe('atlas source compatibility revalidation', () => {
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
       ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS,
-      ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS});
+      ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS, ...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

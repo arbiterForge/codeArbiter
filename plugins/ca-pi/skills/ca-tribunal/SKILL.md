@@ -63,6 +63,10 @@ schemas (`<plugin-root>/routines/tribunal/references/schemas.md`).
    unresolved filing/telemetry after the unchanged-source check. source-drift,
    legacy-unbound or invalid never resume as current evidence. terminal starts
    fresh if a new audit is requested. Preserve all historical files.
+   If a stranded `.write-lock` blocks writes, use the helper's `recover-lock`
+   only after explicit operator confirmation that no writer is running and an
+   exact SHA-256 match for the inspected lock. Preserve the archived lock and
+   records; never manually delete the lock or infer staleness from its age.
 2. For fresh work use `inventory` for mechanical facts; no model mapper yet.
    Inspect applicability, bounded target packets and declared outside-subtree
    evidence. Enumerate concrete represented files/gitlinks before binding;

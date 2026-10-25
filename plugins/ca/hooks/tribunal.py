@@ -45,6 +45,10 @@ def main(argv=None):
     resume.add_argument("--evidence-path", action="append", default=None)
     read = commands.add_parser("read-run")
     read.add_argument("run")
+    recover = commands.add_parser("recover-lock")
+    recover.add_argument("run")
+    recover.add_argument("--expected-sha256", required=True)
+    recover.add_argument("--confirm-no-writer", action="store_true")
     event = commands.add_parser("event")
     event.add_argument("run")
     event.add_argument("event")
@@ -85,6 +89,9 @@ def main(argv=None):
         result = runs.resume_status(args.root, args.run, args.scope, args.target_digest, args.evidence_path)
     elif args.command == "read-run":
         result = runs.read_run(args.root, args.run)
+    elif args.command == "recover-lock":
+        result = runs.recover_lock(args.root, args.run, args.expected_sha256,
+                                   args.confirm_no_writer)
     elif args.command == "event":
         if not isinstance(args.data, dict):
             parser.error("--data must be a JSON object")
