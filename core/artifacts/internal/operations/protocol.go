@@ -259,6 +259,7 @@ func RequestSchema(op string) (object, error) {
 	case "knowledge-cutover":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("mode", enum("sections", "preview", "apply"), true)
+		add("cursor", object{"type": "integer", "minimum": 0}, false)
 		add("expected", object{"type": "object", "additionalProperties": object{"oneOf": []any{digestType(), object{"type": "null"}}}}, false)
 		add("coverage", array(closed(object{
 			"section": text(),

@@ -272,9 +272,23 @@ def _convert(client, root, finish, coverage_arg):
             if _doc_id(doc) not in present:
                 _create(client, doc)
                 created.append(_doc_id(doc))
-        inventory = client.call("knowledge-cutover", {"operation_id": "knowledge-cutover-sections", "mode": "sections"})
-        return {"created": created, "read": sorted(inventory["sources"]),
-                "sections": inventory["sections"], "token": _source_token(inventory["sources"]),
+        sources, sections, cursor = None, [], 0
+        while True:
+            inventory = client.call("knowledge-cutover", {"operation_id": "knowledge-cutover-sections",
+                                                          "mode": "sections", "cursor": cursor})
+            if sources is None:
+                sources = inventory["sources"]
+            elif inventory["sources"] != sources:
+                raise ValueError("Markdown changed during section inventory; run convert again")
+            sections.extend(inventory["sections"])
+            next_cursor = inventory["next_cursor"]
+            if next_cursor is None:
+                break
+            if next_cursor <= cursor:
+                raise ValueError("section inventory did not advance")
+            cursor = next_cursor
+        return {"created": created, "read": sorted(sources),
+                "sections": sections, "token": _source_token(sources),
                 "next": "Read each file. Add records or notes for every meaningful section, in batches of at most 32. "
                         "Map every returned section ID to its saved record or note references in a JSON checklist "
                         "([{section, records}]); use [] only for sections marked content=false. Exclude secret values. "

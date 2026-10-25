@@ -204,7 +204,6 @@ func (e *Engine) planCutover() (*cutoverPlan, error) {
 	for _, entry := range entries {
 		docs[entry.Doc.ID()] = entry.Doc
 	}
-	initialized := strings.Contains(string(ctx[bodyStart:]), "<!--INITIALIZED-->")
 	plan := &cutoverPlan{expected: map[string]any{contextPath: canonical.BytesHash(ctx)}, coverage: []any{}}
 	for _, doc := range knowledgeDocuments {
 		d := docs[knowledgeID(doc.slug)]
@@ -226,7 +225,7 @@ func (e *Engine) planCutover() (*cutoverPlan, error) {
 		// Report meaningful section coverage; validation uses the section
 		// checklist below rather than a coarse record count for the whole file.
 		content := false
-		if present && (doc.legacy != contextPath || initialized) {
+		if present {
 			sections, err := contextdocument.Sections(raw, start, doc.title)
 			if err != nil {
 				return nil, err
@@ -319,11 +318,35 @@ func (e *Engine) knowledgeCutover(r object) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		listed := []any{}
-		for _, section := range sections {
-			listed = append(listed, section.view)
+		cursor := int(model.I(r["cursor"]))
+		if cursor < 0 || cursor > len(sections) {
+			return nil, fault.New("INVALID_CURSOR", "section cursor is outside the inventory")
 		}
-		return object{"mode": "sections", "sources": sources, "sections": listed}, nil
+		listed := []any{}
+		out := object{"mode": "sections", "sources": sources, "sections": listed, "next_cursor": nil}
+		for i := cursor; i < len(sections); i++ {
+			listed = append(listed, sections[i].view)
+			out["sections"] = listed
+			out["next_cursor"] = int64(i + 1)
+			encoded, err := canonical.Marshal(out)
+			if err != nil {
+				return nil, err
+			}
+			if len(encoded) > 60_000 {
+				listed = listed[:len(listed)-1]
+				if len(listed) == 0 {
+					return nil, fault.New("SECTION_PAGE_TOO_LARGE", "one section plus source inventory exceeds the response limit")
+				}
+				out["sections"] = listed
+				out["next_cursor"] = int64(i)
+				return out, nil
+			}
+			if len(listed) == 64 {
+				return out, nil
+			}
+		}
+		out["next_cursor"] = nil
+		return out, nil
 	}
 	if replay, err := e.FS.Lookup(model.S(r["operation_id"]), e.RequestHash); err != nil {
 		return nil, err

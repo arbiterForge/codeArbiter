@@ -66,8 +66,8 @@ worktree does not establish their referenced verification or approval history.
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
 
-`knowledge-cutover` has a read-only `sections` mode that returns exact Markdown
-byte spans and source hashes. `preview` and `apply` require one checklist row
+`knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
+exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
 per section, mapping every meaningful section to active record or note
 references in its matching knowledge document. `apply` also requires the
 preview's input identities and commits the cutover in one journaled transaction.

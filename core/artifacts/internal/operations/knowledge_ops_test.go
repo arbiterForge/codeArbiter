@@ -197,6 +197,60 @@ func TestKnowledgeCutoverRefusesUnmappedSections(t *testing.T) {
 	}
 }
 
+func TestKnowledgeCutoverRequiresCoverageForUninitializedNarrative(t *testing.T) {
+	r := newLegacyRepo(t)
+	p := filepath.Join(r.root, ".codearbiter", "CONTEXT.md")
+	if err := os.WriteFile(p, []byte(strings.Replace(legacyContext, "<!--INITIALIZED-->\n", "", 1)), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	inventory := r.call("knowledge-cutover", object{"operation_id": r.next(), "mode": "sections"})
+	meaningful := 0
+	for _, value := range model.A(inventory["sections"]) {
+		section := model.M(value)
+		if section["source"] == contextPath && section["content"] == true {
+			meaningful++
+		}
+	}
+	if meaningful == 0 {
+		t.Fatal("uninitialized but authored CONTEXT.md narrative was classified as empty")
+	}
+}
+
+func TestKnowledgeCutoverPagesLargeSectionInventory(t *testing.T) {
+	r := newLegacyRepo(t)
+	p := filepath.Join(r.root, ".codearbiter", "tech-stack.md")
+	var markdown strings.Builder
+	markdown.WriteString("# Tech stack\n")
+	for i := 0; i < 300; i++ {
+		markdown.WriteString("\n## Rule ")
+		markdown.WriteString(strings.Repeat("x", 32))
+		markdown.WriteString("\nKeep the rule.\n")
+	}
+	if err := os.WriteFile(p, []byte(markdown.String()), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	count, cursor := 0, int64(0)
+	for {
+		page := r.call("knowledge-cutover", object{"operation_id": r.next(), "mode": "sections", "cursor": cursor})
+		encoded, err := canonical.Marshal(page)
+		if err != nil || len(encoded) > 60_000 {
+			t.Fatalf("section page exceeds bridge budget: bytes=%d err=%v", len(encoded), err)
+		}
+		count += len(model.A(page["sections"]))
+		if page["next_cursor"] == nil {
+			break
+		}
+		next := model.I(page["next_cursor"])
+		if next <= cursor {
+			t.Fatal("section cursor did not advance")
+		}
+		cursor = next
+	}
+	if count < 300 {
+		t.Fatalf("paged inventory lost sections: %d", count)
+	}
+}
+
 func TestKnowledgeCutoverRetryKeepsLaterWorkAndStaleApplyFails(t *testing.T) {
 	r := newLegacyRepo(t)
 	r.prepare()

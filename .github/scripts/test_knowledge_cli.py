@@ -168,6 +168,15 @@ class KnowledgeCli(unittest.TestCase):
         outline = self.knowledge("read", "tech-stack")["records"]
         self.assertEqual([r["id"] for r in outline if r["kind"] == "notes"], ["NOTE-001", "NOTE-002"])
 
+    def test_large_markdown_inventory_is_paged(self):
+        self.scaffold("--format", "markdown")
+        source = self.root / ".codearbiter/tech-stack.md"
+        source.write_text("# Tech stack\n" + "".join(
+            f"\n## Rule {i}\nKeep the rule.\n" for i in range(300)), encoding="utf-8")
+        prepared = self.knowledge("convert")
+        self.assertGreaterEqual(len([part for part in prepared["sections"]
+                                     if part["source"] == ".codearbiter/tech-stack.md"]), 301)
+
     def test_promotion_is_idempotent_across_archive(self):
         self.scaffold()
         self.knowledge("create-missing")

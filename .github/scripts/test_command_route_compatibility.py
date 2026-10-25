@@ -114,6 +114,12 @@ OWNER_OPERATIONAL_SHA256.update({
     'create-context': '53c7517302b6c9298a0d3167873cd597544431faf5f0b0be563fca2318a45eb7',
     'decompose': '548fb7672659664761d7b0236a249e3334691e904cf30ee06c6df37e11377a6a',
 })
+# PR #1030 adds the explicit section checklist to the HTML conversion owner.
+# The Markdown procedures in references/markdown-format.md retain their pins.
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': 'a0f7c065ba6355291244208ce8a4fb7a498b93c1113a85f9ce624d0a3a601353',
+    'decompose': 'de754accbc1bb7cae4f02e7ef710a180856d7589f9aa502c5bc38d1f7f5081ce',
+})
 EXPECTED_DEFAULT_BODY_SHA256.update({
     'init': '08746b4ddc731e134857c288fd321ed8072fec5408e05c147001614cc0f9c46d',
 })

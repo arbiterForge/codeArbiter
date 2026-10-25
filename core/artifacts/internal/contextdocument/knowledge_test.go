@@ -25,6 +25,18 @@ func TestHeadingOnlyMarkdownHasContent(t *testing.T) {
 	}
 }
 
+func TestHasContentKeepsTextAfterComments(t *testing.T) {
+	for _, source := range []string{
+		"<!-- explanation --> Never log tokens\n",
+		"<!-- explanation\ncontinued --> Never log tokens\n",
+		"<!-- unfinished comment\nNever log tokens\n",
+	} {
+		if !HasContent([]byte(source), 0) {
+			t.Fatalf("visible or uncertain Markdown was treated as empty: %q", source)
+		}
+	}
+}
+
 func TestConfigOnlyControlsRejectsMismatchedScopeBlocks(t *testing.T) {
 	_, err := ConfigOnlyControls([]byte("<!-- migration-paths -->\n+ db/**\n<!-- /ci-paths -->\n"))
 	if err == nil {

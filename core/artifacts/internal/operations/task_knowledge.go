@@ -3,6 +3,7 @@ package operations
 import (
 	"encoding/json"
 	"path"
+	"sort"
 	"strings"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
@@ -156,15 +157,13 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 		}
 	}
 	// Stable order: rank, then reference.
-	for i := 1; i < len(candidates); i++ {
-		for j := i; j > 0; j-- {
-			a, b := candidates[j-1], candidates[j]
-			if selectionRank[a.reason] < selectionRank[b.reason] || selectionRank[a.reason] == selectionRank[b.reason] && a.ref <= b.ref {
-				break
-			}
-			candidates[j-1], candidates[j] = b, a
+	sort.SliceStable(candidates, func(i, j int) bool {
+		a, b := candidates[i], candidates[j]
+		if selectionRank[a.reason] != selectionRank[b.reason] {
+			return selectionRank[a.reason] < selectionRank[b.reason]
 		}
-	}
+		return a.ref < b.ref
+	})
 	initial, _ := json.Marshal(out)
 	used := len(initial)
 	// Leave room for counts growing in decimal and for the caller's wrapper.

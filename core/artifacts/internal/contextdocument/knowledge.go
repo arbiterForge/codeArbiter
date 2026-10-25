@@ -154,18 +154,26 @@ func HasContent(raw []byte, start int) bool {
 		without.Write(body[last:])
 		body = without.Bytes()
 	}
-	comment := false
-	for _, line := range strings.Split(string(body), "\n") {
-		t := strings.TrimSpace(line)
-		if comment {
-			comment = !strings.Contains(t, "-->")
-			continue
+	// Remove closed comments without discarding visible text on the same line.
+	// An unclosed comment is uncertain content and must receive coverage.
+	var visible bytes.Buffer
+	for len(body) > 0 {
+		open := bytes.Index(body, []byte("<!--"))
+		if open < 0 {
+			visible.Write(body)
+			break
 		}
-		switch {
-		case t == "", t == "---":
-		case strings.HasPrefix(t, "<!--"):
-			comment = !strings.Contains(t, "-->")
-		default:
+		visible.Write(body[:open])
+		body = body[open+4:]
+		close := bytes.Index(body, []byte("-->"))
+		if close < 0 {
+			return true
+		}
+		body = body[close+3:]
+	}
+	for _, line := range strings.Split(visible.String(), "\n") {
+		t := strings.TrimSpace(line)
+		if t != "" && t != "---" {
 			return true
 		}
 	}

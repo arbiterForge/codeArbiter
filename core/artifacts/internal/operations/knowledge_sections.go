@@ -2,7 +2,6 @@ package operations
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument"
@@ -32,10 +31,9 @@ func (e *Engine) sourceSections() (map[string]any, []sourceSection, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	initialized := strings.Contains(string(ctx[bodyStart:]), "<!--INITIALIZED-->")
 	expected := map[string]any{}
 	sections := []sourceSection{}
-	add := func(p, id, title string, raw []byte, start int, active bool) error {
+	add := func(p, id, title string, raw []byte, start int) error {
 		expected[p] = canonical.BytesHash(raw)
 		parts, err := contextdocument.Sections(raw, start, title)
 		if err != nil {
@@ -43,7 +41,7 @@ func (e *Engine) sourceSections() (map[string]any, []sourceSection, error) {
 		}
 		for _, part := range parts {
 			sectionID := fmt.Sprintf("%s@%d:%d", p, part.Start, part.End)
-			content := active && part.Content
+			content := part.Content
 			sections = append(sections, sourceSection{sectionID, p, id, content,
 				object{"id": sectionID, "source": p, "artifact_id": id,
 					"start": int64(part.Start), "end": int64(part.End), "heading": part.Heading,
@@ -56,9 +54,9 @@ func (e *Engine) sourceSections() (map[string]any, []sourceSection, error) {
 	}
 	for _, doc := range knowledgeDocuments {
 		p := doc.legacy
-		raw, start, active := []byte(nil), 0, true
+		raw, start := []byte(nil), 0
 		if p == contextPath {
-			raw, start, active = ctx, bodyStart, initialized
+			raw, start = ctx, bodyStart
 		} else {
 			var found bool
 			raw, found, err = readOptional(e.FS, p)
@@ -69,7 +67,7 @@ func (e *Engine) sourceSections() (map[string]any, []sourceSection, error) {
 				continue
 			}
 		}
-		if err := add(p, knowledgeID(doc.slug), doc.title, raw, start, active); err != nil {
+		if err := add(p, knowledgeID(doc.slug), doc.title, raw, start); err != nil {
 			return nil, nil, err
 		}
 	}
@@ -82,7 +80,7 @@ func (e *Engine) sourceSections() (map[string]any, []sourceSection, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-		if err := add(p, "DECOMP-PROJECT", "", raw, 0, true); err != nil {
+		if err := add(p, "DECOMP-PROJECT", "", raw, 0); err != nil {
 			return nil, nil, err
 		}
 	}
