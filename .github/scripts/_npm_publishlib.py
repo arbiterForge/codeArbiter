@@ -46,6 +46,7 @@ SOURCE_WORKFLOWS = {
     ".github/workflows/release.yml",
     ".github/workflows/npm-publish.yml",
 }
+PI_RELEASE_WORKFLOWS = frozenset({".github/workflows/release.yml"})
 NPM_PACKER_INTEGRITY = "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
 DURABLE_RECEIPT_NAME = "codearbiter-cohort-publication-v1.json"
 DURABLE_RECEIPT_FIELDS = {
@@ -466,6 +467,7 @@ def validate_attestation_document(
     trusted_sha: str | None,
     *,
     package: str = PACKAGE,
+    source_workflows: frozenset[str] | set[str] = SOURCE_WORKFLOWS,
 ) -> str:
     if trusted_sha is not None:
         validate_sha(trusted_sha, "trusted workflow SHA")
@@ -510,7 +512,7 @@ def validate_attestation_document(
         "repository": SOURCE_REPOSITORY,
         "ref": SOURCE_REF,
         "path": workflow.get("path"),
-    } or workflow.get("path") not in SOURCE_WORKFLOWS:
+    } or workflow.get("path") not in source_workflows:
         raise ValueError("npm provenance workflow identity is not approved")
     if not isinstance(dependencies, list) or len(dependencies) != 1:
         raise ValueError("npm provenance does not bind the trusted workflow commit")
@@ -537,9 +539,12 @@ def validate_publication_attestation(document: dict, version: str, integrity: st
                                      *, release_source_sha: str,
                                      trusted_sha: str, trusted_repo: Path,
                                      allow_continuation: bool,
-                                     package: str = PACKAGE) -> str:
+                                     package: str = PACKAGE,
+                                     source_workflows: frozenset[str] | set[str] = SOURCE_WORKFLOWS) -> str:
     """Bind npm provenance to this run or a prior authorized continuation run."""
     attestation_args = {}
+    if source_workflows is not SOURCE_WORKFLOWS:
+        attestation_args["source_workflows"] = source_workflows
     if package != PACKAGE:
         attestation_args["package"] = package
     attested = validate_attestation_document(

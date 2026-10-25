@@ -346,7 +346,6 @@ jobs:
           source-commit: ${{ needs.preflight.outputs.source }}
           ci-run-id: ${{ needs.preflight.outputs.ci-run-id }}
           github-token: ${{ github.token }}
-          npm-token: ${{ secrets.NPMJS_TOKEN }}
 
   release-sandbox:
     name: CA-Sandbox | [Release]
