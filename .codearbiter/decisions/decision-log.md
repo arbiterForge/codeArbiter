@@ -2205,3 +2205,27 @@ This is the owner's direct product decision, not a scored delegation or a claim 
 The initial native scheduling/progress slice does not complete host orchestration, scoped prerequisite observations, evidence-impact selection, migration, or release qualification. Keep the PR draft until those compatible changes are integrated. See docs/plans/assistive-state-engine-overhaul.md and assistive-state-engine-progress.md for exact scope and progress. Acceptance is not implementation or verification.
 
 ---
+## DECISION-0077 — adr-0044-ratified — Require OIDC and verified Pi publication identity
+
+**Date:** 2026-10-24
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — "yes this is the more correct way to release" after reviewing the proposed OIDC and blocking provenance change.
+**Decision category:** release-security
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0029 uses the org npm token; ADR-0040 makes npm attestation and signature verification advisory.
+- **Scaffold position:** The owner now chooses trusted-publisher OIDC authentication and a blocking Pi provenance identity check.
+- **Status type:** owner-directed-correction
+
+### Decision
+Adopt ADR-0044 for Pi npm publication. Remove the reusable publish token once the trusted-publisher route is configured and require verified repository, workflow and source identity before completing a Pi release. Preserve exact-byte readback and the independent release jobs.
+
+### SMARTS rationale
+Securable: the publish credential is short-lived and the attestation must name the intended workflow. Reliable: an unavailable trust or verification service stops the Pi release, which is the owner's accepted tradeoff. Maintainable: reuse the existing npm attestation verifier and release workflow instead of adding a second publisher.
+
+### Implementation implication
+Update release.yml, publish-target/action.yml, _npm_publishlib.py, focused tests and security controls. The account-side npm trusted publisher must allow npm publish for arbiterForge/codeArbiter release.yml; its actual configuration and a live OIDC publish remain separately verified.
+
+---

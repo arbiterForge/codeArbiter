@@ -274,10 +274,15 @@ No desktop VM/device-auth/API-key simulation substitutes for actual host proof.
 
 ### ca-pi npm publication boundary
 
-Pi publication of `@arbiterforge/ca-pi` explicitly forwards the authorized
-repository or organization Actions secret `NPMJS_TOKEN`, never all
-secrets. `NODE_AUTH_TOKEN` is exposed only to the publish invocation. The exact
-npm@11.19.1 CLI is acquired without credentials over verified non-redirecting
+Pi publication of `@arbiterforge/ca-pi` uses npm trusted publishing with
+short-lived GitHub OIDC credentials. The npm package setting must authorize
+`arbiterForge/codeArbiter`, workflow filename `release.yml`, and `npm publish`.
+The GitHub-hosted Pi release job has `id-token: write`; no `NPMJS_TOKEN` or
+`NODE_AUTH_TOKEN` enters the publish invocation. An unavailable trusted publisher
+fails publication closed. The exact-byte integrity, npm audit signatures, and
+attested repository, workflow and source commit are blocking before the GitHub
+Release becomes public (ADR-0044). The exact npm@11.19.1 CLI is acquired
+without credentials over verified non-redirecting
 TLS, with pinned SHA-512 SRI, bounded regular contained archive extraction and
 a verified temporary CLI; never a global install or PATH replacement. Pins and
 the scoped registry are verified; install/pack/publish scripts are disabled.
@@ -286,9 +291,9 @@ The credential-free download is exactly
 `sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.
 Archive path-containment and the resolved executable are verified before use.
 `npm audit signatures` and SLSA checks bind source, builder, payload and commit;
-OIDC provenance is the approved publication identity. Credential rotation or
-revocation occurs in the organization Actions secret store, never through a
-repository change or fallback credential. Pin changes need fresh review.
+OIDC provenance is the approved publication identity. The npm trusted-publisher
+setting is managed in the npm package account; no token fallback is permitted.
+Pin changes need fresh review.
 
 Codex distribution uses the protected `codex-distribution` environment's six
 named values: `CODEX_DISTRIBUTION_APP_ID`, `CODEX_DISTRIBUTION_APP_INSTALLATION_ID`,

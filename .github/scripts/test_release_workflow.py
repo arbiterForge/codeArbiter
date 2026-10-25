@@ -9,7 +9,10 @@ CI red.
 """
 from __future__ import annotations
 
+import os
 import re
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -123,7 +126,7 @@ class IndependenceTest(unittest.TestCase):
     def test_no_cohort_machinery_remains(self):
         for text in (release_text(), action_text()):
             self.assertNotIn("cohort-reconciliation", text)
-            self.assertNotIn("continuation", text)
+            self.assertNotIn("allow_continuation=True", text)
             self.assertNotIn("cohort-marker", text)
 
     def test_each_release_job_serializes_only_with_itself(self):
@@ -161,6 +164,42 @@ class PermissionTest(unittest.TestCase):
 
 
 class ConsumerSafetyGateTest(unittest.TestCase):
+    def test_pi_publish_refuses_a_different_workflow_commit(self):
+        guard = action_step("Require matching Pi npm provenance commit")
+        self.assertIn("if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}", guard)
+        self.assertLess(step_index("Select the exact Pi npm tarball"), step_index("Require matching Pi npm provenance commit"))
+        self.assertLess(step_index("Require matching Pi npm provenance commit"),
+                        step_index("Create and push the annotated tag"))
+        publish = action_step("Publish @arbiterforge/ca-pi to npm")
+        run = publish.split("      run: ", 1)[1]
+        if run.startswith("'\""):
+            script = run.splitlines()[0][1:-1]
+        else:
+            self.assertTrue(run.startswith("|\n"), "publish must have a shell body")
+            script = "\n".join(
+                line[8:] for line in run.splitlines()[1:] if line.startswith("        ")
+            )
+        if os.name == "nt":
+            git = shutil.which("git")
+            self.assertIsNotNone(git, "Git for Windows is required")
+            bash = Path(git).resolve().parents[1] / "bin" / "bash.exe"
+        else:
+            bash = shutil.which("bash")
+        self.assertTrue(bash and Path(bash).is_file(), "bash is required")
+        script = "npm_mock() { printf '__NPM_CALLED__\\n'; }\n" + script
+        base_env = {**os.environ, "NPM_CLI": "npm_mock", "TARBALL": "unused.tgz",
+                    "SOURCE_COMMIT": "a" * 40}
+        matched = subprocess.run([str(bash), "-c", script], env={**base_env, "GITHUB_SHA": "a" * 40},
+                                 capture_output=True, text=True, timeout=10)
+        self.assertEqual(matched.returncode, 0, matched.stderr)
+        self.assertIn("__NPM_CALLED__", matched.stdout)
+        mismatched = subprocess.run([str(bash), "-c", script], env={**base_env, "GITHUB_SHA": "b" * 40},
+                                    capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(mismatched.returncode, 0,
+                            "a moved main commit must stop before npm publish")
+        self.assertNotIn("__NPM_CALLED__", mismatched.stdout)
+        self.assertIn("SOURCE_COMMIT: ${{ inputs.source-commit }}", publish)
+
     def test_package_cohort_is_verified_before_anything_is_published(self):
         verify = action_step("Verify the CI package cohort")
         self.assertIn("verify-cohort", verify)
@@ -201,11 +240,14 @@ class ConsumerSafetyGateTest(unittest.TestCase):
 
     def test_npm_readback_requires_the_ci_built_integrity(self):
         readback = action_step("Read back the npm publication")
-        self.assertIn('state.startswith("present")', readback)
+        self.assertIn('state == "present"', readback)
         self.assertIn("classify_registry_lookup", readback)
-        # Integrity is the gate; attestation shape is advisory (ADR-0040).
-        self.assertIn("require_attestation=False", readback)
-        self.assertIn("require_attestation=False", action_step("Select the exact Pi npm tarball"))
+        self.assertIn("verify_registry_authenticity", readback)
+        self.assertIn("validate_publication_attestation", readback)
+        self.assertIn("PI_RELEASE_WORKFLOWS", readback)
+        self.assertIn("allow_continuation=False, source_workflows=lib.PI_RELEASE_WORKFLOWS", readback)
+        self.assertNotIn("::warning::npm provenance", readback)
+        self.assertNotIn("require_attestation=False", action_step("Select the exact Pi npm tarball"))
 
     def test_release_goes_public_only_after_every_channel(self):
         publish = step_index("Publish the Release")
@@ -228,8 +270,10 @@ class AdvisoryCheckTest(unittest.TestCase):
         self.assertIn("continue-on-error: true", audit)
         self.assertIn("::warning::", audit)
 
-    def test_npm_provenance_is_advisory(self):
-        self.assertIn("::warning::npm provenance", action_step("Read back the npm publication"))
+    def test_pi_npm_provenance_is_blocking(self):
+        readback = action_step("Read back the npm publication")
+        self.assertIn("validate_publication_attestation", readback)
+        self.assertNotIn("::warning::npm provenance", readback)
 
     def test_pre_tag_checks_are_advisory(self):
         self.assertIn("run-pre-tag", jobs()["preflight"])
