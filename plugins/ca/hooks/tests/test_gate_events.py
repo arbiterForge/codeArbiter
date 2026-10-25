@@ -66,6 +66,78 @@ class _GateEventsFixture(unittest.TestCase):
 
 
 class TestDurableRecordAC1(_GateEventsFixture):
+    def test_multiline_block_is_one_physical_record(self):
+        import io
+        message = "first line\r\nBLOCK [forged] second line\nthird line"
+        stderr = io.StringIO()
+        with mock.patch.object(sys, "stderr", stderr), self.assertRaises(SystemExit) as cm:
+            _hooklib.block("H-03", message)
+        self.assertEqual(cm.exception.code, 2)
+        self.assertIn(message, stderr.getvalue())
+        lines = _read_log(self.cad).splitlines()
+        self.assertEqual(len(lines), 1)
+        self.assertIn("first line", lines[0])
+        self.assertIn("third line", lines[0])
+
+    def test_all_record_fields_encode_line_delimiters(self):
+        host = mock.Mock()
+        host.name = "claude\nhost"
+        host.project_root.return_value = self.root
+        with mock.patch.object(_hooklib, "get_host", return_value=host), \
+             mock.patch.object(sys, "argv", ["pre\nbash.py"]):
+            _hooklib._log_gate_event("BLOCK\nforged", "H-03\rforged", "reason\nforged")
+        lines = _read_log(self.cad).splitlines()
+        self.assertEqual(len(lines), 1)
+        for fragment in ("BLOCK\\nforged", "H-03\\rforged", "claude\\nhost",
+                         "pre\\nbash.py", "reason\\nforged"):
+            self.assertIn(fragment, lines[0])
+
+    def test_linked_log_does_not_modify_external_file(self):
+        outside = os.path.join(self.root, "outside.log")
+        with open(outside, "w", encoding="utf-8") as handle:
+            handle.write("sentinel\n")
+        try:
+            os.symlink(outside, os.path.join(self.cad, "gate-events.log"))
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"host cannot create file symlinks: {error}")
+        with self.assertRaises(SystemExit) as cm:
+            _hooklib.block("H-03", "linked sink")
+        self.assertEqual(cm.exception.code, 2)
+        with open(outside, encoding="utf-8") as handle:
+            self.assertEqual(handle.read(), "sentinel\n")
+
+    def test_hardlinked_log_does_not_modify_external_file(self):
+        outside = os.path.join(self.root, "outside-hardlink.log")
+        with open(outside, "w", encoding="utf-8") as handle:
+            handle.write("sentinel\n")
+        try:
+            os.link(outside, os.path.join(self.cad, "gate-events.log"))
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"host cannot create hardlinks: {error}")
+        with self.assertRaises(SystemExit) as cm:
+            _hooklib.block("H-03", "hardlinked sink")
+        self.assertEqual(cm.exception.code, 2)
+        with open(outside, encoding="utf-8") as handle:
+            self.assertEqual(handle.read(), "sentinel\n")
+
+    def test_linked_state_directory_does_not_modify_external_log(self):
+        outside = os.path.join(self.root, "outside-state")
+        os.mkdir(outside)
+        target = os.path.join(outside, "gate-events.log")
+        with open(target, "w", encoding="utf-8") as handle:
+            handle.write("sentinel\n")
+        os.rmdir(self.cad)
+        try:
+            os.symlink(outside, self.cad, target_is_directory=True)
+        except (OSError, NotImplementedError) as error:
+            os.mkdir(self.cad)
+            self.skipTest(f"host cannot create directory symlinks: {error}")
+        with self.assertRaises(SystemExit) as cm:
+            _hooklib.block("H-03", "linked state directory")
+        self.assertEqual(cm.exception.code, 2)
+        with open(target, encoding="utf-8") as handle:
+            self.assertEqual(handle.read(), "sentinel\n")
+
     def test_block_writes_greppable_record_and_still_exits_2(self):
         with self.assertRaises(SystemExit) as cm:
             _hooklib.block("H-01", "example block reason")

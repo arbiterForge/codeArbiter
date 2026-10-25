@@ -147,6 +147,8 @@ export type DockerRunOptions = {
 export type DockerCallOptions = {
   /** Fires cancellation at the child; see runDocker for what that guarantees. */
   signal?: AbortSignal;
+  /** Complete environment for this Docker client invocation. */
+  env?: NodeJS.ProcessEnv;
 };
 
 /** An injectable docker runner — the seam every command module's tests use. */
@@ -204,7 +206,7 @@ function runDocker(
     // rather than the `{code: 1}` every caller is written against.
     let child;
     try {
-      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra, ...(call.env ? { env: call.env } : {}) });
     } catch (e) {
       resolve({ code: 1, stdout: "", stderr: String(e) });
       return;

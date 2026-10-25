@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.4.1] - 2026-10-24
+
+### Fixed
+
+- Gate-event logging refuses linked or redirected destinations and records line breaks as escaped text.
+
 ## [3.4.0] - 2026-10-24
 
 ### Added

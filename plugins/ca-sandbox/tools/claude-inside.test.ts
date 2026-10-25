@@ -100,12 +100,11 @@ describe("buildClaudeRunArgs — env-token auth, no host bind (AC-12)", () => {
     homeVolume: "ca-sbx-claude-home-demo",
   });
 
-  it("injects the OAuth token via the environment (the auth path, Spike B)", async () => {
+  it("passes only the token name in argv, never the reusable value", async () => {
     const i = argv.indexOf("-e");
     expect(i).toBeGreaterThanOrEqual(0);
-    // Some `-e KEY=VALUE` token carries the OAuth env var with the supplied value.
-    const envEntries = collectEnv(argv);
-    expect(envEntries[TOKEN_ENV_VAR]).toBe("dummy-not-a-real-token");
+    expect(argv[i + 1]).toBe(TOKEN_ENV_VAR);
+    expect(argv.join(" ")).not.toContain("dummy-not-a-real-token");
   });
 
   it("backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists", async () => {
@@ -218,10 +217,10 @@ const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 // credential. The 401 it produces is the proof the env token IS the auth path.
 const DUMMY_TOKEN = "dummy-not-a-real-token";
 
-function dk(args: string[], input?: string) {
+function dk(args: string[], input?: string, env: NodeJS.ProcessEnv = DENV) {
   return spawnSync("docker", args, {
     encoding: "utf8",
-    env: DENV,
+    env,
     input,
     maxBuffer: 64 * 1024 * 1024,
   });
@@ -268,7 +267,7 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
       "--label",
       "ca.sandbox=1",
       "-e",
-      `${TOKEN_ENV_VAR}=${DUMMY_TOKEN}`,
+      TOKEN_ENV_VAR,
       "-e",
       `HOME=${CLAUDE_HOME}`,
       "--mount",
@@ -277,7 +276,7 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
       "claude",
       "-p",
       "say hi",
-    ]);
+    ], undefined, { ...DENV, [TOKEN_ENV_VAR]: DUMMY_TOKEN });
     // Exit non-zero (auth rejected) and the message is the server-side 401 for a
     // SENT bearer token — proof the env token was read, a header built, and sent.
     expect(r.status).not.toBe(0);
@@ -389,6 +388,37 @@ describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall",
     token: "DUMMY-NOT-A-REAL-TOKEN",
     homeVolume: "ca-sbx-claude-home-test",
   };
+
+  it("supplies the token only to the Docker run process environment", async () => {
+    const calls: Array<{ args: string[]; env: NodeJS.ProcessEnv | undefined }> = [];
+    const dockerRun = async (args: string[], call?: { env?: NodeJS.ProcessEnv }) => {
+      calls.push({ args, env: call?.env });
+      return { code: 0, stdout: args[0] === "run" ? "cid\n" : "", stderr: "" };
+    };
+    await runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
+    expect(calls[0]!.args.join(" ")).not.toContain(baseOpts.token);
+    expect(calls[0]!.env).toMatchObject({ [TOKEN_ENV_VAR]: baseOpts.token });
+    expect(calls.slice(1).every((entry) => entry.env?.[TOKEN_ENV_VAR] === undefined)).toBe(true);
+  });
+
+  it("redacts a token echoed by a failing Docker client", async () => {
+    const dockerRun = async () => ({ code: 125, stdout: "", stderr: `failure: ${baseOpts.token}` });
+    await expect(runClaudeInside(baseOpts, dockerRun)).rejects.not.toThrow(baseOpts.token);
+  });
+
+  it("redacts a token echoed by a failed firewall command and tears down without it", async () => {
+    const calls: Array<{ args: string[]; env: NodeJS.ProcessEnv | undefined }> = [];
+    const dockerRun = async (args: string[], call?: { env?: NodeJS.ProcessEnv }) => {
+      calls.push({ args, env: call?.env });
+      if (args[0] === "run") return { code: 0, stdout: "cid\n", stderr: "" };
+      if (args[0] === "exec") return { code: 1, stdout: "", stderr: `error ${baseOpts.token}` };
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    await expect(runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun))
+      .rejects.not.toThrow(baseOpts.token);
+    expect(calls.map((c) => c.args[0])).toContain("rm");
+    expect(calls.slice(1).every((c) => c.env?.[TOKEN_ENV_VAR] === undefined)).toBe(true);
+  });
 
   it("applies the firewall inside the box for anthropic-only", async () => {
     const calls: string[][] = [];
