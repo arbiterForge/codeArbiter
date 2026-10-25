@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
@@ -117,6 +118,52 @@ func TestCompletionWorkspaceRequiresExplicitGit(t *testing.T) {
 	t.Setenv("CODEARBITER_GIT_EXECUTABLE", "")
 	if _, err := completionGitText(f.Root, completionGitHead); err == nil {
 		t.Fatal("completion silently searched ambient PATH for Git instead of requiring the bridge-selected absolute executable")
+	}
+}
+
+func TestCompletionGitRejectsUnsupportedNoLazyFetchWithoutRetry(t *testing.T) {
+	// Simulate an older Git executable at the real process boundary. A retry
+	// without --no-lazy-fetch would appear to succeed, but would permit a
+	// promisor remote fetch and must never be accepted.
+	dir := t.TempDir()
+	source := filepath.Join(dir, "oldgit.go")
+	program := `package main
+import ("fmt"; "os")
+func main() {
+	for _, arg := range os.Args[1:] {
+		if arg == "--no-lazy-fetch" {
+			message := os.Getenv("OLD_GIT_DIAGNOSTIC")
+			if message == "" { message = "unknown option: --no-lazy-fetch" }
+			fmt.Fprintln(os.Stderr, message)
+			os.Exit(129)
+		}
+	}
+	fmt.Println("unsafe unguarded retry")
+}`
+	if err := os.WriteFile(source, []byte(program), 0600); err != nil {
+		t.Fatal(err)
+	}
+	executable := filepath.Join(dir, "oldgit")
+	if runtime.GOOS == "windows" {
+		executable += ".exe"
+	}
+	build := exec.Command("go", "build", "-o", executable, source)
+	if out, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("build old Git fixture: %v: %s", err, out)
+	}
+	t.Setenv("CODEARBITER_GIT_EXECUTABLE", executable)
+	if _, err := completionGitText(dir, completionGitHead); fault.Code(err) != "UNSUPPORTED_VERSION" {
+		t.Fatalf("old Git must fail with an actionable capability error, without an unguarded retry: %v", err)
+	} else if fault.Exit(err) != 6 || strings.Contains(fault.Public(err).Message, dir) {
+		t.Fatalf("old Git must produce a bounded capability diagnostic and exit 6: %v", err)
+	}
+	t.Setenv("OLD_GIT_DIAGNOSTIC", "unbekannte Option: --no-lazy-fetch")
+	if _, err := completionGitText(dir, completionGitHead); fault.Code(err) != "UNSUPPORTED_VERSION" {
+		t.Fatalf("localized old Git must retain the same capability diagnosis: %v", err)
+	}
+	t.Setenv("OLD_GIT_DIAGNOSTIC", "unrelated Git parser failure")
+	if _, err := completionGitText(dir, completionGitHead); fault.Code(err) != "WORKSPACE_DRIFT" {
+		t.Fatalf("other Git failures must not be mislabeled as an unsupported version: %v", err)
 	}
 }
 
