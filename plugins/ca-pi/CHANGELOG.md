@@ -23,8 +23,9 @@ All notable changes to `ca-pi` are documented in this file.
   paths, with one explicit link hop. A damaged knowledge document is
   reported without hiding the others.
 - `knowledge.py convert` prepares empty HTML documents and lists Markdown
-  sources with a fingerprint token. The agent records their meaning; `convert
-  --finish <token>` refuses changed sources or unrecorded content, then switches
+  sections with a fingerprint token. The agent records their meaning and maps
+  every section to saved records or notes; `convert --finish <token> --coverage
+  @checklist.json` refuses changed sources or uncovered sections, then switches
   formats in one journaled transaction that retains the original bytes.
 
 ### Changed

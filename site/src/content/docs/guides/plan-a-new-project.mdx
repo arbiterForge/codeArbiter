@@ -132,8 +132,10 @@ reconciles intended and implemented facts, keeping the interview records.
 
 A repository scaffolded before HTML knowledge, or one whose owner keeps the Markdown format,
 follows the unchanged procedure. Conversion is never silent: `knowledge.py convert` prepares
-empty HTML documents and lists the Markdown files to read. After their meaning is recorded,
-`convert --finish <token>` switches formats; the transaction retains the original bytes.
+empty HTML documents and lists the Markdown sections to read. After their meaning is
+recorded, map every section to saved records or notes in a JSON checklist.
+`convert --finish <token> --coverage @checklist.json` switches formats only when
+all meaningful sections are mapped; the transaction retains the original bytes.
 
 <ProjectBlueprint />
 

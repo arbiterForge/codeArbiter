@@ -32,7 +32,7 @@ New scaffolds record narrative context as native HTML knowledge: `context/projec
 `context/code-map.html`, plus greenfield `decomposition/project.html`. `CONTEXT.md` frontmatter
 carries `context-format: html` for them. Repositories scaffolded earlier keep the Markdown
 documents and `.provenance/` records described below until their owner converts them explicitly
-with `knowledge.py convert` followed by agent-recorded content and `convert --finish <token>`. In both formats `CONTEXT.md` owns activation and stage, and the scope
+with `knowledge.py convert`, agent-recorded content, a mapping from every returned section to saved records or notes, and `convert --finish <token> --coverage @checklist.json`. In both formats `CONTEXT.md` owns activation and stage, and the scope
 blocks in `security-controls.md` stay the operative migration, CI and deploy configuration.
 
 ## Project plans are not feature execution plans

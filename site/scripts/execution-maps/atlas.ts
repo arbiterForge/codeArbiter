@@ -104,8 +104,8 @@ export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freez
 
 /** Sources reviewed for HTML knowledge records and decomposition (#1023): the
  * context owners gained an HTML procedure and kept Markdown in references.
- * The conversion route now asks the agent to record Markdown meaning before
- * a digest-bound cutover; the context-creation and decompose routes retain
+ * The conversion route now asks the agent to map each Markdown section to
+ * saved knowledge before a digest-bound cutover; the context-creation and decompose routes retain
  * their explicit format choice and unchanged Markdown fallback. Security
  * policy readers now select complete HTML records after conversion while the
  * Markdown scope blocks remain operative. This changes the cited source text,
@@ -118,7 +118,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/debug/SKILL.md':'83c3124f046df51e3db67278545260bff93b19d2',
   'core/surface/skills/security-architecture/SKILL.md':'669e8a1d4660a7166d0d3304304bcf322758c111',
   'core/surface/skills/tribunal/SKILL.md':'a549fae64b1bf6243b59ea78aa608c05beeab348',
-  'core/artifacts/internal/operations/protocol.go':'f4f4df1562b3ab287fef0251e3a10c31fb3584f5',
+  'core/artifacts/internal/operations/protocol.go':'2badc981c88c084e76bbb093488b1746fd3a99da',
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
   'core/pysrc/_artifactlib.py':'a3228472bddc2d095e0abeef64e9a60c352e70e7',
@@ -129,8 +129,8 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/brainstorming/SKILL.md':'036c3c440f8d09b563e00c472b9394deb6f6e705',
   'core/surface/skills/commit-gate/SKILL.md':'159e0f1d0746c26006e4d12a4f28429fb0c023b6',
   'core/surface/skills/context-check/SKILL.md':'10814dbe261c9ecd98be83716a03fd9699715018',
-  'core/surface/skills/context-creation/SKILL.md':'d90dc3f36ccf184e54e89a85ea211b586dfb2a74',
-  'core/surface/skills/decompose/SKILL.md':'d48ec8cbeddb60dcd4fd8cd24516943e0ffa92a2',
+  'core/surface/skills/context-creation/SKILL.md':'9f28e5f8c9dbb903abee8e2264f60069c5128487',
+  'core/surface/skills/decompose/SKILL.md':'891a4ed873bbe2a8cbfd5ccb5315e6ef7ece1e02',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'5082926a20883837a75994322db5c0b845eae3fd',
   'core/surface/skills/release/SKILL.md':'15216183910a201eb5966b741bbb1a8d023927f8',
   'core/surface/skills/subagent-driven-development/SKILL.md':'7c27d8ebb707088636e39a5ce28ca59043745609',
