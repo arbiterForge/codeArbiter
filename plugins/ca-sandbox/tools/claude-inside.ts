@@ -43,6 +43,7 @@ import { applyNetworkPolicy } from "./network.ts";
 import { SANDBOX_LABEL, hardeningFlags } from "./run.ts";
 import {
   defaultDockerRun,
+  DOCKER_ENV,
   type DockerCallOptions,
   type DockerRun,
   type RunResult,
@@ -245,7 +246,7 @@ function resolveClaudeNetworkPlan(policy: ClaudeNetPolicy): ClaudeNetworkPlan {
  * `--with-claude` box. Pure: builds the array, runs nothing. Enforces the hardened
  * posture by construction:
  *
- *   - the OAuth token is env-injected (`-e CLAUDE_CODE_OAUTH_TOKEN=...`) — the auth
+ *   - the OAuth token is env-injected (`-e CLAUDE_CODE_OAUTH_TOKEN`) — the auth
  *     path, no host bind of ~/.claude;
  *   - HOME is set to the in-container claude home and backed by a NAMED VOLUME
  *     (via buildMountArgs, which throws on any bind) so .claude persists on the
@@ -299,9 +300,9 @@ export function buildClaudeRunArgs(opts: ClaudeRunOptions): string[] {
     "run",
     "-d",
     ...nameArgs,
-    // Auth: env-inject the token + point HOME at the persisted claude home.
+    // Docker reads the token from its own scoped process environment.
     "-e",
-    `${TOKEN_ENV_VAR}=${token}`,
+    TOKEN_ENV_VAR,
     "-e",
     `HOME=${CLAUDE_HOME}`,
     // Belt-and-braces: keep the autoupdater off at run time too (the image already
@@ -354,11 +355,17 @@ export async function runClaudeInside(
   call: DockerCallOptions = {},
 ): Promise<string> {
   const args = buildClaudeRunArgs(opts);
-  const r = await dockerRun(args, call);
+  const dockerEnv = { ...(call.env ?? DOCKER_ENV) };
+  delete dockerEnv[TOKEN_ENV_VAR];
+  const normalCall = { ...call, env: dockerEnv };
+  const r = await dockerRun(args, {
+    ...normalCall,
+    env: { ...dockerEnv, [TOKEN_ENV_VAR]: opts.token },
+  });
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for --with-claude image ${opts.image} (exit ${r.code})\n` +
-        `${(r.stderr || r.stdout).slice(-2000)}`,
+        `${(r.stderr || r.stdout).slice(-2000).split(opts.token).join("[REDACTED]")}`,
     );
   }
   const id = r.stdout.trim();
@@ -375,17 +382,17 @@ export async function runClaudeInside(
   const firewallScript = claudeFirewallScript(opts);
   if (firewallScript === undefined) return id;
 
-  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
+  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript], normalCall);
   if (applied.code !== 0) {
     // Best effort, and deliberately not conditional on its own success: if the
     // teardown ALSO fails there is nothing further this process can do, and the
     // thrown error names the container so an operator can finish the job.
-    await dockerRun(["rm", "-f", id]);
+    await dockerRun(["rm", "-f", id], normalCall);
     throw new Error(
       `ca-sandbox: --with-claude could not apply the egress firewall to ${id} ` +
         `(exit ${applied.code}); the container has been destroyed rather than left ` +
         `running with NET_ADMIN and no rules around a live token.\n` +
-        `${(applied.stderr || applied.stdout).slice(-2000)}`,
+        `${(applied.stderr || applied.stdout).slice(-2000).split(opts.token).join("[REDACTED]")}`,
     );
   }
   return id;

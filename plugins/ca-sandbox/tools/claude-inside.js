@@ -210,7 +210,7 @@ function runDocker(args, extra = {}, options = {}, call = {}) {
   return new Promise((resolve) => {
     let child;
     try {
-      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra, ...call.env ? { env: call.env } : {} });
     } catch (e) {
       resolve({ code: 1, stdout: "", stderr: String(e) });
       return;
@@ -383,9 +383,9 @@ function buildClaudeRunArgs(opts) {
     "run",
     "-d",
     ...nameArgs,
-    // Auth: env-inject the token + point HOME at the persisted claude home.
+    // Docker reads the token from its own scoped process environment.
     "-e",
-    `${TOKEN_ENV_VAR}=${token}`,
+    TOKEN_ENV_VAR,
     "-e",
     `HOME=${CLAUDE_HOME}`,
     // Belt-and-braces: keep the autoupdater off at run time too (the image already
@@ -413,22 +413,28 @@ function claudeFirewallScript(opts) {
 }
 async function runClaudeInside(opts, dockerRun = defaultDockerRun, call = {}) {
   const args = buildClaudeRunArgs(opts);
-  const r = await dockerRun(args, call);
+  const dockerEnv = { ...call.env ?? DOCKER_ENV };
+  delete dockerEnv[TOKEN_ENV_VAR];
+  const normalCall = { ...call, env: dockerEnv };
+  const r = await dockerRun(args, {
+    ...normalCall,
+    env: { ...dockerEnv, [TOKEN_ENV_VAR]: opts.token }
+  });
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for --with-claude image ${opts.image} (exit ${r.code})
-${(r.stderr || r.stdout).slice(-2e3)}`
+${(r.stderr || r.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`
     );
   }
   const id = r.stdout.trim();
   const firewallScript = claudeFirewallScript(opts);
   if (firewallScript === void 0) return id;
-  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
+  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript], normalCall);
   if (applied.code !== 0) {
-    await dockerRun(["rm", "-f", id]);
+    await dockerRun(["rm", "-f", id], normalCall);
     throw new Error(
       `ca-sandbox: --with-claude could not apply the egress firewall to ${id} (exit ${applied.code}); the container has been destroyed rather than left running with NET_ADMIN and no rules around a live token.
-${(applied.stderr || applied.stdout).slice(-2e3)}`
+${(applied.stderr || applied.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`
     );
   }
   return id;
@@ -534,7 +540,8 @@ async function runClaudeInsideCli(argv, env = process.env, deps = {}) {
     return 0;
   } catch (e) {
     const prefix = e instanceof TokenCoMountRejectedError ? "co-mount refused" : "failed";
-    err(`ca-sandbox: claude-inside ${prefix}: ${e instanceof Error ? e.message : String(e)}`);
+    const detail = (e instanceof Error ? e.message : String(e)).split(token).join("[REDACTED]");
+    err(`ca-sandbox: claude-inside ${prefix}: ${detail}`);
     return 1;
   }
 }

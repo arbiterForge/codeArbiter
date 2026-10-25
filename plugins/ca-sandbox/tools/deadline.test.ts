@@ -82,6 +82,19 @@ function fakeSpawn(make: (cmd: string, args: string[], options: unknown) => unkn
 }
 
 describe("#394 — every docker invocation carries a finite deadline", () => {
+  it("passes a per-call environment to the spawned Docker client", async () => {
+    let seen: NodeJS.ProcessEnv | undefined;
+    const run = makeDockerRun({}, {
+      spawn: fakeSpawn((_cmd, _args, options) => {
+        seen = (options as { env?: NodeJS.ProcessEnv }).env;
+        return fakeChild();
+      }),
+    });
+    const env = { PATH: "test-path", CLAUDE_CODE_OAUTH_TOKEN: "dummy-token" };
+    await run(["run", "image"], { env });
+    expect(seen).toEqual(env);
+  });
+
   it("declares a default timeout, and it is finite and plausible", async () => {
     expect(Number.isFinite(DEFAULT_DOCKER_TIMEOUT_MS)).toBe(true);
     expect(DEFAULT_DOCKER_TIMEOUT_MS).toBeGreaterThan(0);
