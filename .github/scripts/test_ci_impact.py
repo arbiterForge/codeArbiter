@@ -3727,7 +3727,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             job,
         )
         self.assertIn(
-            "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0",
+            "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0",
             job,
         )
         self.assertIn("fetch-depth: 0", job)
@@ -4001,7 +4001,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "needs.artifact-engine.result == 'success'",
             "runs-on: ubuntu-24.04",
             "persist-credentials: false",
-            'node-version: "22.23.2"',
+            'node-version: "22.23.4"',
             'python-version: "3.14"',
             "artifact-native-ubuntu-24.04",
             "tools/create-artifact-examples.py",
