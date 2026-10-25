@@ -214,6 +214,50 @@ runs:
           --remote-tag "$RUNNER_TEMP/remote-tag.txt" --releases "$RUNNER_TEMP/releases.json" \
           --asset codearbiter-publication.json "${extra[@]}" --output "$GITHUB_OUTPUT"
 
+    - name: Select the exact Pi npm tarball
+      id: pi
+      if: ${{ inputs.host == 'pi' }}
+      shell: bash
+      env:
+        VERSION: ${{ steps.v.outputs.version }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+      run: |
+        set -euo pipefail
+        python3 - <<'PY' >> "$GITHUB_OUTPUT"
+        import json, os, sys
+        from pathlib import Path
+        sys.path.insert(0, ".github/scripts")
+        import _npm_publishlib as lib
+        root = Path(os.environ["RUNNER_TEMP"]) / "artifact-publication-packages"
+        cohort = root / "artifact-package-cohort.json"
+        name = json.loads(cohort.read_text(encoding="utf-8"))["packages"]["pi"]["file"]
+        tarball, integrity = lib.load_prebuilt_pi_package(
+            cohort, root / name, version=os.environ["VERSION"],
+            expected_sha=os.environ["SOURCE_COMMIT"], ci_run_id=os.environ["CI_RUN_ID"])
+        lookup = lib.registry_lookup(os.environ["NPM_CLI"], os.environ["VERSION"])
+        state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,
+                                             os.environ["VERSION"], integrity)
+        print(f"tarball={tarball}"); print(f"integrity={integrity}")
+        print(f"skip={'true' if state == 'present' else 'false'}")
+        PY
+
+    # npm's workflow_run provenance uses the default branch SHA. Refuse a new
+    # Pi publish before creating a tag or draft when that differs from CI source.
+    # An existing, byte-identical npm version can still complete readback.
+    - name: Require matching Pi npm provenance commit
+      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
+      shell: bash
+      env:
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+      run: |
+        set -euo pipefail
+        if [ "$GITHUB_SHA" != "$SOURCE_COMMIT" ]; then
+          echo "::error::npm provenance workflow commit differs from selected CI source; refusing publish"
+          exit 1
+        fi
+
     - name: Create and push the annotated tag
       if: ${{ steps.plan.outputs.tag == 'create' }}
       shell: bash
@@ -367,42 +411,20 @@ runs:
           --advance-channel > "$RUNNER_TEMP/codex-channel.json"
         echo "ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["marketplace_commit"])' "$RUNNER_TEMP/codex-channel.json")" >> "$GITHUB_OUTPUT"
 
-    - name: Select the exact Pi npm tarball
-      id: pi
-      if: ${{ inputs.host == 'pi' }}
-      shell: bash
-      env:
-        VERSION: ${{ steps.v.outputs.version }}
-        SOURCE_COMMIT: ${{ inputs.source-commit }}
-        CI_RUN_ID: ${{ inputs.ci-run-id }}
-        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
-      run: |
-        set -euo pipefail
-        python3 - <<'PY' >> "$GITHUB_OUTPUT"
-        import json, os, sys
-        from pathlib import Path
-        sys.path.insert(0, ".github/scripts")
-        import _npm_publishlib as lib
-        root = Path(os.environ["RUNNER_TEMP"]) / "artifact-publication-packages"
-        cohort = root / "artifact-package-cohort.json"
-        name = json.loads(cohort.read_text(encoding="utf-8"))["packages"]["pi"]["file"]
-        tarball, integrity = lib.load_prebuilt_pi_package(
-            cohort, root / name, version=os.environ["VERSION"],
-            expected_sha=os.environ["SOURCE_COMMIT"], ci_run_id=os.environ["CI_RUN_ID"])
-        lookup = lib.registry_lookup(os.environ["NPM_CLI"], os.environ["VERSION"])
-        state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,
-                                             os.environ["VERSION"], integrity)
-        print(f"tarball={tarball}"); print(f"integrity={integrity}")
-        print(f"skip={'true' if state == 'present' else 'false'}")
-        PY
-
     - name: Publish @arbiterforge/ca-pi to npm
       if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
       shell: bash
       env:
         NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
         TARBALL: ${{ steps.pi.outputs.tarball }}
-      run: '"$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/'
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+      run: |
+        set -euo pipefail
+        if [ "$GITHUB_SHA" != "$SOURCE_COMMIT" ]; then
+          echo "::error::npm provenance workflow commit differs from selected CI source; refusing publish"
+          exit 1
+        fi
+        "$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/
 
     # GATE: the registry serves exactly the tarball CI built (integrity match).
     - name: Read back the npm publication

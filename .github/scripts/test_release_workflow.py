@@ -9,7 +9,10 @@ CI red.
 """
 from __future__ import annotations
 
+import os
 import re
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -161,6 +164,42 @@ class PermissionTest(unittest.TestCase):
 
 
 class ConsumerSafetyGateTest(unittest.TestCase):
+    def test_pi_publish_refuses_a_different_workflow_commit(self):
+        guard = action_step("Require matching Pi npm provenance commit")
+        self.assertIn("if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}", guard)
+        self.assertLess(step_index("Select the exact Pi npm tarball"), step_index("Require matching Pi npm provenance commit"))
+        self.assertLess(step_index("Require matching Pi npm provenance commit"),
+                        step_index("Create and push the annotated tag"))
+        publish = action_step("Publish @arbiterforge/ca-pi to npm")
+        run = publish.split("      run: ", 1)[1]
+        if run.startswith("'\""):
+            script = run.splitlines()[0][1:-1]
+        else:
+            self.assertTrue(run.startswith("|\n"), "publish must have a shell body")
+            script = "\n".join(
+                line[8:] for line in run.splitlines()[1:] if line.startswith("        ")
+            )
+        if os.name == "nt":
+            git = shutil.which("git")
+            self.assertIsNotNone(git, "Git for Windows is required")
+            bash = Path(git).resolve().parents[1] / "bin" / "bash.exe"
+        else:
+            bash = shutil.which("bash")
+        self.assertTrue(bash and Path(bash).is_file(), "bash is required")
+        script = "npm_mock() { printf '__NPM_CALLED__\\n'; }\n" + script
+        base_env = {**os.environ, "NPM_CLI": "npm_mock", "TARBALL": "unused.tgz",
+                    "SOURCE_COMMIT": "a" * 40}
+        matched = subprocess.run([str(bash), "-c", script], env={**base_env, "GITHUB_SHA": "a" * 40},
+                                 capture_output=True, text=True, timeout=10)
+        self.assertEqual(matched.returncode, 0, matched.stderr)
+        self.assertIn("__NPM_CALLED__", matched.stdout)
+        mismatched = subprocess.run([str(bash), "-c", script], env={**base_env, "GITHUB_SHA": "b" * 40},
+                                    capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(mismatched.returncode, 0,
+                            "a moved main commit must stop before npm publish")
+        self.assertNotIn("__NPM_CALLED__", mismatched.stdout)
+        self.assertIn("SOURCE_COMMIT: ${{ inputs.source-commit }}", publish)
+
     def test_package_cohort_is_verified_before_anything_is_published(self):
         verify = action_step("Verify the CI package cohort")
         self.assertIn("verify-cohort", verify)
