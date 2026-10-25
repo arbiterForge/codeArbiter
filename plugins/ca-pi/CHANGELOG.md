@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.23.1] - 2026-10-24
+
+### Fixed
+
+- Gate-event logging refuses linked or redirected destinations and records line breaks as escaped text.
+
 ## [0.23.0] - 2026-10-24
 
 ### Added
