@@ -64,6 +64,13 @@ worktree does not establish their referenced verification or approval history.
 | Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-check`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
+| Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
+
+`knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
+exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
+per section, mapping every meaningful section to active record or note
+references in its matching knowledge document. `apply` also requires the
+preview's input identities and commits the cutover in one journaled transaction.
 
 `capture` **writes** immutable events and receipts even though it does not increment an artifact revision. Locks, journals and a contextual-pagination key are engine-managed metadata; “read operation” does not mean the filesystem can never acquire such metadata. Host permission classification must distinguish content writes and event writes from ordinary reads. No generic content mutation can set approval or task acceptance.
 
@@ -204,6 +211,70 @@ execution, workspace scan, or persisted cache is created by this read.
 The engine's normal transaction/pending-record checks still apply before
 informational reads. It is not a permission-granting or verified-acceptance
 operation and does not claim model comprehension or independent test proof.
+
+The packet also carries the repository knowledge relevant to the task
+(`knowledge`, below): `knowledge`, `knowledge_omitted`, `knowledge_unreadable`,
+`knowledge_unresolved_references` and `knowledge_unmatched_records`. They fill
+whatever budget the task fields leave.
+
+## Repository knowledge and decomposition
+
+Two optional HTML kinds hold repository context as records: `knowledge`
+(`.codearbiter/context/<slug>.html`, ID `CTX-<SLUG>`) for the five narrative
+documents (`project`, `tech-stack`, `coding-standards`, `security-controls`,
+`code-map`), and `decomposition` (`.codearbiter/decomposition/<slug>.html`, ID
+`DECOMP-<SLUG>`) for greenfield interview answers, intended architecture, phases
+and proposed work. The ID is derived from the slug, so a cross-document link
+renders as `../context/<slug>.html#<record>` by identity rather than through one
+companion path. Both reuse the ordinary model, renderer, journal and typed
+`create`/`apply`/`read`/`outline` operations. Being optional kinds, they are never
+scanned by spec or plan reads, so a damaged knowledge page cannot veto those.
+
+A record has `type`, `title`, `statement`, `basis` (`user-reported`,
+`source-observed`, `inferred`, `proposed`, `unknown`), `scope.paths`,
+`related_refs` and `source_refs`. Only a `source-observed` record must cite a
+source. A `command` record carries `argv`, `cwd`, `purpose` and `run_state`
+(`unrun` until a run is reported; a reported state is not verification). A
+decomposition `question` carries `status` and `answer`; a `work_item` may carry
+its task-board `promotion` back-reference. `knowledge` documents also hold
+`notes`: unclassified text with its source `origin` (path and byte offsets).
+Nothing in a record is policy: CONTEXT.md frontmatter keeps activation and stage,
+and the scope blocks in `security-controls.md` stay the operative configuration.
+`CONTEXT.md` frontmatter line `context-format: html` selects this layout.
+
+- `knowledge-context` (read; `paths`, optional `budget`) returns the records
+  relevant to those paths: records whose `scope.paths` overlap them, unscoped
+  `command`, `constraint`, `exclusion` and `convention` records, and one explicit
+  hop of their `related_refs`. Each document is parsed on its own; a damaged one
+  is listed in `knowledge_unreadable` and the rest are still returned. A whole
+  record that does not fit is named in `knowledge_omitted`, never truncated.
+  Unrelated records are only counted. The result carries no admission,
+  permission or ticket field and writes nothing.
+- `knowledge-initialize` (`operation_id`, `expected` CONTEXT.md digest) adds the
+  `<!--INITIALIZED-->` marker once the five knowledge documents exist and parse
+  and the task board is well formed. Unknown records and open questions do not
+  prevent it; no provenance, receipt or completed interview is required.
+- `knowledge-cutover` (`operation_id`, `mode: preview|apply`, `expected`) switches
+  a prepared Markdown repository in one journaled transaction. `knowledge.py
+  convert` first creates empty HTML documents and lists the Markdown sources
+  with a fingerprint token; an agent reads them and adds records or notes by
+  inference, omitting secret values. Preview refuses any nonempty Markdown
+  document lacking records, writes nothing, and returns input digests. Apply
+  requires those digests, rewrites `CONTEXT.md` to select HTML, reduces
+  `security-controls.md` to its scope blocks, removes replaced Markdown and
+  provenance (original bytes remain in journal before-images), and adds the
+  no-conversion lines for artifact HTML to `.codearbiter/.gitattributes`.
+  A retry replays; cutover over converted state fails `ALREADY_CONVERTED`.
+  Reads and package updates never cut over.
+- `knowledge-merge` (`operation_id`, `path`, `base`, `ours`, `theirs`,
+  `expected_current_sha256`) resolves a Git conflict in one knowledge page by
+  record ID. A record changed on one side takes that side; one changed
+  differently on both sides is returned as a conflict and nothing is written.
+  Two different records added under the same new ID keep ours and give theirs
+  the next free ID, rewriting links in theirs' records and reporting the rename.
+
+The host helper `hooks/knowledge.py` wraps these for skills; see
+`core/surface/includes/knowledge.md`.
 
 ## Advisory scheduling and ordinary progress
 

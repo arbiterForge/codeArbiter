@@ -96,10 +96,9 @@ describe('C04 distinct workflow routes', () => {
     expect(svg).toContain('data-execution-map="greenfield"'); expect(svg).toContain('data-execution-map="brownfield"');
     const allEdges = [...svg.matchAll(/data-map-edge="([^:]+):([^"]+)"/g)];
     allEdges.forEach(([, from, to]) => expect(from.split('-')[0]).toBe(to.split('-')[0]));
-    expect(mapText('greenfield')).toContain('01-architecture-breakdown.md');
-    expect(mapText('greenfield')).toContain('02-phased-build-plan.md');
-    expect(mapText('greenfield')).toContain('03-task-backlog.md');
-    expect(mapText('greenfield')).toContain('all three outputs are approved');
+    for (const record of ['capability', 'component', 'phase', 'work-item']) expect(mapText('greenfield')).toContain(record);
+    expect(mapText('greenfield')).toContain('confirms the records match their choices');
+    expect(mapText('greenfield')).not.toContain('01-architecture-breakdown.md');
     const brownfield = getWorkflow('brownfield').map;
     const scouts = brownfield.chapters.flatMap(chapter => chapter.nodes).find(node => node.id === 'brown-scouts')!;
     const scoutSource = brownfield.sources.scouts;
@@ -125,7 +124,7 @@ describe('C04 distinct workflow routes', () => {
       expect(prose).toContain('optional scoped agents');
     }
     expect(brownfield.sources.writeContext.currentQuote).toContain('No document approval receipt');
-    expect(brownfield.sources.brownLock.currentQuote).toBe('context-finalize-preview');
+    expect(brownfield.sources.brownLock.currentQuote).toBe('Run `knowledge.py initialize`.');
     expect(mapText('brownfield')).toContain('does not invent');
     expect(mapText('brownfield')).toContain('conditional on real evidence');
     expect(brownfield.outcome).toContain('Material user-owned questions');
@@ -166,17 +165,18 @@ describe('C04 distinct workflow routes', () => {
     expect(verify).toContain('criterion-focused checks for features');
     expect(verify).toContain('passing characterization baselines for refactors');
   });
-  it('greenfield retains interview evidence and uses paired native population and finalization', () => {
+  it('greenfield resumes saved answers and initializes structurally from records', () => {
     const nodes=getWorkflow('greenfield').map.chapters.flatMap(chapter=>chapter.nodes);
-    expect(nodes.find(node=>node.id==='green-resume')?.detail).toContain('plans/decomposition/');
+    const resume=nodes.find(node=>node.id==='green-resume')!.detail;
+    expect(resume).toContain('Answered questions stay settled');
+    expect(resume).not.toContain('first unfinished step');
     const populate=nodes.find(node=>node.id==='green-populate')!.detail;
-    for(const operation of ['--context-draft','--context-apply','taskwrite.py','decision-lifecycle'])
+    for(const operation of ['knowledge.py promote','decision-lifecycle','unknowns stay unknown','proposed and unrun'])
       expect(populate).toContain(operation);
-    expect(populate).toContain('document and v2 provenance together');
-    const finalize=nodes.find(node=>node.id==='green-lock')!.detail;
-    expect(finalize).toContain('--context-finalize');
-    expect(finalize).toContain('all thirteen required outputs');
-    expect(finalize).toContain('retain plans/decomposition source records');
+    const initialize=nodes.find(node=>node.id==='green-lock')!.detail;
+    expect(initialize).toContain('knowledge.py initialize');
+    expect(initialize).toContain('Open questions do not prevent it');
+    expect(mapText('greenfield')).not.toContain('all thirteen required outputs');
     expect(mapText('greenfield')).not.toContain('provenance stubs');
   });
   it('dependency review returns before installation and invents no intermediate skill', () => {

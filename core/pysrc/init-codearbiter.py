@@ -42,7 +42,7 @@ CONTEXT = """\
 ---
 arbiter: enabled
 stage: {stage}
----
+{format_line}---
 
 # Project: {name}
 
@@ -101,8 +101,19 @@ OVERRIDES = """\
 # last-checkpoint marker as "overrides since last checkpoint."
 """
 
+# Native artifact HTML is bound to its exact bytes. Git line-ending conversion
+# (core.autocrlf on Windows) would rewrite it on checkout and the engine would
+# then refuse to read it, so these paths are never converted.
+GITATTRIBUTES = """# codeArbiter native artifacts are hash-bound to their exact bytes.
+specs/*.html -text
+plans/*.html -text
+context/*.html -text
+decomposition/*.html -text
+"""
+
 FILES = {
     "open-tasks.md": OPEN_TASKS,
+    ".gitattributes": GITATTRIBUTES,
     # B-23: scaffolded at init rather than created on first archive. An
     # append-only file that springs into existence mid-sweep has no
     # reviewed initial content and no header explaining what it is — and
@@ -218,6 +229,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("--root")
     ap.add_argument("--stage", type=int)
+    ap.add_argument("--format", choices=("html", "markdown"), default="html", help=(
+        "narrative context format for a NEW scaffold: native HTML knowledge "
+        "(default) or the legacy Markdown documents; an existing CONTEXT.md is never changed"))
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--passive", action="store_true", help=(
         "inspect explicit root before host activation; no Git or network probes"))
@@ -345,8 +359,9 @@ def main(argv=None):
     os.makedirs(cad, exist_ok=True)
     created = []
     if "CONTEXT.md" in absent:
-        _create_scaffold_file(ctx, CONTEXT.format(stage=args.stage, name=name,
-                              create_context=_cc, decompose=_dc))
+        _create_scaffold_file(ctx, CONTEXT.format(
+            stage=args.stage, name=name, create_context=_cc, decompose=_dc,
+            format_line="context-format: html\n" if args.format == "html" else ""))
         created.append("CONTEXT.md")
     for fname, content in FILES.items():
         if fname in absent:

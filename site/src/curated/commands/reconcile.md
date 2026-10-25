@@ -20,7 +20,10 @@ A full pass locates `01-architecture-breakdown.md`, `02-phased-build-plan.md`, a
 pass; unrelated decomposition files are not prerequisites. Missing or unreadable
 inputs remain visible coverage gaps, never a clean result. This comparison uses
 Markdown architectural records; typed HTML feature specs/plans retain their
-existing typed workflow owner, not Markdown section-hash handling.
+existing typed workflow owner, not Markdown section-hash handling. In an
+HTML-knowledge repository the full pass reads the decomposition records instead
+(component and decision records for architecture, phase records for the plan,
+work-item records for the backlog), citing their stable record IDs.
 
 ## Usage
 

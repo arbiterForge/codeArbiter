@@ -237,13 +237,22 @@ class TestPassiveBeforeActivation(unittest.TestCase):
 
 class TestAssistiveContextBridge(unittest.TestCase):
     def test_greenfield_owner_uses_paired_writer_and_retained_evidence(self):
-        owner = (ROOT / "core/surface/skills/decompose/SKILL.md").read_text(encoding="utf-8")
+        # Markdown-format repositories keep the unchanged paired-writer owner.
+        owner = (ROOT / "core/surface/skills/decompose/references/markdown-format.md").read_text(encoding="utf-8")
         for required in ("--context-draft", "--context-apply", "--context-finalize",
                          "plans/decomposition/", "decision-lifecycle", "taskwrite.py",
                          "five", "v2"):
             self.assertIn(required, owner)
-        self.assertNotIn("write_stub", owner)
-        self.assertNotIn("Write the `<!--INITIALIZED-->` body marker", owner)
+        # HTML-format repositories record the interview as knowledge records.
+        entry = (ROOT / "core/surface/skills/decompose/SKILL.md").read_text(encoding="utf-8")
+        for required in ("knowledge.py create-missing", "knowledge.py promote",
+                         "knowledge.py initialize", "decision-lifecycle",
+                         "`question` record", "status: answered", "basis: proposed",
+                         "references/markdown-format.md"):
+            self.assertIn(required, entry)
+        for text in (owner, entry):
+            self.assertNotIn("write_stub", text)
+            self.assertNotIn("Write the `<!--INITIALIZED-->` body marker", text)
 
     def test_document_preparation_preserves_legacy_bytes_and_records_unreviewed_sources(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1386,7 +1395,7 @@ class TestPartialOnboardingRecovery(unittest.TestCase):
                 self.assertFalse(missing.exists())
         ctx.write_bytes(initializer.CONTEXT.format(
             stage=1, name=self.root.name,
-            create_context="/ca:create-context", decompose="/ca:decompose"
+            create_context="/ca:create-context", decompose="/ca:decompose", format_line="context-format: html\n"
         ).encode())
         (self.state / "overrides.log").write_bytes(b"human edit\n")
         before = self._snapshot()
@@ -1495,7 +1504,8 @@ class TestHumanContextPreservation(unittest.TestCase):
                 existing = outside / "CONTEXT.md"
                 existing.write_bytes(initializer.CONTEXT.format(
                     stage=1, name="Fixture", create_context="/ca:create-context",
-                    decompose="/ca:decompose").encode("utf-8"))
+                    decompose="/ca:decompose",
+                    format_line="context-format: html\n").encode("utf-8"))
                 existing_bytes = existing.read_bytes()
                 alias = base / ".codearbiter"
                 created = subprocess.run(
@@ -1591,10 +1601,13 @@ class TestFirstRealContextInput(unittest.TestCase):
         self.assertFalse(acquired["verified_fresh"])
         self.assertEqual(self._assess(), acquired)
         self.assertEqual(self._state(), before)
-        owner = (ROOT / "core/surface/skills/decompose/SKILL.md").read_text(
+        owner = (ROOT / "core/surface/skills/decompose/references/markdown-format.md").read_text(
             encoding="utf-8")
         self.assertIn("first_input_pending", owner)
         self.assertIn("assess_context_provenance", owner)
+        # HTML-format greenfield hands the first real manifest to context-check.
+        entry = (ROOT / "core/surface/skills/decompose/SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("When source and manifests arrive", entry)
 
     def test_t040_first_real_context_input_negative_controls(self):
         """Unrelated leaves and unsafe snapshots cannot invent package guidance."""

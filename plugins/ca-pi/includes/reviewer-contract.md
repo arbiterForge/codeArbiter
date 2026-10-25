@@ -1,5 +1,12 @@
 # Reviewer contract — findings format, output template, out-of-scope rule
 
+For every security policy reference below, follow `<plugin-root>/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Canonical for every gate reviewer agent (`security-reviewer`, `auth-crypto-reviewer`,
 `dependency-reviewer`, `migration-reviewer`, `coverage-auditor`). Loaded via each agent's
 Required Reading; the agent bodies do not restate these blocks. An agent body MAY narrow the

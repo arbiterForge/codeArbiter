@@ -22,7 +22,9 @@ edits and stable references in the selected representation.
 
 Read relevant project context and the build/test commands in
 `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md`; use
-`${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` for applicable conventions.
+`${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` for applicable conventions. In an
+HTML-knowledge repository `knowledge.py relevant <paths>` returns both
+(`${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`).
 Missing optional orientation is not a new permission gate. Identify a genuinely
 missing requirement or command contract instead of guessing it.
 

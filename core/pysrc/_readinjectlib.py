@@ -271,8 +271,8 @@ def assemble_context(pointers, budget=150):
 # Concise pointer text for tier 1.  Kept well under the 150-token budget so it
 # leaves headroom for tiers 2–4 when assembled by governing_docs (T-07).
 _SECURITY_CONTROLS_TEXT = (
-    "security-controls.md governs this file — consult it for auth, crypto,"
-    " and secret-handling constraints."
+    "Security policy governs this file: use CTX-SECURITY-CONTROLS records in"
+    " HTML context, or security-controls.md in Markdown context."
 )
 
 

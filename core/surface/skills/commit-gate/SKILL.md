@@ -17,7 +17,7 @@ must not reach staging, commit, or this procedure's writing close.
 
 Read these, or STOP and surface the gap — never guess a command:
 
-- `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess.
+- `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess. In an HTML-knowledge repository the same declarations come from `"$PY" "{{PLUGIN_ROOT}}/hooks/knowledge.py" commands` (see `{{PLUGIN_ROOT}}/includes/knowledge.md`); stop if the command you need is not declared. A declared command's `run_state` is what was reported, not proof it passes.
 - `{{PLUGIN_ROOT}}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
 - Read the scoped obligations and observed evidence under `{{PLUGIN_ROOT}}/skills/tdd/SKILL.md`. Confirmed fixes require regression RED/GREEN; features require current criterion-focused checks; refactors require passing characterization/parity evidence. Apply the relevant coverage and lint requirements. Resolve missing evidence for the staged change using its selected verification approach.
@@ -71,7 +71,7 @@ Gate: the staged set is type-homogeneous with a single type and scope.
 
 ## Phase 4 — Verification · gate: BLOCK
 
-Read the test, lint, and secrets-scan commands from `tech-stack.md`, then apply
+Read the test, lint, and secrets-scan commands from `tech-stack.md` (or `knowledge.py commands`), then apply
 `{{PLUGIN_ROOT}}/includes/verification-boundary.md`:
 
 - Establish impact-bounded local test results that directly cover the staged paths and obligations. Reuse inspected results while their relevant source, inputs and command match; run missing or affected checks. Any unresolved failure blocks. Repository-wide and cross-platform suites belong to exact-head hosted CI before merge.
@@ -107,6 +107,11 @@ self-report.
 Gate: inspected current command output and exit code prove the claimed behavior. The phase change alone does not require another run. A self-reported "it works" does not pass.
 
 ## Phase 5.5 — Provenance auto-heal (conditional)
+
+An HTML-knowledge repository has no provenance records, so this phase does
+nothing there. Knowledge freshness is advisory: when staged paths are ones that
+knowledge records govern, `knowledge.py stale` lists those records for the next
+context refresh. It never blocks the commit and is never auto-rewritten here.
 
 Partition the loaded records by schema. Select only recorded content paths or
 membership scopes/predicates intersecting staged sources. Commits touching no
@@ -256,6 +261,6 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT skip, disable, or work around any automated gate.
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
-- MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.
+- MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` (or `knowledge.py commands`) or STOP.
 - MUST NOT silently rewrite a doc's claims — a claim-change edit proposed by Phase 5.5 goes through diff review (Phase 6), never through the silent re-baseline path. The re-baseline path is strictly for claims that still hold; the Phase 5.5 re-baseline MUST ride the work commit (staged by explicit path in Phase 7).
 - MUST, **at Phase 7 before staging**, run the follow-up harvest (`{{PLUGIN_ROOT}}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote to `open-tasks.md` (work) or `open-questions.md` (decision) so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not the board.

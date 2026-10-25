@@ -5,6 +5,13 @@ argument-hint: "<package[@version]>"
 
 # {{CMD:add-dep}} — dependency review
 
+For every security policy reference below, follow `{{PLUGIN_ROOT}}/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Gate a new or changed third-party dependency through review before it lands. When you route through
 this command, the orchestrator runs no install until the `dependency-reviewer` agent clears the
 package. Specify the exact version if you have one; without one, the reviewer evaluates the latest
@@ -14,7 +21,8 @@ available version.
 
 The `dependency-reviewer` agent (`{{PLUGIN_ROOT}}/agents/dependency-reviewer.md`). The agent
 reads `{{PROJECT_DIR}}/.codearbiter/security-controls.md` (allowed/denied licenses, provenance
-and supply-chain policy) and `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` (stack fit, dependency
+and supply-chain policy) and the format-selected tech-stack document
+(`{{PLUGIN_ROOT}}/includes/knowledge.md`; stack fit, dependency
 manager) to judge the package.
 
 After the agent clears it, the orchestrator surfaces the install command for confirmation. The lock

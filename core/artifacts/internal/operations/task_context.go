@@ -143,6 +143,15 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 	if err != nil {
 		return nil, err
 	}
+	// Knowledge fills what the task packet leaves of the budget, keeping room
+	// for the omission list; whole records that do not fit are named instead.
+	for k, v := range e.taskKnowledge(task.Value, budget-len(b)-4096) {
+		out[k] = v
+	}
+	b, err = json.Marshal(out)
+	if err != nil {
+		return nil, err
+	}
 	if len(b)+1024 > budget {
 		return nil, fault.At("RECORD_TOO_LARGE", id, "", "task packet exceeds response budget; use exact symbol reads or increase budget; no truncated packet returned")
 	}

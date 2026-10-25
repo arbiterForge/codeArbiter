@@ -53,6 +53,12 @@ one is not. Security findings should identify relevant sites without exposing se
 
 ## Review what is written
 
+In a new (HTML-format) repository the same five subjects are HTML knowledge documents under
+`.codearbiter/context/` (`project`, `tech-stack`, `coding-standards`, `security-controls`,
+`code-map`). Each record states its basis; a record read from source cites the files it rests on
+and names the paths it governs, so a later task receives only the records relevant to its paths.
+Review them with `knowledge.py read <document>`. The table below names the Markdown-format files.
+
 | Output | What to check |
 |---|---|
 | `CONTEXT.md` | The actual project, its users, scope and exclusions, rather than a generic description |
@@ -77,7 +83,10 @@ facts where possible. Ask `[CONFIRM-NN]` questions only for material unresolved 
 reuse existing answers and authorization. Answer, challenge or explicitly defer such a question. A deferred question remains visible and can
 still stop later work that depends on its answer.
 
-The safe writer previews each selected document/provenance pair and applies it only while the
+In an HTML-format repository each record is written and corrected individually through
+`knowledge.py`; the native engine journals every write and makes it safe to retry. In a
+Markdown-format repository the safe writer previews each selected document/provenance pair and
+applies it only while the
 source and target identities still match. Existing authorization is enough for those writes;
 there is no extra approval code for each document. Preserve human content outside selected spans.
 An initialized refresh retains its marker and never repeats finalization.
@@ -90,7 +99,8 @@ Use [the first-repository walkthrough](/getting-started/quickstart/) to prove th
 
 Use [Return to a project](/guides/return-to-a-project/) for ordinary work.
 When a source path or configuration changes, inspect provenance with status drift and choose the
-appropriate re-scout or re-baseline procedure. Do not erase the context to silence a warning.
+appropriate re-scout or re-baseline procedure; in an HTML-format repository `knowledge.py stale`
+lists the records whose cited sources changed. Do not erase the context to silence a warning.
 
 The [context-creation reference](/reference/skills/context-creation/) owns the exact extraction
 contract. Academy [U04](/academy/u04-initialize-projects/) practices the distinct greenfield and

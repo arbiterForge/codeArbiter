@@ -25,9 +25,22 @@ This page documents every stock path the scaffold or a governed lane produces or
 when the owning workflow first needs them (`plans/decomposition/`,
 `.markers/`, `.provenance/`, `spikes/`, `reports/`); those lifecycles are noted below.
 
+## Two context formats
+
+New scaffolds record narrative context as native HTML knowledge: `context/project.html`,
+`context/tech-stack.html`, `context/coding-standards.html`, `context/security-controls.html` and
+`context/code-map.html`, plus greenfield `decomposition/project.html`. `CONTEXT.md` frontmatter
+carries `context-format: html` for them. Repositories scaffolded earlier keep the Markdown
+documents and `.provenance/` records described below until their owner converts them explicitly
+with `knowledge.py convert`, agent-recorded content, a mapping from every returned section to saved records or notes, and `convert --finish <token> --coverage @checklist.json`. In both formats `CONTEXT.md` owns activation and stage, and the scope
+blocks in `security-controls.md` stay the operative migration, CI and deploy configuration.
+
 ## Project plans are not feature execution plans
 
-Greenfield decomposition creates three named Markdown documents:
+In an HTML-knowledge repository, greenfield decomposition is one native document,
+`decomposition/project.html`, whose capability, component, phase and work-item records hold the
+intended architecture, phased plan and backlog; reconcile reads them by stable record ID.
+In a Markdown-format repository, greenfield decomposition creates three named Markdown documents:
 `plans/01-architecture-breakdown.md`, `plans/02-phased-build-plan.md` and
 `plans/03-task-backlog.md`. They own project architecture, phased delivery and the project backlog.
 Reconcile consumes their exact filenames. They are not legacy feature pairs to convert to HTML.
@@ -45,6 +58,9 @@ review, progress and recovery boundaries.
 |---|---|---|---|
 | `CONTEXT.md` | `/ca:init`; context workflows through the native writer | every enforcement hook (`arbiter_active()`), the orchestrator | No: use the context writer; preserve activation frontmatter |
 | `code-map.md` | Context workflows through the native writer | feature/task orientation, context checks | No: refresh selected claims through `/ca:context-check` |
+| `context/*.html` | HTML-format context workflows through `knowledge.py` and the native engine | `knowledge.py relevant`, `task-context`, reviewers | No: change records with `knowledge.py`; a Git conflict uses `knowledge.py merge-conflict` |
+| `decomposition/project.html` | HTML-format `/ca:decompose` | Interview resume, `reconcile`, `knowledge.py promote` | No: change records with `knowledge.py` |
+| `.gitattributes` | `/ca:init` (HTML format) and `knowledge.py convert --finish` | Git | Keep it: it stops line-ending conversion of native HTML artifacts |
 | `open-tasks.md` | `/ca:task` only | `/ca:status`, the statusline, `SessionStart` | No: guarded to `/ca:task` (hook `H-22`, helper-only) |
 | `done-tasks.md` | `/ca:task archive`, `/ca:standup`'s per-item archival sweep | the permanent record; read on demand | No: guarded (hook `H-22`, append-only) |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
@@ -77,6 +93,8 @@ The activation contract. Its leading YAML frontmatter carries two load-bearing k
   but never closes is treated as **malformed**, not disabled, and is surfaced as an error rather
   than silently ignored. A file with no frontmatter at all is simply dormant. Missing activation is dormant. Malformed activation is a separate error state; do not treat it
   as a documented way to disable enforcement.
+- **`context-format: html`** — present in HTML-knowledge repositories; selects where narrative
+  context lives. Absent means the Markdown documents.
 - **`stage: N`** — a single maturity number that `/ca:status` and the statusline surface. It has
   no enforcement effect encoded in this file itself; it is a legible signal for how far the
   project has matured, not a config switch.

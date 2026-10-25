@@ -41,7 +41,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -172,6 +172,22 @@ func Run(root, op string, input object) (any, error) {
 	if op == "context-apply" {
 		return engine.contextApply(r)
 	}
+	// Knowledge operations read their own documents individually; they never
+	// scan the spec/plan catalog, so a damaged unrelated artifact cannot veto them.
+	switch op {
+	case "knowledge-context":
+		budget := reads.DefaultBudget
+		if b := model.I(r["budget"]); b != 0 {
+			budget, _ = model.NativeInt(b)
+		}
+		return engine.knowledgeContext(r, budget)
+	case "knowledge-initialize":
+		return engine.knowledgeInitialize(r)
+	case "knowledge-cutover":
+		return engine.knowledgeCutover(r)
+	case "knowledge-merge":
+		return engine.knowledgeMerge(r)
+	}
 	if op == "capture-observation" {
 		observedSource, _, sourceErr := authority.LoadSource(f, model.S(r["source_ref"]), model.S(r["source_sha256"]))
 		if sourceErr != nil {
@@ -283,7 +299,12 @@ func Run(root, op string, input object) (any, error) {
 		if offset > 0 && model.S(r["model_sha256"]) != d.Hash() {
 			return nil, fault.New("STALE_CURSOR", "outline continuation requires the same model identity")
 		}
-		return reads.Outline(d, offset, budget)
+		out, err := reads.Outline(d, offset, budget)
+		if err == nil && kind.Knowledge(d.Kind()) {
+			// Knowledge freshness is judged against the document's baseline.
+			out["baseline"] = d.Norm()["baseline"]
+		}
+		return out, err
 	case "plan-verification":
 		expected := model.M(r["expected"])
 		if model.S(expected["artifact_id"]) != d.ID() || model.I(expected["revision"]) != d.Revision() || model.S(expected["model_sha256"]) != d.Hash() || model.S(expected["normative_sha256"]) != d.NormHash() {

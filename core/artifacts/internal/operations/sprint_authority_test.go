@@ -260,6 +260,7 @@ func TestSMARTSRefusesDecisionCriticalUnknownSelection(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
 			h := newHarness(t)
 			h.createPair()
 			_, r := pairFixture(h, true)

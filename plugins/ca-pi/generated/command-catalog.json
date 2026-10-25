@@ -129,7 +129,7 @@
     },
     "create-context": {
       "name": "create-context",
-      "description": "Build source-backed project context through bounded inspection, optional agents, and safe selected writes.",
+      "description": "Build source-backed project context through bounded inspection, optional agents, and record-level knowledge writes.",
       "skillPath": "skills/ca-create-context/SKILL.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -147,7 +147,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Develop greenfield context from a durable interview and initialize it through the native context writer.",
+      "description": "Develop greenfield context from a resumable interview recorded as decomposition and knowledge records.",
       "skillPath": "skills/ca-decompose/SKILL.md",
       "visibility": "alias",
       "workflow": "initialize",

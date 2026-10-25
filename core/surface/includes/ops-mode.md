@@ -79,8 +79,9 @@ mode reads it for you:
 - `tech-stack.md` — languages, frameworks, and the commands that build, test,
   and lint this repo.
 - `coding-standards.md` — the conventions code here is expected to match.
-- `security-controls.md` — the boundaries, banned primitives, and
-  secret-handling rules.
+- `security-controls.md` — operational scope blocks; read the complete
+  format-selected security-controls policy (see `{{PLUGIN_ROOT}}/includes/knowledge.md`)
+  for boundaries, banned primitives, and secret-handling rules.
 - `open-questions.md` — the unresolved `[CONFIRM-NN]` set.
 
 Read whichever the work actually touches. These are facts about the repo,

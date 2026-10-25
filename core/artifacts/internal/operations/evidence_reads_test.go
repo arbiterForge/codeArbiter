@@ -69,15 +69,11 @@ func (l *evidenceLedger) validate(kind, hash string) {
 func (h *farmHarness) measured(op string, r object) (*evidenceLedger, object) {
 	h.t.Helper()
 	l := &evidenceLedger{opens: map[string]int{}, scans: map[string]int{}, validations: map[string]int{}}
-	openStore = func(root string) (*store.FS, error) {
-		f, err := store.Open(root)
-		if err == nil {
-			f.SetReadHook(l.open)
-			f.SetValidateHook(l.validate)
-		}
-		return f, err
-	}
-	defer func() { openStore = store.Open }()
+	storeHooks.Store(h.root, func(f *store.FS) {
+		f.SetReadHook(l.open)
+		f.SetValidateHook(l.validate)
+	})
+	defer storeHooks.Delete(h.root)
 	l.started = time.Now()
 	out := h.run(op, r)
 	l.elapsed = time.Since(l.started)
@@ -263,31 +259,44 @@ func evidenceReadScenario(t *testing.T, extra int, sameRoot bool) evidenceScenar
 }
 
 func TestEvidenceObjectsReadOnce(t *testing.T) {
-	small := evidenceReadScenario(t, 0, false)
-	large := evidenceReadScenario(t, 6, false)
+	t.Parallel()
+	var small, large, same evidenceScenario
+	t.Run("small", func(t *testing.T) {
+		t.Parallel()
+		small = evidenceReadScenario(t, 0, false)
+	})
+	t.Run("large", func(t *testing.T) {
+		t.Parallel()
+		large = evidenceReadScenario(t, 6, false)
+	})
 	// Two tasks in the SAME workspace root: the root's state is computed once and
 	// reused, so accepting the two-task scope costs the passes of the one-task scope.
-	same := evidenceReadScenario(t, 0, true)
-	t.Logf("receipt chains: small fixture %d, large fixture %d", small.receipts, large.receipts)
-	if large.receipts < 12 || large.receipts <= small.receipts {
-		t.Fatalf("fixtures do not scale: %d then %d receipts; want the large fixture to hold at least 12 chains", small.receipts, large.receipts)
-	}
-	// Scan passes are bounded by a constant: they must not grow with the number
-	// of receipts (small against large fixture) or with the number of completed
-	// tasks in the accepted scope (CP-01 holds two, CP-02 one).
-	for name, passes := range small.passes {
-		if large.passes[name] != passes {
-			t.Errorf("%s made %d scan passes on the small fixture and %d on the large one; passes must not grow with receipts", name, passes, large.passes[name])
+	t.Run("same root", func(t *testing.T) {
+		t.Parallel()
+		same = evidenceReadScenario(t, 0, true)
+	})
+	t.Cleanup(func() {
+		t.Logf("receipt chains: small fixture %d, large fixture %d", small.receipts, large.receipts)
+		if large.receipts < 12 || large.receipts <= small.receipts {
+			t.Fatalf("fixtures do not scale: %d then %d receipts; want the large fixture to hold at least 12 chains", small.receipts, large.receipts)
 		}
-	}
-	if same.passes["accept-scope"] != small.passes["accept-scope"] {
-		t.Errorf("accept-scope over two tasks in one workspace root made %d scan passes; the mixed-root scope made %d", same.passes["accept-scope"], small.passes["accept-scope"])
-	}
-	for _, run := range []evidenceScenario{small, large, same} {
-		if run.passes["accept-scope"] != run.passes["accept-scope (1 task)"] {
-			t.Errorf("accept-scope made %d scan passes over a scope of two tasks and %d over one; passes must not grow with tasks", run.passes["accept-scope"], run.passes["accept-scope (1 task)"])
+		// Scan passes are bounded by a constant: they must not grow with the number
+		// of receipts (small against large fixture) or with the number of completed
+		// tasks in the accepted scope (CP-01 holds two, CP-02 one).
+		for name, passes := range small.passes {
+			if large.passes[name] != passes {
+				t.Errorf("%s made %d scan passes on the small fixture and %d on the large one; passes must not grow with receipts", name, passes, large.passes[name])
+			}
 		}
-	}
+		if same.passes["accept-scope"] != small.passes["accept-scope"] {
+			t.Errorf("accept-scope over two tasks in one workspace root made %d scan passes; the mixed-root scope made %d", same.passes["accept-scope"], small.passes["accept-scope"])
+		}
+		for _, run := range []evidenceScenario{small, large, same} {
+			if run.passes["accept-scope"] != run.passes["accept-scope (1 task)"] {
+				t.Errorf("accept-scope made %d scan passes over a scope of two tasks and %d over one; passes must not grow with tasks", run.passes["accept-scope"], run.passes["accept-scope (1 task)"])
+			}
+		}
+	})
 }
 
 // A failed or absent object is never reused: after a transient failure the same

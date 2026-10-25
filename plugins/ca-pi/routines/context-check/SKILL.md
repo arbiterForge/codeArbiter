@@ -39,6 +39,30 @@ clear `<!--INITIALIZED-->`, or repeat context finalization. An ordinary status
 snapshot and the initial `/ca-status drift` report are read-only. A declined
 refresh leaves every file unchanged.
 
+## HTML knowledge repositories
+
+Run `knowledge.py format` first (`<plugin-root>/includes/knowledge.md`). When it
+reports `html`, use this section instead of the Markdown provenance flow below.
+
+1. **Find what may be stale.** `knowledge.py stale` lists, per document, the
+   records whose scoped paths or cited sources changed since that document's
+   baseline commit. It is advisory: unlisted records are unaffected, and nothing
+   is reset. A document with no baseline is reported as such, not as stale.
+2. **Report** the listed records and their changed paths before offering
+   actions. An audit-only request stops here.
+3. **Refresh the selected records.** Reinspect only the changed paths those
+   records rely on (the context-creation inspection and evidence rules apply), then
+   `update` records whose claims changed, `add` newly observed ones and `retire`
+   ones that no longer hold, each with its basis. An unchanged claim needs no
+   write. A full refresh selected by the user covers all six categories.
+4. **Rebaseline** each document whose listed records were checked:
+   `knowledge.py rebaseline <doc>`. Leave a deferred document's baseline alone so
+   its records are listed again next time.
+
+Every write is a journaled, retry-safe engine operation; there is no preview to
+approve and no provenance file to hand-write. `<!--INITIALIZED-->` and all
+history stay. Imported notes stay until a record replaces them.
+
 ## Pre-flight
 
 Read these before computing drift:

@@ -20,13 +20,13 @@ catalogs; source inspection is not live-host or publication qualification.
 - `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, and context-document operations.
 - `core/artifacts/internal/model/` — Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.
 - `core/artifacts/schemas/` — Versioned JSON contracts for typed artifacts and operations.
-- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan HTML and project-context Markdown.
+- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan HTML, knowledge/decomposition HTML, and project-context Markdown.
 - `core/artifacts/internal/read/` — Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.
 - `core/artifacts/internal/symbol/` — Stable symbol references and resolution.
 - `core/artifacts/internal/evidence/` — Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.
 - `core/artifacts/internal/render/` — Deterministic offline HTML with stable anchors, safe escaping, and separate progress/evidence labels.
 - `core/artifacts/internal/store/` — Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.
-- `core/artifacts/internal/contextdocument/` — Five-document Markdown ownership, bounded typed content, preview/apply, and provenance contracts.
+- `core/artifacts/internal/contextdocument/` — Five-document Markdown ownership, bounded typed content, preview/apply, provenance contracts, and Markdown-to-HTML knowledge conversion.
 - `tools/build-artifacts.py` — Pinned-toolchain native payload build and qualification metadata.
 - `tools/generate-artifact-types.py` — Generated schema and typed-view consistency.
 - `tools/test-artifact-mixed-schema.py` — Disposable old/current-client compatibility, retained stops, replay, complete-store restore, and forward export.
@@ -39,6 +39,7 @@ catalogs; source inspection is not live-host or publication qualification.
 - `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.
 - `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.
 - `core/pysrc/_taskboardlib.py` — Board schema and counters; taskwrite.py owns mutations and archival.
+- `core/pysrc/knowledge.py` — Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.
 - `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.
 
 Hook coverage is host-specific. Loaded instructions and named tools alone do not

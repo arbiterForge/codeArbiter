@@ -1,6 +1,6 @@
 ---
 name: decompose
-description: Develop greenfield context from a durable interview and initialize it through the native context writer.
+description: Develop greenfield context from a resumable interview recorded as decomposition and knowledge records.
 argument-hint: (none)
 ---
 
@@ -13,148 +13,114 @@ argument-hint: (none)
 <!-- catalog-compatibility-notice:end -->
 
 Develop the project specification before implementation. Keep actual user decisions,
-planned architecture and observed repository facts distinct.
+planned architecture and observed repository facts distinct. Load
+[includes/knowledge.md](../../includes/knowledge.md) for the record vocabulary and the
+`knowledge.py` verbs used below.
 
 ## 1. Inspect and resume
 
-Read `.codearbiter/CONTEXT.md`. An initialized project returns to normal operation;
-context changes use `$ca-context-check`. Meaningful implementation source routes
-to `$ca-create-context`. If the scaffold is absent, run `$ca-init` first.
+Read `.codearbiter/CONTEXT.md` frontmatter. An initialized project returns to normal
+operation; context changes use `$ca-context-check`. Meaningful implementation
+source routes to `$ca-create-context`. If the scaffold is absent, run
+`$ca-init` first. If `knowledge.py format` reports `markdown`, this is an older
+scaffold: offer `knowledge.py convert`; read every returned Markdown section,
+record its meaning, map each section ID to its saved record or note references
+(`[]` only for `content=false`), then run
+`knowledge.py convert --finish <token> --coverage @checklist.json` (the
+transaction retains the original bytes). If the
+user keeps the Markdown format, load
+[routines/decompose/references/markdown-format.md](references/markdown-format.md) and follow that
+unchanged procedure instead of this one; never convert silently.
 
-Keep the interview in `.codearbiter/plans/decomposition/`: `_session.md` records the
-current phase, remaining questions and actual user confirmations; each completed
-layer has its own file. Read this state and resume the first unfinished step. Do not
-repeat settled questions or require another approval of unchanged accepted work.
-An explicit restart preserves earlier interview and decision history.
-
-If `.codearbiter/.decompose-draft/` contains an interrupted interview, copy its session
-and layer records to the durable directory before using them as source evidence.
-Compare existing destinations byte-for-byte: retain identical files, and reconcile
-conflicting versions without overwriting either. Temporary drafts remain until
-initialization completes. Never cite a temporary file that cleanup will remove.
+Run `knowledge.py create-missing`, then `knowledge.py read decomposition`. Existing
+`question` records with `status: answered` are settled: do not ask them again or
+require another approval of unchanged answers. Resume with the open question that
+matters most for what the user wants to do next, not a fixed first-unfinished
+step. An explicit restart retires earlier records with a reason; it never deletes
+them.
 
 ## 2. Capture the interview
 
 Explain briefly that you will establish scope, architecture and a build sequence.
 Ask focused questions only where existing answers do not establish the needed facts
-or choices. Use these six layers; record an inapplicable category with its reason.
-Persist each layer before proceeding. Each record contains the question, actual
-answer, relevant trade-offs and unresolved `[CONFIRM-NN]` items. Keep each source
-file within 1 MiB; split a long layer into named parts. Exclude secret values.
+or choices. Cover these areas, in whatever order the conversation makes natural;
+record an inapplicable area with its reason:
 
-| Layer and file | Required outcomes |
+| Area | Outcomes to capture |
 |---|---|
-| 1 — `layer-1-vision.md` | Problem, primary users, demonstrable success and exclusions. |
-| 2 — `layer-2-flows.md` | User journey, non-human actors, failure experience and privilege boundaries. |
-| 3 — `layer-3-functional-scope.md` | Capabilities with initiators, inputs and outputs; MVP/v1/later classification; hardest user-facing risk. |
-| 4 — `layer-4-tech-shape.md` | Components and ownership, entities, state/write paths, stack and other hard constraints, technical risks, copyright holder, actual architectural choices and release intent. |
-| 5 — `layer-5-integrations.md` | External dependencies, available contracts/authentication, ownership, reliability, cost and fallback requirements. |
-| 6 — `layer-6-risks.md` | Material risks with mitigations, unresolved questions, bounded spikes and architecture-change triggers. |
+| Vision | Problem, primary users, demonstrable success and exclusions. |
+| Flows | User journey, non-human actors, failure experience and privilege boundaries. |
+| Functional scope | Capabilities with initiators, inputs and outputs; MVP/v1/later; hardest user-facing risk. |
+| Technical shape | Components and ownership, entities, state/write paths, stack and hard constraints, technical risks, copyright holder, release intent. |
+| Integrations | External dependencies, contracts and authentication, ownership, reliability, cost and fallback. |
+| Risks | Material risks with mitigations, open questions, bounded spikes and architecture-change triggers. |
+
+Record each question as a decomposition `question` record when you ask it
+(`status: open`) and update it with the user's actual answer
+(`status: answered`, `basis: user-reported`) as soon as it is given, so a closed
+session loses nothing. A deferral is `status: deferred`, not an answer. Exclude
+secret values.
 
 Record a user-decided architectural choice through `decision-lifecycle` at
-[routines/decision-lifecycle/SKILL.md](../decision-lifecycle/SKILL.md). It owns ADR numbering,
-attribution, authoring and status transitions. Preserve draft choices as drafts
-until the user actually decides; do not create an ADR merely to fill a quota.
+[routines/decision-lifecycle/SKILL.md](../decision-lifecycle/SKILL.md); it owns ADR numbering,
+attribution and status. Link the ADR from a decomposition `decision` record. Keep
+draft choices as `proposed` until the user actually decides; do not create an ADR
+merely to fill a quota.
 
 Release intent is elicited here: capture the **tag prefix** preference and
-**changelog kept** yes/no in Layer 4. No `.codearbiter/release-targets.md` row is ever written by this skill.
+**changelog kept** yes/no under technical shape. No `.codearbiter/release-targets.md` row is ever written by this skill.
 Greenfield runs before any manifest or tag exists. `$ca-release` or a subsequent
 context refresh derives a target from the actual manifest and delivery structure.
 
-An unresolved consequential choice blocks its dependent output. Record other gaps
-as questions; a user's explicit deferral remains unresolved and is not permission.
+An unresolved consequential choice blocks only the output that depends on it.
+Continue with independent areas.
 
 ## 3. Synthesize and confirm
 
-Re-read the retained layer records and relevant ADRs. Write these three artifacts
-under `.codearbiter/plans/`, using the recorded evidence:
+From the answered questions and linked ADRs, add decomposition records:
+`capability` (what the product does), `component` (intended parts, responsibilities
+and connections), `phase` (MVP and later phases with measurable completion) and
+`work_item` (bounded tasks with roles, dependencies and time-boxed spikes). Link
+each to the questions it rests on in `related_refs`. These describe intended
+architecture; they never claim code exists.
 
-- `01-architecture-breakdown.md`: components, responsibilities, connections,
-  integration boundaries and remaining architectural questions.
-- `02-phased-build-plan.md`: MVP and subsequent phases, scope, risks, deferrals and
-  measurable completion criteria.
-- `03-task-backlog.md`: prioritized, bounded tasks with roles, dependencies and
-  time-boxed spikes.
-
-Present the files for review. Apply corrections and record the user's actual
-confirmation in `_session.md`; existing confirmation covers unchanged artifacts.
-Proceed when the artifacts accurately represent the user's choices and each gap is
-resolved or explicitly retained on the question board.
+Show the user the synthesized records. Apply corrections with `update`; a wording
+or method refinement does not need a fresh confirmation. Record the user's actual
+confirmation as an answered question. Proceed when the records match the user's
+choices and every remaining gap is an open question.
 
 ## 4. Populate context
 
-Re-read the approved artifacts and retained interview sources. Prepare UTF-8 drafts
-outside the five target paths, each at most 128 KiB. Use only relevant retained
-sources for each document; planned choices must not be described as implemented facts.
-Use the matching document title: `# Project: <name>`, `# Tech stack`,
-`# Coding standards`, `# Security controls` or `# Code map`.
-Preserve existing CONTEXT frontmatter exactly; the scaffold owns activation and stage.
+Add knowledge records for what is known now:
 
-| Document ID | Content |
+| Document | Content |
 |---|---|
-| `CONTEXT` | Identity, purpose, users, scope and exclusions; frontmatter `arbiter: enabled` and one `stage:` number. |
-| `tech-stack` | Intended runtime, frameworks, tooling and confirmed conventions. Mark commands without a real manifest as planned, not verified executable commands. |
-| `coding-standards` | Confirmed structural/style conventions and copyright holder. |
-| `security-controls` | Actual trust boundaries, authentication requirements, secret handling and prohibited primitives. |
-| `code-map` | Planned concerns and ownership. Distinguish proposed paths from existing paths; state when no implementation paths exist yet. |
+| `project` | Identity, purpose, users, scope and exclusions. |
+| `tech-stack` | Intended runtime, frameworks and tooling. A command without a real manifest is a `command` record with `basis: proposed` and `run_state: unrun`. |
+| `coding-standards` | Confirmed structural and style conventions; copyright holder. |
+| `security-controls` | Trust boundaries, authentication requirements, secret handling and prohibited primitives. Scope blocks for migrations, CI and deploys stay in `security-controls.md`. |
+| `code-map` | Leave it empty or state that no implementation paths exist yet: the code map records observed code, and intended components live in decomposition. |
 
-For each of the five documents, invoke the installed writer:
+Leave unknowns as `unknown` records rather than inventing facts. Preserve
+`CONTEXT.md` frontmatter exactly; the scaffold owns activation and stage.
 
-```bash
-python3 "${PLUGIN_ROOT}/hooks/init-codearbiter.py" --root "<project-root>" --context-draft "<draft.md>" --document "<document-id>" --source ".codearbiter/plans/decomposition/<layer-file.md>"
-```
+Promote each approved `work_item` with `knowledge.py promote <WORK-ID>`. It adds the
+task through the task board's own writer and is safe to repeat. Never write task
+rows directly or mark planned work done. Record unresolved questions that need the
+user's later decision on `open-questions.md` as well, keeping its history. Preserve
+`overrides.log`, `last-checkpoint` and all ADR history.
 
-Repeat `--source` for each relevant retained source, up to 64 per document. Inspect
-the returned preview, exact preimage and source bindings, then apply that preview
-under the existing authorization:
+## 5. Initialize and return to work
 
-```bash
-python3 "${PLUGIN_ROOT}/hooks/init-codearbiter.py" --root "<project-root>" --context-apply "<preview_ref>" --preview-sha256 "<preview_sha256>"
-```
+Run `knowledge.py initialize`. It checks that the knowledge documents exist and
+parse and that the task board is well formed, then adds the standalone
+`<!--INITIALIZED-->` marker to `CONTEXT.md`. Open questions do not prevent it.
+A refusal names the document to repair; never append the marker manually.
 
-The writer commits each document and its v2 provenance record together. Do not write
-those protected pairs directly. A digest records inspected bytes; it does not certify
-semantic review or user authority. If source or output bytes change, inspect the
-changed input and prepare a fresh preview. Reuse the same retained preview after an
-uncertain response; recovery determines whether its transaction committed.
+Report the populated context, open questions and any actual checks, then continue
+authorized work. Initialization records population; it does not certify host
+enforcement, semantic review or passing tests.
 
-Populate the other records through their owners:
-
-- Add each approved backlog item with `python3 "${PLUGIN_ROOT}/hooks/taskwrite.py" add "<task>"`.
-  Compare the existing board before retrying so resumed population does not duplicate
-  tasks. Never write task rows directly or mark planned work done.
-- Record unresolved questions in `open-questions.md`, retaining the scaffold and
-  actual resolution or deferral history. An empty question board is valid.
-- Preserve `overrides.log`, `last-checkpoint` and all ADR history. The scaffold owns
-  their creation; initialization does not invent audit events or acceptance evidence.
-
-Verify all five v2 pairs, the task/question boards and audit header are present.
-Do not scaffold cut documents listed in [includes/cut-docs.md](../../includes/cut-docs.md).
-
-## 5. Finalize and return to work
-
-Preview initialization against the exact five document/provenance pairs and the
-three independent board/audit outputs:
-
-```bash
-python3 "${PLUGIN_ROOT}/hooks/init-codearbiter.py" --root "<project-root>" --context-finalize
-```
-
-Inspect the result and apply its `preview_ref` and `preview_sha256` with
-`--context-apply`. The writer validates current outputs and source evidence, then
-commits the standalone `<!--INITIALIZED-->` marker and matching CONTEXT provenance
-together. Missing, stale or malformed input names the repair needed; never append
-the marker manually. Recover an uncertain transaction before preparing another.
-
-Read back the committed result and all required outputs. Keep
-`.codearbiter/plans/decomposition/`, approved plans and decision history. Remove only
-this run's temporary drafts after confirming no provenance source refers to them.
-Record completion in `_session.md`. Report the populated context, unresolved choices
-and actual checks, then continue authorized work. Initialization records population;
-it does not certify host enforcement, semantic review or passing tests.
-
-When source and manifests arrive, `$ca-context-check` refreshes the selected
-context against those files. Use `_provenancelib.assess_context_provenance` to inspect
-current evidence. An existing `first_input_pending` result names the bounded refresh;
-otherwise select the documents affected by the new source. Preserve interview
-history and the initialized marker while reconciling intended and implemented facts.
+When source and manifests arrive, `$ca-context-check` adds what the code
+actually contains to the code map and reconciles intended and implemented facts,
+keeping the interview records.

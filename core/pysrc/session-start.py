@@ -49,6 +49,7 @@ from _standuplib import (  # noqa: E402
 )
 import _taskboardlib  # noqa: E402 — shared task-board count/staleness logic
 import _provenancelib  # noqa: E402 — shared provenance drift detection (T-16)
+import _knowledgelib  # noqa: E402 — narrative context format (no engine call)
 import _updatelib  # noqa: E402 — update-available notifier (cache read + notice text)
 # T-06 (#437): the write-ahead audit-close ledger moved to _modelib.py — see
 # that module's docstring. `_DEV_PENDING_CLOSE_MAX` is re-imported because a
@@ -871,13 +872,39 @@ def provenance_drift_line(root, runner=None, report_unknown=False):
         return ""
 
 
-def context_coverage_line(root):
-    """Bounded provenance coverage notice; no source hash or authority claim."""
+def context_coverage_line(root, ctx_text=None):
+    """Bounded provenance coverage notice; no source hash or authority claim.
+
+    A converted repository has no Markdown provenance to count. It gets one
+    pointer to where its knowledge is, read on demand, never the pages.
+    ctx_text is the CONTEXT.md text main() already read, so the format check
+    adds no read to this hot path."""
     try:
+        html = (_knowledgelib.frontmatter_selects_html(ctx_text) if ctx_text is not None
+                else _knowledgelib.context_format(root) == "html")
+        if html:
+            return ("context: HTML knowledge in .codearbiter/context/ -- read the records "
+                    "relevant to a path with hooks/knowledge.py relevant <path>")
         return _provenancelib.startup_context_coverage_line(
             root, cmd_ref=get_host().cmd_ref)
     except Exception:  # noqa: BLE001 — never crash session startup
         return "context coverage: unknown -- run /ca:context-check"
+
+
+def context_conversion_line(ctx_text):
+    """Prompt an initialized Markdown project to consider explicit conversion.
+
+    The caller already read CONTEXT.md. Preparation and cutover remain separate
+    actions; startup never creates or removes a document.
+    """
+    if (initialized_body_text(ctx_text)
+            and not _knowledgelib.frontmatter_selects_html(ctx_text)):
+        return ("context: Markdown project detected -- read the existing context "
+                "and offer explicit HTML conversion; if chosen, use "
+                "hooks/knowledge.py convert to prepare HTML knowledge, "
+                "record each section and map it in a checklist before "
+                "convert --finish <token> --coverage @checklist.json.")
+    return ""
 
 
 # --- Update-available notifier (spec: update-available-notifier.md) ---------
@@ -1263,7 +1290,8 @@ def main():
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
     _drift = provenance_drift_line(root, report_unknown=True)
     emit_provenance_drift(_drift)
-    emit_provenance_drift(context_coverage_line(root))
+    emit_provenance_drift(context_coverage_line(root, ctx_text=ctx_text))
+    emit_provenance_drift(context_conversion_line(ctx_text))
 
     # --- Update-available notice (AC-1/AC-2/AC-3) --------------------------
     _update = update_notice_line(plugin)

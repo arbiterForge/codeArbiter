@@ -12,7 +12,7 @@ The secret-source gate. Routed to when changed code reads, writes, generates, st
 
 Read these, or STOP and surface the gap — never guess the policy:
 
-- `<project-root>/.codearbiter/security-controls.md` — the approved secret store, the access method (IAM role, workload identity, service-account token — never long-lived static keys), and any required reference format. If this file is unreadable, BLOCK; do not infer the store.
+- The complete format-selected `security-controls` policy, read by `<plugin-root>/includes/knowledge.md` ("Read security policy before a security decision") — the approved secret store, access method (IAM role, workload identity, service-account token — never long-lived static keys), and required reference format. If the required policy is absent or unreadable, BLOCK; do not infer the store from scope blocks.
 
 ## Phase 1 — Identify · gate: BLOCK
 
@@ -59,7 +59,7 @@ Gate: no secret reaches a prohibited sink and no secret persists beyond its requ
 
 ## Hard rules
 
-- MUST read `security-controls.md` for the approved store before Phase 2 — BLOCK if it cannot be read.
+- MUST read the complete format-selected `security-controls` policy for the approved store before Phase 2 — BLOCK if it cannot be read.
 - MUST NOT source a secret from a hardcoded literal, `process.env`, a `.env` file, or any unapproved store.
 - MUST NOT let a secret reach a logger, error response, telemetry, LLM prompt, serialized state, or session/JWT payload.
 - MUST NOT store a secret value in the database — store the approved-store reference only, with a format check constraint.

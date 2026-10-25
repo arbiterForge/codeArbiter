@@ -1207,7 +1207,7 @@ export const workflows: readonly WorkflowDefinition[] = [
   {
     "id": "greenfield",
     "title": "Initialize a new project from intent",
-    "summary": "Scaffold → capture intent → confirm → populate → finalize",
+    "summary": "Scaffold → resumable interview → confirm records → populate → initialize",
     "endpoint": "Populated project context; implementation has not started.",
     "guide": "/guides/plan-a-new-project/",
     "asset": "lane-init-greenfield.svg",
@@ -1216,7 +1216,7 @@ export const workflows: readonly WorkflowDefinition[] = [
       "title": "Initialize a new project from intent",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "Choose this route only when meaningful source does not yet exist. A decomposition persona is not an extra agent dispatch. Existing source selects the separate brownfield route.",
-      "outcome": "Five source-bound context/provenance pairs, three confirmed project-level documents, retained interview evidence and native initialization. Continue already-authorized work; population alone does not prove implementation or verification.",
+      "outcome": "Five HTML knowledge documents, decomposition records holding the answered interview and confirmed intended architecture, promoted work on the task board, and native initialization. Unknowns stay recorded as unknown. Continue already-authorized work; population alone does not prove implementation or verification.",
       "sources": {
         "decompose": {
           "path": "core/surface/skills/decompose/SKILL.md",
@@ -1226,7 +1226,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "greenLock": {
           "path": "core/surface/skills/decompose/SKILL.md",
           "quote": "## Phase 6 — Initialization lock & cleanup · gate: BLOCK",
-          "currentQuote": "## 5. Finalize and return to work"
+          "currentQuote": "## 5. Initialize and return to work"
         },
         "init": {
           "path": "core/surface/commands/init.md",
@@ -1235,7 +1235,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "interview": {
           "path": "core/surface/skills/decompose/SKILL.md",
           "quote": "Gate: all six layers complete",
-          "currentQuote": "Use these six layers; record an inapplicable category with its reason."
+          "currentQuote": "Record each question as a decomposition `question` record when you ask it"
         },
         "populate": {
           "path": "core/surface/skills/decompose/SKILL.md",
@@ -1245,7 +1245,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "threeDocs": {
           "path": "core/surface/skills/decompose/SKILL.md",
           "quote": "Gate: all three artifact files on disk AND the user explicitly approves all three",
-          "currentQuote": "confirmation in `_session.md`; existing confirmation covers unchanged artifacts."
+          "currentQuote": "Show the user the synthesized records."
         }
       },
       "chapters": [
@@ -1288,8 +1288,8 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "decompose: establish or resume drafts",
               "href": "/reference/skills/decompose/",
               "source": "decompose",
-              "detail": "Inspect .codearbiter/plans/decomposition/ and resume the first unfinished step. Preserve interview and decision history; settled questions and unchanged confirmations remain effective.",
-              "output": "Durable interview records and the next unresolved step."
+              "detail": "Create any missing knowledge documents and read the decomposition records. Answered questions stay settled; resume with the open question that matters most for the next step, not a fixed first-unfinished phase.",
+              "output": "Durable interview records and the next relevant open question."
             }
           ],
           "edges": [
@@ -1313,48 +1313,48 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         {
           "id": "design-project",
-          "title": "Review three guiding documents",
+          "title": "Confirm the intended project",
           "question": "What did the interview produce that the user must inspect?",
-          "output": "All three project-level documents are on disk and explicitly approved. Their tasks are not a typed feature execution plan.",
+          "output": "Capability, component, phase and work-item records the user confirmed. They describe intended architecture, not a typed feature execution plan or existing code.",
           "nodes": [
             {
               "id": "green-layers",
               "role": "skill",
               "label": [
-                "Six-layer",
+                "Resumable",
                 "interview"
               ],
-              "title": "decompose: complete each layer",
+              "title": "decompose: record questions and answers",
               "href": "/reference/skills/decompose/",
               "source": "interview",
-              "detail": "Explore problem, users, capabilities, technical shape, integrations and risks. Persist actual answers and applicable choices within bounded source files. ADR attribution uses the decision-lifecycle owner; unresolved facts remain questions.",
-              "output": "Six durable layer records and the applicable draft decisions."
+              "detail": "Explore problem, users, capabilities, technical shape, integrations and risks in the order the conversation makes natural. Each question is saved when asked and each actual answer as soon as it is given. ADR attribution uses the decision-lifecycle owner; unresolved facts remain open questions.",
+              "output": "Answered and open question records, with linked draft decisions."
             },
             {
               "id": "green-docs",
               "role": "skill",
               "label": [
-                "Three guiding",
-                "documents"
+                "Intended",
+                "architecture"
               ],
-              "title": "decompose: synthesize from disk",
+              "title": "decompose: synthesize records",
               "href": "/guides/plan-a-new-project/",
               "source": "threeDocs",
-              "detail": "Reread the drafts and write 01-architecture-breakdown.md, 02-phased-build-plan.md and 03-task-backlog.md under .codearbiter/plans/ before review.",
-              "output": "Architecture, phased delivery and a prioritized project backlog."
+              "detail": "From the answered questions and linked ADRs, add capability, component, phase and work-item decomposition records, each linked to the answers it rests on.",
+              "output": "Intended architecture, phased delivery and proposed work as records."
             },
             {
               "id": "green-approve",
               "role": "skill",
               "label": [
-                "Review all",
-                "three"
+                "Confirm",
+                "records"
               ],
               "title": "decompose: confirm the project definition",
               "href": "/guides/plan-a-new-project/",
               "source": "threeDocs",
-              "detail": "Present the three documents, apply requested corrections and record the user's actual confirmation. Existing confirmation covers unchanged artifacts; retain unresolved choices on the question board.",
-              "output": "The reviewed project definition before population."
+              "detail": "Show the synthesized records, apply corrections with record updates and save the user's actual confirmation as an answered question. A wording or method refinement needs no fresh confirmation; remaining gaps stay open questions.",
+              "output": "The confirmed project definition before population."
             }
           ],
           "edges": [
@@ -1363,7 +1363,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "kind": "sequence",
               "label": "complete durable input",
               "source": "threeDocs",
-              "detail": "Synthesis rereads the layer and draft-decision files rather than trusting conversation memory.",
+              "detail": "Synthesis rereads the saved answers and linked decisions rather than trusting conversation memory.",
               "from": "green-layers"
             },
             {
@@ -1371,16 +1371,16 @@ export const workflows: readonly WorkflowDefinition[] = [
               "kind": "return",
               "label": "user review",
               "source": "threeDocs",
-              "detail": "No population until all three outputs are approved.",
+              "detail": "No population until the user confirms the records match their choices.",
               "from": "green-docs"
             }
           ]
         },
         {
           "id": "lock-greenfield",
-          "title": "Populate and finalize initialization",
+          "title": "Populate and initialize",
           "question": "What exists when control returns to normal operation?",
-          "output": "Five paired v2 context documents, the task/question boards, audit header and native initialization result. Retained interview evidence supports intended design; observed implementation facts remain distinct.",
+          "output": "Five HTML knowledge documents, promoted work on the task board, the question board, audit header and native initialization. Decomposition holds intended design; the code map records only what code exists.",
           "nodes": [
             {
               "id": "green-populate",
@@ -1392,19 +1392,19 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "decompose: populate project context",
               "href": "/reference/skills/decompose/",
               "source": "populate",
-              "detail": "Prepare each of five context drafts from retained interview sources. Use --context-draft and apply its exact preview with --context-apply to commit the document and v2 provenance together. Use taskwrite.py for backlog entries and decision-lifecycle for actual ADR choices.",
-              "output": "Five paired documents and v2 provenance records, with questions and intended roadmap retained."
+              "detail": "Add knowledge records for what is known, each with its basis; planned commands stay proposed and unrun, and unknowns stay unknown. Promote each approved work item once with knowledge.py promote; decision-lifecycle owns actual ADR choices.",
+              "output": "Populated knowledge documents and promoted tasks, with open questions and intended roadmap retained."
             },
             {
               "id": "green-lock",
               "role": "skill",
               "label": [
-                "Finalize"
+                "Initialize"
               ],
-              "title": "decompose: native finalization",
+              "title": "decompose: native initialization",
               "href": "/reference/skills/decompose/",
               "source": "greenLock",
-              "detail": "Run --context-finalize against all thirteen required outputs, inspect the result and apply its exact preview. The writer commits the initialization marker with matching provenance. Read back the result and retain plans/decomposition source records; recover an uncertain transaction before retrying.",
+              "detail": "knowledge.py initialize checks that the five knowledge documents exist and parse and the task board is well formed, then commits the initialization marker. Open questions do not prevent it; a refusal names the document to repair.",
               "output": "Initialized project state; no implied feature, commit or PR completion."
             }
           ],
@@ -1412,9 +1412,9 @@ export const workflows: readonly WorkflowDefinition[] = [
             {
               "to": "green-lock",
               "kind": "sequence",
-              "label": "inspect then finalize",
+              "label": "then initialize",
               "source": "greenLock",
-              "detail": "Finalize only against current output identities and retained evidence. Remove temporary drafts only when no provenance source refers to them.",
+              "detail": "Initialization records structural availability only; it does not require every question answered or any command run.",
               "from": "green-populate"
             }
           ]
@@ -1426,15 +1426,15 @@ export const workflows: readonly WorkflowDefinition[] = [
           "kind": "sequence",
           "label": "fresh or resumed interview",
           "source": "decompose",
-          "detail": "Continue from completed layer boundaries after the selected resume action.",
+          "detail": "Continue from the saved answers; nothing settled is asked again.",
           "from": "green-resume"
         },
         {
           "to": "green-populate",
           "kind": "sequence",
-          "label": "all three approved",
+          "label": "records confirmed",
           "source": "populate",
-          "detail": "Population consumes reviewed files, not a guessed summary.",
+          "detail": "Population consumes the confirmed records, not a guessed summary.",
           "from": "green-approve"
         },
         {
@@ -1442,7 +1442,7 @@ export const workflows: readonly WorkflowDefinition[] = [
           "kind": "repeat",
           "label": "Requested corrections",
           "source": "threeDocs",
-          "detail": "Revise the on-disk artifacts and ask for review again; preserve the recorded intent.",
+          "detail": "Update the records and show them again; preserve the recorded intent.",
           "from": "green-approve"
         }
       ]
@@ -1455,12 +1455,12 @@ export const workflows: readonly WorkflowDefinition[] = [
       },
       {
         "title": "Intent and implementation stay distinct",
-        "detail": "V2 provenance binds the retained interview files and confirmed plans. Planned paths and commands remain planned; refresh selected context against real implementation sources and manifests when they arrive.",
+        "detail": "Decomposition records hold intended architecture and the code map holds observed structure. Planned commands remain proposed and unrun; refresh context against real sources and manifests when they arrive.",
         "source": "populate"
       },
       {
         "title": "Initialization is not the first feature",
-        "detail": "The endpoint is populated project context and observed finalization. Continue already-authorized work through its owner; initialization alone does not claim feature completion or PR delivery.",
+        "detail": "The endpoint is populated project context and observed initialization. Continue already-authorized work through its owner; initialization alone does not claim feature completion or PR delivery.",
         "source": "greenLock"
       }
     ]
@@ -1468,8 +1468,8 @@ export const workflows: readonly WorkflowDefinition[] = [
   {
     "id": "brownfield",
     "title": "Initialize existing code from evidence",
-    "summary": "Scaffold → inspect bounded source → preview and apply → initialize",
-    "endpoint": "Source-backed context with explicit gaps and retained provenance.",
+    "summary": "Scaffold → inspect bounded source → record with basis → initialize",
+    "endpoint": "Source-backed knowledge records with explicit gaps and cited sources.",
     "guide": "/guides/understand-an-existing-project/",
     "asset": "lane-init-brownfield.svg",
     "map": {
@@ -1477,12 +1477,12 @@ export const workflows: readonly WorkflowDefinition[] = [
       "title": "Initialize existing code from evidence",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "Choose this route when meaningful source exists. Initial or full work covers six logical categories through direct bounded inspection or optional scoped agents; scoped refreshes cover only declared affected categories through context-check. Actual host permissions and excluded paths apply. An agent label does not prove containment or semantic correctness.",
-      "outcome": "Populated source-backed project state, provenance and a code map. Material user-owned questions retain actual resolutions or explicit deferrals; other unknowns remain visible with their inspected scope. It does not invent the three greenfield planning documents.",
+      "outcome": "Populated HTML knowledge records, each with its basis and cited sources, including a path-scoped code map. Material user-owned questions retain actual resolutions or explicit deferrals; other unknowns remain visible as unknown records. It does not invent a greenfield decomposition.",
       "sources": {
         "brownLock": {
           "path": "core/surface/skills/context-creation/SKILL.md",
           "quote": "## Phase 6 — Initialization lock · gate: BLOCK",
-          "currentQuote": "context-finalize-preview"
+          "currentQuote": "Run `knowledge.py initialize`."
         },
         "context": {
           "path": "core/surface/skills/context-creation/SKILL.md",
@@ -1490,7 +1490,8 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "gaps": {
           "path": "core/surface/skills/context-creation/SKILL.md",
-          "quote": "## Phase 4 — Gap interview · gate: BLOCK"
+          "quote": "## Phase 4 — Gap interview · gate: BLOCK",
+          "currentQuote": "## Phase 4 — Gap interview"
         },
         "init": {
           "path": "core/surface/commands/init.md",
@@ -1508,7 +1509,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "writeContext": {
           "path": "core/surface/skills/context-creation/SKILL.md",
           "quote": "## Phase 5 — Project-state write · gate: BLOCK",
-          "currentQuote": "No document approval receipt or qualified agent profile is required."
+          "currentQuote": "No document approval receipt or agent profile is required."
         }
       },
       "chapters": [
@@ -1613,8 +1614,8 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: source-backed synthesis",
               "href": "/reference/skills/context-creation/",
               "source": "synthesis",
-              "detail": "Map inspected evidence into context, stack, standards, security and code-map drafts. Reinspect disputed or changed sources directly or with an independent agent when useful; do not turn an inferred claim into a verified fact.",
-              "output": "Draft state with the evidence and unresolved facts visible."
+              "detail": "Turn inspected evidence into project, stack, standards, security and code-map records, each with its basis; source-observed records cite their source and are scoped to the paths they govern. Reinspect disputed or changed sources when useful; do not turn an inferred claim into a verified fact.",
+              "output": "Draft records with the evidence and unresolved facts visible."
             },
             {
               "id": "brown-gaps",
@@ -1637,8 +1638,8 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: write project state",
               "href": "/reference/skills/context-creation/",
               "source": "writeContext",
-              "detail": "Prepare the five content documents with context-preview, inspect the exact diff and source bindings, then apply preview_ref and preview_sha256 under existing authorization. No per-document approval receipt is required. Board mutations retain their own helper; a release-target row remains conditional on real evidence or a resolved declaration.",
-              "output": "Selected content/provenance pairs and separately maintained task state."
+              "detail": "Write the records with knowledge.py add and update. Each write is checked and journaled by the native engine and is safe to retry; no per-document approval receipt is required. Board mutations retain their own helper; a release-target row remains conditional on real evidence or a resolved declaration.",
+              "output": "Populated knowledge documents and separately maintained task state."
             }
           ],
           "edges": [
@@ -1670,13 +1671,13 @@ export const workflows: readonly WorkflowDefinition[] = [
               "id": "brown-provenance",
               "role": "skill",
               "label": [
-                "Provenance",
+                "Sources",
                 "+ code map"
               ],
-              "title": "context-creation: record evidence",
+              "title": "context-creation: cite evidence",
               "href": "/concepts/provenance-drift/",
               "source": "writeContext",
-              "detail": "The native writer pairs each selected content document with its v2 provenance. Keep exact source evidence, original preimages and transaction history; missing/v1 adoption and v2 updates do not manufacture semantic review.",
+              "detail": "Each source-observed record cites the files it rests on, and each document keeps a baseline commit, so knowledge.py stale later lists exactly the records whose sources changed. Citations do not manufacture semantic review.",
               "output": "Traceable source pointers and the current code map."
             },
             {
@@ -1688,7 +1689,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: initialization lock",
               "href": "/reference/skills/context-creation/",
               "source": "brownLock",
-              "detail": "For initial population only, prepare context-finalize-preview with all thirteen required output identities, inspect it and apply its exact reference. The writer rechecks source/output identities and commits the marker with matching provenance. Initialized refresh retains its marker and never finalizes again.",
+              "detail": "For initial population only, knowledge.py initialize checks that the five knowledge documents exist and parse and the task board is well formed, then commits the marker. Unknown records and open questions do not prevent it. Initialized refresh retains its marker and never initializes again.",
               "output": "Initialized source-backed context, not an implemented change."
             }
           ],
@@ -1696,9 +1697,9 @@ export const workflows: readonly WorkflowDefinition[] = [
             {
               "to": "brown-lock",
               "kind": "sequence",
-              "label": "inspect completeness",
+              "label": "structural check",
               "source": "brownLock",
-              "detail": "Validate all thirteen outputs and their source bindings before the native initialization transaction.",
+              "detail": "Initialization checks that the documents exist and parse, not that every question is answered.",
               "from": "brown-provenance"
             }
           ]
@@ -1726,7 +1727,7 @@ export const workflows: readonly WorkflowDefinition[] = [
           "kind": "sequence",
           "label": "bind derived claims",
           "source": "writeContext",
-          "detail": "Source-derived documents retain evidence instead of only their final prose.",
+          "detail": "Source-derived records retain their citations instead of only their final prose.",
           "from": "brown-write"
         }
       ]
@@ -1734,7 +1735,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "notes": [
       {
         "title": "This is not greenfield decomposition",
-        "detail": "Existing-code extraction does not fabricate 01-architecture-breakdown.md, 02-phased-build-plan.md or 03-task-backlog.md as a retrospective roadmap.",
+        "detail": "Existing-code extraction does not fabricate decomposition records as a retrospective roadmap.",
         "source": "context"
       },
       {

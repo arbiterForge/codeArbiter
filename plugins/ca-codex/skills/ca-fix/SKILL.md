@@ -8,7 +8,7 @@ argument-hint: "<what's happening vs. what should happen>"
 
 The only permitted entry to bug-fix work. No fix code is written before a regression test reproduces the defect and goes red for the right reason. Give the observed behavior and the expected behavior, plus a stack trace or reproduction when you have one.
 
-**Orientation:** if `.codearbiter/code-map.md` is present, read it before diagnosing — a coarse concern→path→role map that helps locate the defect. Absent is fine; it is read-on-demand.
+**Orientation:** if the code map is present (`.codearbiter/code-map.md`, or its HTML knowledge document), read it before diagnosing — a coarse concern→path→role map that helps locate the defect. Absent is fine; it is read-on-demand.
 
 For a confirmed bug, the author reads the current scoped map,
 provenance, command declarations and collector observations, applicable

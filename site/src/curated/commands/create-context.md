@@ -14,8 +14,10 @@ gates:
 
 Populate project context from existing code through direct bounded inspection and optional
 scoped agents. Cover stack, infrastructure, architecture, security, tests and data; record what
-was inspected and what remains unknown. This creates five content documents and their source
-provenance. It does not require six child agents, a qualified scout profile or approval receipts.
+was inspected and what remains unknown. In a new (HTML-format) repository this adds records to
+five knowledge documents, each with its basis, cited sources and the paths it governs; a
+Markdown-format repository gets five content documents and their source provenance. It does not
+require six child agents, a qualified scout profile or approval receipts.
 
 Only material user-owned decisions need questions. A package script is a declared command,
 not a passing test, and an observed convention is not a newly approved policy. Preserve actual

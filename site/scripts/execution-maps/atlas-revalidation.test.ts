@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -271,8 +271,9 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/decompose/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
       'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md',
+      'core/surface/skills/security-architecture/SKILL.md',
       'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
     ]);
     expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
       'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
@@ -319,8 +320,9 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/decompose/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
       'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md',
+      'core/surface/skills/security-architecture/SKILL.md',
       'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
@@ -365,7 +367,7 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+      expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
         ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
@@ -499,8 +501,9 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/decompose/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
       'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md',
+      'core/surface/skills/security-architecture/SKILL.md',
       'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
     ]);
     expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
       'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
@@ -519,7 +522,7 @@ describe('atlas source compatibility revalidation', () => {
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
       ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS,
-      ...COMMAND_REMOVAL_SOURCE_BLOBS});
+      ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

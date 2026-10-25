@@ -1,6 +1,6 @@
 # Context and decomposition — HTML implementation handoff
 
-**Status:** planning documents only; implementation and migration have not begun.
+**Status:** implementation in progress in PR #1030; repository migration has not begun.
 The [native HTML specification](../../../.codearbiter/specs/context-decomposition.html)
 and [linked HTML implementation plan](../../../.codearbiter/plans/context-decomposition.html)
 are the canonical working documents. They use the existing codeArbiter renderer

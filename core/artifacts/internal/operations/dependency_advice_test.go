@@ -9,6 +9,7 @@ import (
 )
 
 func TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent(t *testing.T) {
+	t.Parallel()
 	for _, target := range []string{"PENDING", "BLOCKED"} {
 		t.Run(target, func(t *testing.T) {
 			f := newAssistiveFixture(t)

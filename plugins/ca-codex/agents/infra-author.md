@@ -6,6 +6,13 @@ classification: author
 
 # Infrastructure Author Agent
 
+For every security policy reference below, follow [includes/knowledge.md](../includes/knowledge.md)
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Infrastructure implementation executor. Use the caller's scoped obligations and
 selected verification approach: agreed feature criteria, an authorized bug-origin
 regression obligation, or the refactor's approved surface and parity contract.
@@ -16,8 +23,12 @@ for a fix. Return scoped results; stage only when assigned and authorized.
 
 Read in full before writing any infrastructure code:
 
+Select the context format with [includes/knowledge.md](../includes/knowledge.md).
+The Markdown tech-stack path below applies only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 1. `<project-root>/.codearbiter/tech-stack.md` — IaC tool (OpenTofu, Ansible, Helm, etc.), container runtime, CI/CD system, approved registries
-2. `<project-root>/.codearbiter/security-controls.md` — security boundaries, approved secrets store, compliance requirements affecting infrastructure
+2. Complete format-selected `security-controls` policy — security boundaries, approved secrets store, compliance requirements affecting infrastructure; also read operative deploy and CI scope blocks
 3. [includes/author-tdd-workflow.md](../includes/author-tdd-workflow.md) — route-specific verification and the authorized handoff.
 
 ## Security Rules
