@@ -789,7 +789,7 @@ describe("Pi keyed status lifecycle", () => {
     expect(render()).toContain("20");
     releaseFirst();
     await firstStart;
-    const sessionRow = render().split("\n").find((line) => line.includes("Session"));
+    const sessionRow = render().split("\n").find((line) => /│\s*Session\s*│/u.test(line));
     expect(sessionRow).toMatch(/↓\s+20\s+↑/u);
     expect(sessionRow).not.toMatch(/↓\s+10\s+↑/u);
   });
