@@ -148,6 +148,7 @@ def main(argv=None):
     sub.add_parser("initialize")
     pi = sub.add_parser("convert")
     pi.add_argument("--finish", metavar="TOKEN")
+    pi.add_argument("--coverage", help="JSON section-to-record checklist, or @file, required with --finish")
     pp = sub.add_parser("promote")
     pp.add_argument("record")
     ps = sub.add_parser("stale")
@@ -188,15 +189,41 @@ def _dispatch(args, client, root):
         return {"commands": records, "note": "Declared commands; run_state records what was reported, not a verified result."}
     if args.verb == "add":
         doc_id = _doc_id(args.doc)
-        record = _json_arg(args.record)
-        keys = {"records": ("type", "title", "statement"), "sources": ("title", "locator"), "notes": ("title", "text")}[args.collection]
-        for existing in _records(client, doc_id, args.collection):
-            if all(existing.get(k) == record.get(k) for k in keys):
-                return {"artifact_id": doc_id, "record": existing["id"], "reused": True}
-        before = {r["id"] for r in client.outline(doc_id)}
-        result = _apply(client, doc_id, [{"op": "record.add", "collection": args.collection, "record": record}], "knowledge-add")
-        created = [r["id"] for r in client.outline(doc_id) if r["id"] not in before]
-        return {"artifact_id": doc_id, "record": created[0] if created else None, "revision": result["revision"], "reused": False}
+        supplied = _json_arg(args.record)
+        batch = isinstance(supplied, list)
+        records = supplied if batch else [supplied]
+        if not records or len(records) > 32 or any(not isinstance(record, dict) for record in records):
+            raise ValueError("add accepts one record or a list of 1 to 32 records")
+        existing = _records(client, doc_id, args.collection)
+        pending = []
+        selected = []
+        for record in records:
+            match = next((item for item in existing
+                          if (item if "id" in record else {k: v for k, v in item.items() if k != "id"}) == record), None)
+            if match is not None:
+                selected.append({"record": match["id"], "reused": True})
+                continue
+            same_pending = next((i for i, item in enumerate(pending) if item == record), None)
+            if same_pending is not None:
+                selected.append({"pending": same_pending, "reused": True})
+                continue
+            selected.append({"pending": len(pending), "reused": False})
+            pending.append(record)
+        revision = None
+        if pending:
+            before = {r["id"] for r in client.outline(doc_id)}
+            changes = [{"op": "record.add", "collection": args.collection, "record": record} for record in pending]
+            result = _apply(client, doc_id, changes, "knowledge-add")
+            created = [r["id"] for r in client.outline(doc_id) if r["id"] not in before]
+            if len(created) != len(pending):
+                raise ValueError("native add response did not identify every new record")
+            revision = result["revision"]
+            for item in selected:
+                if "pending" in item:
+                    item["record"] = created[item.pop("pending")]
+        if batch:
+            return {"artifact_id": doc_id, "records": selected, "revision": revision}
+        return {"artifact_id": doc_id, **selected[0], "revision": revision}
     if args.verb == "update":
         doc_id = _doc_id(args.doc)
         result = _apply(client, doc_id, [{"op": "record.update", "symbol": args.record, "fields": _json_arg(args.fields)}], "knowledge-update")
@@ -217,7 +244,7 @@ def _dispatch(args, client, root):
         return client.call("knowledge-initialize", {"operation_id": _op_id("knowledge-init", _context_digest(root)),
                                                     "expected": {kl.LEGACY_PATHS["project"]: _context_digest(root)}})
     if args.verb == "convert":
-        return _convert(client, root, args.finish)
+        return _convert(client, root, args.finish, args.coverage)
     if args.verb == "promote":
         return _promote(client, root, args.record)
     if args.verb == "merge-conflict":
@@ -229,31 +256,15 @@ def _dispatch(args, client, root):
     raise ValueError(f"unknown verb {args.verb}")
 
 
-def _legacy_inputs(root):
-    """Markdown context and decomposition files a conversion reads, with digests."""
-    paths = list(kl.LEGACY_PATHS.values())
-    for directory, test in ((".codearbiter/plans/decomposition", lambda n: n.endswith(".md")),
-                            (".codearbiter/plans", lambda n: n.endswith(".md") and n[:3] in ("01-", "02-", "03-"))):
-        full = os.path.join(root, directory)
-        if os.path.isdir(full):
-            paths += [f"{directory}/{n}" for n in sorted(os.listdir(full)) if test(n) and os.path.isfile(os.path.join(full, n))]
-    out = {}
-    for rel in paths:
-        try:
-            with open(os.path.join(root, rel), "rb") as handle:
-                out[rel] = hashlib.sha256(handle.read()).hexdigest()
-        except FileNotFoundError:
-            continue
-    return out
+def _source_token(sources):
+    return hashlib.sha256(json.dumps(sources, sort_keys=True).encode()).hexdigest()
 
 
-def _convert(client, root, finish):
+def _convert(client, root, finish, coverage_arg):
     """One-time Markdown to HTML conversion. The agent records the content by
     inference; the engine only checks coverage and switches over."""
     if kl.context_format(root) == "html":
         raise ValueError("already converted")
-    inputs = _legacy_inputs(root)
-    token = hashlib.sha256(json.dumps(inputs, sort_keys=True).encode()).hexdigest()
     if not finish:
         present = {e["artifact_id"] for kind in ("knowledge", "decomposition") for e in client.index(kind)}
         created = []
@@ -261,15 +272,22 @@ def _convert(client, root, finish):
             if _doc_id(doc) not in present:
                 _create(client, doc)
                 created.append(_doc_id(doc))
-        return {"created": created, "read": sorted(inputs), "token": token,
-                "next": "Read each file and record its content with knowledge.py add (records with their real basis; "
-                        "a note for text that fits no record). Exclude secret values. Then run "
-                        "knowledge.py convert --finish TOKEN."}
-    if finish != token:
+        inventory = client.call("knowledge-cutover", {"operation_id": "knowledge-cutover-sections", "mode": "sections"})
+        return {"created": created, "read": sorted(inventory["sources"]),
+                "sections": inventory["sections"], "token": _source_token(inventory["sources"]),
+                "next": "Read each file. Add records or notes for every meaningful section, in batches of at most 32. "
+                        "Map every returned section ID to its saved record or note references in a JSON checklist "
+                        "([{section, records}]); use [] only for sections marked content=false. Exclude secret values. "
+                        "Then run knowledge.py convert --finish TOKEN --coverage @checklist.json."}
+    if not coverage_arg:
+        raise ValueError("--finish requires --coverage with one mapping per returned section")
+    coverage = _json_arg(coverage_arg)
+    preview = client.call("knowledge-cutover", {"operation_id": "knowledge-cutover-preview", "mode": "preview",
+                                                "coverage": coverage})
+    if finish != _source_token(preview["sources"]):
         raise ValueError("a Markdown file changed after it was read; record the change and run convert again")
-    preview = client.call("knowledge-cutover", {"operation_id": "knowledge-cutover-preview", "mode": "preview"})
-    return client.call("knowledge-cutover", {"operation_id": _op_id("knowledge-cutover", token), "mode": "apply",
-                                             "expected": preview["expected"]})
+    return client.call("knowledge-cutover", {"operation_id": _op_id("knowledge-cutover", finish), "mode": "apply",
+                                             "expected": preview["expected"], "coverage": coverage})
 
 
 def _promote(client, root, record_id):

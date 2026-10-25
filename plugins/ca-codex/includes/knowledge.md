@@ -99,11 +99,15 @@ decisions.
   have, then `knowledge.py initialize`. Unanswered questions stay `unknown` or
   `open`; initialization only needs the documents to exist and parse.
 - Markdown to HTML, only when the user chooses it: `knowledge.py convert`
-  creates empty HTML documents and lists the Markdown files with a fingerprint
-  token. Read each file and add its meaning as sourced records or notes; omit
-  secret values. `knowledge.py convert --finish <token>` refuses changed inputs
-  or nonempty documents without records, then switches formats in one
-  recoverable transaction. The journal retains the original bytes.
+  creates empty HTML documents and returns the Markdown files, their sections,
+  and a fingerprint token. Read every section and add its meaning as sourced
+  records or notes (up to 32 per `knowledge.py add` call); omit secret values.
+  Map each returned section ID to its saved record or note references in a JSON
+  checklist, using `[]` only for sections marked `content=false`. Run
+  `knowledge.py convert --finish <token> --coverage @checklist.json`. Cutover
+  refuses changed inputs, missing sections, and invalid references, then
+  switches formats in one recoverable transaction. The journal retains the
+  original bytes.
 - `knowledge.py promote <WORK-ID>` adds a decomposition work item to the task board
   once; a retry finds the existing task even after it is done or archived.
 - A Git conflict in a knowledge page: `knowledge.py merge-conflict <path>` merges

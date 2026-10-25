@@ -23,9 +23,11 @@ Read `.codearbiter/CONTEXT.md` frontmatter. An initialized project returns to no
 operation; context changes use `{{CMD:context-check}}`. Meaningful implementation
 source routes to `{{CMD:create-context}}`. If the scaffold is absent, run
 `{{CMD:init}}` first. If `knowledge.py format` reports `markdown`, this is an older
-scaffold: offer `knowledge.py convert`; read the listed Markdown files, record
-their meaning, then finish with the returned token (the transaction retains
-the original bytes). If the
+scaffold: offer `knowledge.py convert`; read every returned Markdown section,
+record its meaning, map each section ID to its saved record or note references
+(`[]` only for `content=false`), then run
+`knowledge.py convert --finish <token> --coverage @checklist.json` (the
+transaction retains the original bytes). If the
 user keeps the Markdown format, load
 `{{PLUGIN_ROOT}}/skills/decompose/references/markdown-format.md` and follow that
 unchanged procedure instead of this one; never convert silently.

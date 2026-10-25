@@ -91,6 +91,32 @@ class KnowledgeCli(unittest.TestCase):
         commands = self.knowledge("commands", "--purpose", "test")["commands"]
         self.assertEqual(commands[0]["command"]["run_state"], "unrun")
 
+    def test_add_keeps_distinct_commands_with_the_same_summary(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        first = {"type": "command", "title": "Tests", "statement": "Run tests.", "basis": "proposed",
+                 "scope": {"paths": []}, "related_refs": [], "source_refs": [],
+                 "command": {"argv": ["npm", "test"], "cwd": "site", "purpose": "test", "run_state": "unrun"}}
+        second = json.loads(json.dumps(first))
+        second["command"] = {"argv": ["go", "test", "./..."], "cwd": "core/artifacts",
+                             "purpose": "test", "run_state": "unrun"}
+        added = self.knowledge("add", "tech-stack", "--record", json.dumps(first))
+        distinct = self.knowledge("add", "tech-stack", "--record", json.dumps(second))
+        self.assertFalse(distinct["reused"], "a distinct command was silently discarded")
+        self.assertNotEqual(added["record"], distinct["record"])
+        self.assertTrue(self.knowledge("add", "tech-stack", "--record", json.dumps(second))["reused"])
+
+    def test_add_batches_records_and_reuses_exact_retry(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        records = [{"type": "fact", "title": f"Runtime {n}", "statement": f"Node {n}.",
+                    "basis": "user-reported", "scope": {"paths": []},
+                    "related_refs": [], "source_refs": []} for n in (22, 24)]
+        first = self.knowledge("add", "tech-stack", "--record", json.dumps(records))
+        self.assertEqual([item["record"] for item in first["records"]], ["FACT-001", "FACT-002"])
+        again = self.knowledge("add", "tech-stack", "--record", json.dumps(records))
+        self.assertTrue(all(item["reused"] for item in again["records"]))
+
     def test_markdown_conversion_requires_records_and_unchanged_sources(self):
         self.scaffold("--format", "markdown")
         state = self.root / ".codearbiter"
@@ -104,23 +130,43 @@ class KnowledgeCli(unittest.TestCase):
         self.assertIn(".codearbiter/tech-stack.md", prepared["read"])
         refused = self.knowledge("convert", "--finish", "0" * 64, success=False)
         self.assertFalse(refused["ok"])
-        refused = self.knowledge("convert", "--finish", prepared["token"], success=False)
-        self.assertFalse(refused["ok"], "nonempty Markdown was discarded without an agent record")
-        note = {"title": "Tech stack commands", "text": "Run npm test.",
-                "basis": "source-observed", "origin": {"path": ".codearbiter/tech-stack.md", "start": 0, "end": 40}}
-        self.knowledge("add", "tech-stack", "--collection", "notes", "--record", json.dumps(note))
+        empty_checklist = [{"section": part["id"], "records": []} for part in prepared["sections"]]
+        refused = self.knowledge("convert", "--finish", prepared["token"], "--coverage",
+                                 json.dumps(empty_checklist), success=False)
+        self.assertFalse(refused["ok"], "a meaningful Markdown section had no mapped record")
+
+        def checklist(inventory):
+            slug = {"CTX-PROJECT": "project", "CTX-TECH-STACK": "tech-stack",
+                    "CTX-CODE-MAP": "code-map", "CTX-CODING-STANDARDS": "coding-standards",
+                    "CTX-SECURITY-CONTROLS": "security-controls", "DECOMP-PROJECT": "decomposition"}
+            rows = []
+            for part in inventory["sections"]:
+                refs = []
+                if part["content"]:
+                    source = (self.root / part["source"]).read_bytes()[part["start"]:part["end"]].decode("utf-8")
+                    note = {"title": part["heading"] or "Preamble", "text": source,
+                            "basis": "source-observed", "origin": {"path": part["source"],
+                            "start": part["start"], "end": part["end"]}}
+                    added = self.knowledge("add", slug[part["artifact_id"]], "--collection", "notes",
+                                           "--record", json.dumps(note))
+                    refs = [part["artifact_id"] + "#" + added["record"]]
+                rows.append({"section": part["id"], "records": refs})
+            return rows
+
+        coverage = checklist(prepared)
         changed = state / "tech-stack.md"
         changed.write_text(changed.read_text(encoding="utf-8") + "\n", encoding="utf-8")
-        refused = self.knowledge("convert", "--finish", prepared["token"], success=False)
+        refused = self.knowledge("convert", "--finish", prepared["token"], "--coverage",
+                                 json.dumps(coverage), success=False)
         self.assertFalse(refused["ok"], "changed Markdown invalidated the read token")
         prepared = self.knowledge("convert")
-        self.knowledge("convert", "--finish", prepared["token"])
+        self.knowledge("convert", "--finish", prepared["token"], "--coverage", json.dumps(checklist(prepared)))
         self.assertEqual(self.knowledge("format")["format"], "html")
         self.assertFalse((state / "tech-stack.md").exists())
         self.assertIn("<!-- deploy-paths -->\n+ ops/**\n<!-- /deploy-paths -->",
                       (state / "security-controls.md").read_text(encoding="utf-8"))
         outline = self.knowledge("read", "tech-stack")["records"]
-        self.assertEqual([r["id"] for r in outline if r["kind"] == "notes"], ["NOTE-001"])
+        self.assertEqual([r["id"] for r in outline if r["kind"] == "notes"], ["NOTE-001", "NOTE-002"])
 
     def test_promotion_is_idempotent_across_archive(self):
         self.scaffold()

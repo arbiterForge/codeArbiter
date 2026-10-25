@@ -28,7 +28,7 @@ POLICY_STARTUP_FIXTURES = (
 # current content pins separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
     "core/surface/arbiter.md": "955705504f53800cd5f6626abb2db5a94cbee88d679f1fb8ea4d599a09d699b0",
-    "core/pysrc/session-start.py": "b604ce3c4cca32123755f8d75937c06dcffa2c4e4c2da92e2e32eb841abb1b36",
+    "core/pysrc/session-start.py": "3d81d653025b2a1d302e2300f1cf5c110ea6ea4d19002673900d283d02fe721f",
 }
 
 HISTORICAL_ATTESTATION_GUIDANCE_PATHS = (

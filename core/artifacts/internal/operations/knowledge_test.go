@@ -177,6 +177,31 @@ func TestTaskContextReturnsRelevantKnowledgeWithoutAuthority(t *testing.T) {
 	f.assertNoAuthorityFiles()
 }
 
+func TestKnowledgeScopeDoesNotMatchUnrelatedWildcardPath(t *testing.T) {
+	if scopeOverlaps("**/*.py", "site/foo.md") {
+		t.Fatal("Python-only scope matched an unrelated Markdown file")
+	}
+}
+
+func TestKnowledgeContextBoundsOmissionMetadata(t *testing.T) {
+	f := newAssistiveFixture(t)
+	f.createKnowledge("knowledge", "CTX-CODE-MAP", "code-map")
+	records := []object{}
+	for i := 0; i < 80; i++ {
+		records = append(records, knowledgeRecord("component", strings.Repeat("Component", 10),
+			strings.Repeat("large detail ", 80), "inferred", []string{"src/**"}))
+	}
+	f.addKnowledge("CTX-CODE-MAP", records...)
+	packet := f.call("knowledge-context", object{"paths": model.List("src/app.py"), "budget": int64(4096)})
+	b, err := json.Marshal(packet)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b) > 4096 {
+		t.Fatalf("omission metadata exceeded the requested budget: %d bytes", len(b))
+	}
+}
+
 func TestTaskContextFollowsOnlyOneExplicitHop(t *testing.T) {
 	f := newAssistiveFixture(t)
 	seedTaskKnowledge(f)

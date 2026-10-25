@@ -66,6 +66,12 @@ worktree does not establish their referenced verification or approval history.
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
 
+`knowledge-cutover` has a read-only `sections` mode that returns exact Markdown
+byte spans and source hashes. `preview` and `apply` require one checklist row
+per section, mapping every meaningful section to active record or note
+references in its matching knowledge document. `apply` also requires the
+preview's input identities and commits the cutover in one journaled transaction.
+
 `capture` **writes** immutable events and receipts even though it does not increment an artifact revision. Locks, journals and a contextual-pagination key are engine-managed metadata; “read operation” does not mean the filesystem can never acquire such metadata. Host permission classification must distinguish content writes and event writes from ordinary reads. No generic content mutation can set approval or task acceptance.
 
 ## Identity domains

@@ -78,22 +78,49 @@ func (r legacyRepo) record() {
 	r.t.Helper()
 	r.addKnowledge("CTX-PROJECT", knowledgeRecord("scope", "Invoices", "Invoices only.", "user-reported", nil))
 	r.addKnowledge("CTX-TECH-STACK", knowledgeRecord("fact", "Runtime", "Node 22.", "user-reported", nil))
+	r.addKnowledge("CTX-TECH-STACK", knowledgeRecord("command", "Tests", "Run npm test.", "user-reported", nil))
 	r.addKnowledge("CTX-SECURITY-CONTROLS", knowledgeRecord("constraint", "Sessions", "Sessions expire after 15 minutes.", "user-reported", nil))
 	r.addKnowledge("CTX-CODE-MAP", knowledgeRecord("component", "Everything", "src/ holds everything.", "user-reported", []string{"src/**"}))
 	r.addKnowledge("DECOMP-PROJECT", knowledgeRecord("component", "API and worker", "Two components.", "user-reported", nil))
 }
 
+func (r legacyRepo) sectionCoverage() []any {
+	r.t.Helper()
+	inventory := r.call("knowledge-cutover", object{"operation_id": r.next(), "mode": "sections"})
+	covered := []any{}
+	for _, value := range model.A(inventory["sections"]) {
+		section := model.M(value)
+		refs := []any{}
+		if section["content"] == true {
+			ref := map[string]string{
+				"CTX-PROJECT":           "SCOPE-001",
+				"CTX-TECH-STACK":        "FACT-001",
+				"CTX-SECURITY-CONTROLS": "CON-001",
+				"CTX-CODE-MAP":          "COMP-001",
+				"DECOMP-PROJECT":        "COMP-001",
+			}[model.S(section["artifact_id"])]
+			if model.S(section["heading"]) == "Commands" {
+				ref = "CMD-001"
+			}
+			refs = append(refs, model.S(section["artifact_id"])+"#"+ref)
+		}
+		covered = append(covered, object{"section": section["id"], "records": refs})
+	}
+	return covered
+}
+
 func (r legacyRepo) cutover(op string) object {
 	r.t.Helper()
-	preview := r.call("knowledge-cutover", object{"operation_id": op, "mode": "preview"})
-	return r.call("knowledge-cutover", object{"operation_id": op, "mode": "apply", "expected": preview["expected"]})
+	coverage := r.sectionCoverage()
+	preview := r.call("knowledge-cutover", object{"operation_id": op, "mode": "preview", "coverage": coverage})
+	return r.call("knowledge-cutover", object{"operation_id": op, "mode": "apply", "expected": preview["expected"], "coverage": coverage})
 }
 
 func TestKnowledgeCutoverPreservesSettingsAndScopeBlocks(t *testing.T) {
 	r := newLegacyRepo(t)
 	r.prepare()
 	before, _ := r.read(".codearbiter/CONTEXT.md")
-	r.call("knowledge-cutover", object{"operation_id": "cutover-0000001", "mode": "preview"})
+	r.call("knowledge-cutover", object{"operation_id": "cutover-0000001", "mode": "preview", "coverage": r.sectionCoverage()})
 	if after, _ := r.read(".codearbiter/CONTEXT.md"); after != before {
 		t.Fatal("preview wrote to the repository")
 	}
@@ -126,7 +153,7 @@ func TestKnowledgeCutoverPreservesSettingsAndScopeBlocks(t *testing.T) {
 	if !strings.Contains(attributes, "context/*.html -text\n") || !strings.Contains(attributes, "decomposition/*.html -text\n") {
 		t.Fatalf("knowledge pages are exposed to line-ending conversion:\n%s", attributes)
 	}
-	if got := r.knowledgeDoc("CTX-TECH-STACK"); len(model.A(got.Norm()["records"])) != 1 {
+	if got := r.knowledgeDoc("CTX-TECH-STACK"); len(model.A(got.Norm()["records"])) != 2 {
 		t.Fatal("the cutover changed the agent's recorded knowledge")
 	}
 }
@@ -139,7 +166,7 @@ func TestKnowledgeCutoverRefusesUnrecordedContent(t *testing.T) {
 	r.createDocuments()
 	before, _ := r.read(".codearbiter/tech-stack.md")
 	_, err := r.request("knowledge-cutover", object{"operation_id": "cutover-0000006", "mode": "preview"})
-	if fault.Code(err) != "UNRECORDED_CONTENT" {
+	if fault.Code(err) != "UNCOVERED_SECTION" {
 		t.Fatalf("Markdown with content but no records was accepted for removal: %v", err)
 	}
 	if after, ok := r.read(".codearbiter/tech-stack.md"); !ok || after != before {
@@ -151,33 +178,54 @@ func TestKnowledgeCutoverRefusesUnrecordedContent(t *testing.T) {
 	r.cutover("cutover-0000006")
 }
 
+func TestKnowledgeCutoverRefusesUnmappedSections(t *testing.T) {
+	r := newLegacyRepo(t)
+	r.prepare()
+	if _, err := r.request("knowledge-cutover", object{"operation_id": "cutover-sections-0001", "mode": "preview"}); fault.Code(err) != "UNCOVERED_SECTION" {
+		t.Fatalf("cutover accepted Markdown sections without an explicit record mapping: %v", err)
+	}
+	coverage := r.sectionCoverage()
+	for _, value := range coverage {
+		row := model.M(value)
+		if refs := model.A(row["records"]); len(refs) > 0 {
+			row["records"] = []any{"CTX-CODE-MAP#COMP-001"}
+			break
+		}
+	}
+	if _, err := r.request("knowledge-cutover", object{"operation_id": "cutover-sections-0002", "mode": "preview", "coverage": coverage}); fault.Code(err) != "INVALID_COVERAGE" {
+		t.Fatalf("cutover accepted a mapping to another document: %v", err)
+	}
+}
+
 func TestKnowledgeCutoverRetryKeepsLaterWorkAndStaleApplyFails(t *testing.T) {
 	r := newLegacyRepo(t)
 	r.prepare()
-	preview := r.call("knowledge-cutover", object{"operation_id": "cutover-0000002", "mode": "preview"})
-	r.call("knowledge-cutover", object{"operation_id": "cutover-0000002", "mode": "apply", "expected": preview["expected"]})
+	coverage := r.sectionCoverage()
+	preview := r.call("knowledge-cutover", object{"operation_id": "cutover-0000002", "mode": "preview", "coverage": coverage})
+	r.call("knowledge-cutover", object{"operation_id": "cutover-0000002", "mode": "apply", "expected": preview["expected"], "coverage": coverage})
 	r.addKnowledge("CTX-TECH-STACK", knowledgeRecord("fact", "Later", "Written after the cutover.", "user-reported", nil))
 	after := r.knowledgeDoc("CTX-TECH-STACK").Hash()
 
-	replay := r.call("knowledge-cutover", object{"operation_id": "cutover-0000002", "mode": "apply", "expected": preview["expected"]})
+	replay := r.call("knowledge-cutover", object{"operation_id": "cutover-0000002", "mode": "apply", "expected": preview["expected"], "coverage": coverage})
 	if !strings.Contains(canonicalString(t, replay), `"replay":true`) {
 		t.Fatalf("an exact retry did not replay: %v", replay)
 	}
 	if r.knowledgeDoc("CTX-TECH-STACK").Hash() != after {
 		t.Fatal("retrying the cutover overwrote later work")
 	}
-	_, err := r.request("knowledge-cutover", object{"operation_id": "cutover-0000003", "mode": "apply", "expected": preview["expected"]})
+	_, err := r.request("knowledge-cutover", object{"operation_id": "cutover-0000003", "mode": "apply", "expected": preview["expected"], "coverage": coverage})
 	if fault.Code(err) != "ALREADY_CONVERTED" {
 		t.Fatalf("a second cutover over converted state was not refused: %v", err)
 	}
 
 	stale := newLegacyRepo(t)
 	stale.prepare()
-	old := stale.call("knowledge-cutover", object{"operation_id": "cutover-0000004", "mode": "preview"})
+	staleCoverage := stale.sectionCoverage()
+	old := stale.call("knowledge-cutover", object{"operation_id": "cutover-0000004", "mode": "preview", "coverage": staleCoverage})
 	if err := os.WriteFile(filepath.Join(stale.root, ".codearbiter", "tech-stack.md"), []byte("# Tech stack\n\nEdited after it was read.\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := stale.request("knowledge-cutover", object{"operation_id": "cutover-0000004", "mode": "apply", "expected": old["expected"]}); fault.Code(err) != "REVISION_CONFLICT" {
+	if _, err := stale.request("knowledge-cutover", object{"operation_id": "cutover-0000004", "mode": "apply", "expected": old["expected"], "coverage": staleCoverage}); fault.Code(err) != "REVISION_CONFLICT" {
 		t.Fatalf("a cutover over Markdown edited after it was read was accepted: %v", err)
 	}
 	if body, _ := stale.read(".codearbiter/tech-stack.md"); !strings.Contains(body, "Edited after it was read.") {
@@ -324,6 +372,32 @@ func TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs(t *testing.T) {
 	}
 	if got := model.Strings(d.Symbols.ByID["FACT-002"].Value["related_refs"]); len(got) != 1 || got[0] != "CMD-002" {
 		t.Fatalf("an incoming link did not follow its renamed record: %v", got)
+	}
+}
+
+func TestKnowledgeMergeRewritesIncomingEditReferences(t *testing.T) {
+	f, p, base := mergeFixture(t)
+	ours := f.branch(p, base, knowledgeRecord("command", "Unit tests", "npm test.", "proposed", nil))
+	f.branch(p, base, knowledgeRecord("command", "Lint", "npm run lint.", "proposed", nil))
+	d := f.knowledgeDoc("CTX-TECH-STACK")
+	f.call("apply", object{"artifact_id": "CTX-TECH-STACK", "operation_id": f.next(),
+		"expected": object{"revision": d.Revision(), "model_sha256": d.Hash()},
+		"changes": []any{object{"op": "record.update", "symbol": "FACT-001",
+			"fields": object{"related_refs": model.List("CMD-001")}}}})
+	theirs, err := os.ReadFile(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	conflicted := []byte("<<<<<<< ours\nconflict\n>>>>>>> theirs\n")
+	if err := os.WriteFile(p, conflicted, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	f.call("knowledge-merge", object{"operation_id": f.next(), "path": ".codearbiter/context/tech-stack.html",
+		"base": string(base), "ours": string(ours), "theirs": string(theirs),
+		"expected_current_sha256": canonical.BytesHash(conflicted)})
+	d = f.knowledgeDoc("CTX-TECH-STACK")
+	if got := model.Strings(d.Symbols.ByID["FACT-001"].Value["related_refs"]); len(got) != 1 || got[0] != "CMD-002" {
+		t.Fatalf("incoming edit linked to the wrong colliding record: %v", got)
 	}
 }
 

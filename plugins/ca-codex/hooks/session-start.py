@@ -899,9 +899,11 @@ def context_conversion_line(ctx_text):
     """
     if (initialized_body_text(ctx_text)
             and not _knowledgelib.frontmatter_selects_html(ctx_text)):
-        return ("context: Markdown project detected -- read the existing context, "
-                "then use hooks/knowledge.py convert to prepare HTML knowledge; "
-                "record its content before convert --finish <token>.")
+        return ("context: Markdown project detected -- read the existing context "
+                "and offer explicit HTML conversion; if chosen, use "
+                "hooks/knowledge.py convert to prepare HTML knowledge, "
+                "record each section and map it in a checklist before "
+                "convert --finish <token> --coverage @checklist.json.")
     return ""
 
 

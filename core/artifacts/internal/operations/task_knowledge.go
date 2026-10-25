@@ -64,7 +64,7 @@ func scopeOverlaps(scope, task string) bool {
 	}
 	// Two globs overlap when one literal prefix contains the other.
 	a, b := literalPrefix(scope), literalPrefix(task)
-	return strings.ContainsAny(scope+task, "*?[") && (strings.HasPrefix(a, b) || strings.HasPrefix(b, a))
+	return strings.ContainsAny(scope, "*?[") && strings.ContainsAny(task, "*?[") && (strings.HasPrefix(a, b) || strings.HasPrefix(b, a))
 }
 
 type knowledgeCandidate struct {
@@ -78,7 +78,9 @@ type knowledgeCandidate struct {
 // commands, scan source files, or decide whether the task may proceed.
 func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 	entries, unreadable, err := repository.LoadKnowledge(e.FS)
-	out := object{"knowledge": []any{}, "knowledge_omitted": []any{}, "knowledge_unreadable": []any{}, "knowledge_unresolved_references": []any{}, "knowledge_unmatched_records": int64(0)}
+	out := object{"knowledge": []any{}, "knowledge_omitted": []any{}, "knowledge_omitted_count": int64(0),
+		"knowledge_unreadable": []any{}, "knowledge_unresolved_references": []any{},
+		"knowledge_unresolved_references_count": int64(0), "knowledge_unmatched_records": int64(0)}
 	if err != nil {
 		out["knowledge_unreadable"] = []any{object{"path": ".codearbiter/context", "code": "LIST_FAILED"}}
 		return out
@@ -163,25 +165,53 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 			candidates[j-1], candidates[j] = b, a
 		}
 	}
-	used := 0
+	initial, _ := json.Marshal(out)
+	used := len(initial)
+	// Leave room for counts growing in decimal and for the caller's wrapper.
+	limit := budget - 64
 	for _, c := range candidates {
 		item := object{"ref": c.ref, "selection_reason": c.reason}
 		for k, v := range c.record {
 			item[k] = v
 		}
 		b, _ := json.Marshal(item)
-		if used+len(b) > budget {
+		separator := 0
+		if len(model.A(out["knowledge"])) > 0 {
+			separator = 1
+		}
+		if used+len(b)+separator > limit {
 			// Never truncate a record: name it so it can be read on its own.
-			out["knowledge_omitted"] = append(model.A(out["knowledge_omitted"]), object{"ref": c.ref, "title": c.record["title"], "reason": "response budget"})
+			out["knowledge_omitted_count"] = model.I(out["knowledge_omitted_count"]) + 1
+			omitted := object{"ref": c.ref, "title": c.record["title"], "reason": "response budget"}
+			short, _ := json.Marshal(omitted)
+			separator = 0
+			if len(model.A(out["knowledge_omitted"])) > 0 {
+				separator = 1
+			}
+			if used+len(short)+separator <= limit {
+				used += len(short) + separator
+				out["knowledge_omitted"] = append(model.A(out["knowledge_omitted"]), omitted)
+			}
 			continue
 		}
-		used += len(b)
+		used += len(b) + separator
 		out["knowledge"] = append(model.A(out["knowledge"]), item)
+	}
+	for _, ref := range unresolved {
+		out["knowledge_unresolved_references_count"] = model.I(out["knowledge_unresolved_references_count"]) + 1
+		b, _ := json.Marshal(ref)
+		separator := 0
+		if len(model.A(out["knowledge_unresolved_references"])) > 0 {
+			separator = 1
+		}
+		if used+len(b)+separator <= limit {
+			used += len(b) + separator
+			out["knowledge_unresolved_references"] = append(model.A(out["knowledge_unresolved_references"]), ref)
+		}
 	}
 	if unmatched < 0 {
 		unmatched = 0
 	}
-	out["knowledge_unresolved_references"] = unresolved
 	out["knowledge_unmatched_records"] = unmatched
 	return out
 }

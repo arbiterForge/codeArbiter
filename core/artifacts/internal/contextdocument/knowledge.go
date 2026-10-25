@@ -84,12 +84,46 @@ func ConvertedContext(raw []byte) (converted []byte, bodyStart int, err error) {
 	return out.Bytes(), bodyStart, nil
 }
 
-var controlBlock = regexp.MustCompile(`(?is)<!--\s*(migration-paths|ci-paths|deploy-paths)\s*-->.*?<!--\s*/(migration-paths|ci-paths|deploy-paths)\s*-->`)
+var controlTag = regexp.MustCompile(`(?i)<!--\s*(/?)\s*(migration-paths|ci-paths|deploy-paths)\s*-->`)
+
+type controlRange struct{ start, end int }
+
+func controlRanges(raw []byte) ([]controlRange, error) {
+	type openTag struct {
+		kind  string
+		start int
+	}
+	stack := []openTag{}
+	ranges := []controlRange{}
+	for _, match := range controlTag.FindAllSubmatchIndex(raw, -1) {
+		kind := strings.ToLower(string(raw[match[4]:match[5]]))
+		if match[2] == match[3] {
+			stack = append(stack, openTag{kind, match[0]})
+			continue
+		}
+		if len(stack) == 0 || stack[len(stack)-1].kind != kind {
+			return nil, fault.New("INVALID_SCOPE_BLOCK", "operative scope block delimiters are mismatched")
+		}
+		start := stack[len(stack)-1].start
+		stack = stack[:len(stack)-1]
+		if len(stack) == 0 {
+			ranges = append(ranges, controlRange{start, match[1]})
+		}
+	}
+	if len(stack) != 0 {
+		return nil, fault.New("INVALID_SCOPE_BLOCK", "operative scope block is not closed")
+	}
+	return ranges, nil
+}
 
 // ConfigOnlyControls keeps only the operative scope blocks of
 // security-controls.md, byte for byte and in order. The narrative moves to
 // HTML; nothing in the narrative becomes a control.
-func ConfigOnlyControls(raw []byte) []byte {
+func ConfigOnlyControls(raw []byte) ([]byte, error) {
+	ranges, err := controlRanges(raw)
+	if err != nil {
+		return nil, err
+	}
 	eol := "\n"
 	if bytes.Contains(raw, []byte("\r\n")) {
 		eol = "\r\n"
@@ -97,20 +131,29 @@ func ConfigOnlyControls(raw []byte) []byte {
 	var out bytes.Buffer
 	out.WriteString("# Security controls (configuration)" + eol + eol)
 	out.WriteString("Operative scope blocks only. The narrative is in `.codearbiter/context/security-controls.html`." + eol)
-	for _, match := range controlBlock.FindAll(raw, -1) {
+	for _, match := range ranges {
 		out.WriteString(eol)
-		out.Write(match)
+		out.Write(raw[match.start:match.end])
 		out.WriteString(eol)
 	}
-	return out.Bytes()
+	return out.Bytes(), nil
 }
 
 // HasContent reports whether Markdown from start onward says anything beyond
-// headings, blank lines, HTML comments, the initialization marker and the
-// operative scope blocks. A cutover requires such content to have been
-// recorded before its file is removed.
+// blank lines, HTML comments, and operative scope blocks. A heading can carry
+// a rule on its own; callers handle generic document titles separately.
 func HasContent(raw []byte, start int) bool {
-	body := controlBlock.ReplaceAll(raw[start:], nil)
+	body := raw[start:]
+	if ranges, err := controlRanges(body); err == nil {
+		var without bytes.Buffer
+		last := 0
+		for _, match := range ranges {
+			without.Write(body[last:match.start])
+			last = match.end
+		}
+		without.Write(body[last:])
+		body = without.Bytes()
+	}
 	comment := false
 	for _, line := range strings.Split(string(body), "\n") {
 		t := strings.TrimSpace(line)
@@ -119,7 +162,7 @@ func HasContent(raw []byte, start int) bool {
 			continue
 		}
 		switch {
-		case t == "", strings.HasPrefix(t, "#"), t == "---":
+		case t == "", t == "---":
 		case strings.HasPrefix(t, "<!--"):
 			comment = !strings.Contains(t, "-->")
 		default:

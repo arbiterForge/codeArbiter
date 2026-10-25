@@ -61,7 +61,7 @@ func (e *Engine) knowledgeContext(r object, budget int) (any, error) {
 	for _, p := range model.Strings(r["paths"]) {
 		paths = append(paths, object{"path": p})
 	}
-	out := e.taskKnowledge(object{"paths": paths}, budget-4096)
+	out := e.taskKnowledge(object{"paths": paths}, budget-128)
 	out["assessment"] = "advisory"
 	out["context_complete"] = false
 	return out, nil
@@ -223,19 +223,30 @@ func (e *Engine) planCutover() (*cutoverPlan, error) {
 				plan.expected[doc.legacy] = canonical.BytesHash(raw)
 			}
 		}
-		// An uninitialized CONTEXT.md body is the scaffold stub, not content.
-		content := present && contextdocument.HasContent(raw, start) && (doc.legacy != contextPath || initialized)
+		// Report meaningful section coverage; validation uses the section
+		// checklist below rather than a coarse record count for the whole file.
+		content := false
+		if present && (doc.legacy != contextPath || initialized) {
+			sections, err := contextdocument.Sections(raw, start, doc.title)
+			if err != nil {
+				return nil, err
+			}
+			for _, section := range sections {
+				content = content || section.Content
+			}
+		}
 		recorded := recordedEntries(d)
 		plan.coverage = append(plan.coverage, object{"source": doc.legacy, "artifact_id": d.ID(), "content": content, "recorded": int64(recorded)})
-		if content && recorded == 0 {
-			return nil, fault.At("UNRECORDED_CONTENT", d.ID(), doc.legacy, "this Markdown document has content but its knowledge document has no records or notes; record it before the cutover")
-		}
 		switch {
 		case doc.legacy == contextPath:
 			plan.edits = append(plan.edits, store.Edit{Path: contextPath, Before: ctx, After: converted})
 		case !present:
 		case doc.slug == "security-controls":
-			plan.edits = append(plan.edits, store.Edit{Path: doc.legacy, Before: raw, After: contextdocument.ConfigOnlyControls(raw)})
+			controls, err := contextdocument.ConfigOnlyControls(raw)
+			if err != nil {
+				return nil, err
+			}
+			plan.edits = append(plan.edits, store.Edit{Path: doc.legacy, Before: raw, After: controls})
 		default:
 			plan.edits = append(plan.edits, store.Edit{Path: doc.legacy, Before: raw})
 		}
@@ -274,7 +285,13 @@ func (e *Engine) planCutover() (*cutoverPlan, error) {
 		if err != nil {
 			return nil, err
 		}
-		interview = interview || contextdocument.HasContent(b, 0)
+		sections, err := contextdocument.Sections(b, 0, "")
+		if err != nil {
+			return nil, err
+		}
+		for _, section := range sections {
+			interview = interview || section.Content
+		}
 		plan.expected[p] = canonical.BytesHash(b)
 		plan.edits = append(plan.edits, store.Edit{Path: p, Before: b})
 	}
@@ -285,9 +302,6 @@ func (e *Engine) planCutover() (*cutoverPlan, error) {
 			recorded = recordedEntries(d)
 		}
 		plan.coverage = append(plan.coverage, object{"source": ".codearbiter/plans/", "artifact_id": "DECOMP-PROJECT", "content": interview, "recorded": int64(recorded)})
-		if interview && recorded == 0 {
-			return nil, fault.At("UNRECORDED_CONTENT", "DECOMP-PROJECT", ".codearbiter/plans/", "the Markdown decomposition has content but DECOMP-PROJECT has no records; record it before the cutover")
-		}
 	}
 	if len(plan.edits) > 128 {
 		return nil, fault.New("INVALID_TRANSACTION", "cutover exceeds 128 files; record and remove some decomposition sources first")
@@ -300,6 +314,17 @@ func (e *Engine) planCutover() (*cutoverPlan, error) {
 // Preview writes nothing and returns the input identities; apply requires
 // them unchanged, so content edited after the agent read it is never lost.
 func (e *Engine) knowledgeCutover(r object) (any, error) {
+	if model.S(r["mode"]) == "sections" {
+		sources, sections, err := e.sourceSections()
+		if err != nil {
+			return nil, err
+		}
+		listed := []any{}
+		for _, section := range sections {
+			listed = append(listed, section.view)
+		}
+		return object{"mode": "sections", "sources": sources, "sections": listed}, nil
+	}
 	if replay, err := e.FS.Lookup(model.S(r["operation_id"]), e.RequestHash); err != nil {
 		return nil, err
 	} else if replay != nil && model.S(r["mode"]) == "apply" {
@@ -307,6 +332,30 @@ func (e *Engine) knowledgeCutover(r object) (any, error) {
 	}
 	plan, err := e.planCutover()
 	if err != nil {
+		return nil, err
+	}
+	if model.S(r["mode"]) == "apply" {
+		expected := model.M(r["expected"])
+		if len(expected) != len(plan.expected) {
+			return nil, fault.New("REVISION_CONFLICT", "the Markdown inputs changed after they were read; read them again")
+		}
+		for p, want := range plan.expected {
+			got, ok := expected[p]
+			if !ok || (want == nil) != (got == nil) || (want != nil && model.S(got) != want) {
+				return nil, fault.At("REVISION_CONFLICT", "", p, "a Markdown input changed after it was read; record the change, then start again")
+			}
+		}
+	}
+	sources, sections, err := e.sourceSections()
+	if err != nil {
+		return nil, err
+	}
+	for p, hash := range sources {
+		if plan.expected[p] != hash {
+			return nil, fault.At("REVISION_CONFLICT", "", p, "Markdown changed during section inventory")
+		}
+	}
+	if err := e.validateSectionCoverage(sections, r["coverage"]); err != nil {
 		return nil, err
 	}
 	paths := []any{}
@@ -320,18 +369,8 @@ func (e *Engine) knowledgeCutover(r object) (any, error) {
 		paths = append(paths, object{"path": edit.Path, "action": action})
 	}
 	if model.S(r["mode"]) == "preview" {
-		return object{"mode": "preview", "expected": plan.expected, "coverage": plan.coverage, "edits": paths,
+		return object{"mode": "preview", "expected": plan.expected, "sources": sources, "coverage": plan.coverage, "edits": paths,
 			"note": "Nothing is written by preview; removed and rewritten originals stay in the transaction before-images."}, nil
-	}
-	expected := model.M(r["expected"])
-	if len(expected) != len(plan.expected) {
-		return nil, fault.New("REVISION_CONFLICT", "the Markdown inputs changed after they were read; read them again")
-	}
-	for p, want := range plan.expected {
-		got, ok := expected[p]
-		if !ok || (want == nil) != (got == nil) || (want != nil && model.S(got) != want) {
-			return nil, fault.At("REVISION_CONFLICT", "", p, "a Markdown input changed after it was read; record the change, then start again")
-		}
 	}
 	result := map[string]any{"mode": "knowledge-cutover", "edits": paths}
 	o, err := e.FS.Commit(model.S(r["operation_id"]), e.RequestHash, plan.edits, result)

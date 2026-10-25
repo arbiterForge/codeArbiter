@@ -258,8 +258,12 @@ func RequestSchema(op string) (object, error) {
 		add("expected_current_sha256", digestType(), true)
 	case "knowledge-cutover":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
-		add("mode", enum("preview", "apply"), true)
+		add("mode", enum("sections", "preview", "apply"), true)
 		add("expected", object{"type": "object", "additionalProperties": object{"oneOf": []any{digestType(), object{"type": "null"}}}}, false)
+		add("coverage", array(closed(object{
+			"section": text(),
+			"records": array(text(), 0),
+		}, "section", "records"), 0), false)
 	case "task-context":
 		artifact()
 		add("task", idType(), true)

@@ -26,7 +26,7 @@ repository never clears the marker or re-enters Phase 6 to refresh content.
 Read these, or STOP and surface the gap — never guess project identity or a command:
 
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — if it already carries `<!--INITIALIZED-->`, context exists. Stop and route to normal operation.
-- `knowledge.py format`. A `markdown` scaffold is an older one: offer `knowledge.py convert` before writing. Read the listed Markdown files, add their meaning as records or notes, and finish with the returned token only after coverage is complete. If the user keeps the Markdown format, load `${CLAUDE_PLUGIN_ROOT}/skills/context-creation/references/markdown-format.md` and follow that unchanged procedure instead of this one; never convert silently.
+- `knowledge.py format`. A `markdown` scaffold is an older one: offer `knowledge.py convert` before writing. Read every returned Markdown section, add its meaning as records or notes, then map each section ID to its saved references (use `[]` only for `content=false`). Finish with `knowledge.py convert --finish <token> --coverage @checklist.json`. If the user keeps the Markdown format, load `${CLAUDE_PLUGIN_ROOT}/skills/context-creation/references/markdown-format.md` and follow that unchanged procedure instead of this one; never convert silently.
 - The repository root listing (one level deep) — the source surface this skill extracts from.
 
 The excluded set (not "meaningful source"): `.git/`, `.codearbiter/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`, `.gitignore`, `.gitmodules`, and standard tooling dotfiles (`.editorconfig`, `.prettierrc`, etc.). Meaningful source MUST exist beyond it.

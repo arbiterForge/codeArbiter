@@ -52,7 +52,7 @@ func recordList(v any) (map[string]any, []string, bool) {
 // one side take that side; the same record changed differently on both sides
 // is a conflict. Two different records added under the same new ID keep
 // ours and give theirs the next free ID, recorded in renamed.
-func mergeRecords(field string, base, ours, theirs any, taken map[string]bool, renamed map[string]string, conflicts *[]mergeConflict) []any {
+func mergeRecords(field string, base, ours, theirs any, taken map[string]bool, renamed map[string]string, incoming map[string]bool, conflicts *[]mergeConflict) []any {
 	b, _, _ := recordList(base)
 	o, oOrder, _ := recordList(ours)
 	t, tOrder, _ := recordList(theirs)
@@ -71,6 +71,7 @@ func mergeRecords(field string, base, ours, theirs any, taken map[string]bool, r
 				out = append(out, ov)
 			case equalJSON(ov, bv):
 				out = append(out, tv)
+				incoming[id] = true
 			default:
 				*conflicts = append(*conflicts, mergeConflict{field, id, "changed differently on both sides"})
 			}
@@ -99,6 +100,7 @@ func mergeRecords(field string, base, ours, theirs any, taken map[string]bool, r
 				moved := canonicalClone(tv)
 				model.M(moved)["id"] = next
 				out = append(out, moved)
+				incoming[next] = true
 			}
 		case inBase:
 			if !equalJSON(tv, bv) {
@@ -106,6 +108,7 @@ func mergeRecords(field string, base, ours, theirs any, taken map[string]bool, r
 			}
 		default:
 			out = append(out, tv)
+			incoming[id] = true
 		}
 	}
 	return out
@@ -181,6 +184,7 @@ func MergeKnowledge(base, ours, theirs *model.Document) (*model.Document, map[st
 	renamed := map[string]string{}
 	conflicts := []mergeConflict{}
 	merged := map[string]any{}
+	incoming := map[string]map[string]bool{}
 	keys := map[string]bool{}
 	for k := range ours.Norm() {
 		keys[k] = true
@@ -196,7 +200,8 @@ func MergeKnowledge(base, ours, theirs *model.Document) (*model.Document, map[st
 	for _, k := range names {
 		bv, ov, tv := baseNorm[k], ours.Norm()[k], theirs.Norm()[k]
 		if mergedCollections[k] {
-			merged[k] = mergeRecords(k, bv, ov, tv, taken, renamed, &conflicts)
+			incoming[k] = map[string]bool{}
+			merged[k] = mergeRecords(k, bv, ov, tv, taken, renamed, incoming[k], &conflicts)
 			continue
 		}
 		switch {
@@ -217,7 +222,7 @@ func MergeKnowledge(base, ours, theirs *model.Document) (*model.Document, map[st
 			clean[from] = to
 		}
 	}
-	rewriteTheirs(merged, ours, clean)
+	rewriteTheirs(merged, ours.ID(), incoming, clean)
 	next, err := canonical.Clone(ours.Data)
 	if err != nil {
 		return nil, nil, nil, err
@@ -237,14 +242,14 @@ func MergeKnowledge(base, ours, theirs *model.Document) (*model.Document, map[st
 
 // rewriteTheirs updates references inside records that ours does not have,
 // so a renamed incoming record keeps its links without touching ours.
-func rewriteTheirs(merged map[string]any, ours *model.Document, renamed map[string]string) {
+func rewriteTheirs(merged map[string]any, docID string, incoming map[string]map[string]bool, renamed map[string]string) {
 	if len(renamed) == 0 {
 		return
 	}
 	for field := range mergedCollections {
 		for _, v := range model.A(merged[field]) {
-			if _, fromOurs := ours.Symbols.ByID[model.S(model.M(v)["id"])]; !fromOurs {
-				rewriteRefs(v, ours.ID(), renamed)
+			if incoming[field][model.S(model.M(v)["id"])] {
+				rewriteRefs(v, docID, renamed)
 			}
 		}
 	}
