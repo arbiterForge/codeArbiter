@@ -6,6 +6,13 @@ disable-model-invocation: true
 
 # tribunal
 
+For every security policy reference below, follow `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 An opt-in deep audit selected by a deliberate request, including /ca:tribunal.
 The roster is the set of lens cards, executed by one generic reviewer. Persist
 findings, leads, verification and append-only decisions in a source-bound run

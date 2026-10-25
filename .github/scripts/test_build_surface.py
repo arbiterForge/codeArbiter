@@ -2534,8 +2534,16 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
                 with self.subTest(host=host, command=command):
                     path = f'commands/{command}.md' if host == 'claude' else f'skills/ca-{command}/SKILL.md'
                     public = surface[path].decode()
+                    procedure = public
+                    if command in ('create-context', 'decompose'):
+                        # Markdown-format repositories keep the unchanged procedure in a
+                        # reference the public entry routes to; HTML is the entry itself.
+                        routine = 'skills' if host == 'claude' else 'routines'
+                        reference = f'{routine}/{self.owners[command]}/references/markdown-format.md'
+                        self.assertIn('references/markdown-format.md', public)
+                        procedure += surface[reference].decode()
                     for term in terms:
-                        self.assertIn(term, public)
+                        self.assertIn(term, procedure)
                     self.assertEqual('disable-model-invocation: true' in _frontmatter(public), host == 'claude')
                     if command != 'release':
                         self.assertIn('Compatibility route', public)

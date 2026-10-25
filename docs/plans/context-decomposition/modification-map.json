@@ -1,0 +1,860 @@
+{
+  "format": "codearbiter.context-conversion-review-map/1",
+  "status": "planning-only",
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "0badb588dc1179b06e13db1ca5322590962b586a",
+  "hook_pr": {
+    "number": 1016,
+    "head": "8c16bb1116c76ca0cbe69851d9f3d323764727fd",
+    "inspected_state": "open"
+  },
+  "input_plan_sha256": "4c995aa2ce83fc713e158e6f3fa0efcd16b37b07b436ee3ae12d83bdaede8215",
+  "notes": [
+    "Exact content path references and snapshots were inspected; this is an owner map, not proof that every dynamic consumer has been enumerated.",
+    "A fresh path + semantic caller scan at the eventual implementation base is required. Candidate literal matches included source, tests and derivatives; a match is not automatically a needed code edit.",
+    "Academy is a separately owned follow-up: its exact release/lesson/verifier coverage is not claimed inspected in this review."
+  ],
+  "groups": [
+    {
+      "id": "M01",
+      "title": "Native kinds, schema and identity",
+      "disposition": "modify",
+      "paths": [
+        "core/artifacts/internal/kind/contracts.go",
+        "core/artifacts/internal/model/artifact.go",
+        "core/artifacts/internal/symbol/index.go",
+        "core/artifacts/internal/repository/catalog.go",
+        "core/artifacts/internal/operations/engine.go",
+        "core/artifacts/internal/operations/protocol.go",
+        "core/artifacts/internal/validate/validate.go"
+      ],
+      "change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "id": "M02",
+      "title": "Context writing, provenance and finalization",
+      "disposition": "modify",
+      "paths": [
+        "core/pysrc/_contextwriterlib.py",
+        "core/pysrc/_artifactlib.py",
+        "core/pysrc/init-codearbiter.py",
+        "core/artifacts/internal/contextdocument/contract.go",
+        "core/artifacts/internal/contextdocument/finalization.go",
+        "core/artifacts/internal/operations/context_assistive.go",
+        "core/artifacts/internal/operations/context_authority.go"
+      ],
+      "change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "id": "M03",
+      "title": "Existing selector and freshness machinery",
+      "disposition": "modify",
+      "paths": [
+        "core/pysrc/_contextselectlib.py",
+        "core/pysrc/_contextsnapshotlib.py",
+        "core/pysrc/_contextreportlib.py",
+        "core/pysrc/_provenancelib.py",
+        "core/artifacts/internal/read/read.go",
+        "core/artifacts/internal/operations/task_context.go"
+      ],
+      "change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "id": "M04",
+      "title": "Activation, initialization and hot-path access",
+      "disposition": "modify-or-prove-unchanged",
+      "paths": [
+        "core/pysrc/_activationlib.py",
+        "core/pysrc/_arbiterstatelib.py",
+        "core/pysrc/session-start.py",
+        "core/pysrc/statusline.py",
+        "core/pysrc/hostapi.py",
+        "core/pysrc/doctor.py",
+        "core/pysrc/_readinjectlib.py",
+        "core/pysrc/pre-read.py",
+        "core/pysrc/post-write-edit.py",
+        "plugins/ca-pi/tools/src/activation.ts"
+      ],
+      "change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "id": "M05",
+      "title": "Actual control configuration and protected-state recognition",
+      "disposition": "modify-or-prove-unchanged",
+      "paths": [
+        "core/pysrc/_scopelib.py",
+        "core/pysrc/_hooklib.py",
+        "core/pysrc/_protectedlib.py",
+        "core/pysrc/_protectedstatelib.py",
+        "core/pysrc/_bashguardlib.py",
+        "core/pysrc/pre-write.py",
+        "core/pysrc/pre-edit.py",
+        "core/pysrc/prompt-submit.py",
+        "core/pysrc/_replylib.py",
+        "core/pysrc/_artifactauthoritylib.py"
+      ],
+      "change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "id": "M06",
+      "title": "Planning, interview and execution callers",
+      "disposition": "modify",
+      "paths": [
+        "core/surface/skills/decompose/SKILL.md",
+        "core/surface/skills/context-creation/SKILL.md",
+        "core/surface/skills/brainstorming/SKILL.md",
+        "core/surface/skills/writing-plans/SKILL.md",
+        "core/surface/skills/executing-plans/SKILL.md",
+        "core/surface/skills/subagent-driven-development/SKILL.md",
+        "core/surface/skills/tdd/SKILL.md",
+        "core/surface/skills/commit-gate/SKILL.md",
+        "core/surface/skills/decision-variance/references/analysis.md",
+        "core/surface/SPRINT.md",
+        "core/surface/includes/artifacts.md"
+      ],
+      "change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "id": "M07",
+      "title": "Board promotion and single-owner references",
+      "disposition": "modify",
+      "paths": [
+        "core/pysrc/_taskboardlib.py",
+        "core/pysrc/taskwrite.py",
+        "core/pysrc/boardsync.py",
+        "core/pysrc/_taskexcludelib.py",
+        "core/pysrc/_intentlib.py"
+      ],
+      "change": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+    },
+    {
+      "id": "M08",
+      "title": "Merge, worktrees, sources and recovery",
+      "disposition": "modify-or-prove-unchanged",
+      "paths": [
+        "core/pysrc/_contextmergelib.py",
+        "core/pysrc/resolve-context-conflict.py",
+        "core/pysrc/_appendonlyconflictlib.py",
+        "core/pysrc/_releaselib.py",
+        "core/pysrc/_pathnorm.py",
+        "core/pysrc/_sensitivelib.py",
+        "core/pysrc/prune-transcript.py",
+        "core/artifacts/internal/store/transaction.go",
+        "core/artifacts/internal/store/infrastructure.go"
+      ],
+      "change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "id": "M09",
+      "title": "Native presentation and generated delivery",
+      "disposition": "modify-and-generate",
+      "paths": [
+        "core/artifacts/internal/render/render.go",
+        "core/artifacts/internal/render/assets/artifact.css",
+        "core/artifacts/internal/render/assets/logo.svg",
+        "tools/generate-artifact-types.py",
+        "tools/build-surface.py",
+        "tools/sync-core.py",
+        "tools/build-artifacts.py",
+        "tools/install-artifact-payload.py",
+        "tools/build-host-packages.py",
+        "docs/artifacts/consumer-inventory.json"
+      ],
+      "change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "id": "M10",
+      "title": "Training, site and current claims",
+      "disposition": "modify-or-coordinate",
+      "paths": [
+        "site/scripts/capture-context-examples.py",
+        "site/scripts/generate-diagrams.ts",
+        "site/scripts/execution-maps/workflows.ts",
+        "site/scripts/execution-maps/atlas.ts",
+        "site/scripts/execution-maps/atlas-data/assistive-update.json",
+        "site/scripts/generate-academy.ts",
+        ".github/scripts/test_artifact_installed_host.py",
+        "tools/test-artifact-mixed-schema.py"
+      ],
+      "change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    }
+  ],
+  "files": [
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/kind/contracts.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/kind/contracts.go",
+      "sha256": "e8b1b18d6b070def5270272fdf2c916a7d68261db5967ba857603d05d28a4850",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/model/artifact.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/model/artifact.go",
+      "sha256": "ebd18c36a276475bce40af945073392daa28ea3cc2385d242f5f6bfe84ad4e79",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/symbol/index.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/symbol/index.go",
+      "sha256": "bffa5d9db042067b8b4b3fd1046eb9273ce09106271e42c78421d60c86360792",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/repository/catalog.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/repository/catalog.go",
+      "sha256": "9ba9be56af9285df606943fecfaa54b84b31b3d46e31e617167dada3471ed955",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/operations/engine.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/operations/engine.go",
+      "sha256": "cf8d827990018c5cf082130391769e744e49588917561024eff22c2e799fd464",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/operations/protocol.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/operations/protocol.go",
+      "sha256": "12973b00c4163462ee86e65f6b739149c82726fdc942f840f2dcfeeb0d75fbb6",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M01",
+      "path": "core/artifacts/internal/validate/validate.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/validate/validate.go",
+      "sha256": "fbeb7f741497cc32d933d97b7804f9183d571d467b9e157ba4cd5b80fb617963",
+      "disposition": "modify",
+      "owner_change": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+    },
+    {
+      "group": "M02",
+      "path": "core/pysrc/_contextwriterlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextwriterlib.py",
+      "sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M02",
+      "path": "core/pysrc/_artifactlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_artifactlib.py",
+      "sha256": "5761e096518fc760ba1aa8fc73dd3a84de7148e9aa88c01ecf66bf129a0eabeb",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M02",
+      "path": "core/pysrc/init-codearbiter.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/init-codearbiter.py",
+      "sha256": "cf171d2bda01c9c04e3f6dea0e8c2146722456ea8f42a137543a1255369453d2",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M02",
+      "path": "core/artifacts/internal/contextdocument/contract.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/contextdocument/contract.go",
+      "sha256": "62d24a2193b7a68a659c3f3beaa8d09b34ac03d165e781aae20939d8ad2ca84a",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M02",
+      "path": "core/artifacts/internal/contextdocument/finalization.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/contextdocument/finalization.go",
+      "sha256": "1d3783b6ba12b4b8469899ad28723dd66c5e9c3f264b1dd12b2ce55fff7765df",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M02",
+      "path": "core/artifacts/internal/operations/context_assistive.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/operations/context_assistive.go",
+      "sha256": "b7f138fdb706160f523330e85b08688642e9bcfd74f05c118acd603d254e9e25",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M02",
+      "path": "core/artifacts/internal/operations/context_authority.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/operations/context_authority.go",
+      "sha256": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+      "disposition": "modify",
+      "owner_change": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+    },
+    {
+      "group": "M03",
+      "path": "core/pysrc/_contextselectlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextselectlib.py",
+      "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "disposition": "modify",
+      "owner_change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "group": "M03",
+      "path": "core/pysrc/_contextsnapshotlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextsnapshotlib.py",
+      "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+      "disposition": "modify",
+      "owner_change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "group": "M03",
+      "path": "core/pysrc/_contextreportlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextreportlib.py",
+      "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+      "disposition": "modify",
+      "owner_change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "group": "M03",
+      "path": "core/pysrc/_provenancelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_provenancelib.py",
+      "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "disposition": "modify",
+      "owner_change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "group": "M03",
+      "path": "core/artifacts/internal/read/read.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/read/read.go",
+      "sha256": "297b384f869ec050fd6bdaeab6863727ad78c6fb47227fde30487596f77cb18a",
+      "disposition": "modify",
+      "owner_change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "group": "M03",
+      "path": "core/artifacts/internal/operations/task_context.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/operations/task_context.go",
+      "sha256": "68766bac322050ac03363cb575d5ce25cd35021f5dc901503e680c6fc53169d9",
+      "disposition": "modify",
+      "owner_change": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/_activationlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_activationlib.py",
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/_arbiterstatelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_arbiterstatelib.py",
+      "sha256": "03ec0a1a1812660d8ba1cb8e274c41a6bf6554cc3ee01e4847702c7cb859a815",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/session-start.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/session-start.py",
+      "sha256": "2cc0d575e3f85824a3eba4b21e54cca9d0285f4ce4bf8c41e5331344c18c9c80",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/statusline.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/statusline.py",
+      "sha256": "e538a58feef0211e5f00a125ff2418cb958ffdad887b54cf6067a99d217f967c",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/hostapi.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/hostapi.py",
+      "sha256": "3795708011df74ff02c7882e8571b29b14f7b4478d95194f1bbd1ef52987ad4e",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/doctor.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/doctor.py",
+      "sha256": "f198edf7e0bbd20366d0a018830db38e0d32950170a9dc79ea8edb412a3e2764",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/_readinjectlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_readinjectlib.py",
+      "sha256": "3067bb896c409f06cdfd4194581fc4f9534af0b26ffd7d704cc5f6e008b2778a",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/pre-read.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/pre-read.py",
+      "sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "core/pysrc/post-write-edit.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/post-write-edit.py",
+      "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M04",
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:plugins/ca-pi/tools/src/activation.ts",
+      "sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_scopelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_scopelib.py",
+      "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_hooklib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_hooklib.py",
+      "sha256": "6bfa37eabf55258c3476f0cee4e4384d5cc0a21d0dacba0a957bd15a16a79902",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_protectedlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_protectedlib.py",
+      "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_protectedstatelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_protectedstatelib.py",
+      "sha256": "8f063aabb2269191a1a9e81fc49b83b24b0c29d1d73b906229c62eb1bead5a24",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_bashguardlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_bashguardlib.py",
+      "sha256": "054f80631dcf20b947eb5d952418e9f9d1090bece2857cb7826c6a18e79ca17b",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/pre-write.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/pre-write.py",
+      "sha256": "a501cedd39eefd605a4db4dfd74d365d78e2074535aec8dc8e6fe534fb9f029c",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/pre-edit.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/pre-edit.py",
+      "sha256": "e8df75253acac6b0a988929f4ba23f7ab5ff5ebcb995e7e271a86bc8f49e6fcc",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/prompt-submit.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/prompt-submit.py",
+      "sha256": "1eaf3b2c464727e1af297cdf5f7c857547734eab7172c1daa03d75fe752ae171",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_replylib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_replylib.py",
+      "sha256": "6d9477a46247caf248749a18ddf37b258833b0ffbaea9b883bc78e2f9b495471",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M05",
+      "path": "core/pysrc/_artifactauthoritylib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_artifactauthoritylib.py",
+      "sha256": "e69e6c5a4d6874df18b7dd20728fa7b7bc505682f916a799b1e7aaaeae994fad",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/decompose/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/decompose/SKILL.md",
+      "sha256": "a28543d4bdb4286bd9bb688ee7ee0969b80a8824f6e421aa239fd52d9192a39a",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/context-creation/SKILL.md",
+      "sha256": "0eb29e95533b9febb02ea394e8d1d2abcc80fe8b6598d1915e0eefa65f346d74",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/brainstorming/SKILL.md",
+      "sha256": "b149d08684cbc8cfb40ed65bd93398ba41691fe107ff7b299a05a037c48c026e",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/writing-plans/SKILL.md",
+      "sha256": "5a4f5d9f8d7aa6d965ff79189d2e2b27ea3a7edaf78b1615bb3aebad3b49be99",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/executing-plans/SKILL.md",
+      "sha256": "0dfafc3b5b6bcb472b9b89582f0c4f1c057bef289c2920d744c312630e2ce61d",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/subagent-driven-development/SKILL.md",
+      "sha256": "8e70e5041a3dd6afa4f902100778554cdde8e900b8f3dd7f9d68acaf8bf83356",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/tdd/SKILL.md",
+      "sha256": "db16f470b5bc3ef493c3775602bee3679ed046c3585b04ae47b95bb2830d7e2e",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/commit-gate/SKILL.md",
+      "sha256": "836fc5619f7d67dd67b95a8982d05b80b6bb122756b94fe6c87760b82b020fe2",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/skills/decision-variance/references/analysis.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/decision-variance/references/analysis.md",
+      "sha256": "bfdf8f1edc67b54dd380c9506e581fc9d86fa8e48f34c144b17ae1e777a9ad2c",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/SPRINT.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/SPRINT.md",
+      "sha256": "b6f72996873bc37348e86383a61cffc9557e32b05a60a2dd0e65c66b64e486ed",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M06",
+      "path": "core/surface/includes/artifacts.md",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/includes/artifacts.md",
+      "sha256": "6c0f6956d0d9fa5506e73c4f715badd0314d6aaa9880688ea302ee70c49b68c5",
+      "disposition": "modify",
+      "owner_change": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+    },
+    {
+      "group": "M07",
+      "path": "core/pysrc/_taskboardlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_taskboardlib.py",
+      "sha256": "c562779b3d5d49ff9b73883196770186a4814e9615efe39422512a2432a8cebc",
+      "disposition": "modify",
+      "owner_change": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+    },
+    {
+      "group": "M07",
+      "path": "core/pysrc/taskwrite.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/taskwrite.py",
+      "sha256": "f834f3fcc9dafcdf31db16ad4f52cd232c17162dc1711bdba112c2cac8a30d29",
+      "disposition": "modify",
+      "owner_change": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+    },
+    {
+      "group": "M07",
+      "path": "core/pysrc/boardsync.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/boardsync.py",
+      "sha256": "c72699726c2d0c1c7d66fcfac30178f11c5bab7f624e923e9572ab6316a8d056",
+      "disposition": "modify",
+      "owner_change": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+    },
+    {
+      "group": "M07",
+      "path": "core/pysrc/_taskexcludelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_taskexcludelib.py",
+      "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+      "disposition": "modify",
+      "owner_change": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+    },
+    {
+      "group": "M07",
+      "path": "core/pysrc/_intentlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_intentlib.py",
+      "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "disposition": "modify",
+      "owner_change": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/_contextmergelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextmergelib.py",
+      "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/resolve-context-conflict.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/resolve-context-conflict.py",
+      "sha256": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/_appendonlyconflictlib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_appendonlyconflictlib.py",
+      "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/_releaselib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_releaselib.py",
+      "sha256": "bde7b9e3479552b5b91c29aad56f47cc870addad4052fef672ca63dee9611228",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/_pathnorm.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_pathnorm.py",
+      "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/_sensitivelib.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_sensitivelib.py",
+      "sha256": "ccb2b1c7b6912aac52bf0aae5fbba8bd0a8e66e4c4fae5a28458ab4790d38c34",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/pysrc/prune-transcript.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/prune-transcript.py",
+      "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/artifacts/internal/store/transaction.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/store/transaction.go",
+      "sha256": "f4a0efcb4dd9e57aeb8ab365db34408e888ea6096fdd7f8859f4dd93d88c7887",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M08",
+      "path": "core/artifacts/internal/store/infrastructure.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/store/infrastructure.go",
+      "sha256": "16bda6fc8ac3e0031c7bbf570acd21115754626adbb200b3e79ee75eb8e17b36",
+      "disposition": "modify-or-prove-unchanged",
+      "owner_change": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+    },
+    {
+      "group": "M09",
+      "path": "core/artifacts/internal/render/render.go",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/render.go",
+      "sha256": "0cf473d1e2052cc6318b7935714b66249e0aa1b4cba5ea0687a4d2327146c864",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "core/artifacts/internal/render/assets/artifact.css",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/assets/artifact.css",
+      "sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "core/artifacts/internal/render/assets/logo.svg",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/assets/logo.svg",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "tools/generate-artifact-types.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/generate-artifact-types.py",
+      "sha256": "8561f08f106de835a0d9bdc4fe41ac7ee4a918f45da3877cf0f9cad825b895b6",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "tools/build-surface.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/build-surface.py",
+      "sha256": "b58efc9ed8f839c20d6d4af66f03875afb0c6d17a6ec6c7e326137814ac6f832",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "tools/sync-core.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/sync-core.py",
+      "sha256": "fd9b2a2b653f48d379aca690a7fc74effd0954a9da5326cd2f1b1f6d3af41e00",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "tools/build-artifacts.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/build-artifacts.py",
+      "sha256": "cb815f0e2dacb5b722d706ea9bcb27bff0f70d4b9ca4acee8d7f5ef35ede192c",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "tools/install-artifact-payload.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/install-artifact-payload.py",
+      "sha256": "f57d485479eefee873437f3c9546f85a6a6bc08bf5c04f5c3600c6678d058ce5",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "tools/build-host-packages.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/build-host-packages.py",
+      "sha256": "be7f6fad13b5041bfc901e8c803d2426fc9bb2d8b313786cd622d8d961a386be",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M09",
+      "path": "docs/artifacts/consumer-inventory.json",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:docs/artifacts/consumer-inventory.json",
+      "sha256": "7d0b66e1ed541ed4a8c3f1ca91a0d594d6db368bb68a80a68decf563bea7a821",
+      "disposition": "modify-and-generate",
+      "owner_change": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+    },
+    {
+      "group": "M10",
+      "path": "site/scripts/capture-context-examples.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/capture-context-examples.py",
+      "sha256": "b90e43fc6b7276717935d0f82365042b179aa38e308009faff8d894bc4f57645",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": "site/scripts/generate-diagrams.ts",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/generate-diagrams.ts",
+      "sha256": "bfd47ca88eeafcef8915ad4a028d530f81c5d40ec42a7b1f035c8666e9558475",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": "site/scripts/execution-maps/workflows.ts",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/execution-maps/workflows.ts",
+      "sha256": "c825a8be5a1be5c35015cd9338a21040d6e2c2f553ec0b4780020e5b6f307006",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/execution-maps/atlas.ts",
+      "sha256": "0d70189b7f76c846f76e0db3034a40f766ecfb024079f9016fffad4879addb4c",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": "site/scripts/execution-maps/atlas-data/assistive-update.json",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/execution-maps/atlas-data/assistive-update.json",
+      "sha256": "e9ab1e7a844a84abb2903413e7c9b3ff9b2db876c8ff7d5fa7f19ef2d3b53f71",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": "site/scripts/generate-academy.ts",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/generate-academy.ts",
+      "sha256": "b797b4c24c47e18864bbc6c053cf6ea55723aefe2e4b553348c42c175ae783ab",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": ".github/scripts/test_artifact_installed_host.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:.github/scripts/test_artifact_installed_host.py",
+      "sha256": "9317e0b33b8786daf5d6e952d68015338050d9b508dd840523f0d0c44f1819bd",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    },
+    {
+      "group": "M10",
+      "path": "tools/test-artifact-mixed-schema.py",
+      "source_ref": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:tools/test-artifact-mixed-schema.py",
+      "sha256": "878e0f1ea8b110b23da8084ff94f7a5758886078f7164df83e43b75020821625",
+      "disposition": "modify-or-coordinate",
+      "owner_change": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+    }
+  ],
+  "missing_points_fixed": [
+    "existing context selector/report/snapshot owners",
+    "receipt-free context versus inherited required evidence",
+    "independent Pi TypeScript activation",
+    "13-file finalization",
+    "active-and-archived board origin deduplication",
+    "code-map conflict/version repair",
+    "bounded catalog fault isolation",
+    "cross-kind renderer links",
+    "generated schema/type/package copies",
+    "release/training claim boundaries"
+  ]
+}

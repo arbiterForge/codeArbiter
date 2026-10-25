@@ -56,12 +56,16 @@ describe('composed assistive workflow references', () => {
   it('retains real greenfield confirmation and native population without discarding sources', () => {
     for (const type of ['command', 'skill'] as const) {
       const { guidance, source } = reference(type, 'decompose');
-      for (const text of [guidance, source]) {
+      // Repositories that keep the Markdown format retain the paired-writer procedure.
+      const legacy = read('../core/surface/skills/decompose/references/markdown-format.md');
+      for (const text of [guidance, legacy]) {
         expect(text).toContain('.codearbiter/plans/decomposition/');
         expect(text).toContain('_session.md');
         expect(text).toContain('--context-finalize');
         expect(text).toMatch(/unchanged (?:accepted work|artifacts)/);
       }
+      expect(source).toContain('references/markdown-format.md');
+      expect(source).toContain('knowledge.py initialize');
       expect(guidance).not.toMatch(/promote every draft|no draft decision records|remove the (?:working )?draft directory/);
     }
     const guide = read('src/content/docs/guides/plan-a-new-project.mdx');

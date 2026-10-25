@@ -6,6 +6,13 @@ argument-hint: "[path | #<pr> | <pr-url>] (defaults to the current diff)"
 
 # $ca-review — diff review
 
+For every security policy reference below, follow [includes/knowledge.md](../../includes/knowledge.md)
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Read-only review of a change. Routes to `dispatching-parallel-agents` ([routines/dispatching-parallel-agents/SKILL.md](../../routines/dispatching-parallel-agents/SKILL.md)): dispatches the reviewer fleet by path matrix, dedupes, then funnels through `finding-triage` → `verdict-aggregator` to a single in-memory verdict. No code is modified.
 
 `$ca-review #123` reviews an inbound pull request through the same fleet and triage as a local diff.

@@ -33,7 +33,8 @@ class TestGreenfieldContext(unittest.TestCase):
         self.root = Path(self.temporary.name).resolve()
         subprocess.run(["git", "init", "--quiet", str(self.root)], check=True)
         self.env = {**os.environ, "PYTHONUTF8": "1", "PYTHONDONTWRITEBYTECODE": "1"}
-        self.cli()
+        # The paired Markdown writer serves repositories that keep the older format.
+        self.cli("--format", "markdown")
         self.state = self.root / ".codearbiter"
         self.interview = self.state / "plans/decomposition"
         self.interview.mkdir(parents=True)

@@ -197,9 +197,17 @@ class DedupTest(unittest.TestCase):
     def test_already_promoted_false_for_unknown(self):
         self.assertFalse(tb.already_promoted(BOARD, "checkpoint-2026-06-13#H-99"))
 
-    def test_done_entry_does_not_block_repromote(self):
+    def test_done_entry_blocks_repromote(self):
+        # A retried promotion must not add finished work again (#1023 AC-010).
         done = "- [x] old  (from o1)  (done 2026-06-10)\n"
-        self.assertFalse(tb.already_promoted(done, "o1"))  # only OPEN entries block
+        self.assertTrue(tb.already_promoted(done, "o1"))
+
+    def test_archived_entry_blocks_repromote(self):
+        archive = "# Done tasks\n- [x] old  (from o1)  (done 2026-06-10)\n"
+        self.assertTrue(tb.already_promoted("# Open tasks\n", "o1", archive))
+        self.assertFalse(tb.already_promoted("# Open tasks\n", "o10", archive))
+        self.assertEqual(tb.promoted_entry("# Open tasks\n", "o1", archive),
+                         "- [x] old  (from o1)  (done 2026-06-10)")
 
 
 class ExtractTest(unittest.TestCase):

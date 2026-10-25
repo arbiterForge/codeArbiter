@@ -111,6 +111,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess  # noqa: F401 — no longer used directly; kept so any external
 #                     consumer referencing _hooklib.subprocess keeps resolving
 import sys
@@ -495,6 +496,40 @@ def marker_fresh(path, minutes):
         return False
 
 
+def _open_gate_event_log(cad):
+    """Open the audit sink without following a repository-controlled link."""
+    info = os.lstat(cad)
+    if not stat.S_ISDIR(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+        raise OSError("gate-event state directory is a link or reparse point")
+    flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0)
+    flags |= getattr(os, "O_NONBLOCK", 0)
+    if os.name != "nt":
+        directory = os.open(cad, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            fd = os.open("gate-events.log", flags | os.O_NOFOLLOW, 0o600,
+                         dir_fd=directory)
+        finally:
+            os.close(directory)
+    else:
+        fd = os.open(os.path.join(cad, "gate-events.log"), flags, 0o600)
+    try:
+        opened = os.fstat(fd)
+        current_dir = os.lstat(cad)
+        current = os.lstat(os.path.join(cad, "gate-events.log"))
+        if (not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(current.st_mode)
+                or opened.st_nlink != 1 or current.st_nlink != 1
+                or getattr(current, "st_file_attributes", 0) & 0x400
+                or getattr(opened, "st_file_attributes", 0) & 0x400
+                or getattr(current_dir, "st_file_attributes", 0) & 0x400
+                or (current_dir.st_dev, current_dir.st_ino) != (info.st_dev, info.st_ino)
+                or (current.st_dev, current.st_ino) != (opened.st_dev, opened.st_ino)):
+            raise OSError("gate-event log is not a repository-local regular file")
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
 def _log_gate_event(kind, tag, msg):
     """Best-effort durable append of one gate decision to
     .codearbiter/gate-events.log (observability-001, issue #186) — the durable
@@ -546,12 +581,13 @@ def _log_gate_event(kind, tag, msg):
             host = get_host().name
         except Exception:  # noqa: BLE001 — host resolution must never break the sink
             host = "unknown"
-        tag_part = f"[{tag}] " if tag else ""
-        line = f"[{ts}] {kind} {tag_part}host={host} hook={hook} | {msg}\n"
+        def one_line(value):
+            return str(value).replace("\\", "\\\\").replace("\r", "\\r").replace("\n", "\\n")
+
+        tag_part = f"[{one_line(tag)}] " if tag else ""
+        line = (f"[{ts}] {one_line(kind)} {tag_part}host={one_line(host)} "
+                f"hook={one_line(hook)} | {one_line(msg)}\n")
         log_path = os.path.join(cad, "gate-events.log")
-        flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY
-        if hasattr(os, "O_BINARY"):
-            flags |= os.O_BINARY
         process_lock_acquired = False
         try:
             _GATE_EVENTS_PROCESS_LOCK.acquire()
@@ -571,7 +607,7 @@ def _log_gate_event(kind, tag, msg):
         fd = None
         os_lock_acquired = False
         try:
-            fd = os.open(log_path, flags, 0o600)
+            fd = _open_gate_event_log(cad)
             # The trusted sidecar already serializes current writers. Keep the
             # legacy descriptor lock for compatibility once the log has data,
             # but Windows cannot reliably lock byte zero of a new empty file.

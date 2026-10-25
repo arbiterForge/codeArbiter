@@ -489,6 +489,9 @@ jobs:
               - '.github/scripts/test_context_native.py'
               - '.github/scripts/test_context_workflow.py'
               - '.github/scripts/test_greenfield_context.py'
+              - '.github/scripts/test_knowledge_cli.py'
+              - 'core/pysrc/knowledge.py'
+              - 'core/pysrc/_knowledgelib.py'
               - '.github/requirements/artifact-conformance.in'
               - '.github/requirements/artifact-conformance-py314.lock'
               # Auto-release consumes this exact-head package cohort. A
@@ -950,6 +953,10 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_greenfield_context.py
+      - name: Verify knowledge records CLI with the candidate
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_knowledge_cli.py
       - name: Check out the fixed pre-assistive compatibility source
         if: matrix.os == 'ubuntu-24.04'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

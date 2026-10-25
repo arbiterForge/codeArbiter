@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,RETIRED_COMMANDS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS,RETIRED_COMMANDS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
@@ -115,7 +115,7 @@ describe('atlas source and original-composition regression contract',{timeout:30
       for(const [path,blob] of Object.entries(CONTEXT_MAINTENANCE_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries(RUNTIME_COMPATIBILITY_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       writeFileSync(join(dir,'core/surface/command-routes.json'),execFileSync('git',['--no-replace-objects','cat-file','blob',atlasCatalog.catalog_snapshot.verified_current_blob],{cwd:dir,env:fixtureEnv}));
-      for(const [path,blob] of Object.entries({...ASSISTIVE_SOURCE_BLOBS,...SMARTS_INTEGRATION_SOURCE_BLOBS,...COMMAND_REMOVAL_SOURCE_BLOBS,...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS})) {
+      for(const [path,blob] of Object.entries({...ASSISTIVE_SOURCE_BLOBS,...SMARTS_INTEGRATION_SOURCE_BLOBS,...COMMAND_REMOVAL_SOURCE_BLOBS,...CONTEXT_KNOWLEDGE_SOURCE_BLOBS,...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS})) {
         mkdirSync(dirname(join(dir,path)),{recursive:true});
         writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       }

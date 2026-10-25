@@ -316,6 +316,25 @@ def main(argv=None):
             except ArchiveUnreadable as exc:
                 print(str(exc), file=sys.stderr)
                 return EXIT_ARCHIVE_UNREADABLE
+        elif args.verb == "add" and args.origin:
+            # Promotion is idempotent by origin across the board and its
+            # archive: a retry after the task finished or was archived returns
+            # that task instead of adding finished work again (#1023 AC-010).
+            archive_path = os.path.join(root, ".codearbiter", "done-tasks.md")
+            try:
+                with open(archive_path, encoding="utf-8") as handle:
+                    archive = handle.read()
+            except FileNotFoundError:
+                archive = ""
+            except (OSError, UnicodeError) as exc:
+                print(f"cannot read {archive_path} to check for an earlier promotion "
+                      f"({exc}); no changes were written", file=sys.stderr)
+                return 1
+            existing = tb.promoted_entry(text, args.origin, archive)
+            if existing is not None:
+                print(f"already promoted: {existing}")
+                return 0
+            new, action_or_err = _apply(args, text)
         else:
             new, action_or_err = _apply(args, text)
         if new is None:

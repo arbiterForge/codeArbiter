@@ -10696,7 +10696,7 @@ class BackfillOrderingTest(unittest.TestCase):
 
     def test_branch_refusal_follows_the_prerequisite_check_and_precedes_the_write(self):
         existence_check = self.backfill.index("re-check existence")
-        tech_stack_check = self.backfill.index(".codearbiter/tech-stack.md")
+        tech_stack_check = self.backfill.index("Call `release_require_commit_path` HERE")
         branch_check = self.backfill.index("current branch is not `main`")
         marker_mint = self.backfill.index("mkdir -p")
         write = self.backfill.index("Write the confirmed block verbatim")
@@ -11754,8 +11754,8 @@ class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
     committed the lane to a state `commit-gate` would then refuse deep
     inside Phase 1 step 7 or Back-fill's own commit. `commit-gate`'s own
     SKILL.md Pre-flight is the source of truth for what "prerequisite"
-    concretely means here -- a readable `.codearbiter/tech-stack.md`
-    ("Stop if missing; do not guess") and a resolvable git repository --
+    concretely means here -- declared tech-stack context in the selected
+    Markdown or HTML format and a resolvable git repository --
     never an invented check, and never a replacement for `commit-gate`
     itself."""
 
@@ -11778,9 +11778,10 @@ class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
         # this skill checks for must be the one `commit-gate` itself states.
         self.assertIn("Stop if missing; do not guess.", self.gate)
         self.assertIn(".codearbiter/tech-stack.md", self.gate)
+        self.assertIn("knowledge.py", self.gate)
 
     def test_backfill_checks_tech_stack_before_minting_the_marker_or_writing(self):
-        check = self.backfill.index(".codearbiter/tech-stack.md")
+        check = self.backfill.index("Call `release_require_commit_path` HERE")
         marker_mint = self.backfill.index("mkdir -p")
         write = self.backfill.index("Write the confirmed block verbatim")
         self.assertLess(check, marker_mint)
@@ -11791,7 +11792,7 @@ class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
         self.assertIn("commit-gate", window)
 
     def test_preflight_checks_tech_stack_before_any_write(self):
-        check = self.preflight.index(".codearbiter/tech-stack.md")
+        check = self.preflight.index("Call `release_require_commit_path`")
         rebuild = self.preflight.index('eval "$REBUILD"')
         self.assertLess(check, rebuild)
         window = self.preflight[check:check + 900]
@@ -11814,14 +11815,15 @@ class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
         self.assertNotIn(".codearbiter/tech-stack.md", step7)
 
     def test_never_invents_a_verification_command(self):
+        definition = self.skill[self.skill.index("release_require_commit_path() ("):self.skill.index("## Targets")]
+        self.assertIn('.codearbiter/context/tech-stack.html', definition)
+        self.assertIn('.codearbiter/tech-stack.md', definition)
         for lane in (self.backfill, self.preflight):
-            idx = lane.index(".codearbiter/tech-stack.md")
-            snippet = lane[idx:idx + 400]
-            self.assertIn('[ -f "', snippet)
+            self.assertIn("release_require_commit_path", lane)
 
     def test_diagnostic_names_a_real_next_action_not_a_silent_onboarding(self):
         for lane in (self.backfill, self.preflight):
-            idx = lane.index(".codearbiter/tech-stack.md")
+            idx = lane.index("release_require_commit_path")
             snippet = lane[idx:idx + 900]
             self.assertIn("context-creation", snippet)
             self.assertNotIn("automatically run", snippet)
@@ -11829,7 +11831,7 @@ class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
 
     def test_check_never_claims_to_bypass_or_replace_commit_gate(self):
         for lane in (self.backfill, self.preflight):
-            idx = lane.index(".codearbiter/tech-stack.md")
+            idx = lane.index("release_require_commit_path")
             snippet = lane[idx:idx + 900]
             self.assertNotIn("skip commit-gate", snippet)
             self.assertNotIn("bypass commit-gate", snippet)
@@ -11844,7 +11846,7 @@ class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
 
     def test_never_described_as_a_fully_onboarding_free_release(self):
         for lane in (self.backfill, self.preflight):
-            idx = lane.index(".codearbiter/tech-stack.md")
+            idx = lane.index("release_require_commit_path")
             snippet = lane[idx:idx + 900]
             self.assertIn("not a new onboarding-free", snippet)
 

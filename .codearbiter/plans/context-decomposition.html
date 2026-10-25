@@ -1,0 +1,1622 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Context and decomposition — implementation plan · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-CONTEXT-DECOMPOSITION</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/context-decomposition.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Context and decomposition — implementation plan</h1><p class="deck">Eight coherent tasks for one conversion PR: use existing native artifacts and safe operations, remove context-as-permission behavior, wire real consumers and migrate without losing work. All implementation and test outcomes are planned, not complete.</p><div class="meta"><span>PLAN-CONTEXT-DECOMPOSITION</span><span>Revision 27 · schema 0.3.2</span><span>27 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-CONTEXT-DECOMPOSITION</div><div class="field"><span class="label">Binding mode</span>draft_preview</div><div class="field"><span class="label">Normative sha256</span>7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-001 -->
+<article class="record" id="T-001" data-ca-symbol="T-001" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-001">T-001</a><h3>CD-01 — Establish source contract and full consumer disposition</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-001">SPEC-CONTEXT-DECOMPOSITION#AC-001</a></li><li><a href="../specs/context-decomposition.html#AC-002">SPEC-CONTEXT-DECOMPOSITION#AC-002</a></li><li><a href="../specs/context-decomposition.html#AC-007">SPEC-CONTEXT-DECOMPOSITION#AC-007</a></li><li><a href="../specs/context-decomposition.html#AC-011">SPEC-CONTEXT-DECOMPOSITION#AC-011</a></li><li><a href="../specs/context-decomposition.html#AC-016">SPEC-CONTEXT-DECOMPOSITION#AC-016</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Every actual producer/consumer has a modify, verify-unchanged, generate or separately-owned follow-up disposition.</li><li>No required authority fields or new runtime policy/cache service appear in the proposed new ordinary API.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>docs/artifacts/consumer-inventory.json</code></td></tr><tr><td>inspect</td><td><code>core/artifacts/internal/kind/contracts.go</code></td></tr><tr><td>inspect</td><td><code>core/pysrc/_contextselectlib.py</code></td></tr><tr><td>inspect</td><td><code>core/pysrc/_scopelib.py</code></td></tr><tr><td>inspect</td><td><code>.github/scripts/test_context_consumers.py</code></td></tr><tr><td>inspect</td><td><code>.github/scripts/test_context_contracts.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert only the contract/inventory changes before format activation; no user repository has been migrated.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M01">SRC-M01</a></li><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M04">SRC-M04</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M06">SRC-M06</a></li><li><a href="#SRC-M07">SRC-M07</a></li><li><a href="#SRC-M08">SRC-M08</a></li><li><a href="#SRC-M09">SRC-M09</a></li><li><a href="#SRC-M10">SRC-M10</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Re-resolve main and #1016. Preserve its ordinary-input/diagnostic/draft-refresh changes in the eventual implementation base; do not copy proposed version numbers from this draft.</li><li>Use modification-map.json as the owning seam inventory, then perform a fresh literal-path and semantic caller sweep at that base. Classify generated duplicates, old-format compatibility, dynamic path construction, tests and independently implemented TS readers.</li><li>Adopt the two existing config-only exceptions and plain informational retrieval contract. Ordinary read/draft/write must not require context admission, sources for unknown claims, read receipts or user codes.</li><li>Define the small context/decomposition record vocabulary and old-format adapter without inventing a new authority or entity framework. Record consequential architecture rationale once under the actual decision owner; no separate approval ceremony for these implementation tasks.</li><li>Capture old/new fixture sizes, call counts and latency before optimization. Select the existing suites to extend; do not invent a mandatory measurement pipeline for end users.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_consumers.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_contracts.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_consumers.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:33:41Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>e144b2a48fe19c69039f62ec03cf5864b5eeac4182e9fec5cfc566c8b8c7b4e6</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>28 consumer inventory and routing tests passed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-001 -->
+
+<!-- CA:BEGIN:T-002 -->
+<article class="record" id="T-002" data-ca-symbol="T-002" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-002">T-002</a><h3>CD-02 — Add lossless native context and decomposition HTML</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-003">SPEC-CONTEXT-DECOMPOSITION#AC-003</a></li><li><a href="../specs/context-decomposition.html#AC-004">SPEC-CONTEXT-DECOMPOSITION#AC-004</a></li><li><a href="../specs/context-decomposition.html#AC-006">SPEC-CONTEXT-DECOMPOSITION#AC-006</a></li><li><a href="../specs/context-decomposition.html#AC-014">SPEC-CONTEXT-DECOMPOSITION#AC-014</a></li><li><a href="../specs/context-decomposition.html#AC-015">SPEC-CONTEXT-DECOMPOSITION#AC-015</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-001">T-001</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Create, exact read, typed update and render work for each new kind; drafts remain valid when material is unknown.</li><li>Stable IDs survive rename/reorder; unrelated corrupt optional artifacts do not veto a valid target; malicious prose remains inert.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/kind/contracts.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/model/artifact.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/symbol/index.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/repository/catalog.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/engine.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/protocol.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/contextdocument/contract.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/render/render.go</code></td></tr><tr><td>modify</td><td><code>tools/generate-artifact-types.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_contracts.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/context_assistive_test.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/context_capability_test.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Before cutover, revert new-kind feature changes or retain old-format reader; never downgrade existing converted bytes in place.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M01">SRC-M01</a></li><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M09">SRC-M09</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Extend the existing closed kind/schema/model/symbol/renderer dispatch for context HTML and a separate decomposition kind. Never reuse execution-plan prerequisites, approval state or review completion as knowledge lifecycle.</li><li>Add stable typed records, notes, source basis and references; preserve unknown/proposed values. Keep declaration separate from execution. Reuse existing context-assistive transaction ownership and avoid requiring proof metadata for a truthful unverified draft.</li><li>Extend exact target resolution and safe catalog lookup for new directories without scanning/validating unrelated optional documents before every ordinary read. Reject only actual selected malformed/ambiguous state.</li><li>Render with the official static codeArbiter renderer/assets. Implement identity-correct cross-kind anchors instead of routing all links to one spec/plan companion. Keep HTML/model integrity and source escaping.</li><li>Update both packaged/embedded schema copies and generated typed views. Start with a command record plus a security observation and component, then complete the remaining defined record shapes.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/contextdocument&#34;,&#34;./internal/read&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestContextOrdinaryCreateReplayAndIntegrity</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_contracts.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-race&#34;,&#34;-buildvcs=false&#34;,&#34;-count=1&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:34:26Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>338f9ef2a3e39aae951aa1d0ab9233bdcf5172529b3a9e0bf537a42c3546b58e</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>Go operations race suite passed in 346.470s, including native kind and recovery cases</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-002 -->
+
+<!-- CA:BEGIN:T-003 -->
+<article class="record" id="T-003" data-ca-symbol="T-003" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-003">T-003</a><h3>CD-03 — Deliver small relevant context without admission logic</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-001">SPEC-CONTEXT-DECOMPOSITION#AC-001</a></li><li><a href="../specs/context-decomposition.html#AC-005">SPEC-CONTEXT-DECOMPOSITION#AC-005</a></li><li><a href="../specs/context-decomposition.html#AC-006">SPEC-CONTEXT-DECOMPOSITION#AC-006</a></li><li><a href="../specs/context-decomposition.html#AC-007">SPEC-CONTEXT-DECOMPOSITION#AC-007</a></li><li><a href="../specs/context-decomposition.html#AC-008">SPEC-CONTEXT-DECOMPOSITION#AC-008</a></li><li><a href="../specs/context-decomposition.html#AC-015">SPEC-CONTEXT-DECOMPOSITION#AC-015</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-002">T-002</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>A known task gets its direct useful information in one ordinary response, with explicit incomplete scope and no admission verdict.</li><li>The same task remains usable with unrelated missing/oversized/stale material; no automatic verification/reviewer invocation occurs.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/read/read.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/task_context.go</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_contextselectlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_contextsnapshotlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_contextreportlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_provenancelib.py</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/tdd/SKILL.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_consumers.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_evaluation.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/task_context_test.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Return new callers to existing bounded exact reads without converting format or claiming missing context is approved.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M06">SRC-M06</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Extend native index/outline/read-batch/task-context to request IDs, record types, explicit paths/components and one bounded same-repository reference hop. Unknown external references remain inert descriptors.</li><li>Wire new HTML consumers to the native information result rather than composing the old _contextselectlib requires_actor_check/blocked envelope. Keep old explicit attestation separate; no synthetic approval or context proof.</li><li>Return pertinent constraints and their scope/basis, known omissions, ambiguous applicable records and selected record identities. Full context is not promised. Required information for an action is resolved by ordinary inspection/judgment, not a new state transition.</li><li>Handle whole-record overflow and stale cursors without persistent delivery tickets. Do not rehash the workspace or spawn scout/reviewer processes on read; unrelated title/prose changes must not revoke every result.</li><li>Complete the first useful vertical fixture: tech-stack command → native HTML → bounded task packet → TDD caller, including an auth constraint and unknown unrelated integration.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/contextdocument&#34;,&#34;./internal/read&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestTaskContextReturnsBoundedReferencedContextWithoutAuthority</li><li>TestTaskContextAvoidsWholeSourceSnapshots</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_consumers.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_knowledge_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:34:29Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>528119a26266ddb33d53551050737a2c2c31a9b19237628e599901a8091a9859</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>Knowledge CLI end-to-end suite passed against the candidate; exact and scoped retrieval exercised</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-003 -->
+
+<!-- CA:BEGIN:T-004 -->
+<article class="record" id="T-004" data-ca-symbol="T-004" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-004">T-004</a><h3>CD-04 — Convert context writer, initialization and hook readers</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-001">SPEC-CONTEXT-DECOMPOSITION#AC-001</a></li><li><a href="../specs/context-decomposition.html#AC-002">SPEC-CONTEXT-DECOMPOSITION#AC-002</a></li><li><a href="../specs/context-decomposition.html#AC-004">SPEC-CONTEXT-DECOMPOSITION#AC-004</a></li><li><a href="../specs/context-decomposition.html#AC-007">SPEC-CONTEXT-DECOMPOSITION#AC-007</a></li><li><a href="../specs/context-decomposition.html#AC-008">SPEC-CONTEXT-DECOMPOSITION#AC-008</a></li><li><a href="../specs/context-decomposition.html#AC-011">SPEC-CONTEXT-DECOMPOSITION#AC-011</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-002">T-002</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>A partially answered project can initialize structurally without a verification or approval ceremony.</li><li>Routine hooks/statusline use no additional native process, full narrative parse or policy cache; existing scope/activation behavior survives byte-for-byte configuration extraction.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_contextwriterlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/init-codearbiter.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/context_assistive.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/contextdocument/finalization.go</code></td></tr><tr><td>modify</td><td><code>core/pysrc/session-start.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_arbiterstatelib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_readinjectlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_protectedstatelib.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/tools/src/activation.ts</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_workflow.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_greenfield_context.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_host.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_hook_guards.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert consumer wiring before format flip; after format activation use current-format forward recovery, not silent old narrative fallback.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M04">SRC-M04</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M08">SRC-M08</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Replace new-record FIELD-DOCUMENT wrapping with granular native writes while retaining safe import of old prose. Keep ordinary writes under existing authorization and exact CAS/journal operations; no prompt-submit capture is added.</li><li>Keep activation/stage/init and actual +/- path-scope settings in their existing small operational owners. Move narrative only, and do not create a derived effective-policy cache or infer rules from HTML.</li><li>Replace thirteen-output semantic finalization with structural initialization appropriate to the supported new format, truthful unknown fields and actual board/audit ownership. Preserve disabled repositories, user stops and human content.</li><li>Update Python activation/status/read injection and independently implemented Pi activation checks; targeted source/provenance refresh runs only on requested/affected data. Maintain worktree identity and safe paths.</li><li>Adapt protected-state recognition and _contextmergelib/resolve-context-conflict to the new canonical record targets. Keep harmless reads supported and apply #1016 recognition fixes; no whole-context lock on ordinary tools.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/contextdocument&#34;,&#34;./internal/read&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestContextWholeDocumentSelectionPreservesControls</li><li>TestContextOrdinaryFinalization</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_workflow.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_native.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:34:30Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>af45804a51e00c61ef61a737bdae3873cde280e7d882c52b9c73c5e8b889c4cb</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>Native context bridge named cases passed with restricted PATH after TestMain fix</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-004 -->
+
+<!-- CA:BEGIN:T-005 -->
+<article class="record" id="T-005" data-ca-symbol="T-005" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-005">T-005</a><h3>CD-05 — Use records in the interview, planning and existing board flow</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-001">SPEC-CONTEXT-DECOMPOSITION#AC-001</a></li><li><a href="../specs/context-decomposition.html#AC-009">SPEC-CONTEXT-DECOMPOSITION#AC-009</a></li><li><a href="../specs/context-decomposition.html#AC-010">SPEC-CONTEXT-DECOMPOSITION#AC-010</a></li><li><a href="../specs/context-decomposition.html#AC-011">SPEC-CONTEXT-DECOMPOSITION#AC-011</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-003">T-003</a></li><li><a href="#T-004">T-004</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Interview resumes correctly and promotes work only once, including after archive/crash retry.</li><li>The normal execution path consumes actual contextual records and preserves old global task/question/ADR owners without creating shadow ledgers.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/skills/decompose/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/context-creation/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/writing-plans/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/subagent-driven-development/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/decision-variance/references/analysis.md</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_taskboardlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/taskwrite.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/boardsync.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_greenfield_context.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_recorded_intent_surface.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_workflow.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve original board origins and user choices; remove only new derived back-references when safe. Never delete an existing promoted task as rollback.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M06">SRC-M06</a></li><li><a href="#SRC-M07">SRC-M07</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Convert decompose, init greenfield/brownfield and context-creation/check instructions to record writes and relevant reads. Preserve actual answers; resume a useful unresolved choice, not a forced six-stage approval chain.</li><li>Separate intended capability/architecture/phase records from observed code-map structure. Link promoted work and external ADRs; do not clone execution state, question answers or architectural authority.</li><li>Reuse taskwrite and existing origin marker semantics. Deduplicate across open and archived rows under its owning lock, then attach the link back with idempotent retry. Do not auto-sync to GitHub issues or acquire both stores in a new distributed transaction.</li><li>Adapt brainstorm/plan/TDD/execution/reconcile/decision-variance/harvest consumers, including instructions/includes and generated reference tables. Request relevant constraints without needing a context-reviewed marker.</li><li>Save bounded notes and material choices as reported information, not manufactured accepted authority. A routine method refinement updates the plan without asking the user again.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_greenfield_context.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_recorded_intent_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_consumers.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:34:33Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>6bf19a69c22d74489506ca451036e52afd4936885ee9311fa6edf8ccf972d017</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>28 consumer and board route contract tests passed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-005 -->
+
+<!-- CA:BEGIN:T-006 -->
+<article class="record" id="T-006" data-ca-symbol="T-006" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-006">T-006</a><h3>CD-06 — Implement model-led conversion, cross-format safety and forward recovery</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-008">SPEC-CONTEXT-DECOMPOSITION#AC-008</a></li><li><a href="../specs/context-decomposition.html#AC-010">SPEC-CONTEXT-DECOMPOSITION#AC-010</a></li><li><a href="../specs/context-decomposition.html#AC-012">SPEC-CONTEXT-DECOMPOSITION#AC-012</a></li><li><a href="../specs/context-decomposition.html#AC-013">SPEC-CONTEXT-DECOMPOSITION#AC-013</a></li><li><a href="../specs/context-decomposition.html#AC-015">SPEC-CONTEXT-DECOMPOSITION#AC-015</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-004">T-004</a></li><li><a href="#T-005">T-005</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Model-recorded meaning is present before cutover; changed or unrecorded Markdown cannot be removed. Original source bytes remain recoverable from the journal.</li><li>One coherent format is active after cutover. Older clients cannot silently write it, and later committed work survives retries and recovery.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_contextmergelib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/resolve-context-conflict.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/store/transaction.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/context_assistive.go</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/init-codearbiter.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/migration_test.go</code></td></tr><tr><td>modify</td><td><code>tools/test-artifact-mixed-schema.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_native.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Restore exact preimages only before newer work; otherwise use current compatible engine and forward recovery/export with no silent loss.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M01">SRC-M01</a></li><li><a href="#SRC-M02">SRC-M02</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M07">SRC-M07</a></li><li><a href="#SRC-M08">SRC-M08</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Use knowledge.py convert to create empty HTML documents and list every existing Markdown context and decomposition source with a fingerprint token. Neither a read, hook nor package update initiates conversion.</li><li>The agent reads each listed source and adds its meaning as typed records or bounded notes with honest basis and source references, excluding secret values. The engine does not parse sections or convert text.</li><li>Convert --finish rejects a changed source fingerprint and any nonempty Markdown document without records or notes. Preview and apply bind exact current source digests.</li><li>Cut over CONTEXT.md, retained security scope blocks, replaced Markdown, provenance and HTML Git attributes in one journaled transaction. Original bytes remain in before-images; mixed versions and newer work must fail safely.</li><li>Test explicit preparation, unrecorded-content refusal, changed-source refusal, exact retry, recovery and board-promotion idempotence. Reconcile the owning paths and generated host copies.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/contextdocument&#34;,&#34;./internal/read&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestMigrationStalePreview</li><li>TestCreateDoesNotShadowLegacy</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_native.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_knowledge_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:34:34Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>aaee2afc8bea9076771bb915e2cffd82d2cef7c8d2dd0cab2b4ab286271d9ab5</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>Model-led convert and journaled cutover CLI end-to-end suite passed; actual candidate model journey cut over and initialized</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-006 -->
+
+<!-- CA:BEGIN:T-007 -->
+<article class="record" id="T-007" data-ca-symbol="T-007" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-007">T-007</a><h3>CD-07 — Regenerate delivery, update current claims and check reader coverage</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-011">SPEC-CONTEXT-DECOMPOSITION#AC-011</a></li><li><a href="../specs/context-decomposition.html#AC-014">SPEC-CONTEXT-DECOMPOSITION#AC-014</a></li><li><a href="../specs/context-decomposition.html#AC-016">SPEC-CONTEXT-DECOMPOSITION#AC-016</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-005">T-005</a></li><li><a href="#T-006">T-006</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All three installed candidates contain matching new capabilities and current instructions, with no false release or Academy support claim.</li><li>Human links open the exact records selected by the model, and model instructions remain concise.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>docs/artifacts/consumer-inventory.json</code></td></tr><tr><td>modify</td><td><code>tools/build-surface.py</code></td></tr><tr><td>modify</td><td><code>tools/sync-core.py</code></td></tr><tr><td>modify</td><td><code>tools/build-artifacts.py</code></td></tr><tr><td>modify</td><td><code>tools/build-host-packages.py</code></td></tr><tr><td>modify</td><td><code>site/scripts/capture-context-examples.py</code></td></tr><tr><td>modify</td><td><code>site/scripts/execution-maps/workflows.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/execution-maps/atlas-data/assistive-update.json</code></td></tr><tr><td>modify</td><td><code>site/scripts/generate-academy.ts</code></td></tr><tr><td>modify</td><td><code>tools/generate-artifact-types.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_installed_host.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert derived docs/package changes together with their owning implementation; do not publish broken interim versions or change external releases automatically.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M09">SRC-M09</a></li><li><a href="#SRC-M10">SRC-M10</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Regenerate canonical Markdown instructions, Python copies, typed schema views, capability and package metadata through their normal tools. Independently check TS/Pi resources and package manifests; generated Python alone is not proof of parity.</li><li>Update consumer inventory with actual implemented scope, docs examples and source-bound render/atlas captures. Do not relabel old screenshots/results as current or append large running history to model-facing files.</li><li>Read the exact affected arbiterForge/arbiter-academy lesson and verifier sources before changing them; coordinate their own version/compatibility and avoid silently advancing the submodule pin.</li><li>Update install/update/disable/uninstall and migration help where paths/formats changed. Existing boards, ADRs, farm boundaries and operational config exceptions remain explicit.</li><li>Complete a fresh negative-control reader sweep: no active converted narrative path still reads old Markdown content or a whole-document wrapper; remaining matches have an explicit compatibility/config/test/historical disposition.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-surface.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>All three generated instruction surfaces match the canonical owners.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/sync-core.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Generated Python copies match their canonical helpers; independent TS behavior is tested separately.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-surface.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:34:37Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>c6b340ce35e2af336b65f6475dae86b7f665d5842cff75b6c811ef5c8c5c42f1</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>Claude, Codex and Pi generated surfaces match canonical source; site build, typecheck and link audit also passed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-007 -->
+
+<!-- CA:BEGIN:T-008 -->
+<article class="record" id="T-008" data-ca-symbol="T-008" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-008">T-008</a><h3>CD-08 — Demonstrate ordinary use, measure cost and finish the PR</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/context-decomposition.html#AC-001">SPEC-CONTEXT-DECOMPOSITION#AC-001</a></li><li><a href="../specs/context-decomposition.html#AC-002">SPEC-CONTEXT-DECOMPOSITION#AC-002</a></li><li><a href="../specs/context-decomposition.html#AC-003">SPEC-CONTEXT-DECOMPOSITION#AC-003</a></li><li><a href="../specs/context-decomposition.html#AC-004">SPEC-CONTEXT-DECOMPOSITION#AC-004</a></li><li><a href="../specs/context-decomposition.html#AC-005">SPEC-CONTEXT-DECOMPOSITION#AC-005</a></li><li><a href="../specs/context-decomposition.html#AC-006">SPEC-CONTEXT-DECOMPOSITION#AC-006</a></li><li><a href="../specs/context-decomposition.html#AC-007">SPEC-CONTEXT-DECOMPOSITION#AC-007</a></li><li><a href="../specs/context-decomposition.html#AC-008">SPEC-CONTEXT-DECOMPOSITION#AC-008</a></li><li><a href="../specs/context-decomposition.html#AC-009">SPEC-CONTEXT-DECOMPOSITION#AC-009</a></li><li><a href="../specs/context-decomposition.html#AC-010">SPEC-CONTEXT-DECOMPOSITION#AC-010</a></li><li><a href="../specs/context-decomposition.html#AC-011">SPEC-CONTEXT-DECOMPOSITION#AC-011</a></li><li><a href="../specs/context-decomposition.html#AC-012">SPEC-CONTEXT-DECOMPOSITION#AC-012</a></li><li><a href="../specs/context-decomposition.html#AC-013">SPEC-CONTEXT-DECOMPOSITION#AC-013</a></li><li><a href="../specs/context-decomposition.html#AC-014">SPEC-CONTEXT-DECOMPOSITION#AC-014</a></li><li><a href="../specs/context-decomposition.html#AC-015">SPEC-CONTEXT-DECOMPOSITION#AC-015</a></li><li><a href="../specs/context-decomposition.html#AC-016">SPEC-CONTEXT-DECOMPOSITION#AC-016</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-003">T-003</a></li><li><a href="#T-006">T-006</a></li><li><a href="#T-007">T-007</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All implementation criteria have real source/test evidence or an explicit unresolved limitation; no missing modification owner is silently claimed complete.</li><li>The supported ordinary workflow completes without a context-derived permission prompt, receipt, reviewer quota or mandatory full-document read.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_context_evaluation.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_context_installed.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_installed_host.py</code></td></tr><tr><td>modify</td><td><code>tools/test-artifact-mixed-schema.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Keep the candidate unpublished or revert the coherent source changes before migration if criteria fail. Preserve user work and previous distribution; do not force downgrade on converted consumers.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-M03">SRC-M03</a></li><li><a href="#SRC-M04">SRC-M04</a></li><li><a href="#SRC-M05">SRC-M05</a></li><li><a href="#SRC-M06">SRC-M06</a></li><li><a href="#SRC-M07">SRC-M07</a></li><li><a href="#SRC-M08">SRC-M08</a></li><li><a href="#SRC-M09">SRC-M09</a></li><li><a href="#SRC-M10">SRC-M10</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Extend existing greenfield/brownfield, scope/read, promotion, migration and installed-candidate suites with the six specification scenarios. Keep synthetic unknown reports distinct from actual executed checks.</li><li>Measure representative old full-document and new scoped retrieval on the same small/large fixtures. Report returned bytes, tokenizer counts when available, calls/read/process counts, cold/warm latency and omitted scope. No runtime completeness score or fixed percentage gate.</li><li>Run an authorized supported host/model journey with the exact candidate where available; otherwise explicitly retain that qualification gap. Do not manufacture receipts or model evidence from structural tests.</li><li>Verify the exact-head relevant existing CI matrix and scoped static/source rules once the coherent implementation is ready. Do not require a fresh reviewer cascade for a packet identity change or every incremental commit.</li><li>Declare implementation/merge readiness separately from release readiness. Only after separately authorized publication inspect the actual tag/archive/npm/marketplace and affected live documents; do not block saving useful progress until publication.</li><li>Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_evaluation.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_installed.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/measure-knowledge-retrieval.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-24T22:35:08Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>1d90780b918dfe169a8f3e69dc3fce9f5e7d51bae57af813efb5b8f2e558922c</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local command output 2026-10-24</div><div class="field"><span class="label">Summary</span>Small and large fixtures measured old whole-file and new scoped retrieval; new output fell from 8456 to 6022 and 63413 to 16936 bytes, with higher process latency</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-008 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-DELIVERY -->
+<article class="record" id="CP-DELIVERY" data-ca-symbol="CP-DELIVERY" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-DELIVERY">CP-DELIVERY</a><h3>One coherent conversion, no new permission workflow</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>All implementation acceptance criteria are supported by actual source/candidate evidence; this grouping grants no user, host, merge or publication permission.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-001">T-001</a></li><li><a href="#T-002">T-002</a></li><li><a href="#T-003">T-003</a></li><li><a href="#T-004">T-004</a></li><li><a href="#T-005">T-005</a></li><li><a href="#T-006">T-006</a></li><li><a href="#T-007">T-007</a></li><li><a href="#T-008">T-008</a></li></ul></div></article>
+<!-- CA:END:CP-DELIVERY -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:PLAN-READ-ME -->
+<article class="record" id="PLAN-READ-ME" data-ca-symbol="PLAN-READ-ME" data-ca-kind="sections"><div class="record-head"><a class="id" href="#PLAN-READ-ME">PLAN-READ-ME</a><h3>How to execute this plan</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>One coherent conversion PR, separate from hook PR #1016. Rebase on the applicable current fixes; this draft does not require #1016 approval merely to read records or plan work. All tasks below are PENDING. Task order describes code dependencies, not new authority. There are no artifact approval prerequisites or promised reviewers.</p><div class="refs">References: <a href="#SRC-PR">SRC-PR</a> <a href="#SRC-USER">SRC-USER</a> </div></div><div class="block"><p>First useful vertical slice: T-001 → minimal T-002 native command/component records → T-003 bounded retrieval and TDD consumption, with the necessary T-004 bootstrap wiring. Demonstrate actual useful small reads before broad document conversion. T-003 and most T-004 changes can proceed in parallel after the schema seam exists. Complete all new-format consumers before enabling default cutover.</p></div><div class="block"><p>This bundle uses codeArbiter’s actual static spec/plan renderer and embedded models. Structural validity/readback is a document check only: it does not prove the proposed feature is implemented, any planned tests have run, or a real external model followed this design.</p></div></div></article>
+<!-- CA:END:PLAN-READ-ME -->
+
+<!-- CA:BEGIN:PLAN-OWNERS -->
+<article class="record" id="PLAN-OWNERS" data-ca-symbol="PLAN-OWNERS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#PLAN-OWNERS">PLAN-OWNERS</a><h3>Modification points and dispositions</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><div class="table-wrap"><table><thead><tr><th scope="col">Group</th><th scope="col">Owning source set</th><th scope="col">Required treatment</th></tr></thead><tbody><tr><td>M01 — Native kinds, schema and identity</td><td>core/artifacts/internal/kind/contracts.go
+core/artifacts/internal/model/artifact.go
+core/artifacts/internal/symbol/index.go
+core/artifacts/internal/repository/catalog.go
+core/artifacts/internal/operations/engine.go
+core/artifacts/internal/operations/protocol.go
+core/artifacts/internal/validate/validate.go</td><td>Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target.</td></tr><tr><td>M02 — Context writing, provenance and finalization</td><td>core/pysrc/_contextwriterlib.py
+core/pysrc/_artifactlib.py
+core/pysrc/init-codearbiter.py
+core/artifacts/internal/contextdocument/contract.go
+core/artifacts/internal/contextdocument/finalization.go
+core/artifacts/internal/operations/context_assistive.go
+core/artifacts/internal/operations/context_authority.go</td><td>The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts.</td></tr><tr><td>M03 — Existing selector and freshness machinery</td><td>core/pysrc/_contextselectlib.py
+core/pysrc/_contextsnapshotlib.py
+core/pysrc/_contextreportlib.py
+core/pysrc/_provenancelib.py
+core/artifacts/internal/read/read.go
+core/artifacts/internal/operations/task_context.go</td><td>Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads.</td></tr><tr><td>M04 — Activation, initialization and hot-path access</td><td>core/pysrc/_activationlib.py
+core/pysrc/_arbiterstatelib.py
+core/pysrc/session-start.py
+core/pysrc/statusline.py
+core/pysrc/hostapi.py
+core/pysrc/doctor.py
+core/pysrc/_readinjectlib.py
+core/pysrc/pre-read.py
+core/pysrc/post-write-edit.py
+plugins/ca-pi/tools/src/activation.ts</td><td>Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call.</td></tr><tr><td>M05 — Actual control configuration and protected-state recognition</td><td>core/pysrc/_scopelib.py
+core/pysrc/_hooklib.py
+core/pysrc/_protectedlib.py
+core/pysrc/_protectedstatelib.py
+core/pysrc/_bashguardlib.py
+core/pysrc/pre-write.py
+core/pysrc/pre-edit.py
+core/pysrc/prompt-submit.py
+core/pysrc/_replylib.py
+core/pysrc/_artifactauthoritylib.py</td><td>Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path.</td></tr><tr><td>M06 — Planning, interview and execution callers</td><td>core/surface/skills/decompose/SKILL.md
+core/surface/skills/context-creation/SKILL.md
+core/surface/skills/brainstorming/SKILL.md
+core/surface/skills/writing-plans/SKILL.md
+core/surface/skills/executing-plans/SKILL.md
+core/surface/skills/subagent-driven-development/SKILL.md
+core/surface/skills/tdd/SKILL.md
+core/surface/skills/commit-gate/SKILL.md
+core/surface/skills/decision-variance/references/analysis.md
+core/surface/SPRINT.md
+core/surface/includes/artifacts.md</td><td>Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact.</td></tr><tr><td>M07 — Board promotion and single-owner references</td><td>core/pysrc/_taskboardlib.py
+core/pysrc/taskwrite.py
+core/pysrc/boardsync.py
+core/pysrc/_taskexcludelib.py
+core/pysrc/_intentlib.py</td><td>Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation.</td></tr><tr><td>M08 — Merge, worktrees, sources and recovery</td><td>core/pysrc/_contextmergelib.py
+core/pysrc/resolve-context-conflict.py
+core/pysrc/_appendonlyconflictlib.py
+core/pysrc/_releaselib.py
+core/pysrc/_pathnorm.py
+core/pysrc/_sensitivelib.py
+core/pysrc/prune-transcript.py
+core/artifacts/internal/store/transaction.go
+core/artifacts/internal/store/infrastructure.go</td><td>code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs.</td></tr><tr><td>M09 — Native presentation and generated delivery</td><td>core/artifacts/internal/render/render.go
+core/artifacts/internal/render/assets/artifact.css
+core/artifacts/internal/render/assets/logo.svg
+tools/generate-artifact-types.py
+tools/build-surface.py
+tools/sync-core.py
+tools/build-artifacts.py
+tools/install-artifact-payload.py
+tools/build-host-packages.py
+docs/artifacts/consumer-inventory.json</td><td>Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies.</td></tr><tr><td>M10 — Training, site and current claims</td><td>site/scripts/capture-context-examples.py
+site/scripts/generate-diagrams.ts
+site/scripts/execution-maps/workflows.ts
+site/scripts/execution-maps/atlas.ts
+site/scripts/execution-maps/atlas-data/assistive-update.json
+site/scripts/generate-academy.ts
+.github/scripts/test_artifact_installed_host.py
+tools/test-artifact-mixed-schema.py</td><td>Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change.</td></tr></tbody></table></div><div class="refs">References: <a href="#SRC-M01">SRC-M01</a> <a href="#SRC-M02">SRC-M02</a> <a href="#SRC-M03">SRC-M03</a> <a href="#SRC-M04">SRC-M04</a> <a href="#SRC-M05">SRC-M05</a> <a href="#SRC-M06">SRC-M06</a> <a href="#SRC-M07">SRC-M07</a> <a href="#SRC-M08">SRC-M08</a> <a href="#SRC-M09">SRC-M09</a> <a href="#SRC-M10">SRC-M10</a> </div></div><div class="block"><p>Every path above existed in the inspected snapshot. modification-map.json contains exact owner/repo@commit:path identities and content hashes. Generated copies under plugins/ca, plugins/ca-codex and plugins/ca-pi are propagated with normal generators, not edited independently. A raw grep count is not a completeness proof; CD-01 and CD-07 explicitly cover dynamic callers, filename construction and negative reader tests.</p></div></div></article>
+<!-- CA:END:PLAN-OWNERS -->
+
+<!-- CA:BEGIN:PLAN-PERMISSION -->
+<article class="record" id="PLAN-PERMISSION" data-ca-symbol="PLAN-PERMISSION" data-ca-kind="sections"><div class="record-head"><a class="id" href="#PLAN-PERMISSION">PLAN-PERMISSION</a><h3>Rules that prevent the cage from returning</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><div class="table-wrap"><table><thead><tr><th scope="col">Situation</th><th scope="col">Required response</th></tr></thead><tbody><tr><td>Unknown optional field or stale descriptive source</td><td>Save the truthful draft / return uncertainty / continue independent work. No permission state.</td></tr><tr><td>Selected record is absent or too large</td><td>Return a targeted read error or whole-record continuation; do not mint a proof-of-reading ticket.</td></tr><tr><td>User explicitly stopped a task or host denied a command</td><td>Respect the actual stop or denial. Changing context representation cannot override it.</td></tr><tr><td>Concurrent mutation or unsafe target path</td><td>Refuse the failed mutation and report the integrity issue. Retry the exact ID or use existing recovery, not another approval.</td></tr><tr><td>Proposed command or inferred security preference</td><td>Store declaration/basis, not proof of execution or effective authority.</td></tr><tr><td>Actual policy-mandated proof consumer</td><td>Use its existing specific protocol only there, never make it the normal route for authoring or retrieval.</td></tr></tbody></table></div></div><div class="block"><p>Keep preservation tests focused on these observable distinctions. No &#34;relaxed mode&#34;, universal auto-approval, completeness score, control-plane cache or blanket bypass is an acceptable implementation shortcut.</p></div></div></article>
+<!-- CA:END:PLAN-PERMISSION -->
+
+<!-- CA:BEGIN:PLAN-CHECKS -->
+<article class="record" id="PLAN-CHECKS" data-ca-symbol="PLAN-CHECKS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#PLAN-CHECKS">PLAN-CHECKS</a><h3>Practical verification and shipment</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Each task extends the smallest owning suite already present. Commands listed under tasks are verification intentions; they have not been run against an implementation of this proposal. Existing tests may need new cases without adding a separate framework or nightly reviewer program.</p></div><div class="block"><p>The one final matrix covers: greenfield resume, brownfield scoped refresh, known task retrieval, missing/oversized/stale selected records, interruption/retry/promotion, and three actual installed adapters. Include before/after measurements and negative controls for manufactured approval, missing real stops, omitted constraints, unwanted network/HTML execution and old-client writes.</p></div><div class="block"><p>Readiness is separated: structural draft validity now; implementation plus exact-candidate CI for merge later; separately authorized publication and exact distributed-byte readback afterward. Historical reports remain source-bound and are never copied forward as fresh passing evidence.</p></div></div></article>
+<!-- CA:END:PLAN-CHECKS -->
+
+<!-- CA:BEGIN:PLAN-BOUNDARY -->
+<article class="record" id="PLAN-BOUNDARY" data-ca-symbol="PLAN-BOUNDARY" data-ca-kind="sections"><div class="record-head"><a class="id" href="#PLAN-BOUNDARY">PLAN-BOUNDARY</a><h3>Design decisions and remaining uncertainty</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Recommended design correction: retain two existing small operational config exceptions (CONTEXT.md and only operative scope blocks in security-controls.md). This deliberately replaces the earlier one-bootstrap-plus-generated-runtime-view proposal. The HTML files contain narrative knowledge, not a new policy authority. It is a proposed product-specific choice, not an organization-wide rule or implemented/released fact.</p></div><div class="block"><p>Unresolved implementation specifics are ordinary engineering details: exact schema evolution/version under existing policy, measured batch limits, operation argument names, precise source-private field bounds and Academy lesson impacts. Do not invent version numbers, host compatibility or arbitrary perf thresholds in this plan. Resolve them in code/tests without repeating product-direction approvals.</p></div><div class="block"><p>No GitHub source, release, live site, user repository or private Project registry has been modified to produce these planning artifacts.</p></div></div></article>
+<!-- CA:END:PLAN-BOUNDARY -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-INPUT -->
+<article class="record" id="SRC-INPUT" data-ca-symbol="SRC-INPUT" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-INPUT">SRC-INPUT</a><h3>Original user plan</h3></div><div class="field"><span class="label">Locator</span>CODEARBITER-CONTEXT-DECOMPOSITION-HTML-PLAN.md</div><div class="field"><span class="label">Note</span>SHA-256 4c995aa2ce83fc713e158e6f3fa0efcd16b37b07b436ee3ae12d83bdaede8215; replaced by this reviewed draft, not silently treated as implemented.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-INPUT -->
+
+<!-- CA:BEGIN:SRC-USER -->
+<article class="record" id="SRC-USER" data-ca-symbol="SRC-USER" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-USER">SRC-USER</a><h3>Current product instruction</h3></div><div class="field"><span class="label">Locator</span>Conversation, 2026-10-22</div><div class="field"><span class="label">Note</span>Keep assistance simple, no secondary permission system; deliver native codeArbiter-style HTML spec and plan.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-USER -->
+
+<!-- CA:BEGIN:SRC-PR -->
+<article class="record" id="SRC-PR" data-ca-symbol="SRC-PR" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-PR">SRC-PR</a><h3>Existing hook cleanup</h3></div><div class="field"><span class="label">Locator</span>PR #1016 at 8c16bb1116c76ca0cbe69851d9f3d323764727fd</div><div class="field"><span class="label">Note</span>Inspected open; preserve its ordinary input, verifier selection and safe diagnostic behavior. Re-resolve before implementation; not a release prerequisite for reading these documents.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/pull/1016</div></article>
+<!-- CA:END:SRC-PR -->
+
+<!-- CA:BEGIN:SRC-M01 -->
+<article class="record" id="SRC-M01" data-ca-symbol="SRC-M01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M01">SRC-M01</a><h3>Native kinds, schema and identity</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/kind/contracts.go</div><div class="field"><span class="label">Note</span>Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/kind/contracts.go</div></article>
+<!-- CA:END:SRC-M01 -->
+
+<!-- CA:BEGIN:SRC-M02 -->
+<article class="record" id="SRC-M02" data-ca-symbol="SRC-M02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M02">SRC-M02</a><h3>Context writing, provenance and finalization</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextwriterlib.py</div><div class="field"><span class="label">Note</span>The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextwriterlib.py</div></article>
+<!-- CA:END:SRC-M02 -->
+
+<!-- CA:BEGIN:SRC-M03 -->
+<article class="record" id="SRC-M03" data-ca-symbol="SRC-M03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M03">SRC-M03</a><h3>Existing selector and freshness machinery</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextselectlib.py</div><div class="field"><span class="label">Note</span>Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextselectlib.py</div></article>
+<!-- CA:END:SRC-M03 -->
+
+<!-- CA:BEGIN:SRC-M04 -->
+<article class="record" id="SRC-M04" data-ca-symbol="SRC-M04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M04">SRC-M04</a><h3>Activation, initialization and hot-path access</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_activationlib.py</div><div class="field"><span class="label">Note</span>Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_activationlib.py</div></article>
+<!-- CA:END:SRC-M04 -->
+
+<!-- CA:BEGIN:SRC-M05 -->
+<article class="record" id="SRC-M05" data-ca-symbol="SRC-M05" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M05">SRC-M05</a><h3>Actual control configuration and protected-state recognition</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_scopelib.py</div><div class="field"><span class="label">Note</span>Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_scopelib.py</div></article>
+<!-- CA:END:SRC-M05 -->
+
+<!-- CA:BEGIN:SRC-M06 -->
+<article class="record" id="SRC-M06" data-ca-symbol="SRC-M06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M06">SRC-M06</a><h3>Planning, interview and execution callers</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/decompose/SKILL.md</div><div class="field"><span class="label">Note</span>Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/surface/skills/decompose/SKILL.md</div></article>
+<!-- CA:END:SRC-M06 -->
+
+<!-- CA:BEGIN:SRC-M07 -->
+<article class="record" id="SRC-M07" data-ca-symbol="SRC-M07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M07">SRC-M07</a><h3>Board promotion and single-owner references</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_taskboardlib.py</div><div class="field"><span class="label">Note</span>Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_taskboardlib.py</div></article>
+<!-- CA:END:SRC-M07 -->
+
+<!-- CA:BEGIN:SRC-M08 -->
+<article class="record" id="SRC-M08" data-ca-symbol="SRC-M08" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M08">SRC-M08</a><h3>Merge, worktrees, sources and recovery</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextmergelib.py</div><div class="field"><span class="label">Note</span>code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextmergelib.py</div></article>
+<!-- CA:END:SRC-M08 -->
+
+<!-- CA:BEGIN:SRC-M09 -->
+<article class="record" id="SRC-M09" data-ca-symbol="SRC-M09" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M09">SRC-M09</a><h3>Native presentation and generated delivery</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/render.go</div><div class="field"><span class="label">Note</span>Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/render/render.go</div></article>
+<!-- CA:END:SRC-M09 -->
+
+<!-- CA:BEGIN:SRC-M10 -->
+<article class="record" id="SRC-M10" data-ca-symbol="SRC-M10" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-M10">SRC-M10</a><h3>Training, site and current claims</h3></div><div class="field"><span class="label">Locator</span>arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/capture-context-examples.py</div><div class="field"><span class="label">Note</span>Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change. All group paths are in modification-map.json.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/site/scripts/capture-context-examples.py</div></article>
+<!-- CA:END:SRC-M10 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>0badb588dc1179b06e13db1ca5322590962b586a</div><div class="field"><span class="label">Observed date</span>2026-10-22</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 2a3ddc8a7d85fb96d233fbf81bbd7c4894502669ac49ba34a751dd254e59e0a2<br>Model SHA-256: f8c92a0f7fc987995a97581b9ba59f15bab4bf8a2ef0a2fd9be3abc019938723</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-CONTEXT-DECOMPOSITION",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "task_check_observations": {
+      "T-001": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_context_consumers.py"
+          ],
+          "criterion_subject_sha256": "54a0bd3778d41b028c1db28fd140ed100be2479ba4fa48552f0e97f1e3fbcb5a",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:33:41Z",
+          "recording_operation_id": "ctxdecomp-t001-consumer-20261024",
+          "scoped_inputs_sha256": "e144b2a48fe19c69039f62ec03cf5864b5eeac4182e9fec5cfc566c8b8c7b4e6",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "28 consumer inventory and routing tests passed",
+          "task_subject_sha256": "34fa552aa1342bae037abc06a2a4ca3d687467102e5dfbf7b8033a821d35ca95"
+        }
+      ],
+      "T-002": [
+        {
+          "argv": [
+            "go",
+            "test",
+            "-race",
+            "-buildvcs=false",
+            "-count=1",
+            "./internal/operations"
+          ],
+          "criterion_subject_sha256": "ff44a5e6628b0065a33847691a5b3c7237fece3d38cc98ec3d751617082c4103",
+          "cwd": "core/artifacts",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:34:26Z",
+          "recording_operation_id": "ctxdecomp-t002-check-20261024",
+          "scoped_inputs_sha256": "338f9ef2a3e39aae951aa1d0ab9233bdcf5172529b3a9e0bf537a42c3546b58e",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "Go operations race suite passed in 346.470s, including native kind and recovery cases",
+          "task_subject_sha256": "3cadb58a351dea18c9dc839b7f7966d7e887022c538e6d0971f549eba92232c1"
+        }
+      ],
+      "T-003": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_knowledge_cli.py"
+          ],
+          "criterion_subject_sha256": "a94d920b93b6e277eb77a04f1f618a82883fafb1d2aaed0eb1487fe19f83325b",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:34:29Z",
+          "recording_operation_id": "ctxdecomp-t003-check-20261024",
+          "scoped_inputs_sha256": "528119a26266ddb33d53551050737a2c2c31a9b19237628e599901a8091a9859",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "Knowledge CLI end-to-end suite passed against the candidate; exact and scoped retrieval exercised",
+          "task_subject_sha256": "a7dcea2d40dcdd20dcf337d94b14cdc17443dfdd6f739d949e77b373b0897922"
+        }
+      ],
+      "T-004": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_context_native.py"
+          ],
+          "criterion_subject_sha256": "608f76892412c32768474bfdc9543b2f1bb941279261adbbac8aae9bc7bc6dd2",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:34:30Z",
+          "recording_operation_id": "ctxdecomp-t004-check-20261024",
+          "scoped_inputs_sha256": "af45804a51e00c61ef61a737bdae3873cde280e7d882c52b9c73c5e8b889c4cb",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "Native context bridge named cases passed with restricted PATH after TestMain fix",
+          "task_subject_sha256": "f353e36c76cc988ab0be6cae703e2573571b38113270515fa56c6edf968ea405"
+        }
+      ],
+      "T-005": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_context_consumers.py"
+          ],
+          "criterion_subject_sha256": "d6006a72bee5bf104a7fbe802a36f353ba53c09eca38e4f7e8ab174e9815274a",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:34:33Z",
+          "recording_operation_id": "ctxdecomp-t005-check-20261024",
+          "scoped_inputs_sha256": "6bf19a69c22d74489506ca451036e52afd4936885ee9311fa6edf8ccf972d017",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "28 consumer and board route contract tests passed",
+          "task_subject_sha256": "95dfb649103ff81e0093531011a1555c5f9a7ccc5941d4580c2cfbfd23495972"
+        }
+      ],
+      "T-006": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_knowledge_cli.py"
+          ],
+          "criterion_subject_sha256": "363befabe7bbb22200c5f4368eb05b851b0bd073bcc33072f0f795e41ce43d52",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:34:34Z",
+          "recording_operation_id": "ctxdecomp-t006-check-20261024",
+          "scoped_inputs_sha256": "aaee2afc8bea9076771bb915e2cffd82d2cef7c8d2dd0cab2b4ab286271d9ab5",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "Model-led convert and journaled cutover CLI end-to-end suite passed; actual candidate model journey cut over and initialized",
+          "task_subject_sha256": "d458b6c1dc587bf7eb153fb68d5dc8e8529bb907bf1660042485ad18b5df6b2d"
+        }
+      ],
+      "T-007": [
+        {
+          "argv": [
+            "python",
+            "tools/build-surface.py",
+            "--check"
+          ],
+          "criterion_subject_sha256": "0cc700408a4c9317e00f9b8fcd8c50aaff2a7d99dc09093be4acf689d1f44378",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:34:37Z",
+          "recording_operation_id": "ctxdecomp-t007-check-20261024",
+          "scoped_inputs_sha256": "c6b340ce35e2af336b65f6475dae86b7f665d5842cff75b6c811ef5c8c5c42f1",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "Claude, Codex and Pi generated surfaces match canonical source; site build, typecheck and link audit also passed",
+          "task_subject_sha256": "ca16a7e0af9a9a611c981e2f75225161b649de1638f56899bf10750642a82f21"
+        }
+      ],
+      "T-008": [
+        {
+          "argv": [
+            "python",
+            "tools/measure-knowledge-retrieval.py"
+          ],
+          "criterion_subject_sha256": "e75afa9c679c0c3eebe7236de6adbf94418e79fb7678ab9a777a10ea890cc796",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-24T22:35:08Z",
+          "recording_operation_id": "ctxdecomp-t008-measure-20261024",
+          "scoped_inputs_sha256": "1d90780b918dfe169a8f3e69dc3fce9f5e7d51bae57af813efb5b8f2e558922c",
+          "source": "local command output 2026-10-24",
+          "source_normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c",
+          "summary": "Small and large fixtures measured old whole-file and new scoped retrieval; new output fell from 8456 to 6022 and 63413 to 16936 bytes, with higher process latency",
+          "task_subject_sha256": "0d7ed1582933b3955040e8bf20febd427c8386997d002c119dff70346afcf940"
+        }
+      ]
+    },
+    "tasks": {
+      "T-001": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-002": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-003": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-004": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-005": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-006": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-007": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-008": {
+        "evidence_refs": [],
+        "reason": "All eight implementation tasks have scoped local check reports and a real candidate Codex model conversion journey; independent hosted exact-head CI and PR review remain separate pending gates. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "f8c92a0f7fc987995a97581b9ba59f15bab4bf8a2ef0a2fd9be3abc019938723",
+    "normative_sha256": "2a3ddc8a7d85fb96d233fbf81bbd7c4894502669ac49ba34a751dd254e59e0a2",
+    "symbol_count": 27
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "0badb588dc1179b06e13db1ca5322590962b586a",
+      "observed_date": "2026-10-22",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "All implementation acceptance criteria are supported by actual source/candidate evidence; this grouping grants no user, host, merge or publication permission.",
+        "id": "CP-DELIVERY",
+        "tasks": [
+          "T-001",
+          "T-002",
+          "T-003",
+          "T-004",
+          "T-005",
+          "T-006",
+          "T-007",
+          "T-008"
+        ],
+        "title": "One coherent conversion, no new permission workflow"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-PR",
+              "SRC-USER"
+            ],
+            "text": "One coherent conversion PR, separate from hook PR #1016. Rebase on the applicable current fixes; this draft does not require #1016 approval merely to read records or plan work. All tasks below are PENDING. Task order describes code dependencies, not new authority. There are no artifact approval prerequisites or promised reviewers.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "First useful vertical slice: T-001 → minimal T-002 native command/component records → T-003 bounded retrieval and TDD consumption, with the necessary T-004 bootstrap wiring. Demonstrate actual useful small reads before broad document conversion. T-003 and most T-004 changes can proceed in parallel after the schema seam exists. Complete all new-format consumers before enabling default cutover.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "This bundle uses codeArbiter’s actual static spec/plan renderer and embedded models. Structural validity/readback is a document check only: it does not prove the proposed feature is implemented, any planned tests have run, or a real external model followed this design.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "PLAN-READ-ME",
+        "title": "How to execute this plan"
+      },
+      {
+        "blocks": [
+          {
+            "columns": [
+              "Group",
+              "Owning source set",
+              "Required treatment"
+            ],
+            "refs": [
+              "SRC-M01",
+              "SRC-M02",
+              "SRC-M03",
+              "SRC-M04",
+              "SRC-M05",
+              "SRC-M06",
+              "SRC-M07",
+              "SRC-M08",
+              "SRC-M09",
+              "SRC-M10"
+            ],
+            "rows": [
+              [
+                "M01 — Native kinds, schema and identity",
+                "core/artifacts/internal/kind/contracts.go\ncore/artifacts/internal/model/artifact.go\ncore/artifacts/internal/symbol/index.go\ncore/artifacts/internal/repository/catalog.go\ncore/artifacts/internal/operations/engine.go\ncore/artifacts/internal/operations/protocol.go\ncore/artifacts/internal/validate/validate.go",
+                "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target."
+              ],
+              [
+                "M02 — Context writing, provenance and finalization",
+                "core/pysrc/_contextwriterlib.py\ncore/pysrc/_artifactlib.py\ncore/pysrc/init-codearbiter.py\ncore/artifacts/internal/contextdocument/contract.go\ncore/artifacts/internal/contextdocument/finalization.go\ncore/artifacts/internal/operations/context_assistive.go\ncore/artifacts/internal/operations/context_authority.go",
+                "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts."
+              ],
+              [
+                "M03 — Existing selector and freshness machinery",
+                "core/pysrc/_contextselectlib.py\ncore/pysrc/_contextsnapshotlib.py\ncore/pysrc/_contextreportlib.py\ncore/pysrc/_provenancelib.py\ncore/artifacts/internal/read/read.go\ncore/artifacts/internal/operations/task_context.go",
+                "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads."
+              ],
+              [
+                "M04 — Activation, initialization and hot-path access",
+                "core/pysrc/_activationlib.py\ncore/pysrc/_arbiterstatelib.py\ncore/pysrc/session-start.py\ncore/pysrc/statusline.py\ncore/pysrc/hostapi.py\ncore/pysrc/doctor.py\ncore/pysrc/_readinjectlib.py\ncore/pysrc/pre-read.py\ncore/pysrc/post-write-edit.py\nplugins/ca-pi/tools/src/activation.ts",
+                "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call."
+              ],
+              [
+                "M05 — Actual control configuration and protected-state recognition",
+                "core/pysrc/_scopelib.py\ncore/pysrc/_hooklib.py\ncore/pysrc/_protectedlib.py\ncore/pysrc/_protectedstatelib.py\ncore/pysrc/_bashguardlib.py\ncore/pysrc/pre-write.py\ncore/pysrc/pre-edit.py\ncore/pysrc/prompt-submit.py\ncore/pysrc/_replylib.py\ncore/pysrc/_artifactauthoritylib.py",
+                "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path."
+              ],
+              [
+                "M06 — Planning, interview and execution callers",
+                "core/surface/skills/decompose/SKILL.md\ncore/surface/skills/context-creation/SKILL.md\ncore/surface/skills/brainstorming/SKILL.md\ncore/surface/skills/writing-plans/SKILL.md\ncore/surface/skills/executing-plans/SKILL.md\ncore/surface/skills/subagent-driven-development/SKILL.md\ncore/surface/skills/tdd/SKILL.md\ncore/surface/skills/commit-gate/SKILL.md\ncore/surface/skills/decision-variance/references/analysis.md\ncore/surface/SPRINT.md\ncore/surface/includes/artifacts.md",
+                "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact."
+              ],
+              [
+                "M07 — Board promotion and single-owner references",
+                "core/pysrc/_taskboardlib.py\ncore/pysrc/taskwrite.py\ncore/pysrc/boardsync.py\ncore/pysrc/_taskexcludelib.py\ncore/pysrc/_intentlib.py",
+                "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation."
+              ],
+              [
+                "M08 — Merge, worktrees, sources and recovery",
+                "core/pysrc/_contextmergelib.py\ncore/pysrc/resolve-context-conflict.py\ncore/pysrc/_appendonlyconflictlib.py\ncore/pysrc/_releaselib.py\ncore/pysrc/_pathnorm.py\ncore/pysrc/_sensitivelib.py\ncore/pysrc/prune-transcript.py\ncore/artifacts/internal/store/transaction.go\ncore/artifacts/internal/store/infrastructure.go",
+                "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs."
+              ],
+              [
+                "M09 — Native presentation and generated delivery",
+                "core/artifacts/internal/render/render.go\ncore/artifacts/internal/render/assets/artifact.css\ncore/artifacts/internal/render/assets/logo.svg\ntools/generate-artifact-types.py\ntools/build-surface.py\ntools/sync-core.py\ntools/build-artifacts.py\ntools/install-artifact-payload.py\ntools/build-host-packages.py\ndocs/artifacts/consumer-inventory.json",
+                "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies."
+              ],
+              [
+                "M10 — Training, site and current claims",
+                "site/scripts/capture-context-examples.py\nsite/scripts/generate-diagrams.ts\nsite/scripts/execution-maps/workflows.ts\nsite/scripts/execution-maps/atlas.ts\nsite/scripts/execution-maps/atlas-data/assistive-update.json\nsite/scripts/generate-academy.ts\n.github/scripts/test_artifact_installed_host.py\ntools/test-artifact-mixed-schema.py",
+                "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change."
+              ]
+            ],
+            "type": "table"
+          },
+          {
+            "refs": [],
+            "text": "Every path above existed in the inspected snapshot. modification-map.json contains exact owner/repo@commit:path identities and content hashes. Generated copies under plugins/ca, plugins/ca-codex and plugins/ca-pi are propagated with normal generators, not edited independently. A raw grep count is not a completeness proof; CD-01 and CD-07 explicitly cover dynamic callers, filename construction and negative reader tests.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "PLAN-OWNERS",
+        "title": "Modification points and dispositions"
+      },
+      {
+        "blocks": [
+          {
+            "columns": [
+              "Situation",
+              "Required response"
+            ],
+            "refs": [],
+            "rows": [
+              [
+                "Unknown optional field or stale descriptive source",
+                "Save the truthful draft / return uncertainty / continue independent work. No permission state."
+              ],
+              [
+                "Selected record is absent or too large",
+                "Return a targeted read error or whole-record continuation; do not mint a proof-of-reading ticket."
+              ],
+              [
+                "User explicitly stopped a task or host denied a command",
+                "Respect the actual stop or denial. Changing context representation cannot override it."
+              ],
+              [
+                "Concurrent mutation or unsafe target path",
+                "Refuse the failed mutation and report the integrity issue. Retry the exact ID or use existing recovery, not another approval."
+              ],
+              [
+                "Proposed command or inferred security preference",
+                "Store declaration/basis, not proof of execution or effective authority."
+              ],
+              [
+                "Actual policy-mandated proof consumer",
+                "Use its existing specific protocol only there, never make it the normal route for authoring or retrieval."
+              ]
+            ],
+            "type": "table"
+          },
+          {
+            "refs": [],
+            "text": "Keep preservation tests focused on these observable distinctions. No \"relaxed mode\", universal auto-approval, completeness score, control-plane cache or blanket bypass is an acceptable implementation shortcut.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "PLAN-PERMISSION",
+        "title": "Rules that prevent the cage from returning"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Each task extends the smallest owning suite already present. Commands listed under tasks are verification intentions; they have not been run against an implementation of this proposal. Existing tests may need new cases without adding a separate framework or nightly reviewer program.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "The one final matrix covers: greenfield resume, brownfield scoped refresh, known task retrieval, missing/oversized/stale selected records, interruption/retry/promotion, and three actual installed adapters. Include before/after measurements and negative controls for manufactured approval, missing real stops, omitted constraints, unwanted network/HTML execution and old-client writes.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Readiness is separated: structural draft validity now; implementation plus exact-candidate CI for merge later; separately authorized publication and exact distributed-byte readback afterward. Historical reports remain source-bound and are never copied forward as fresh passing evidence.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "PLAN-CHECKS",
+        "title": "Practical verification and shipment"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Recommended design correction: retain two existing small operational config exceptions (CONTEXT.md and only operative scope blocks in security-controls.md). This deliberately replaces the earlier one-bootstrap-plus-generated-runtime-view proposal. The HTML files contain narrative knowledge, not a new policy authority. It is a proposed product-specific choice, not an organization-wide rule or implemented/released fact.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Unresolved implementation specifics are ordinary engineering details: exact schema evolution/version under existing policy, measured batch limits, operation argument names, precise source-private field bounds and Academy lesson impacts. Do not invent version numbers, host compatibility or arbitrary perf thresholds in this plan. Resolve them in code/tests without repeating product-direction approvals.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "No GitHub source, release, live site, user repository or private Project registry has been modified to produce these planning artifacts.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "PLAN-BOUNDARY",
+        "title": "Design decisions and remaining uncertainty"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-INPUT",
+        "locator": "CODEARBITER-CONTEXT-DECOMPOSITION-HTML-PLAN.md",
+        "note": "SHA-256 4c995aa2ce83fc713e158e6f3fa0efcd16b37b07b436ee3ae12d83bdaede8215; replaced by this reviewed draft, not silently treated as implemented.",
+        "title": "Original user plan",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-USER",
+        "locator": "Conversation, 2026-10-22",
+        "note": "Keep assistance simple, no secondary permission system; deliver native codeArbiter-style HTML spec and plan.",
+        "title": "Current product instruction",
+        "type": "user_request",
+        "url": null
+      },
+      {
+        "id": "SRC-PR",
+        "locator": "PR #1016 at 8c16bb1116c76ca0cbe69851d9f3d323764727fd",
+        "note": "Inspected open; preserve its ordinary input, verifier selection and safe diagnostic behavior. Re-resolve before implementation; not a release prerequisite for reading these documents.",
+        "title": "Existing hook cleanup",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/pull/1016"
+      },
+      {
+        "id": "SRC-M01",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/kind/contracts.go",
+        "note": "Context is optional Markdown; TypedNormative and contextual resolution still assume spec/plan. Add two concrete artifact kinds, not a general graph framework. Narrow catalog reads so an unrelated damaged document cannot veto a valid target. All group paths are in modification-map.json.",
+        "title": "Native kinds, schema and identity",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/kind/contracts.go"
+      },
+      {
+        "id": "SRC-M02",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextwriterlib.py",
+        "note": "The wrapper writes FIELD-DOCUMENT and finalizes five Markdown/provenance pairs plus boards/audit. Preserve safe writes; replace semantic completeness and blanket evidence requirements with explicit unknown/proposed records. Do not call context approval producers for routine drafts. All group paths are in modification-map.json.",
+        "title": "Context writing, provenance and finalization",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextwriterlib.py"
+      },
+      {
+        "id": "SRC-M03",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextselectlib.py",
+        "note": "Do not run two relevance engines or inherit blocked/requires_actor_check admission. Reuse native bounded reads for new artifacts, retain only necessary format translation for old records. Source snapshots belong to requested refreshes, never ordinary reads. All group paths are in modification-map.json.",
+        "title": "Existing selector and freshness machinery",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextselectlib.py"
+      },
+      {
+        "id": "SRC-M04",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_activationlib.py",
+        "note": "Keep CONTEXT.md operational settings and initialization semantics. Pi has a separate TypeScript reader. Replace narrative file assumptions and emit pointers, not whole pages. No engine spawn, graph walk or source hash on each tool call. All group paths are in modification-map.json.",
+        "title": "Activation, initialization and hot-path access",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_activationlib.py"
+      },
+      {
+        "id": "SRC-M05",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_scopelib.py",
+        "note": "Keep existing migration/CI/deploy +/- scope blocks authoritative in a configuration-only security-controls.md. HTML narrative does not write policy. Preserve #1016 input fixes and genuine host/user protections; no new policy mirror or receipt-required HTML write path. All group paths are in modification-map.json.",
+        "title": "Actual control configuration and protected-state recognition",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_scopelib.py"
+      },
+      {
+        "id": "SRC-M06",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/surface/skills/decompose/SKILL.md",
+        "note": "Replace pathname/heading reads and fixed layer progression with stable records and relevant questions. Keep native engine operations under current authorization. Context-check, reconcile, harvest and context agents/includes must join the same source sweep; no reviewer ceremony per artifact. All group paths are in modification-map.json.",
+        "title": "Planning, interview and execution callers",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/surface/skills/decompose/SKILL.md"
+      },
+      {
+        "id": "SRC-M07",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_taskboardlib.py",
+        "note": "Reuse existing (from origin) semantics. already_promoted currently ignores done rows, so retry must inspect active AND archived records before adding. No second task ledger, distributed lock coordinator, or automatic external issue creation. All group paths are in modification-map.json.",
+        "title": "Board promotion and single-owner references",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_taskboardlib.py"
+      },
+      {
+        "id": "SRC-M08",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/pysrc/_contextmergelib.py",
+        "note": "code-map conflict repair currently binds Markdown version lines. Preserve release/adoption anchors in CONTEXT.md, worktree roots, path case/Unicode, and real journal preimages. Do not mistake regenerated HTML bytes for changed semantic source or recursively consume own outputs. All group paths are in modification-map.json.",
+        "title": "Merge, worktrees, sources and recovery",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/pysrc/_contextmergelib.py"
+      },
+      {
+        "id": "SRC-M09",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:core/artifacts/internal/render/render.go",
+        "note": "Keep the official renderer, inert embedded model and offline CSS/logo. Fix companion-only cross-artifact links. Update both schema copies/types, capability inventory, installed manifests, candidate archives and all three adapters; never hand-edit generated copies. All group paths are in modification-map.json.",
+        "title": "Native presentation and generated delivery",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/core/artifacts/internal/render/render.go"
+      },
+      {
+        "id": "SRC-M10",
+        "locator": "arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a:site/scripts/capture-context-examples.py",
+        "note": "Update live claims/captures only after their owner works. Hash-bound old captures stay historical or are deliberately regenerated; do not bump hashes to conceal contradictions. Academy is a separately owned versioned follow-up: inventory lessons/verifiers and compatibility before any gitlink/release change. All group paths are in modification-map.json.",
+        "title": "Training, site and current claims",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/0badb588dc1179b06e13db1ca5322590962b586a/site/scripts/capture-context-examples.py"
+      }
+    ],
+    "spec_ref": {
+      "artifact_id": "SPEC-CONTEXT-DECOMPOSITION",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "7073a30a44bb9b526cc56f6ba335a649973bed61792924f6dc783eccb36cc29c"
+    },
+    "summary": "Eight coherent tasks for one conversion PR: use existing native artifacts and safe operations, remove context-as-permission behavior, wire real consumers and migrate without losing work. All implementation and test outcomes are planned, not complete.",
+    "tasks": [
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-001",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-002",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-007",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-011",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-016"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Every actual producer/consumer has a modify, verify-unchanged, generate or separately-owned follow-up disposition.",
+          "No required authority fields or new runtime policy/cache service appear in the proposed new ordinary API."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-001",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "docs/artifacts/consumer-inventory.json"
+          },
+          {
+            "action": "inspect",
+            "path": "core/artifacts/internal/kind/contracts.go"
+          },
+          {
+            "action": "inspect",
+            "path": "core/pysrc/_contextselectlib.py"
+          },
+          {
+            "action": "inspect",
+            "path": "core/pysrc/_scopelib.py"
+          },
+          {
+            "action": "inspect",
+            "path": ".github/scripts/test_context_consumers.py"
+          },
+          {
+            "action": "inspect",
+            "path": ".github/scripts/test_context_contracts.py"
+          }
+        ],
+        "rollback": "Revert only the contract/inventory changes before format activation; no user repository has been migrated.",
+        "source_refs": [
+          "SRC-M01",
+          "SRC-M02",
+          "SRC-M03",
+          "SRC-M04",
+          "SRC-M05",
+          "SRC-M06",
+          "SRC-M07",
+          "SRC-M08",
+          "SRC-M09",
+          "SRC-M10"
+        ],
+        "steps": [
+          "Re-resolve main and #1016. Preserve its ordinary-input/diagnostic/draft-refresh changes in the eventual implementation base; do not copy proposed version numbers from this draft.",
+          "Use modification-map.json as the owning seam inventory, then perform a fresh literal-path and semantic caller sweep at that base. Classify generated duplicates, old-format compatibility, dynamic path construction, tests and independently implemented TS readers.",
+          "Adopt the two existing config-only exceptions and plain informational retrieval contract. Ordinary read/draft/write must not require context admission, sources for unknown claims, read receipts or user codes.",
+          "Define the small context/decomposition record vocabulary and old-format adapter without inventing a new authority or entity framework. Record consequential architecture rationale once under the actual decision owner; no separate approval ceremony for these implementation tasks.",
+          "Capture old/new fixture sizes, call counts and latency before optimization. Select the existing suites to extend; do not invent a mandatory measurement pipeline for end users.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-01 — Establish source contract and full consumer disposition",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_consumers.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_contracts.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-003",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-004",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-006",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-014",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-015"
+        ],
+        "depends_on": [
+          "T-001"
+        ],
+        "done_when": [
+          "Create, exact read, typed update and render work for each new kind; drafts remain valid when material is unknown.",
+          "Stable IDs survive rename/reorder; unrelated corrupt optional artifacts do not veto a valid target; malicious prose remains inert."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-002",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/kind/contracts.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/model/artifact.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/symbol/index.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/repository/catalog.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/engine.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/protocol.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/contextdocument/contract.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/render/render.go"
+          },
+          {
+            "action": "modify",
+            "path": "tools/generate-artifact-types.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_contracts.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/context_assistive_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/context_capability_test.go"
+          }
+        ],
+        "rollback": "Before cutover, revert new-kind feature changes or retain old-format reader; never downgrade existing converted bytes in place.",
+        "source_refs": [
+          "SRC-M01",
+          "SRC-M02",
+          "SRC-M09"
+        ],
+        "steps": [
+          "Extend the existing closed kind/schema/model/symbol/renderer dispatch for context HTML and a separate decomposition kind. Never reuse execution-plan prerequisites, approval state or review completion as knowledge lifecycle.",
+          "Add stable typed records, notes, source basis and references; preserve unknown/proposed values. Keep declaration separate from execution. Reuse existing context-assistive transaction ownership and avoid requiring proof metadata for a truthful unverified draft.",
+          "Extend exact target resolution and safe catalog lookup for new directories without scanning/validating unrelated optional documents before every ordinary read. Reject only actual selected malformed/ambiguous state.",
+          "Render with the official static codeArbiter renderer/assets. Implement identity-correct cross-kind anchors instead of routing all links to one spec/plan companion. Keep HTML/model integrity and source escaping.",
+          "Update both packaged/embedded schema copies and generated typed views. Start with a command record plus a security observation and component, then complete the remaining defined record shapes.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-02 — Add lossless native context and decomposition HTML",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/contextdocument",
+              "./internal/read",
+              "./internal/operations"
+            ],
+            "assertion": "Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestContextOrdinaryCreateReplayAndIntegrity"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_contracts.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-001",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-005",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-006",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-007",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-008",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-015"
+        ],
+        "depends_on": [
+          "T-002"
+        ],
+        "done_when": [
+          "A known task gets its direct useful information in one ordinary response, with explicit incomplete scope and no admission verdict.",
+          "The same task remains usable with unrelated missing/oversized/stale material; no automatic verification/reviewer invocation occurs."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-003",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/read/read.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/task_context.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_contextselectlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_contextsnapshotlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_contextreportlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_provenancelib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/tdd/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_consumers.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_evaluation.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/task_context_test.go"
+          }
+        ],
+        "rollback": "Return new callers to existing bounded exact reads without converting format or claiming missing context is approved.",
+        "source_refs": [
+          "SRC-M03",
+          "SRC-M06"
+        ],
+        "steps": [
+          "Extend native index/outline/read-batch/task-context to request IDs, record types, explicit paths/components and one bounded same-repository reference hop. Unknown external references remain inert descriptors.",
+          "Wire new HTML consumers to the native information result rather than composing the old _contextselectlib requires_actor_check/blocked envelope. Keep old explicit attestation separate; no synthetic approval or context proof.",
+          "Return pertinent constraints and their scope/basis, known omissions, ambiguous applicable records and selected record identities. Full context is not promised. Required information for an action is resolved by ordinary inspection/judgment, not a new state transition.",
+          "Handle whole-record overflow and stale cursors without persistent delivery tickets. Do not rehash the workspace or spawn scout/reviewer processes on read; unrelated title/prose changes must not revoke every result.",
+          "Complete the first useful vertical fixture: tech-stack command → native HTML → bounded task packet → TDD caller, including an auth constraint and unknown unrelated integration.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-03 — Deliver small relevant context without admission logic",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/contextdocument",
+              "./internal/read",
+              "./internal/operations"
+            ],
+            "assertion": "Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestTaskContextReturnsBoundedReferencedContextWithoutAuthority",
+              "TestTaskContextAvoidsWholeSourceSnapshots"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_consumers.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-001",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-002",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-004",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-007",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-008",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-011"
+        ],
+        "depends_on": [
+          "T-002"
+        ],
+        "done_when": [
+          "A partially answered project can initialize structurally without a verification or approval ceremony.",
+          "Routine hooks/statusline use no additional native process, full narrative parse or policy cache; existing scope/activation behavior survives byte-for-byte configuration extraction."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-004",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_contextwriterlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/init-codearbiter.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/context_assistive.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/contextdocument/finalization.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/session-start.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_readinjectlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_protectedstatelib.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/tools/src/activation.ts"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_workflow.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_greenfield_context.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_host.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_hook_guards.py"
+          }
+        ],
+        "rollback": "Revert consumer wiring before format flip; after format activation use current-format forward recovery, not silent old narrative fallback.",
+        "source_refs": [
+          "SRC-M02",
+          "SRC-M04",
+          "SRC-M05",
+          "SRC-M08"
+        ],
+        "steps": [
+          "Replace new-record FIELD-DOCUMENT wrapping with granular native writes while retaining safe import of old prose. Keep ordinary writes under existing authorization and exact CAS/journal operations; no prompt-submit capture is added.",
+          "Keep activation/stage/init and actual +/- path-scope settings in their existing small operational owners. Move narrative only, and do not create a derived effective-policy cache or infer rules from HTML.",
+          "Replace thirteen-output semantic finalization with structural initialization appropriate to the supported new format, truthful unknown fields and actual board/audit ownership. Preserve disabled repositories, user stops and human content.",
+          "Update Python activation/status/read injection and independently implemented Pi activation checks; targeted source/provenance refresh runs only on requested/affected data. Maintain worktree identity and safe paths.",
+          "Adapt protected-state recognition and _contextmergelib/resolve-context-conflict to the new canonical record targets. Keep harmless reads supported and apply #1016 recognition fixes; no whole-context lock on ordinary tools.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-04 — Convert context writer, initialization and hook readers",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/contextdocument",
+              "./internal/read",
+              "./internal/operations"
+            ],
+            "assertion": "Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestContextWholeDocumentSelectionPreservesControls",
+              "TestContextOrdinaryFinalization"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_workflow.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-001",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-009",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-010",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-011"
+        ],
+        "depends_on": [
+          "T-003",
+          "T-004"
+        ],
+        "done_when": [
+          "Interview resumes correctly and promotes work only once, including after archive/crash retry.",
+          "The normal execution path consumes actual contextual records and preserves old global task/question/ADR owners without creating shadow ledgers."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-005",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/decompose/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/context-creation/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/writing-plans/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/subagent-driven-development/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/decision-variance/references/analysis.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_taskboardlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/taskwrite.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/boardsync.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_greenfield_context.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_recorded_intent_surface.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_workflow.py"
+          }
+        ],
+        "rollback": "Preserve original board origins and user choices; remove only new derived back-references when safe. Never delete an existing promoted task as rollback.",
+        "source_refs": [
+          "SRC-M06",
+          "SRC-M07"
+        ],
+        "steps": [
+          "Convert decompose, init greenfield/brownfield and context-creation/check instructions to record writes and relevant reads. Preserve actual answers; resume a useful unresolved choice, not a forced six-stage approval chain.",
+          "Separate intended capability/architecture/phase records from observed code-map structure. Link promoted work and external ADRs; do not clone execution state, question answers or architectural authority.",
+          "Reuse taskwrite and existing origin marker semantics. Deduplicate across open and archived rows under its owning lock, then attach the link back with idempotent retry. Do not auto-sync to GitHub issues or acquire both stores in a new distributed transaction.",
+          "Adapt brainstorm/plan/TDD/execution/reconcile/decision-variance/harvest consumers, including instructions/includes and generated reference tables. Request relevant constraints without needing a context-reviewed marker.",
+          "Save bounded notes and material choices as reported information, not manufactured accepted authority. A routine method refinement updates the plan without asking the user again.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-05 — Use records in the interview, planning and existing board flow",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_greenfield_context.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_recorded_intent_surface.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-008",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-010",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-012",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-013",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-015"
+        ],
+        "depends_on": [
+          "T-004",
+          "T-005"
+        ],
+        "done_when": [
+          "Model-recorded meaning is present before cutover; changed or unrecorded Markdown cannot be removed. Original source bytes remain recoverable from the journal.",
+          "One coherent format is active after cutover. Older clients cannot silently write it, and later committed work survives retries and recovery."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-006",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_contextmergelib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/resolve-context-conflict.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/transaction.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/context_assistive.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/init-codearbiter.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/migration_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "tools/test-artifact-mixed-schema.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_native.py"
+          }
+        ],
+        "rollback": "Restore exact preimages only before newer work; otherwise use current compatible engine and forward recovery/export with no silent loss.",
+        "source_refs": [
+          "SRC-M01",
+          "SRC-M02",
+          "SRC-M05",
+          "SRC-M07",
+          "SRC-M08"
+        ],
+        "steps": [
+          "Use knowledge.py convert to create empty HTML documents and list every existing Markdown context and decomposition source with a fingerprint token. Neither a read, hook nor package update initiates conversion.",
+          "The agent reads each listed source and adds its meaning as typed records or bounded notes with honest basis and source references, excluding secret values. The engine does not parse sections or convert text.",
+          "Convert --finish rejects a changed source fingerprint and any nonempty Markdown document without records or notes. Preview and apply bind exact current source digests.",
+          "Cut over CONTEXT.md, retained security scope blocks, replaced Markdown, provenance and HTML Git attributes in one journaled transaction. Original bytes remain in before-images; mixed versions and newer work must fail safely.",
+          "Test explicit preparation, unrecorded-content refusal, changed-source refusal, exact retry, recovery and board-promotion idempotence. Reconcile the owning paths and generated host copies."
+        ],
+        "title": "CD-06 — Implement model-led conversion, cross-format safety and forward recovery",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/contextdocument",
+              "./internal/read",
+              "./internal/operations"
+            ],
+            "assertion": "Retain the named existing safety regressions and extend the owning suites with this task acceptance cases; existing tests alone do not prove the new conversion. No implementation tests have run for this proposal.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestMigrationStalePreview",
+              "TestCreateDoesNotShadowLegacy"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_native.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-011",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-014",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-016"
+        ],
+        "depends_on": [
+          "T-005",
+          "T-006"
+        ],
+        "done_when": [
+          "All three installed candidates contain matching new capabilities and current instructions, with no false release or Academy support claim.",
+          "Human links open the exact records selected by the model, and model instructions remain concise."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-007",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "docs/artifacts/consumer-inventory.json"
+          },
+          {
+            "action": "modify",
+            "path": "tools/build-surface.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/sync-core.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/build-artifacts.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/build-host-packages.py"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/capture-context-examples.py"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/execution-maps/workflows.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/execution-maps/atlas-data/assistive-update.json"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generate-academy.ts"
+          },
+          {
+            "action": "modify",
+            "path": "tools/generate-artifact-types.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_installed_host.py"
+          }
+        ],
+        "rollback": "Revert derived docs/package changes together with their owning implementation; do not publish broken interim versions or change external releases automatically.",
+        "source_refs": [
+          "SRC-M09",
+          "SRC-M10"
+        ],
+        "steps": [
+          "Regenerate canonical Markdown instructions, Python copies, typed schema views, capability and package metadata through their normal tools. Independently check TS/Pi resources and package manifests; generated Python alone is not proof of parity.",
+          "Update consumer inventory with actual implemented scope, docs examples and source-bound render/atlas captures. Do not relabel old screenshots/results as current or append large running history to model-facing files.",
+          "Read the exact affected arbiterForge/arbiter-academy lesson and verifier sources before changing them; coordinate their own version/compatibility and avoid silently advancing the submodule pin.",
+          "Update install/update/disable/uninstall and migration help where paths/formats changed. Existing boards, ADRs, farm boundaries and operational config exceptions remain explicit.",
+          "Complete a fresh negative-control reader sweep: no active converted narrative path still reads old Markdown content or a whole-document wrapper; remaining matches have an explicit compatibility/config/test/historical disposition.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-07 — Regenerate delivery, update current claims and check reader coverage",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "tools/build-surface.py",
+              "--check"
+            ],
+            "assertion": "All three generated instruction surfaces match the canonical owners.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/sync-core.py",
+              "--check"
+            ],
+            "assertion": "Generated Python copies match their canonical helpers; independent TS behavior is tested separately.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-CONTEXT-DECOMPOSITION#AC-001",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-002",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-003",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-004",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-005",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-006",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-007",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-008",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-009",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-010",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-011",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-012",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-013",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-014",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-015",
+          "SPEC-CONTEXT-DECOMPOSITION#AC-016"
+        ],
+        "depends_on": [
+          "T-003",
+          "T-006",
+          "T-007"
+        ],
+        "done_when": [
+          "All implementation criteria have real source/test evidence or an explicit unresolved limitation; no missing modification owner is silently claimed complete.",
+          "The supported ordinary workflow completes without a context-derived permission prompt, receipt, reviewer quota or mandatory full-document read."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-008",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_evaluation.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_context_installed.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_installed_host.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/test-artifact-mixed-schema.py"
+          }
+        ],
+        "rollback": "Keep the candidate unpublished or revert the coherent source changes before migration if criteria fail. Preserve user work and previous distribution; do not force downgrade on converted consumers.",
+        "source_refs": [
+          "SRC-M03",
+          "SRC-M04",
+          "SRC-M05",
+          "SRC-M06",
+          "SRC-M07",
+          "SRC-M08",
+          "SRC-M09",
+          "SRC-M10"
+        ],
+        "steps": [
+          "Extend existing greenfield/brownfield, scope/read, promotion, migration and installed-candidate suites with the six specification scenarios. Keep synthetic unknown reports distinct from actual executed checks.",
+          "Measure representative old full-document and new scoped retrieval on the same small/large fixtures. Report returned bytes, tokenizer counts when available, calls/read/process counts, cold/warm latency and omitted scope. No runtime completeness score or fixed percentage gate.",
+          "Run an authorized supported host/model journey with the exact candidate where available; otherwise explicitly retain that qualification gap. Do not manufacture receipts or model evidence from structural tests.",
+          "Verify the exact-head relevant existing CI matrix and scoped static/source rules once the coherent implementation is ready. Do not require a fresh reviewer cascade for a packet identity change or every incremental commit.",
+          "Declare implementation/merge readiness separately from release readiness. Only after separately authorized publication inspect the actual tag/archive/npm/marketplace and affected live documents; do not block saving useful progress until publication.",
+          "Principal paths below are not the full dependency list: reconcile every owning path in the referenced modification-map groups and preserve generated derivatives."
+        ],
+        "title": "CD-08 — Demonstrate ordinary use, measure cost and finish the PR",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_evaluation.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_installed.py"
+            ],
+            "assertion": "Run with the repository-required installed candidate and fixture environment; new acceptance scenarios must be added, not assumed from the old suite.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "Context and decomposition — implementation plan"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/context-decomposition.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 27,
+  "schema_version": "0.3.2",
+  "slug": "context-decomposition"
+}
+</script>
+</body></html>

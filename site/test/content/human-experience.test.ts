@@ -22,7 +22,8 @@ describe("human-operable product window", () => {
 
   it("keeps the exact greenfield contract separate from typed feature plans", () => {
     const guide = read("src/content/docs/guides/plan-a-new-project.mdx");
-    const source = read("../core/surface/skills/decompose/SKILL.md");
+    // Repositories that keep the Markdown format retain the three-document procedure.
+    const source = read("../core/surface/skills/decompose/references/markdown-format.md");
     for (const filename of ["01-architecture-breakdown.md", "02-phased-build-plan.md", "03-task-backlog.md"]) {
       expect(guide).toContain(filename);
       expect(source).toContain(filename);
@@ -122,9 +123,11 @@ describe("human-operable product window", () => {
   it("keeps curated review guidance aligned with the producer contract", () => {
     const decompose = read("src/curated/commands/decompose.md");
     expect(decompose.replace(/\s+/g, " ")).toContain("Review all three planning documents");
-    const source = read("../core/surface/skills/decompose/SKILL.md").replace(/\s+/g, " ");
+    const source = read("../core/surface/skills/decompose/references/markdown-format.md").replace(/\s+/g, " ");
     expect(source).toContain("record the user's actual confirmation in `_session.md`");
     expect(source).toContain("existing confirmation covers unchanged artifacts");
+    const entry = read("../core/surface/skills/decompose/SKILL.md").replace(/\s+/g, " ");
+    expect(entry).toContain("Record the user's actual confirmation as an answered question");
     expect(read("src/curated/skills/brainstorming.md")).not.toContain("single test");
     expect(read("src/curated/skills/brainstorming.md")).toContain("one or more named tests");
     expect(read("../core/surface/skills/brainstorming/SKILL.md")).toContain("one or more focused tests");

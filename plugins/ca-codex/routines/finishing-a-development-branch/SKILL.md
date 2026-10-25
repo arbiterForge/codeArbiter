@@ -137,6 +137,16 @@ Carry out the chosen option, and only that one:
 
 Gate: the chosen option completed — for open-PR a PR exists against the default branch; for merge the work landed through that PR; for discard the user confirmed against a stated loss summary.
 
+### Knowledge page conflicts
+
+A Git conflict in an HTML knowledge page (`.codearbiter/context/*.html` or
+`.codearbiter/decomposition/project.html`) is resolved record by record with
+`"$PY" "${PLUGIN_ROOT}/hooks/knowledge.py" merge-conflict <path>`. It writes the
+merged page only when no record was changed differently on both sides, keeps
+both sides' new records (renaming a colliding new ID and reporting it), and
+lists any real conflicts to settle on one side first. Stage the merged page by
+explicit path afterwards. Never hand-merge the HTML.
+
 ### Legacy code-map conflict recovery
 
 When an authorized branch integration has a genuine Git conflict in

@@ -178,9 +178,10 @@ export async function runClaudeInsideCli(
     // The co-mount guard is the one refusal worth naming, because it is a
     // deliberate structural block rather than an operational failure.
     const prefix = e instanceof TokenCoMountRejectedError ? "co-mount refused" : "failed";
-    // The message may carry docker's stderr. It never carries the token: the
-    // token is only ever in the child's environment, never in argv or a message.
-    err(`ca-sandbox: claude-inside ${prefix}: ${e instanceof Error ? e.message : String(e)}`);
+    // A failed Docker client may echo its environment in stderr. Keep that
+    // diagnostic while removing the reusable credential.
+    const detail = (e instanceof Error ? e.message : String(e)).split(token).join("[REDACTED]");
+    err(`ca-sandbox: claude-inside ${prefix}: ${detail}`);
     return 1;
   }
 }

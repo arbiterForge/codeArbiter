@@ -14,7 +14,7 @@ For artifact I/O, load [includes/artifacts.md](../../includes/artifacts.md) and 
 
 The calling feature or sprint owns scope and the next step. A sprint may include several related features under one coherent goal. A small inline feature remains the caller's mini-spec lane. Specification authoring itself does not grant commit, publication, override, provider spending, or irreversible-operation authority.
 
-Use relevant CONTEXT.md, tech-stack.md and security-controls.md when present. Read an existing open-questions document and relevant ADR/plan headings index-first. Missing optional historical indices are not blockers. Preserve real decisions while distinguishing an accepted decision from implemented or released behavior.
+Use relevant CONTEXT.md, tech-stack.md and security-controls.md when present; in an HTML-knowledge repository use `knowledge.py relevant <paths>` and the greenfield decomposition records instead (see [includes/knowledge.md](../../includes/knowledge.md)). Read an existing open-questions document and relevant ADR/plan headings index-first. Missing optional historical indices are not blockers. Preserve real decisions while distinguishing an accepted decision from implemented or released behavior.
 
 ## Recorded intent and consequential conflicts
 

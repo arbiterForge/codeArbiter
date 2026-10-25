@@ -93,7 +93,7 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // writers and archives the inspected lock before work can continue. Fresh-run,
 // cost, dispatch and completion routes keep their existing geometry and gates.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/surface/skills/tribunal/SKILL.md':'1d11adf29758ccbd9d7ded876ecbaa65fb598c3a',
+  'core/surface/skills/tribunal/SKILL.md':'aebf7129fdb9aa93f04a50fb3d652d3810ee257a',
   'core/pysrc/_tribunalrunlib.py':'6dc04cc4d6728cd3e1d4abe381f7f9cdd6125866',
 });
 
@@ -112,6 +112,42 @@ export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freez
   Object.fromEntries(assistiveUpdate.changes.map(change=>[change.path,change.blob])),
 );
 
+/** Sources reviewed for HTML knowledge records and decomposition (#1023): the
+ * context owners gained an HTML procedure and kept Markdown in references.
+ * The conversion route now asks the agent to map each Markdown section to
+ * saved knowledge before a digest-bound cutover; the context-creation and decompose routes retain
+ * their explicit format choice and unchanged Markdown fallback. Security
+ * policy readers now select complete HTML records after conversion while the
+ * Markdown scope blocks remain operative. This changes the cited source text,
+ * not the diagram routes or gate ownership. */
+export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_readinjectlib.py':'eb9ac0c2ed4516450ec8607327790e3edaab8252',
+  'core/surface/commands/add-dep.md':'4f39d82c50862c0f16965c1676c8c0a78813362d',
+  'core/surface/commands/review.md':'4ead3a713888eeabaa003c3679e02d459a8647ea',
+  'core/surface/includes/reference-map.md':'983ed0c26c2bbe14009847017507e871f772e380',
+  'core/surface/skills/debug/SKILL.md':'83c3124f046df51e3db67278545260bff93b19d2',
+  'core/surface/skills/security-architecture/SKILL.md':'669e8a1d4660a7166d0d3304304bcf322758c111',
+  'core/surface/skills/tribunal/SKILL.md':'a549fae64b1bf6243b59ea78aa608c05beeab348',
+  'core/artifacts/internal/operations/protocol.go':'3b09bf4c71dcdc9f8e9d2bfa18732c8c82b0b48f',
+  'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
+  'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
+  'core/pysrc/_artifactlib.py':'a3228472bddc2d095e0abeef64e9a60c352e70e7',
+  'core/pysrc/init-codearbiter.py':'ab47257f03a0bdd2cbd249cc00478cdbeeea4f39',
+  'core/surface/commands/feature.md':'ebb6047b0ec2f7040c60c6847535bb1f65f6cd10',
+  'core/surface/commands/fix.md':'03fbef8fef446eb3c40f8f7ea5207352e587ba0f',
+  'core/surface/commands/init.md':'d00ab436b525ad86d0e9f95fb106833c9a297006',
+  'core/surface/skills/brainstorming/SKILL.md':'036c3c440f8d09b563e00c472b9394deb6f6e705',
+  'core/surface/skills/commit-gate/SKILL.md':'159e0f1d0746c26006e4d12a4f28429fb0c023b6',
+  'core/surface/skills/context-check/SKILL.md':'10814dbe261c9ecd98be83716a03fd9699715018',
+  'core/surface/skills/context-creation/SKILL.md':'9f28e5f8c9dbb903abee8e2264f60069c5128487',
+  'core/surface/skills/decompose/SKILL.md':'891a4ed873bbe2a8cbfd5ccb5315e6ef7ece1e02',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'5082926a20883837a75994322db5c0b845eae3fd',
+  'core/surface/skills/release/SKILL.md':'15216183910a201eb5966b741bbb1a8d023927f8',
+  'core/surface/skills/subagent-driven-development/SKILL.md':'7c27d8ebb707088636e39a5ce28ca59043745609',
+  'core/surface/skills/tdd/SKILL.md':'1246d507b3bc3f46a8b15757b2a74d57207b93f0',
+  'core/surface/skills/writing-plans/SKILL.md':'5b47ef521e29bcb9b49db2662d13806a415cd8de',
+  'core/surface/skills/refactor/SKILL.md':'3f96c8640832c34d7fb91d59fd5928b8fa68ecfc',
+});
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those
 // routes (or record the new catalog counts); every remaining route, gate and
@@ -225,7 +261,7 @@ export function originalAtlas():Atlas {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);

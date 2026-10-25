@@ -11,6 +11,7 @@ import (
 // These are synthetic producer fixtures against real native operations. They
 // exercise the receipt/state contract, not a model-backed host or real tests.
 func TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	oldVerifications, oldReviews, reruns := []string{}, []string{}, []string{}
 	for _, id := range []string{"T-001", "T-002"} {
@@ -80,6 +81,7 @@ func TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence(t *testing
 }
 
 func TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	for _, id := range []string{"T-001", "T-002"} {
 		startNativeV1FixtureTask(t, h, id)

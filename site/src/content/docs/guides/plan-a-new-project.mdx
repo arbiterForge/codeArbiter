@@ -1,26 +1,39 @@
 ---
 title: Plan a New Project
-description: "Use the greenfield interview to create, review, and maintain an architecture breakdown, phased build plan, and task backlog."
+description: "Use the greenfield interview to record intended architecture, a phased plan and a backlog, then populate repository context."
 journey:
   level: Foundation
   time: "Guided interview; may span sessions"
-  outcome: "Three reviewed project-planning documents and initialized repository context, without inventing a codebase."
+  outcome: "Confirmed decomposition records and initialized repository context, without inventing a codebase."
   prerequisites:
     - A supported adapter installed and trusted
     - An intended Git repository with no meaningful source code
     - Git identity configured
-  proof: "You can open the three exact planning documents, explain their different jobs, and identify the approval and initialization boundaries."
+  proof: "You can read the decomposition records, explain what each record type is for, and identify the confirmation and initialization boundaries."
 ---
 
 import ProjectBlueprint from '../../../components/ProjectBlueprint.astro';
 
 Greenfield means the project has no meaningful source to inspect yet. codeArbiter therefore starts
-from your intent, not a guessed architecture. The interview's central deliverable is a set of
-**three project-planning documents**. It also populates the context that later work reads.
+from your intent, not a guessed architecture. The interview records the **intended project**:
+its architecture, a phased build plan and a backlog. It also populates the context that later
+work reads.
 
-## The three planning documents
+## What the interview produces
 
-<ProjectBlueprint />
+New projects keep decomposition in one native HTML document,
+`.codearbiter/decomposition/project.html`. Each record has a stable ID, so renaming or reordering
+never breaks a reference to it:
+
+| Record | Purpose | Review it for |
+|---|---|---|
+| `question` | One interview question with its status and your actual answer | Answers recorded the way you meant them; deferrals that are really still open |
+| `capability` | What the product does, who starts it, its inputs and outputs | Missing capabilities and anything that belongs in a later phase |
+| `component` | Intended parts, responsibilities, connections and integrations | Missing owners, incorrect boundaries and hidden integrations |
+| `phase` | MVP and later phases with measurable completion | Whether the first phase is useful and each completion test is observable |
+| `work_item` | Bounded tasks with roles, dependencies and time-boxed spikes | Whether work is estimable and uncertainty is investigated rather than concealed |
+
+These records describe what you intend to build. They never claim that code exists.
 
 ## Before entering the interview
 
@@ -51,90 +64,101 @@ the brownfield populator. Neither case permits overwriting existing project reco
 ## Work through six areas
 
 The interview covers vision and problem, users and flows, functional scope, technical shape,
-integrations and infrastructure, then risks and unknowns. Existing answers and settled decisions
-carry forward. Questions focus on missing facts and consequential choices; inapplicable areas
+integrations and infrastructure, then risks and unknowns, in whatever order the conversation
+makes natural. Questions focus on missing facts and consequential choices; inapplicable areas
 are recorded with their reason.
 
 Answer in observable terms. Instead of “make exports work well,” identify who exports, what is
 exported, the format, the empty case, and how a reviewer could tell whether it works.
 codeArbiter challenges vague answers and explains architectural trade-offs. You own material
-choices. A genuinely unresolved answer becomes an explicit `[CONFIRM-NN]`, not an invented fact.
+choices. A genuinely unresolved answer stays an open question, not an invented fact.
 
-At each completed layer, the interview writes its record beneath
-`.codearbiter/plans/decomposition/` before starting the next layer. `_session.md` records the phase,
-remaining questions and actual confirmations. User-decided architectural choices go through the
-decision-lifecycle owner; draft choices remain drafts until actually decided. **Do not assume
-every unfinished answer has already been saved.** Before leaving, inspect the retained records.
+Each question is saved when it is asked and your answer as soon as you give it, so closing the
+session loses nothing. User-decided architectural choices go through the decision-lifecycle
+owner and are linked from `decision` records; draft choices stay `proposed` until you decide.
 
-## Review the three deliverables
+## Confirm the intended project
 
-After all six layers are complete, codeArbiter re-reads the saved records and writes:
-
-| File under `.codearbiter/plans/` | Purpose | Review it for |
-|---|---|---|
-| `01-architecture-breakdown.md` | Components, responsibilities, connections, system diagram, integrations and open architectural questions | Missing owners, incorrect boundaries, hidden integrations and designs that do not represent your intent |
-| `02-phased-build-plan.md` | MVP, v1 and v2 goals; included and deferred work; rationale, risks and measurable definitions of done | Whether the first phase is useful, deferrals are deliberate and each completion test is observable |
-| `03-task-backlog.md` | Prioritized, phase-grouped work with role assignments, dependencies and time-boxed spikes | Whether work is estimable, dependencies are sensible and uncertainty is investigated rather than concealed |
-
-Open **all three files** before approving. They are already on disk at this review boundary.
-For the [saved-search example](/product-tour/#project-blueprint), ask whether CSV export belongs
-in the first useful release, whether the export component owns formatting rather than storage,
-and whether the backlog leaves an investigation for any unresolved external integration.
+From your answers, codeArbiter adds capability, component, phase and work-item records, each
+linked to the answers it rests on, and shows them to you. For the
+[saved-search example](/product-tour/#project-blueprint), ask whether CSV export belongs in the
+first useful release, whether the export component owns formatting rather than storage, and
+whether the backlog leaves an investigation for any unresolved external integration.
 
 A useful revision request is: “The first phase must export existing saved searches, but must not
-add account sharing. Update all three documents consistently and return them for review.”
-Your actual confirmation covers the three documents and is recorded in `_session.md`. Existing
-confirmation covers unchanged artifacts; corrections do not restart settled questions. A
-consequential unresolved choice holds its dependent output, while other explicitly retained gaps
-stay on the question board. Confirmation does not authorize later scope expansion or a merge.
+add account sharing. Update the records consistently.” Corrections update the records in place;
+a wording or method refinement does not need a fresh confirmation, and settled questions are not
+asked again. Your actual confirmation is itself saved as an answered question. Confirmation does
+not authorize later scope expansion or a merge.
+
+## Populate context and initialize
+
+Population adds records to five HTML knowledge documents under `.codearbiter/context/`: project,
+tech-stack, coding-standards, security-controls and code-map. Each record carries its basis, so
+what you decided, what was proposed and what is still unknown stay distinct. Planned commands are
+recorded as proposed and unrun; the code map stays empty until real code exists, because intended
+components live in decomposition.
+
+Each approved work item is promoted once to the task board through its owning writer; repeating
+the promotion does nothing. Questions, decisions and audit history remain intact. Then
+`knowledge.py initialize` checks that the knowledge documents exist and parse and that the task
+board is well formed, and records the `<!--INITIALIZED-->` marker. Open questions do not prevent
+it. A refusal names the document to repair; do not append the marker manually.
+
+Initialization records population; it does not establish accurate implementation, passing tests
+or installed-host enforcement. Use [Protect your first repository](/getting-started/quickstart/)
+for host qualification and [Build a feature](/guides/feature-lane/) for the next selected change.
 
 ## Understand the two planning scales
 
 The decomposition backlog is **project planning**. A later feature's execution plan breaks a
-selected change into coherent, verifiable tasks with actual dependencies. Choose task sizes for
-useful progress and review. The two plans serve different scopes even though both live under `plans/`.
-
-The three named greenfield documents remain Markdown. They are not legacy feature artifacts
-waiting for automatic HTML conversion. New full-lane feature and sprint work has a separate
+selected change into coherent, verifiable tasks with actual dependencies. The two serve different
+scopes: new full-lane feature and sprint work has a separate
 [typed specification-and-plan contract](/guides/review-artifacts/).
-
-## Confirm initialization, then choose work
-
-After confirmation, the populator derives context, stack, coding standards, security controls and
-a planned code map from the retained inputs. Planned commands and paths stay labelled as planned
-until actual source establishes them. The native writer's `--context-draft` and `--context-apply`
-operations populate five document/provenance pairs together, preserving activation frontmatter.
-Inspect each preview and its source bindings before applying it under the existing authorization.
-
-Tasks are populated through their owning writer without duplicating existing entries. Questions,
-decisions and audit history remain intact. `--context-finalize` validates the thirteen required
-outputs: five document/provenance pairs, the task board, question board and audit log. Apply its
-preview through the native writer to record the `<!--INITIALIZED-->` marker and matching context
-provenance together. A failed or uncertain transaction needs its reported repair or recovery;
-do not append the marker manually.
-
-Read back the result, retain the interview, plans and decision history, and remove only temporary
-drafts that no provenance source references. Report unresolved choices and observed checks, then
-continue authorized work. Initialization records population; it does not establish accurate
-implementation, passing tests or installed-host enforcement. Use
-[Protect your first repository](/getting-started/quickstart/) for host qualification and
-[Build a feature](/guides/feature-lane/) for the next selected change.
 
 ## Resume, revise, or reconcile
 
-Re-entering decomposition after interruption resumes the first unfinished step from the retained
-session and layer records. An explicit restart preserves earlier interview and decision history.
-If interrupted records are in a temporary location, preserve them in the durable interview
-directory before citing them as provenance sources. Reconcile conflicting versions without
-overwriting either. Do not delete records to make the initialization check pass.
+Re-entering decomposition reads the saved records and continues with the open question that
+matters most for what you want to do next. An explicit restart retires earlier records with a
+reason; it never deletes them.
 
-Later, when architecture, roadmap, backlog or prior decisions disagree, `reconcile` reads these
-**exact three filenames**. It presents variances for your choice and records the outcome. It does
-not silently rewrite the documents, fix code or create an ADR itself. A replacement ADR uses the
-ADR lane. Preserve the filenames unless the owning product contract changes.
+Later, when architecture, roadmap, backlog or prior decisions disagree, `reconcile` reads the
+decomposition records by their stable IDs. It presents variances for your choice and records the
+outcome. It does not silently rewrite records, fix code or create an ADR itself. When real source
+and manifests arrive, `context-check` adds what the code actually contains to the code map and
+reconciles intended and implemented facts, keeping the interview records.
 
-For verified practice, follow Academy's prerequisites before
+## Repositories that keep the Markdown format
+
+A repository scaffolded before HTML knowledge, or one whose owner keeps the Markdown format,
+follows the unchanged procedure. Conversion is never silent: `knowledge.py convert` prepares
+empty HTML documents and lists the Markdown sections to read. After their meaning is
+recorded, map every section to saved records or notes in a JSON checklist.
+`convert --finish <token> --coverage @checklist.json` switches formats only when
+all meaningful sections are mapped; the transaction retains the original bytes.
+
+<ProjectBlueprint />
+
+In that format the interview writes each completed layer beneath
+`.codearbiter/plans/decomposition/`, and `_session.md` records the phase, remaining questions and
+actual confirmations. It then writes three project-planning documents under `.codearbiter/plans/`:
+
+| File under `.codearbiter/plans/` | Purpose |
+|---|---|
+| `01-architecture-breakdown.md` | Components, responsibilities, connections, system diagram, integrations and open architectural questions |
+| `02-phased-build-plan.md` | MVP, v1 and v2 goals; included and deferred work; rationale, risks and measurable definitions of done |
+| `03-task-backlog.md` | Prioritized, phase-grouped work with role assignments, dependencies and time-boxed spikes |
+
+Open all three files before approving; existing confirmation covers unchanged artifacts. The
+native writer's `--context-draft` and `--context-apply` operations populate five
+document/provenance pairs, and `--context-finalize` validates the thirteen required outputs: five
+document/provenance pairs, the task board, question board and audit log. Read back the result and
+retain the interview, plans and decision history as provenance sources. `reconcile` reads these **exact three
+filenames** in that format.
+
+For practice with the older Markdown format, follow Academy's prerequisites before
 [U04: initialize greenfield and brownfield projects](/academy/u04-initialize-projects/).
+That pinned lesson does not yet verify the HTML knowledge and decomposition route above.
 The [decompose reference](/reference/skills/decompose/) contains the exact phase contract.
 
 ## Follow the complete initialization route

@@ -14,7 +14,8 @@ Read `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` before Phase 3.
 
 Read `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` and its `stage:` value. Unreadable or
 missing required context is reported as a gap, never initialized by this pass.
-Read `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` only when a variance touches
+Read `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` (or its HTML knowledge document; see
+`${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`) only when a variance touches
 a security boundary (auth, crypto, secrets); do not fabricate its Securable inputs.
 
 For a **full pass**, locate all three decomposition artifacts by **exact filename**:
@@ -25,6 +26,14 @@ substitute similarly named files. These are decomposition records, not
 interchangeable with HTML feature specs/plans. A missing required source prevents
 a complete full pass; return the supported partial findings and ask for the
 missing path only when necessary to continue, never invent a clean result.
+
+In an HTML-knowledge repository (`knowledge.py format` reports `html`; see
+`${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`), greenfield decomposition is one native
+document instead of the three files. A full pass reads it with
+`knowledge.py read decomposition`: its `component` and `decision` records are the
+architecture breakdown, `phase` records the phased build plan and `work_item`
+records the backlog. Cite their stable record IDs where this procedure cites
+section anchors, and do not require the three Markdown files in that repository.
 
 For a **scoped pass**, resolve the named ADR, artifact or area and relevant prior
 records first; do not require unrelated decomposition files. Load other source

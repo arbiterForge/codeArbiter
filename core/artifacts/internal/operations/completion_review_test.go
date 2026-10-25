@@ -20,6 +20,7 @@ import (
 // Completion fixtures exercise the real engine with explicitly synthetic
 // producers. They do not claim a real host or verification command ran.
 func TestCompletionPublicationClosureRetainsIntegrity(t *testing.T) {
+	t.Parallel()
 	for _, mutation := range []string{"unchanged", "source", "unknown-output", "malformed-output", "tamper"} {
 		t.Run(mutation, func(t *testing.T) {
 			h, _ := completionHarness(t)
@@ -72,6 +73,7 @@ func TestCompletionReviewRejectsDefinitionOnlyReceipt(t *testing.T) {
 }
 
 func TestCompletionReviewNativeCapturePublicationAndScope(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	material := filepath.Join(testutil.Root(t), "matrix.txt")
 	if err := os.WriteFile(material, []byte("Task completion evidence matrix\n"), 0600); err != nil {
@@ -137,6 +139,7 @@ func TestCompletionReviewNativeCapturePublicationAndScope(t *testing.T) {
 }
 
 func TestCompletionReviewRejectsSelectedEvidenceDrift(t *testing.T) {
+	t.Parallel()
 	for _, mode := range []string{"mapped-before-capture", "material-before-capture", "mapped-before-consume", "material-before-consume", "mapped-after-publish", "material-after-publish"} {
 		t.Run(mode, func(t *testing.T) {
 			h, linked := completionHarness(t)
@@ -191,6 +194,7 @@ func TestCompletionReviewRejectsSelectedEvidenceDrift(t *testing.T) {
 }
 
 func TestCompletionReviewSelectionAndDecisionAreExact(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	startNativeV1FixtureTask(t, h, "T-001")
 	verification := completionVerification(t, h, "T-001", linked)
@@ -251,6 +255,7 @@ func TestCompletionReviewSelectionAndDecisionAreExact(t *testing.T) {
 }
 
 func TestCompletionReviewCanSupersedeStaleCompletedRun(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	startNativeV1FixtureTask(t, h, "T-001")
 	first := completionVerification(t, h, "T-001", linked)
@@ -280,6 +285,7 @@ func TestCompletionReviewCanSupersedeStaleCompletedRun(t *testing.T) {
 }
 
 func TestCompletionReviewReplayRetainsExplicitSelectedReceipt(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	startNativeV1FixtureTask(t, h, "T-001")
 	verification := completionVerification(t, h, "T-001", linked)
@@ -308,6 +314,7 @@ func TestCompletionReviewReplayRetainsExplicitSelectedReceipt(t *testing.T) {
 }
 
 func TestCompletionReviewMaterialCannotBypassCanonicalArtifactAPI(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	startNativeV1FixtureTask(t, h, "T-001")
 	verification := completionVerification(t, h, "T-001", linked)
@@ -318,6 +325,7 @@ func TestCompletionReviewMaterialCannotBypassCanonicalArtifactAPI(t *testing.T) 
 }
 
 func TestCompletionReviewRejectsWindowsMaterialAlias(t *testing.T) {
+	t.Parallel()
 	if runtime.GOOS != "windows" {
 		t.Skip("Windows case-insensitive locator contract")
 	}
@@ -336,6 +344,7 @@ func TestCompletionReviewRejectsWindowsMaterialAlias(t *testing.T) {
 }
 
 func TestCompletionReviewQualityPreservesExactTaskEvidence(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	material := filepath.Join(testutil.Root(t), "matrix.txt")
 	if err := os.WriteFile(material, []byte("selected task evidence"), 0600); err != nil {
@@ -396,6 +405,7 @@ func TestCompletionReviewQualityPreservesExactTaskEvidence(t *testing.T) {
 }
 
 func TestCompletionReviewMaterialBoundsAndClosedSchema(t *testing.T) {
+	t.Parallel()
 	h, linked := completionHarness(t)
 	startNativeV1FixtureTask(t, h, "T-001")
 	verification := completionVerification(t, h, "T-001", linked)

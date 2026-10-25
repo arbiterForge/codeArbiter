@@ -9,15 +9,26 @@ model: sonnet
 
 # Backend Author Agent
 
+For every security policy reference below, follow `<plugin-root>/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Backend implementation executor. Use the caller's scoped obligations and selected verification approach from the `tdd` skill.
 
 ## Required Reading at the Start of Every Task
 
 Read in full before writing any code:
 
+Select the context format with `<plugin-root>/includes/knowledge.md`.
+The Markdown document paths below apply only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 1. `<project-root>/.codearbiter/tech-stack.md` — language, framework, ORM, test runner command, lint command, test file location convention
 2. `<project-root>/.codearbiter/coding-standards.md` — banned patterns, naming conventions, import style
-3. `<project-root>/.codearbiter/security-controls.md` — security-boundary rules governing this change
+3. Complete format-selected `security-controls` policy — security-boundary rules governing this change
 4. `<project-root>/.codearbiter/CONTEXT.md` — read the `stage:` frontmatter value (project maturity, 1–4); higher maturity tightens coverage expectations
 5. `<plugin-root>/includes/author-tdd-workflow.md` — route-specific verification and the authorized handoff.
 

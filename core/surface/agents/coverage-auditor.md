@@ -13,6 +13,10 @@ Read-only. Verify the suite covers all TDD obligations and exercises real behavi
 
 ## Required Reading
 
+Select the context format with `{{PLUGIN_ROOT}}/includes/knowledge.md`.
+The Markdown tech-stack path below applies only in Markdown mode; in HTML mode,
+read the corresponding exact knowledge records and declared commands.
+
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test runner, coverage command, test file convention.
 - `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — `stage:` maturity value (1–4) governing the coverage threshold.
 - `{{PLUGIN_ROOT}}/includes/maturity-coverage.md` — the threshold table AND which metrics bind. Read it; do not carry a remembered copy.
