@@ -43,9 +43,9 @@ store two independent GitHub App identities as environment secrets:
   be a bypass actor and needs no Contents write permission.
 
 While Codex npm publication is deferred (ADR-0040), the Codex publisher job
-receives no npm credential. `NPMJS_TOKEN` is passed only to the `ca-pi` job's
-authenticated publish step. When Codex npm resumes, its credential exposure
-must be re-reviewed before the token is wired back into this job. This
+receives no npm credential. Pi publishes through its npm trusted publisher
+without a reusable token (ADR-0044). When Codex npm resumes, its credential
+exposure must be re-reviewed before any credential is wired into this job. This
 repository change does not itself authorize or run a release.
 
 The verifier credential is used only for the two advisory ruleset reads; the

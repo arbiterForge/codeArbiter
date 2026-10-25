@@ -32,10 +32,18 @@ Git source. In `pi config`, confirm that the package contributes one parent
 extension and the generated `ca-*` skills. Use `-l` only when you deliberately
 want a project-local Pi setting.
 
-The convenience install is `pi install npm:@arbiterforge/ca-pi` — every
-`ca-pi-v*` tag is published to npm by CI with provenance (ADR-0029). The
+The convenience install is `pi install npm:@arbiterforge/ca-pi` — qualified
+`ca-pi-v*` releases publish to npm from CI with provenance (ADRs 0029 and 0044). The
 pinned Git install above remains the reproducible channel this runbook
 verifies against.
+
+For the npm package owner: configure a GitHub Actions trusted publisher on
+`@arbiterforge/ca-pi` with organization `arbiterForge`, repository `codeArbiter`,
+workflow filename `release.yml`, and permission to run `npm publish`. Leave the
+environment field empty unless the Pi release job uses that GitHub environment.
+The job publishes with short-lived OIDC credentials and has no npm token fallback.
+Confirm the exact setting and a successful hosted Pi release before calling the
+new authentication path qualified; saving the npm setting does not validate it.
 
 The generated public catalog counts are:
 
