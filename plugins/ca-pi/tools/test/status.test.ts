@@ -728,7 +728,8 @@ describe("Pi keyed status lifecycle", () => {
 
   test("lets a replacement session refresh immediately while stale completion remains unable to mutate it", async () => {
     const firstCwd = await bareProject();
-    const secondCwd = await bareProject();
+    const secondCwd = resolve(await bareProject(), "contains-10-in-path");
+    await mkdir(secondCwd);
     const packageRoot = await bareProject();
     const host = new StatusHost(packageRoot, []);
     let releaseFirst!: () => void;
@@ -788,8 +789,9 @@ describe("Pi keyed status lifecycle", () => {
     expect(render()).toContain("20");
     releaseFirst();
     await firstStart;
-    expect(render()).toContain("20");
-    expect(render()).not.toContain("10");
+    const sessionRow = render().split("\n").find((line) => /│\s*Session\s*│/u.test(line));
+    expect(sessionRow).toMatch(/↓\s+20\s+↑/u);
+    expect(sessionRow).not.toMatch(/↓\s+10\s+↑/u);
   });
 
   test("returns a nonempty bounded ASCII fallback even when both injected width functions throw", async () => {
