@@ -110,6 +110,9 @@ func (f *FS) dir(rel string, create bool) (*os.File, error) {
 			if e == syscall.ENOENT {
 				return nil, os.ErrNotExist
 			}
+			if isOperationalIO(e) {
+				return nil, e
+			}
 			return nil, fault.New("UNSAFE_PATH", "directory is not a safe real directory")
 		}
 		cur = os.NewFile(uintptr(n), part)
@@ -129,11 +132,11 @@ func (f *FS) Read(rel string, limit int64) ([]byte, error) {
 	}
 	d, n, e := f.parent(rel, false)
 	if e != nil {
-		return nil, e
+		return nil, ioFault("read artifact", rel, e)
 	}
 	defer d.Close()
 	b, _, e := f.readAt(d, n, limit)
-	return b, e
+	return b, ioFault("read artifact", rel, e)
 }
 
 // readAt opens name relative to the directory descriptor d exactly once and
@@ -145,12 +148,18 @@ func (f *FS) readAt(d *os.File, n string, limit int64) ([]byte, os.FileInfo, err
 		if e == syscall.ENOENT {
 			return nil, nil, os.ErrNotExist
 		}
+		if isOperationalIO(e) {
+			return nil, nil, e
+		}
 		return nil, nil, fault.New("UNSAFE_PATH", "file is not a safe readable regular file")
 	}
 	file := os.NewFile(uintptr(fd), n)
 	defer file.Close()
 	before, e := file.Stat()
-	if e != nil || !before.Mode().IsRegular() {
+	if e != nil {
+		return nil, nil, e
+	}
+	if !before.Mode().IsRegular() {
 		return nil, nil, fault.New("UNSAFE_PATH", "only regular files can be read")
 	}
 	if before.Size() > limit {
@@ -178,7 +187,11 @@ func (f *FS) readAt(d *os.File, n string, limit int64) ([]byte, os.FileInfo, err
 	// file that was opened. Identity (device and inode) is therefore read from the
 	// name, without following links, and must still be the opened file's.
 	f.Stats.entryCheck()
-	if !sameNamedFile(d, n, bs) {
+	same, e := sameNamedFile(d, n, bs)
+	if e != nil {
+		return nil, nil, e
+	}
+	if !same {
 		return nil, nil, fault.New("CONCURRENT_CHANGE", "file changed while being read")
 	}
 	return b, before, nil
@@ -191,17 +204,24 @@ const oPath = 0x200000
 // sameNamedFile reports whether name, resolved relative to d without following a
 // link, is the file whose identity is want. O_PATH yields a descriptor for the
 // name itself (a replacing symlink included) without opening the file's data.
-func sameNamedFile(d *os.File, name string, want *syscall.Stat_t) bool {
+func sameNamedFile(d *os.File, name string, want *syscall.Stat_t) (bool, error) {
 	fd, e := syscall.Openat(int(d.Fd()), name, oPath|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
 	if e != nil {
-		return false
+		if isOperationalIO(e) {
+			return false, e
+		}
+		return false, nil
 	}
 	defer syscall.Close(fd)
 	var named syscall.Stat_t
-	return syscall.Fstat(fd, &named) == nil && named.Dev == want.Dev && named.Ino == want.Ino
+	if e := syscall.Fstat(fd, &named); e != nil {
+		return false, e
+	}
+	return named.Dev == want.Dev && named.Ino == want.Ino, nil
 }
 
-func (f *FS) Exists(rel string) (bool, error) {
+func (f *FS) Exists(rel string) (_ bool, err error) {
+	defer func() { err = ioFault("inspect artifact", rel, err) }()
 	d, n, e := f.parent(rel, false)
 	if e != nil {
 		if errors.Is(e, os.ErrNotExist) {
@@ -214,6 +234,9 @@ func (f *FS) Exists(rel string) (bool, error) {
 	if e == syscall.ENOENT {
 		return false, nil
 	}
+	if isOperationalIO(e) {
+		return false, e
+	}
 	if e != nil {
 		return false, fault.New("UNSAFE_PATH", "path exists but is unsafe")
 	}
@@ -224,7 +247,8 @@ func (f *FS) Exists(rel string) (bool, error) {
 // ListUnfollowed returns directory entries without dereferencing their targets.
 // Callers must apply their explicit exclusion policy before opening an entry;
 // subsequent Read/dir operations still refuse every symlink component.
-func (f *FS) ListUnfollowed(rel string) ([]os.DirEntry, error) {
+func (f *FS) ListUnfollowed(rel string) (_ []os.DirEntry, err error) {
+	defer func() { err = ioFault("list directory", rel, err) }()
 	d, e := f.dir(rel, false)
 	if e != nil {
 		return nil, e
@@ -257,7 +281,8 @@ type Dir struct {
 }
 
 // OpenDir anchors the real directory at rel.
-func (f *FS) OpenDir(rel string) (*Dir, error) {
+func (f *FS) OpenDir(rel string) (_ *Dir, err error) {
+	defer func() { err = ioFault("open directory", rel, err) }()
 	fd, e := f.dir(rel, false)
 	if e != nil {
 		return nil, e
@@ -270,7 +295,8 @@ func (d *Dir) Close() error { return d.fd.Close() }
 // Entries lists the directory without dereferencing any entry, sorted by name.
 // The anchoring descriptor is rewound first, so a repeated call lists the same
 // entries again instead of continuing from the previous end of directory.
-func (d *Dir) Entries() ([]os.DirEntry, error) {
+func (d *Dir) Entries() (_ []os.DirEntry, err error) {
+	defer func() { err = ioFault("list directory", d.rel, err) }()
 	d.f.Stats.enumOpen()
 	if _, e := d.fd.Seek(0, io.SeekStart); e != nil {
 		return nil, e
@@ -280,7 +306,8 @@ func (d *Dir) Entries() ([]os.DirEntry, error) {
 
 // OpenSub anchors a child directory named by a listed entry. Anything that the
 // listing did not report as a real directory is refused.
-func (d *Dir) OpenSub(entry os.DirEntry) (*Dir, error) {
+func (d *Dir) OpenSub(entry os.DirEntry) (_ *Dir, err error) {
+	defer func() { err = ioFault("open directory", d.rel+"/"+entry.Name(), err) }()
 	if !entry.IsDir() {
 		return nil, fault.New("UNSAFE_PATH", "only real directories can be descended")
 	}
@@ -293,6 +320,9 @@ func (d *Dir) OpenSub(entry os.DirEntry) (*Dir, error) {
 		if e == syscall.ENOENT {
 			return nil, os.ErrNotExist
 		}
+		if isOperationalIO(e) {
+			return nil, e
+		}
 		return nil, fault.New("UNSAFE_PATH", "directory is not a safe real directory")
 	}
 	return &Dir{f: d.f, fd: os.NewFile(uintptr(fd), entry.Name()), rel: d.rel + "/" + entry.Name()}, nil
@@ -301,7 +331,8 @@ func (d *Dir) OpenSub(entry os.DirEntry) (*Dir, error) {
 // ReadEntry opens a listed regular file once and returns its bytes together
 // with the identity of the opened handle. Anything not reported as a plain
 // regular file by the listing is refused; O_NOFOLLOW backs that at open time.
-func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) ([]byte, os.FileInfo, error) {
+func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) (_ []byte, _ os.FileInfo, err error) {
+	defer func() { err = ioFault("read artifact", d.rel+"/"+entry.Name(), err) }()
 	if entry.Type() != 0 {
 		return nil, nil, fault.New("UNSAFE_PATH", "only regular files can be read")
 	}
@@ -317,7 +348,8 @@ func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) ([]byte, os.FileInfo, er
 // Current re-checks, without following, that name in d still resolves to the
 // very directory sub anchors. A scan that reuses a cached anchor calls it at each
 // reuse, so the descriptor never outlives a swap of the name it was opened under.
-func (d *Dir) Current(name string, sub *Dir) error {
+func (d *Dir) Current(name string, sub *Dir) (err error) {
+	defer func() { err = ioFault("inspect directory", d.rel+"/"+name, err) }()
 	if e := entryName(name); e != nil {
 		return e
 	}
@@ -329,6 +361,12 @@ func (d *Dir) Current(name string, sub *Dir) error {
 		syscall.Close(fd)
 	}
 	held, e2 := sub.fd.Stat()
+	if isOperationalIO(e) {
+		return e
+	}
+	if isOperationalIO(e2) {
+		return e2
+	}
 	if e != nil || e2 != nil || named.Mode&syscall.S_IFMT != syscall.S_IFDIR {
 		return fault.New("CONCURRENT_CHANGE", "directory changed after it was anchored")
 	}
@@ -342,7 +380,8 @@ func (d *Dir) Current(name string, sub *Dir) error {
 // Has reports whether name exists in the directory under any spelling the
 // platform resolves, without following it. It exists only to tell a missing
 // path from a non-canonical spelling of an existing one.
-func (d *Dir) Has(name string) (bool, error) {
+func (d *Dir) Has(name string) (_ bool, err error) {
+	defer func() { err = ioFault("inspect artifact", d.rel+"/"+name, err) }()
 	if e := entryName(name); e != nil {
 		return false, e
 	}
@@ -372,7 +411,8 @@ func (f *FS) List(rel string) ([]os.DirEntry, error) {
 	}
 	return out, nil
 }
-func (f *FS) Mkdir(rel string) error {
+func (f *FS) Mkdir(rel string) (err error) {
+	defer func() { err = ioFault("create directory", rel, err) }()
 	d, e := f.dir(rel, true)
 	if e == nil {
 		e = d.Sync()
@@ -380,7 +420,8 @@ func (f *FS) Mkdir(rel string) error {
 	}
 	return e
 }
-func (f *FS) create(rel string, b []byte, mode uint32) error {
+func (f *FS) create(rel string, b []byte, mode uint32) (err error) {
+	defer func() { err = ioFault("create artifact", rel, err) }()
 	d, n, e := f.parent(rel, true)
 	if e != nil {
 		return e
@@ -416,7 +457,8 @@ func (f *FS) create(rel string, b []byte, mode uint32) error {
 	ok = true
 	return nil
 }
-func (f *FS) remove(rel string) error {
+func (f *FS) remove(rel string) (err error) {
+	defer func() { err = ioFault("remove artifact", rel, err) }()
 	d, n, e := f.parent(rel, false)
 	if e != nil {
 		return e
@@ -442,7 +484,8 @@ func linkat(oldfd int, old string, newfd int, new string) error {
 	}
 	return nil
 }
-func (f *FS) replace(stage, dest string, createOnly bool) error {
+func (f *FS) replace(stage, dest string, createOnly bool) (err error) {
+	defer func() { err = ioFault("replace artifact", dest, err) }()
 	a, an, e := f.parent(stage, false)
 	if e != nil {
 		return e
@@ -488,7 +531,8 @@ func (f *FS) updateMetadata(rel string, b []byte) error {
 }
 
 // Stat uses the anchored descriptor, never DirEntry.Info's name-based fallback.
-func (f *FS) Stat(rel string) (os.FileInfo, error) {
+func (f *FS) Stat(rel string) (_ os.FileInfo, err error) {
+	defer func() { err = ioFault("inspect artifact", rel, err) }()
 	d, n, e := f.parent(rel, false)
 	if e != nil {
 		return nil, e
