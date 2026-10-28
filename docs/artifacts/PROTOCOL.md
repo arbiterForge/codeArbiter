@@ -763,9 +763,11 @@ new writes; an unreadable, oversized or malformed final journal blocks both new
 writes and recovery of that operation. Orphaned or missing history blocks
 `Infrastructure()` snapshots but does not by itself block committed replay or
 new writes. Preserve the entire store and inspect the named entry before
-changing it. For a foreign entry, retain its bytes and metadata outside the
-store, establish that no valid journal references it, and reconcile the entry
-under the writer lock before retrying the blocked operation. A final `.json`
+changing it. Stop all artifact operations that can access this store, including
+other `ca-artifact` processes, for the full manual reconciliation. For a foreign
+entry, retain its bytes and metadata outside the store, establish that no valid
+journal references it, and reconcile the entry before resuming operations. A
+final `.json`
 may describe already changed targets even when no
 `.new` stage remains, so stage-file absence is not evidence that it is safe to
 remove the journal. Restore readability or the exact retained journal bytes,
