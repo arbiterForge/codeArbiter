@@ -66,6 +66,9 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 			if os.IsNotExist(e) {
 				return nil, fault.At("CORRUPT_JOURNAL", "", p, "before-image is missing")
 			}
+			if fault.Code(e) == "MAX_BYTES" {
+				return nil, fault.At("CORRUPT_JOURNAL", "", p, "before-image exceeds its size limit; preserve bytes and reconcile manually")
+			}
 			return nil, e
 		}
 		if canonical.BytesHash(b) != h {
