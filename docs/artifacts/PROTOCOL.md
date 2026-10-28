@@ -755,6 +755,39 @@ requirement.
 
 Journal 0.2.0 records the bounded original completion result. Identical retries preserve that result even after later artifact edits. Journal 0.1.0 remains readable and explicitly requests a fresh identity where original metadata is absent. Rolled-back operations return `OPERATION_ROLLED_BACK`, never a successful mutation result. Export responses use `companion_links` for the disposition of companion links.
 
+## Obstructed transaction stores
+
+`Pending()` and `Infrastructure()` name the offending repository-relative
+transaction or history entry in `field`. An unexpected transaction entry blocks
+new writes; an unreadable, oversized or malformed final journal blocks both new
+writes and recovery of that operation. Orphaned or missing history blocks
+`Infrastructure()` snapshots but does not by itself block committed replay or
+new writes. Preserve the entire store and inspect the named entry before
+changing it. Stop all artifact operations that can access this store, including
+other `ca-artifact` processes, for the full manual reconciliation. For a foreign
+entry, retain its bytes and metadata outside the store, establish that no valid
+journal references it, and reconcile the entry before resuming operations. A
+final `.json`
+may describe already changed targets even when no
+`.new` stage remains, so stage-file absence is not evidence that it is safe to
+remove the journal. Restore readability or the exact retained journal bytes,
+then use the normal `recover` operation under the writer lock. If the journal
+cannot be recovered, reconcile each target against trusted before and after
+evidence; the engine must not guess a transaction outcome.
+
+A missing before-image blocks snapshots, while valid committed journals still
+support `Pending()` and exact-ID replay. A new write does not reconstruct the
+missing history. Restore the before-image only from a trusted copy
+whose SHA-256 matches the `before_sha256` in its valid journal entry, then rerun
+the snapshot. A mismatch remains a corruption error. The engine treats
+`.codearbiter/.artifacts` as local operational metadata: a fresh clone or
+worktree can initialize without inherited journals, and Git tracking is not
+required for normal operation. This repository tracks no files there and does
+not ignore the directory. Git history is therefore not a backup for these
+before-images. Preserve the whole local store when exact-ID replay, rollback,
+or audit history must survive a worktree move or cleanup. Do not prune or
+quarantine history without a separate policy for recovery, replay and audit.
+
 
 ## Initial paired approval and delegated SMARTS methods
 

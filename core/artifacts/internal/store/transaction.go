@@ -2,6 +2,7 @@ package store
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -73,14 +74,28 @@ func (f *FS) journal(id string) (map[string]any, error) {
 	}
 	b, e := f.Read(journalPath(id), 4<<20)
 	if e != nil {
-		return nil, e
+		if os.IsNotExist(e) {
+			return nil, e
+		}
+		var known *fault.Error
+		if errors.As(e, &known) {
+			if known.Code == "MAX_BYTES" {
+				return nil, fault.At("CORRUPT_JOURNAL", "", journalPath(id), "journal exceeds its size limit; preserve bytes and reconcile manually")
+			}
+			copy := *known
+			if copy.Field == "" {
+				copy.Field = journalPath(id)
+			}
+			return nil, &copy
+		}
+		return nil, fault.At("IO_ERROR", "", journalPath(id), "journal cannot be read; restore access and retry")
 	}
 	j, e := canonical.Object(b)
 	if e != nil {
-		return nil, e
+		return nil, fault.At("CORRUPT_JOURNAL", "", journalPath(id), "journal cannot be parsed; preserve bytes and reconcile manually")
 	}
 	if e = validJournal(id, j); e != nil {
-		return nil, e
+		return nil, fault.At("CORRUPT_JOURNAL", "", journalPath(id), "journal is malformed; preserve bytes and reconcile manually")
 	}
 	return j, nil
 }
@@ -178,18 +193,25 @@ func (f *FS) Pending() ([]string, error) {
 	}
 	out := []string{}
 	for _, n := range names {
+		entry := meta + "/transactions/" + n.Name()
 		if n.IsDir() {
-			return nil, fault.New("CORRUPT_JOURNAL", "unexpected transaction subdirectory")
+			return nil, fault.At("CORRUPT_JOURNAL", "", entry, "unexpected transaction subdirectory; preserve and inspect it")
 		}
 		if strings.HasSuffix(n.Name(), ".next") {
 			continue
 		}
 		if !strings.HasSuffix(n.Name(), ".json") {
-			return nil, fault.New("CORRUPT_JOURNAL", "unexpected transaction file")
+			return nil, fault.At("CORRUPT_JOURNAL", "", entry, "unexpected transaction file; preserve and inspect it")
 		}
 		id := strings.TrimSuffix(n.Name(), ".json")
+		if !opPattern.MatchString(id) {
+			return nil, fault.At("CORRUPT_JOURNAL", "", entry, "invalid transaction filename; preserve and inspect it")
+		}
 		j, e := f.journal(id)
 		if e != nil {
+			if os.IsNotExist(e) {
+				return nil, fault.At("RECOVERY_REQUIRED", "", entry, "listed transaction journal disappeared; inspect store and retry")
+			}
 			return nil, e
 		}
 		if model.S(j["state"]) == "prepared" {
