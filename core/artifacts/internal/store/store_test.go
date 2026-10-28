@@ -6,9 +6,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
+	iofs "io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,6 +15,10 @@ import (
 	"syscall"
 	"testing"
 	"time"
+
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
 func fs(t *testing.T) *FS {
@@ -76,15 +78,20 @@ func TestPartialJournalStageRequiresManualReconciliation(t *testing.T) {
 
 func TestPreJournalIOFailureHasBoundedPublicDiagnostic(t *testing.T) {
 	for _, tc := range []struct {
-		name  string
-		cause error
+		name, kind string
+		cause      error
 	}{
-		{"EACCES", syscall.EACCES},
-		{"EPERM", syscall.EPERM},
-		{"EIO", syscall.EIO},
-		{"ENOSPC", syscall.ENOSPC},
+		{"EACCES", "EACCES", syscall.EACCES},
+		{"EPERM", "EPERM", syscall.EPERM},
+		{"EIO", "EIO", syscall.EIO},
+		{"ENOSPC", "ENOSPC", syscall.ENOSPC},
+		{"permission sentinel", "EACCES", iofs.ErrPermission},
+		{"EROFS", "EROFS", syscall.EROFS},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			if !isOperationalIO(tc.cause) {
+				t.Fatal("operational fault was not recognized before path classification")
+			}
 			f := fs(t)
 			const target = ".codearbiter/specs/a.html"
 			f.Inject = func(step string) error {
@@ -99,13 +106,23 @@ func TestPreJournalIOFailureHasBoundedPublicDiagnostic(t *testing.T) {
 			if pub.Code != "IO_ERROR" || fault.Exit(err) != 5 {
 				t.Fatalf("want IO_ERROR and exit 5, got %v and %d", pub, fault.Exit(err))
 			}
-			if pub.Field != target || !strings.Contains(pub.Message, tc.name) || strings.Contains(pub.Message, "credential=do-not-echo") {
+			if pub.Field != target || !strings.Contains(pub.Message, tc.kind) || strings.Contains(pub.Message, "credential=do-not-echo") {
 				t.Fatalf("public diagnostic lost target or leaked source: %+v", pub)
 			}
 			if _, err := f.Read(target, 100); !errors.Is(err, os.ErrNotExist) {
 				t.Fatalf("pre-journal I/O failure wrote target: %v", err)
 			}
 		})
+	}
+}
+
+func TestUnknownIOFailureIsNotReclassified(t *testing.T) {
+	cause := errors.New("unknown test failure")
+	if isOperationalIO(cause) {
+		t.Fatal("unknown error was treated as a known OS I/O class")
+	}
+	if got := ioFault("inspect artifact", "draft.html", cause); got != cause {
+		t.Fatalf("unknown error was reclassified: %v", got)
 	}
 }
 
