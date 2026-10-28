@@ -24,6 +24,14 @@ Supply one UTF-8 JSON object carrying the exact `protocol` value. Standard outpu
 
 Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a partial response. Unknown fields and operations fail; there is no `force` field and no permissive passthrough. Query `schema` for the current closed request shape rather than guessing flags.
 
+Storage permission, device I/O, capacity, and closed-handle failures return
+`IO_ERROR` with a repository-relative target in `field` and a bounded operation
+and OS error class when available. Raw OS paths and file contents are not copied into the
+envelope. `IO_ERROR`, `LOCK_FAILED`, `LOCK_TIMEOUT`, and `NO_LOCAL_STORE` use
+exit 5; `CORRUPT_JOURNAL` and `ORPHAN_HISTORY` use recovery exit 7. The JSON
+`code` remains the authoritative classification. Missing files and unsafe path
+objects retain their separate error codes.
+
 On Windows, `index` and shared read-only observations (including `identity` and
 `eligible`) return `NO_LOCAL_STORE` when `.codearbiter/`, `.codearbiter/.artifacts/`,
 or `store.lock` is missing. This identifies absent or incomplete local metadata,

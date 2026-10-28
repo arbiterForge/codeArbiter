@@ -54,7 +54,13 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 			return nil, fault.New("ORPHAN_HISTORY", "unreferenced history file; preserve it and retry the original operation with identical input or inspect retained history")
 		}
 		b, e := f.Read(p, canonical.MaxBytes)
-		if e != nil || canonical.BytesHash(b) != h {
+		if e != nil {
+			if !os.IsNotExist(e) {
+				return nil, e
+			}
+			return nil, fault.New("CORRUPT_JOURNAL", "before-image is missing")
+		}
+		if canonical.BytesHash(b) != h {
 			return nil, fault.New("CORRUPT_JOURNAL", "before-image bytes changed")
 		}
 		out[p] = true

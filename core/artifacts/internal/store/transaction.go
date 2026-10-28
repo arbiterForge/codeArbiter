@@ -285,7 +285,7 @@ func (f *FS) Commit(id, requestHash string, edits []Edit, result ...map[string]a
 		}
 		entries = append(entries, map[string]any{"path": ed.Path, "stage": stage, "backup": backup, "before_sha256": hash(ed.Before), "after_sha256": hash(ed.After), "size": int64(len(ed.After))})
 		if e := f.step(fmt.Sprintf("after-stage-%d", i)); e != nil {
-			return Outcome{}, e
+			return Outcome{}, ioFault("stage artifact", ed.Path, e)
 		}
 	}
 	j := map[string]any{"format": "codearbiter.transaction/0.2.0", "operation_id": id, "request_sha256": requestHash, "state": "prepared", "entries": entries, "result": response}
