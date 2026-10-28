@@ -737,6 +737,12 @@ output and a timeout, and do not invoke a shell. The package guard permits this
 reviewed boundary while continuing to reject other process launches, network
 packages and direct network syscalls.
 
+Completion workspace probes require Git 2.45 or newer, which supports
+`--no-lazy-fetch`. An older Git that rejects this option returns
+`UNSUPPORTED_VERSION` (exit 6); the engine does not retry without the no-fetch
+guard. This requirement is separate from the ADR lifecycle verifier's Git
+requirement.
+
 ## Durable replay results
 
 Journal 0.2.0 records the bounded original completion result. Identical retries preserve that result even after later artifact edits. Journal 0.1.0 remains readable and explicitly requests a fresh identity where original metadata is absent. Rolled-back operations return `OPERATION_ROLLED_BACK`, never a successful mutation result. Export responses use `companion_links` for the disposition of companion links.

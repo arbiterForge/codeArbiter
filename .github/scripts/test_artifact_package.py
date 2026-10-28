@@ -1342,7 +1342,7 @@ class PackageTests(unittest.TestCase):
                     if err != nil { return err }
                     if filepath.ToSlash(relative) == "internal/evidence/completion_workspace.go" {
                         reviewedProbe := map[string]string{
-                            "completionGitText": "5d233f0d699008c3973452171ece24915948aa37db804b0f434fe8e401c6eabe",
+                            "completionGitText": "6f3a6cc465c18d6f284ae142212e1e5265d1e0bfdaf6423da5a1bf0f5b869673",
                             "completionGitEnv": "bb214ce0faba321f4459695985ea58219bd530cf6e8c3a0714295c55dd35ac4c",
                         }
                         found := map[string]int{}

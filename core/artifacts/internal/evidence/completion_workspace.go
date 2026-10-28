@@ -267,6 +267,10 @@ func completionGitText(root string, probe completionGitProbe) (string, error) {
 		if probe == completionGitRootIgnored && cmd.ProcessState != nil && cmd.ProcessState.ExitCode() == 1 {
 			return "", nil
 		}
+		if cmd.ProcessState != nil && cmd.ProcessState.ExitCode() == 129 &&
+			strings.Contains(stderr.String(), "--no-lazy-fetch") {
+			return "", fault.New("UNSUPPORTED_VERSION", "completion Git probes require Git 2.45 or newer with --no-lazy-fetch")
+		}
 		return "", fault.New("WORKSPACE_DRIFT", "Git workspace identity or inventory is unavailable")
 	}
 	if probe == completionGitRootIgnored {
