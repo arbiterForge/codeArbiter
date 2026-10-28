@@ -2,11 +2,13 @@ package store
 
 import (
 	"encoding/hex"
+	"os"
+	"sort"
+	"strings"
+
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
-	"os"
-	"strings"
 )
 
 // Infrastructure proves each transaction/history file is known generated
@@ -23,15 +25,21 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 	for _, n := range names {
 		p := meta + "/transactions/" + n.Name()
 		if !strings.HasSuffix(p, ".json") || n.IsDir() {
-			return nil, fault.New("RECOVERY_REQUIRED", "unexpected transaction staging file requires reconciliation")
+			return nil, fault.At("RECOVERY_REQUIRED", "", p, "unexpected transaction entry requires reconciliation")
 		}
 		id := strings.TrimSuffix(n.Name(), ".json")
+		if !opPattern.MatchString(id) {
+			return nil, fault.At("CORRUPT_JOURNAL", "", p, "invalid transaction filename; preserve and inspect it")
+		}
 		j, e := f.journal(id)
 		if e != nil {
+			if os.IsNotExist(e) {
+				return nil, fault.At("RECOVERY_REQUIRED", "", p, "listed transaction journal disappeared; inspect store and retry")
+			}
 			return nil, e
 		}
 		if model.S(j["state"]) == "prepared" {
-			return nil, fault.New("RECOVERY_REQUIRED", "pending transaction blocks input snapshots")
+			return nil, fault.At("RECOVERY_REQUIRED", "", p, "pending transaction blocks input snapshots")
 		}
 		out[p] = true
 		for _, v := range model.A(j["entries"]) {
@@ -51,23 +59,28 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 		p := meta + "/history/" + n.Name()
 		h, ok := hist[p]
 		if !ok || n.IsDir() {
-			return nil, fault.New("ORPHAN_HISTORY", "unreferenced history file; preserve it and retry the original operation with identical input or inspect retained history")
+			return nil, fault.At("ORPHAN_HISTORY", "", p, "unreferenced history entry; preserve and inspect it")
 		}
 		b, e := f.Read(p, canonical.MaxBytes)
 		if e != nil {
-			if !os.IsNotExist(e) {
-				return nil, e
+			if os.IsNotExist(e) {
+				return nil, fault.At("CORRUPT_JOURNAL", "", p, "before-image is missing")
 			}
-			return nil, fault.New("CORRUPT_JOURNAL", "before-image is missing")
+			return nil, e
 		}
 		if canonical.BytesHash(b) != h {
-			return nil, fault.New("CORRUPT_JOURNAL", "before-image bytes changed")
+			return nil, fault.At("CORRUPT_JOURNAL", "", p, "before-image bytes changed")
 		}
 		out[p] = true
 		delete(hist, p)
 	}
 	if len(hist) > 0 {
-		return nil, fault.New("CORRUPT_JOURNAL", "before-image is missing")
+		missing := make([]string, 0, len(hist))
+		for p := range hist {
+			missing = append(missing, p)
+		}
+		sort.Strings(missing)
+		return nil, fault.At("CORRUPT_JOURNAL", "", missing[0], "before-image is missing")
 	}
 	return out, nil
 }
