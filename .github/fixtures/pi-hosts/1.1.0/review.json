@@ -10,7 +10,7 @@
   "source_commit": "abe508e1b89912adde45528136c3221eb69acdd7",
   "result": "PASS",
   "source_tag": "v1.1.0",
-  "reviewed_at": "2026-10-09",
+  "reviewed_at": "2026-10-27",
   "reviewer": "ca-add-dep:C019-DEPENDENCY",
   "licenses": {
     "result": "PASS",
@@ -61,7 +61,7 @@
       "package": "undici",
       "version": "8.10.2",
       "severity": "high",
-      "reason": "Content-encoding error DoS. Published 2026-10-23 after this review. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "reason": "Content-encoding error DoS. Published 2026-10-23 and re-reviewed 2026-10-27. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
       "baseline_version": "1.0.2",
       "backstop": "2026-11-08"
     },
@@ -70,7 +70,7 @@
       "package": "undici",
       "version": "8.10.2",
       "severity": "moderate",
-      "reason": "EventSource-parser memory DoS. Published 2026-10-23 after this review. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "reason": "EventSource-parser memory DoS. Published 2026-10-23 and re-reviewed 2026-10-27. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
       "baseline_version": "1.0.2",
       "backstop": "2026-11-08"
     },
@@ -79,7 +79,52 @@
       "package": "undici",
       "version": "8.10.2",
       "severity": "moderate",
-      "reason": "Subresource Integrity token bypass. Published 2026-10-23 after this review. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "reason": "Subresource Integrity token bypass. Published 2026-10-23 and re-reviewed 2026-10-27. Pi pins undici 8.10.2 exactly in every release through 1.4.0, so no supported host clears it; already present in the 1.0.2 baseline. The adapter contract runs the host offline against fixtures. ADR-0041 strict-subset retention.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-4w7w-5xrc-9h26",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "high",
+      "reason": "Cross-origin redirect and shared-cache poisoning or disclosure. Re-reviewed 2026-10-27. Pi 1.1.0 and latest 1.4.0 pin undici 8.10.2; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, and general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with patched undici.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-2m5v-pch6-74hx",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "high",
+      "reason": "TLS Agent options drop can bypass certificate validation. Re-reviewed 2026-10-27. Pi 1.1.0 and latest 1.4.0 pin undici 8.10.2; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, and general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with patched undici.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-qrxm-fqhp-jwvm",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "high",
+      "reason": "TLS 1.2 certificate-changing renegotiation denial of service. Re-reviewed 2026-10-27. Pi 1.1.0 and latest 1.4.0 pin undici 8.10.2; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, and general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with patched undici.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-9fm3-97px-rjf6",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "moderate",
+      "reason": "WebSocket automatic PONG buffering denial of service. Re-reviewed 2026-10-27. Pi 1.1.0 and latest 1.4.0 pin undici 8.10.2; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, and general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with patched undici.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-55wc-3pg8-jfw6",
+      "package": "undici",
+      "version": "8.10.2",
+      "severity": "moderate",
+      "reason": "Decompress interceptor exception denial of service. Re-reviewed 2026-10-27. Pi 1.1.0 and latest 1.4.0 pin undici 8.10.2; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, and general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with patched undici.",
       "baseline_version": "1.0.2",
       "backstop": "2026-11-08"
     }
