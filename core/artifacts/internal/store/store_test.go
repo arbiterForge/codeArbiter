@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -70,6 +71,134 @@ func TestPartialJournalStageRequiresManualReconciliation(t *testing.T) {
 	}
 	if b, e := os.ReadFile(stage); e != nil || string(b) != `{"format":` {
 		t.Fatalf("orphan stage was not preserved: %q %v", b, e)
+	}
+}
+
+func TestPreJournalIOFailureHasBoundedPublicDiagnostic(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		cause error
+	}{
+		{"EACCES", syscall.EACCES},
+		{"EPERM", syscall.EPERM},
+		{"EIO", syscall.EIO},
+		{"ENOSPC", syscall.ENOSPC},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := fs(t)
+			const target = ".codearbiter/specs/a.html"
+			f.Inject = func(step string) error {
+				if step == "after-stage-0" {
+					return &os.PathError{Op: "write", Path: "private/credential=do-not-echo", Err: tc.cause}
+				}
+				return nil
+			}
+			_, err := f.Commit("io-stage-0001", canonical.BytesHash([]byte("request")),
+				[]Edit{{Path: target, After: []byte("new")}})
+			pub := fault.Public(err)
+			if pub.Code != "IO_ERROR" || fault.Exit(err) != 5 {
+				t.Fatalf("want IO_ERROR and exit 5, got %v and %d", pub, fault.Exit(err))
+			}
+			if pub.Field != target || !strings.Contains(pub.Message, tc.name) || strings.Contains(pub.Message, "credential=do-not-echo") {
+				t.Fatalf("public diagnostic lost target or leaked source: %+v", pub)
+			}
+			if _, err := f.Read(target, 100); !errors.Is(err, os.ErrNotExist) {
+				t.Fatalf("pre-journal I/O failure wrote target: %v", err)
+			}
+		})
+	}
+}
+
+func TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics(t *testing.T) {
+	const file = ".codearbiter/specs/a.html"
+	const directory = ".codearbiter/specs"
+	for _, tc := range []struct {
+		name, target string
+		call         func(*FS) error
+	}{
+		{"read", file, func(f *FS) error { _, err := f.Read(file, 100); return err }},
+		{"create", file, func(f *FS) error { return f.create(file, []byte("new"), 0600) }},
+		{"mkdir", directory, func(f *FS) error { return f.Mkdir(directory) }},
+		{"exists", directory, func(f *FS) error { _, err := f.Exists(directory); return err }},
+		{"list", directory, func(f *FS) error { _, err := f.ListUnfollowed(directory); return err }},
+		{"open directory", directory, func(f *FS) error { _, err := f.OpenDir(directory); return err }},
+		{"stat", directory, func(f *FS) error { _, err := f.Stat(directory); return err }},
+		{"remove", file, func(f *FS) error { return f.remove(file) }},
+		{"replace", file, func(f *FS) error { return f.replace("stage.html", file, false) }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := fs(t)
+			if err := f.Close(); err != nil {
+				t.Fatal(err)
+			}
+			err := tc.call(f)
+			pub := fault.Public(err)
+			if pub.Code != "IO_ERROR" || pub.Field != tc.target || fault.Exit(err) != 5 || strings.Contains(pub.Message, f.Root) {
+				t.Fatalf("want bounded I/O diagnostic for %s, got %+v (exit %d)", tc.target, pub, fault.Exit(err))
+			}
+		})
+	}
+}
+
+func TestClosedAnchoredDirectoryHasBoundedPublicDiagnostics(t *testing.T) {
+	for _, tc := range []struct {
+		name, target string
+		call         func(*Dir, os.DirEntry) error
+	}{
+		{"entries", "anchor", func(d *Dir, _ os.DirEntry) error { _, err := d.Entries(); return err }},
+		{"open subdirectory", "anchor/child", func(d *Dir, entry os.DirEntry) error { _, err := d.OpenSub(entry); return err }},
+		{"has", "anchor/child", func(d *Dir, _ os.DirEntry) error { _, err := d.Has("child"); return err }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := fs(t)
+			if err := f.Mkdir("anchor/child"); err != nil {
+				t.Fatal(err)
+			}
+			dir, err := f.OpenDir("anchor")
+			if err != nil {
+				t.Fatal(err)
+			}
+			entries, err := dir.Entries()
+			if err != nil || len(entries) != 1 {
+				t.Fatalf("list child fixture: %v, %d entries", err, len(entries))
+			}
+			if err := dir.Close(); err != nil {
+				t.Fatal(err)
+			}
+			err = tc.call(dir, entries[0])
+			pub := fault.Public(err)
+			if pub.Code != "IO_ERROR" || pub.Field != tc.target || fault.Exit(err) != 5 || strings.Contains(pub.Message, f.Root) {
+				t.Fatalf("want bounded anchored I/O diagnostic, got %+v (exit %d)", pub, fault.Exit(err))
+			}
+		})
+	}
+}
+
+func TestClosedParentCurrentHasBoundedPublicDiagnostic(t *testing.T) {
+	f := fs(t)
+	if err := f.Mkdir("anchor/child"); err != nil {
+		t.Fatal(err)
+	}
+	parent, err := f.OpenDir("anchor")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entries, err := parent.Entries()
+	if err != nil || len(entries) != 1 {
+		t.Fatalf("list child fixture: %v, %d entries", err, len(entries))
+	}
+	sub, err := parent.OpenSub(entries[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sub.Close()
+	if err := parent.Close(); err != nil {
+		t.Fatal(err)
+	}
+	err = parent.Current("child", sub)
+	pub := fault.Public(err)
+	if pub.Code != "IO_ERROR" || pub.Field != "anchor/child" || fault.Exit(err) != 5 {
+		t.Fatalf("want bounded current-directory I/O diagnostic, got %+v (exit %d)", pub, fault.Exit(err))
 	}
 }
 func TestReplaceRecovery(t *testing.T) {
