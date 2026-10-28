@@ -121,6 +121,33 @@ func TestChangedBeforeImageNamesPathWithoutChangingBytes(t *testing.T) {
 	}
 }
 
+func TestOversizedBeforeImageNamesPathAndPreservesBytes(t *testing.T) {
+	f := fs(t)
+	request := canonical.BytesHash([]byte("request"))
+	if _, err := f.Commit("large-seed-001", request, []Edit{{Path: "draft.html", After: []byte("old")}}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.Commit("large-next-001", request, []Edit{{Path: "draft.html", Before: []byte("old"), After: []byte("new")}}); err != nil {
+		t.Fatal(err)
+	}
+	rel := meta + "/history/large-next-001-0.before"
+	absolute := filepath.Join(f.Root, filepath.FromSlash(rel))
+	oversized := bytes.Repeat([]byte("x"), canonical.MaxBytes+1)
+	if err := os.WriteFile(absolute, oversized, 0600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := f.Infrastructure()
+	if got := fault.Public(err); got.Code != "CORRUPT_JOURNAL" || got.Field != rel {
+		t.Fatalf("oversized before-image diagnostic = %+v", got)
+	}
+	if got, err := os.ReadFile(absolute); err != nil || !bytes.Equal(got, oversized) {
+		t.Fatalf("oversized before-image changed: %v", err)
+	}
+	if got, err := f.Read("draft.html", 100); err != nil || string(got) != "new" {
+		t.Fatalf("oversized before-image modified target: %q %v", got, err)
+	}
+}
+
 func TestOrphanHistoryNamesEntryWithoutChangingIt(t *testing.T) {
 	f := fs(t)
 	const rel = meta + "/history/foreign.before"
