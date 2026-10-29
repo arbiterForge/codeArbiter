@@ -222,6 +222,44 @@ class RepositoryTests(unittest.TestCase):
                 self.assertEqual(operation(), {"ok": False, "error": "run-not-writable"})
                 self.assertEqual(records(), before)
 
+    def test_fingerprint_probe_failure_is_not_reported_as_source_drift(self):
+        folder = self.start(scope="src")
+        with mock.patch.object(run, "_fingerprint", side_effect=OSError("private machine detail")):
+            status = self.success(run.resume_status(self.root, folder))
+            self.assertEqual(status["state"], "source-probe-failed")
+            self.assertFalse(status["can_resume_audit"])
+            self.assertFalse(status["can_resume_follow_up"])
+            self.assertNotIn("private machine detail", json.dumps(status))
+            self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                             {"ok": False, "error": "run-not-writable"})
+
+    def test_changed_scope_with_selected_input_is_source_drift(self):
+        self.write("src/reviewed.txt", b"selected input\n")
+        folder = self.start(scope="src", reviewed_untracked=["src/reviewed.txt"])
+        status = self.success(run.resume_status(self.root, folder, scope="outside.txt"))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+
+    def test_changed_evidence_set_is_drift_before_old_input_probe(self):
+        self.write("old-evidence.txt", b"selected input\n")
+        folder = self.start(scope="src", reviewed_untracked=["old-evidence.txt"],
+                            evidence_paths=["old-evidence.txt"])
+        (self.root / "old-evidence.txt").unlink()
+        self.write("new-evidence.txt", b"replacement input\n")
+        status = self.success(run.resume_status(self.root, folder,
+                                                evidence_paths=["new-evidence.txt"]))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertFalse(status["can_resume_follow_up"])
+
+    def test_committed_evidence_deletion_is_source_drift(self):
+        folder = self.start(scope="src", evidence_paths=["outside.txt"])
+        self.git("rm", "--", "outside.txt")
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "remove evidence", "--no-gpg-sign")
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+
     def test_populated_gitlink_binds_child_source_and_rejects_child_drift(self):
         child = self.root / "child"
         self.git("clone", "-q", "--no-hardlinks", str(self.root), str(child))
@@ -273,6 +311,15 @@ class RepositoryTests(unittest.TestCase):
         self.write("src/reviewed.txt", b"changed same selected input\n")
         self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
         self.assertFalse(run.start_run(self.root, reviewed_untracked=["ignored.txt"])["ok"])
+
+    def test_staged_selected_untracked_input_is_source_drift(self):
+        self.write("src/reviewed.txt", b"reviewed untracked\n")
+        folder = self.start(reviewed_untracked=["src/reviewed.txt"])
+        self.git("add", "--", "src/reviewed.txt")
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertFalse(status["can_resume_follow_up"])
 
     def test_new_untracked_default_and_index_deletion_invalidate_resume(self):
         folder = self.start()

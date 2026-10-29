@@ -4580,14 +4580,29 @@ class CoreCLITest(unittest.TestCase):
                     self.assertEqual(
                         core_releaselib.main(["dates-match", section, message]), 1)
 
-    def test_dates_match_exits_1_on_an_unreadable_file_never_a_traceback(self):
-        # Same contract as notes-match: an unreadable file is empty text,
-        # which has no date, so the comparison is False and the exit is 1.
-        # A traceback here would break a `set -e` lane with no diagnosis.
+    def test_notes_match_reports_unreadable_evidence_separately(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = os.path.join(tmp, "missing-notes.md")
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                rc = core_releaselib.main(["notes-match", "v1.0.0", missing])
+            self.assertEqual(rc, 3)
+            self.assertIn("could not read notes file", err.getvalue())
+            self.assertNotIn(missing, err.getvalue())
+
+    def test_dates_match_reports_unreadable_evidence_separately(self):
         with tempfile.TemporaryDirectory() as tmp:
             _section, message = self._dates_files(tmp, "2026-07-31", "2026-07-31")
             missing = os.path.join(tmp, "does-not-exist.md")
-            self.assertEqual(core_releaselib.main(["dates-match", missing, message]), 1)
+            for argv in (("dates-match", missing, message),
+                         ("dates-match", message, missing)):
+                with self.subTest(argv=argv):
+                    err = io.StringIO()
+                    with contextlib.redirect_stderr(err):
+                        rc = core_releaselib.main(list(argv))
+                    self.assertEqual(rc, 3)
+                    self.assertIn("could not read input file", err.getvalue())
+                    self.assertNotIn(missing, err.getvalue())
 
     def test_notes_and_dates_match_reject_non_utf8_without_tracebacks(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -4606,6 +4621,7 @@ class CoreCLITest(unittest.TestCase):
                         rc = core_releaselib.main(list(argv))
                     self.assertEqual(rc, 4, err.getvalue())
                     self.assertIn("not UTF-8", err.getvalue())
+                    self.assertNotIn(os.path.basename(bad), err.getvalue())
                     self.assertNotIn("Traceback", err.getvalue())
 
     # `changelog-section` (blind exercise run 19, HIGH-2). `resume_publish`

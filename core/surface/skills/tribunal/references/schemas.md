@@ -145,6 +145,7 @@ Never infer current evidence from a manifest or the last timestamp.
 | audit | Use detail's recorded waves and last_triaged_wave; review only unfinished work. |
 | follow-up | Report exists. Resume unresolved filing/telemetry dispositions only, without lenses. |
 | source-drift | Preserve history; start a fresh binding/run before current-source work. |
+| source-probe-failed | Preserve history; repair the fingerprint probe and retry status. Do not resume until a successful probe proves unchanged source. |
 | legacy-unbound | Read as history only; never resume as current evidence. |
 | invalid | Surface the malformed/incomplete records; never guess or rewrite them. |
 | terminal | Run completed/aborted. Read history; a new audit needs exclusive allocation. |

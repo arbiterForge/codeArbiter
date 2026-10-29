@@ -426,7 +426,7 @@ describe('atlas source compatibility revalidation', () => {
   it('binds only the three reviewed runtime compatibility owners and preserves cited document ranges', () => {
     expect(RUNTIME_COMPATIBILITY_SOURCE_BLOBS).toEqual({
       'core/surface/includes/artifacts.md': 'c10c13162e63699c3748809f3ef2448bc8b07fb9',
-      'core/pysrc/_artifactauthoritylib.py': '7624ad9dce3330505bdca5f5e19c3bf7e2534d10',
+      'core/pysrc/_artifactauthoritylib.py': '5c95b3f70eb84e26e494d294c9028eca1fb78871',
       'docs/hooks.md': 'd4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
     });
     expect(changedProductInputs(runtimeCompatibilityBaseline, '045c0812888f20f4c843677cfb37b802e2084770')).toEqual([
@@ -447,8 +447,8 @@ describe('atlas source compatibility revalidation', () => {
 
   it('binds guarded tribunal lock recovery to the existing resume and history route', () => {
     expect(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS).toEqual({
-      'core/surface/skills/tribunal/SKILL.md': 'aebf7129fdb9aa93f04a50fb3d652d3810ee257a',
-      'core/pysrc/_tribunalrunlib.py': '6dc04cc4d6728cd3e1d4abe381f7f9cdd6125866',
+      'core/surface/skills/tribunal/SKILL.md': 'fa411c6e8d9b335914e0b31a875d6739d38ade40',
+      'core/pysrc/_tribunalrunlib.py': 'c2db7a2b082e005e0be9dd637a853c6ee096a01f',
     });
     for (const [path, blob] of Object.entries(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS)) {
       expect(git('hash-object', '--', path).trim()).toBe(blob);

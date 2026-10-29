@@ -3375,7 +3375,8 @@ def main(argv):
             with open(notes_path, encoding="utf-8") as fh:
                 notes_text = fh.read()
         except OSError:
-            notes_text = ""
+            sys.stderr.write("notes-match: could not read notes file\n")
+            return 3
         except UnicodeError:
             sys.stderr.write("notes-match: notes file is not UTF-8\n")
             return 4
@@ -4123,10 +4124,7 @@ def main(argv):
         # an operator following the prose could not perform a check the
         # prose demanded. The exercising agent could only reach it by
         # importing the module, which the skill never tells anyone to do.
-        # Same read-and-compare shape as `notes-match` above, including its
-        # unreadable-file-is-empty-text behaviour (an unreadable file has
-        # no date, so the comparison is False, so the exit code is 1 --
-        # never a traceback).
+        # Distinguish an unreadable input from a proven date mismatch.
         paths = rest[:2]
         policy, initial = (rest[2], rest[3] or None) if len(rest) == 4 else (
             "semver", None)
@@ -4139,10 +4137,10 @@ def main(argv):
                 with open(path, encoding="utf-8") as fh:
                     texts.append(fh.read())
             except OSError:
-                texts.append("")
+                sys.stderr.write("dates-match: could not read input file\n")
+                return 3
             except UnicodeError:
-                sys.stderr.write(
-                    f"dates-match: input file {path!r} is not UTF-8\n")
+                sys.stderr.write("dates-match: input file is not UTF-8\n")
                 return 4
         return 0 if release_dates_consistent(
             texts[0], texts[1], policy, initial) else 1

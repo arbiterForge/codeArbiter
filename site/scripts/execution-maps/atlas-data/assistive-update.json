@@ -40,8 +40,8 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "b625af45eb456aa740182ee03531e7abebd316b3",
-      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE. On Windows the binary's architecture comes from the kernel (IsWow64Process2), never WMI or PROCESSOR_* environment.",
+      "blob": "a354b103ac1d211650732262cdb5cb5d2a16222b",
+      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE. On Windows the binary's architecture comes from the kernel (IsWow64Process2), never WMI or PROCESSOR_* environment. Index and outline pages are now fully checked before rows are yielded, including continuation identity and row shape.",
       "nodes": [
         "f-entry",
         "f-plan",
@@ -741,8 +741,8 @@
     },
     {
       "path": "core/pysrc/_artifactauthoritylib.py",
-      "blob": "685327a043aac850145fbb875b21371c0c16acae",
-      "summary": "Only an actual verifier wrapper executable/script prefix selects authority handling. Inert PowerShell data mentioning the filename is not a verifier call; malformed real verifier invocations still fail closed.",
+      "blob": "5c95b3f70eb84e26e494d294c9028eca1fb78871",
+      "summary": "Only an actual verifier wrapper executable/script prefix selects authority handling. Inert PowerShell data mentioning the filename is not a verifier call; malformed real verifier invocations still fail closed. Fresh legacy context approval arming is refused; historical pending routes remain readable.",
       "nodes": [
         "f-verify",
         "f-recovery",

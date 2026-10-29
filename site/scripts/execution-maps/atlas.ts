@@ -81,9 +81,11 @@ export const CONTEXT_MAINTENANCE_SOURCE_BLOBS:Readonly<Record<string,string>>=Ob
 // Independent source-bound review still requires actual launch/child/first-Stop
 // evidence. No route, geometry or installed-host qualification claim changes.
 // These tracked owner blobs survive a squash; earlier bindings stay historical.
+// Fresh legacy context approval arming is now refused; the assistive update
+// already describes the ordinary context writer without that receipt.
 export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/includes/artifacts.md':'c10c13162e63699c3748809f3ef2448bc8b07fb9',
-  'core/pysrc/_artifactauthoritylib.py':'7624ad9dce3330505bdca5f5e19c3bf7e2534d10',
+  'core/pysrc/_artifactauthoritylib.py':'5c95b3f70eb84e26e494d294c9028eca1fb78871',
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
 });
 
@@ -92,9 +94,12 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // same source binding and preserves historical files; S30 now guards active
 // writers and archives the inspected lock before work can continue. Fresh-run,
 // cost, dispatch and completion routes keep their existing geometry and gates.
+// A failed fingerprint probe has its own fail-closed status. Staging a selected
+// untracked input, changing scope, or changing committed HEAD reports source
+// drift even if a later probe cannot read evidence; neither state resumes an audit.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/surface/skills/tribunal/SKILL.md':'aebf7129fdb9aa93f04a50fb3d652d3810ee257a',
-  'core/pysrc/_tribunalrunlib.py':'6dc04cc4d6728cd3e1d4abe381f7f9cdd6125866',
+  'core/surface/skills/tribunal/SKILL.md':'fa411c6e8d9b335914e0b31a875d6739d38ade40',
+  'core/pysrc/_tribunalrunlib.py':'c2db7a2b082e005e0be9dd637a853c6ee096a01f',
 });
 
 // PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
@@ -135,7 +140,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/artifacts/internal/operations/protocol.go':'c3238af44ac7dca08fa4002eec28847ab85f6b50',
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
-  'core/pysrc/_artifactlib.py':'47f0562b17cb7108737fda40a2752f4bd6b49cae',
+  'core/pysrc/_artifactlib.py':'5b900d8ee592935d04a2d6f1a2f7ffcc832dd976',
   'core/pysrc/init-codearbiter.py':'ab47257f03a0bdd2cbd249cc00478cdbeeea4f39',
   'core/surface/commands/feature.md':'ebb6047b0ec2f7040c60c6847535bb1f65f6cd10',
   'core/surface/commands/fix.md':'03fbef8fef446eb3c40f8f7ea5207352e587ba0f',

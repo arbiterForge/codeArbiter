@@ -12,6 +12,23 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.4.4] - 2026-10-29
+
+### Fixed
+
+- Validate artifact pages before reading their embedded model and reject unsafe
+  or inconsistent rendered content. Report fingerprint probe failures distinctly
+  and bound unreadable release-evidence diagnostics, distinguishing unreadable
+  notes from invalid UTF-8.
+- Keep fresh legacy context approval from arming an unrelated artifact action.
+- Align the Claude host identity with its release manifest so installed hooks
+  authenticate the package after the version bump.
+- Treat a staged selected untracked Tribunal input as source drift while
+  retaining separate diagnostics for failed fingerprint probes.
+- Reject overlapping filtered artifact pages. Treat a changed Tribunal scope,
+  declared evidence set, or committed source revision as drift even when a later
+  evidence probe fails.
+
 ## [3.4.3] - 2026-10-29
 
 ### Fixed
