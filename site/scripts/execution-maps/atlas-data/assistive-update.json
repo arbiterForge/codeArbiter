@@ -241,8 +241,8 @@
     },
     {
       "path": "core/artifacts/internal/read/read.go",
-      "blob": "0f8d47a56cf2753b99141b43db466e76210c185a",
-      "summary": "Exact and batch symbol retrieval exposes reported check history under existing response budgets, without a snapshot or approval ticket.",
+      "blob": "677ed0dd66447353b6600b7017003530d303ee24",
+      "summary": "Exact and batch symbol retrieval exposes reported check history without an approval ticket. Outline paging now accounts for encoded rows incrementally while retaining response budgets and continuation behavior.",
       "nodes": [
         "c-read",
         "f-selection"
