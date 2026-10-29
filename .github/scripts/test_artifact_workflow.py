@@ -616,6 +616,26 @@ class ArtifactProductionPilotTest(unittest.TestCase):
                 self.assertEqual(caught.exception.code, code)
                 self.assertEqual(self._tree_bytes(), before)
 
+    def test_unpaired_migration_refuses_preview_and_apply_without_writes(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        client.call("migration-preview", self._request())
+        before = self._tree_bytes()
+        for missing in ("spec", "plan"):
+            for operation in ("migration-preview", "migration-apply"):
+                with self.subTest(missing=missing, operation=operation):
+                    request = self._request()
+                    del request[missing]
+                    if operation == "migration-apply":
+                        request.update({
+                            "operation_id": "unpaired-cutover-001",
+                            "preview_sha256": "0" * 64,
+                            "review": {"actor": "fixture", "origin": "test", "source_text": "Fixture only"},
+                        })
+                    with self.assertRaises(ArtifactError) as caught:
+                        client.call(operation, request)
+                    self.assertEqual(caught.exception.code, "INVALID_MODEL")
+                    self.assertEqual(self._tree_bytes(), before)
+
     def test_stale_source_or_mapping_refuses_cutover_without_writes(self) -> None:
         client = _artifactlib.ArtifactClient(self.root, self.installation)
         for changed in ("source", "mapping"):
