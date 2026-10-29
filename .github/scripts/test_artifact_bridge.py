@@ -89,6 +89,32 @@ class EngineTimeoutTests(unittest.TestCase):
                 client.call("identity", {"artifact_id": "SPEC-X"})
         self.assertEqual(seen, [300], "the configured bound must be the one the engine child is waited on")
 
+    def test_engine_fault_keeps_bounded_target_for_host_caller(self):
+        import _artifactlib
+        client = ArtifactClient(self.directory, INSTALLATION)
+        target = ".codearbiter/specs/damaged.html"
+        envelope = {
+            "protocol": _artifactlib.PROTOCOL, "operation": "identity", "ok": False,
+            "error": {"code": "RENDER_DRIFT", "message": "rendered view differs",
+                      "field": target},
+        }
+        with mock.patch.object(_artifactlib, "_bounded_child", return_value=(2, json.dumps(envelope).encode(), b"")):
+            with self.assertRaises(ArtifactError) as raised:
+                client.call("identity", {"artifact_id": "SPEC-DAMAGED"})
+        self.assertEqual(raised.exception.code, "RENDER_DRIFT")
+        self.assertEqual(raised.exception.field, target)
+        self.assertIn(target, str(raised.exception))
+        envelope["error"]["field"] = "x" * 2048
+        with mock.patch.object(_artifactlib, "_bounded_child", return_value=(2, json.dumps(envelope).encode(), b"")):
+            with self.assertRaises(ArtifactError) as oversized:
+                client.call("identity", {"artifact_id": "SPEC-DAMAGED"})
+        self.assertEqual(oversized.exception.code, "INVALID_RESPONSE")
+        envelope["error"]["field"] = "\ud800"
+        with mock.patch.object(_artifactlib, "_bounded_child", return_value=(2, json.dumps(envelope).encode(), b"")):
+            with self.assertRaises(ArtifactError) as malformed:
+                client.call("identity", {"artifact_id": "SPEC-DAMAGED"})
+        self.assertEqual(malformed.exception.code, "INVALID_RESPONSE")
+
 
 class PlatformSelectionTests(unittest.TestCase):
     def kernel(self, native, emulated=0, success=True):

@@ -456,6 +456,7 @@ class ArtifactConformanceTest(unittest.TestCase):
             with self.assertRaises(ArtifactError) as caught:
                 list(client.index())
             self.assertEqual(caught.exception.code, "RENDER_DRIFT")
+            self.assertEqual(caught.exception.field, ".codearbiter/plans/" + plan["slug"] + ".html")
 
     def test_real_progress_transition_preserves_normative_identity(self) -> None:
         self.assertIsNotNone(INSTALLATION)
