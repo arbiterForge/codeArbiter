@@ -33,9 +33,13 @@ type Entry struct {
 	Doc   *model.Document
 }
 type Catalog struct {
-	Entries map[string]Entry
-	Order   []string
+	Entries    map[string]Entry
+	Order      []string
+	BytesTotal int
 }
+
+const MaxArtifacts = 1024
+const MaxCatalogBytes = 64 << 20
 
 func Scan(f *store.FS) (*Catalog, error) {
 	return ScanFor(f, "")
@@ -74,10 +78,10 @@ func scanContracts(f *store.FS, contracts []kind.Contract, codecs map[string]kin
 			if file.IsDir() || !strings.HasSuffix(file.Name(), codec.Extension) {
 				continue
 			}
-			if len(out.Order) >= 1024 {
-				return nil, fault.New("MAX_ARTIFACTS", "live artifact count exceeds 1024")
-			}
 			p := path.Join(dir, file.Name())
+			if len(out.Order) >= MaxArtifacts {
+				return nil, fault.At("MAX_ARTIFACTS", "", p, "live artifact count exceeds 1024")
+			}
 			legacy := strings.TrimSuffix(p, codec.Extension) + ".md"
 			if _, err := f.Read(legacy, canonical.MaxBytes); err == nil {
 				return nil, fault.New("AMBIGUOUS_ARTIFACT", "HTML and Markdown coexist for a canonical slug; use reviewed pair cutover")
@@ -89,9 +93,10 @@ func scanContracts(f *store.FS, contracts []kind.Contract, codecs map[string]kin
 				return nil, e
 			}
 			total += len(b)
-			if total > 64<<20 {
-				return nil, fault.New("MAX_BYTES", "live artifact catalog exceeds 64 MiB")
+			if total > MaxCatalogBytes {
+				return nil, fault.At("MAX_BYTES", "", p, "live artifact catalog exceeds 64 MiB")
 			}
+			out.BytesTotal = total
 			d, e := parseWithCodec(codec, b)
 			if e != nil {
 				return nil, fault.At(fault.Code(e), "", p, e.Error())

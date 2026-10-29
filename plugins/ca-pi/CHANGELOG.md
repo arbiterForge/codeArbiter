@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.23.3] - 2026-10-29
+
+### Fixed
+
+- Artifact diagnostics identify the affected path and preserve a bounded error
+  field. Saves and legacy cutovers enforce catalog limits before writing.
+
 ## [0.23.2] - 2026-10-24
 
 ### Fixed
