@@ -40,8 +40,8 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "b625af45eb456aa740182ee03531e7abebd316b3",
-      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE. On Windows the binary's architecture comes from the kernel (IsWow64Process2), never WMI or PROCESSOR_* environment.",
+      "blob": "a354b103ac1d211650732262cdb5cb5d2a16222b",
+      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE. On Windows the binary's architecture comes from the kernel (IsWow64Process2), never WMI or PROCESSOR_* environment. Index and outline pages are now fully checked before rows are yielded, including continuation identity and row shape.",
       "nodes": [
         "f-entry",
         "f-plan",
@@ -241,8 +241,8 @@
     },
     {
       "path": "core/artifacts/internal/read/read.go",
-      "blob": "0f8d47a56cf2753b99141b43db466e76210c185a",
-      "summary": "Exact and batch symbol retrieval exposes reported check history under existing response budgets, without a snapshot or approval ticket.",
+      "blob": "677ed0dd66447353b6600b7017003530d303ee24",
+      "summary": "Exact and batch symbol retrieval exposes reported check history without an approval ticket. Outline paging now accounts for encoded rows incrementally while retaining response budgets and continuation behavior.",
       "nodes": [
         "c-read",
         "f-selection"
@@ -568,8 +568,8 @@
     },
     {
       "path": "core/surface/skills/release/SKILL.md",
-      "blob": "e0b7e396954cc65efe3e7f24c93fa36f75ae123d",
-      "summary": "Release preparation inserts a new version below the entire Unreleased section and above prior versions, preserving pending notes. This guidance correction does not grant publication authority or replace the existing release-PR and hosted qualification boundaries.",
+      "blob": "73bae2bf44be58014e59fa4b26cbf2c4b3e247cf",
+      "summary": "Release preparation inserts a new version below the entire Unreleased section and above prior versions, preserving pending notes. Unreadable or invalid UTF-8 evidence now has a distinct bounded exit reason; each nonzero result still blocks publication. This guidance does not grant publication authority or replace the existing release-PR and hosted qualification boundaries.",
       "nodes": [
         "o-release",
         "r-release",
@@ -741,8 +741,8 @@
     },
     {
       "path": "core/pysrc/_artifactauthoritylib.py",
-      "blob": "685327a043aac850145fbb875b21371c0c16acae",
-      "summary": "Only an actual verifier wrapper executable/script prefix selects authority handling. Inert PowerShell data mentioning the filename is not a verifier call; malformed real verifier invocations still fail closed.",
+      "blob": "5c95b3f70eb84e26e494d294c9028eca1fb78871",
+      "summary": "Only an actual verifier wrapper executable/script prefix selects authority handling. Inert PowerShell data mentioning the filename is not a verifier call; malformed real verifier invocations still fail closed. Fresh legacy context approval arming is refused; historical pending routes remain readable.",
       "nodes": [
         "f-verify",
         "f-recovery",

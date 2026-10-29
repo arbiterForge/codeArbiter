@@ -81,9 +81,11 @@ export const CONTEXT_MAINTENANCE_SOURCE_BLOBS:Readonly<Record<string,string>>=Ob
 // Independent source-bound review still requires actual launch/child/first-Stop
 // evidence. No route, geometry or installed-host qualification claim changes.
 // These tracked owner blobs survive a squash; earlier bindings stay historical.
+// Fresh legacy context approval arming is now refused; the assistive update
+// already describes the ordinary context writer without that receipt.
 export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/includes/artifacts.md':'c10c13162e63699c3748809f3ef2448bc8b07fb9',
-  'core/pysrc/_artifactauthoritylib.py':'7624ad9dce3330505bdca5f5e19c3bf7e2534d10',
+  'core/pysrc/_artifactauthoritylib.py':'5c95b3f70eb84e26e494d294c9028eca1fb78871',
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
 });
 
@@ -92,9 +94,11 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // same source binding and preserves historical files; S30 now guards active
 // writers and archives the inspected lock before work can continue. Fresh-run,
 // cost, dispatch and completion routes keep their existing geometry and gates.
+// A failed fingerprint probe now has its own fail-closed status; it cannot
+// resume a prior audit and changes no route or operator decision.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/surface/skills/tribunal/SKILL.md':'aebf7129fdb9aa93f04a50fb3d652d3810ee257a',
-  'core/pysrc/_tribunalrunlib.py':'6dc04cc4d6728cd3e1d4abe381f7f9cdd6125866',
+  'core/surface/skills/tribunal/SKILL.md':'fa411c6e8d9b335914e0b31a875d6739d38ade40',
+  'core/pysrc/_tribunalrunlib.py':'17c3bd7b2dbf83510634ebc3dbbb0e29b7811a8e',
 });
 
 // PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
@@ -131,7 +135,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/artifacts/internal/operations/protocol.go':'3b09bf4c71dcdc9f8e9d2bfa18732c8c82b0b48f',
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
-  'core/pysrc/_artifactlib.py':'a3228472bddc2d095e0abeef64e9a60c352e70e7',
+  'core/pysrc/_artifactlib.py':'a354b103ac1d211650732262cdb5cb5d2a16222b',
   'core/pysrc/init-codearbiter.py':'ab47257f03a0bdd2cbd249cc00478cdbeeea4f39',
   'core/surface/commands/feature.md':'ebb6047b0ec2f7040c60c6847535bb1f65f6cd10',
   'core/surface/commands/fix.md':'03fbef8fef446eb3c40f8f7ea5207352e587ba0f',
@@ -142,7 +146,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/context-creation/SKILL.md':'9f28e5f8c9dbb903abee8e2264f60069c5128487',
   'core/surface/skills/decompose/SKILL.md':'891a4ed873bbe2a8cbfd5ccb5315e6ef7ece1e02',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'5082926a20883837a75994322db5c0b845eae3fd',
-  'core/surface/skills/release/SKILL.md':'15216183910a201eb5966b741bbb1a8d023927f8',
+  'core/surface/skills/release/SKILL.md':'73bae2bf44be58014e59fa4b26cbf2c4b3e247cf',
   'core/surface/skills/subagent-driven-development/SKILL.md':'7c27d8ebb707088636e39a5ce28ca59043745609',
   'core/surface/skills/tdd/SKILL.md':'1246d507b3bc3f46a8b15757b2a74d57207b93f0',
   'core/surface/skills/writing-plans/SKILL.md':'5b47ef521e29bcb9b49db2662d13806a415cd8de',
