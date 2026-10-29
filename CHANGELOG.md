@@ -23,6 +23,8 @@ predate the plugin rewrite and are grouped by date.
 - Keep fresh legacy context approval from arming an unrelated artifact action.
 - Align the Claude host identity with its release manifest so installed hooks
   authenticate the package after the version bump.
+- Treat a staged selected untracked Tribunal input as source drift while
+  retaining separate diagnostics for failed fingerprint probes.
 
 ## [3.4.3] - 2026-10-29
 

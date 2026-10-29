@@ -448,7 +448,7 @@ describe('atlas source compatibility revalidation', () => {
   it('binds guarded tribunal lock recovery to the existing resume and history route', () => {
     expect(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS).toEqual({
       'core/surface/skills/tribunal/SKILL.md': 'fa411c6e8d9b335914e0b31a875d6739d38ade40',
-      'core/pysrc/_tribunalrunlib.py': '17c3bd7b2dbf83510634ebc3dbbb0e29b7811a8e',
+      'core/pysrc/_tribunalrunlib.py': 'b390fe376de0dfcc23b7b0d911a32d12361093fb',
     });
     for (const [path, blob] of Object.entries(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS)) {
       expect(git('hash-object', '--', path).trim()).toBe(blob);

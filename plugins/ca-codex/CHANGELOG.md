@@ -16,6 +16,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Keep fresh legacy context approval from arming an unrelated artifact action.
 - Align the Codex host identity and npm package version with its release
   manifest so installed hooks authenticate the package.
+- Treat a staged selected untracked Tribunal input as source drift while
+  retaining separate diagnostics for failed fingerprint probes.
 
 ## [0.22.3] - 2026-10-29
 

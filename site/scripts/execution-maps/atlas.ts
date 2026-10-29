@@ -94,11 +94,11 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // same source binding and preserves historical files; S30 now guards active
 // writers and archives the inspected lock before work can continue. Fresh-run,
 // cost, dispatch and completion routes keep their existing geometry and gates.
-// A failed fingerprint probe now has its own fail-closed status; it cannot
-// resume a prior audit and changes no route or operator decision.
+// A failed fingerprint probe has its own fail-closed status. Staging a selected
+// untracked input instead reports source drift; neither state resumes an audit.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/skills/tribunal/SKILL.md':'fa411c6e8d9b335914e0b31a875d6739d38ade40',
-  'core/pysrc/_tribunalrunlib.py':'17c3bd7b2dbf83510634ebc3dbbb0e29b7811a8e',
+  'core/pysrc/_tribunalrunlib.py':'b390fe376de0dfcc23b7b0d911a32d12361093fb',
 });
 
 // PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
