@@ -61,7 +61,8 @@ schemas ([routines/tribunal/references/schemas.md](references/schemas.md)).
    Source identity, not elapsed age, determines reuse. audit resumes unfinished
    waves using its recorded detail/last_triaged_wave. follow-up resumes only
    unresolved filing/telemetry after the unchanged-source check. source-drift,
-   legacy-unbound or invalid never resume as current evidence. terminal starts
+   source-probe-failed, legacy-unbound or invalid never resume as current evidence.
+   A probe failure requires repairing the probe before another resume check; terminal starts
    fresh if a new audit is requested. Preserve all historical files.
    If a stranded `.write-lock` blocks writes, use the helper's `recover-lock`
    only after explicit operator confirmation that no writer is running and an
