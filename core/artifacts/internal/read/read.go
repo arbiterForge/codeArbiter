@@ -405,17 +405,22 @@ func Outline(d *model.Document, offset, budget int) (map[string]any, error) {
 	}
 	out := map[string]any{"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "offset": int64(offset), "total": int64(len(ids)), "records": []any{}, "next_offset": nil}
 	items := []any{}
+	base, _ := json.Marshal(out)
+	used := len(base)
 	next := offset
 	for next < len(ids) {
 		r := d.Symbols.ByID[ids[next]]
 		item := map[string]any{"id": r.ID, "kind": r.Kind, "retired": r.Retired, "title": r.Value["title"]}
-		candidate := append(append([]any{}, items...), item)
-		out["records"] = candidate
-		b, _ := json.Marshal(out)
-		if len(b)+512 > budget {
+		encoded, _ := json.Marshal(item)
+		candidateBytes := used + len(encoded)
+		if len(items) > 0 {
+			candidateBytes++ // JSON array separator.
+		}
+		if candidateBytes+512 > budget {
 			break
 		}
-		items = candidate
+		items = append(items, item)
+		used = candidateBytes
 		next++
 	}
 	if len(items) == 0 && next < len(ids) {
