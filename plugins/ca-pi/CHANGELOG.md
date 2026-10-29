@@ -16,8 +16,9 @@ All notable changes to `ca-pi` are documented in this file.
   authenticate the package after the version bump.
 - Treat a staged selected untracked Tribunal input as source drift while
   retaining separate diagnostics for failed fingerprint probes.
-- Reject overlapping filtered artifact pages. Treat a changed Tribunal scope or
-  committed source revision as drift even when a later evidence probe fails.
+- Reject overlapping filtered artifact pages. Treat a changed Tribunal scope,
+  declared evidence set, or committed source revision as drift even when a later
+  evidence probe fails.
 
 ## [0.23.3] - 2026-10-29
 

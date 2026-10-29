@@ -99,7 +99,7 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // drift even if a later probe cannot read evidence; neither state resumes an audit.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/skills/tribunal/SKILL.md':'fa411c6e8d9b335914e0b31a875d6739d38ade40',
-  'core/pysrc/_tribunalrunlib.py':'04b39724d170e3233771f24d0189bf88edf7bb17',
+  'core/pysrc/_tribunalrunlib.py':'c2db7a2b082e005e0be9dd637a853c6ee096a01f',
 });
 
 // PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
