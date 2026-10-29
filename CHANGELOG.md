@@ -25,6 +25,8 @@ predate the plugin rewrite and are grouped by date.
   authenticate the package after the version bump.
 - Treat a staged selected untracked Tribunal input as source drift while
   retaining separate diagnostics for failed fingerprint probes.
+- Reject overlapping filtered artifact pages. Treat a changed Tribunal scope or
+  committed source revision as drift even when a later evidence probe fails.
 
 ## [3.4.3] - 2026-10-29
 

@@ -95,10 +95,11 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // writers and archives the inspected lock before work can continue. Fresh-run,
 // cost, dispatch and completion routes keep their existing geometry and gates.
 // A failed fingerprint probe has its own fail-closed status. Staging a selected
-// untracked input instead reports source drift; neither state resumes an audit.
+// untracked input, changing scope, or changing committed HEAD reports source
+// drift even if a later probe cannot read evidence; neither state resumes an audit.
 export const TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/skills/tribunal/SKILL.md':'fa411c6e8d9b335914e0b31a875d6739d38ade40',
-  'core/pysrc/_tribunalrunlib.py':'b390fe376de0dfcc23b7b0d911a32d12361093fb',
+  'core/pysrc/_tribunalrunlib.py':'04b39724d170e3233771f24d0189bf88edf7bb17',
 });
 
 // PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
@@ -139,7 +140,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/artifacts/internal/operations/protocol.go':'c3238af44ac7dca08fa4002eec28847ab85f6b50',
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
-  'core/pysrc/_artifactlib.py':'47556f8eb986cd70b7d944262933437d45e97319',
+  'core/pysrc/_artifactlib.py':'5b900d8ee592935d04a2d6f1a2f7ffcc832dd976',
   'core/pysrc/init-codearbiter.py':'ab47257f03a0bdd2cbd249cc00478cdbeeea4f39',
   'core/surface/commands/feature.md':'ebb6047b0ec2f7040c60c6847535bb1f65f6cd10',
   'core/surface/commands/fix.md':'03fbef8fef446eb3c40f8f7ea5207352e587ba0f',

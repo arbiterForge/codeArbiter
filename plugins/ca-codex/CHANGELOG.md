@@ -18,6 +18,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   manifest so installed hooks authenticate the package.
 - Treat a staged selected untracked Tribunal input as source drift while
   retaining separate diagnostics for failed fingerprint probes.
+- Reject overlapping filtered artifact pages. Treat a changed Tribunal scope or
+  committed source revision as drift even when a later evidence probe fails.
 
 ## [0.22.3] - 2026-10-29
 
