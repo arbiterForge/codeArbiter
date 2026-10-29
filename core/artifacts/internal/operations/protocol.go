@@ -127,7 +127,7 @@ func RequestSchema(op string) (object, error) {
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")
 		add("spec", item, true)
-		add("plan", item, false)
+		add("plan", item, true)
 		if op == "migration-apply" {
 			add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 			add("preview_sha256", digestType(), true)

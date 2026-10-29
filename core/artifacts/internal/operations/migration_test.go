@@ -3,9 +3,13 @@
 package operations
 
 import (
+	"encoding/json"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"os"
 	"path/filepath"
@@ -42,6 +46,14 @@ func TestMigrationPairAndRollback(t *testing.T) {
 	r["operation_id"] = "cutover-fixture-001"
 	r["review"] = object{"actor": "test fixture", "origin": "unit test", "source_text": "Synthetic explicit mapping approval; not implementation approval."}
 	h.run("migration-apply", r)
+	journalBytes, err := os.ReadFile(filepath.Join(h.root, ".codearbiter/.artifacts/transactions/cutover-fixture-001.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var journal object
+	if err := json.Unmarshal(journalBytes, &journal); err != nil || len(model.A(journal["entries"])) != 4 {
+		t.Fatalf("pair cutover did not journal four edits: %v", err)
+	}
 	for _, kind := range []string{"spec", "plan"} {
 		if _, e := os.Stat(filepath.Join(h.root, ".codearbiter", kind+"s/example.md")); !os.IsNotExist(e) {
 			t.Fatal("two live authorities")
@@ -61,6 +73,120 @@ func TestMigrationPairAndRollback(t *testing.T) {
 		if e != nil || string(b) != "# Legacy\nStatus: approved\nHistoric behavior\n" {
 			t.Fatal("legacy bytes not restored")
 		}
+	}
+}
+
+func TestMigrationRefusesUnpairedCutover(t *testing.T) {
+	for _, missing := range []string{"spec", "plan"} {
+		t.Run(missing, func(t *testing.T) {
+			h := newHarness(t)
+			r := migrationRequest(t, h)
+			delete(r, missing)
+			for _, op := range []string{"migration-preview", "migration-apply"} {
+				if op == "migration-apply" {
+					r["operation_id"] = "cutover-unpaired-001"
+					r["preview_sha256"] = strings.Repeat("0", 64)
+					r["review"] = object{"actor": "fixture", "origin": "test", "source_text": "Fixture only"}
+				}
+				if _, err := h.request(op, r); fault.Code(err) != "INVALID_MODEL" || fault.Public(err).Field != "/"+missing {
+					t.Fatalf("%s accepted an unpaired %s: %v", op, missing, err)
+				}
+			}
+			for _, kind := range []string{"spec", "plan"} {
+				if _, err := os.Stat(filepath.Join(h.root, ".codearbiter", kind+"s", "example.html")); !os.IsNotExist(err) {
+					t.Fatalf("unpaired migration wrote %s HTML: %v", kind, err)
+				}
+				if _, err := os.Stat(filepath.Join(h.root, ".codearbiter", kind+"s", "example.md")); err != nil {
+					t.Fatalf("unpaired migration removed %s Markdown: %v", kind, err)
+				}
+			}
+		})
+	}
+}
+
+func TestMigrationOwnerRefusesUnpairedCutover(t *testing.T) {
+	h := newHarness(t)
+	r := migrationRequest(t, h)
+	delete(r, "plan")
+	f, err := store.Open(h.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	c, err := repository.Scan(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine := &Engine{FS: f, Catalog: c}
+	if _, _, err := engine.migration(r); fault.Code(err) != "PAIR_REQUIRED" {
+		t.Fatalf("migration owner accepted an unpaired spec: %v", err)
+	}
+}
+
+func TestMigrationRefusesMixedSlugPair(t *testing.T) {
+	h := newHarness(t)
+	r := migrationRequest(t, h)
+	other := filepath.Join(h.root, ".codearbiter/plans/other.md")
+	if err := os.WriteFile(other, []byte("# Legacy\nStatus: approved\nHistoric behavior\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	model.M(r["plan"])["slug"] = "other"
+	model.M(r["plan"])["source_path"] = ".codearbiter/plans/other.md"
+	for _, op := range []string{"migration-preview", "migration-apply"} {
+		if op == "migration-apply" {
+			r["operation_id"] = "cutover-mixed-slug-001"
+			r["preview_sha256"] = strings.Repeat("0", 64)
+			r["review"] = object{"actor": "fixture", "origin": "test", "source_text": "Fixture only"}
+		}
+		if _, err := h.request(op, r); fault.Code(err) != "PAIR_MISMATCH" {
+			t.Fatalf("%s accepted mixed slug pair: %v", op, err)
+		}
+	}
+	for _, rel := range []string{".codearbiter/specs/example.md", ".codearbiter/plans/other.md"} {
+		if _, err := os.Stat(filepath.Join(h.root, filepath.FromSlash(rel))); err != nil {
+			t.Fatalf("mixed slug attempt removed %s: %v", rel, err)
+		}
+	}
+	for _, rel := range []string{".codearbiter/specs/example.html", ".codearbiter/plans/other.html"} {
+		if _, err := os.Stat(filepath.Join(h.root, filepath.FromSlash(rel))); !os.IsNotExist(err) {
+			t.Fatalf("mixed slug attempt wrote %s: %v", rel, err)
+		}
+	}
+}
+
+func TestMigrationRollbackKeepsHistoricalTwoEditCutoverRecoverable(t *testing.T) {
+	h := newHarness(t)
+	migrationRequest(t, h)
+	legacy := []byte("# Legacy\nStatus: approved\nHistoric behavior\n")
+	view, err := render.Render(testutil.Seal(t, testutil.Spec()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := store.Open(h.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = f.Commit("historical-cutover-001", canonical.BytesHash([]byte("historical fixture")), []store.Edit{
+		{Path: ".codearbiter/specs/example.html", After: view},
+		{Path: ".codearbiter/specs/example.md", Before: legacy},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.Infrastructure(); err != nil {
+		t.Fatalf("historical two-edit journal is not inspectable: %v", err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.request("migration-rollback", object{"operation_id": "historical-rollback-001", "cutover_operation_id": "historical-cutover-001"}); err != nil {
+		t.Fatalf("historical two-edit cutover cannot be rolled back: %v", err)
+	}
+	if got, err := os.ReadFile(filepath.Join(h.root, ".codearbiter/specs/example.md")); err != nil || string(got) != string(legacy) {
+		t.Fatalf("historical Markdown not restored: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(h.root, ".codearbiter/specs/example.html")); !os.IsNotExist(err) {
+		t.Fatalf("historical HTML still live after rollback: %v", err)
 	}
 }
 func TestMigrationRequiresCompleteMapping(t *testing.T) {
