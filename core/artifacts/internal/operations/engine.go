@@ -420,9 +420,16 @@ func Run(root, op string, input object) (any, error) {
 	return nil, fault.New("UNKNOWN_OPERATION", "operation has no implementation")
 }
 func (e *Engine) save(r object, old repository.Entry, next *model.Document) (any, error) {
+	if old.Doc == nil && len(e.Catalog.Order) >= repository.MaxArtifacts {
+		return nil, fault.At("MAX_ARTIFACTS", next.ID(), old.Path, "creating this artifact would exceed the 1024-artifact catalog limit")
+	}
 	b, err := render.Render(next)
 	if err != nil {
 		return nil, err
+	}
+	total := e.Catalog.BytesTotal + len(b) - len(old.Bytes)
+	if total > repository.MaxCatalogBytes {
+		return nil, fault.At("MAX_BYTES", next.ID(), old.Path, "saving this artifact would exceed the 64 MiB catalog limit")
 	}
 	out := Identity(next, old.Path)
 	o, err := e.FS.Commit(model.S(r["operation_id"]), e.RequestHash, []store.Edit{{Path: old.Path, Before: old.Bytes, After: b}}, out)

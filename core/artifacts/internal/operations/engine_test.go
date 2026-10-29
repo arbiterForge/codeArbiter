@@ -779,9 +779,12 @@ func TestRenderDriftRejectedByEveryRead(t *testing.T) {
 		if op == "read" {
 			r["symbol"] = "AC-001"
 		}
-		if _, e := h.request(op, r); fault.Code(e) != "RENDER_DRIFT" {
-			t.Fatalf("%s: %v", op, e)
+		if _, e := h.request(op, r); fault.Code(e) != "RENDER_DRIFT" || fault.Public(e).Field != ".codearbiter/specs/example.html" {
+			t.Fatalf("%s: damaged artifact path missing from drift diagnostic: %v", op, fault.Public(e))
 		}
+	}
+	if _, e := h.request("identity", object{"artifact_id": "PLAN-EXAMPLE"}); fault.Code(e) != "RENDER_DRIFT" || fault.Public(e).Field != ".codearbiter/specs/example.html" {
+		t.Fatalf("unrelated read should identify the damaged artifact: %v", fault.Public(e))
 	}
 	preview := h.run("repair-preview", object{"path": ".codearbiter/specs/example.html"})
 	h.run("repair-apply", object{"operation_id": h.next(), "path": preview["path"], "expected_bytes_sha256": preview["expected_bytes_sha256"], "preview_sha256": preview["preview_sha256"]})
