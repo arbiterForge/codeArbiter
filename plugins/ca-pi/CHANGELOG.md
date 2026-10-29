@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.23.4] - 2026-10-29
+
+### Fixed
+
+- Validate artifact pages before model reads, distinguish fingerprint probe
+  failures, and bound unreadable release-evidence diagnostics.
+- Keep fresh legacy context approval from arming an unrelated artifact action.
+
 ## [0.23.3] - 2026-10-29
 
 ### Fixed

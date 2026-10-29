@@ -12,6 +12,15 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.4.4] - 2026-10-29
+
+### Fixed
+
+- Validate artifact pages before reading their embedded model and reject unsafe
+  or inconsistent rendered content. Report fingerprint probe failures distinctly
+  and bound unreadable release-evidence diagnostics.
+- Keep fresh legacy context approval from arming an unrelated artifact action.
+
 ## [3.4.3] - 2026-10-29
 
 ### Fixed
