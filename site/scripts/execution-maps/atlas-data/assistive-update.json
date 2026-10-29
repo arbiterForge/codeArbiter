@@ -568,8 +568,8 @@
     },
     {
       "path": "core/surface/skills/release/SKILL.md",
-      "blob": "73bae2bf44be58014e59fa4b26cbf2c4b3e247cf",
-      "summary": "Release preparation inserts a new version below the entire Unreleased section and above prior versions, preserving pending notes. Unreadable or invalid UTF-8 evidence now has a distinct bounded exit reason; each nonzero result still blocks publication. This guidance does not grant publication authority or replace the existing release-PR and hosted qualification boundaries.",
+      "blob": "e0b7e396954cc65efe3e7f24c93fa36f75ae123d",
+      "summary": "Release preparation inserts a new version below the entire Unreleased section and above prior versions, preserving pending notes. This guidance correction does not grant publication authority or replace the existing release-PR and hosted qualification boundaries.",
       "nodes": [
         "o-release",
         "r-release",

@@ -148,7 +148,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/context-creation/SKILL.md':'9f28e5f8c9dbb903abee8e2264f60069c5128487',
   'core/surface/skills/decompose/SKILL.md':'891a4ed873bbe2a8cbfd5ccb5315e6ef7ece1e02',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'5082926a20883837a75994322db5c0b845eae3fd',
-  'core/surface/skills/release/SKILL.md':'73bae2bf44be58014e59fa4b26cbf2c4b3e247cf',
+  'core/surface/skills/release/SKILL.md':'15216183910a201eb5966b741bbb1a8d023927f8',
   'core/surface/skills/subagent-driven-development/SKILL.md':'7c27d8ebb707088636e39a5ce28ca59043745609',
   'core/surface/skills/tdd/SKILL.md':'1246d507b3bc3f46a8b15757b2a74d57207b93f0',
   'core/surface/skills/writing-plans/SKILL.md':'5b47ef521e29bcb9b49db2662d13806a415cd8de',
