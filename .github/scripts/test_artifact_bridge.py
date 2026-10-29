@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests the real executable through the stdlib installed-payload bridge."""
 from __future__ import annotations
+import copy
 import hashlib
 import json
 import os
@@ -153,6 +154,179 @@ class PlatformSelectionTests(unittest.TestCase):
                     ArtifactClient._binary_name()
                 self.assertEqual(raised.exception.code, "UNSUPPORTED_PLATFORM")
                 loader.assert_not_called()
+
+
+class PageValidationTests(unittest.TestCase):
+    @staticmethod
+    def client(*pages):
+        client = ArtifactClient.__new__(ArtifactClient)
+        client.call = mock.Mock(side_effect=pages)
+        return client
+
+    @staticmethod
+    def index_page():
+        return {
+            "catalog_sha256": "a" * 64, "total": 2, "next_offset": None,
+            "entries": [
+                {"artifact_id": "SPEC-ONE", "kind": "spec", "path": ".codearbiter/specs/one.html",
+                 "revision": 1, "model_sha256": "b" * 64, "normative_sha256": "c" * 64,
+                 "symbol_count": 1, "title": "One", "governs": [],
+                 "authority": {"state": "draft", "authority_verified": False,
+                               "trust_model": "cooperative workflow attestation", "diagnostic": "AUTHORITY_UNVERIFIED"}},
+                {"artifact_id": "SPEC-TWO", "kind": "spec", "path": ".codearbiter/specs/two.html",
+                 "revision": 1, "model_sha256": "d" * 64, "normative_sha256": "e" * 64,
+                 "symbol_count": 1, "title": "Two", "governs": [],
+                 "authority": {"state": "draft", "authority_verified": False,
+                               "trust_model": "cooperative workflow attestation", "diagnostic": "AUTHORITY_UNVERIFIED"}},
+            ],
+        }
+
+    @staticmethod
+    def outline_page():
+        return {
+            "artifact_id": "SPEC-ONE", "revision": 1,
+            "model_sha256": "b" * 64, "normative_sha256": "c" * 64,
+            "offset": 0, "total": 2, "next_offset": None,
+            "records": [
+                {"id": "SCOPE-ONE", "kind": "scope", "retired": False, "title": "One"},
+                {"id": "SCOPE-TWO", "kind": "scope", "retired": False, "title": "Two"},
+            ],
+        }
+
+    def test_index_rejects_bad_header_and_row_before_yield(self):
+        for damage in ("digest", "total", "capacity", "row"):
+            page = copy.deepcopy(self.index_page())
+            if damage == "digest":
+                page["catalog_sha256"] = "not a digest"
+            elif damage == "total":
+                page["total"] = True
+            elif damage == "capacity":
+                page["total"] = 1
+            else:
+                page["entries"][1]["authority"]["authority_verified"] = "false"
+            with self.subTest(damage=damage):
+                with self.assertRaises(ArtifactError) as raised:
+                    next(self.client(page).index())
+                self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_index_rejects_bad_spec_governs_before_yield(self):
+        for governs in (None, [""], [1]):
+            page = self.index_page()
+            page["entries"][1]["governs"] = governs
+            with self.subTest(governs=governs):
+                with self.assertRaises(ArtifactError) as raised:
+                    next(self.client(page).index())
+                self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_index_rejects_unknown_artifact_kind(self):
+        page = self.index_page()
+        page["entries"][1]["kind"] = "unknown"
+        with self.assertRaises(ArtifactError) as raised:
+            next(self.client(page).index())
+        self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_index_rejects_continuation_at_total(self):
+        page = self.index_page()
+        page["next_offset"] = page["total"]
+        with self.assertRaises(ArtifactError) as raised:
+            next(self.client(page).index())
+        self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_index_rejects_changed_continuation_digest(self):
+        first = self.index_page()
+        first["entries"] = first["entries"][:1]
+        first["next_offset"] = 1
+        second = self.index_page()
+        second["entries"] = second["entries"][1:]
+        second["catalog_sha256"] = "f" * 64
+        with self.assertRaises(ArtifactError) as raised:
+            list(self.client(first, second).index())
+        self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_index_accepts_plan_without_spec_governs(self):
+        page = self.index_page()
+        page["entries"][1]["kind"] = "plan"
+        page["entries"][1]["path"] = ".codearbiter/plans/two.html"
+        page["entries"][1]["governs"] = None
+        self.assertEqual(len(list(self.client(page).index())), 2)
+
+    def test_index_accepts_knowledge_without_spec_governs(self):
+        page = self.index_page()
+        page["entries"][1]["artifact_id"] = "CTX-TWO"
+        page["entries"][1]["kind"] = "knowledge"
+        page["entries"][1]["path"] = ".codearbiter/context/two.html"
+        page["entries"][1]["governs"] = None
+        self.assertEqual(len(list(self.client(page).index())), 2)
+
+    def test_index_accepts_matching_continuation(self):
+        first = self.index_page()
+        first["entries"] = first["entries"][:1]
+        first["next_offset"] = 1
+        second = self.index_page()
+        second["entries"] = second["entries"][1:]
+        self.assertEqual([row["artifact_id"] for row in self.client(first, second).index()],
+                         ["SPEC-ONE", "SPEC-TWO"])
+
+    def test_unfiltered_index_refuses_skipped_rows_before_yield(self):
+        for next_offset in (None, 2):
+            page = self.index_page()
+            page["entries"] = page["entries"][:1]
+            page["next_offset"] = next_offset
+            with self.subTest(next_offset=next_offset):
+                with self.assertRaises(ArtifactError) as raised:
+                    next(self.client(page).index())
+                self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_filtered_index_refuses_other_kind_before_yield(self):
+        page = self.index_page()
+        page["entries"][1]["kind"] = "plan"
+        with self.assertRaises(ArtifactError) as raised:
+            next(self.client(page).index("spec"))
+        self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_filtered_index_may_skip_other_kind(self):
+        page = self.index_page()
+        page["entries"] = page["entries"][:1]
+        self.assertEqual([row["artifact_id"] for row in self.client(page).index("spec")],
+                         ["SPEC-ONE"])
+
+    def test_outline_rejects_bad_header_and_row_before_yield(self):
+        for damage in ("offset", "boolean offset", "digest", "row"):
+            page = copy.deepcopy(self.outline_page())
+            if damage == "offset":
+                page["offset"] = 1
+            elif damage == "boolean offset":
+                page["offset"] = False
+            elif damage == "digest":
+                page["model_sha256"] = "not a digest"
+            else:
+                page["records"][1]["retired"] = "false"
+            with self.subTest(damage=damage):
+                with self.assertRaises(ArtifactError) as raised:
+                    next(self.client(page).outline("SPEC-ONE"))
+                self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_outline_rejects_changed_continuation_digest(self):
+        first = self.outline_page()
+        first["records"] = first["records"][:1]
+        first["next_offset"] = 1
+        second = self.outline_page()
+        second["records"] = second["records"][1:]
+        second["offset"] = 1
+        second["model_sha256"] = "f" * 64
+        with self.assertRaises(ArtifactError) as raised:
+            list(self.client(first, second).outline("SPEC-ONE"))
+        self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
+    def test_outline_accepts_matching_continuation(self):
+        first = self.outline_page()
+        first["records"] = first["records"][:1]
+        first["next_offset"] = 1
+        second = self.outline_page()
+        second["records"] = second["records"][1:]
+        second["offset"] = 1
+        self.assertEqual([row["id"] for row in self.client(first, second).outline("SPEC-ONE")],
+                         ["SCOPE-ONE", "SCOPE-TWO"])
 
 
 class BridgeTests(unittest.TestCase):
