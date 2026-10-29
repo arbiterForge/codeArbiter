@@ -167,6 +167,7 @@ EXPECTED_SUITES = {
         "test_native_artifact_roundtrip_does_not_normalize_retained_evidence",
         "test_plan_without_spec_and_mixed_pair_stop_without_writes",
         "test_unpaired_migration_refuses_preview_and_apply_without_writes",
+        "test_mixed_slug_migration_refuses_before_either_source_changes",
         "test_committed_cutover_replays_after_lost_reply_and_rejects_changed_request",
         "test_incomplete_or_overlapping_mapping_preserves_legacy_pair",
         "test_partial_cutover_recovery_preserves_unrelated_edits_in_both_directions",

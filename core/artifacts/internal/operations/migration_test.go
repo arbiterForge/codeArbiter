@@ -123,6 +123,37 @@ func TestMigrationOwnerRefusesUnpairedCutover(t *testing.T) {
 	}
 }
 
+func TestMigrationRefusesMixedSlugPair(t *testing.T) {
+	h := newHarness(t)
+	r := migrationRequest(t, h)
+	other := filepath.Join(h.root, ".codearbiter/plans/other.md")
+	if err := os.WriteFile(other, []byte("# Legacy\nStatus: approved\nHistoric behavior\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	model.M(r["plan"])["slug"] = "other"
+	model.M(r["plan"])["source_path"] = ".codearbiter/plans/other.md"
+	for _, op := range []string{"migration-preview", "migration-apply"} {
+		if op == "migration-apply" {
+			r["operation_id"] = "cutover-mixed-slug-001"
+			r["preview_sha256"] = strings.Repeat("0", 64)
+			r["review"] = object{"actor": "fixture", "origin": "test", "source_text": "Fixture only"}
+		}
+		if _, err := h.request(op, r); fault.Code(err) != "PAIR_MISMATCH" {
+			t.Fatalf("%s accepted mixed slug pair: %v", op, err)
+		}
+	}
+	for _, rel := range []string{".codearbiter/specs/example.md", ".codearbiter/plans/other.md"} {
+		if _, err := os.Stat(filepath.Join(h.root, filepath.FromSlash(rel))); err != nil {
+			t.Fatalf("mixed slug attempt removed %s: %v", rel, err)
+		}
+	}
+	for _, rel := range []string{".codearbiter/specs/example.html", ".codearbiter/plans/other.html"} {
+		if _, err := os.Stat(filepath.Join(h.root, filepath.FromSlash(rel))); !os.IsNotExist(err) {
+			t.Fatalf("mixed slug attempt wrote %s: %v", rel, err)
+		}
+	}
+}
+
 func TestMigrationRollbackKeepsHistoricalTwoEditCutoverRecoverable(t *testing.T) {
 	h := newHarness(t)
 	migrationRequest(t, h)
