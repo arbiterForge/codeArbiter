@@ -55,9 +55,6 @@ def main(argv=None) -> int:
         "--codex-review-profile", choices=("native", "native-v1", "native-v2"), default=None,
         help="Codex reviews default to the collaboration evidence protocol; legacy profiles are explicit",
     )
-    context_arm = sub.add_parser("arm-context")
-    context_arm.add_argument("--root", required=True)
-    context_arm.add_argument("--request-file", required=True)
     context_cancel = sub.add_parser("cancel-context")
     context_cancel.add_argument("--root", required=True)
     context_cancel.add_argument("--document-id", required=True)
@@ -107,9 +104,6 @@ def main(argv=None) -> int:
             result["verify_command"] = (
                 f'python "{script}" verify --root "{root}" --request-id {result["request_id"]}'
             )
-    elif args.command == "arm-context":
-        preview = _artifactlib.read_context_preview_request(root, args.request_file)
-        result = _artifactauthoritylib.arm_context_preview(root, client, preview)
     elif args.command == "apply-context":
         result = client.call("context-apply", {"receipt": args.receipt})
     elif args.command == "verify":

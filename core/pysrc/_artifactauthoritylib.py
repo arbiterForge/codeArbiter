@@ -2451,30 +2451,8 @@ def _context_preview_context(root: Path, client: Any, preview: dict[str, Any], p
 
 
 def arm_context_preview(root: str | Path, client: Any, preview: dict[str, Any], *, token: str | None = None) -> dict[str, Any]:
-    """Arm an exact preview reply; this step does not assert approval."""
-    root = _real_root(root)
-    valid_content = (isinstance(preview, dict) and set(preview) == CONTEXT_PREVIEW_KEYS
-                     and isinstance(preview.get("mode"), str)
-                     and preview.get("mode") in {"create", "adopt", "update"}
-                     and isinstance(preview.get("document_id"), str)
-                     and preview.get("document_id") in {"CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"})
-    valid_final = (isinstance(preview, dict) and set(preview) == CONTEXT_FINALIZE_KEYS
-                   and preview.get("mode") == "finalize" and preview.get("document_id") == "CONTEXT"
-                   and preview.get("target_path") == ".codearbiter/CONTEXT.md"
-                   and isinstance(preview.get("expected"), dict))
-    if not (valid_content or valid_final):
-        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview request contains unsupported or authority fields")
-    token = token or secrets.token_urlsafe(24)
-    if TOKEN_RE.fullmatch(token) is None:
-        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview token is invalid")
-    artifact_id = "CONTEXT-" + preview["document_id"].upper()
-    prompt = f"approve-context {artifact_id} {token}"
-    context, context_ref, context_hash, binding = _context_preview_context(root, client, preview, prompt)
-    _artifactpromptlib.register(root, CONTEXT_ROUTE, artifact_id, prompt, binding_sha256=context_hash)
-    return {"reply": prompt, "artifact_id": artifact_id, "preview_binding_sha256": binding,
-            "context_ref": context_ref, "context_sha256": context_hash,
-            "target_path": preview["target_path"], "preview_document": context["preview_document"],
-            "after_document_sha256": context["after_document_sha256"]}
+    """Retain the legacy entry point without permitting a new approval route."""
+    raise AuthorityError("CONTEXT_WORKFLOW_UNAVAILABLE", "legacy context approval cannot be newly armed; use the context writer")
 
 
 def cancel_context_preview(root: str | Path, document_id: str) -> dict[str, Any]:
