@@ -240,6 +240,18 @@ class RepositoryTests(unittest.TestCase):
         self.assertEqual(status["state"], "source-drift")
         self.assertFalse(status["can_resume_audit"])
 
+    def test_changed_evidence_set_is_drift_before_old_input_probe(self):
+        self.write("old-evidence.txt", b"selected input\n")
+        folder = self.start(scope="src", reviewed_untracked=["old-evidence.txt"],
+                            evidence_paths=["old-evidence.txt"])
+        (self.root / "old-evidence.txt").unlink()
+        self.write("new-evidence.txt", b"replacement input\n")
+        status = self.success(run.resume_status(self.root, folder,
+                                                evidence_paths=["new-evidence.txt"]))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertFalse(status["can_resume_follow_up"])
+
     def test_committed_evidence_deletion_is_source_drift(self):
         folder = self.start(scope="src", evidence_paths=["outside.txt"])
         self.git("rm", "--", "outside.txt")

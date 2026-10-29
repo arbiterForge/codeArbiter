@@ -400,7 +400,12 @@ def _status(root, folder, scope=None, target_digest=None, evidence_paths=None):
             scope_changed = scope is not None and _relative(scope) != fp["scope"]
         except (ValueError, TypeError):
             scope_changed = False
-        if scope_changed:
+        try:
+            evidence_changed = (evidence_paths is not None and isinstance(evidence_paths, list) and
+                                sorted({_relative(path) for path in evidence_paths}) != fp["evidence_paths"])
+        except (ValueError, TypeError):
+            evidence_changed = False
+        if scope_changed or evidence_changed:
             cursor["state"] = "source-drift"
         else:
             try:
