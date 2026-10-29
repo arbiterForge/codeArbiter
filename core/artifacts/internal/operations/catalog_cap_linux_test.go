@@ -120,3 +120,48 @@ func TestSaveRefusesCatalogByteOverflowBeforeWriting(t *testing.T) {
 		t.Fatalf("overflow save wrote an artifact: %v", err)
 	}
 }
+
+func TestMigrationByteCapsCoverPreviewAndReviewExpansion(t *testing.T) {
+	h := newHarness(t)
+	r := migrationRequest(t, h)
+	fs, err := store.Open(h.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fs.Close()
+	engine := &Engine{
+		FS: fs, RequestHash: strings.Repeat("0", 64),
+		Catalog: &repository.Catalog{Entries: map[string]repository.Entry{}, Order: []string{}},
+	}
+	items, _, err := engine.migration(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	previewBytes := 0
+	for _, item := range items {
+		previewBytes += len(item.After)
+	}
+	engine.Catalog.BytesTotal = repository.MaxCatalogBytes - previewBytes + 1
+	if _, err := engine.migrate("migration-preview", r); fault.Code(err) != "MAX_BYTES" || fault.Public(err).Field != ".codearbiter/plans/example.html" {
+		t.Fatalf("preview accepted an oversized catalog: %v", fault.Public(err))
+	}
+	engine.Catalog.BytesTotal = repository.MaxCatalogBytes - previewBytes - 1
+	preview, err := engine.migrate("migration-preview", r)
+	if err != nil {
+		t.Fatalf("preview should fit before review notes: %v", err)
+	}
+	r["preview_sha256"] = model.M(preview)["preview_sha256"]
+	r["operation_id"] = "cutover-byte-cap-fixture-001"
+	r["review"] = object{"actor": "fixture", "origin": "unit test", "source_text": "Synthetic mapping review, not implementation approval."}
+	if _, err := engine.migrate("migration-apply", r); fault.Code(err) != "MAX_BYTES" || fault.Public(err).Field == "" {
+		t.Fatalf("review expansion crossed cap without target: %v", fault.Public(err))
+	}
+	for _, kind := range []string{"spec", "plan"} {
+		if _, err := os.Stat(filepath.Join(h.root, ".codearbiter", kind+"s", "example.html")); !os.IsNotExist(err) {
+			t.Fatalf("migration wrote %s target despite cap: %v", kind, err)
+		}
+		if _, err := os.Stat(filepath.Join(h.root, ".codearbiter", kind+"s", "example.md")); err != nil {
+			t.Fatalf("migration removed %s source despite cap: %v", kind, err)
+		}
+	}
+}
