@@ -24,7 +24,7 @@ type migrationItem struct {
 // AND a complete, nonoverlapping line disposition. The engine proves coverage
 // of bytes/lines, not the truth of the caller's interpretation.
 func (e *Engine) migration(r object) ([]migrationItem, object, error) {
-	c := &repository.Catalog{Entries: map[string]repository.Entry{}, Order: []string{}}
+	c := &repository.Catalog{Entries: map[string]repository.Entry{}, Order: []string{}, BytesTotal: e.Catalog.BytesTotal}
 	for k, v := range e.Catalog.Entries {
 		c.Entries[k] = v
 		c.Order = append(c.Order, k)
@@ -119,8 +119,15 @@ func (e *Engine) migration(r object) ([]migrationItem, object, error) {
 		if err != nil {
 			return nil, nil, err
 		}
+		if len(c.Order) >= repository.MaxArtifacts {
+			return nil, nil, fault.At("MAX_ARTIFACTS", d.ID(), target, "migration would exceed the 1024-artifact catalog limit")
+		}
+		if c.BytesTotal+len(after) > repository.MaxCatalogBytes {
+			return nil, nil, fault.At("MAX_BYTES", d.ID(), target, "migration would exceed the 64 MiB catalog limit")
+		}
 		c.Entries[d.ID()] = repository.Entry{Path: target, Bytes: after, Doc: d}
 		c.Order = append(c.Order, d.ID())
+		c.BytesTotal += len(after)
 		items = append(items, migrationItem{source, target, before, after, d})
 		model.M(manifest)["items"] = append(model.A(manifest["items"]), object{"source_path": source, "source_sha256": canonical.BytesHash(before), "source_lines": int64(len(lines)), "target_path": target, "artifact_id": d.ID(), "normative_sha256": d.NormHash(), "model_sha256": d.Hash(), "mapping": item["mappings"]})
 		if kind == "spec" {
@@ -146,6 +153,7 @@ func (e *Engine) migrate(op string, r object) (any, error) {
 	}
 	review := model.M(r["review"])
 	edits := []store.Edit{}
+	total := e.Catalog.BytesTotal
 	for _, item := range items {
 		gov := model.M(item.Doc.Data["governance"])
 		gov["review_notes"] = append(model.A(gov["review_notes"]), "Migration mapping attestation by "+model.S(review["actor"])+" at "+model.S(review["origin"])+": "+model.S(review["source_text"])+"; preview "+model.S(preview["preview_sha256"])+". This is not implementation approval.")
@@ -157,6 +165,10 @@ func (e *Engine) migrate(op string, r object) (any, error) {
 		after, er := render.Render(d)
 		if er != nil {
 			return nil, er
+		}
+		total += len(after)
+		if total > repository.MaxCatalogBytes {
+			return nil, fault.At("MAX_BYTES", d.ID(), item.Target, "migration would exceed the 64 MiB catalog limit")
 		}
 		edits = append(edits, store.Edit{Path: item.Target, After: after}, store.Edit{Path: item.Source, Before: item.Before})
 	}

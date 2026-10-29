@@ -27,9 +27,11 @@ READ_OPERATIONS = frozenset({"capabilities", "schema", "read", "outline", "ident
 
 
 class ArtifactError(RuntimeError):
-    def __init__(self, code: str, message: str):
+    def __init__(self, code: str, message: str, field: str | None = None):
         self.code = code
-        super().__init__(f"{code}: {message}")
+        self.field = field
+        suffix = f" [field: {field!r}]" if field else ""
+        super().__init__(f"{code}: {message}{suffix}")
 
 
 def _object(pairs):
@@ -1187,7 +1189,15 @@ class ArtifactClient:
                     or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,79}", error["code"])
                     or code == 0):
                 raise ArtifactError("INVALID_RESPONSE", "malformed failure envelope")
-            raise ArtifactError(error["code"], error["message"][:512])
+            field = error.get("field")
+            if field is not None:
+                try:
+                    field_bytes = field.encode("utf-8")
+                except UnicodeError as exc:
+                    raise ArtifactError("INVALID_RESPONSE", "failure field is not valid Unicode") from exc
+                if len(field_bytes) > 1024:
+                    raise ArtifactError("INVALID_RESPONSE", "failure field exceeds bound")
+            raise ArtifactError(error["code"], error["message"][:512], field)
         if set(result) != {"protocol", "operation", "ok", "result"} or not isinstance(result.get("result"), dict):
             raise ArtifactError("INVALID_RESPONSE", "malformed success envelope")
         if code != 0 and not (permit_invalid and operation == "validate" and code == 2 and result["result"].get("valid") is False):

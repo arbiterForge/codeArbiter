@@ -120,7 +120,9 @@ export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freez
  * context owners gained an HTML procedure and kept Markdown in references.
  * The conversion route now asks the agent to map each Markdown section to
  * saved knowledge before a digest-bound cutover; the context-creation and decompose routes retain
- * their explicit format choice and unchanged Markdown fallback. Security
+ * their explicit format choice and unchanged Markdown fallback. The Python
+ * artifact bridge also now exposes a bounded error field for diagnostics;
+ * this does not change the context or approval routes. Security
  * policy readers now select complete HTML records after conversion while the
  * Markdown scope blocks remain operative. This changes the cited source text,
  * not the diagram routes or gate ownership. */
@@ -135,7 +137,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/artifacts/internal/operations/protocol.go':'3b09bf4c71dcdc9f8e9d2bfa18732c8c82b0b48f',
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
-  'core/pysrc/_artifactlib.py':'a354b103ac1d211650732262cdb5cb5d2a16222b',
+  'core/pysrc/_artifactlib.py':'47556f8eb986cd70b7d944262933437d45e97319',
   'core/pysrc/init-codearbiter.py':'ab47257f03a0bdd2cbd249cc00478cdbeeea4f39',
   'core/surface/commands/feature.md':'ebb6047b0ec2f7040c60c6847535bb1f65f6cd10',
   'core/surface/commands/fix.md':'03fbef8fef446eb3c40f8f7ea5207352e587ba0f',

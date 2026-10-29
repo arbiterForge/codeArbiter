@@ -47,6 +47,9 @@ func TestContextRepresentationBoundary(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		if want := len(specBytes) + len(planBytes); catalog.BytesTotal != want {
+			t.Fatalf("catalog byte total = %d, want %d", catalog.BytesTotal, want)
+		}
 		for _, item := range []struct{ id, path, hash string }{
 			{spec.ID(), ".codearbiter/specs/example.html", spec.Hash()},
 			{plan.ID(), ".codearbiter/plans/example.html", plan.Hash()},

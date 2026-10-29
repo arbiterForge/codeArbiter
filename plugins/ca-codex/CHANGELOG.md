@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.22.3] - 2026-10-29
+
+### Fixed
+
+- Artifact diagnostics identify the affected path and preserve a bounded error
+  field. Saves and legacy cutovers enforce catalog limits before writing.
+
 ## [0.22.2] - 2026-10-24
 
 ### Fixed
