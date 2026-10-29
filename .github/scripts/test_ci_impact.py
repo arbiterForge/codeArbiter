@@ -2572,6 +2572,30 @@ class WorkflowContractTest(unittest.TestCase):
 
 
 class ReceiptCommandTest(unittest.TestCase):
+    def test_core_artifact_change_writes_exact_required_receipt(self):
+        changed = "core/artifacts/internal/operations/protocol.go"
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "impact.json"
+            summary = Path(temporary) / "summary.md"
+            self.assertEqual(module.main([
+                "--map", str(REPO_ROOT / ".github/ci-impact-map.json"),
+                "--hosts", str(REPO_ROOT / "core/hosts.json"),
+                "--changed-files", changed,
+                "--output", str(output),
+                "--summary", str(summary),
+            ]), 0)
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], [changed])
+            self.assertEqual([check["id"] for check in receipt["selected"]], [
+                "artifact-engine", "artifact-browser", "artifact-package-cold",
+            ])
+            self.assertTrue(all(
+                check["reason"] == f"matched path: {changed}"
+                for check in receipt["selected"]
+            ))
+            self.assertIn("## CI impact receipt", summary.read_text(encoding="utf-8"))
+
     def test_cli_writes_deterministic_json_and_a_markdown_summary(self):
         with tempfile.TemporaryDirectory() as temporary:
             temporary_path = Path(temporary)
