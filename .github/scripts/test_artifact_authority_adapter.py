@@ -213,6 +213,38 @@ class AuthorityAdapterTest(unittest.TestCase):
 
         self.assertEqual(self.client.calls, [])
 
+    def test_t017_fresh_context_approval_arming_is_disabled(self):
+        preview = {
+            "operation_id": "context-fixture-001", "mode": "update",
+            "document_id": "tech-stack", "target_path": ".codearbiter/tech-stack.md",
+            "typed": {"format": "codearbiter.repository-context/0.1.0", "document_id": "tech-stack", "entries": []},
+            "selections": [], "expected_document_sha256": "b" * 64,
+            "expected_provenance_sha256": "c" * 64,
+            "proposed_provenance": {"schema": 2},
+        }
+        client = mock.Mock()
+        client.call.side_effect = AssertionError("fresh arm reached native context authority")
+        with self.assertRaisesRegex(RuntimeError, "CONTEXT_WORKFLOW_UNAVAILABLE"):
+            self.adapter.arm_context_preview(self.root, client, preview)
+        client.call.assert_not_called()
+
+        cli = subprocess.run(
+            [sys.executable, str(CORE_PYSRC / "artifact-authority.py"),
+             "arm-context", "--root", str(self.root),
+             "--request-file", str(self.root / "absent-preview.json")],
+            capture_output=True, text=True, check=False)
+        self.assertEqual(cli.returncode, 2)
+        self.assertIn("invalid choice", cli.stderr)
+        self.assertNotIn("Traceback", cli.stderr)
+        self.assertFalse((self.root / "absent-preview.json").exists())
+
+        help_text = subprocess.run(
+            [sys.executable, str(CORE_PYSRC / "artifact-authority.py"), "--help"],
+            capture_output=True, text=True, check=True).stdout
+        self.assertIn("apply-context", help_text)
+        self.assertIn("cancel-context", help_text)
+        self.assertNotIn("arm-context", help_text)
+
     def test_t017_context_authority_boundary_positive_controls(self):
         """A fixture host reply captures only its engine-issued exact context preview."""
         binding = "a" * 64
@@ -255,11 +287,15 @@ class AuthorityAdapterTest(unittest.TestCase):
                 return super().call(operation, request, **kwargs)
 
         client = ContextClient(self.root)
-        self.assertTrue(callable(getattr(self.adapter, "arm_context_preview", None)),
-                        "context preview authority must be armed by the host adapter")
         self.assertTrue(callable(getattr(self.adapter, "capture_context_preview", None)),
-                        "context preview approval must be captured from the host reply")
-        armed = self.adapter.arm_context_preview(self.root, client, preview, token="fixture-context-token-001")
+                        "historical context approval must remain capturable")
+        prompt = "approve-context CONTEXT-TECH-STACK fixture-context-nonce-001"
+        _context, _ref, context_hash, _binding = self.adapter._context_preview_context(
+            self.root, client, preview, prompt)
+        self.adapter._artifactpromptlib.register(
+            self.root, self.adapter.CONTEXT_ROUTE, "CONTEXT-TECH-STACK", prompt,
+            binding_sha256=context_hash)
+        armed = {"reply": prompt, "context_sha256": context_hash}
         with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=client):
             notice = self.adapter.capture_context_preview_from_hook(
                 root=self.root, plugin_root=self.root, prompt=armed["reply"],
@@ -285,13 +321,13 @@ class AuthorityAdapterTest(unittest.TestCase):
     def test_t017_context_authority_boundary_negative_controls(self):
         """Wrong scope, replay and caller-authored approval labels cannot grant context authority."""
         self.assertTrue(callable(getattr(self.adapter, "arm_context_preview", None)),
-                        "context preview authority must reject caller approval labels")
+                        "legacy arm entry point must reject new requests")
         self.assertTrue(callable(getattr(self.adapter, "capture_context_preview", None)),
                         "context preview authority must reject unrelated approval replies")
         preview = {"operation_id": "context-fixture-002", "mode": "update", "document_id": "tech-stack"}
         for extras in ({"approved": True}, {"authority_kind": "user_workflow"},
                        {"receipt": self.client.receipt}, {"kind": "approval"}):
-            with self.subTest(extras=extras), self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+            with self.subTest(extras=extras), self.assertRaisesRegex(RuntimeError, "CONTEXT_WORKFLOW_UNAVAILABLE"):
                 self.adapter.arm_context_preview(self.root, self.client, {**preview, **extras})
         self.assertEqual(self.client.calls, [])
         with self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
@@ -336,9 +372,9 @@ class AuthorityAdapterTest(unittest.TestCase):
                                 "after_document_sha256": context["after_document_sha256"]}
 
                 with self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
-                    self.adapter.arm_context_preview(
+                    self.adapter._context_preview_context(
                         self.root, WrongContextClient(), full_preview,
-                        token="fixture-context-token-003",
+                        "approve-context CONTEXT-CONTEXT fixture-context-nonce-003",
                     )
 
         installed = self.adapter._artifactlib.ArtifactClient.__new__(
