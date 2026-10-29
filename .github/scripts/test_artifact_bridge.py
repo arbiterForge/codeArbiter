@@ -316,6 +316,14 @@ class PageValidationTests(unittest.TestCase):
         self.assertEqual([row["artifact_id"] for row in self.client(page).index("spec")],
                          ["SPEC-ONE"])
 
+    def test_filtered_index_rejects_overlapping_continuation_before_yield(self):
+        page = self.index_page()
+        page["total"] = 3
+        page["next_offset"] = 1
+        with self.assertRaises(ArtifactError) as raised:
+            next(self.client(page).index("spec"))
+        self.assertEqual(raised.exception.code, "INVALID_RESPONSE")
+
     def test_outline_rejects_bad_header_and_row_before_yield(self):
         for damage in ("offset", "boolean offset", "digest", "row"):
             page = copy.deepcopy(self.outline_page())

@@ -397,18 +397,29 @@ def _status(root, folder, scope=None, target_digest=None, evidence_paths=None):
         return {"ok": False, "state": "invalid", "error": "invalid-run-records", "can_resume_audit": False, "can_resume_follow_up": False}
     if cursor["state"] != "terminal":
         try:
-            current = _fingerprint(root, fp["scope"] if scope is None else scope,
-                                   None if fp["untracked_policy"] == "all" else fp["reviewed_untracked"],
-                                   fp["target_digest"] if target_digest is None else target_digest, folder,
-                                   fp["evidence_paths"] if evidence_paths is None else evidence_paths)
-        except _Invalid as exc:
-            cursor["state"] = ("source-drift" if str(exc) == "untracked-input-staged"
-                               else "source-probe-failed")
-        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
-            cursor["state"] = "source-probe-failed"
+            scope_changed = scope is not None and _relative(scope) != fp["scope"]
+        except (ValueError, TypeError):
+            scope_changed = False
+        if scope_changed:
+            cursor["state"] = "source-drift"
         else:
-            if current != fp:
-                cursor["state"] = "source-drift"
+            try:
+                current = _fingerprint(root, fp["scope"] if scope is None else scope,
+                                       None if fp["untracked_policy"] == "all" else fp["reviewed_untracked"],
+                                       fp["target_digest"] if target_digest is None else target_digest, folder,
+                                       fp["evidence_paths"] if evidence_paths is None else evidence_paths)
+            except (_Invalid, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as exc:
+                try:
+                    head = _git_text(root, "rev-parse", "--verify", "HEAD")
+                    head_changed = bool(_OBJECT.fullmatch(head) and head != fp["head"])
+                except (OSError, ValueError, subprocess.SubprocessError):
+                    head_changed = False
+                cursor["state"] = ("source-drift" if head_changed or
+                                   isinstance(exc, _Invalid) and str(exc) == "untracked-input-staged"
+                                   else "source-probe-failed")
+            else:
+                if current != fp:
+                    cursor["state"] = "source-drift"
     return {"ok": True, **cursor, "can_resume_audit": cursor["state"] == "audit",
             "can_resume_follow_up": cursor["state"] == "follow-up"}
 

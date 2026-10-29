@@ -233,6 +233,21 @@ class RepositoryTests(unittest.TestCase):
             self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
                              {"ok": False, "error": "run-not-writable"})
 
+    def test_changed_scope_with_selected_input_is_source_drift(self):
+        self.write("src/reviewed.txt", b"selected input\n")
+        folder = self.start(scope="src", reviewed_untracked=["src/reviewed.txt"])
+        status = self.success(run.resume_status(self.root, folder, scope="outside.txt"))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+
+    def test_committed_evidence_deletion_is_source_drift(self):
+        folder = self.start(scope="src", evidence_paths=["outside.txt"])
+        self.git("rm", "--", "outside.txt")
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "remove evidence", "--no-gpg-sign")
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+
     def test_populated_gitlink_binds_child_source_and_rejects_child_drift(self):
         child = self.root / "child"
         self.git("clone", "-q", "--no-hardlinks", str(self.root), str(child))

@@ -84,6 +84,7 @@ EXPECTED_SUITES = {
         "test_unfiltered_index_refuses_skipped_rows_before_yield",
         "test_filtered_index_refuses_other_kind_before_yield",
         "test_filtered_index_may_skip_other_kind",
+        "test_filtered_index_rejects_overlapping_continuation_before_yield",
         "test_outline_rejects_bad_header_and_row_before_yield",
         "test_outline_rejects_changed_continuation_digest",
         "test_outline_accepts_matching_continuation",

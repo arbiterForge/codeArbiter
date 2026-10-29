@@ -1241,6 +1241,8 @@ class ArtifactClient:
         next_offset = page["next_offset"]
         if not kind and (total if next_offset is None else next_offset) != offset + len(page["entries"]):
             raise ArtifactError("INVALID_RESPONSE", "malformed index continuation")
+        if kind and next_offset is not None and next_offset < offset + len(page["entries"]):
+            raise ArtifactError("INVALID_RESPONSE", "filtered index continuation overlaps returned entries")
         for row in page["entries"]:
             if not isinstance(row, dict) or not {
                 "artifact_id", "kind", "path", "revision", "model_sha256",
