@@ -459,6 +459,7 @@ a separate PR rather than weakening this release. The interactive agent may auth
 observe that publisher, but MUST NOT execute the tag-composition commands below locally.
 
 All version-sensitive helper calls use the declared policy. In particular, invoke `notes-match "$RELEASE_TAG" <stored-file> "$VERSION_POLICY" "$INITIAL_VERSION"`; any shorter `notes-match` spelling below documents the retained SemVer-compatible CLI arity, not the command for this resolved row.
+For `notes-match` and `dates-match`, exit 1 means the readable contents disagree, exit 3 means an input could not be read, and exit 4 means an input is not UTF-8. Each nonzero result stops publication; the helper prints a bounded reason without the file path or contents.
 
 Phase 2's remaining work is twelve named substeps, in this fixed order (#623/T-17: the former 9,324-character single item is replaced, not duplicated alongside these). Each substep's number is a stable name for T-18's per-substep structural tests and the campaign invariant map — do not renumber them independently of that map.
 
