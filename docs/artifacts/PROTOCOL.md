@@ -687,7 +687,7 @@ Process-death tests exercise actual subprocess exits at stage/journal/replacemen
 
 ## Legacy conversion
 
-Legacy Markdown remains with the original workflow until explicit conversion. `migration-preview` requires both spec and plan mappings in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
+Legacy Markdown remains with the original workflow until explicit conversion. `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
 
 `migration-apply` requires the same pair, the exact preview identity, and a recorded review. The new documents start as drafts. Old approval and acceptance prose is not transferred as authority. A pair cutover journals HTML creation and Markdown retirement together. Original bytes remain in history. `recover` handles an uncertain cutover; `migration-rollback` also accepts historical completed two-edit cutovers while canonical endpoints still match them. Intervening edits block rollback.
 
