@@ -12,6 +12,8 @@ All notable changes to `ca-pi` are documented in this file.
   failures, and bound unreadable release-evidence diagnostics with a distinct
   invalid UTF-8 result.
 - Keep fresh legacy context approval from arming an unrelated artifact action.
+- Align the Pi host identity with its release manifest so installed hooks
+  authenticate the package after the version bump.
 
 ## [0.23.3] - 2026-10-29
 

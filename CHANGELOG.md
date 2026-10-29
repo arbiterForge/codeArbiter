@@ -21,6 +21,8 @@ predate the plugin rewrite and are grouped by date.
   and bound unreadable release-evidence diagnostics, distinguishing unreadable
   notes from invalid UTF-8.
 - Keep fresh legacy context approval from arming an unrelated artifact action.
+- Align the Claude host identity with its release manifest so installed hooks
+  authenticate the package after the version bump.
 
 ## [3.4.3] - 2026-10-29
 

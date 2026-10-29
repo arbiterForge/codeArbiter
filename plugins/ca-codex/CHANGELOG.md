@@ -14,6 +14,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   failures, and bound unreadable release-evidence diagnostics with a distinct
   invalid UTF-8 result.
 - Keep fresh legacy context approval from arming an unrelated artifact action.
+- Align the Codex host identity and npm package version with its release
+  manifest so installed hooks authenticate the package.
 
 ## [0.22.3] - 2026-10-29
 
