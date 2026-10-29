@@ -49,6 +49,7 @@ EXPECTED_SUITES = {
         "test_unknown_request_fields", "test_changed_installed_binary",
         "test_symlink_binary_rejected", "test_linked_or_reparse_installation_directory_rejected",
         "test_artifact_mutations_never_execute_content",
+        "test_engine_fault_keeps_bounded_target_for_host_caller",
         "test_helper_child_receives_no_parent_environment",
         "test_darwin_staging_uses_only_the_verified_open_descriptor",
         "test_existing_html_mutation_revalidates_payload_before_writing",
