@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.4.3] - 2026-10-29
+
+### Fixed
+
+- Artifact saves and legacy cutovers reject catalog count or byte-limit overflow
+  before writing. Drift and limit errors identify the affected artifact path,
+  and the Python bridge retains a bounded error field.
+
 ## [3.4.2] - 2026-10-24
 
 ### Fixed
