@@ -396,11 +396,11 @@ def _status(root, folder, scope=None, target_digest=None, evidence_paths=None):
                                    None if fp["untracked_policy"] == "all" else fp["reviewed_untracked"],
                                    fp["target_digest"] if target_digest is None else target_digest, folder,
                                    fp["evidence_paths"] if evidence_paths is None else evidence_paths)
-            unchanged = current == fp
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
-            unchanged = False
-        if not unchanged:
-            cursor["state"] = "source-drift"
+            cursor["state"] = "source-probe-failed"
+        else:
+            if current != fp:
+                cursor["state"] = "source-drift"
     return {"ok": True, **cursor, "can_resume_audit": cursor["state"] == "audit",
             "can_resume_follow_up": cursor["state"] == "follow-up"}
 
