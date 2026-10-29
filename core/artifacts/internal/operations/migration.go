@@ -24,6 +24,9 @@ type migrationItem struct {
 // AND a complete, nonoverlapping line disposition. The engine proves coverage
 // of bytes/lines, not the truth of the caller's interpretation.
 func (e *Engine) migration(r object) ([]migrationItem, object, error) {
+	if model.M(r["spec"]) == nil || model.M(r["plan"]) == nil {
+		return nil, nil, fault.New("PAIR_REQUIRED", "legacy migration requires both spec and plan mappings")
+	}
 	c := &repository.Catalog{Entries: map[string]repository.Entry{}, Order: []string{}}
 	for k, v := range e.Catalog.Entries {
 		c.Entries[k] = v
@@ -34,9 +37,6 @@ func (e *Engine) migration(r object) ([]migrationItem, object, error) {
 	var spec *model.Document
 	for _, kind := range []string{"spec", "plan"} {
 		item := model.M(r[kind])
-		if item == nil {
-			continue
-		}
 		source := model.S(item["source_path"])
 		slug := model.S(item["slug"])
 		if source != ".codearbiter/"+kind+"s/"+slug+".md" || !validate.Path(source, false) {
