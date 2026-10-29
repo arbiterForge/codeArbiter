@@ -222,6 +222,17 @@ class RepositoryTests(unittest.TestCase):
                 self.assertEqual(operation(), {"ok": False, "error": "run-not-writable"})
                 self.assertEqual(records(), before)
 
+    def test_fingerprint_probe_failure_is_not_reported_as_source_drift(self):
+        folder = self.start(scope="src")
+        with mock.patch.object(run, "_fingerprint", side_effect=OSError("private machine detail")):
+            status = self.success(run.resume_status(self.root, folder))
+            self.assertEqual(status["state"], "source-probe-failed")
+            self.assertFalse(status["can_resume_audit"])
+            self.assertFalse(status["can_resume_follow_up"])
+            self.assertNotIn("private machine detail", json.dumps(status))
+            self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                             {"ok": False, "error": "run-not-writable"})
+
     def test_populated_gitlink_binds_child_source_and_rejects_child_drift(self):
         child = self.root / "child"
         self.git("clone", "-q", "--no-hardlinks", str(self.root), str(child))
