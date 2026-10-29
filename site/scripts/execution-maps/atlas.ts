@@ -118,7 +118,9 @@ export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freez
  * saved knowledge before a digest-bound cutover; the context-creation and decompose routes retain
  * their explicit format choice and unchanged Markdown fallback. Security
  * policy readers now select complete HTML records after conversion while the
- * Markdown scope blocks remain operative. This changes the cited source text,
+ * Markdown scope blocks remain operative. Native legacy migration now requires
+ * both spec and plan mappings in one request; the diagram routes are unchanged.
+ * This changes the cited source text,
  * not the diagram routes or gate ownership. */
 export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/pysrc/_readinjectlib.py':'eb9ac0c2ed4516450ec8607327790e3edaab8252',
@@ -128,7 +130,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/debug/SKILL.md':'83c3124f046df51e3db67278545260bff93b19d2',
   'core/surface/skills/security-architecture/SKILL.md':'669e8a1d4660a7166d0d3304304bcf322758c111',
   'core/surface/skills/tribunal/SKILL.md':'a549fae64b1bf6243b59ea78aa608c05beeab348',
-  'core/artifacts/internal/operations/protocol.go':'3b09bf4c71dcdc9f8e9d2bfa18732c8c82b0b48f',
+  'core/artifacts/internal/operations/protocol.go':'c3238af44ac7dca08fa4002eec28847ab85f6b50',
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
   'core/pysrc/_artifactlib.py':'a3228472bddc2d095e0abeef64e9a60c352e70e7',
