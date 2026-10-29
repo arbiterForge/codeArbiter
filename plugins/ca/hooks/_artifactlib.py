@@ -1203,20 +1203,97 @@ class ArtifactClient:
 
     @staticmethod
     def _check_page(page: dict, offset: int, field: str):
+        if not isinstance(page, dict):
+            raise ArtifactError("INVALID_RESPONSE", "malformed bounded page")
         values = page.get(field)
-        if not isinstance(values, list) or "next_offset" not in page:
+        total = page.get("total")
+        if (not isinstance(values, list) or type(total) is not int or total < 0
+                or offset > total or len(values) > total - offset
+                or "next_offset" not in page):
             raise ArtifactError("INVALID_RESPONSE", "malformed bounded page")
         next_offset = page["next_offset"]
-        if next_offset is not None and (type(next_offset) is not int or next_offset <= offset or not values):
+        if next_offset is not None and (type(next_offset) is not int or next_offset <= offset
+                                        or next_offset >= total or not values):
             raise ArtifactError("INVALID_RESPONSE", "pagination must make forward progress")
+
+    @staticmethod
+    def _page_digest(value: object) -> bool:
+        return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+
+    @classmethod
+    def _check_index_page(cls, page: dict, offset: int, previous: tuple[str, int] | None,
+                          kind: str | None):
+        cls._check_page(page, offset, "entries")
+        digest = page.get("catalog_sha256")
+        total = page["total"]
+        if not cls._page_digest(digest) or (previous is not None and previous != (digest, total)):
+            raise ArtifactError("INVALID_RESPONSE", "malformed index continuation")
+        next_offset = page["next_offset"]
+        if not kind and (total if next_offset is None else next_offset) != offset + len(page["entries"]):
+            raise ArtifactError("INVALID_RESPONSE", "malformed index continuation")
+        for row in page["entries"]:
+            if not isinstance(row, dict) or not {
+                "artifact_id", "kind", "path", "revision", "model_sha256",
+                "normative_sha256", "symbol_count", "title", "governs", "authority",
+            } <= row.keys():
+                raise ArtifactError("INVALID_RESPONSE", "malformed index row")
+            authority = row["authority"]
+            if (any(not isinstance(row[key], str) or not row[key]
+                    for key in ("artifact_id", "kind", "path", "title"))
+                    or row["kind"] not in ("spec", "plan", "knowledge", "decomposition")
+                    or type(row["revision"]) is not int or row["revision"] < 1
+                    or type(row["symbol_count"]) is not int or row["symbol_count"] < 0
+                    or not cls._page_digest(row["model_sha256"])
+                    or not cls._page_digest(row["normative_sha256"])
+                    or (kind and row["kind"] != kind)
+                    or (row["kind"] == "spec" and not isinstance(row["governs"], list))
+                    or (row["governs"] is not None and
+                        (not isinstance(row["governs"], list) or
+                         any(not isinstance(value, str) or not value for value in row["governs"])))
+                    or not isinstance(authority, dict)
+                    or not isinstance(authority.get("state"), str)
+                    or type(authority.get("authority_verified")) is not bool
+                    or not isinstance(authority.get("trust_model"), str)
+                    or ("diagnostic" in authority and not isinstance(authority["diagnostic"], str))):
+                raise ArtifactError("INVALID_RESPONSE", "malformed index row")
+        return digest, total
+
+    @classmethod
+    def _check_outline_page(cls, page: dict, artifact_id: str, offset: int,
+                            previous: tuple[str, str, int, int] | None):
+        cls._check_page(page, offset, "records")
+        digest = page.get("model_sha256")
+        normative = page.get("normative_sha256")
+        revision = page.get("revision")
+        total = page["total"]
+        values = page["records"]
+        next_offset = page["next_offset"]
+        if (page.get("artifact_id") != artifact_id or type(page.get("offset")) is not int
+                or page["offset"] != offset
+                or not cls._page_digest(digest) or not cls._page_digest(normative)
+                or type(revision) is not int or revision < 1
+                or offset + len(values) > total
+                or (next_offset is None and offset + len(values) != total)
+                or (next_offset is not None and next_offset != offset + len(values))
+                or (previous is not None and previous != (digest, normative, revision, total))):
+            raise ArtifactError("INVALID_RESPONSE", "malformed outline continuation")
+        for row in values:
+            if (not isinstance(row, dict) or not {"id", "kind", "retired", "title"} <= row.keys()
+                    or not isinstance(row["id"], str) or not row["id"]
+                    or not isinstance(row["kind"], str) or not row["kind"]
+                    or type(row["retired"]) is not bool
+                    or (row["title"] is not None and not isinstance(row["title"], str))):
+                raise ArtifactError("INVALID_RESPONSE", "malformed outline row")
+        return digest, normative, revision, total
 
     def index(self, kind: str | None = None):
         request = {"budget": 16384}
         if kind:
             request["kind"] = kind
+        previous = None
         for _ in range(1025):
             page = self.call("index", request)
-            self._check_page(page, request.get("offset", 0), "entries")
+            previous = self._check_index_page(page, request.get("offset", 0), previous, kind)
             yield from page["entries"]
             if page["next_offset"] is None:
                 return
@@ -1225,9 +1302,10 @@ class ArtifactClient:
 
     def outline(self, artifact_id: str):
         request = {"artifact_id": artifact_id, "budget": 16384}
+        previous = None
         for _ in range(8193):
             page = self.call("outline", request)
-            self._check_page(page, request.get("offset", 0), "records")
+            previous = self._check_outline_page(page, artifact_id, request.get("offset", 0), previous)
             yield from page["records"]
             if page["next_offset"] is None:
                 return
