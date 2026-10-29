@@ -255,7 +255,12 @@ def _fingerprint(root, scope, reviewed_untracked, target_digest, active_run=None
     available = {name for name in available if selected(name)}
     _require(reviewed_untracked is None or isinstance(reviewed_untracked, list), "invalid-untracked-selection")
     untracked = sorted(available if reviewed_untracked is None else {_relative(name) for name in reviewed_untracked})
-    _require(all(name in available for name in untracked), "untracked-input-unavailable")
+    unavailable = [name for name in untracked if name not in available]
+    if unavailable:
+        indexed_names = {entry["path"] for entry in index_entries}
+        if all(name in indexed_names for name in unavailable):
+            raise _Invalid("untracked-input-staged")
+        raise _Invalid("untracked-input-unavailable")
     represented = {entry["path"] for entry in head_entries + index_entries} | set(untracked)
     _require(all(path in represented for path in evidence_paths), "evidence-input-unavailable")
     blobs = _blobs(root, head_entries + index_entries)
@@ -396,6 +401,9 @@ def _status(root, folder, scope=None, target_digest=None, evidence_paths=None):
                                    None if fp["untracked_policy"] == "all" else fp["reviewed_untracked"],
                                    fp["target_digest"] if target_digest is None else target_digest, folder,
                                    fp["evidence_paths"] if evidence_paths is None else evidence_paths)
+        except _Invalid as exc:
+            cursor["state"] = ("source-drift" if str(exc) == "untracked-input-staged"
+                               else "source-probe-failed")
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
             cursor["state"] = "source-probe-failed"
         else:

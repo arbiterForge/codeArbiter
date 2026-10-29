@@ -285,6 +285,15 @@ class RepositoryTests(unittest.TestCase):
         self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
         self.assertFalse(run.start_run(self.root, reviewed_untracked=["ignored.txt"])["ok"])
 
+    def test_staged_selected_untracked_input_is_source_drift(self):
+        self.write("src/reviewed.txt", b"reviewed untracked\n")
+        folder = self.start(reviewed_untracked=["src/reviewed.txt"])
+        self.git("add", "--", "src/reviewed.txt")
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertFalse(status["can_resume_follow_up"])
+
     def test_new_untracked_default_and_index_deletion_invalidate_resume(self):
         folder = self.start()
         self.write("new.txt", b"new reviewed input\n")
