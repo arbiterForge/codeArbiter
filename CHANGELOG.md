@@ -18,7 +18,8 @@ predate the plugin rewrite and are grouped by date.
 
 - Validate artifact pages before reading their embedded model and reject unsafe
   or inconsistent rendered content. Report fingerprint probe failures distinctly
-  and bound unreadable release-evidence diagnostics.
+  and bound unreadable release-evidence diagnostics, distinguishing unreadable
+  notes from invalid UTF-8.
 - Keep fresh legacy context approval from arming an unrelated artifact action.
 
 ## [3.4.3] - 2026-10-29
