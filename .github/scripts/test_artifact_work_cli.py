@@ -150,6 +150,28 @@ class WorkCLITest(unittest.TestCase):
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
 
+    def test_project_view_pages_native_work_without_writing_a_second_owner(self) -> None:
+        first = self.run_work("create", "--title", "Fix <input>", "--intent", "First result",
+                              "--type", "fix", "--operation-id", "project-cli-create-001")
+        self.run_work("create", "--title", "Second result", "--intent", "Next result",
+                      "--type", "feature", "--operation-id", "project-cli-create-002")
+        page = self.client.call("project-view", {"limit": 1})
+        self.assertEqual(page["total"], 2)
+        self.assertEqual(page["next_offset"], 1)
+        self.assertFalse(page["canonical"])
+        self.assertFalse(page["content_snapshot"])
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["project-view", "--limit", "1"]), 0)
+        html = output.getvalue()
+        self.assertTrue(html.startswith("<!doctype html>"))
+        self.assertIn("Local progress", html)
+        self.assertIn("Checks", html)
+        self.assertIn("More work remains", html)
+        self.assertNotIn('id="ca-artifact-model"', html)
+        self.assertFalse((self.root / ".codearbiter" / "views").exists())
+        self.assertEqual(self.run_work("get", first["work_id"])["state"], "queued")
+
     def test_legacy_board_remains_owner_and_create_returns_stable_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)
