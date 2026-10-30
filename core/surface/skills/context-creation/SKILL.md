@@ -17,7 +17,9 @@ Wrap an existing codebase in project state, without guessing. Routed to by `/cre
 This back-fills from existing source. It complements `{{CMD:init}}`, which scaffolds an empty `.codearbiter/` for a fresh project; here the context is derived from what is already on disk. Load `{{PLUGIN_ROOT}}/includes/knowledge.md` for the record vocabulary and the `knowledge.py` verbs used below.
 
 An initialized refresh is requested through `{{CMD:status}} drift` and the
-existing `context-check` owner after an explicit scoped or full selection. This
+existing `context-check` owner after an explicit scoped or full selection. An
+explicit initialized brownfield project-model request also uses the existing
+`decompose` owner for intended target, phases, and candidate work. This
 initial-population route keeps its `<!--INITIALIZED-->` lock; an initialized
 repository never clears the marker or re-enters Phase 6 to refresh content.
 
@@ -25,7 +27,7 @@ repository never clears the marker or re-enters Phase 6 to refresh content.
 
 Read these, or STOP and surface the gap — never guess project identity or a command:
 
-- `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — if it already carries `<!--INITIALIZED-->`, context exists. Stop and route to normal operation.
+- `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — if it already carries `<!--INITIALIZED-->`, context exists. Leave this initial-population route and use `context-check` for selected observed context; an explicit project-model acquisition also uses `decompose`.
 - `knowledge.py format`. A `markdown` scaffold is an older one: offer `knowledge.py convert` before writing. Read every returned Markdown section, add its meaning as records or notes, then map each section ID to its saved references (use `[]` only for `content=false`). Finish with `knowledge.py convert --finish <token> --coverage @checklist.json`. If the user keeps the Markdown format, load `{{PLUGIN_ROOT}}/skills/context-creation/references/markdown-format.md` and follow that unchanged procedure instead of this one; never convert silently.
 - The repository root listing (one level deep) — the source surface this skill extracts from.
 

@@ -102,7 +102,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose | Replacement |
 |---|---|---|
 | `$ca-create-context` | Build source-backed project context through bounded inspection, optional agents, and record-level knowledge writes. | `$ca-init --brownfield` |
-| `$ca-decompose` | Develop greenfield context from a resumable interview recorded as decomposition and knowledge records. | `$ca-init --greenfield` |
+| `$ca-decompose` | Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records. | `$ca-init --greenfield` |
 
 ### Ship
 

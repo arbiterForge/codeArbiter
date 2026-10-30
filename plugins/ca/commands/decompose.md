@@ -1,5 +1,5 @@
 ---
-description: Develop greenfield context from a resumable interview recorded as decomposition and knowledge records.
+description: Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records.
 argument-hint: (none)
 disable-model-invocation: true
 ---
@@ -19,9 +19,11 @@ planned architecture and observed repository facts distinct. Load
 
 ## 1. Inspect and resume
 
-Read `.codearbiter/CONTEXT.md` frontmatter. An initialized project returns to normal
-operation; context changes use `/ca:context-check`. Meaningful implementation
-source routes to `/ca:create-context`. If the scaffold is absent, run
+Read `.codearbiter/CONTEXT.md` frontmatter. For an initialized project, an
+explicit brownfield acquisition or target/delta request uses the initialized
+path below; ordinary source drift stays with `/ca:context-check`. An
+uninitialized project with meaningful implementation source routes to
+`/ca:create-context`. If the scaffold is absent, run
 `/ca:init` first. If `knowledge.py format` reports `markdown`, this is an older
 scaffold: offer `knowledge.py convert`; read every returned Markdown section,
 record its meaning, map each section ID to its saved record or note references
@@ -38,6 +40,37 @@ require another approval of unchanged answers. Resume with the open question tha
 matters most for what the user wants to do next, not a fixed first-unfinished
 step. An explicit restart retires earlier records with a reason; it never deletes
 them.
+
+## Initialized brownfield acquisition
+
+When source already exists and the user selects project-model acquisition,
+preserve `<!--INITIALIZED-->`, the current context documents, existing
+decomposition records, question history, ADRs, and work identities. Read those
+owners index-first before asking or writing. Use the selected `context-check`
+refresh for source-backed changes to the code map and other observed knowledge;
+do not invoke the initial-population route, rerun `initialize`, or invent the
+original interview. A denied or incomplete source inspection leaves its claim
+unknown and does not erase independent existing records.
+
+Add observed capabilities and architecture to the existing decomposition
+document with `basis: source-observed` and actual source references. Distinguish
+the current implementation from the intended target and delta: target
+capabilities, future phases, and possible work are `proposed` until the user
+decides. Link to the existing global open-question and ADR owners by identity;
+do not make a second writable answer or acceptance status. A source file does
+not establish historical rationale, deployment, passing tests, or an accepted
+decision. Ask only consequential choices still unresolved after the saved
+answers and current user direction are considered.
+
+Save discovered gaps as decomposition `work_item` candidates. Do not call
+`knowledge.py promote` or create an external issue merely because a gap was
+recorded. When the user selects promotion, check the candidate's stable origin
+against the selected work owner, including archived work, and retain the actual
+returned `work_id`; a retry repairs the same link. Reinspect only affected
+records on later source changes through `context-check`. Continue with
+independent useful work when a separate choice remains open. Report the
+selected records and remaining unknowns, then return to the requested work;
+the greenfield interview and initialization steps below do not run on this path.
 
 ## 2. Capture the interview
 

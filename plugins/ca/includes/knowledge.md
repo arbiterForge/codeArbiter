@@ -122,7 +122,9 @@ decisions.
   refuses changed inputs, missing sections, and invalid references, then
   switches formats in one recoverable transaction. The journal retains the
   original bytes.
-- `knowledge.py promote <WORK-ID>` adds a decomposition work item to the task board
-  once; a retry finds the existing task even after it is done or archived.
+- `knowledge.py promote <WORK-ID>` sends a selected decomposition work item to
+  the chosen native or legacy work owner once; a retry finds the same stable
+  work ID even after completion or archival. Candidate records are not
+  promoted automatically.
 - A Git conflict in a knowledge page: `knowledge.py merge-conflict <path>` merges
   record by record and writes only when no record was changed on both sides.

@@ -147,7 +147,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Develop greenfield context from a resumable interview recorded as decomposition and knowledge records.",
+      "description": "Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records.",
       "commandPath": "commands/decompose.md",
       "visibility": "alias",
       "workflow": "initialize",
