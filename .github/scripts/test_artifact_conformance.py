@@ -251,6 +251,7 @@ EXPECTED_SUITES = {
     },
     "test_artifact_work_cli.py": {
         "test_create_requires_a_replay_identity_and_origin_reuses_one_item",
+        "test_first_native_work_survives_fresh_clone",
         "test_legacy_board_remains_owner_and_create_returns_stable_identity",
         "test_legacy_context_reads_selected_work_with_budget",
         "test_legacy_duplicate_identity_metadata_refuses_selected_read",
