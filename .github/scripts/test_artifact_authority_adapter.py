@@ -128,6 +128,9 @@ class AuthorityAdapterTest(unittest.TestCase):
         git_run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
         git_run(["git", "-C", str(self.root), "config", "user.name", "Test"], check=True)
         (self.root / "fixture.txt").write_text("fixture", encoding="utf-8")
+        (self.root / ".git" / "info" / "exclude").write_text(
+            ".codearbiter/.markers/\n", encoding="utf-8"
+        )
         git_run(["git", "-C", str(self.root), "add", "fixture.txt"], check=True)
         git_run(["git", "-C", str(self.root), "commit", "--quiet", "-m", "fixture"], check=True)
         self.candidate = self.root / "candidate"
@@ -162,6 +165,31 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def test_fixture_repository_is_under_its_own_root(self):
         self.assertTrue((self.root / ".git").exists())
+
+    def test_verification_refuses_unignored_runtime_markers_before_arming(self):
+        (self.root / ".git" / "info" / "exclude").write_text("", encoding="utf-8")
+        for marker_exists in (False, True):
+            with self.subTest(marker_exists=marker_exists):
+                if marker_exists:
+                    marker = self.root / ".codearbiter" / ".markers" / "mode-session-seen"
+                    marker.parent.mkdir()
+                    marker.write_text("session", encoding="utf-8")
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE:.*ignore"):
+                    self.adapter.arm_request(
+                        self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                        request_nonce=f"unignored-runtime-marker-{marker_exists}",
+                    )
+        self.assertEqual(list((self.root / ".codearbiter").glob("authority-requests/*")), [])
+
+    def test_verification_accepts_project_gitignore_for_runtime_markers(self):
+        (self.root / ".git" / "info" / "exclude").write_text("", encoding="utf-8")
+        (self.root / ".gitignore").write_text(".codearbiter/.markers/\n", encoding="utf-8")
+        git_run(["git", "-C", str(self.root), "add", ".gitignore"], check=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="project-marker-ignore",
+        )
+        self.assertEqual(armed["activity"], "verification")
 
     def _authorize(self, armed, suffix="1"):
         command = (
@@ -3927,7 +3955,9 @@ class ClaudeEndToEndTest(unittest.TestCase):
         """Actual native validation; host hook events remain labeled synthetic fixtures."""
         # Native publication must remain fresh even when its complete evidence
         # history is visible to Git, as it is in real governed workspaces.
-        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
+        (self.root / ".gitignore").write_text(
+            "__pycache__/\n.codearbiter/.markers/\n", encoding="utf-8"
+        )
         bridge = self.host.load_bridge(self.plugin)
         workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
         client = workflow.client
