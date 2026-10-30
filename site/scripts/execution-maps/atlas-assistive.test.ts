@@ -25,7 +25,7 @@ describe('assistive candidate versus retained historical routes',()=>{
     });
     let offset=0;
     for(const change of update.changes) {
-      const later=(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
+      const later=WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
         ??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)
         ??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
@@ -55,10 +55,8 @@ describe('assistive candidate versus retained historical routes',()=>{
       expect(bytes.length).toBe(size);
       expect(objects[end+1+size]).toBe(10);
       offset=end+2+size;
-      const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
       // Later exact bindings for command removal, knowledge, and local work
       // supersede the PR983 bytes for their files. The PR983 blob stays recorded.
-      const later=WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       expect(later?execFileSync('git',['--no-replace-objects','cat-file','blob',later],{cwd:root,encoding:'utf8'}):bytes.toString('utf8')).toBe(current);
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }
