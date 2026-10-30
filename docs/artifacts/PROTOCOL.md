@@ -73,7 +73,7 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `work-update` |
+| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `work-update` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -368,15 +368,27 @@ canonical model container, is not stored by the engine and is rejected by
 response also provides `view_path: .codearbiter/views/work/<WORK-ID>.html`;
 saving the HTML there makes its relative spec and plan links valid. This
 derived location stays outside canonical artifact discovery. The command does
-not write a second work owner or scan unrelated artifacts. Project,
-architecture and cycle overviews remain future work.
+not write a second work owner or scan unrelated artifacts. Native
+`project-view` renders one bounded `work-list` page as an inert project work
+overview. It shows local progress and checks separately, labels delivery as
+unobserved and tracker sync as unconfigured, and links to the existing
+canonical work pages.
+Its `offset`, `limit` (at most 16), `membership_sha256`, `next_offset`,
+`total`, and `content_snapshot: false` have the same membership-only
+continuation semantics as `work-list`. It refuses an absent portable project
+identity. `hooks/work.py project-view` prints HTML; the response's
+`.codearbiter/views/project/<PROJECT-ID>-<offset>.html` path is derived and
+optional. The engine does not save it or include it in artifact discovery.
+Legacy projects continue to use their board; this native-only derived view
+reports unsupported through the legacy facade. Architecture and cycle
+overviews remain future work.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
-`work-context`, `work-view` and `work-update`. The selected owner validates the
+`work-context`, `work-view`, `project-view` and `work-update`. The selected owner validates the
 operation-specific request and returns one JSON result; the ordinary CLI
-`view` verb prints raw HTML for an explicit human-view action. Native
+`view` and `project-view` verbs print raw HTML for an explicit human-view action. Native
 `work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.
 Legacy `work-update` accepts `operation_id`, `work_id`, `action` (start,
 complete or archive), and `expected_board_sha256` instead of `expected`.
