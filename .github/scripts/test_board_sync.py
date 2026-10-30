@@ -51,6 +51,11 @@ def test_task_doc_states_commit_colocation():
         "chore(board)" in t,
         "task.md: must name the chore(board) anti-pattern being eliminated",
     )
+    check(
+        "origin-backed legacy rows also use `work.py`" not in t
+        and "legacy rows stay with `taskwrite.py`" in t,
+        "task.md: archive guidance must agree with standup's selected legacy writer",
+    )
 
 
 # ---- AC-04: commit-gate Phase 6 board-edit exemption (T-06) --------------------

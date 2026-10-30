@@ -128,9 +128,9 @@ an ID (`/ca-task start --as <group>.<type> -- "<title>"`) to disambiguate.
 - Archiving long-settled done items → `/ca-standup` owns the sweep (D-2,
   resolved 2026-07-31). It proposes dated complete work strictly more than 14
   calendar days old through the selected owner, then archives only the user's
-  named subset on a dedicated branch. Native items use `work.py`; origin-backed
-  legacy rows also use `work.py`, while exact-ID originless rows remain with
-  `taskwrite.py`. Undated done items are never proposed automatically; standup's
+  named subset in a fresh dedicated worktree. Native items use `work.py`;
+  legacy rows stay with `taskwrite.py`, using an exact dotted ID or a uniquely
+  verified title for an ID-less row. Undated done items are never proposed automatically; standup's
   explicit-request and `--allow-undated` rules apply. Declined items stay put.
 - Filing a separate `chore(board)` PR just to flip a task state → task-board transitions
   (`[x]` done-flip, `[~]` start-flip, new `[ ]` add) ride the **work commit** via
