@@ -1,32 +1,11 @@
 # decompose — Markdown-format repositories
 
 This is the procedure for a repository whose `knowledge.py format` reports
-`markdown` and whose user keeps that format rather than importing it. The
-greenfield sections retain the pre-HTML workflow; HTML-format repositories
-follow the skill entry.
+`markdown` and whose user keeps that format rather than importing it. It is the
+unchanged pre-HTML workflow; HTML-format repositories follow the skill entry.
 
 Develop the project specification before implementation. Keep actual user decisions,
 planned architecture and observed repository facts distinct.
-
-## 1. Inspect and resume
-
-Read `.codearbiter/CONTEXT.md`. An explicit initialized brownfield
-project-model request uses the acquisition section below; ordinary source drift
-uses `{{CMD:context-check}}`. In an uninitialized project, meaningful
-implementation source routes to `{{CMD:create-context}}`. If the scaffold is
-absent, run `{{CMD:init}}` first.
-
-Keep the interview in `.codearbiter/plans/decomposition/`: `_session.md` records the
-current phase, remaining questions and actual user confirmations; each completed
-layer has its own file. Read this state and resume the first unfinished step. Do not
-repeat settled questions or require another approval of unchanged accepted work.
-An explicit restart preserves earlier interview and decision history.
-
-If `.codearbiter/.decompose-draft/` contains an interrupted interview, copy its session
-and layer records to the durable directory before using them as source evidence.
-Compare existing destinations byte-for-byte: retain identical files, and reconcile
-conflicting versions without overwriting either. Temporary drafts remain until
-initialization completes. Never cite a temporary file that cleanup will remove.
 
 ## Initialized brownfield acquisition
 
@@ -56,6 +35,24 @@ link on retry. The legacy task-board writer remains the owner in an unconverted
 project; do not create a parallel native work record. Report changed documents,
 source scope and remaining unknowns, then return to the requested work. The
 greenfield interview and initialization steps below do not run on this path.
+
+## 1. Inspect and resume
+
+Read `.codearbiter/CONTEXT.md`. An initialized project returns to normal operation;
+context changes use `{{CMD:context-check}}`. Meaningful implementation source routes
+to `{{CMD:create-context}}`. If the scaffold is absent, run `{{CMD:init}}` first.
+
+Keep the interview in `.codearbiter/plans/decomposition/`: `_session.md` records the
+current phase, remaining questions and actual user confirmations; each completed
+layer has its own file. Read this state and resume the first unfinished step. Do not
+repeat settled questions or require another approval of unchanged accepted work.
+An explicit restart preserves earlier interview and decision history.
+
+If `.codearbiter/.decompose-draft/` contains an interrupted interview, copy its session
+and layer records to the durable directory before using them as source evidence.
+Compare existing destinations byte-for-byte: retain identical files, and reconcile
+conflicting versions without overwriting either. Temporary drafts remain until
+initialization completes. Never cite a temporary file that cleanup will remove.
 
 ## 2. Capture the interview
 

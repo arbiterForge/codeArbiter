@@ -17,32 +17,6 @@ planned architecture and observed repository facts distinct. Load
 `{{PLUGIN_ROOT}}/includes/knowledge.md` for the record vocabulary and the
 `knowledge.py` verbs used below.
 
-## 1. Inspect and resume
-
-Read `.codearbiter/CONTEXT.md` frontmatter. For an initialized project, an
-explicit brownfield acquisition or target/delta request uses the initialized
-path below; ordinary source drift stays with `{{CMD:context-check}}`. An
-uninitialized project with meaningful implementation source routes to
-`{{CMD:create-context}}`. If the scaffold is absent, run
-`{{CMD:init}}` first. If `knowledge.py format` reports `markdown`, this is an older
-scaffold: offer `knowledge.py convert`; read every returned Markdown section,
-record its meaning, map each section ID to its saved record or note references
-(`[]` only for `content=false`), then run
-`knowledge.py convert --finish <token> --coverage @checklist.json` (the
-transaction retains the original bytes). If the
-user keeps the Markdown format, load
-`{{PLUGIN_ROOT}}/skills/decompose/references/markdown-format.md` and follow its
-format-specific procedure instead of this one. For an explicit initialized
-brownfield request, use that reference's initialized acquisition section; do
-not return to greenfield initialization. Never convert silently.
-
-Run `knowledge.py create-missing`, then `knowledge.py read decomposition`. Existing
-`question` records with `status: answered` are settled: do not ask them again or
-require another approval of unchanged answers. Resume with the open question that
-matters most for what the user wants to do next, not a fixed first-unfinished
-step. An explicit restart retires earlier records with a reason; it never deletes
-them.
-
 ## Initialized brownfield acquisition
 
 When source already exists and the user selects project-model acquisition,
@@ -73,6 +47,33 @@ records on later source changes through `context-check`. Continue with
 independent useful work when a separate choice remains open. Report the
 selected records and remaining unknowns, then return to the requested work;
 the greenfield interview and initialization steps below do not run on this path.
+
+For an initialized project that keeps Markdown format, use the initialized
+acquisition section in `{{PLUGIN_ROOT}}/skills/decompose/references/markdown-format.md`.
+Do not silently convert. The numbered procedure below remains the greenfield
+route for projects that have not been initialized.
+
+## 1. Inspect and resume
+
+Read `.codearbiter/CONTEXT.md` frontmatter. An initialized project returns to normal
+operation; context changes use `{{CMD:context-check}}`. Meaningful implementation
+source routes to `{{CMD:create-context}}`. If the scaffold is absent, run
+`{{CMD:init}}` first. If `knowledge.py format` reports `markdown`, this is an older
+scaffold: offer `knowledge.py convert`; read every returned Markdown section,
+record its meaning, map each section ID to its saved record or note references
+(`[]` only for `content=false`), then run
+`knowledge.py convert --finish <token> --coverage @checklist.json` (the
+transaction retains the original bytes). If the
+user keeps the Markdown format, load
+`{{PLUGIN_ROOT}}/skills/decompose/references/markdown-format.md` and follow that
+unchanged procedure instead of this one; never convert silently.
+
+Run `knowledge.py create-missing`, then `knowledge.py read decomposition`. Existing
+`question` records with `status: answered` are settled: do not ask them again or
+require another approval of unchanged answers. Resume with the open question that
+matters most for what the user wants to do next, not a fixed first-unfinished
+step. An explicit restart retires earlier records with a reason; it never deletes
+them.
 
 ## 2. Capture the interview
 

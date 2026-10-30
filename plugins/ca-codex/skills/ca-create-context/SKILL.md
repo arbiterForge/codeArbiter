@@ -27,7 +27,7 @@ repository never clears the marker or re-enters Phase 6 to refresh content.
 
 Read these, or STOP and surface the gap — never guess project identity or a command:
 
-- `<project-root>/.codearbiter/CONTEXT.md` — if it already carries `<!--INITIALIZED-->`, context exists. Leave this initial-population route and use `context-check` for selected observed context; an explicit project-model acquisition also uses `decompose`.
+- `<project-root>/.codearbiter/CONTEXT.md` — if it already carries `<!--INITIALIZED-->`, context exists. Stop and route to normal operation.
 - `knowledge.py format`. A `markdown` scaffold is an older one: offer `knowledge.py convert` before writing. Read every returned Markdown section, add its meaning as records or notes, then map each section ID to its saved references (use `[]` only for `content=false`). Finish with `knowledge.py convert --finish <token> --coverage @checklist.json`. If the user keeps the Markdown format, load [routines/context-creation/references/markdown-format.md](../../routines/context-creation/references/markdown-format.md) and follow that unchanged procedure instead of this one; never convert silently.
 - The repository root listing (one level deep) — the source surface this skill extracts from.
 
