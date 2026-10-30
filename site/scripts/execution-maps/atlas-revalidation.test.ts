@@ -263,7 +263,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -312,7 +313,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -368,7 +370,7 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+      expect(git('hash-object', '--', path).trim()).toBe(WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
         ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
@@ -515,7 +517,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
