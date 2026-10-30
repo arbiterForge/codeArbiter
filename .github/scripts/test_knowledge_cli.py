@@ -183,19 +183,53 @@ class KnowledgeCli(unittest.TestCase):
         work = {"type": "work_item", "title": "Build the login form", "statement": "MVP login.", "basis": "user-reported",
                 "scope": {"paths": []}, "related_refs": [], "source_refs": []}
         self.knowledge("add", "decomposition", "--record", json.dumps(work))
-        self.knowledge("promote", "WORK-001")
+        promoted = self.knowledge("promote", "WORK-001")
+        self.assertRegex(promoted["work_id"], r"^WORK-[A-F0-9]{32}$")
         board = (self.root / ".codearbiter/open-tasks.md").read_text(encoding="utf-8")
         self.assertEqual(board.count("(from DECOMP-PROJECT#WORK-001)"), 1)
         # The task finishes and is archived; a delayed retry must not re-add it.
         self.script("taskwrite.py", "start", "Build the login form")
         self.script("taskwrite.py", "done", "Build the login form")
         self.script("taskwrite.py", "archive", "Build the login form")
+        # The board write can succeed while the decomposition back-reference
+        # is interrupted. A retry after archival must repair that reference.
+        self.knowledge("update", "decomposition", "WORK-001", "--fields",
+                       json.dumps({"promotion": None}))
         retried = self.knowledge("promote", "WORK-001")
+        self.assertEqual(retried["work_id"], promoted["work_id"])
         self.assertTrue(retried["board"].startswith("already promoted:"), retried)
         board = (self.root / ".codearbiter/open-tasks.md").read_text(encoding="utf-8")
         self.assertNotIn("(from DECOMP-PROJECT#WORK-001)", board)
         record = self.knowledge("read", "decomposition", "WORK-001")["records"][0]
         self.assertEqual(record["promotion"]["origin"], "DECOMP-PROJECT#WORK-001")
+        self.assertEqual(record["promotion"]["work_id"], promoted["work_id"])
+
+        # Old decomposition pages carry a title-based board_id. Reading and
+        # retrying them upgrades the back-reference without another board row.
+        self.knowledge("update", "decomposition", "WORK-001", "--fields",
+                       json.dumps({"promotion": {"board_id": "Build the login form",
+                                                 "origin": "DECOMP-PROJECT#WORK-001"}}))
+        migrated = self.knowledge("promote", "WORK-001")
+        self.assertEqual(migrated["work_id"], promoted["work_id"])
+        record = self.knowledge("read", "decomposition", "WORK-001")["records"][0]
+        self.assertEqual(record["promotion"]["work_id"], promoted["work_id"])
+
+    def test_promotion_uses_native_work_when_no_legacy_board_owns_project(self):
+        self.scaffold()
+        board = self.root / ".codearbiter/open-tasks.md"
+        board.unlink(missing_ok=True)  # disposable fixture selects native ownership
+        self.knowledge("create-missing")
+        work = {"type": "work_item", "title": "Native candidate", "statement": "Track one result.",
+                "basis": "user-reported", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        self.knowledge("add", "decomposition", "--record", json.dumps(work))
+        first = self.knowledge("promote", "WORK-001")
+        replay = self.knowledge("promote", "WORK-001")
+        self.assertEqual(first["work_id"], replay["work_id"])
+        self.assertEqual(first["owner"], "native")
+        self.assertNotIn("board", first)
+        record = self.knowledge("read", "decomposition", "WORK-001")["records"][0]
+        self.assertEqual(record["promotion"]["work_id"], first["work_id"])
+        self.assertFalse(board.exists())
 
 
     def git(self, *arguments):

@@ -913,5 +913,38 @@ class FindBoardDriftTest(unittest.TestCase):
         self.assertIsInstance(result, tb.DriftResult)
 
 
+class OriginSelectedTransitionTest(unittest.TestCase):
+    def test_injected_second_origin_is_ambiguous(self):
+        text = ("## In-flight\n"
+                "- [ ] Victim  (from A) (from B)\n")
+        self.assertIn("ambiguous", tb.transition_error(
+            text, "Victim", "in_progress", origin="B"))
+        self.assertEqual(tb.set_state(text, "Victim", "in_progress",
+                                     datetime.date(2026, 10, 30),
+                                     origin="B"), text)
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            tb.promoted_entry(text, "B")
+        self.assertIsNotNone(tb.add_error(desc="Victim", origin="A) (from B"))
+
+    def test_same_title_updates_only_exact_origin(self):
+        text = ("## In-flight\n"
+                "- [ ] Same title  (from DECOMP#1)\n"
+                "- [ ] Same title  (from DECOMP#2)\n")
+        changed = tb.set_state(text, "Same title", "in_progress",
+                               datetime.date(2026, 10, 30), origin="DECOMP#2")
+        self.assertIn("- [ ] Same title  (from DECOMP#1)", changed)
+        self.assertIn("- [~] Same title  (from DECOMP#2)", changed)
+
+    def test_duplicate_origin_is_refused(self):
+        text = ("## In-flight\n"
+                "- [ ] A  (from DECOMP#1)\n"
+                "- [ ] B  (from DECOMP#1)\n")
+        self.assertIn("duplicate", tb.transition_error(
+            text, "A", "in_progress", origin="DECOMP#1"))
+        self.assertEqual(tb.set_state(text, "A", "in_progress",
+                                     datetime.date(2026, 10, 30),
+                                     origin="DECOMP#1"), text)
+
+
 if __name__ == "__main__":
     unittest.main()
