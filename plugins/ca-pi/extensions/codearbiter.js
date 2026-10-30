@@ -7441,7 +7441,10 @@ async function startInferenceBroker(options) {
     authorize(authority) {
       if (revoked) refuseBroker();
       if (typeof authority?.nonce !== "string" || !sameToken(authority.nonce, ownerNonce)) refuseBroker();
-      if (typeof authority?.credential !== "string" || authority.credential === "") refuseBroker();
+      if (typeof authority?.credential !== "string" || authority.credential === "" || Buffer.byteLength(authority.credential, "utf8") > RESPONSE_SCAN_OVERLAP_BYTES) refuseBroker();
+      for (const value of Object.values(authority.headers ?? {})) {
+        if (typeof value !== "string" || Buffer.byteLength(value, "utf8") > RESPONSE_SCAN_OVERLAP_BYTES) refuseBroker();
+      }
       if (typeof authority?.containsSensitiveValue !== "function") refuseBroker();
       const endpoint = boundedUpstream(authority.baseUrl);
       upstream = Object.freeze({
@@ -8011,7 +8014,11 @@ async function prepareChildEnvironment(input, broker, cleanupIo = DEFAULT_CLEANU
   const configPath = join(env.PI_CODING_AGENT_DIR, "models.json");
   let configHandle;
   const sensitiveValues = /* @__PURE__ */ new Set();
-  sensitiveValues.add(broker.token);
+  const includeSensitiveValue = (value) => {
+    if (Buffer.byteLength(value, "utf8") > RESPONSE_SCAN_OVERLAP_BYTES) refuseAuthority();
+    sensitiveValues.add(value);
+  };
+  includeSensitiveValue(broker.token);
   const containsSensitiveValue = (text2) => {
     for (const value of sensitiveValues) if (text2.includes(value)) return true;
     return false;
@@ -8062,10 +8069,10 @@ async function prepareChildEnvironment(input, broker, cleanupIo = DEFAULT_CLEANU
     providers[input.provider] = projected;
     const document = JSON.stringify({ providers });
     if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
-    for (const endpoint of providerConfig?.endpoints ?? []) sensitiveValues.add(endpoint);
-    for (const value of stored?.sensitiveValues ?? []) sensitiveValues.add(value);
-    for (const value of Object.values(headers)) sensitiveValues.add(value);
-    sensitiveValues.add(credential);
+    for (const endpoint of providerConfig?.endpoints ?? []) includeSensitiveValue(endpoint);
+    for (const value of stored?.sensitiveValues ?? []) includeSensitiveValue(value);
+    for (const value of Object.values(headers)) includeSensitiveValue(value);
+    includeSensitiveValue(credential);
     configHandle = await open3(configPath, "wx", 384);
     await configHandle.writeFile(document + "\n", { encoding: "utf8" });
     return Object.freeze({
