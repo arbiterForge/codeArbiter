@@ -73,7 +73,7 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-context`, `work-update` |
+| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `work-update` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -322,9 +322,16 @@ the legacy board owns the project.
 
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
-reading only the selected page's work models. Its membership digest rejects a
-continuation after a create; it is not a frozen content snapshot. `work-create`
-with a local `ARTIFACT#SYMBOL` origin scans active
+reading only the selected page's work models, including each origin for
+deduplication and completion date for an age-based archival preview. A fresh
+native project lists zero work without creating a project identity; orphan
+work files without that identity still refuse.
+`work-origins` checks up to 32 exact source keys in one bounded directory pass,
+including archived items, for harvest preview. Its read is not a frozen
+content snapshot. `work-list`'s membership digest rejects a continuation
+after a create; it is not a frozen content snapshot. `work-create` with a
+bounded local `SOURCE#ITEM` origin (including `ARTIFACT#SYMBOL` and harvest
+source keys) scans active
 and archived items for that correlation key and returns the matching stable ID
 on retry. A retry with the same title, intent and type can fill a missing spec
 or plan attachment after an interrupted promotion, even when the item is
@@ -351,22 +358,31 @@ document identities and concise summaries. Its `assessment: advisory` and
 source read. Legacy `work-context` returns selected `work`,
 `context_complete: false`, and `omitted`; it does not include `assessment` or
 attached-document summaries. Read those attachments by exact artifact ID when
-needed. The native work page joins intent, progress, check status and
-links to the separate spec and plan. `hooks/work.py` exposes the same local
-journey to an agent without another approval workflow. Tracker providers,
-legacy adoption and broader task-board routing are future slices.
+needed. The canonical native work page joins intent, progress, check status
+and links to the separate spec and plan. Native `work-view` reads the selected
+work and its exact attachments through `work-context`, then returns an HTML
+overview. Progress, checks, delivery and tracker sync remain separate; unknown
+check or delivery state is never inferred from completion. The overview has no
+canonical model container, is not stored by the engine and is rejected by
+`render.Parse`. `hooks/work.py view <WORK-ID>` prints the HTML to stdout. The
+response also provides `view_path: .codearbiter/views/work/<WORK-ID>.html`;
+saving the HTML there makes its relative spec and plan links valid. This
+derived location stays outside canonical artifact discovery. The command does
+not write a second work owner or scan unrelated artifacts. Project,
+architecture and cycle overviews remain future work.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
-The closed operation set is `work-create`, `work-get`, `work-list`,
-`work-context` and `work-update`. The selected owner validates the
-operation-specific request and returns one JSON result. Native `work-update`
-requires `expected: {"revision": N, "model_sha256": "..."}`. Legacy
-`work-update` accepts `operation_id`, `work_id`, `action` (start, complete or
-archive), and `expected_board_sha256` instead of `expected`. The legacy
-`work-context` request accepts `work_id` and optional `budget`, but its result
-has the omissions described above. The stable operation ID and owner-specific
-CAS rules still apply, including on an uncertain retry.
+The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
+`work-context`, `work-view` and `work-update`. The selected owner validates the
+operation-specific request and returns one JSON result; the ordinary CLI
+`view` verb prints raw HTML for an explicit human-view action. Native
+`work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.
+Legacy `work-update` accepts `operation_id`, `work_id`, `action` (start,
+complete or archive), and `expected_board_sha256` instead of `expected`.
+The legacy `work-context` request accepts `work_id` and optional `budget`,
+with the omissions described above. The stable operation ID and owner-specific
+CAS rules still apply to mutations, including an uncertain retry.
 
 ## Advisory scheduling and ordinary progress
 

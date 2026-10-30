@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-10-30
+
+### Added
+
+- Route selected work, archival, and initialized Markdown acquisition through
+  the owning local work store.
+- Render a bounded, derived HTML overview for one native work item.
+
 ## [0.23.0] - 2026-10-30
 
 ### Added

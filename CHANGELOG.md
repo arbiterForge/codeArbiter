@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-10-30
+
+### Added
+
+- Route selected work, archival, and initialized Markdown acquisition through
+  the owning local work store.
+- Render a bounded, derived HTML overview for one native work item.
+
 ## [3.5.0] - 2026-10-30
 
 ### Added
