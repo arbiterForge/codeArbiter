@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"html"
 	"strings"
+	"sync"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
@@ -27,16 +28,24 @@ const modelEnd = "\n</script>"
 var assets embed.FS
 
 func CSS() []byte { b, _ := assets.ReadFile("assets/artifact.css"); return b }
-func DefaultLogo() string {
+
+var embeddedStylesheet = sync.OnceValue(func() struct{ text, hash string } {
+	b := CSS()
+	return struct{ text, hash string }{string(b), canonical.BytesHash(b)}
+})
+
+var embeddedLogo = sync.OnceValue(func() string {
 	b, _ := assets.ReadFile("assets/logo.svg")
 	s, e := Logo("image/svg+xml", b)
 	if e != nil {
 		panic(e)
 	}
 	return s
-}
+})
+
+func DefaultLogo() string { return embeddedLogo() }
 func Presentation(companion string) map[string]any {
-	return map[string]any{"renderer": Version, "brand_name": "codeArbiter", "logo_data_uri": DefaultLogo(), "logo_origin": "embedded codeArbiter logo", "logo_git_blob": nil, "companion_path": companion, "stylesheet_sha256": canonical.BytesHash(CSS())}
+	return map[string]any{"renderer": Version, "brand_name": "codeArbiter", "logo_data_uri": DefaultLogo(), "logo_origin": "embedded codeArbiter logo", "logo_git_blob": nil, "companion_path": companion, "stylesheet_sha256": embeddedStylesheet().hash}
 }
 func Prepare(v map[string]any) (*model.Document, error) {
 	if model.S(model.M(v["presentation"])["renderer"]) != Version {
@@ -339,7 +348,7 @@ func Render(d *model.Document) ([]byte, error) {
 	if model.S(p["renderer"]) != Version {
 		return nil, fault.New("UNSUPPORTED_RENDERER", "renderer is not installed")
 	}
-	if model.S(p["stylesheet_sha256"]) != canonical.BytesHash(CSS()) {
+	if model.S(p["stylesheet_sha256"]) != embeddedStylesheet().hash {
 		return nil, fault.New("STYLE_MISMATCH", "stylesheet digest differs from installed renderer")
 	}
 	if e := CheckLogo(model.S(p["logo_data_uri"])); e != nil {
@@ -353,7 +362,7 @@ func Render(d *model.Document) ([]byte, error) {
 	w.raw(` · `)
 	w.text(model.S(p["brand_name"]))
 	w.raw("</title><style>\n")
-	w.raw(string(CSS()))
+	w.raw(embeddedStylesheet().text)
 	w.raw("</style></head><body><a class=\"skip\" href=\"#main-content\">Skip to document</a><div class=\"layout\"><aside class=\"sidebar\"><img src=\"")
 	w.raw(esc(model.S(p["logo_data_uri"])))
 	w.raw(`" alt="` + esc(model.S(p["brand_name"])) + `"><p class="identity">`)
