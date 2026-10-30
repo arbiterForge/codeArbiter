@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.22.5] - 2026-10-30
+
+### Fixed
+
+- Detect unignored runtime markers before verification is armed, preserving
+  the native completion workspace drift boundary.
+
 ## [0.22.4] - 2026-10-29
 
 ### Fixed
