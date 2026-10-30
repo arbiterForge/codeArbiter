@@ -14,6 +14,11 @@ All notable changes to `ca-pi` are documented in this file.
 - Keep derived views outside canonical artifact ownership and leave checks
   unknown until their evidence is recorded separately.
 
+### Fixed
+
+- Keep the legacy task count when the native work directory is empty, and
+  review harvested work before it joins a commit.
+
 ## [0.24.0] - 2026-10-30
 
 ### Added
