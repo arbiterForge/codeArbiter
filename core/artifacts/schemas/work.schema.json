@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codearbiter:artifact:work:0.3.2",
+  "title": "codeArbiter work reference schema 0.3.2",
+  "type": "object",
+  "properties": {
+    "format": {"const": "codearbiter.artifact"},
+    "format_version": {"const": "0.1.0"},
+    "kind": {"const": "work"},
+    "schema_version": {"const": "0.3.2"},
+    "artifact_id": {"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"},
+    "slug": {"type": "string", "pattern": "^work-[a-f0-9]{32}$"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "presentation": {"$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/presentation"},
+    "integrity": {"$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/integrity"},
+    "normative": {
+      "type": "object",
+      "properties": {
+        "project_id": {"type": "string", "pattern": "^PROJECT-[A-F0-9]{32}$"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 240},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 4000},
+        "work_type": {"enum": ["feature", "fix", "chore", "spike", "unknown"]},
+        "spec_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^SPEC-[A-Z0-9-]{1,74}$"}]},
+        "plan_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^PLAN-[A-Z0-9-]{1,74}$"}]},
+        "spec_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/specs/[a-z][a-z0-9-]*\\.html$"}]},
+        "plan_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/plans/[a-z][a-z0-9-]*\\.html$"}]},
+        "origin": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,79}#[A-Z][A-Z0-9-]{1,79}$"}]},
+        "aliases": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 120}, "maxItems": 128, "uniqueItems": true}
+      },
+      "required": ["project_id", "title", "summary", "work_type", "spec_id", "plan_id", "spec_path", "plan_path", "origin", "aliases"],
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "state": {"enum": ["queued", "active", "complete", "archived"]},
+        "check_status": {"enum": ["unknown", "passed", "failed"]},
+        "started_at": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}]},
+        "completed_at": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}]}
+      },
+      "required": ["state", "check_status", "started_at", "completed_at"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["format", "format_version", "kind", "schema_version", "artifact_id", "slug", "revision", "presentation", "integrity", "normative", "execution"],
+  "additionalProperties": false
+}

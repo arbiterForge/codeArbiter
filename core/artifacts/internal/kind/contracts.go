@@ -32,6 +32,7 @@ var contracts = []Contract{
 	{Name: "context", Directory: ".codearbiter", Schema: "context"},
 	{Name: "knowledge", Directory: ".codearbiter/context", Schema: "knowledge"},
 	{Name: "decomposition", Directory: ".codearbiter/decomposition", Schema: "decomposition"},
+	{Name: "work", Directory: ".codearbiter/work", Schema: "work"},
 }
 
 var codecs = map[string]Codec{
@@ -42,6 +43,7 @@ var codecs = map[string]Codec{
 	// plan read never scans them, so a damaged knowledge page cannot veto it.
 	"knowledge":     {Representation: HTML, Extension: ".html", Optional: true, IDPrefix: "CTX-"},
 	"decomposition": {Representation: HTML, Extension: ".html", Optional: true, IDPrefix: "DECOMP-"},
+	"work":          {Representation: HTML, Extension: ".html", Optional: true, IDPrefix: "WORK-"},
 }
 
 // Knowledge reports whether a kind holds descriptive repository knowledge
