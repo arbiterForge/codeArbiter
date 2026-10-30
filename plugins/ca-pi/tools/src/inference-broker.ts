@@ -88,11 +88,10 @@ const FORWARDED_REQUEST_HEADERS = new Set([
   "x-opencode-client", "x-opencode-session",
 ]);
 
-/** How many trailing bytes of the upstream body stay in the scan window. A sensitive value split
- * across two TCP writes is whole in the next window and is caught there; only a value longer than
- * this could straddle undetected, and no provider credential, operator header value, endpoint, or
- * broker token comes close. */
-const RESPONSE_SCAN_OVERLAP_BYTES = 4_096;
+/** How many trailing bytes of the upstream body stay in the scan window. Every sensitive value
+ * accepted by the parent and every credential/header accepted by the broker is bounded to this
+ * size before a child can use it, so a split value is whole in a scanned window. */
+export const RESPONSE_SCAN_OVERLAP_BYTES = 4_096;
 
 /** A fixed, bounded, value-free refusal body. It never carries a credential, a token, an
  * upstream endpoint, or a filesystem path, so a compromised child learns exactly one bit —
@@ -477,7 +476,11 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
     authorize(authority: BrokerUpstreamAuthority): void {
       if (revoked) refuseBroker();
       if (typeof authority?.nonce !== "string" || !sameToken(authority.nonce, ownerNonce)) refuseBroker();
-      if (typeof authority?.credential !== "string" || authority.credential === "") refuseBroker();
+      if (typeof authority?.credential !== "string" || authority.credential === ""
+        || Buffer.byteLength(authority.credential, "utf8") > RESPONSE_SCAN_OVERLAP_BYTES) refuseBroker();
+      for (const value of Object.values(authority.headers ?? {})) {
+        if (typeof value !== "string" || Buffer.byteLength(value, "utf8") > RESPONSE_SCAN_OVERLAP_BYTES) refuseBroker();
+      }
       // No predicate, no forwarding: without it the broker cannot tell whether a response is
       // handing the operator's own material back to the child, and must not guess.
       if (typeof authority?.containsSensitiveValue !== "function") refuseBroker();

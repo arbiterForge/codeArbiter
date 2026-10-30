@@ -5,7 +5,7 @@ import type { FileHandle } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 
-import { BROKER_TOKEN_ENV_NAME } from "./inference-broker.ts";
+import { BROKER_TOKEN_ENV_NAME, RESPONSE_SCAN_OVERLAP_BYTES } from "./inference-broker.ts";
 
 export interface ChildEnvInput {
   platform: NodeJS.Platform;
@@ -797,9 +797,13 @@ export async function prepareChildEnvironment(
   const configPath = join(env.PI_CODING_AGENT_DIR!, "models.json");
   let configHandle: FileHandle | undefined;
   const sensitiveValues = new Set<string>();
+  const includeSensitiveValue = (value: string): void => {
+    if (Buffer.byteLength(value, "utf8") > RESPONSE_SCAN_OVERLAP_BYTES) refuseAuthority();
+    sensitiveValues.add(value);
+  };
   // The token is the child's own value, but a child echoing it into its final assistant message
   // is still a leak of parent-issued material, so it joins the scrub set on the same footing.
-  sensitiveValues.add(broker.token);
+  includeSensitiveValue(broker.token);
   const containsSensitiveValue = (text: string): boolean => {
     for (const value of sensitiveValues) if (text.includes(value)) return true;
     return false;
@@ -866,10 +870,10 @@ export async function prepareChildEnvironment(
     if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
     // Every operator value the parent now holds joins the scrub set, so a child that somehow
     // learned one cannot echo it back through the final assistant message.
-    for (const endpoint of providerConfig?.endpoints ?? []) sensitiveValues.add(endpoint);
-    for (const value of stored?.sensitiveValues ?? []) sensitiveValues.add(value);
-    for (const value of Object.values(headers)) sensitiveValues.add(value);
-    sensitiveValues.add(credential);
+    for (const endpoint of providerConfig?.endpoints ?? []) includeSensitiveValue(endpoint);
+    for (const value of stored?.sensitiveValues ?? []) includeSensitiveValue(value);
+    for (const value of Object.values(headers)) includeSensitiveValue(value);
+    includeSensitiveValue(credential);
     configHandle = await open(configPath, "wx", 0o600);
     await configHandle.writeFile(document + "\n", { encoding: "utf8" });
     return Object.freeze({
