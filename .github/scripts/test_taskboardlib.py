@@ -337,6 +337,31 @@ class ReaderIntegrationTest(unittest.TestCase):
             state = mod.arbiter_state(tmp)
             self.assertEqual(state["tasks"], 3)   # fallback excludes done too
 
+    def test_native_work_does_not_display_a_stale_board_count(self):
+        import tempfile
+        mod = _load("statusline", "statusline.py")
+        with tempfile.TemporaryDirectory() as tmp:
+            cad = os.path.join(tmp, ".codearbiter")
+            os.makedirs(os.path.join(cad, "work"))
+            with open(os.path.join(cad, "CONTEXT.md"), "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\n")
+            with open(os.path.join(cad, "open-tasks.md"), "w", encoding="utf-8") as f:
+                f.write(SAMPLE)
+            with open(os.path.join(cad, "work", "project.json"), "w", encoding="utf-8") as f:
+                f.write("{}")
+            state = mod.arbiter_state(tmp)
+            self.assertEqual(state["tasks"], "?")
+
+    def test_startup_native_work_summary_is_explicitly_unknown(self):
+        import contextlib
+        import io
+        mod = _load("session_start", "session-start.py")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            mod.emit_task_summary(None, native_work=True)
+        self.assertIn("native work", output.getvalue())
+        self.assertNotIn("in-flight tasks: 0", output.getvalue())
+
 
 class ScaffoldTest(unittest.TestCase):
     """AC-06: the init template documents the schema."""

@@ -1688,8 +1688,8 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
             self.assertNotIn('SKILL_ENTRY', out['arbiter.md'].decode())
 
 
-    def test_debug_entry_preserves_investigation_and_board_writer(self):
-        """Debug stays evidence-led; only an authorized task owner writes the board."""
+    def test_debug_entry_preserves_investigation_and_selected_work_writer(self):
+        """Debug stays evidence-led; only the selected task owner writes work."""
         def assert_contract(entry):
             hypothesis = entry.split('## Phase 2 — Hypothesis generation', 1)[1].split('## Phase 3', 1)[0]
             handoff = entry.split('## Phase 5 — Handoff', 1)[1].split('## Hard rules', 1)[0]
@@ -1705,8 +1705,10 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                 self.assertIn(obligation, entry)
             for obligation in ('Make no default board write, task transition',
                                'If a separately authorized concrete follow-up is needed',
-                               'to the existing `/task` owner', '`taskwrite.py` helper',
-                               'The writer applies its normal gates, never by appending to the file.'):
+                               'to the existing `/task` owner', '`work.py` helper',
+                               'Legacy mode delegates', '`taskwrite.py`',
+                               'Native mode retains the',
+                               'The selected writer applies its normal gates; neither'):
                 self.assertIn(obligation, handoff)
             self.assertNotIn('symptom and rationale appended to', handoff)
 

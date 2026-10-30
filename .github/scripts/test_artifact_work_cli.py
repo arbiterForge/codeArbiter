@@ -61,6 +61,32 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(code, 0, result)
         return result
 
+    def test_first_native_work_survives_fresh_clone(self) -> None:
+        first = self.run_work("create", "--title", "Portable work", "--intent",
+                              "Retain project identity", "--type", "fix",
+                              "--operation-id", "cli-portable-work-001")
+        project = self.root / ".codearbiter" / "work" / "project.json"
+        self.assertTrue(project.is_file())
+        (self.root / ".gitattributes").write_bytes((REPO / ".gitattributes").read_bytes())
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "--",
+                        ".gitattributes", ".codearbiter/work/project.json", first["path"]],
+                       check=True, capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                        "-c", "user.email=test@example.invalid", "commit", "--quiet",
+                        "-m", "Record first work"], check=True,
+                       capture_output=True, text=True)
+        with tempfile.TemporaryDirectory(prefix="ca-work-clone-") as directory:
+            clone = Path(directory) / "clone"
+            subprocess.run(["git", "clone", "--quiet", str(self.root), str(clone)],
+                           check=True, capture_output=True, text=True)
+            self.assertFalse((clone / ".codearbiter" / ".artifacts").exists())
+            restored = _artifactlib.ArtifactClient(clone, self.installation).call(
+                "work-get", {"work_id": first["work_id"]})
+            self.assertEqual(restored["work_id"], first["work_id"])
+            self.assertEqual(restored["title"], "Portable work")
+
     def test_local_journey_has_stable_identity_and_unknown_check(self) -> None:
         self.client.call("create", {"operation_id": "cli-spec-create-001", "kind": "spec",
                                     "artifact_id": "SPEC-CLI", "slug": "cli", "title": "CLI specification",
@@ -98,6 +124,30 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual((archived["work_id"], archived["state"]), (work_id, "archived"))
         self.assertIn("../plans/cli.html", (self.root / archived["path"]).read_text(encoding="utf-8"))
 
+    def test_selected_view_is_inert_html_and_leaves_no_second_owner(self) -> None:
+        self.client.call("create", {"operation_id": "view-cli-spec-001", "kind": "spec",
+                                    "artifact_id": "SPEC-VIEW-CLI", "slug": "view-cli",
+                                    "title": "Specification", "summary": "Outcome <safe>"})
+        self.client.call("create", {"operation_id": "view-cli-plan-001", "kind": "plan",
+                                    "artifact_id": "PLAN-VIEW-CLI", "slug": "view-cli",
+                                    "title": "Plan", "summary": "Implementation path",
+                                    "spec_id": "SPEC-VIEW-CLI"})
+        work_item = self.run_work("create", "--title", "View selected work",
+                                  "--intent", "One readable overview", "--type", "feature",
+                                  "--spec-id", "SPEC-VIEW-CLI", "--plan-id", "PLAN-VIEW-CLI",
+                                  "--operation-id", "view-cli-work-001")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["view", work_item["work_id"]]), 0)
+        page = output.getvalue()
+        self.assertTrue(page.startswith("<!doctype html>"))
+        for value in ("Outcome &lt;safe&gt;", "Local progress", "Checks", "Delivery",
+                      "Tracker sync", "../../specs/view-cli.html", "../../plans/view-cli.html"):
+            self.assertIn(value, page)
+        self.assertNotIn('id="ca-artifact-model"', page)
+        self.assertFalse((self.root / ".codearbiter" / "views").exists())
+        self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
+
     def test_legacy_board_remains_owner_and_create_returns_stable_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)
@@ -118,6 +168,10 @@ class WorkCLITest(unittest.TestCase):
         continued = self.run_work("list", "--offset", str(page["next_offset"]),
                                   "--limit", "1", "--membership-sha256", page["membership_sha256"])
         self.assertEqual((len(continued["entries"]), continued["next_offset"]), (1, None))
+        self.assertEqual(
+            {entry["origin"] for entry in page["entries"] + continued["entries"]},
+            {"DECOMP-1#WORK-1", "DECOMP-1#WORK-2"},
+        )
         self.assertIn("(from DECOMP-1#WORK-1)", board.read_text(encoding="utf-8"))
         self.assertFalse((self.root / ".codearbiter" / "work").exists())
 
@@ -171,14 +225,18 @@ class WorkCLITest(unittest.TestCase):
             code = work.main(["create", "--title", "Unbound", "--intent", "Uncertain response", "--type", "fix"])
         self.assertEqual(code, 1)
         self.assertIn("--operation-id or --origin", json.loads(output.getvalue())["error"])
+        source = "checkpoint-2026-10-30#triage-1"
+        self.assertEqual(self.run_work("origins", "--origin", source)["matches"], [])
         first = self.run_work("create", "--title", "Promoted", "--intent", "Same logical work",
-                              "--type", "fix", "--origin", "DECOMP-CLI#WORK-001")
+                              "--type", "fix", "--origin", source)
         retried = self.run_work("create", "--title", "Promoted", "--intent", "Same logical work",
-                                "--type", "fix", "--origin", "DECOMP-CLI#WORK-001")
+                                "--type", "fix", "--origin", source)
         self.assertEqual((first["work_id"], first["operation_id"]),
                          (retried["work_id"], retried["operation_id"]))
+        self.assertEqual(self.run_work("list")["entries"][0]["origin"], source)
+        self.assertEqual(self.run_work("origins", "--origin", source)["matches"][0]["work_id"], first["work_id"])
         changed = self.run_work("create", "--title", "Promoted again", "--intent", "Changed wording",
-                                "--type", "fix", "--origin", "DECOMP-CLI#WORK-001")
+                                "--type", "fix", "--origin", source)
         self.assertEqual(changed["work_id"], first["work_id"])
         self.assertNotEqual(changed["operation_id"], first["operation_id"])
         self.assertTrue(changed["input_differs"])
@@ -198,6 +256,7 @@ class WorkCLITest(unittest.TestCase):
         archived = self.run_work("get", first["work_id"])
         self.assertEqual(archived["state"], "archived")
         self.assertEqual(archived["work_id"], first["work_id"])
+        self.assertEqual(self.run_work("origins", "--origin", first["origin"])["matches"][0]["state"], "archived")
         replay = self.run_work("create", "--title", "Archived work",
                                "--intent", "Keep identity through archive",
                                "--type", "chore", "--origin", first["origin"])
@@ -239,6 +298,10 @@ class WorkCLITest(unittest.TestCase):
         code, refused = invoke({**payload, "request": {**payload["request"], "origin": ["bad"]}})
         self.assertEqual(code, 1)
         self.assertIn("origin must be text", refused["error"])
+        code, refused = invoke({"schema": payload["schema"], "operation": "work-origins",
+                                "request": {"origins": [["not a source key"]]}})
+        self.assertEqual(code, 1)
+        self.assertIn("invalid legacy origin query", refused["error"])
 
     def test_legacy_oversize_board_refuses_before_a_write(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
@@ -327,6 +390,9 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual((completed["state"], completed["check_status"]),
                          ("complete", "unknown"))
         self.assertIsNone(completed["started_at"])
+        listed = self.run_work("list")["entries"]
+        listed_completed = next(item for item in listed if item["work_id"] == first["work_id"])
+        self.assertEqual(listed_completed["completed_at"], completed["completed_at"])
         self.assertEqual(self.run_work("get", second["work_id"])["state"], "queued")
         archived = self.run_work("archive", first["work_id"],
                                  "--operation-id", "legacy-archive-001")

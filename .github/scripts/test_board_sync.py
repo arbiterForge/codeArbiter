@@ -51,6 +51,11 @@ def test_task_doc_states_commit_colocation():
         "chore(board)" in t,
         "task.md: must name the chore(board) anti-pattern being eliminated",
     )
+    check(
+        "origin-backed legacy rows also use `work.py`" not in t
+        and "legacy rows stay with `taskwrite.py`" in t,
+        "task.md: archive guidance must agree with standup's selected legacy writer",
+    )
 
 
 # ---- AC-04: commit-gate Phase 6 board-edit exemption (T-06) --------------------
@@ -106,6 +111,15 @@ def test_commit_gate_phase6_board_edit_exemption():
         "commit-gate SKILL.md Phase 6: the archival carve-out must state that "
         "classify_board_diff is not consulted",
     )
+    check(
+        "native work" in phase6.lower() and "work.py get" in phase6
+        and "unstaged changes" in phase6.lower(),
+        "commit-gate Phase 6 must review selected native work and reject a staged/current mismatch",
+    )
+    check(
+        "project.json" in phase6 and "staged/current" in phase6.lower(),
+        "commit-gate Phase 6 must validate the portable project identity with native work",
+    )
 
 
 # ---- AC-05: commit-gate Phase 7 stages the board edit by explicit path (T-07) --
@@ -141,6 +155,15 @@ def test_commit_gate_phase7_stages_board_edit_by_path():
         ),
         "commit-gate SKILL.md Phase 7: must state that open-tasks.md is staged "
         "by explicit path (not wildcard)",
+    )
+    check(
+        ".codearbiter/work/<work_id>.html" in phase7
+        and "selected owner" in phase7.lower(),
+        "commit-gate Phase 7 must stage selected native work by exact ID",
+    )
+    check(
+        ".codearbiter/work/project.json" in phase7,
+        "commit-gate Phase 7 must stage the first native item's project identity",
     )
 
 
@@ -227,6 +250,11 @@ def test_standup_advisory_board_sweep():
         "(advisory board-drift sweep, AC-11)",
     )
     check(
+        "legacy owner" in t and "native owner" in t
+        and "do not run" in t,
+        "standup.md: native work must not be reconciled through the legacy board",
+    )
+    check(
         any(phrase in t for phrase in ["advisory", "drift"]),
         "standup.md: must use 'advisory' or 'drift' to characterise the sweep (AC-11)",
     )
@@ -284,14 +312,8 @@ def test_decompose_intent_only():
 
 # ---- Issue #573: standup step 6 routes the archival sweep through a chore branch --
 def test_standup_archival_sweep_routes_through_chore():
-    """#573: the archival sweep must not write straight to open-tasks.md /
-    done-tasks.md on whatever branch happens to be current -- that produces an
-    uncommittable diff (STOPped by commit-gate Phase 2 on `main`, or flagged as
-    scope creep riding an unrelated feature commit under Phase 3). The sweep
-    must establish its own dedicated branch before archiving anything, and hand
-    off to a chore commit afterward so the removal + done-tasks.md append land
-    as a single in-scope docs commit -- no classify_board_diff change, no
-    ADR-0008 amendment needed.
+    """#573/WS-03: archive through the selected work owner on an isolated
+    chore branch, with one explicit named subset and later-edit-safe reads.
 
     Checked across all 4 rendered copies (host token substitution means the
     chore/task command name itself varies -- `{{CMD:chore}}` / `/ca:chore` /
@@ -299,11 +321,8 @@ def test_standup_archival_sweep_routes_through_chore():
     matching the multi-copy pattern `test_debug_uses_helper` and
     `test_context_creation_board_route` already use in this file.
 
-    Also asserts the superseded direct-write instruction ("archive only the
-    ones the user says yes to", followed immediately by the helper call with
-    no branch step) is gone -- per this repo's mutation-testing convention, a
-    partial revert that restores the old in-place archive alongside the new
-    branch/chore prose must fail this test, not pass it.
+    A legacy board still produces its paired open/done task files, while native
+    projects archive selected HTML work through the same public work CLI.
     """
     copies = [
         "core/surface/commands/standup.md",
@@ -327,30 +346,24 @@ def test_standup_archival_sweep_routes_through_chore():
         step6_lower = step6.lower()
         step6_normalized = " ".join(step6_lower.split())
 
-        clean_index = step6_normalized.find("clean working tree and index")
-        switch_default = step6_normalized.find("switch to the configured default branch")
-        fetch_default = step6_normalized.find("fetch", switch_default)
-        ff_only = step6_normalized.find("--ff-only", fetch_default)
-        create_switch = step6_normalized.find("create and switch to a fresh")
-        archive_helpers = []
-        search_from = 0
-        while True:
-            helper_at = step6_normalized.find("taskwrite.py", search_from)
-            if helper_at == -1:
-                break
-            archive_helpers.append(helper_at)
-            search_from = helper_at + 1
+        fetch_default = step6_normalized.find("fetch the configured default")
+        create_switch = step6_normalized.find("git worktree add -b", fetch_default)
+        archive_helper = step6_normalized.find("work.py get", create_switch)
+        legacy_helper = step6_normalized.find("taskwrite.py archive", create_switch)
 
         check(
-            -1 not in [clean_index, switch_default, fetch_default, ff_only, create_switch]
-            and clean_index < switch_default < fetch_default < ff_only < create_switch,
-            f"{relative}: step 6 must require, in order, a clean working tree "
-            "and index, switching to the configured default branch, fetching it, "
-            "its --ff-only update, and creating/switching to the fresh archive branch",
+            -1 not in [fetch_default, create_switch]
+            and fetch_default < create_switch
+            and "preserve both worktrees' journals" in step6_normalized
+            and "working tree and index are clean" in step6_normalized
+            and "require the same owner" in step6_normalized,
+            f"{relative}: step 6 must fetch the default tip, create a fresh "
+            "worktree and branch, then preserve separate local journals",
         )
         check(
-            archive_helpers and all(create_switch < helper for helper in archive_helpers),
-            f"{relative}: every taskwrite.py archive invocation must follow the "
+            archive_helper > create_switch and legacy_helper > create_switch
+            and "archive <work_id>" in step6_normalized,
+            f"{relative}: selected-owner work.py archive must follow the "
             "complete archive-branch isolation sequence",
         )
         check(
@@ -366,15 +379,17 @@ def test_standup_archival_sweep_routes_through_chore():
             "or the sweep writes on whatever branch is current (#573)",
         )
         check(
-            "chore" in step6_lower and "commit-gate" in step6_lower,
+            "chore" in step6_lower and "commit-gate" in step6_lower
+            and "native canonical work-state changes directly" in step6_lower,
             f"{relative}: step 6 must hand off to the chore lane, which exits "
             "through commit-gate, so the archive lands as a single in-scope "
             "docs commit (#573)",
         )
         check(
-            "never batched" in step6_lower,
-            f"{relative}: step 6 must still archive per item, never batched -- "
-            "the branch/chore handoff must not regress this existing invariant",
+            "named subset" in step6_normalized and "--operation-id" in step6_normalized
+            and "--expected-revision" in step6_normalized
+            and "--expected-model-sha256" in step6_normalized,
+            f"{relative}: batch selection must name IDs and mutations must retain replay/CAS evidence",
         )
         check(
             "done-tasks.md" in step6,
@@ -382,15 +397,25 @@ def test_standup_archival_sweep_routes_through_chore():
             "archive's new file is understood as expected, not scope creep (#573)",
         )
         check(
-            "noting which ones the user says yes to" in step6_lower,
-            f"{relative}: step 6 must defer archiving until after the branch is "
-            "established, not act on each yes immediately (#573)",
+            "work.py" in step6_normalized and "membership-sha256" in step6_normalized
+            and "completed_at" in step6_normalized,
+            f"{relative}: age preview must page selected-owner work with membership and completion dates",
         )
         check(
-            "archive only the ones the user says yes to" not in step6_lower,
-            f"{relative}: step 6 still carries the superseded direct-write "
-            "instruction (archive immediately, no branch step) -- a partial "
-            "revert would restore the pre-#573 uncommittable sweep",
+            "legacy owner" in step6_normalized and "native owner" in step6_normalized,
+            f"{relative}: archive must select exactly one existing owner",
+        )
+        check(
+            "taskwrite.py archive <exact-dotted-id>" in step6_normalized
+            and "taskwrite.py archive <unique-title>" in step6_normalized
+            and "exactly one completed row" in step6_normalized,
+            f"{relative}: legacy archive must retain exact ID and unique ID-less title routes",
+        )
+        check(
+            "helper-invocation.md" in t
+            and "{{plugin_root}}/hooks/" not in step6_normalized
+            and '"$py"' not in step6_normalized,
+            f"{relative}: ordinary helper calls must use the loaded installed resource",
         )
     check(seen >= 4, f"expected at least 4 rendered standup copies, found {seen}")
 
@@ -443,7 +468,9 @@ def test_debug_uses_helper():
         # The direct-append instruction, in the shape it actually had.
         check("append a schema-conformant queued entry" not in text,
               f"{relative}: the direct-append instruction still remains")
-        check("never by appending to the file" in text,
+        normalized = " ".join(text.split())
+        check("never by appending to the file" in normalized
+              or "neither mode appends directly to the board" in normalized,
               f"{relative}: nothing forbids the direct append it replaced")
     check(seen >= 4,
           f"expected at least 4 rendered debug copies, found {seen}")
