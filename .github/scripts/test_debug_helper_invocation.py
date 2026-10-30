@@ -99,6 +99,20 @@ def capture_helper_attempt(scratch, argv, stdin, exit_code=0):
 
 
 class TestDebugHelperInvocation(unittest.TestCase):
+    def test_brainstorming_has_an_installed_work_helper_anchor(self):
+        cases = (
+            ("plugins/ca", "skills/brainstorming/SKILL.md"),
+            ("plugins/ca-codex", "routines/brainstorming/SKILL.md"),
+            ("plugins/ca-pi", "routines/brainstorming/SKILL.md"),
+        )
+        for package, resource in cases:
+            with self.subTest(package=package):
+                root = SOURCE_ROOT / package
+                self.assertTrue((root / resource).is_file())
+                card = (root / "includes/helper-invocation.md").read_text(encoding="utf-8")
+                self.assertIn(f"`{resource}`", card)
+                self.assertIn("hooks/work.py", card)
+
     def test_emitted_host_links_reach_installed_card_without_root_tokens(self):
         cases = (
             ("plugins/ca/commands/task.md", "plugins/ca/includes/helper-invocation.md"),

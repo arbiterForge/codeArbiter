@@ -28,6 +28,12 @@ do not invoke the initial-population route, rerun `initialize`, or invent the
 original interview. A denied or incomplete source inspection leaves its claim
 unknown and does not erase independent existing records.
 
+After reading the relevant decomposition records and checking their cited
+sources, run `knowledge.py stale decomposition`. If it reports no baseline,
+run `knowledge.py rebaseline decomposition` once after the check. Leave
+deferred or unresolved records in their existing states; a baseline records
+the checked source revision and does not answer them.
+
 Add observed capabilities and architecture to the existing decomposition
 document with `basis: source-observed` and actual source references. Distinguish
 the current implementation from the intended target and delta: target

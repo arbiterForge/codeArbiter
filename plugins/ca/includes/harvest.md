@@ -27,8 +27,11 @@ contingent default: an abandoned branch or PR abandons the board additions with 
 (self-correcting per ADR-0008). A follow-up that **must survive** abandonment should be filed
 as a **GitHub issue**, not the board.
 
-`origin` is the artifact's identity (e.g. `checkpoint-2026-06-13`, `spec:<slug>`,
-`sprint:<slug>`) so each promoted entry carries a `(from <origin>)` back-ref.
+Pass the artifact identity (e.g. `checkpoint-2026-06-13`, `spec:<slug>`,
+`sprint:<slug>`) to the extractor. Each returned candidate's `origin` is the
+exact source key with its item suffix (for example `spec:<slug>#triage-1`);
+use that returned key unchanged for deduplication, promotion, and the
+`(from <origin>)` back-ref.
 
 ## Procedure
 

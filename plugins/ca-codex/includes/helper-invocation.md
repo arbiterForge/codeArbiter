@@ -71,14 +71,15 @@ if [ -z "$ca_python" ]; then printf '%s\n' 'compatible Python 3 interpreter unav
 ```
 
 Start from the absolute path of the **loaded installed entry resource** that
-the host actually supplied: `commands/task.md`, `commands/status.md`, or
-`commands/debug.md` or `commands/standup.md` on Claude;
+the host actually supplied: `commands/task.md`, `commands/status.md`,
+`commands/debug.md`, `commands/standup.md`, `commands/commit.md`, or
+`skills/brainstorming/SKILL.md` on Claude;
 `skills/ca-task/SKILL.md`, `skills/ca-status/SKILL.md`,
 `skills/ca-debug/SKILL.md`, `skills/ca-standup/SKILL.md`, or
-`skills/ca-commit/SKILL.md` on Codex and Pi. For Claude commit-gate, use
-the loaded `commands/commit.md` entry resource.
-The Codex and Pi skill directories are two levels below the package root;
-Claude's command directory is one level below it. Do not use the current directory, a project checkout,
+`skills/ca-commit/SKILL.md`, or `routines/brainstorming/SKILL.md` on Codex and Pi.
+The Codex and Pi skill/routine directories are two levels below the package root;
+Claude's command directory is one level below it and its brainstorming skill
+directory is two levels below it. Do not use the current directory, a project checkout,
 an unset `PLUGIN_ROOT`/`CLAUDE_PLUGIN_ROOT` token from a hook runner, `/hooks`,
 a source clone, or a recursive cache search. If the loaded resource, package
 identity, or exact helper is absent, report that failure and stop. Keep the
@@ -86,7 +87,7 @@ current working directory at the intended project when invoking `taskwrite.py`.
 
 Codex ordinary tool calls do not inherit the hook runner's root token. Bind
 `$caLoadedResource` or `ca_loaded_resource` to the absolute path of the loaded
-`ca-task`/`ca-status`/`ca-debug`/`ca-standup`/`ca-commit` `SKILL.md`; bind the helper-relative variable to the one
+`ca-task`/`ca-status`/`ca-debug`/`ca-standup`/`ca-commit` or brainstorming `SKILL.md`; bind the helper-relative variable to the one
 literal leaf named above. The following blocks resolve the installed package
 without changing the caller's working directory.
 

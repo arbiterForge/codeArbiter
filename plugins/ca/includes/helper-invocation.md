@@ -71,14 +71,15 @@ if [ -z "$ca_python" ]; then printf '%s\n' 'compatible Python 3 interpreter unav
 ```
 
 Start from the absolute path of the **loaded installed entry resource** that
-the host actually supplied: `commands/task.md`, `commands/status.md`, or
-`commands/debug.md` or `commands/standup.md` on Claude;
+the host actually supplied: `commands/task.md`, `commands/status.md`,
+`commands/debug.md`, `commands/standup.md`, `commands/commit.md`, or
+`skills/brainstorming/SKILL.md` on Claude;
 `skills/ca-task/SKILL.md`, `skills/ca-status/SKILL.md`,
 `skills/ca-debug/SKILL.md`, `skills/ca-standup/SKILL.md`, or
-`skills/ca-commit/SKILL.md` on Codex and Pi. For Claude commit-gate, use
-the loaded `commands/commit.md` entry resource.
-The Codex and Pi skill directories are two levels below the package root;
-Claude's command directory is one level below it. Do not use the current directory, a project checkout,
+`skills/ca-commit/SKILL.md`, or `routines/brainstorming/SKILL.md` on Codex and Pi.
+The Codex and Pi skill/routine directories are two levels below the package root;
+Claude's command directory is one level below it and its brainstorming skill
+directory is two levels below it. Do not use the current directory, a project checkout,
 an unset `PLUGIN_ROOT`/`CLAUDE_PLUGIN_ROOT` token from a hook runner, `/hooks`,
 a source clone, or a recursive cache search. If the loaded resource, package
 identity, or exact helper is absent, report that failure and stop. Keep the
@@ -87,7 +88,7 @@ current working directory at the intended project when invoking `taskwrite.py`.
 
 
 Claude's loaded `commands/task.md`, `commands/status.md`, `commands/debug.md`,
-`commands/standup.md`, or `commands/commit.md`
+`commands/standup.md`, `commands/commit.md`, or `skills/brainstorming/SKILL.md`
 is the anchor.
 The package identity marker is `.claude-plugin/plugin.json`. The native
 `CLAUDE_PLUGIN_ROOT` spelling remains valid in hook configuration, but these
@@ -98,7 +99,8 @@ unset.
 ```powershell
 $caResolvedResource = (Resolve-Path -LiteralPath $caLoadedResource -ErrorAction Stop).ProviderPath
 $caResourceDirectory = Split-Path -Parent $caResolvedResource
-$caInstalledRoot = (Resolve-Path -LiteralPath (Join-Path $caResourceDirectory '..') -ErrorAction Stop).ProviderPath
+$caRootOffset = if ((Split-Path -Leaf $caResourceDirectory) -eq 'brainstorming') { '..\..' } else { '..' }
+$caInstalledRoot = (Resolve-Path -LiteralPath (Join-Path $caResourceDirectory $caRootOffset) -ErrorAction Stop).ProviderPath
 $caManifest = Join-Path $caInstalledRoot '.claude-plugin\plugin.json'
 if (-not (Test-Path -LiteralPath $caManifest -PathType Leaf)) { throw "installed ca package identity missing" }
 $caHelper = Join-Path $caInstalledRoot $caHelperRelative
@@ -109,7 +111,11 @@ if (-not (Test-Path -LiteralPath $caHelper -PathType Leaf)) { throw "installed h
 ```sh
 case "$ca_loaded_resource" in /*) ;; *) printf '%s\n' 'loaded installed resource must be absolute' >&2; exit 2;; esac
 if [ ! -f "$ca_loaded_resource" ]; then printf '%s\n' 'loaded installed resource missing' >&2; exit 2; fi
-ca_installed_root=$(CDPATH= cd -P "$(dirname "$ca_loaded_resource")/.." && pwd -P) || exit 2
+case "$ca_loaded_resource" in
+  */skills/brainstorming/SKILL.md) ca_root_offset=../.. ;;
+  *) ca_root_offset=.. ;;
+esac
+ca_installed_root=$(CDPATH= cd -P "$(dirname "$ca_loaded_resource")/$ca_root_offset" && pwd -P) || exit 2
 if [ ! -f "$ca_installed_root/.claude-plugin/plugin.json" ]; then printf '%s\n' 'installed ca package identity missing' >&2; exit 2; fi
 ca_helper=$ca_installed_root/$ca_helper_relative
 if [ ! -f "$ca_helper" ]; then printf '%s\n' 'installed helper missing' >&2; exit 2; fi

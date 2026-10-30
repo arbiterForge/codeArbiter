@@ -244,7 +244,20 @@ Gate: the diff is clean — zero blocking findings.
 
 **Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the selected owner's additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not local work.
 
+Before staging any newly harvested native work, review the exact current HTML
+bytes and, for the first item, `project.json` bytes under the Phase 6 secret,
+identity, scope, and native work checks. Verify the selected owner and current
+`work.py get <work_id>` result, and reject unexpected or mismatched files. A
+path-list check alone does not review these newly created bytes. If this review
+finds a blocker, stop before the commit; do not exempt the harvest output.
+
 Then selectively stage: if files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. For the legacy owner, retain clean board transitions and harvest additions by explicitly staging `open-tasks.md`. For the native owner, stage validated `.codearbiter/work/<work_id>.html` paths returned or changed by the selected work operation, each by its exact ID. When the first native work-create also creates `.codearbiter/work/project.json`, stage that exact validated identity path in the same commit; if its staged bytes differ from current bytes, stop. Never stage the whole work directory or a journal. The lifecycle change rides the same work commit. When Phase 5.5 produced a re-baselined provenance record, include the affected `.codearbiter/.provenance/<doc>.json` file(s) by explicit path in the same selective stage so the re-baselined record rides the work commit. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
+
+For harvested native work, compare the newly staged HTML and first-item
+`project.json` with the reviewed current bytes, then inspect their exact
+`git diff --cached` content and rerun Phase 6 secret, identity, scope, and
+native work checks on those staged bytes. A mismatch or new finding blocks
+the commit. This check is required even when the staged path list is exact.
 
 Gate: the staged set contains exactly the intended files. MUST NOT use `git add -A`, `git add .`, or any wildcard.
 
