@@ -73,7 +73,7 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-context`, `work-update` |
+| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-update` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -317,7 +317,11 @@ the legacy board owns the project.
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
 reading only the selected page's work models, including each origin for
-deduplication. Its membership digest rejects a continuation after a create; it
+deduplication. A fresh native project lists zero work without creating a
+project identity; orphan work files without that identity still refuse.
+`work-origins` checks up to 32 exact source keys in one bounded directory pass,
+including archived items, for harvest preview. Its read is not a frozen
+content snapshot. `work-list`'s membership digest rejects a continuation after a create; it
 is not a frozen content snapshot. `work-create` with a bounded local
 `SOURCE#ITEM` origin (including `ARTIFACT#SYMBOL` and harvest source keys) scans active
 and archived items for that correlation key and returns the matching stable ID
@@ -351,7 +355,7 @@ tracker providers and legacy adoption remain future slices.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
-The closed operation set is `work-create`, `work-get`, `work-list`,
+The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
 `work-context` and `work-update`; the installed native protocol validates the
 operation-specific request. It returns one JSON result. The stable operation
 ID and CAS rules above still apply, including on an uncertain retry.
