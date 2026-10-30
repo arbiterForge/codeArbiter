@@ -1210,6 +1210,35 @@ def _git_text(directory: Path, *args: str) -> str:
     return decoded if "-z" in args else decoded.strip()
 
 
+def _require_runtime_markers_ignored(roots: set[Path]) -> None:
+    """Refuse a receipt that ordinary host bookkeeping would later invalidate."""
+    for root in roots:
+        marker_parent = root / ".codearbiter"
+        try:
+            info = marker_parent.lstat()
+        except FileNotFoundError:
+            continue  # A mapped, unenrolled worktree has no host marker writer.
+        if not stat.S_ISDIR(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", ".codearbiter is not a real directory")
+        try:
+            checked = subprocess.run(
+                [git_executable(), "-C", str(root), "check-ignore", "--quiet", "--",
+                 ".codearbiter/.markers/"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+                timeout=15, env=root_bound_git_env(),
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker Git ignore status is unavailable") from exc
+        if checked.returncode == 1:
+            raise AuthorityError(
+                "UNSUPPORTED_WORKSPACE",
+                "Git does not ignore .codearbiter/.markers/ in the verification workspace; "
+                "add .codearbiter/.markers/ to its .gitignore before arming verification",
+            )
+        if checked.returncode != 0:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker Git ignore status is unavailable")
+
+
 def _path_identity(path: Path) -> str:
     info = path.lstat()
     reparse = getattr(info, "st_file_attributes", 0) & 0x400
@@ -1640,6 +1669,10 @@ def arm_request(
             raise AuthorityError("UNSUPPORTED_WORKSPACE", "workspace map must exactly cover declared cwd labels")
         frozen_workspaces = {label: str(_real_root(path)) for label, path in workspace_roots.items()}
     command_bindings = _bind_commands(root, context, frozen_workspaces) if activity == "verification" else []
+    if activity == "verification":
+        _require_runtime_markers_ignored(
+            {root, *(Path(binding["workspace_root"]) for binding in command_bindings)}
+        )
     if completion_selection is not None:
         _require_completion_materials(context)
         resumed = _context(root, client, artifact_id, record_id, activity,
