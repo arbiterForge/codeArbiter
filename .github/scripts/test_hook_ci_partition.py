@@ -19,10 +19,11 @@ ISOLATION = 'python .github/scripts/test_suite_hermeticity.py'
 GUARD = 'python .github/scripts/test_hook_ci_partition.py'
 # sha256(compact JSON of the ordered pre-partition command list). This binds
 # the guard to all 64 reviewed command steps without duplicating the workflow here.
+# The release workflow command also runs the required Codex identity regression.
 # The guard matrix, ca-codex adapter and dual-host store suites have no direct
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
-COMMANDS_SHA256 = '63a253e4886cda6bea7148f3c5f32bbc738df40b00eefd2f780934a4631b78f4'
+COMMANDS_SHA256 = '62ef77f8af640a1f2d2855a3d8a4107e6239b3045e8e37ac602af9f5db79e93f'
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:
