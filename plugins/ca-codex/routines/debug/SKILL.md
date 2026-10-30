@@ -332,12 +332,12 @@ remain intact.
 
 Out-of-scope findings follow the existing explicit harvest/promotion rules on
 every exit. If a separately authorized concrete follow-up is needed, refer it
-to the existing `/task` owner. That owner uses the selected installed
-`taskwrite.py` helper and Python interpreter from `helper-invocation.md`,
-once per authorized item. Under the `/task` owner's invocation rules, any
-`--desc` reason stays with the other options before `--`; place the literal task
-description after `--`.
-The writer applies its normal gates, never by appending to the file.
+to the existing `/task` owner. That owner uses the selected installed `work.py` helper and Python interpreter
+from `helper-invocation.md`, once per authorized item. Legacy mode delegates
+to `taskwrite.py`: any `--desc` reason stays with the other options before
+`--`, and the literal task description follows `--`. Native mode retains the
+returned stable work ID. The selected writer applies its normal gates; neither
+mode appends directly to the board.
 The follow-up needs its own task authority, action, provenance, and completion
 evidence; the debug disposition itself never calls that helper. Do not create a queued
 note merely because a case closes as `no_action` or `design_question`. Surface

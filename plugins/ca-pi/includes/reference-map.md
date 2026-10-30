@@ -23,7 +23,7 @@ then route to the owning skill or agent. This map answers *what to read before t
 | Failure / retry, CI/CD, branch settings | `tech-stack.md`, `security-controls.md` | `security-reviewer` agent (CI/CD: H-15 advisory) |
 | Risks / ADRs | `open-questions.md`, `decisions/` | `decision-lifecycle` skill (`/adr`) |
 | Architectural reconciliation | `plans/` (the three artifacts), `decisions/decision-log.md` | `decision-variance` skill (`/reconcile`) |
-| Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR); promoted to `open-tasks.md` by the harvest at the workflow's terminal step |
-| Following up on workflow residue / a backlog task | `open-tasks.md` (schema), `<plugin-root>/includes/harvest.md` | `/ca-task` writer; harvest (`extract_*` → `promote`) at a terminal step |
+| Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR); promoted to the selected work owner by the harvest at the workflow's terminal step |
+| Following up on workflow residue / a backlog task | `<plugin-root>/includes/harvest.md`, selected `work.py` owner | `/ca-task` writer; harvest (`extract_*` → `promote`) at a terminal step. Legacy mode retains `open-tasks.md`. |
 | Generating a user-facing deliverable (UI, report, PR/CHANGELOG prose, slide, chart) | `<plugin-root>/includes/anti-slop-design/INDEX.md` (then `core` + the medium leaf) | `design-quality-reviewer` agent |
 | Provenance drift or requested refresh of initialized context | Selected documents + `.codearbiter/.provenance/` + `.codearbiter/code-map.md` | `context-check` skill (`/ca-context-check`); reuse the selected scope and existing authorization |

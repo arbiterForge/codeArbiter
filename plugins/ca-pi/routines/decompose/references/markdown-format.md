@@ -1,17 +1,20 @@
 # decompose — Markdown-format repositories
 
 This is the procedure for a repository whose `knowledge.py format` reports
-`markdown` and whose user keeps that format rather than importing it. It is the
-unchanged pre-HTML workflow; HTML-format repositories follow the skill entry.
+`markdown` and whose user keeps that format rather than importing it. The
+greenfield sections retain the pre-HTML workflow; HTML-format repositories
+follow the skill entry.
 
 Develop the project specification before implementation. Keep actual user decisions,
 planned architecture and observed repository facts distinct.
 
 ## 1. Inspect and resume
 
-Read `.codearbiter/CONTEXT.md`. An initialized project returns to normal operation;
-context changes use `/ca-context-check`. Meaningful implementation source routes
-to `/ca-create-context`. If the scaffold is absent, run `/ca-init` first.
+Read `.codearbiter/CONTEXT.md`. An explicit initialized brownfield
+project-model request uses the acquisition section below; ordinary source drift
+uses `/ca-context-check`. In an uninitialized project, meaningful
+implementation source routes to `/ca-create-context`. If the scaffold is
+absent, run `/ca-init` first.
 
 Keep the interview in `.codearbiter/plans/decomposition/`: `_session.md` records the
 current phase, remaining questions and actual user confirmations; each completed
@@ -24,6 +27,35 @@ and layer records to the durable directory before using them as source evidence.
 Compare existing destinations byte-for-byte: retain identical files, and reconcile
 conflicting versions without overwriting either. Temporary drafts remain until
 initialization completes. Never cite a temporary file that cleanup will remove.
+
+## Initialized brownfield acquisition
+
+Keep the existing `<!--INITIALIZED-->` marker, CONTEXT frontmatter, human edits,
+provenance, decomposition files, question and ADR history, and task identities.
+Inspect those owners before writing. Use `/ca-context-check` for selected
+source-backed refreshes of the existing Markdown context/provenance pairs; do
+not invoke `create-context`, `--context-finalize`, or the initial interview.
+If inspection is denied or incomplete, record the affected observation as
+unknown instead of inferring that a capability is absent.
+
+Maintain the existing project model under `.codearbiter/plans/`. Record
+source-observed current capabilities and architecture with exact source paths
+in `01-architecture-breakdown.md`; proposed target, delta and future phases in
+`02-phased-build-plan.md`; and possible work in a clearly marked candidate
+section of `03-task-backlog.md`. Read existing files first and update only the
+affected sections, preserving earlier answers and user edits.
+Link existing questions and ADRs by identity, without copying their mutable
+status. Code inspection alone cannot establish deployment, passing checks,
+historical rationale or an accepted choice. Ask only consequential unknowns
+that affect the selected target.
+
+Candidates are not tasks or tracker tickets. When the user selects promotion,
+check the stable origin against active and archived work through the selected
+work owner. Retain the returned work ID in the candidate and repair that same
+link on retry. The legacy task-board writer remains the owner in an unconverted
+project; do not create a parallel native work record. Report changed documents,
+source scope and remaining unknowns, then return to the requested work. The
+greenfield interview and initialization steps below do not run on this path.
 
 ## 2. Capture the interview
 

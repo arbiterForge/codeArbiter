@@ -31,8 +31,10 @@ record its meaning, map each section ID to its saved record or note references
 `knowledge.py convert --finish <token> --coverage @checklist.json` (the
 transaction retains the original bytes). If the
 user keeps the Markdown format, load
-`<plugin-root>/routines/decompose/references/markdown-format.md` and follow that
-unchanged procedure instead of this one; never convert silently.
+`<plugin-root>/routines/decompose/references/markdown-format.md` and follow its
+format-specific procedure instead of this one. For an explicit initialized
+brownfield request, use that reference's initialized acquisition section; do
+not return to greenfield initialization. Never convert silently.
 
 Run `knowledge.py create-missing`, then `knowledge.py read decomposition`. Existing
 `question` records with `status: answered` are settled: do not ask them again or
