@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beforeAll,describe,expect,it} from 'vitest';
-import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
+import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,WORK_SYSTEM_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
 import {geometryRecord,REVIEWED_AT,validateAtlas} from './atlas-model';
 import {nodeDetails,renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 
@@ -55,9 +55,10 @@ describe('assistive candidate versus retained historical routes',()=>{
       expect(bytes.length).toBe(size);
       expect(objects[end+1+size]).toBe(10);
       offset=end+2+size;
-      // A later exact binding (the 2026-10-23 command removal, then the #1023
-      // knowledge records) supersedes the PR983 bytes for its own files; the
-      // PR983 blob itself stays recorded.
+      const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
+      // Later exact bindings for command removal, knowledge, and local work
+      // supersede the PR983 bytes for their files. The PR983 blob stays recorded.
+      const later=WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       expect(later?execFileSync('git',['--no-replace-objects','cat-file','blob',later],{cwd:root,encoding:'utf8'}):bytes.toString('utf8')).toBe(current);
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }
