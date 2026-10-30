@@ -41,7 +41,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-list":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -187,6 +187,20 @@ func Run(root, op string, input object) (any, error) {
 		return engine.knowledgeCutover(r)
 	case "knowledge-merge":
 		return engine.knowledgeMerge(r)
+	}
+	// Selected work reads and updates use stable identity paths instead of the
+	// generic spec/plan catalog scan.
+	switch op {
+	case "work-create":
+		return engine.workCreate(r)
+	case "work-get":
+		return engine.workGet(r)
+	case "work-update":
+		return engine.workUpdate(r)
+	case "work-context":
+		return engine.workContext(r)
+	case "work-list":
+		return engine.workList(r)
 	}
 	if op == "capture-observation" {
 		observedSource, _, sourceErr := authority.LoadSource(f, model.S(r["source_ref"]), model.S(r["source_sha256"]))
