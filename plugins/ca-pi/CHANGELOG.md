@@ -11,6 +11,8 @@ All notable changes to `ca-pi` are documented in this file.
 - Route selected work, archival, and initialized Markdown acquisition through
   the owning local work store.
 - Render a bounded, derived HTML overview for one native work item.
+- Keep derived views outside canonical artifact ownership and leave checks
+  unknown until their evidence is recorded separately.
 
 ## [0.24.0] - 2026-10-30
 

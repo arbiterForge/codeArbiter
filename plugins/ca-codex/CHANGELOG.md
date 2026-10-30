@@ -13,6 +13,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Route selected work, archival, and initialized Markdown acquisition through
   the owning local work store.
 - Render a bounded, derived HTML overview for one native work item.
+- Keep derived views outside canonical artifact ownership and leave checks
+  unknown until their evidence is recorded separately.
 
 ## [0.23.0] - 2026-10-30
 
