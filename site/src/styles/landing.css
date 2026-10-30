@@ -852,7 +852,9 @@ ca-splash-docs {
     transition: none;
   }
 
-  .ca-lane-card {
+  .ca-lane-card,
+  .ca-journey-preview__grid a,
+  .ca-proof-strip .ca-trust__link {
     transition: none;
   }
 }
