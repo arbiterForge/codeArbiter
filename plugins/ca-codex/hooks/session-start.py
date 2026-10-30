@@ -1088,10 +1088,16 @@ def emit_confirm_nn(oq_text):
         print("open questions: 0")
 
 
-def emit_task_summary(ot_text, today=None):
+def emit_task_summary(ot_text, today=None, native_work=False):
     """The open-tasks summary. `today` is injectable for deterministic tests;
     defaults to the real local date at the I/O edge. `ot_text` of None
     (file unreadable/absent) emits nothing, matching the pre-#437 behavior."""
+    if native_work:
+        print("native work: current counts and states require work.py list")
+        if ot_text is not None:
+            print("codeArbiter: both native work and a legacy board are present; inspect owner selection",
+                  file=sys.stderr)
+        return
     if ot_text is None:
         return
     today = today if today is not None else datetime.date.today()
@@ -1285,7 +1291,8 @@ def main():
 
     ot = os.path.join(root, ".codearbiter", "open-tasks.md")
     ot_text = read_text(ot)
-    emit_task_summary(ot_text)
+    emit_task_summary(ot_text, native_work=os.path.lexists(
+        os.path.join(root, ".codearbiter", "work")))
 
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
     _drift = provenance_drift_line(root, report_unknown=True)

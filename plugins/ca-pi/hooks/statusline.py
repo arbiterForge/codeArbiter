@@ -643,7 +643,7 @@ def _render_active_palette(raw):
         s = f" {V0}·{RESET} "
         qcol = DANGER if arb["q"] > 0 else GREY
         ocol = DANGER if arb["over"] > 0 else GREY
-        tcol = WHITE if arb["tasks"] > 0 else GREY
+        tcol = WHITE if arb["tasks"] == "?" or arb["tasks"] > 0 else GREY
         arbline = (
             f"{OK}{DOT}{RESET} {WHITE}stage:{arb['stage']}{RESET}{s}{tcol}tasks:{arb['tasks']}{RESET}"
             f"{s}{qcol}q:{arb['q']}{RESET}{s}{ocol}over:{arb['over']}{RESET}"
