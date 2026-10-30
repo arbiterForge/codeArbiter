@@ -317,7 +317,7 @@ the legacy board owns the project.
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
 reading only the selected page's work models, including each origin for
-deduplication. A fresh native project lists zero work without creating a
+deduplication and completion date for an age-based archival preview. A fresh native project lists zero work without creating a
 project identity; orphan work files without that identity still refuse.
 `work-origins` checks up to 32 exact source keys in one bounded directory pass,
 including archived items, for harvest preview. Its read is not a frozen
