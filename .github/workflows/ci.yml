@@ -2723,9 +2723,10 @@ jobs:
         # workflow, so deleting the exactly-one-target preflight, the
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
-        run: |
-          python .github/scripts/test_release_workflow.py
-          python .github/scripts/test_codex_release_identity.py
+        run: python .github/scripts/test_release_workflow.py
+      - name: Run Codex release identity contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_codex_release_identity.py
       - name: Run Codex immutable marketplace distribution contracts
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_marketplace_distribution.py

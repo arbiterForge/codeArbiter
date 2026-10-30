@@ -235,6 +235,17 @@ jobs:
           python3 .github/scripts/verify_codex_candidate_provenance.py \
             --repo . --final-ref "$CANDIDATE_SHA" --json \
             || echo "::warning::Codex candidate provenance check did not pass (not blocking)"
+      # workflow_run can finish an older CI source after this workflow lands.
+      # Keep its release payload checkout while loading this gate from the
+      # workflow revision that owns the privileged release job.
+      - name: Checkout release-workflow validator
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .release-workflow
+          sparse-checkout: .github/scripts/validate_codex_distribution_identity.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
       # The ca-codex-marketplace branch and ca-codex-dist-v* tags are
       # ruleset-protected; only the dedicated distribution App may write them.
       - name: Validate Codex distribution identities
@@ -243,7 +254,7 @@ jobs:
           PUBLISHER_INSTALLATION_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_INSTALLATION_ID }}
           VERIFIER_APP_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
           VERIFIER_INSTALLATION_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID }}
-        run: python3 .github/scripts/validate_codex_distribution_identity.py
+        run: python3 .release-workflow/.github/scripts/validate_codex_distribution_identity.py
       - name: Mint Codex distribution publisher token
         id: codex-publisher
         env:

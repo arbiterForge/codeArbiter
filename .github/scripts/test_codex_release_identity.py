@@ -17,6 +17,29 @@ SPEC.loader.exec_module(IDENTITY)
 
 
 class CodexReleaseIdentityTest(unittest.TestCase):
+    def test_release_contract_commands_fail_independently_on_windows(self):
+        workflow = (REPO / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        release_step = workflow.split("- name: Run hosted release-workflow contract tests", 1)[1]
+        release_step = release_step.split("\n      - name:", 1)[0]
+        identity_step = workflow.split("- name: Run Codex release identity contract tests", 1)[1]
+        identity_step = identity_step.split("\n      - name:", 1)[0]
+        self.assertIn("run: python .github/scripts/test_release_workflow.py", release_step)
+        self.assertNotIn("test_codex_release_identity.py", release_step)
+        self.assertIn("run: python .github/scripts/test_codex_release_identity.py", identity_step)
+
+    def test_validator_comes_from_workflow_revision_not_release_source(self):
+        workflow = (REPO / ".github/workflows/release.yml").read_text(encoding="utf-8")
+        codex = workflow.split("\n  release-codex:\n", 1)[1].split("\n  release-", 1)[0]
+        checkout = codex.split("- name: Checkout release-workflow validator", 1)[1]
+        checkout = checkout.split("\n      - name:", 1)[0]
+        self.assertIn("ref: ${{ github.workflow_sha }}", checkout)
+        self.assertIn("path: .release-workflow", checkout)
+        self.assertIn("sparse-checkout-cone-mode: false", checkout)
+        self.assertIn("persist-credentials: false", checkout)
+        validator = codex.split("- name: Validate Codex distribution identities", 1)[1]
+        validator = validator.split("\n      - name:", 1)[0]
+        self.assertIn("python3 .release-workflow/.github/scripts/validate_codex_distribution_identity.py", validator)
+
     def test_required_pair_preflight_precedes_publisher_token(self):
         workflow = (REPO / ".github/workflows/release.yml").read_text(encoding="utf-8")
         codex = workflow.split("\n  release-codex:\n", 1)[1].split("\n  release-", 1)[0]
