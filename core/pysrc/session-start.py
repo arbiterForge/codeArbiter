@@ -48,6 +48,7 @@ from _standuplib import (  # noqa: E402
     stale_worktree_candidates,
 )
 import _taskboardlib  # noqa: E402 — shared task-board count/staleness logic
+from _arbiterstatelib import native_work_selected  # noqa: E402 — selected owner parity
 import _provenancelib  # noqa: E402 — shared provenance drift detection (T-16)
 import _knowledgelib  # noqa: E402 — narrative context format (no engine call)
 import _updatelib  # noqa: E402 — update-available notifier (cache read + notice text)
@@ -1088,10 +1089,16 @@ def emit_confirm_nn(oq_text):
         print("open questions: 0")
 
 
-def emit_task_summary(ot_text, today=None):
+def emit_task_summary(ot_text, today=None, native_work=False):
     """The open-tasks summary. `today` is injectable for deterministic tests;
     defaults to the real local date at the I/O edge. `ot_text` of None
     (file unreadable/absent) emits nothing, matching the pre-#437 behavior."""
+    if native_work:
+        print("native work: current counts and states require work.py list")
+        if ot_text is not None:
+            print("codeArbiter: both native work and a legacy board are present; inspect owner selection",
+                  file=sys.stderr)
+        return
     if ot_text is None:
         return
     today = today if today is not None else datetime.date.today()
@@ -1285,7 +1292,8 @@ def main():
 
     ot = os.path.join(root, ".codearbiter", "open-tasks.md")
     ot_text = read_text(ot)
-    emit_task_summary(ot_text)
+    emit_task_summary(ot_text, native_work=native_work_selected(
+        os.path.join(root, ".codearbiter")))
 
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
     _drift = provenance_drift_line(root, report_unknown=True)

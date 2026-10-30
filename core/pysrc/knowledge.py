@@ -18,7 +18,7 @@
 #   initialize                     record structural initialization (HTML format)
 #   convert [--finish TOKEN]       prepare HTML knowledge, then cut over after
 #                                  the agent has recorded the Markdown content
-#   promote RECORD                 add a decomposition work item to the task board
+#   promote RECORD                 send a selected work item to its work owner
 #   stale [DOC ...]                records whose scoped or cited paths changed since
 #                                  their document's baseline commit (advisory)
 #   rebaseline DOC                 set a document's baseline to the current commit
@@ -305,26 +305,38 @@ def _convert(client, root, finish, coverage_arg):
 
 
 def _promote(client, root, record_id):
-    """Add a decomposition work item to the task board once.
-
-    The board owns task state; the work item only keeps the back-reference.
-    Board first, then the reference: a crash between the two leaves the task,
-    and a retry finds it by origin instead of adding it again."""
+    """Create selected work once, then repair its decomposition back-reference."""
     record = client.call("read", {"artifact_id": "DECOMP-PROJECT", "symbol": record_id, "mode": "exact"})["record"]
     if record.get("type") != "work_item":
         raise ValueError("only decomposition work items are promoted")
     origin = f"DECOMP-PROJECT#{record_id}"
-    taskwrite = os.path.join(os.path.dirname(os.path.abspath(__file__)), "taskwrite.py")
-    done = subprocess.run([sys.executable, taskwrite, "add", record["title"], "--from", origin],
-                          cwd=root, capture_output=True, text=True, encoding="utf-8")
-    if done.returncode != 0:
-        raise ValueError(f"task board refused the promotion: {done.stderr.strip() or done.stdout.strip()}")
-    board_line = done.stdout.strip()
-    if record.get("promotion") is None:
+    import work
+    selected = work._selected_client(root)
+    prior = record.get("promotion")
+    if prior is not None and prior.get("origin") != origin:
+        raise ValueError("decomposition promotion origin changed; preserve the selected record")
+    if prior is not None and prior.get("work_id") is not None:
+        bound = selected.call("work-get", {"work_id": prior["work_id"]})
+        if bound.get("origin") != origin:
+            raise ValueError("decomposition promotion points to a different work origin")
+    result = selected.call("work-create", {
+        "operation_id": _op_id("knowledge-promote", origin, record["title"], record["statement"]),
+        "origin": origin, "title": record["title"], "intent": record["statement"],
+        "work_type": "unknown",
+    })
+    work_id = result["work_id"]
+    if prior is not None and prior.get("work_id") not in (None, work_id):
+        raise ValueError("decomposition promotion points to a different work identity")
+    if prior is None or prior.get("work_id") != work_id:
         _apply(client, "DECOMP-PROJECT", [{"op": "record.update", "symbol": record_id,
-                                           "fields": {"promotion": {"board_id": record["title"][:40], "origin": origin}}}],
+                                           "fields": {"promotion": {"work_id": work_id, "origin": origin}}}],
                "knowledge-promote")
-    return {"record": record_id, "origin": origin, "board": board_line}
+    owner = "legacy" if getattr(selected, "legacy", False) else "native"
+    out = {"record": record_id, "origin": origin, "work_id": work_id,
+           "owner": owner, "reused": result.get("reused", False)}
+    if owner == "legacy":
+        out["board"] = ("already promoted: " if result.get("reused") else "added queued task: ") + record["title"]
+    return out
 
 
 def _git_out(root, *arguments):

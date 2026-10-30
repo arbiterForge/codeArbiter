@@ -249,6 +249,27 @@ EXPECTED_SUITES = {
         "test_promotion_receipt_rejects_context_host_file_set_and_byte_drift",
         "test_verified_promotion_snapshot_cannot_be_swapped_before_install",
     },
+    "test_artifact_work_cli.py": {
+        "test_create_requires_a_replay_identity_and_origin_reuses_one_item",
+        "test_first_native_work_survives_fresh_clone",
+        "test_legacy_board_remains_owner_and_create_returns_stable_identity",
+        "test_legacy_context_reads_selected_work_with_budget",
+        "test_legacy_duplicate_identity_metadata_refuses_selected_read",
+        "test_legacy_json_request_refuses_unknown_field_before_write",
+        "test_legacy_origin_survives_board_archive_and_replay",
+        "test_legacy_oversize_board_refuses_before_a_write",
+        "test_legacy_owner_refuses_orphan_native_work_files",
+        "test_legacy_title_with_origin_words_does_not_strand_create",
+        "test_legacy_update_stale_snapshot_preserves_later_edit",
+        "test_legacy_work_keeps_option_like_values_as_data",
+        "test_legacy_work_updates_keep_unknown_check_and_exact_identity",
+        "test_local_journey_has_stable_identity_and_unknown_check",
+        "test_origin_retry_repairs_archived_work_attachment",
+        "test_selected_view_is_inert_html_and_leaves_no_second_owner",
+        "test_update_requires_replay_identity_to_preserve_later_edit",
+        "test_versioned_stdin_request_uses_only_native_work_operations",
+        "test_versioned_request_uses_legacy_owner_without_native_write",
+    },
 }
 
 

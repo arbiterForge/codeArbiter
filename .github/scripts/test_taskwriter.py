@@ -332,6 +332,16 @@ class PromoteTest(unittest.TestCase):
         self.assertEqual(res.board, BOARD)   # nothing added — already promoted
         self.assertEqual(res.audit, [])
 
+    def test_native_empty_board_preview_dedups_prior_decision(self):
+        decision = tb.Candidate(kind="decision", desc="Choose a safe route",
+                                origin="checkpoint-2026-10-30#triage-1", boundaries=[])
+        first = tb.promote("", "# Open questions\n", [decision],
+                           mode="auto", today=_d(2026, 10, 30))
+        repeated = tb.promote("", first.questions, [decision],
+                              mode="interactive", today=_d(2026, 10, 30))
+        self.assertEqual(repeated.candidates, [])
+        self.assertFalse(repeated.applied)
+
     def test_blocking_decision_escalates_not_filed(self):
         # A blocking decision must NOT land in the non-gating Deferred section.
         cands = [tb.Candidate(kind="decision", desc="must decide the auth model",

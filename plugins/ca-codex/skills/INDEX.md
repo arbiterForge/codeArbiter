@@ -63,7 +63,7 @@ skill is invoked — never bulk-read this directory.
 | `$ca-doctor` | Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only. |
 | `$ca-override` | Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed. |
 | `$ca-status` | Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only. |
-| `$ca-task` | The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md. |
+| `$ca-task` | Add, start, or complete selected local work through its owning store. |
 
 ## Advanced
 
@@ -93,7 +93,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `$ca-audit` | Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only. |
-| `$ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
+| `$ca-standup` | Daily repo hygiene — review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes. |
 
 ## Compatibility aliases
 
@@ -102,7 +102,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose | Replacement |
 |---|---|---|
 | `$ca-create-context` | Build source-backed project context through bounded inspection, optional agents, and record-level knowledge writes. | `$ca-init --brownfield` |
-| `$ca-decompose` | Develop greenfield context from a resumable interview recorded as decomposition and knowledge records. | `$ca-init --greenfield` |
+| `$ca-decompose` | Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records. | `$ca-init --greenfield` |
 
 ### Ship
 

@@ -43,9 +43,23 @@ The orchestrator reads and presents:
    A draft spec or plan is not awaiting permission. Show a genuine unresolved product decision,
    explicit user checkpoint, or `BLOCKED` stop with its actual reason; status never clears it.
    An interrupted pipeline is resumable via `$ca-feature` — say so on its line.
-3. **Open tasks** — the in-flight count from `<project-root>/.codearbiter/open-tasks.md`
+3. **Open tasks** — resolve the installed `hooks/work.py` through the installed
+   helper card: [includes/helper-invocation.md](../../includes/helper-invocation.md).
+   When `open-tasks.md` exists,
+   run `work.py list --limit 1` to check for conflicting owners, then use the
+   board's in-flight count if it reports `owner: legacy`
    (top-level `- ` bullets excluding done `- [x]`; the same `_taskboardlib` count the
    SessionStart hook uses).
+   Otherwise page `work.py list --limit 64` with its returned `next_offset` and
+   `membership_sha256`, up to 256 entries total. Count `queued` and `active`;
+   exclude `complete` and `archived`. If the first page reports more than 256
+   entries, or a later page remains after the cap, report the count as unknown
+   with the total and suggest `work.py list` for selected pages. Stop on an
+   unavailable page, changed membership, or an unsafe store and report the
+   count as unknown. This cap avoids repeated full-directory scans for one
+   display count.
+   This selected read is for the explicit status command, not a new native-engine
+   call on every statusline or SessionStart frame.
 4. **Open questions** — the count of unresolved `[CONFIRM-NN]` placeholders in
    `<project-root>/.codearbiter/open-questions.md`.
 5. **Overrides since last checkpoint** — entries in `<project-root>/.codearbiter/overrides.log`

@@ -164,6 +164,27 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/writing-plans/SKILL.md':'5b47ef521e29bcb9b49db2662d13806a415cd8de',
   'core/surface/skills/refactor/SKILL.md':'3f96c8640832c34d7fb91d59fd5928b8fa68ecfc',
 });
+// The local work owner adds selected work operations to the artifact bridge
+// and a work document rendering. Existing review routes retain their geometry;
+// these are the current reviewed source bytes for those shared owners.
+export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_artifactlib.py':'adb2696ed5ef1288ac110b01e5566de38861b2a4',
+  'core/artifacts/internal/render/render.go':'1ea6066acf90a463920584608d73724eb291c7e7',
+  'core/artifacts/internal/operations/protocol.go':'11f21e2ab9e0cfcfcaa3415546b9fd1381f18e44',
+  'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
+  'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
+  'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
+  'core/surface/commands/task.md':'5bf344c907f9af13689e3ce71c7f036f4b26d61f',
+  'core/surface/includes/reference-map.md':'4a024e9c0afbf3a07472e28cd66d41298c73db35',
+  'core/surface/includes/routing-table.md':'6064c94e7507d0fa3f10fd32d0a96f23eca0c7c7',
+  'core/surface/skills/brainstorming/SKILL.md':'9d53f27511dc063341068498c45766ae042f5b4d',
+  'core/surface/skills/commit-gate/SKILL.md':'b009fa35e839f2ae929451a7114ac2a05e26c9db',
+  'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
+  'core/surface/skills/context-creation/SKILL.md':'dff4947f37e686afb5d43dbe1ce83580aa9ccc5c',
+  'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
+  'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
+  'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
+});
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those
 // routes (or record the new catalog counts); every remaining route, gate and
@@ -274,10 +295,35 @@ export function originalAtlas():Atlas {
   const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
   return atlas;
 }
+/** Current selected-work labels over the immutable original atlas snapshot. */
+function applySelectedWorkRoute(atlas:Atlas):void {
+  const task=atlas.commands.find(command=>command.name==='task');
+  if(!task)throw new Error('Task route missing from atlas');
+  task.owner='work.py → native engine or legacy taskwrite.py → _taskboardlib';
+  task.steps=['Select native work or legacy board owner',
+    'Validate add, start or done through the selected writer',
+    'Persist native work state or dated board transition'];
+  task.context=['Selected work ID or legacy open-tasks.md row and current state',
+    'Requested task or harvested work'];
+  task.output='Native work item or legacy task-board transition, separate from typed plan acceptance.';
+  task.gates='Native updates require stable work ID, replay identity and expected revision/hash; legacy start stamps date and done requires in-progress. Never delete a task to complete it. A debug disposition alone never authorizes a task write; a concrete follow-up needs separate task authority.';
+  const setNode=(viewId:string,nodeId:string,title:string|undefined,body:string):void=>{
+    const node=atlas.views.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
+    if(!node || !node.layout.body)throw new Error(`Selected-work atlas node missing: ${nodeId}`);
+    if(title!==undefined){node.title=title;node.layout.title.lengths=title.split('\n').map(line=>Array.from(line).length);}
+    node.body=body;node.layout.body.lengths=body.split('\n').map(line=>Array.from(line).length);
+  };
+  setNode('knowledge-operations','k-writer','work.py → selected owner',
+    'Native work.py; legacy taskwrite.py\nStart stamps date; done needs in-progress\nNever delete an entry to mark it done');
+  setNode('knowledge-operations','k-board','Selected work transition',
+    'Native HTML or open-tasks.md state\nNot a typed-plan acceptance receipt\nLater work still selects its own lane');
+  setNode('debug-handoff','d-task',undefined,
+    'A needed task needs separate authorization, action, provenance and completion evidence.\nThe selected task owner uses work.py; legacy boards delegate to taskwrite.py.\nA design question may lead to an attributed ADR later, never by automatic conversion.');
+}
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);
@@ -301,7 +347,9 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   // Product owners must still match. Site-design pointers are historical
   // integration evidence, not product claims; this PR intentionally changes them.
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
-  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,blob);
+  // Retain the historical assistive packet while checking later work-system
+  // owner changes against their separately reviewed current blobs.
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
   for(const command of atlas.commands) {
     if(RETIRED_COMMANDS[command.name]) {
       const owner=commandMetadata(command.name,historical);
@@ -324,7 +372,8 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const expected=execFileSync('git',['--no-replace-objects','ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
-  atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
+  applySelectedWorkRoute(atlas);
+  atlas.scope+=` Original source links and spatial positions retained; task labels show the selected work owner. Source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
   atlas.sourceUpdate=structuredClone(assistiveUpdate);
   atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Current assistive source bindings identify inspected implementation bytes, with ${assistiveUpdate.revision} as the committed source base. Live host qualification and release are separate evidence. `+atlas.scope;

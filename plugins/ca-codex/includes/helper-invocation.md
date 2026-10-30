@@ -1,9 +1,11 @@
 # Installed private helper location
 
-Use this card only for the debug packet validator and an authorized task-board
-follow-up. The exact installed helper leaves are `hooks/debug-handoff.py` (the
-private `validate` operation) and `hooks/taskwrite.py` (the existing board
-writer). The caller chooses one of those literal leaves before resolution;
+Use this card only for the debug packet validator and selected local work
+commands. The exact installed helper leaves are `hooks/debug-handoff.py` (the
+private `validate` operation), `hooks/taskwrite.py` (the existing board
+writer), `hooks/work.py` (the selected local work interface), and
+`hooks/boardsync.py` (the standup drift reader). The caller
+chooses one of those literal leaves before resolution;
 packet text, a project file, and a user argument never choose executable code.
 Select and validate one Python 3 interpreter before invoking the helper. Try
 `python3` first, then `python` only if the first candidate is absent, a launcher
@@ -11,7 +13,8 @@ stub, or incompatible. The probe executes the candidate to obtain its actual
 `sys.executable`, then validates that absolute executable directly as Python
 3.8 or newer. The installed debug validator's `_debughandofflib.py` uses an
 assignment expression, which Python 3.7 cannot parse; the shared selection
-must satisfy that helper even when the current call targets `taskwrite.py`.
+must satisfy that helper even when the current call targets `taskwrite.py` or
+`work.py`.
 Invoke the helper through that executable, not a batch or shell launcher that
 could alter quoted arguments. A name on `PATH` or a successful `--version`
 alone does not establish compatibility. This source-derived minimum is not a
@@ -68,10 +71,15 @@ if [ -z "$ca_python" ]; then printf '%s\n' 'compatible Python 3 interpreter unav
 ```
 
 Start from the absolute path of the **loaded installed entry resource** that
-the host actually supplied: `commands/task.md` or `commands/debug.md` on
-Claude, `skills/ca-task/SKILL.md` or `skills/ca-debug/SKILL.md` on Codex and
-Pi. The Codex and Pi skill directories are two levels below the package root;
-Claude's command directory is one level below it. Do not use the current directory, a project checkout,
+the host actually supplied: `commands/task.md`, `commands/status.md`,
+`commands/debug.md`, `commands/standup.md`, `commands/commit.md`, or
+`skills/brainstorming/SKILL.md` on Claude;
+`skills/ca-task/SKILL.md`, `skills/ca-status/SKILL.md`,
+`skills/ca-debug/SKILL.md`, `skills/ca-standup/SKILL.md`, or
+`skills/ca-commit/SKILL.md`, or `routines/brainstorming/SKILL.md` on Codex and Pi.
+The Codex and Pi skill/routine directories are two levels below the package root;
+Claude's command directory is one level below it and its brainstorming skill
+directory is two levels below it. Do not use the current directory, a project checkout,
 an unset `PLUGIN_ROOT`/`CLAUDE_PLUGIN_ROOT` token from a hook runner, `/hooks`,
 a source clone, or a recursive cache search. If the loaded resource, package
 identity, or exact helper is absent, report that failure and stop. Keep the
@@ -79,7 +87,7 @@ current working directory at the intended project when invoking `taskwrite.py`.
 
 Codex ordinary tool calls do not inherit the hook runner's root token. Bind
 `$caLoadedResource` or `ca_loaded_resource` to the absolute path of the loaded
-`ca-task`/`ca-debug` `SKILL.md`; bind the helper-relative variable to the one
+`ca-task`/`ca-status`/`ca-debug`/`ca-standup`/`ca-commit` or brainstorming `SKILL.md`; bind the helper-relative variable to the one
 literal leaf named above. The following blocks resolve the installed package
 without changing the caller's working directory.
 
@@ -108,6 +116,25 @@ if [ ! -f "$ca_helper" ]; then printf '%s\n' 'installed helper missing' >&2; exi
 
 Never repair a missing installed helper by selecting a similarly named file
 from a checkout or cache. A missing or partial package blocks the operation.
+
+For selected work commands, bind `$caHelperRelative` (PowerShell) or
+`ca_helper_relative` (POSIX) to one literal leaf before the resolution block.
+Run from the intended project worktree. Invoke with argument tokens, not a
+constructed shell command:
+
+```powershell
+& $caPython -B $caHelper list --limit 1
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+```
+
+```sh
+"$ca_python" -B "$ca_helper" list --limit 1
+```
+
+Replace `list --limit 1` with the selected helper's literal arguments. For
+`boardsync.py reconcile`, pass the bounded recent Git log on stdin while
+preserving the helper's exit, stdout, and stderr. Resolve each different leaf
+again from the same installed root; do not change the selected interpreter.
 
 For private debug validation, select the literal leaf
 `hooks/debug-handoff.py` with the resolution block above. Supply one finite

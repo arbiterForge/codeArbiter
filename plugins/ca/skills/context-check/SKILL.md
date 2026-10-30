@@ -59,6 +59,15 @@ reports `html`, use this section instead of the Markdown provenance flow below.
    `knowledge.py rebaseline <doc>`. Leave a deferred document's baseline alone so
    its records are listed again next time.
 
+For an explicitly selected initialized brownfield acquisition, inspect the
+relevant source categories using the same evidence rules, then update only
+affected observed knowledge. The existing `decompose` owner records the
+project's intended target, delta, future phases and candidate work in its
+separate document. Preserve prior answers, ADR references, work IDs and the
+initialized marker; record denied or uninspected scope as unknown. A candidate
+is not promoted by a context refresh. This extension does not make an
+ordinary drift report a request to perform full acquisition.
+
 Every write is a journaled, retry-safe engine operation; there is no preview to
 approve and no provenance file to hand-write. `<!--INITIALIZED-->` and all
 history stay. Imported notes stay until a record replaces them.

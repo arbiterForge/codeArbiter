@@ -154,8 +154,17 @@ def _archive(text, args, root):
     # dead code that reads as load-bearing is how the NEXT change breaks it.
     parsed = tb.parse_board(text)
     target = args.target
-    matches = [t for t in parsed
-               if t.state == "done" and (t.id == target or t.title == target)]
+    origin = getattr(args, "source_origin", None)
+    try:
+        matches = [t for t in parsed
+                   if t.state == "done" and (
+                       tb.origin_for_task(text.splitlines(), t) == origin
+                       if origin is not None
+                       else (t.id == target or t.title == target))]
+    except ValueError as exc:
+        return None, str(exc), False
+    if origin is not None and len(matches) > 1:
+        return None, f"duplicate legacy work origin {origin!r}", False
     if not matches:
         return None, (f"no done task matching {target!r} — archive only moves "
                       f"items already marked done"), False
@@ -210,7 +219,10 @@ def _apply(args, text):
                       if args.boundaries is not None else None)
         err = tb.add_error(desc=args.desc, origin=args.origin,
                            boundaries=boundaries, section=args.section,
-                           rationale=args.rationale)
+                           rationale=args.rationale, work_type=args.work_type,
+                           spec_id=args.spec_id, plan_id=args.plan_id,
+                           work_id=args.work_id,
+                           work_operation_id=args.work_operation_id)
         if err:
             return None, err
         group = typ = None
@@ -220,7 +232,10 @@ def _apply(args, text):
                 return None, err
         new = tb.add_entry(text, desc=args.desc, origin=args.origin, group=group,
                            type=typ, boundaries=boundaries, section=args.section,
-                           rationale=args.rationale)
+                           rationale=args.rationale, work_type=args.work_type,
+                           spec_id=args.spec_id, plan_id=args.plan_id,
+                           work_id=args.work_id,
+                           work_operation_id=args.work_operation_id)
         return new, f"added queued task: {args.desc}"
 
     # start / done
@@ -233,16 +248,18 @@ def _apply(args, text):
         _, _, err = _parse_gid(assign, option="--as")
         if err:
             return None, err
-    transition_error = tb.transition_error(text, args.target, state)
+    origin = getattr(args, "source_origin", None)
+    transition_error = tb.transition_error(text, args.target, state, origin=origin)
     if transition_error:
         return None, transition_error
-    new = tb.set_state(text, args.target, state, day, assign=assign)
+    new = tb.set_state(text, args.target, state, day, assign=assign, origin=origin)
     if new == text:
         return None, f"no change: '{args.target}' not found or already {state}"
     return new, f"marked {state}: {args.target}"
 
 
-def main(argv=None):
+def main(argv=None, *, root=None, expected_work_id=None,
+         expected_board_sha256=None):
     utf8_stdio()
     p = argparse.ArgumentParser(prog="taskwrite", add_help=True)
     sub = p.add_subparsers(dest="verb", required=True)
@@ -255,25 +272,33 @@ def main(argv=None):
     pa.add_argument("--desc", dest="rationale", default=None,
                     help="rationale, emitted as an indented `- Desc:` sub-bullet")
     pa.add_argument("--section", default="## In-flight")
+    pa.add_argument("--work-type", choices=("feature", "fix", "chore", "spike", "unknown"))
+    pa.add_argument("--work-id")
+    pa.add_argument("--work-operation-id")
+    pa.add_argument("--spec-id")
+    pa.add_argument("--plan-id")
 
     ps = sub.add_parser("start")
     ps.add_argument("target")
     ps.add_argument("--as", dest="assign", default=None, help="GROUP.TYPE to mint on pick-up")
     ps.add_argument("--date", default=None)
+    ps.add_argument("--from", dest="source_origin")
 
     pd = sub.add_parser("done")
     pd.add_argument("target")
     pd.add_argument("--date", default=None)
+    pd.add_argument("--from", dest="source_origin")
 
     par = sub.add_parser("archive")
     par.add_argument("target")
     par.add_argument("--allow-undated", dest="allow_undated", action="store_true",
                      help="archive a done item carrying no (done DATE) stamp; "
                           "requires deliberate per-item confirmation")
+    par.add_argument("--from", dest="source_origin")
 
     args = p.parse_args(argv)
 
-    root = project_root()
+    root = project_root() if root is None else root
     board_path = os.path.join(root, ".codearbiter", "open-tasks.md")
 
     # An uninitialized repo (no board at all) is a static precondition, not
@@ -301,6 +326,20 @@ def main(argv=None):
         if text is None:
             print(f"no board at {board_path} — is this an initialized repo?", file=sys.stderr)
             return 1
+        if expected_work_id is not None:
+            # Re-read the exact selected row inside the board writer's lock.
+            # A stale caller cannot overwrite a later human or agent edit.
+            import _worklib
+            try:
+                selected = _worklib.dispatch(root, "work-get",
+                                             {"work_id": expected_work_id})
+            except (OSError, ValueError) as exc:
+                print(f"cannot verify selected legacy work: {exc}", file=sys.stderr)
+                return 1
+            if selected["board_sha256"] != expected_board_sha256:
+                print("legacy work revision conflict: selected board row changed; no changes were written",
+                      file=sys.stderr)
+                return 1
 
         if args.verb == "archive":
             # done-tasks.md is written INSIDE `_archive`, before this
@@ -330,7 +369,17 @@ def main(argv=None):
                 print(f"cannot read {archive_path} to check for an earlier promotion "
                       f"({exc}); no changes were written", file=sys.stderr)
                 return 1
-            existing = tb.promoted_entry(text, args.origin, archive)
+            try:
+                existing = tb.promoted_entry(text, args.origin, archive)
+            except ValueError as exc:
+                print(f"{exc}; no changes were written", file=sys.stderr)
+                return 1
+            if args.work_operation_id:
+                needle = f"  - Work operation ID: {args.work_operation_id}"
+                if any(line == needle for line in (text + "\n" + archive).splitlines()) and existing is None:
+                    print("work operation ID was already used for a different origin; no changes were written",
+                          file=sys.stderr)
+                    return 1
             if existing is not None:
                 print(f"already promoted: {existing}")
                 return 0

@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, RETIRED_COMMANDS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, WORK_SYSTEM_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -263,7 +263,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -312,7 +313,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -368,7 +370,7 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+      expect(git('hash-object', '--', path).trim()).toBe(WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
         ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
@@ -421,7 +423,22 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.commit).toBe(REVIEWED_AT);
     expect(atlas.scope).toContain(REVALIDATED_AT);
     expect(atlas.sources).toEqual(original.sources);
-    expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
+    const current = structuredClone(atlas.views);
+    // The selected-work overlay updates three labels, while the reviewed
+    // original and every position, edge, route, and source stay intact.
+    for (const [viewId, nodeId] of [
+      ['knowledge-operations', 'k-writer'],
+      ['knowledge-operations', 'k-board'],
+      ['debug-handoff', 'd-task'],
+    ]) {
+      const node = current.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
+      const baseline = original.views.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
+      expect(node).toBeDefined();
+      expect(baseline).toBeDefined();
+      node!.title = baseline!.title;
+      node!.body = baseline!.body;
+    }
+    expect(current.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
   });
 
   it('binds only the three reviewed runtime compatibility owners and preserves cited document ranges', () => {
@@ -515,7 +532,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -545,7 +563,8 @@ describe('atlas source compatibility revalidation', () => {
       ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS,
       ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS, ...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': MARKER_PREFLIGHT_BLOB,
-      'core/artifacts/internal/render/render.go': SCHEMA_CACHE_RENDER_BLOB});
+      'core/artifacts/internal/render/render.go': SCHEMA_CACHE_RENDER_BLOB,
+      ...WORK_SYSTEM_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

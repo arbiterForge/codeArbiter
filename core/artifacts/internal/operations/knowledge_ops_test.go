@@ -372,6 +372,71 @@ func TestGreenfieldInitializesWithUnknownsAndKeepsActivation(t *testing.T) {
 	}
 }
 
+func TestBrownfieldDecompositionPreservesInitializedState(t *testing.T) {
+	f := newGreenfield(t)
+	for _, slug := range []string{"project", "tech-stack", "coding-standards", "security-controls", "code-map"} {
+		f.createKnowledge("knowledge", "CTX-"+strings.ToUpper(slug), slug)
+	}
+	f.createKnowledge("decomposition", "DECOMP-PROJECT", "project")
+	f.addKnowledge("DECOMP-PROJECT", knowledgeRecord("question", "Delivery target", "Which deployment target is intended?", "unknown", nil))
+	if _, err := f.initializeKnowledge(); err != nil {
+		t.Fatal(err)
+	}
+	contextPath := filepath.Join(f.root, ".codearbiter", "CONTEXT.md")
+	boardPath := filepath.Join(f.root, ".codearbiter", "open-tasks.md")
+	contextBefore, _ := os.ReadFile(contextPath)
+	boardBefore, _ := os.ReadFile(boardPath)
+
+	// An initialized project can gain observed implementation facts and a
+	// distinct proposed target without replaying its original interview.
+	d := f.knowledgeDoc("DECOMP-PROJECT")
+	f.call("apply", object{"artifact_id": d.ID(), "operation_id": f.next(),
+		"expected": object{"revision": d.Revision(), "model_sha256": d.Hash()},
+		"changes": []any{object{"op": "record.add", "collection": "sources", "record": object{
+			"title": "Service entrypoint", "type": "repository", "url": nil,
+			"locator": "src/server.go", "note": "Observed source path",
+		}}},
+	})
+	observed := knowledgeRecord("capability", "Current service", "The source exposes a local service.", "source-observed", []string{"src/server.go"})
+	observed["source_refs"] = model.List("SRC-001")
+	f.addKnowledge("DECOMP-PROJECT", observed,
+		knowledgeRecord("phase", "Target phase", "Add a deployment path after its target is chosen.", "proposed", nil))
+
+	contextAfter, _ := os.ReadFile(contextPath)
+	boardAfter, _ := os.ReadFile(boardPath)
+	if string(contextAfter) != string(contextBefore) || string(boardAfter) != string(boardBefore) {
+		t.Fatal("brownfield synthesis reset initialization or changed the work owner")
+	}
+	decomp := f.knowledgeDoc("DECOMP-PROJECT")
+	if model.S(decomp.Symbols.ByID["Q-001"].Value["status"]) != "open" ||
+		model.S(decomp.Symbols.ByID["CAP-001"].Value["basis"]) != "source-observed" ||
+		model.S(decomp.Symbols.ByID["PHASE-001"].Value["basis"]) != "proposed" {
+		t.Fatal("brownfield synthesis lost the existing question or conflated observed and proposed records")
+	}
+	f.assertNoAuthorityFiles()
+}
+
+func TestBrownfieldCandidatesAreNotPublished(t *testing.T) {
+	f := newGreenfield(t)
+	for _, slug := range []string{"project", "tech-stack", "coding-standards", "security-controls", "code-map"} {
+		f.createKnowledge("knowledge", "CTX-"+strings.ToUpper(slug), slug)
+	}
+	f.createKnowledge("decomposition", "DECOMP-PROJECT", "project")
+	if _, err := f.initializeKnowledge(); err != nil {
+		t.Fatal(err)
+	}
+	boardPath := filepath.Join(f.root, ".codearbiter", "open-tasks.md")
+	before, _ := os.ReadFile(boardPath)
+	f.addKnowledge("DECOMP-PROJECT", knowledgeRecord("work_item", "Candidate gap", "Investigate an observed gap before selecting work.", "proposed", nil))
+	after, _ := os.ReadFile(boardPath)
+	if string(after) != string(before) {
+		t.Fatal("saving a candidate published it to the work owner")
+	}
+	if _, ok := f.knowledgeDoc("DECOMP-PROJECT").Symbols.ByID["WORK-001"].Value["promotion"]; ok {
+		t.Fatal("candidate was marked promoted without a selected promotion")
+	}
+}
+
 func TestKnowledgeContextIsolatesDamagedDocuments(t *testing.T) {
 	f := newGreenfield(t)
 	seedTaskKnowledge(f)

@@ -18,6 +18,13 @@ Load `{{PLUGIN_ROOT}}/includes/artifacts.md` for artifact I/O and preserve the s
 
 Read the selected spec/plan, relevant `.codearbiter/CONTEXT.md`, and the needed build/check commands from `.codearbiter/tech-stack.md`, when present. Read `security-controls.md` for work affecting its rules. In an HTML-knowledge repository a task's `task-context` packet already carries the knowledge records relevant to its paths (`{{PLUGIN_ROOT}}/includes/knowledge.md`). Missing optional orientation is a diagnostic, not a blanket STOP; never guess an essential requirement or execute an unknown command.
 
+If the task belongs to a selected project work ID, use `work.py context`
+through its installed helper to retain that identity and its actual spec/plan
+bindings. For an attached plan task, use the bounded `task-context` packet;
+otherwise fetch relevant knowledge once for the source paths actually in scope.
+Expand omitted exact records as needed. Do not infer a passed check, completed
+plan or second work item from an attached summary.
+
 For HTML, use `identity`, `index`, `outline`, exact or batched symbol-scoped `read`, and `eligible`. The engine `eligible` response is **advisory scheduling**, not permission or evidence of a passing test. Read actual task dependencies and `waiting_prerequisites`; do not treat a checkpoint number or an unscoped legacy prerequisite as a universal dependency.
 
 **Read only what matters:** use `task-context` with the current plan

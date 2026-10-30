@@ -389,7 +389,11 @@ func Render(d *model.Document) ([]byte, error) {
 	w.raw(`<p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">`)
 	w.text(model.S(p["brand_name"]) + " / " + d.Kind())
 	w.raw(`</p><span class="status">`)
-	w.text(strings.ToUpper(model.S(model.M(d.Data["governance"])["state"])))
+	status := model.S(model.M(d.Data["governance"])["state"])
+	if d.Kind() == "work" {
+		status = model.S(model.M(d.Data["execution"])["state"])
+	}
+	w.text(strings.ToUpper(status))
 	if !historical {
 		w.raw(` · progress and verification tracked separately</span><h1>`)
 	} else {
@@ -425,14 +429,34 @@ func Render(d *model.Document) ([]byte, error) {
 			group(k)
 		}
 	}
-	w.raw(`<section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. `)
-	if !historical {
-		w.raw(`Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p>`)
-	} else {
-		w.raw(`Execution must verify current receipt sources and binding.</p>`)
+	if d.Kind() == "work" {
+		// Work joins its own progress to exact native companions without
+		// copying either source or treating a local completion as verification.
+		ex := model.M(d.Data["execution"])
+		w.raw(`<section class="group" id="group-progress"><a class="back" href="#main-content">Top</a><h2>Local progress</h2><div class="fields">`)
+		w.fields(ex, nil)
+		w.raw(`</div><p class="notice">Progress is recorded locally. Check status is separate from completion.</p></section>`)
+		w.raw(`<section class="group" id="group-companions"><a class="back" href="#main-content">Top</a><h2>Attached documents</h2>`)
+		for _, pair := range []struct{ key, label string }{{"spec_path", "Specification"}, {"plan_path", "Plan"}} {
+			if p := model.S(d.Norm()[pair.key]); p != "" {
+				w.raw(`<p><a href="` + esc("../"+strings.TrimPrefix(p, ".codearbiter/")) + `">`)
+				w.text(pair.label)
+				w.raw(`</a></p>`)
+			}
+		}
+		w.raw(`</section>`)
 	}
-	w.value(d.Data["governance"], "governance")
-	w.raw(`</section><footer class="footer"><p>`)
+	if d.Kind() != "work" {
+		w.raw(`<section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. `)
+		if !historical {
+			w.raw(`Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p>`)
+		} else {
+			w.raw(`Execution must verify current receipt sources and binding.</p>`)
+		}
+		w.value(d.Data["governance"], "governance")
+		w.raw(`</section>`)
+	}
+	w.raw(`<footer class="footer"><p>`)
 	w.text(Version + " · self-contained, static HTML · no runtime network resources")
 	w.raw(`</p><p class="digest">Normative SHA-256: `)
 	w.text(d.NormHash())

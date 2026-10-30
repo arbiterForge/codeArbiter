@@ -909,6 +909,19 @@ class TestArbiterStateCache(unittest.TestCase):
         self.assertEqual(st["stage"], "build")
         self.assertEqual(st["tasks"], 1)
 
+    def test_empty_native_directory_retains_legacy_count(self):
+        os.mkdir(os.path.join(self.cad, "work"))
+        sl._ARBITER_CACHE.clear()
+        self.assertEqual(sl.arbiter_state(self.tmp)["tasks"], 1)
+
+    def test_nonempty_native_directory_hides_ambiguous_count(self):
+        work = os.path.join(self.cad, "work")
+        os.mkdir(work)
+        with open(os.path.join(work, "project.json"), "w", encoding="utf-8") as f:
+            f.write("{}")
+        sl._ARBITER_CACHE.clear()
+        self.assertEqual(sl.arbiter_state(self.tmp)["tasks"], "?")
+
     def test_cached_when_inputs_unchanged(self):
         first = sl.arbiter_state(self.tmp)
         second = sl.arbiter_state(self.tmp)

@@ -134,6 +134,7 @@ _STATE_MARK_RE = re.compile(r'^- \[([ xX~])\]\s*')
 _QUEUED_TOP_RE = re.compile(r'^- \[ \] .+')
 _INDENTED_BULLET_RE = re.compile(r'^\s+- ')
 _LINE_BREAK_RE = re.compile(r'[\n\r\v\f\x1c-\x1e\x85\u2028\u2029]')
+_ORIGIN_REF_RE = re.compile(r'\(from ([^()\r\n]+)\)')
 # extract_task_ids search pattern — non-anchored; two-part negative lookahead so
 # trailing sentence punctuation (e.g. "mvp1.ui.0005.") is not blocked, while an
 # extended alphanumeric suffix ("poc.auth.0001x") and a continuing dot-segment
@@ -629,7 +630,8 @@ def _insert_under_section(text, block, section):
 
 
 def add_error(*, desc, origin=None, boundaries=None, section="## In-flight",
-              rationale=None):
+              rationale=None, work_type=None, spec_id=None, plan_id=None,
+              work_id=None, work_operation_id=None):
     """Return a field-specific error for an add input, else ``None``.
 
     These constraints keep every accepted field on the physical line where the
@@ -646,8 +648,23 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight",
         return ("bad --section: expected one canonical level-two heading, "
                 "e.g. '## In-flight'")
     if origin is not None and (not isinstance(origin, str)
-                               or _LINE_BREAK_RE.search(origin)):
-        return "bad --from: expected single-line text"
+                               or not origin.strip() or len(origin) > 256
+                               or _LINE_BREAK_RE.search(origin)
+                               or "(" in origin or ")" in origin):
+        return "bad --from: expected bounded single-line text without parentheses"
+    if work_type is not None and work_type not in ("feature", "fix", "chore", "spike", "unknown"):
+        return "bad --work-type: expected feature, fix, chore, spike or unknown"
+    if work_id is not None and (not isinstance(work_id, str)
+                               or re.fullmatch(r"WORK-[A-F0-9]{32}", work_id) is None):
+        return "bad --work-id: expected one opaque work ID"
+    if work_operation_id is not None and (
+            not isinstance(work_operation_id, str) or not work_operation_id
+            or len(work_operation_id) > 256 or _LINE_BREAK_RE.search(work_operation_id)):
+        return "bad --work-operation-id: expected one bounded single-line ID"
+    for name, value in (("spec-id", spec_id), ("plan-id", plan_id)):
+        if value is not None and (not isinstance(value, str)
+                                  or re.fullmatch(r"[A-Z][A-Z0-9-]{1,127}", value) is None):
+            return f"bad --{name}: expected one artifact ID"
     if rationale is not None:
         # B-17/T-53. `debug` Exit (c) carries a "no action" rationale as an
         # indented `- Desc:` sub-bullet, which it appended DIRECTLY because
@@ -673,13 +690,17 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight",
 
 
 def add_entry(text, *, desc, origin=None, group=None, type=None,
-              boundaries=None, section="## In-flight", rationale=None):
+              boundaries=None, section="## In-flight", rationale=None,
+              work_type=None, spec_id=None, plan_id=None, work_id=None,
+              work_operation_id=None):
     """Append a queued entry. ID-less by default; mints `<group>.<type>.<NNNN>`
     when both group and type are given. Optional `(from <origin>)` back-ref and a
     `Boundaries` sub-bullet. Invalid fields fail soft by returning ``text``
     unchanged, so no input can inject an orphan/malformed physical line."""
     if add_error(desc=desc, origin=origin, boundaries=boundaries,
-                 section=section, rationale=rationale):
+                 section=section, rationale=rationale, work_type=work_type,
+                 spec_id=spec_id, plan_id=plan_id, work_id=work_id,
+                 work_operation_id=work_operation_id):
         return text
     desc = desc.strip()
     tid = f"{group}.{type}.{next_seq(text, group, type):04d}" if (group and type) else None
@@ -687,11 +708,22 @@ def add_entry(text, *, desc, origin=None, group=None, type=None,
     line = f"- [ ] {body}"
     if origin:
         line += f"  (from {origin})"
+        line += f"\n  - Work origin: {origin}"
     if rationale:
         # Emitted BEFORE Boundaries so the rationale reads immediately under
         # its task — the shape `debug` Exit (c) already produced by hand,
         # and the shape the board's existing readers already tolerate.
         line += f"\n  - Desc: {rationale.strip()}"
+    if work_type:
+        line += f"\n  - Work type: {work_type}"
+    if work_id:
+        line += f"\n  - Work ID: {work_id}"
+    if work_operation_id:
+        line += f"\n  - Work operation ID: {work_operation_id}"
+    if spec_id:
+        line += f"\n  - Spec ID: {spec_id}"
+    if plan_id:
+        line += f"\n  - Plan ID: {plan_id}"
     if boundaries:
         line += f"\n  - Boundaries: {', '.join(boundaries)}"
     return _insert_under_section(text, line, section)
@@ -892,12 +924,46 @@ def archive_transform(open_text, done_text, task):
     return new_open, new_done
 
 
-def _find_task_line(lines, target):
+def origin_for_task(lines, task):
+    """Return one exact board origin, refusing ambiguous historical rows.
+
+    New writer rows carry an explicit subfield so normal title text containing
+    "(from ...)" cannot be mistaken for the appended correlation marker.
+    """
+    refs = _ORIGIN_REF_RE.findall(task.raw)
+    block = task_block(lines, task)
+    metadata = ([] if block is None else [
+        line[len("  - Work origin: "):]
+        for line in lines[block[0] + 1:block[1]]
+        if line.startswith("  - Work origin: ")
+    ])
+    if len(metadata) > 1 or (metadata and (not refs or refs[-1] != metadata[0])):
+        raise ValueError("ambiguous legacy work origin metadata")
+    if metadata:
+        return metadata[0]
+    if len(refs) > 1:
+        raise ValueError("ambiguous legacy work origin markers")
+    return refs[0] if refs else None
+
+
+def _find_task_line(lines, target, *, origin=None):
     """Index of the task line matching `target` (a dotted id, or the title of an
     ID-less item), or -1. PREFERS an open match: a done line never shadows a live
     task of the same title (it is only used as a fallback for an id-targeted
     re-`done`)."""
     fallback = -1
+    if origin is not None:
+        matches = []
+        for task in parse_board("\n".join(lines)):
+            try:
+                source = origin_for_task(lines, task)
+            except ValueError:
+                if origin in _ORIGIN_REF_RE.findall(task.raw):
+                    return -2
+                continue
+            if source == origin:
+                matches.append(task.lineno - 1)
+        return matches[0] if len(matches) == 1 else (-2 if matches else -1)
     for i, ln in enumerate(lines):
         if not _TOP_RE.match(ln):
             continue
@@ -913,7 +979,7 @@ def _find_task_line(lines, target):
     return fallback
 
 
-def transition_error(text, target, state):
+def transition_error(text, target, state, *, origin=None):
     """Return an actionable error when a found task cannot enter ``state``.
 
     The sanctioned writer's lifecycle is queued -> in-progress -> done. Missing
@@ -924,11 +990,13 @@ def transition_error(text, target, state):
     if state not in ("in_progress", "done"):
         return None
     lines = text.splitlines()
-    idx = _find_task_line(lines, target)
+    idx = _find_task_line(lines, target, origin=origin)
+    if idx == -2:
+        return f"duplicate or ambiguous legacy work origin {origin!r}"
     if idx < 0:
         return None
     task = parse_board(lines[idx])[0]
-    if state == "done" and task.state == "queued":
+    if state == "done" and task.state == "queued" and origin is None:
         return f"cannot mark '{target}' done: task is queued; start it first"
     if state == "in_progress" and task.state == "done":
         return f"cannot start '{target}': task is already done"
@@ -937,7 +1005,7 @@ def transition_error(text, target, state):
     return None
 
 
-def set_state(text, target, state, today, *, assign=None):
+def set_state(text, target, state, today, *, assign=None, origin=None):
     """Flip a task's marker and stamp the matching date. `target` is a dotted id
     or the title of an ID-less item (use the id when the desc contains parentheses
     — title matching is best-effort). `in_progress` ALWAYS stamps `(started …)`;
@@ -952,10 +1020,10 @@ def set_state(text, target, state, today, *, assign=None):
     Valid target states: "in_progress", "done"."""
     if (state not in ("in_progress", "done")
             or (assign is not None and not validate_id(f"{assign}.0000"))
-            or transition_error(text, target, state)):
+            or transition_error(text, target, state, origin=origin)):
         return text
     lines = text.splitlines()
-    idx = _find_task_line(lines, target)
+    idx = _find_task_line(lines, target, origin=origin)
     if idx < 0:
         return text
     raw = lines[idx]
@@ -983,10 +1051,12 @@ def promoted_entry(text, origin, archive_text=""):
     Every state counts: queued, in progress, done, and archived. A promotion
     retried after its task finished, or after a crash delayed the back-reference,
     finds the existing task instead of adding finished work again."""
-    needle = f"(from {origin})"
-    for ln in (text or "").splitlines() + (archive_text or "").splitlines():
-        if _TOP_RE.match(ln) and needle in ln:
-            return ln
+    for source in (text or "", archive_text or ""):
+        lines = source.splitlines()
+        for task in parse_board(source):
+            selected = origin_for_task(lines, task)
+            if selected == origin:
+                return task.raw
     return None
 
 

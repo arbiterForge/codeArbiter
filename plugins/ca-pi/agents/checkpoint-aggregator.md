@@ -38,7 +38,7 @@ Report the exact path written in Step 3, including any numeric suffix: "Checkpoi
 
 ### Step 5 — Surface DEFERRABLE findings for harvest
 
-After writing, list the `### DEFERRABLE` findings as follow-up harvest candidates and signal the orchestrator to run the follow-up harvest (`<plugin-root>/includes/harvest.md`) so they reach `open-tasks.md` instead of languishing in the checkpoint doc. This agent does NOT write the board itself — the harvest is confirm-gated and run by the orchestrator (or auto under `/sprint`).
+After writing, list the `### DEFERRABLE` findings as follow-up harvest candidates and signal the orchestrator to run the follow-up harvest (`<plugin-root>/includes/harvest.md`) so they reach the selected work owner instead of languishing in the checkpoint doc. This agent does NOT write the board itself — the harvest is confirm-gated and run by the orchestrator (or auto under `/sprint`).
 
 ## Checkpoint Document Structure
 

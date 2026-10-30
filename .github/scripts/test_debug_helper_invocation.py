@@ -99,12 +99,32 @@ def capture_helper_attempt(scratch, argv, stdin, exit_code=0):
 
 
 class TestDebugHelperInvocation(unittest.TestCase):
+    def test_brainstorming_has_an_installed_work_helper_anchor(self):
+        cases = (
+            ("plugins/ca", "skills/brainstorming/SKILL.md"),
+            ("plugins/ca-codex", "routines/brainstorming/SKILL.md"),
+            ("plugins/ca-pi", "routines/brainstorming/SKILL.md"),
+        )
+        for package, resource in cases:
+            with self.subTest(package=package):
+                root = SOURCE_ROOT / package
+                self.assertTrue((root / resource).is_file())
+                card = (root / "includes/helper-invocation.md").read_text(encoding="utf-8")
+                self.assertIn(f"`{resource}`", card)
+                self.assertIn("hooks/work.py", card)
+
     def test_emitted_host_links_reach_installed_card_without_root_tokens(self):
         cases = (
             ("plugins/ca/commands/task.md", "plugins/ca/includes/helper-invocation.md"),
             ("plugins/ca-codex/skills/ca-task/SKILL.md", "plugins/ca-codex/includes/helper-invocation.md"),
             ("plugins/ca-pi/skills/ca-task/SKILL.md", "plugins/ca-pi/includes/helper-invocation.md"),
             ("plugins/ca-pi/includes/pi-host-notes.md", "plugins/ca-pi/includes/helper-invocation.md"),
+            ("plugins/ca/commands/standup.md", "plugins/ca/includes/helper-invocation.md"),
+            ("plugins/ca-codex/skills/ca-standup/SKILL.md", "plugins/ca-codex/includes/helper-invocation.md"),
+            ("plugins/ca-pi/skills/ca-standup/SKILL.md", "plugins/ca-pi/includes/helper-invocation.md"),
+            ("plugins/ca/commands/commit.md", "plugins/ca/includes/helper-invocation.md"),
+            ("plugins/ca-codex/skills/ca-commit/SKILL.md", "plugins/ca-codex/includes/helper-invocation.md"),
+            ("plugins/ca-pi/skills/ca-commit/SKILL.md", "plugins/ca-pi/includes/helper-invocation.md"),
         )
         for entry_relative, card_relative in cases:
             with self.subTest(entry=entry_relative):
@@ -120,6 +140,57 @@ class TestDebugHelperInvocation(unittest.TestCase):
                     (SOURCE_ROOT / card_relative).resolve(strict=True),
                     "emitted relative link must reach the card in the same installed package",
                 )
+
+    def test_standup_and_commit_resolve_selected_installed_helpers(self):
+        cases = (
+            ("Claude", "plugins/ca", "commands/standup.md", "hooks/work.py"),
+            ("Claude", "plugins/ca", "commands/standup.md", "hooks/boardsync.py"),
+            ("Claude", "plugins/ca", "commands/commit.md", "hooks/work.py"),
+            ("Codex", "plugins/ca-codex", "skills/ca-standup/SKILL.md", "hooks/work.py"),
+            ("Codex", "plugins/ca-codex", "skills/ca-standup/SKILL.md", "hooks/boardsync.py"),
+            ("Codex", "plugins/ca-codex", "skills/ca-commit/SKILL.md", "hooks/work.py"),
+            ("Pi", "plugins/ca-pi", "skills/ca-standup/SKILL.md", "hooks/work.py"),
+            ("Pi", "plugins/ca-pi", "skills/ca-standup/SKILL.md", "hooks/boardsync.py"),
+            ("Pi", "plugins/ca-pi", "skills/ca-commit/SKILL.md", "hooks/work.py"),
+        )
+        shell_kind = "PowerShell" if os.name == "nt" else "POSIX"
+        for host, package_relative, resource_relative, helper in cases:
+            with self.subTest(host=host, resource=resource_relative, helper=helper):
+                package = SOURCE_ROOT / package_relative
+                resource = package / resource_relative
+                card = (package / "includes/helper-invocation.md").read_text(encoding="utf-8")
+                env = os.environ.copy()
+                env.pop("PLUGIN_ROOT", None)
+                env.pop("CLAUDE_PLUGIN_ROOT", None)
+                env["CA_TEST_LOADED_RESOURCE"] = str(resource.resolve(strict=True))
+                if shell_kind == "PowerShell":
+                    shell = shutil.which("pwsh")
+                    self.assertIsNotNone(shell)
+                    script = "\n".join((
+                        "$ErrorActionPreference = 'Stop'",
+                        "$caLoadedResource = $env:CA_TEST_LOADED_RESOURCE",
+                        f"$caHelperRelative = '{helper}'",
+                        self._fence(card, f"{host} PowerShell interpreter selection", "powershell"),
+                        self._fence(card, f"{host} PowerShell resolution", "powershell"),
+                        "& $caPython -B $caHelper --help",
+                        "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+                    ))
+                    command = [shell, "-NoProfile", "-NonInteractive", "-Command", script]
+                else:
+                    shell = shutil.which("sh")
+                    self.assertIsNotNone(shell)
+                    script = "\n".join((
+                        "set -eu", "ca_loaded_resource=$CA_TEST_LOADED_RESOURCE",
+                        f"ca_helper_relative={helper}",
+                        self._fence(card, f"{host} POSIX interpreter selection", "sh"),
+                        self._fence(card, f"{host} POSIX resolution", "sh"),
+                        '"$ca_python" -B "$ca_helper" --help',
+                    ))
+                    command = [shell, "-c", script]
+                result = subprocess.run(command, cwd=SOURCE_ROOT, env=env,
+                                        capture_output=True, text=True, timeout=15)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("usage:", result.stdout.lower())
 
     @staticmethod
     def _emitted_guidance():
