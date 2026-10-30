@@ -3597,7 +3597,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         expected = {
             "test_artifact_bridge.py", "test_artifact_authoring.py",
             "test_artifact_workflow.py", "test_artifact_farm.py",
-            "test_artifact_package.py",
+            "test_artifact_package.py", "test_artifact_work_cli.py",
         }
         self.assertEqual(set(suites), expected)
         self.assertIn("for script, expected in EXPECTED_SUITES.items():", source)
