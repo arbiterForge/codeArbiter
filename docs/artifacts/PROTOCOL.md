@@ -309,6 +309,12 @@ unkeyed rows separately. Start, completion and archive use an exact origin
 selector and a hash of the selected board block checked inside the board
 writer's lock. A stale retry refuses rather than overwriting a later edit;
 legacy board updates do not claim the native journal's exact replay result.
+For a legacy update whose response might be lost, save the selected
+`board_sha256` from `work-get` before the first attempt and pass it as
+`--expected-model-sha256` on both attempts. Without that option, the CLI reads
+a fresh board hash for each invocation, so repeating the command after another
+edit could act on the changed row. A repeat after a successful update with the
+original hash refuses as stale; it does not return the original result.
 Completion can record already-performed work without inventing a start date
 and leaves its check unknown. Legacy rename, later attachment and reopen
 remain unsupported through this facade. Native creation still refuses while
@@ -339,10 +345,13 @@ IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
 slice has no operation to assert a passing check or remote delivery.
 
-`work-context` returns bounded selected work plus current attached document
-identities and concise summaries. Its `assessment: advisory` and
+Native `work-context` returns bounded selected work plus current attached
+document identities and concise summaries. Its `assessment: advisory` and
 `context_complete: false` fields prevent a summary from impersonating a full
-source read. The generated work page joins intent, progress, check status and
+source read. Legacy `work-context` returns selected `work`,
+`context_complete: false`, and `omitted`; it does not include `assessment` or
+attached-document summaries. Read those attachments by exact artifact ID when
+needed. The native work page joins intent, progress, check status and
 links to the separate spec and plan. `hooks/work.py` exposes the same local
 journey to an agent without another approval workflow. Tracker providers,
 legacy adoption and broader task-board routing are future slices.
@@ -350,9 +359,14 @@ legacy adoption and broader task-board routing are future slices.
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`,
-`work-context` and `work-update`; the installed native protocol validates the
-operation-specific request. It returns one JSON result. The stable operation
-ID and CAS rules above still apply, including on an uncertain retry.
+`work-context` and `work-update`. The selected owner validates the
+operation-specific request and returns one JSON result. Native `work-update`
+requires `expected: {"revision": N, "model_sha256": "..."}`. Legacy
+`work-update` accepts `operation_id`, `work_id`, `action` (start, complete or
+archive), and `expected_board_sha256` instead of `expected`. The legacy
+`work-context` request accepts `work_id` and optional `budget`, but its result
+has the omissions described above. The stable operation ID and owner-specific
+CAS rules still apply, including on an uncertain retry.
 
 ## Advisory scheduling and ordinary progress
 
