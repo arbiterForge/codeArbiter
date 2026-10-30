@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, WORK_SYSTEM_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -543,7 +543,8 @@ describe('atlas source compatibility revalidation', () => {
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
       ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS,
-      ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS, ...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS});
+      ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS, ...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS,
+      ...WORK_SYSTEM_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();
