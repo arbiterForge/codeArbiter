@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.23.5] - 2026-10-30
+
+### Fixed
+
+- Detect unignored runtime markers before verification is armed, preserving
+  the native completion workspace drift boundary.
+
 ## [0.23.4] - 2026-10-29
 
 ### Fixed
