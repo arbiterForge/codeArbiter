@@ -52,6 +52,11 @@ func Logo(mime string, b []byte) (string, error) {
 	return "data:" + mime + ";base64," + base64.StdEncoding.EncodeToString(b), nil
 }
 func CheckLogo(uri string) error {
+	// This immutable value was validated by Logo when loaded from the embedded
+	// asset. Revalidating the same SVG for every catalog entry is unnecessary.
+	if uri == DefaultLogo() {
+		return nil
+	}
 	prefix, body, ok := strings.Cut(uri, ";base64,")
 	if !ok || !strings.HasPrefix(prefix, "data:") {
 		return fault.New("INVALID_BRAND", "expected a base64 data image")
