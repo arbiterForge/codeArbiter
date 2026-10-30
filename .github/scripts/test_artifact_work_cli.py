@@ -61,6 +61,32 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(code, 0, result)
         return result
 
+    def test_first_native_work_survives_fresh_clone(self) -> None:
+        first = self.run_work("create", "--title", "Portable work", "--intent",
+                              "Retain project identity", "--type", "fix",
+                              "--operation-id", "cli-portable-work-001")
+        project = self.root / ".codearbiter" / "work" / "project.json"
+        self.assertTrue(project.is_file())
+        (self.root / ".gitattributes").write_bytes((REPO / ".gitattributes").read_bytes())
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "--",
+                        ".gitattributes", ".codearbiter/work/project.json", first["path"]],
+                       check=True, capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                        "-c", "user.email=test@example.invalid", "commit", "--quiet",
+                        "-m", "Record first work"], check=True,
+                       capture_output=True, text=True)
+        with tempfile.TemporaryDirectory(prefix="ca-work-clone-") as directory:
+            clone = Path(directory) / "clone"
+            subprocess.run(["git", "clone", "--quiet", str(self.root), str(clone)],
+                           check=True, capture_output=True, text=True)
+            self.assertFalse((clone / ".codearbiter" / ".artifacts").exists())
+            restored = _artifactlib.ArtifactClient(clone, self.installation).call(
+                "work-get", {"work_id": first["work_id"]})
+            self.assertEqual(restored["work_id"], first["work_id"])
+            self.assertEqual(restored["title"], "Portable work")
+
     def test_local_journey_has_stable_identity_and_unknown_check(self) -> None:
         self.client.call("create", {"operation_id": "cli-spec-create-001", "kind": "spec",
                                     "artifact_id": "SPEC-CLI", "slug": "cli", "title": "CLI specification",
