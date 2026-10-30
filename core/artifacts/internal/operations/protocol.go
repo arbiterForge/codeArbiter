@@ -48,7 +48,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-get", "work-update", "work-context", "work-list", "work-origins"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -279,6 +279,8 @@ func RequestSchema(op string) (object, error) {
 	case "work-context":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 		budget()
+	case "work-view":
+		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 	case "work-list":
 		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		add("limit", object{"type": "integer", "minimum": int64(1), "maximum": int64(64)}, false)

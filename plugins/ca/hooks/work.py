@@ -61,6 +61,8 @@ def _parser():
     context = sub.add_parser("context", help="Read bounded selected work and attached document context")
     context.add_argument("work_id")
     context.add_argument("--budget", type=int, default=16384)
+    view = sub.add_parser("view", help="Print an inert HTML overview of selected native work")
+    view.add_argument("work_id")
     listing = sub.add_parser("list", help="Page through active and archived local work")
     listing.add_argument("--offset", type=int, default=0)
     listing.add_argument("--limit", type=int, default=32)
@@ -102,6 +104,8 @@ def _dispatch(args, client):
         return client.call("work-get", {"work_id": args.work_id})
     if args.verb == "context":
         return client.call("work-context", {"work_id": args.work_id, "budget": args.budget})
+    if args.verb == "view":
+        return client.call("work-view", {"work_id": args.work_id})
     if args.verb == "list":
         request = {"offset": args.offset, "limit": args.limit, "budget": args.budget}
         if args.membership_sha256:
@@ -152,7 +156,7 @@ def _dispatch_request(payload, client):
         raise ValueError("unsupported work request schema")
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
-        "work-create", "work-get", "work-context", "work-list", "work-origins", "work-update"
+        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update"
     }:
         raise ValueError("unsupported work operation")
     if type(payload["request"]) is not dict:
@@ -163,6 +167,7 @@ def _dispatch_request(payload, client):
 def main(argv=None):
     utf8_stdio()
     try:
+        raw_view = False
         if list(sys.argv[1:] if argv is None else argv) == ["--request", "-"]:
             raw = sys.stdin.read(65537)
             if len(raw.encode("utf-8")) > 65536:
@@ -171,6 +176,7 @@ def main(argv=None):
         else:
             args = _parser().parse_args(argv)
             result = _dispatch(args, _selected_client(project_root()))
+            raw_view = args.verb == "view"
     except _artifactlib.ArtifactError as exc:
         print(json.dumps({"ok": False, "code": exc.code, "error": str(exc)}))
         return 1
@@ -180,7 +186,10 @@ def main(argv=None):
             result["code"] = code
         print(json.dumps(result))
         return 1
-    print(json.dumps(result, ensure_ascii=False))
+    if raw_view:
+        print(result["html"])
+    else:
+        print(json.dumps(result, ensure_ascii=False))
     return 0
 
 

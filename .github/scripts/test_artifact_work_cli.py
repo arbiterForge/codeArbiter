@@ -124,6 +124,30 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual((archived["work_id"], archived["state"]), (work_id, "archived"))
         self.assertIn("../plans/cli.html", (self.root / archived["path"]).read_text(encoding="utf-8"))
 
+    def test_selected_view_is_inert_html_and_leaves_no_second_owner(self) -> None:
+        self.client.call("create", {"operation_id": "view-cli-spec-001", "kind": "spec",
+                                    "artifact_id": "SPEC-VIEW-CLI", "slug": "view-cli",
+                                    "title": "Specification", "summary": "Outcome <safe>"})
+        self.client.call("create", {"operation_id": "view-cli-plan-001", "kind": "plan",
+                                    "artifact_id": "PLAN-VIEW-CLI", "slug": "view-cli",
+                                    "title": "Plan", "summary": "Implementation path",
+                                    "spec_id": "SPEC-VIEW-CLI"})
+        work_item = self.run_work("create", "--title", "View selected work",
+                                  "--intent", "One readable overview", "--type", "feature",
+                                  "--spec-id", "SPEC-VIEW-CLI", "--plan-id", "PLAN-VIEW-CLI",
+                                  "--operation-id", "view-cli-work-001")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["view", work_item["work_id"]]), 0)
+        page = output.getvalue()
+        self.assertTrue(page.startswith("<!doctype html>"))
+        for value in ("Outcome &lt;safe&gt;", "Local progress", "Checks", "Delivery",
+                      "Tracker sync", "../../specs/view-cli.html", "../../plans/view-cli.html"):
+            self.assertIn(value, page)
+        self.assertNotIn('id="ca-artifact-model"', page)
+        self.assertFalse((self.root / ".codearbiter" / "views").exists())
+        self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
+
     def test_legacy_board_remains_owner_and_create_returns_stable_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)

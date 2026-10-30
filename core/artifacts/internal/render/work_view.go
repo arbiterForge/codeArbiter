@@ -1,0 +1,97 @@
+package render
+
+import (
+	"strconv"
+	"strings"
+
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+)
+
+// WorkViewData is a selected, already validated projection. A work view is
+// generated for human orientation and contains no canonical artifact model.
+type WorkViewData struct {
+	ID, ProjectID, Title, Intent, WorkType     string
+	State, CheckStatus, StartedAt, CompletedAt string
+	Revision                                   int64
+	ModelSHA256                                string
+	Spec, Plan                                 *WorkViewAttachment
+}
+
+type WorkViewAttachment struct {
+	ID, Title, Summary, Href string
+}
+
+const workViewStyle = `
+.work-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.work-card{border:1px solid #d5dce3;border-radius:.8rem;padding:1.1rem;background:#fff}
+.work-card h2{margin-top:0}
+.work-card p{overflow-wrap:anywhere}
+.work-card .state{font-size:1.3rem;font-weight:700}
+.work-nav{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.2rem 0}
+.work-nav a{padding:.35rem .65rem;border:1px solid #d5dce3;border-radius:.5rem}
+.work-details{margin-top:1.5rem}
+.work-snapshot{margin:1rem 0}
+.work-snapshot dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem 1.4rem;margin:0}
+.work-snapshot dt{font-weight:700}
+.work-snapshot dd{margin:.2rem 0 0;overflow-wrap:anywhere}
+@media(max-width:48rem){.work-grid{grid-template-columns:1fr}}
+@media(max-width:48rem){.work-snapshot dl{grid-template-columns:1fr}}
+`
+
+func workViewAttachment(w *strings.Builder, label, section string, a *WorkViewAttachment) {
+	w.WriteString(`<section class="work-card" id="` + section + `"><h2>` + label + `</h2>`)
+	if a == nil {
+		w.WriteString(`<p>Not attached.</p></section>`)
+		return
+	}
+	w.WriteString(`<p><a href="` + esc(a.Href) + `">` + esc(a.Title) + `</a></p><p>` + esc(a.Summary) + `</p>`)
+	w.WriteString(`<p class="identity">` + esc(a.ID) + `</p></section>`)
+}
+
+// WorkView renders an inert, self-contained overview from selected native
+// records. Its missing model container deliberately makes Parse refuse it.
+func WorkView(data WorkViewData) ([]byte, error) {
+	var w strings.Builder
+	change := "No local implementation change recorded."
+	if data.CompletedAt != "" {
+		change = "Marked complete locally on " + data.CompletedAt + "."
+	} else if data.StartedAt != "" {
+		change = "Started locally on " + data.StartedAt + "."
+	}
+	next := "Define a concrete next action for this work."
+	if data.Plan != nil {
+		next = "Review the attached implementation plan for the next task."
+	}
+	w.WriteString(`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>`)
+	w.WriteString(esc(data.Title) + ` · codeArbiter work</title><style>`)
+	w.Write(CSS())
+	w.WriteString(workViewStyle)
+	w.WriteString(`</style></head><body><a class="skip" href="#main-content">Skip to work</a><div class="layout"><aside class="sidebar"><img src="`)
+	w.WriteString(esc(DefaultLogo()) + `" alt="codeArbiter"><p class="identity">` + esc(data.ID) + `</p><h2>In this work</h2><nav aria-label="Work sections"><a href="#progress">Progress</a><a href="#checks">Checks</a><a href="#delivery">Delivery</a><a href="#sync">Tracker sync</a><a href="#spec">Specification</a><a href="#plan">Plan</a></nav><p>Derived from the selected local work record. Refresh this view after the work changes.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / work</p><h1>`)
+	w.WriteString(esc(data.Title) + `</h1><p class="deck">` + esc(data.Intent) + `</p><div class="meta"><span>` + esc(data.ID) + `</span><span>` + esc(data.WorkType) + `</span></div></header>`)
+	w.WriteString(`<section class="work-card work-snapshot" aria-labelledby="snapshot-title"><h2 id="snapshot-title">At a glance</h2><dl><div><dt>Current situation</dt><dd>` + esc(strings.ToUpper(data.State)) + ` locally</dd></div><div><dt>Recorded change</dt><dd>` + esc(change) + `</dd></div><div><dt>Remaining obstacle</dt><dd>Not recorded in this work item.</dd></div><div><dt>Next action</dt><dd>` + esc(next) + `</dd></div></dl></section>`)
+	w.WriteString(`<nav class="work-nav" aria-label="Jump to work status"><a href="#progress">Progress</a><a href="#checks">Checks</a><a href="#delivery">Delivery</a><a href="#sync">Tracker sync</a></nav><div class="work-grid">`)
+	w.WriteString(`<section class="work-card" id="progress"><h2>Local progress</h2><p class="state">` + esc(strings.ToUpper(data.State)) + `</p>`)
+	if data.StartedAt != "" {
+		w.WriteString(`<p>Started ` + esc(data.StartedAt) + `</p>`)
+	}
+	if data.CompletedAt != "" {
+		w.WriteString(`<p>Completed locally ` + esc(data.CompletedAt) + `</p>`)
+	}
+	checkStatus := data.CheckStatus
+	if checkStatus == "" {
+		checkStatus = "unknown"
+	}
+	w.WriteString(`</section><section class="work-card" id="checks"><h2>Checks</h2><p class="state">` + esc(strings.ToUpper(checkStatus[:1])+checkStatus[1:]) + `</p><p>Check status is separate from local completion. Read the attached plan for exact verification evidence.</p></section>`)
+	w.WriteString(`<section class="work-card" id="delivery"><h2>Delivery</h2><p class="state">Unobserved</p><p>This local record does not establish a merge, release or deployment.</p></section>`)
+	w.WriteString(`<section class="work-card" id="sync"><h2>Tracker sync</h2><p class="state">Unconfigured</p><p>No provider binding or remote result is recorded in this local work model.</p></section>`)
+	workViewAttachment(&w, "Specification", "spec", data.Spec)
+	workViewAttachment(&w, "Implementation plan", "plan", data.Plan)
+	w.WriteString(`</div><details class="work-details"><summary>Source identity</summary><p>Project ` + esc(data.ProjectID) + `</p><p>Revision ` + strconv.FormatInt(data.Revision, 10) + `</p><p>Model SHA-256 ` + esc(data.ModelSHA256) + `</p></details><footer class="footer"><p>Derived static view · no runtime network resources</p></footer></main></div></body></html>`)
+	out := []byte(w.String())
+	if len(out) > 32<<10 {
+		return nil, fault.New("RESPONSE_TOO_LARGE", "selected work view exceeds 32 KiB")
+	}
+	return out, nil
+}
