@@ -369,9 +369,9 @@ func (e *Engine) workList(r object) (any, error) {
 	if offset > len(ids) {
 		return nil, fault.New("INVALID_OFFSET", "work offset is outside the current listing")
 	}
-	limit := 32
+	limit := int64(32)
 	if n := model.I(r["limit"]); n != 0 {
-		limit = int(n)
+		limit = n
 	}
 	budget := int64(16384)
 	if n := model.I(r["budget"]); n != 0 {
@@ -380,7 +380,7 @@ func (e *Engine) workList(r object) (any, error) {
 	out := object{"project_id": projectID, "membership_sha256": digest, "entries": []any{}, "offset": int64(offset), "total": int64(len(ids)), "next_offset": nil, "content_snapshot": false}
 	items := []any{}
 	next := offset
-	for next < len(ids) && len(items) < limit {
+	for next < len(ids) && int64(len(items)) < limit {
 		d, _, p, err := e.readWorkWithProject(ids[next], projectID)
 		if err != nil {
 			return nil, err
