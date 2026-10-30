@@ -143,6 +143,14 @@ export default defineConfig({
         alt: "codeArbiter",
       },
       favicon: "/favicon.svg",
+      // Code frames take their colors from Starlight's neutral ramp, which
+      // design-system.css maps onto the slate tokens. Only the shape needs an
+      // override: Starlight's square default sits apart from every other panel.
+      expressiveCode: {
+        styleOverrides: {
+          borderRadius: "var(--ca-radius-md)",
+        },
+      },
       // codeArbiter is dark-only: ThemeProvider forces data-theme="dark" and
       // ThemeSelect renders nothing (the switcher is removed). See theme.css.
       components: {
