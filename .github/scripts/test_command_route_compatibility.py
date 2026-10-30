@@ -124,10 +124,10 @@ EXPECTED_DEFAULT_BODY_SHA256.update({
     'init': '08746b4ddc731e134857c288fd321ed8072fec5408e05c147001614cc0f9c46d',
 })
 
-# The 2026-10-23 removal of /btw rewrites status's "When NOT to use" pointer
-# for a specific question; nothing else in the body changes.
+# WS-03 changes status's work count to read the selected owner with bounded
+# native paging while preserving the legacy board count.
 EXPECTED_DEFAULT_BODY_SHA256.update({
-    'status': 'e579801e56c8e36fa6c1ab6db7148f02e999ca27180f3b73ffa4773dd12e0d23',
+    'status': '972981829db1cc13bf766cdaeb5d17b004cc2953ef34919bb19ea250a21c1939',
 })
 
 def command_source(slug: str) -> str:

@@ -6,6 +6,21 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-10-30
+
+### Added
+
+- Route selected work, archival, and initialized Markdown acquisition through
+  the owning local work store.
+- Render a bounded, derived HTML overview for one native work item.
+- Keep derived views outside canonical artifact ownership and leave checks
+  unknown until their evidence is recorded separately.
+
+### Fixed
+
+- Keep the legacy task count when the native work directory is empty, and
+  review harvested work before it joins a commit.
+
 ## [0.23.0] - 2026-10-30
 
 ### Added

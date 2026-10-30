@@ -156,6 +156,7 @@ def dispatch(root, operation, request):
         "work-get": {"work_id"},
         "work-context": {"work_id", "budget"},
         "work-list": {"offset", "limit", "budget", "membership_sha256"},
+        "work-origins": {"origins"},
         "work-update": {"operation_id", "work_id", "expected_board_sha256", "action"},
     }.get(operation)
     if fields is None:
@@ -243,8 +244,8 @@ def dispatch(root, operation, request):
         for work_id in ids[offset:offset + limit]:
             entry = records[work_id]
             selected = {key: entry.get(key) for key in
-                        ("work_id", "title", "work_type", "state", "check_status",
-                         "spec_id", "plan_id", "legacy_id")}
+                        ("work_id", "title", "work_type", "state", "check_status", "completed_at",
+                         "spec_id", "plan_id", "legacy_id", "origin")}
             candidate = result["entries"] + [selected]
             if len(json.dumps({**result, "entries": candidate}).encode("utf-8")) + 512 > budget:
                 if not result["entries"]:
@@ -254,6 +255,21 @@ def dispatch(root, operation, request):
         next_offset = offset + len(result["entries"])
         result["next_offset"] = next_offset if next_offset < len(ids) else None
         return result
+    if operation == "work-origins":
+        origins = request.get("origins")
+        if (type(origins) is not list or not 1 <= len(origins) <= 32
+                or any(type(origin) is not str for origin in origins)
+                or len(set(origins)) != len(origins)
+                or any(not origin or len(origin) > 256
+                       or "\n" in origin or "\r" in origin or "(" in origin or ")" in origin
+                       for origin in origins)):
+            raise ValueError("invalid legacy origin query")
+        records = _records(root)
+        found = {record["origin"]: record for record in records.values()}
+        return {"matches": [{"origin": origin, "work_id": found[origin]["work_id"],
+                             "state": found[origin]["state"]}
+                            for origin in origins if origin in found],
+                "content_snapshot": False}
     if operation == "work-update":
         action = request.get("action")
         if action not in ("start", "complete", "archive"):

@@ -18,6 +18,8 @@ core/artifacts/** text eol=lf
 # checkout and staging conversion; historical before-images may contain CRLF.
 /.codearbiter/specs/*.html -text
 /.codearbiter/plans/*.html -text
+/.codearbiter/work/*.html -text
+/.codearbiter/work/project.json -text
 /.codearbiter/.artifacts/** -text
 
 # Enrolled context pairs bind the writer's exact bytes. Preserve the selected

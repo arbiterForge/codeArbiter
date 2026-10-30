@@ -263,7 +263,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -312,7 +313,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
@@ -368,7 +370,7 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+      expect(git('hash-object', '--', path).trim()).toBe(WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
         ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
@@ -421,7 +423,22 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.commit).toBe(REVIEWED_AT);
     expect(atlas.scope).toContain(REVALIDATED_AT);
     expect(atlas.sources).toEqual(original.sources);
-    expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
+    const current = structuredClone(atlas.views);
+    // The selected-work overlay updates three labels, while the reviewed
+    // original and every position, edge, route, and source stay intact.
+    for (const [viewId, nodeId] of [
+      ['knowledge-operations', 'k-writer'],
+      ['knowledge-operations', 'k-board'],
+      ['debug-handoff', 'd-task'],
+    ]) {
+      const node = current.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
+      const baseline = original.views.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
+      expect(node).toBeDefined();
+      expect(baseline).toBeDefined();
+      node!.title = baseline!.title;
+      node!.body = baseline!.body;
+    }
+    expect(current.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
   });
 
   it('binds only the three reviewed runtime compatibility owners and preserves cited document ranges', () => {
@@ -515,7 +532,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
       'core/surface/commands/init.md', 'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
+      'core/surface/commands/status.md', 'core/surface/commands/task.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
