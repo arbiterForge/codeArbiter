@@ -17,7 +17,9 @@ Wrap an existing codebase in project state, without guessing. Routed to by `/cre
 This back-fills from existing source. It complements `/ca:init`, which scaffolds an empty `.codearbiter/` for a fresh project; here the context is derived from what is already on disk. Load `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md` for the record vocabulary and the `knowledge.py` verbs used below.
 
 An initialized refresh is requested through `/ca:status drift` and the
-existing `context-check` owner after an explicit scoped or full selection. This
+existing `context-check` owner after an explicit scoped or full selection. An
+explicit initialized brownfield project-model request also uses the existing
+`decompose` owner for intended target, phases, and candidate work. This
 initial-population route keeps its `<!--INITIALIZED-->` lock; an initialized
 repository never clears the marker or re-enters Phase 6 to refresh content.
 

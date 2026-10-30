@@ -7,6 +7,35 @@ unchanged pre-HTML workflow; HTML-format repositories follow the skill entry.
 Develop the project specification before implementation. Keep actual user decisions,
 planned architecture and observed repository facts distinct.
 
+## Initialized brownfield acquisition
+
+Keep the existing `<!--INITIALIZED-->` marker, CONTEXT frontmatter, human edits,
+provenance, decomposition files, question and ADR history, and task identities.
+Inspect those owners before writing. Use `$ca-context-check` for selected
+source-backed refreshes of the existing Markdown context/provenance pairs; do
+not invoke `create-context`, `--context-finalize`, or the initial interview.
+If inspection is denied or incomplete, record the affected observation as
+unknown instead of inferring that a capability is absent.
+
+Maintain the existing project model under `.codearbiter/plans/`. Record
+source-observed current capabilities and architecture with exact source paths
+in `01-architecture-breakdown.md`; proposed target, delta and future phases in
+`02-phased-build-plan.md`; and possible work in a clearly marked candidate
+section of `03-task-backlog.md`. Read existing files first and update only the
+affected sections, preserving earlier answers and user edits.
+Link existing questions and ADRs by identity, without copying their mutable
+status. Code inspection alone cannot establish deployment, passing checks,
+historical rationale or an accepted choice. Ask only consequential unknowns
+that affect the selected target.
+
+Candidates are not tasks or tracker tickets. When the user selects promotion,
+check the stable origin against active and archived work through the selected
+work owner. Retain the returned work ID in the candidate and repair that same
+link on retry. The legacy task-board writer remains the owner in an unconverted
+project; do not create a parallel native work record. Report changed documents,
+source scope and remaining unknowns, then return to the requested work. The
+greenfield interview and initialization steps below do not run on this path.
+
 ## 1. Inspect and resume
 
 Read `.codearbiter/CONTEXT.md`. An initialized project returns to normal operation;

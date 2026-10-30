@@ -332,12 +332,15 @@ func (e *Engine) workList(r object) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if projectID == "" {
-		return nil, fault.At("NOT_INITIALIZED", "", projectPath, "native work has no portable project identity")
-	}
 	entries, err := e.FS.List(".codearbiter/work")
+	if os.IsNotExist(err) && projectID == "" {
+		entries, err = nil, nil
+	}
 	if err != nil {
 		return nil, err
+	}
+	if projectID == "" && len(entries) != 0 {
+		return nil, fault.At("INVALID_PROJECT", "", projectPath, "work files exist without a portable project identity; preserve them for inspection")
 	}
 	if len(entries) > 20000 {
 		return nil, fault.New("WORK_SCAN_LIMIT", "work directory exceeds bounded listing")
@@ -386,7 +389,8 @@ func (e *Engine) workList(r object) (any, error) {
 			return nil, err
 		}
 		n := d.Norm()
-		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "state": model.M(d.Data["execution"])["state"], "check_status": model.M(d.Data["execution"])["check_status"], "spec_id": n["spec_id"], "plan_id": n["plan_id"]}
+		ex := model.M(d.Data["execution"])
+		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "state": ex["state"], "check_status": ex["check_status"], "completed_at": ex["completed_at"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "origin": n["origin"]}
 		candidate := append(append([]any{}, items...), item)
 		out["entries"] = candidate
 		out["next_offset"] = int64(next + 1)
@@ -410,6 +414,63 @@ func (e *Engine) workList(r object) (any, error) {
 		out["next_offset"] = nil
 	}
 	return out, nil
+}
+
+// workOrigins checks a bounded batch of exact source keys in one directory
+// pass. It includes archived work, so a harvest preview can omit existing
+// identities without repeatedly rescanning the full directory for each page.
+func (e *Engine) workOrigins(r object) (any, error) {
+	projectID, _, err := e.projectIdentity()
+	if err != nil {
+		return nil, err
+	}
+	entries, err := e.FS.List(".codearbiter/work")
+	if os.IsNotExist(err) && projectID == "" {
+		entries, err = nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if projectID == "" && len(entries) != 0 {
+		return nil, fault.At("INVALID_PROJECT", "", projectPath, "work files exist without a portable project identity; preserve them for inspection")
+	}
+	if len(entries) > 20000 {
+		return nil, fault.New("WORK_SCAN_LIMIT", "work directory exceeds bounded origin lookup")
+	}
+	wanted := map[string]bool{}
+	for _, value := range model.A(r["origins"]) {
+		wanted[model.S(value)] = true
+	}
+	found := map[string]object{}
+	for _, entry := range entries {
+		name := entry.Name()
+		if !strings.HasSuffix(name, ".html") {
+			continue
+		}
+		id := strings.TrimSuffix(name, ".html")
+		if !workIDPattern.MatchString(id) || entry.IsDir() {
+			return nil, fault.At("INVALID_WORK", "", ".codearbiter/work/"+name, "work directory contains an invalid HTML entry")
+		}
+		d, _, _, err := e.readWorkWithProject(id, projectID)
+		if err != nil {
+			return nil, err
+		}
+		origin := model.S(d.Norm()["origin"])
+		if !wanted[origin] {
+			continue
+		}
+		if _, duplicate := found[origin]; duplicate {
+			return nil, fault.New("ORIGIN_CONFLICT", "more than one work item claims the same origin")
+		}
+		found[origin] = object{"origin": origin, "work_id": d.ID(), "state": model.M(d.Data["execution"])["state"]}
+	}
+	matches := []any{}
+	for _, value := range model.A(r["origins"]) {
+		if row, ok := found[model.S(value)]; ok {
+			matches = append(matches, row)
+		}
+	}
+	return object{"matches": matches, "content_snapshot": false}, nil
 }
 
 func boundedText(s string, maxRunes int) string {

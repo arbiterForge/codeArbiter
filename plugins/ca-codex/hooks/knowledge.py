@@ -18,7 +18,7 @@
 #   initialize                     record structural initialization (HTML format)
 #   convert [--finish TOKEN]       prepare HTML knowledge, then cut over after
 #                                  the agent has recorded the Markdown content
-#   promote RECORD                 add a decomposition work item to the task board
+#   promote RECORD                 send a selected work item to its work owner
 #   stale [DOC ...]                records whose scoped or cited paths changed since
 #                                  their document's baseline commit (advisory)
 #   rebaseline DOC                 set a document's baseline to the current commit

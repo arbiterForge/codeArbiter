@@ -16,6 +16,12 @@ The calling feature or sprint owns scope and the next step. A sprint may include
 
 Use relevant CONTEXT.md, tech-stack.md and security-controls.md when present; in an HTML-knowledge repository use `knowledge.py relevant <paths>` and the greenfield decomposition records instead (see [includes/knowledge.md](../../includes/knowledge.md)). Read an existing open-questions document and relevant ADR/plan headings index-first. Missing optional historical indices are not blockers. Preserve real decisions while distinguishing an accepted decision from implemented or released behavior.
 
+When the request selects an existing work ID, first read it through the
+selected owner with `work.py context <work_id>` as described in the knowledge
+include. Reuse its exact spec/plan bindings and stated intent; inspect the
+current source and ask only about consequential gaps. A same-title item is not
+an identity match, and a work context is not evidence that attached checks ran.
+
 ## Recorded intent and consequential conflicts
 
 Use an index-first recorded-intent read to avoid asking about settled choices.

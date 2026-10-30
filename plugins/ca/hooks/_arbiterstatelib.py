@@ -61,7 +61,7 @@ from _activationlib import frontmatter_enabled_text as _activation_enabled_text
 # when one of the inputs actually changes between renders.
 _ARBITER_CACHE = {}        # root -> (mtime_key, result)
 _ARBITER_FILES = ("CONTEXT.md", "overrides.log", "last-checkpoint",
-                  "open-tasks.md", "open-questions.md", "sprint-active")
+                  "open-tasks.md", "open-questions.md", "sprint-active", "work")
 
 
 def frontmatter_text(text):
@@ -206,7 +206,12 @@ def _arbiter_state_uncached(cad, count_in_flight=None, read_board=None, frontmat
     if base < 0 or base > total_over:
         base = 0
     ot_path = os.path.join(cad, "open-tasks.md")
-    if count_in_flight is not None:
+    # Native work state belongs to the artifact engine. This hot status reader
+    # cannot infer in-flight state from filenames or launch that engine on each
+    # render. A work directory also makes a retained legacy board ambiguous.
+    if os.path.lexists(os.path.join(cad, "work")):
+        tasks = "?"
+    elif count_in_flight is not None:
         board_text = ot_text if ot_text is not None else (read_board(ot_path) or "")
         tasks = count_in_flight(board_text)
     else:

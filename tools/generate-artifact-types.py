@@ -3,6 +3,7 @@
 import argparse,json,re,subprocess,sys
 from pathlib import Path
 base=Path(__file__).resolve().parents[1]/'core/artifacts'
+schema_kinds=('common','spec','plan','context','knowledge','decomposition','work')
 common=json.loads((base/'schemas/common.schema.json').read_text())
 initialisms={'id':'ID','url':'URL','argv':'Argv','cwd':'CWD','sha256':'SHA256'}
 def title(s):return ''.join(initialisms.get(x,x.title()) for x in s.split('_'))
@@ -39,9 +40,9 @@ rendered=subprocess.check_output(['gofmt'],input=('\n'.join(lines)+'\n').encode(
 target=base/'internal/model/types_generated.go'
 if args.check:
  if target.read_bytes()!=rendered:raise SystemExit('Generated model views are stale.')
- for kind in ('common','spec','plan','context'):
+ for kind in schema_kinds:
   if (base/'schemas'/f'{kind}.schema.json').read_bytes() != (base/'internal/schema'/f'{kind}.schema.json').read_bytes():raise SystemExit('Embedded schema drift: '+kind)
  print('Generated views and embedded schema copies match.')
 else:
  target.write_bytes(rendered)
- for kind in ('common','spec','plan','context'):(base/'internal/schema'/f'{kind}.schema.json').write_bytes((base/'schemas'/f'{kind}.schema.json').read_bytes())
+ for kind in schema_kinds:(base/'internal/schema'/f'{kind}.schema.json').write_bytes((base/'schemas'/f'{kind}.schema.json').read_bytes())

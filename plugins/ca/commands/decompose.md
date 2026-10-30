@@ -1,5 +1,5 @@
 ---
-description: Develop greenfield context from a resumable interview recorded as decomposition and knowledge records.
+description: Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records.
 argument-hint: (none)
 disable-model-invocation: true
 ---
@@ -16,6 +16,42 @@ Develop the project specification before implementation. Keep actual user decisi
 planned architecture and observed repository facts distinct. Load
 `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md` for the record vocabulary and the
 `knowledge.py` verbs used below.
+
+## Initialized brownfield acquisition
+
+When source already exists and the user selects project-model acquisition,
+preserve `<!--INITIALIZED-->`, the current context documents, existing
+decomposition records, question history, ADRs, and work identities. Read those
+owners index-first before asking or writing. Use the selected `context-check`
+refresh for source-backed changes to the code map and other observed knowledge;
+do not invoke the initial-population route, rerun `initialize`, or invent the
+original interview. A denied or incomplete source inspection leaves its claim
+unknown and does not erase independent existing records.
+
+Add observed capabilities and architecture to the existing decomposition
+document with `basis: source-observed` and actual source references. Distinguish
+the current implementation from the intended target and delta: target
+capabilities, future phases, and possible work are `proposed` until the user
+decides. Link to the existing global open-question and ADR owners by identity;
+do not make a second writable answer or acceptance status. A source file does
+not establish historical rationale, deployment, passing tests, or an accepted
+decision. Ask only consequential choices still unresolved after the saved
+answers and current user direction are considered.
+
+Save discovered gaps as decomposition `work_item` candidates. Do not call
+`knowledge.py promote` or create an external issue merely because a gap was
+recorded. When the user selects promotion, check the candidate's stable origin
+against the selected work owner, including archived work, and retain the actual
+returned `work_id`; a retry repairs the same link. Reinspect only affected
+records on later source changes through `context-check`. Continue with
+independent useful work when a separate choice remains open. Report the
+selected records and remaining unknowns, then return to the requested work;
+the greenfield interview and initialization steps below do not run on this path.
+
+For an initialized project that keeps Markdown format, use the initialized
+acquisition section in `${CLAUDE_PLUGIN_ROOT}/skills/decompose/references/markdown-format.md`.
+Do not silently convert. The numbered procedure below remains the greenfield
+route for projects that have not been initialized.
 
 ## 1. Inspect and resume
 

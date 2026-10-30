@@ -147,7 +147,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Develop greenfield context from a resumable interview recorded as decomposition and knowledge records.",
+      "description": "Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records.",
       "commandPath": "commands/decompose.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -279,7 +279,7 @@
     },
     "standup": {
       "name": "standup",
-      "description": "Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.",
+      "description": "Daily repo hygiene — review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes.",
       "commandPath": "commands/standup.md",
       "visibility": "advanced",
       "workflow": "operate",
@@ -308,7 +308,7 @@
     },
     "task": {
       "name": "task",
-      "description": "The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.",
+      "description": "Add, start, or complete selected local work through its owning store.",
       "commandPath": "commands/task.md",
       "visibility": "core",
       "workflow": "operate",
