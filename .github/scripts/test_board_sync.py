@@ -227,6 +227,11 @@ def test_standup_advisory_board_sweep():
         "(advisory board-drift sweep, AC-11)",
     )
     check(
+        "legacy owner" in t and "native owner" in t
+        and "do not run" in t,
+        "standup.md: native work must not be reconciled through the legacy board",
+    )
+    check(
         any(phrase in t for phrase in ["advisory", "drift"]),
         "standup.md: must use 'advisory' or 'drift' to characterise the sweep (AC-11)",
     )
@@ -284,14 +289,8 @@ def test_decompose_intent_only():
 
 # ---- Issue #573: standup step 6 routes the archival sweep through a chore branch --
 def test_standup_archival_sweep_routes_through_chore():
-    """#573: the archival sweep must not write straight to open-tasks.md /
-    done-tasks.md on whatever branch happens to be current -- that produces an
-    uncommittable diff (STOPped by commit-gate Phase 2 on `main`, or flagged as
-    scope creep riding an unrelated feature commit under Phase 3). The sweep
-    must establish its own dedicated branch before archiving anything, and hand
-    off to a chore commit afterward so the removal + done-tasks.md append land
-    as a single in-scope docs commit -- no classify_board_diff change, no
-    ADR-0008 amendment needed.
+    """#573/WS-03: archive through the selected work owner on an isolated
+    chore branch, with one explicit named subset and later-edit-safe reads.
 
     Checked across all 4 rendered copies (host token substitution means the
     chore/task command name itself varies -- `{{CMD:chore}}` / `/ca:chore` /
@@ -299,11 +298,8 @@ def test_standup_archival_sweep_routes_through_chore():
     matching the multi-copy pattern `test_debug_uses_helper` and
     `test_context_creation_board_route` already use in this file.
 
-    Also asserts the superseded direct-write instruction ("archive only the
-    ones the user says yes to", followed immediately by the helper call with
-    no branch step) is gone -- per this repo's mutation-testing convention, a
-    partial revert that restores the old in-place archive alongside the new
-    branch/chore prose must fail this test, not pass it.
+    A legacy board still produces its paired open/done task files, while native
+    projects archive selected HTML work through the same public work CLI.
     """
     copies = [
         "core/surface/commands/standup.md",
@@ -332,14 +328,8 @@ def test_standup_archival_sweep_routes_through_chore():
         fetch_default = step6_normalized.find("fetch", switch_default)
         ff_only = step6_normalized.find("--ff-only", fetch_default)
         create_switch = step6_normalized.find("create and switch to a fresh")
-        archive_helpers = []
-        search_from = 0
-        while True:
-            helper_at = step6_normalized.find("taskwrite.py", search_from)
-            if helper_at == -1:
-                break
-            archive_helpers.append(helper_at)
-            search_from = helper_at + 1
+        archive_helper = step6_normalized.find("work.py", create_switch)
+        legacy_helper = step6_normalized.find("taskwrite.py", create_switch)
 
         check(
             -1 not in [clean_index, switch_default, fetch_default, ff_only, create_switch]
@@ -349,8 +339,9 @@ def test_standup_archival_sweep_routes_through_chore():
             "its --ff-only update, and creating/switching to the fresh archive branch",
         )
         check(
-            archive_helpers and all(create_switch < helper for helper in archive_helpers),
-            f"{relative}: every taskwrite.py archive invocation must follow the "
+            archive_helper > create_switch and legacy_helper > create_switch
+            and "archive <work_id>" in step6_normalized,
+            f"{relative}: selected-owner work.py archive must follow the "
             "complete archive-branch isolation sequence",
         )
         check(
@@ -372,9 +363,10 @@ def test_standup_archival_sweep_routes_through_chore():
             "docs commit (#573)",
         )
         check(
-            "never batched" in step6_lower,
-            f"{relative}: step 6 must still archive per item, never batched -- "
-            "the branch/chore handoff must not regress this existing invariant",
+            "named subset" in step6_normalized and "--operation-id" in step6_normalized
+            and "--expected-revision" in step6_normalized
+            and "--expected-model-sha256" in step6_normalized,
+            f"{relative}: batch selection must name IDs and mutations must retain replay/CAS evidence",
         )
         check(
             "done-tasks.md" in step6,
@@ -382,15 +374,13 @@ def test_standup_archival_sweep_routes_through_chore():
             "archive's new file is understood as expected, not scope creep (#573)",
         )
         check(
-            "noting which ones the user says yes to" in step6_lower,
-            f"{relative}: step 6 must defer archiving until after the branch is "
-            "established, not act on each yes immediately (#573)",
+            "work.py" in step6_normalized and "membership-sha256" in step6_normalized
+            and "completed_at" in step6_normalized,
+            f"{relative}: age preview must page selected-owner work with membership and completion dates",
         )
         check(
-            "archive only the ones the user says yes to" not in step6_lower,
-            f"{relative}: step 6 still carries the superseded direct-write "
-            "instruction (archive immediately, no branch step) -- a partial "
-            "revert would restore the pre-#573 uncommittable sweep",
+            "legacy owner" in step6_normalized and "native owner" in step6_normalized,
+            f"{relative}: archive must select exactly one existing owner",
         )
     check(seen >= 4, f"expected at least 4 rendered standup copies, found {seen}")
 

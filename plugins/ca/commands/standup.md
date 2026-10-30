@@ -1,24 +1,22 @@
 ---
-description: Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.
+description: Daily repo hygiene — review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes.
 argument-hint: (none)
 ---
 
 # /ca:standup — daily hygiene
 
-The best-practice checklist you run when you sit down to code, made routine and
-gated. The SessionStart briefing *reports* hygiene state read-only; this command is
-where the *actions* happen — each one confirmed individually, none taken unbidden.
-Arbiter gathers and proposes; you decide every mutation.
+The checklist you run when you sit down to code. The SessionStart briefing
+*reports* hygiene state read-only; this command performs the cleanups you select.
+Arbiter gathers and proposes; you decide each action's scope.
 
 ## Flow
 
 The orchestrator reads the current repo state (reusing the briefing's read-only
 computation — branch, ahead/behind, dirty tree, stashes, prune-candidate branches,
 stale worktrees) and presents it, then offers each applicable action in turn. Skip
-an action that has no candidates; never bundle confirmations across different
-actions or items — branch deletions always stay per-item, and the sole exception
-is step 3's explicitly enumerated worktree group, which is still one confirmation
-that names every member, never an implied yes.
+an action that has no candidates. Branch deletions stay per-item; worktree
+removal and work archival may use one explicitly named selection. Never infer
+that a yes to one action authorizes another.
 
 1. **Fetch + fast-forward pull** — kick `git fetch`, then offer a **`--ff-only`**
    pull of the current branch. Eligibility is the briefing summary's
@@ -49,44 +47,49 @@ that names every member, never an implied yes.
 4. **Surface stashes / dirty / un-pushed** — list stashes, uncommitted changes, and
    un-pushed commits, each with a suggested next step (`/ca:commit`, `git push`,
    `git stash show`). Report-and-route only: never discard a stash, reset, or push.
-5. **Advisory board-drift sweep** — run `git log` over the recent merge window
-   (since the last `ca`-scoped tag, or a rolling 30-day window when no tag exists)
-   and pipe that text to `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/boardsync.py" reconcile`. Resolve `$PY`
-   once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
-   — never `python3 X || python X`, which reruns X on any nonzero exit (#577); this resolution
-   covers step 6's helper call too.
-   Display the advisory drift report as-is: DRIFTED tasks (work merged but board
-   state not `[x]`) and informational UNKNOWN ids (in the log but absent from the
-   board). This step is read-only and best-effort — the dotted-id grep can miss a
-   task never named in a commit. The board is never mutated here; `open-tasks.md`
-   is never written. Any drifted task must be resolved explicitly through
-   `/ca:task done <id>` — the only blessed board writer. State this clearly to the
-   user; do not auto-flip.
+5. **Selected-owner drift sweep** — resolve `$PY` once by presence, never by
+   retrying a failed helper under another interpreter (#577). Call
+   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/work.py" list --limit 1` to select the owner:
+   `owner: legacy` means the board, and a `project_id` field means native work.
+   Stop if the command fails or returns neither shape.
+   For the **legacy owner**, run `git log` over the recent merge window (since
+   the last `ca`-scoped tag, or a rolling 30-day window when no tag exists) and
+   pipe it to `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/boardsync.py" reconcile`. Display
+   DRIFTED tasks and informational UNKNOWN ids as advisory only. Resolve a
+   drifted task through `/ca:task done <id>`; do not auto-flip the board.
+   For the **native owner**, do not run `boardsync.py`: its dotted board IDs
+   cannot establish native work state. Report that commit-to-work drift is not
+   assessed by this sweep. A failed owner read is a stop for work hygiene, not
+   permission to fall back to a second writer.
 
-6. **Archival sweep — proposed per item, never batched** (B-24). Long-done tasks
-   accumulate on the board; they are already excluded from the in-flight count.
-   List dated done items strictly more than 14 calendar days old
-   (`ARCHIVE_CUTOFF_DAYS`), then ask about **each one
-   separately**, noting which ones the user says yes to.
+6. **Archival sweep — one named subset** (B-24, WS-03). For the **native owner**,
+   page `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/work.py" list --limit 64 --budget 65536`,
+   passing the returned `--membership-sha256` on every later page. Inspect at
+   most 256 entries in this sweep; state the omitted count if more remain.
+   Select only `complete` entries with `completed_at` strictly more than 14
+   calendar days old. `content_snapshot: false` means the preview is advisory;
+   verify each selected item again on the archive branch before writing.
 
-   An item marked `[x]` with **no `(done YYYY-MM-DD)` stamp** cannot be aged, so
-   it is never in the proposed set. Offer it only if the user asks, and only with
-   `--allow-undated` — both `/ca:task done` and the board classifier require
-   the stamp, so an unstamped entry is legacy or override-era and its real age is
-   unknown.
+   For the **legacy owner**, retain the existing board classifier's dated done
+   list and its exact dotted IDs. The work list can omit originless old rows;
+   report its `unkeyed_count` and inspect those rows through the legacy board
+   owner, never by matching the first same-title item. An undated item has
+   unknown age and is excluded unless the user explicitly asks to include its
+   exact ID with `--allow-undated`.
 
-   Declining is always available and costs nothing: an unarchived task stays
-   exactly where it is. Never archive without a yes.
+   Present the eligible IDs and dates, then ask once for a **named subset** to
+   archive. The user may select all, some, or none. Do not infer inclusion from
+   silence; preserve declined items. One selection authorizes only these IDs.
 
-   **If at least one item was confirmed:** an archive is calendar-driven hygiene,
+   **If at least one ID was selected:** an archive is calendar-driven hygiene,
    not a consequence of any in-flight work, so it never rides another commit.
    Before creating the archive branch, require a **clean working tree and index**
-   (`git status --porcelain` emits nothing); otherwise STOP before mutating the
-   board. Then switch to the configured default branch, fetch it and fast-forward
+   (`git status --porcelain` emits nothing); otherwise STOP before mutating
+   work. Then switch to the configured default branch, fetch it and fast-forward
    it with step 1's `--ff-only` pull, and STOP on checkout, fetch, divergence, or
    pull failure. Verify that HEAD is the fetched default tip. Only then create and
    switch to a fresh dedicated branch with non-overwriting `git switch -c`, e.g.
-   `chore/board-archive-<YYYY-MM-DD>-<HHMMSSZ>`. Branch creation MUST fail closed
+   `chore/work-archive-<YYYY-MM-DD>-<HHMMSSZ>`. Branch creation MUST fail closed
    if the branch name already exists; never reuse or reset an earlier sweep's
    branch. Verify the new branch is current and still points at the fetched
    default tip before the first archive helper call.
@@ -97,21 +100,32 @@ that names every member, never an implied yes.
    work (a type split under commit-gate Phase 3) — see #573. One fresh branch per
    sweep, never reused across sessions.
 
-   On that branch, archive each confirmed item, still one at a time:
-   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" archive <id>`.
+   On that branch, re-read every selected ID and its state/date. If it is
+   missing, no longer complete, or no longer eligible, stop that item and report
+   the changed scope. Do not substitute a same-title item. For the native owner,
+   use `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/work.py" get <work_id>` to obtain the current
+   revision and model hash. Archive each still-eligible item through
+   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/work.py" archive <work_id> --operation-id <stable-id>
+   --expected-revision <revision> --expected-model-sha256 <hash>`.
+   Reuse that operation ID and expected pair if the response is lost; report a
+   conflict without overwriting a later edit. For the legacy owner, re-read the
+   exact board row and use `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/work.py" archive <work_id>
+   --operation-id <stable-id> --expected-model-sha256 <board-sha>` for origin-backed
+   rows. An exact dotted ID without work origin stays with the legacy owner:
+   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" archive <id>` after rechecking its
+   completed state/date. Never target an originless row by title.
 
-   One confirmation per item, one helper call per item — the two map 1:1 on
-   purpose. A batched "archive all 12?" turns twelve decisions into one, and the
-   helper's own per-item ordering (append to `done-tasks.md` first, then remove
-   from `open-tasks.md`) is what makes an interrupted sweep recoverable; a batch
-   loop that answered once would throw that away.
+   A selected set is one user choice, not one atomic write. Process IDs one at a
+   time; on refusal, report completed and remaining IDs and retain the branch
+   for recovery. The legacy helper's append to `done-tasks.md` before removing
+   from `open-tasks.md` remains its interrupted-sweep recovery order.
 
-   Once every confirmed item is archived, stage `.codearbiter/open-tasks.md` and
-   `.codearbiter/done-tasks.md` — the very first archive ever run creates
-   `done-tasks.md`; that new file is expected here, not scope creep — and hand
-   off to `/ca:chore docs`, which exits through `commit-gate` (classification
-   `docs`) and `finishing-a-development-branch` as usual. `.codearbiter/` prose
-   is already a listed `docs` chore type.
+   Stage only the selected owner's changed paths: native
+   `.codearbiter/work/<work_id>.html` files, or legacy
+   `.codearbiter/open-tasks.md` and `.codearbiter/done-tasks.md` (including the
+   first-created archive file). Hand off to the `/ca:chore` lane and
+   `commit-gate` for a dedicated archive commit, then the normal PR path.
+   Do not stage journals, generated compatibility views, or unrelated work.
 
 Present a one-line summary of what was done and what was declined.
 

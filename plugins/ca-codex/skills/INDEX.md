@@ -93,7 +93,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `$ca-audit` | Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only. |
-| `$ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
+| `$ca-standup` | Daily repo hygiene — review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes. |
 
 ## Compatibility aliases
 

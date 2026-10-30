@@ -94,7 +94,7 @@ skill is invoked — never bulk-read this directory.
 |---|---|
 | `/ca-audit` | Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only. |
 | `/ca-prune` | Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn. |
-| `/ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
+| `/ca-standup` | Daily repo hygiene — review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes. |
 
 ## Compatibility aliases
 

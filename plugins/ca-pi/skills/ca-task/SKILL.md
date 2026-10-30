@@ -126,12 +126,12 @@ an ID (`/ca-task start --as <group>.<type> -- "<title>"`) to disambiguate.
   (`<plugin-root>/includes/harvest.md`), which calls this writer for you.
 - Reading the board / counts → `/ca-status` (read-only).
 - Archiving long-settled done items → `/ca-standup` owns the sweep (D-2,
-  resolved 2026-07-31). It proposes dated done items strictly more than 14 calendar
-  days old and requires a separate yes for each item before invoking
-  the same installed `taskwrite.py` with `archive <id>`. This is the helper's
-  archive verb, not a new public `/ca-task archive` mode. Undated done items are never
-  proposed automatically; standup's explicit-request and `--allow-undated` rules
-  apply. Declined items stay on the board.
+  resolved 2026-07-31). It proposes dated complete work strictly more than 14
+  calendar days old through the selected owner, then archives only the user's
+  named subset on a dedicated branch. Native items use `work.py`; origin-backed
+  legacy rows also use `work.py`, while exact-ID originless rows remain with
+  `taskwrite.py`. Undated done items are never proposed automatically; standup's
+  explicit-request and `--allow-undated` rules apply. Declined items stay put.
 - Filing a separate `chore(board)` PR just to flip a task state → task-board transitions
   (`[x]` done-flip, `[~]` start-flip, new `[ ]` add) ride the **work commit** via
   commit-gate, co-located atomically with the code that completes, starts, or spawns the
