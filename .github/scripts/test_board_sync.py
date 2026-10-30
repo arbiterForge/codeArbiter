@@ -111,6 +111,10 @@ def test_commit_gate_phase6_board_edit_exemption():
         and "unstaged changes" in phase6.lower(),
         "commit-gate Phase 6 must review selected native work and reject a staged/current mismatch",
     )
+    check(
+        "project.json" in phase6 and "staged/current" in phase6.lower(),
+        "commit-gate Phase 6 must validate the portable project identity with native work",
+    )
 
 
 # ---- AC-05: commit-gate Phase 7 stages the board edit by explicit path (T-07) --
@@ -151,6 +155,10 @@ def test_commit_gate_phase7_stages_board_edit_by_path():
         ".codearbiter/work/<work_id>.html" in phase7
         and "selected owner" in phase7.lower(),
         "commit-gate Phase 7 must stage selected native work by exact ID",
+    )
+    check(
+        ".codearbiter/work/project.json" in phase7,
+        "commit-gate Phase 7 must stage the first native item's project identity",
     )
 
 
@@ -333,20 +341,19 @@ def test_standup_archival_sweep_routes_through_chore():
         step6_lower = step6.lower()
         step6_normalized = " ".join(step6_lower.split())
 
-        clean_index = step6_normalized.find("clean working tree and index")
-        switch_default = step6_normalized.find("switch to the configured default branch")
-        fetch_default = step6_normalized.find("fetch", switch_default)
-        ff_only = step6_normalized.find("--ff-only", fetch_default)
-        create_switch = step6_normalized.find("create and switch to a fresh")
-        archive_helper = step6_normalized.find("work.py", create_switch)
-        legacy_helper = step6_normalized.find("taskwrite.py", create_switch)
+        fetch_default = step6_normalized.find("fetch the configured default")
+        create_switch = step6_normalized.find("git worktree add -b", fetch_default)
+        archive_helper = step6_normalized.find("work.py get", create_switch)
+        legacy_helper = step6_normalized.find("taskwrite.py archive", create_switch)
 
         check(
-            -1 not in [clean_index, switch_default, fetch_default, ff_only, create_switch]
-            and clean_index < switch_default < fetch_default < ff_only < create_switch,
-            f"{relative}: step 6 must require, in order, a clean working tree "
-            "and index, switching to the configured default branch, fetching it, "
-            "its --ff-only update, and creating/switching to the fresh archive branch",
+            -1 not in [fetch_default, create_switch]
+            and fetch_default < create_switch
+            and "preserve both worktrees' journals" in step6_normalized
+            and "working tree and index are clean" in step6_normalized
+            and "require the same owner" in step6_normalized,
+            f"{relative}: step 6 must fetch the default tip, create a fresh "
+            "worktree and branch, then preserve separate local journals",
         )
         check(
             archive_helper > create_switch and legacy_helper > create_switch
@@ -367,7 +374,8 @@ def test_standup_archival_sweep_routes_through_chore():
             "or the sweep writes on whatever branch is current (#573)",
         )
         check(
-            "chore" in step6_lower and "commit-gate" in step6_lower,
+            "chore" in step6_lower and "commit-gate" in step6_lower
+            and "native canonical work-state changes directly" in step6_lower,
             f"{relative}: step 6 must hand off to the chore lane, which exits "
             "through commit-gate, so the archive lands as a single in-scope "
             "docs commit (#573)",
@@ -391,6 +399,18 @@ def test_standup_archival_sweep_routes_through_chore():
         check(
             "legacy owner" in step6_normalized and "native owner" in step6_normalized,
             f"{relative}: archive must select exactly one existing owner",
+        )
+        check(
+            "taskwrite.py archive <exact-dotted-id>" in step6_normalized
+            and "taskwrite.py archive <unique-title>" in step6_normalized
+            and "exactly one completed row" in step6_normalized,
+            f"{relative}: legacy archive must retain exact ID and unique ID-less title routes",
+        )
+        check(
+            "helper-invocation.md" in t
+            and "{{plugin_root}}/hooks/" not in step6_normalized
+            and '"$py"' not in step6_normalized,
+            f"{relative}: ordinary helper calls must use the loaded installed resource",
         )
     check(seen >= 4, f"expected at least 4 rendered standup copies, found {seen}")
 
