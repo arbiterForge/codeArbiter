@@ -387,6 +387,7 @@ func TestWorkListPagesArchiveAndRejectsChangedMembership(t *testing.T) {
 	if archived["state"] != "archived" {
 		t.Fatalf("archive did not persist: %+v", archived)
 	}
+	completed := call("work-update", object{"operation_id": "list-complete-002", "work_id": created[1]["work_id"], "action": "complete", "expected": object{"revision": created[1]["revision"], "model_sha256": created[1]["model_sha256"]}})
 	first := call("work-list", object{"limit": int64(2), "budget": int64(4096)})
 	if first["total"] != int64(3) || len(model.A(first["entries"])) != 2 || first["next_offset"] != int64(2) || first["content_snapshot"] != false {
 		t.Fatalf("first page is not bounded: %+v", first)
@@ -397,16 +398,21 @@ func TestWorkListPagesArchiveAndRejectsChangedMembership(t *testing.T) {
 	}
 	states := map[string]string{}
 	origins := map[string]string{}
+	completionDates := map[string]string{}
 	for _, item := range append(model.A(first["entries"]), model.A(second["entries"])...) {
 		row := model.M(item)
 		states[model.S(row["work_id"])] = model.S(row["state"])
 		origins[model.S(row["work_id"])] = model.S(row["origin"])
+		completionDates[model.S(row["work_id"])] = model.S(row["completed_at"])
 	}
 	if len(states) != 3 || states[model.S(created[0]["work_id"])] != "archived" {
 		t.Fatalf("archived work missing from bounded list: %+v", states)
 	}
 	if origins[model.S(created[0]["work_id"])] != "checkpoint-2026-10-30#triage-1" {
 		t.Fatalf("archived work origin missing from bounded list: %+v", origins)
+	}
+	if completionDates[model.S(created[1]["work_id"])] != model.S(completed["completed_at"]) || completionDates[model.S(created[2]["work_id"])] != "" {
+		t.Fatalf("bounded list lost completion age or invented one: %+v", completionDates)
 	}
 	call("work-create", object{"operation_id": "list-create-004", "title": "New member", "intent": "Change membership", "work_type": "chore"})
 	_, err := Run(root, "work-list", object{"protocol": Protocol, "offset": first["next_offset"], "membership_sha256": first["membership_sha256"]})

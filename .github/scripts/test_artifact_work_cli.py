@@ -324,6 +324,9 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual((completed["state"], completed["check_status"]),
                          ("complete", "unknown"))
         self.assertIsNone(completed["started_at"])
+        listed = self.run_work("list")["entries"]
+        listed_completed = next(item for item in listed if item["work_id"] == first["work_id"])
+        self.assertEqual(listed_completed["completed_at"], completed["completed_at"])
         self.assertEqual(self.run_work("get", second["work_id"])["state"], "queued")
         archived = self.run_work("archive", first["work_id"],
                                  "--operation-id", "legacy-archive-001")
