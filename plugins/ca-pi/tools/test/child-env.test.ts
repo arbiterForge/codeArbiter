@@ -481,6 +481,34 @@ describe("Task 6 child environment", () => {
     }
   });
 
+  test("refuses operator values longer than the response scan overlap before launch", async () => {
+    const { ChildBrokerAuthorityError } = await loadImplementation();
+    const longCredential = "credential-" + "c".repeat(5_000);
+    const longHeader = "header-" + "h".repeat(5_000);
+    for (const [label, environment] of [
+      ["credential", { OPENAI_API_KEY: longCredential }],
+      ["operator header", { CA_PI_GATEWAY_VALUE: longHeader }],
+      ["multibyte credential", { OPENAI_API_KEY: "é".repeat(2_049) }],
+    ] as const) {
+      const { document, error, cleanup } = await projectedModels(OPERATOR_MODELS, "openai", environment);
+      try {
+        expect(document, `${label} must not reach the child`).toBeUndefined();
+        expect(error, `${label} must fail before launch`).toBeInstanceOf(ChildBrokerAuthorityError);
+        const diagnostic = `${(error as Error).message}${(error as Error).stack ?? ""}`;
+        expect(diagnostic).not.toContain(Object.values(environment)[0]!);
+      } finally {
+        await cleanup();
+      }
+    }
+    const accepted = await projectedModels(OPERATOR_MODELS, "openai", { OPENAI_API_KEY: "c".repeat(4_096) });
+    try {
+      expect(accepted.error).toBeUndefined();
+      expect(accepted.upstream?.credential).toHaveLength(4_096);
+    } finally {
+      await accepted.cleanup();
+    }
+  });
+
   test("falls back to the operator's stored api_key record when no environment variable carries one", async () => {
     const { prepareChildEnvironment } = await loadImplementation();
     const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-stored-auth-"));
@@ -513,6 +541,29 @@ describe("Task 6 child environment", () => {
       await prepared.cleanup();
     } finally {
       if (isolationRoot !== undefined) await rm(isolationRoot, { recursive: true, force: true });
+      await rm(operatorHome, { recursive: true, force: true });
+    }
+  });
+
+  test("refuses an oversized stored sensitive value even when another credential was selected", async () => {
+    const { prepareChildEnvironment, ChildBrokerAuthorityError } = await loadImplementation();
+    const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-stored-auth-bound-"));
+    const operatorAgent = join(operatorHome, ".pi", "agent");
+    const longStoredValue = "s".repeat(5_000);
+    try {
+      await mkdir(operatorAgent, { recursive: true });
+      await writeFile(join(operatorAgent, "auth.json"), JSON.stringify({
+        openai: { type: "api_key", key: longStoredValue },
+      }), "utf8");
+      await expect(prepareChildEnvironment({
+        platform: process.platform,
+        parent: {
+          ...process.env, HOME: operatorHome, USERPROFILE: operatorHome,
+          PI_CODING_AGENT_DIR: operatorAgent, OPENAI_API_KEY: PLANTED_UPSTREAM_LITERAL,
+        },
+        provider: "openai",
+      }, BROKER)).rejects.toBeInstanceOf(ChildBrokerAuthorityError);
+    } finally {
       await rm(operatorHome, { recursive: true, force: true });
     }
   });

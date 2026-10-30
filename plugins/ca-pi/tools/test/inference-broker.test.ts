@@ -208,6 +208,24 @@ describe("#455 loopback inference broker", () => {
     })).not.toThrow();
   });
 
+  test("refuses an oversized credential or header at the broker authority boundary", async () => {
+    const { InferenceBrokerError } = await loadImplementation();
+    const broker = await brokerFor(NONCE_A);
+    const longCredential = "c".repeat(5_000);
+    const longHeader = "h".repeat(5_000);
+    const authorities: { credential: string; headers: Record<string, string> }[] = [
+      { credential: longCredential, headers: {} },
+      { credential: PLANTED_UPSTREAM_LITERAL, headers: { "X-Operator": longHeader } },
+    ];
+    for (const authority of authorities) {
+      expect(() => broker.authorize({
+        nonce: NONCE_A, baseUrl: "https://api.example/v1",
+        containsSensitiveValue: containsPlantedValue,
+        ...authority,
+      })).toThrow(InferenceBrokerError);
+    }
+  });
+
   test("refuses to attach an upstream authority once the owning child has exited", async () => {
     const broker = await brokerFor(NONCE_A);
     broker.revoke();
@@ -556,6 +574,28 @@ describe("#455 loopback inference broker", () => {
     // The second half never crossed, so the frame the upstream sent is truncated in flight.
     expect(outcome.received).not.toContain(PLANTED_OPERATOR_HEADER.slice(half));
     expect(outcome.received).not.toContain(terminator);
+  });
+
+  test("catches a maximum-length credential or operator header split across writes", async () => {
+    const maximumValue = "a".repeat(2_048) + "b".repeat(2_048);
+    for (const kind of ["credential", "operator header"] as const) {
+      const upstream = await startRawUpstream((_request, response) => {
+        response.writeHead(200, { "Content-Type": "text/event-stream" });
+        response.write(maximumValue.slice(0, 2_048));
+        setTimeout(() => response.end(maximumValue.slice(2_048)), 25);
+      });
+      openUpstreams.push(upstream.server);
+      const broker = await brokerFor(NONCE_A);
+      broker.authorize({
+        nonce: NONCE_A, baseUrl: upstream.baseUrl,
+        credential: kind === "credential" ? maximumValue : PLANTED_UPSTREAM_LITERAL,
+        headers: kind === "operator header" ? { "X-Operator": maximumValue } : {},
+        containsSensitiveValue: (text) => text.includes(maximumValue) || text.includes(PLANTED_UPSTREAM_LITERAL),
+      });
+      const outcome = await clientOutcome(broker);
+      expect(outcome.received, kind).not.toContain(maximumValue);
+      expect(outcome.received, kind).not.toContain(maximumValue.slice(2_048));
+    }
   });
 
   // The filter must not be a blunt "always abort": an ordinary provider answer still arrives
