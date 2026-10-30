@@ -63,7 +63,7 @@ skill is invoked — never bulk-read this directory.
 | `$ca-doctor` | Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only. |
 | `$ca-override` | Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed. |
 | `$ca-status` | Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only. |
-| `$ca-task` | The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md. |
+| `$ca-task` | Add, start, or complete selected local work through its owning store. |
 
 ## Advanced
 

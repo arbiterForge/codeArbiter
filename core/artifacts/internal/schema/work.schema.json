@@ -24,7 +24,7 @@
         "plan_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^PLAN-[A-Z0-9-]{1,74}$"}]},
         "spec_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/specs/[a-z][a-z0-9-]*\\.html$"}]},
         "plan_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/plans/[a-z][a-z0-9-]*\\.html$"}]},
-        "origin": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,79}#[A-Z][A-Z0-9-]{1,79}$"}]},
+        "origin": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 256, "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"}]},
         "aliases": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 120}, "maxItems": 128, "uniqueItems": true}
       },
       "required": ["project_id", "title", "summary", "work_type", "spec_id", "plan_id", "spec_path", "plan_path", "origin", "aliases"],

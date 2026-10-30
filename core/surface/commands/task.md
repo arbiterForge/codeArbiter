@@ -1,9 +1,41 @@
 ---
-description: The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.
-argument-hint: "add \"<desc>\" | start <id|\"title\"> | done <id|\"title\">"
+description: Add, start, or complete selected local work through its owning store.
+argument-hint: "add \"<desc>\" | start <work-id|legacy-id|\"legacy title\"> | done <work-id|legacy-id|\"legacy title\">"
 ---
 
-# {{CMD:task}} — task-board writer
+# {{CMD:task}} — selected local work writer
+
+# Owner selection
+
+Check whether `{{PROJECT_DIR}}/.codearbiter/open-tasks.md` exists. When it does,
+that board remains the work owner. Before a board write, resolve the installed
+`hooks/work.py` through the helper card below and run `work.py list --limit 1`
+from the project worktree. Continue with the legacy board procedure only when
+the result says `owner: legacy`; a refusal (including two owners) stops the
+write without changing either store.
+When it does not, use the installed `hooks/work.py` helper for native work.
+Do not create a board as a side effect of a native task command, and do not
+write both stores. If the selected helper reports two owners or an unsafe
+store, preserve the state and report its refusal.
+
+For native `add`, use `work.py create --title=<description>
+--intent=<description> --type unknown --operation-id <stable-request-id>`.
+Pass title and intent as separate literal arguments so leading hyphens stay
+data. The request ID must be newly minted for a distinct action and reused unchanged after an
+uncertain result; retain it with the request until the result is known. If the task came from
+a durable source, also pass `--origin <source-key>` so later sessions can
+reconcile the same item. Record the returned `work_id` as the selection key.
+For native `start` and `done`, require that exact `work_id`. Read it once with
+`work.py get <work_id>`, then invoke `work.py start <work_id>` or `work.py
+complete <work_id>` with `--operation-id <stable-request-id>`,
+`--expected-revision <revision>` and `--expected-model-sha256 <model_sha256>`
+from that read. Retain all three values for an exact retry after an uncertain
+result. A title or dotted board ID is not a safe native selector. A conflict
+reports the affected identity and must not overwrite a later update.
+Read the installed helper card described below for `hooks/work.py` too, and
+invoke only the resolved installed copy with the selected Python interpreter.
+
+## Legacy board procedure
 
 The one blessed way to mutate `{{PROJECT_DIR}}/.codearbiter/open-tasks.md`
 (resolves D-1). Hand-editing the board is no longer the only path; this command keeps

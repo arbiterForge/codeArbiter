@@ -243,7 +243,7 @@ def dispatch(root, operation, request):
             entry = records[work_id]
             selected = {key: entry.get(key) for key in
                         ("work_id", "title", "work_type", "state", "check_status",
-                         "spec_id", "plan_id", "legacy_id")}
+                         "spec_id", "plan_id", "legacy_id", "origin")}
             candidate = result["entries"] + [selected]
             if len(json.dumps({**result, "entries": candidate}).encode("utf-8")) + 512 > budget:
                 if not result["entries"]:

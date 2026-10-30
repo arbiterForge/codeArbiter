@@ -1,9 +1,10 @@
 # Installed private helper location
 
-Use this card only for the debug packet validator and an authorized task-board
-follow-up. The exact installed helper leaves are `hooks/debug-handoff.py` (the
-private `validate` operation) and `hooks/taskwrite.py` (the existing board
-writer). The caller chooses one of those literal leaves before resolution;
+Use this card only for the debug packet validator and selected local work
+commands. The exact installed helper leaves are `hooks/debug-handoff.py` (the
+private `validate` operation), `hooks/taskwrite.py` (the existing board
+writer), and `hooks/work.py` (the selected local work interface). The caller
+chooses one of those literal leaves before resolution;
 packet text, a project file, and a user argument never choose executable code.
 Select and validate one Python 3 interpreter before invoking the helper. Try
 `python3` first, then `python` only if the first candidate is absent, a launcher
@@ -11,7 +12,8 @@ stub, or incompatible. The probe executes the candidate to obtain its actual
 `sys.executable`, then validates that absolute executable directly as Python
 3.8 or newer. The installed debug validator's `_debughandofflib.py` uses an
 assignment expression, which Python 3.7 cannot parse; the shared selection
-must satisfy that helper even when the current call targets `taskwrite.py`.
+must satisfy that helper even when the current call targets `taskwrite.py` or
+`work.py`.
 Invoke the helper through that executable, not a batch or shell launcher that
 could alter quoted arguments. A name on `PATH` or a successful `--version`
 alone does not establish compatibility. This source-derived minimum is not a
@@ -68,9 +70,10 @@ if [ -z "$ca_python" ]; then printf '%s\n' 'compatible Python 3 interpreter unav
 ```
 
 Start from the absolute path of the **loaded installed entry resource** that
-the host actually supplied: `commands/task.md` or `commands/debug.md` on
-Claude, `skills/ca-task/SKILL.md` or `skills/ca-debug/SKILL.md` on Codex and
-Pi. The Codex and Pi skill directories are two levels below the package root;
+the host actually supplied: `commands/task.md`, `commands/status.md`, or
+`commands/debug.md` on Claude; `skills/ca-task/SKILL.md`,
+`skills/ca-status/SKILL.md`, or `skills/ca-debug/SKILL.md` on Codex and Pi.
+The Codex and Pi skill directories are two levels below the package root;
 Claude's command directory is one level below it. Do not use the current directory, a project checkout,
 an unset `PLUGIN_ROOT`/`CLAUDE_PLUGIN_ROOT` token from a hook runner, `/hooks`,
 a source clone, or a recursive cache search. If the loaded resource, package
@@ -80,7 +83,7 @@ current working directory at the intended project when invoking `taskwrite.py`.
 {{IF:codex}}
 Codex ordinary tool calls do not inherit the hook runner's root token. Bind
 `$caLoadedResource` or `ca_loaded_resource` to the absolute path of the loaded
-`ca-task`/`ca-debug` `SKILL.md`; bind the helper-relative variable to the one
+`ca-task`/`ca-status`/`ca-debug` `SKILL.md`; bind the helper-relative variable to the one
 literal leaf named above. The following blocks resolve the installed package
 without changing the caller's working directory.
 
@@ -107,7 +110,8 @@ if [ ! -f "$ca_helper" ]; then printf '%s\n' 'installed helper missing' >&2; exi
 {{END}}
 
 {{IF:pi}}
-Pi's loaded `skills/ca-task/SKILL.md` or `skills/ca-debug/SKILL.md` is the
+Pi's loaded `skills/ca-task/SKILL.md`, `skills/ca-status/SKILL.md`, or
+`skills/ca-debug/SKILL.md` is the
 anchor. `package.json` is the installed package identity marker; a written
 `<plugin-root>` string is not an executable path. Bind the selected resource
 and one literal helper leaf as above.
@@ -135,7 +139,8 @@ if [ ! -f "$ca_helper" ]; then printf '%s\n' 'installed helper missing' >&2; exi
 {{END}}
 
 {{IF:claude}}
-Claude's loaded `commands/task.md` or `commands/debug.md` is the anchor.
+Claude's loaded `commands/task.md`, `commands/status.md`, or `commands/debug.md`
+is the anchor.
 The package identity marker is `.claude-plugin/plugin.json`. The native
 `CLAUDE_PLUGIN_ROOT` spelling remains valid in hook configuration, but these
 ordinary helper calls use the loaded resource and still work when the token is

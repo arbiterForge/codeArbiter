@@ -386,7 +386,7 @@ func (e *Engine) workList(r object) (any, error) {
 			return nil, err
 		}
 		n := d.Norm()
-		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "state": model.M(d.Data["execution"])["state"], "check_status": model.M(d.Data["execution"])["check_status"], "spec_id": n["spec_id"], "plan_id": n["plan_id"]}
+		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "state": model.M(d.Data["execution"])["state"], "check_status": model.M(d.Data["execution"])["check_status"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "origin": n["origin"]}
 		candidate := append(append([]any{}, items...), item)
 		out["entries"] = candidate
 		out["next_offset"] = int64(next + 1)

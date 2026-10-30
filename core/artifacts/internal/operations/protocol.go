@@ -273,7 +273,7 @@ func RequestSchema(op string) (object, error) {
 		add("work_type", enum("feature", "fix", "chore", "spike", "unknown"), true)
 		add("spec_id", idType(), false)
 		add("plan_id", idType(), false)
-		add("origin", object{"type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,79}#[A-Z][A-Z0-9-]{1,79}$"}, false)
+		add("origin", object{"type": "string", "maxLength": int64(256), "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"}, false)
 	case "work-get":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 	case "work-context":
