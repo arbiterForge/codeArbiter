@@ -106,6 +106,11 @@ def test_commit_gate_phase6_board_edit_exemption():
         "commit-gate SKILL.md Phase 6: the archival carve-out must state that "
         "classify_board_diff is not consulted",
     )
+    check(
+        "native work" in phase6.lower() and "work.py get" in phase6
+        and "unstaged changes" in phase6.lower(),
+        "commit-gate Phase 6 must review selected native work and reject a staged/current mismatch",
+    )
 
 
 # ---- AC-05: commit-gate Phase 7 stages the board edit by explicit path (T-07) --
@@ -141,6 +146,11 @@ def test_commit_gate_phase7_stages_board_edit_by_path():
         ),
         "commit-gate SKILL.md Phase 7: must state that open-tasks.md is staged "
         "by explicit path (not wildcard)",
+    )
+    check(
+        ".codearbiter/work/<work_id>.html" in phase7
+        and "selected owner" in phase7.lower(),
+        "commit-gate Phase 7 must stage selected native work by exact ID",
     )
 
 

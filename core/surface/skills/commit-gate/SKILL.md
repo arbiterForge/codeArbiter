@@ -210,6 +210,18 @@ Read the complete staged diff (`git diff --cached`). Flag as blocking:
 
 This does not cover a commit whose own Phase 3 classification **is** the board change — e.g. a `docs` chore whose sole content is a `{{CMD:standup}}` archival sweep (open-tasks.md removals plus the matching `done-tasks.md` append). There, the boundary was already agreed at Phase 3, so those edits are in-scope by that classification directly; `classify_board_diff` is not consulted and does not need to recognize archival as a fourth transition.
 
+**Native work co-location (ADR-0008):** use the installed `work.py list --limit 1`
+owner check before applying the board exemption. A `project_id` response selects
+native work; a dual-owner or failed read is a stop. For each staged
+`.codearbiter/work/<work_id>.html`, reject unstaged changes to that same path,
+then use installed `work.py get <work_id>` to verify the current native identity,
+state, and intended relationship to this commit. Review the exact staged diff;
+do not grant a blanket exemption to arbitrary work HTML or a change to a
+different ID. An in-scope lifecycle change rides the work commit, including a
+new queued follow-up from harvest. A standup archive belongs to its own Phase 3
+classification, as with the legacy board archive. Do not run
+`classify_board_diff` on native work or create a Markdown mirror.
+
 **Provenance re-baseline exemption (ADR-0008):** a `.codearbiter/.provenance/<doc>.json` file written by the Phase 5.5 auto-heal re-baseline is likewise **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. A heal-proposed doc or code-map edit (the claim-changed path from Phase 5.5) appears in the diff for normal review; treat it as any other finding. This exemption waives the scope-creep flag only; the secrets check is not waived — the automated re-scan in Phase 5.5 covers the provenance file.
 
 On any blocking finding, unstage the affected files, surface the finding, and STOP. An out-of-scope change that should not be lost gets an inline `[NEEDS-TRIAGE]` marker before it is set aside.
@@ -220,11 +232,11 @@ Gate: the diff is clean — zero blocking findings.
 
 ## Phase 7 — Selective stage · gate: BLOCK
 
-**First, run the follow-up harvest — before staging anything.** Run the follow-up harvest (`{{PLUGIN_ROOT}}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-asides — promote discovered follow-ups to `open-tasks.md` (work) or `open-questions.md` (decision) via the existing harvest procedure. Running this before the commit means raised board tasks are staged and ride the work commit in the same payload.
+**First, run the follow-up harvest — before staging anything.** Run the follow-up harvest (`{{PLUGIN_ROOT}}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-asides — promote discovered work through the selected owner (legacy `open-tasks.md` or native work HTML) and decisions to `open-questions.md`. Running this before the commit means raised work is staged and rides the work commit in the same payload.
 
-**Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the board additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not the board.
+**Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the selected owner's additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not local work.
 
-Then selectively stage: if files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. When a clean task-board transition was retained by the Phase 6 board-edit exemption, include `open-tasks.md` in the selective stage by explicit path (`git add open-tasks.md`) alongside the work files, so the flip rides the same commit. Include any `open-tasks.md` additions produced by the harvest step in the same explicit-path stage. When Phase 5.5 produced a re-baselined provenance record, include the affected `.codearbiter/.provenance/<doc>.json` file(s) by explicit path in the same selective stage so the re-baselined record rides the work commit. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
+Then selectively stage: if files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. For the legacy owner, retain clean board transitions and harvest additions by explicitly staging `open-tasks.md`. For the native owner, stage only validated `.codearbiter/work/<work_id>.html` paths returned or changed by the selected work operation, each by its exact ID; never stage the whole work directory or a journal. The lifecycle change rides the same work commit. When Phase 5.5 produced a re-baselined provenance record, include the affected `.codearbiter/.provenance/<doc>.json` file(s) by explicit path in the same selective stage so the re-baselined record rides the work commit. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
 
 Gate: the staged set contains exactly the intended files. MUST NOT use `git add -A`, `git add .`, or any wildcard.
 
@@ -263,4 +275,4 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` (or `knowledge.py commands`) or STOP.
 - MUST NOT silently rewrite a doc's claims — a claim-change edit proposed by Phase 5.5 goes through diff review (Phase 6), never through the silent re-baseline path. The re-baseline path is strictly for claims that still hold; the Phase 5.5 re-baseline MUST ride the work commit (staged by explicit path in Phase 7).
-- MUST, **at Phase 7 before staging**, run the follow-up harvest (`{{PLUGIN_ROOT}}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote to `open-tasks.md` (work) or `open-questions.md` (decision) so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not the board.
+- MUST, **at Phase 7 before staging**, run the follow-up harvest (`{{PLUGIN_ROOT}}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote work through the selected owner and decisions to `open-questions.md` so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not local work.
