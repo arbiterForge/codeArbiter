@@ -4,13 +4,20 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.23.5] - 2026-10-30
+## [0.23.6] - 2026-10-30
 
 ### Fixed
 
 - Refuse credentials, stored sensitive values, and operator headers longer
   than the broker's response scan overlap before launching a Pi child. Keep
   streamed responses and refuse oversized authority values at the broker.
+
+## [0.23.5] - 2026-10-30
+
+### Fixed
+
+- Detect unignored runtime markers before verification is armed, preserving
+  the native completion workspace drift boundary.
 
 ## [0.23.4] - 2026-10-29
 

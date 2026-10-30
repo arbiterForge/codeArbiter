@@ -1,8 +1,9 @@
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beforeAll,describe,expect,it} from 'vitest';
-import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
+import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
 import {geometryRecord,REVIEWED_AT,validateAtlas} from './atlas-model';
 import {nodeDetails,renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 
@@ -12,6 +13,9 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
+    const historical=readFileSync(new URL('./atlas-data/assistive-update.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
+    expect(createHash('sha256').update(historical).digest('hex'))
+      .toBe('13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50');
     const update=atlas.sourceUpdate!;
     expect(update.revision).toBe('3549ed56f5d5849116aef8d5e946423d8ee677fc');
     expect(update.changes).toHaveLength(67);
@@ -21,9 +25,28 @@ describe('assistive candidate versus retained historical routes',()=>{
     });
     let offset=0;
     for(const change of update.changes) {
+      const later=(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
+        ??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)
+        ??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
+      const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
       const end=objects.indexOf(10,offset);
       expect(end).toBeGreaterThanOrEqual(offset);
-      const header=/^([0-9a-f]{40}) blob (\d+)$/.exec(objects.subarray(offset,end).toString('utf8'));
+      const headerText=objects.subarray(offset,end).toString('utf8');
+      const header=/^([0-9a-f]{40}) blob (\d+)$/.exec(headerText);
+      // Historical PR branch objects can disappear from a fresh clone after
+      // that branch is removed. Current source still needs a reachable exact
+      // binding; the historical OID remains recorded in the retained snapshot.
+      if(headerText===`${change.blob} missing`) {
+        offset=end+1;
+        if(later) {
+          expect(execFileSync('git',['--no-replace-objects','cat-file','blob',later],{cwd:root,encoding:'utf8'})).toBe(current);
+        } else {
+          expect(execFileSync('git',['rev-parse',`HEAD:${change.path}`],{cwd:root,encoding:'utf8'}).trim()).toBe(change.blob);
+          expect(execFileSync('git',['show',`HEAD:${change.path}`],{cwd:root,encoding:'utf8'})).toBe(current);
+        }
+        expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
+        continue;
+      }
       if(!header)throw new Error(`Invalid source object: ${change.path}`);
       expect(header[1]).toBe(change.blob);
       const size=Number(header[2]);
@@ -32,11 +55,9 @@ describe('assistive candidate versus retained historical routes',()=>{
       expect(bytes.length).toBe(size);
       expect(objects[end+1+size]).toBe(10);
       offset=end+2+size;
-      const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
       // A later exact binding (the 2026-10-23 command removal, then the #1023
       // knowledge records) supersedes the PR983 bytes for its own files; the
       // PR983 blob itself stays recorded.
-      const later=CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       expect(later?execFileSync('git',['--no-replace-objects','cat-file','blob',later],{cwd:root,encoding:'utf8'}):bytes.toString('utf8')).toBe(current);
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }

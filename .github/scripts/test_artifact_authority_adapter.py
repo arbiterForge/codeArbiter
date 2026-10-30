@@ -125,9 +125,20 @@ class AuthorityAdapterTest(unittest.TestCase):
         self.root = Path(self.temp.name).resolve()
         (self.root / ".codearbiter").mkdir()
         git_run(["git", "init", "--quiet", str(self.root)], check=True)
+        empty_config = self.root / ".git" / "empty-global-gitconfig"
+        empty_config.write_text("", encoding="utf-8")
+        self.git_config_patch = mock.patch.dict(os.environ, {
+            "GIT_CONFIG_GLOBAL": str(empty_config),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_COUNT": "0",
+        })
+        self.git_config_patch.start()
         git_run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
         git_run(["git", "-C", str(self.root), "config", "user.name", "Test"], check=True)
         (self.root / "fixture.txt").write_text("fixture", encoding="utf-8")
+        (self.root / ".git" / "info" / "exclude").write_text(
+            ".codearbiter/.markers/\n", encoding="utf-8"
+        )
         git_run(["git", "-C", str(self.root), "add", "fixture.txt"], check=True)
         git_run(["git", "-C", str(self.root), "commit", "--quiet", "-m", "fixture"], check=True)
         self.candidate = self.root / "candidate"
@@ -142,7 +153,14 @@ class AuthorityAdapterTest(unittest.TestCase):
         if self.linked is not None and self.linked.exists():
             git_run(["git", "-C", str(self.root), "worktree", "remove", "--force", str(self.linked)], check=False)
         self.adapter.REGISTRY_PARENT = self.original_registry_parent
+        self.git_config_patch.stop()
         self.temp.cleanup()
+
+    def _authority_files(self):
+        roots = (self.adapter._spool_root(self.root), self.adapter._registry_root())
+        return tuple({path.name: path.read_bytes() if path.is_file() else None
+                      for path in root.iterdir()}
+                     for root in roots)
 
     def test_engine_digest_rejects_non_native_values_as_invalid_authority_state(self):
         with self.assertRaisesRegex(RuntimeError, "^INVALID_AUTHORITY_STATE:"):
@@ -162,6 +180,93 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def test_fixture_repository_is_under_its_own_root(self):
         self.assertTrue((self.root / ".git").exists())
+
+    def test_verification_refuses_unignored_runtime_markers_before_arming(self):
+        (self.root / ".git" / "info" / "exclude").write_text("", encoding="utf-8")
+        before = self._authority_files()
+        for marker_exists in (False, True):
+            with self.subTest(marker_exists=marker_exists):
+                if marker_exists:
+                    marker = self.root / ".codearbiter" / ".markers" / "mode-session-seen"
+                    marker.parent.mkdir()
+                    marker.write_text("session", encoding="utf-8")
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE:.*ignore"):
+                    self.adapter.arm_request(
+                        self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                        request_nonce=f"unignored-runtime-marker-{marker_exists}",
+                    )
+                self.assertEqual(self._authority_files(), before)
+
+    def test_verification_refuses_reincluded_marker_descendant(self):
+        (self.root / ".git" / "info" / "exclude").write_text("", encoding="utf-8")
+        (self.root / ".gitignore").write_text(
+            ".codearbiter/.markers/*\n!.codearbiter/.markers/mode.d/\n",
+            encoding="utf-8",
+        )
+        (self.root / ".codearbiter" / ".markers" / "mode.d").mkdir(parents=True)
+        before = self._authority_files()
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE:.*ignore"):
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="reincluded-mode-marker",
+            )
+        self.assertEqual(self._authority_files(), before)
+
+    def test_verification_refuses_tracked_marker_despite_ignore_rule(self):
+        marker = self.root / ".codearbiter" / ".markers" / "mode"
+        marker.parent.mkdir()
+        marker.write_text("mode", encoding="utf-8")
+        git_run(["git", "-C", str(self.root), "add", "-f", str(marker)], check=True)
+        git_run(["git", "-C", str(self.root), "commit", "--quiet", "-m", "tracked marker"], check=True)
+        before = self._authority_files()
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE:.*tracked"):
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="tracked-mode-marker",
+            )
+        self.assertEqual(self._authority_files(), before)
+
+    def test_verification_refuses_linked_marker_writer_directory(self):
+        destination = self.root / "tracked-mode-output"
+        destination.mkdir()
+        sentinel = destination / "sentinel.txt"
+        sentinel.write_text("tracked", encoding="utf-8")
+        git_run(["git", "-C", str(self.root), "add", str(sentinel)], check=True)
+        git_run(["git", "-C", str(self.root), "commit", "--quiet", "-m", "tracked destination"], check=True)
+        marker_root = self.root / ".codearbiter" / ".markers"
+        marker_root.mkdir()
+        try:
+            (marker_root / "mode.d").symlink_to(destination, target_is_directory=True)
+        except OSError as exc:
+            self.skipTest(f"directory symlink unavailable: {exc}")
+        before = self._authority_files()
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE:.*indirection"):
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="linked-mode-marker",
+            )
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "tracked")
+        self.assertEqual(self._authority_files(), before)
+
+    def test_verification_accepts_project_gitignore_for_runtime_markers(self):
+        (self.root / ".git" / "info" / "exclude").write_text("", encoding="utf-8")
+        (self.root / ".gitignore").write_text(".codearbiter/.markers/\n", encoding="utf-8")
+        git_run(["git", "-C", str(self.root), "add", ".gitignore"], check=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="project-marker-ignore",
+        )
+        self.assertEqual(armed["activity"], "verification")
+
+    def test_verification_accepts_literal_ancestor_ignore(self):
+        (self.root / ".git" / "info" / "exclude").write_text(
+            ".codearbiter/\n", encoding="utf-8",
+        )
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="ancestor-marker-ignore",
+        )
+        self.assertEqual(armed["activity"], "verification")
 
     def _authorize(self, armed, suffix="1"):
         command = (
@@ -3927,7 +4032,9 @@ class ClaudeEndToEndTest(unittest.TestCase):
         """Actual native validation; host hook events remain labeled synthetic fixtures."""
         # Native publication must remain fresh even when its complete evidence
         # history is visible to Git, as it is in real governed workspaces.
-        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
+        (self.root / ".gitignore").write_text(
+            "__pycache__/\n.codearbiter/.markers/\n", encoding="utf-8"
+        )
         bridge = self.host.load_bridge(self.plugin)
         workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
         client = workflow.client

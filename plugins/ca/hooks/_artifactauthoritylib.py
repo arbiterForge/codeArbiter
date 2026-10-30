@@ -1210,6 +1210,93 @@ def _git_text(directory: Path, *args: str) -> str:
     return decoded if "-z" in args else decoded.strip()
 
 
+def _require_marker_tree_safe(root: Path) -> None:
+    marker_root = root / ".codearbiter" / ".markers"
+    if not os.path.lexists(marker_root):
+        return
+    pending = [marker_root]
+    seen = 0
+    try:
+        while pending:
+            directory = pending.pop()
+            info = directory.lstat()
+            if (not stat.S_ISDIR(info.st_mode)
+                    or getattr(info, "st_file_attributes", 0) & 0x400):
+                raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tree contains indirection")
+            with os.scandir(directory) as entries:
+                for entry in entries:
+                    seen += 1
+                    if seen > 65536:
+                        raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tree exceeds inspection bound")
+                    child = entry.stat(follow_symlinks=False)
+                    if (stat.S_ISLNK(child.st_mode)
+                            or getattr(child, "st_file_attributes", 0) & 0x400):
+                        raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tree contains indirection")
+                    if stat.S_ISDIR(child.st_mode):
+                        pending.append(Path(entry.path))
+                    elif not stat.S_ISREG(child.st_mode):
+                        raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tree contains a special file")
+    except OSError as exc:
+        raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tree cannot be inspected") from exc
+
+
+def _require_runtime_markers_ignored(roots: set[Path]) -> None:
+    """Refuse a receipt that ordinary host bookkeeping would later invalidate."""
+    for root in roots:
+        marker_parent = root / ".codearbiter"
+        try:
+            info = marker_parent.lstat()
+        except FileNotFoundError:
+            continue  # A mapped, unenrolled worktree has no host marker writer.
+        if not stat.S_ISDIR(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", ".codearbiter is not a real directory")
+        _require_marker_tree_safe(root)
+        try:
+            checked = subprocess.run(
+                [git_executable(), "-C", str(root), "check-ignore", "--no-index",
+                 "--verbose", "-z", "--stdin"],
+                input=b".codearbiter/.markers/\0",
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+                timeout=15, env=root_bound_git_env(),
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker Git ignore status is unavailable") from exc
+        if checked.returncode == 1:
+            raise AuthorityError(
+                "UNSUPPORTED_WORKSPACE",
+                "Git does not ignore .codearbiter/.markers/ in the verification workspace; "
+                "add .codearbiter/.markers/ to its .gitignore before arming verification",
+            )
+        if checked.returncode != 0:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker Git ignore status is unavailable")
+        fields = checked.stdout.split(b"\0")
+        # A wildcard for the directory's *contents* can match the directory
+        # query while a later negation re-includes a child. Only an effective
+        # literal directory rule proves that every descendant stays ignored.
+        if (len(fields) != 5 or fields[3] != b".codearbiter/.markers/"
+                or fields[2] not in (b".codearbiter/", b"/.codearbiter/",
+                                     b".markers/", b"/.markers/",
+                                     b".codearbiter/.markers/", b"/.codearbiter/.markers/")):
+            raise AuthorityError(
+                "UNSUPPORTED_WORKSPACE",
+                "Git does not ignore the entire .codearbiter/.markers/ directory; "
+                "add .codearbiter/.markers/ to its .gitignore before arming verification",
+            )
+        try:
+            tracked = subprocess.run(
+                [git_executable(), "-C", str(root), "ls-files", "--cached", "-z", "--",
+                 ".codearbiter/.markers/"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+                timeout=15, env=root_bound_git_env(),
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tracked state is unavailable") from exc
+        if tracked.returncode != 0:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "runtime marker tracked state is unavailable")
+        if tracked.stdout:
+            raise AuthorityError("UNSUPPORTED_WORKSPACE", "tracked runtime markers would drift verification")
+
+
 def _path_identity(path: Path) -> str:
     info = path.lstat()
     reparse = getattr(info, "st_file_attributes", 0) & 0x400
@@ -1640,6 +1727,10 @@ def arm_request(
             raise AuthorityError("UNSUPPORTED_WORKSPACE", "workspace map must exactly cover declared cwd labels")
         frozen_workspaces = {label: str(_real_root(path)) for label, path in workspace_roots.items()}
     command_bindings = _bind_commands(root, context, frozen_workspaces) if activity == "verification" else []
+    if activity == "verification":
+        _require_runtime_markers_ignored(
+            {root, *(Path(binding["workspace_root"]) for binding in command_bindings)}
+        )
     if completion_selection is not None:
         _require_completion_materials(context)
         resumed = _context(root, client, artifact_id, record_id, activity,
