@@ -461,6 +461,11 @@ func (e *Engine) index(r object, budget int) (any, error) {
 	}
 	out := object{"catalog_sha256": h, "entries": empty(), "next_offset": nil, "total": int64(len(c.Order))}
 	items := empty()
+	base, err := json.Marshal(out)
+	if err != nil {
+		return nil, fault.New("INVALID_RESPONSE", "index page could not be encoded")
+	}
+	encodedSize := len(base)
 	next := offset
 	for next < len(c.Order) {
 		entry := c.Entries[c.Order[next]]
@@ -472,14 +477,20 @@ func (e *Engine) index(r object, budget int) (any, error) {
 		item["title"] = entry.Doc.Norm()["title"]
 		item["governs"] = entry.Doc.Norm()["governs"]
 		item["authority"] = authority.Status(e.FS, entry.Doc)
-		candidate := append(append([]any{}, items...), item)
-		out["entries"] = candidate
-		b, _ := json.Marshal(out)
-		if len(b)+1024 > budget {
+		row, err := json.Marshal(item)
+		if err != nil {
+			return nil, fault.New("INVALID_RESPONSE", "index row could not be encoded")
+		}
+		candidateSize := encodedSize + len(row)
+		if len(items) > 0 {
+			candidateSize++ // JSON array separator.
+		}
+		if candidateSize+1024 > budget {
 			next--
 			break
 		}
-		items = candidate
+		items = append(items, item)
+		encodedSize = candidateSize
 	}
 	if len(items) == 0 && next < len(c.Order) {
 		return nil, fault.New("RESPONSE_TOO_LARGE", "catalog record exceeds response budget")
