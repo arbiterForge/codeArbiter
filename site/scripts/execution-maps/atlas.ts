@@ -91,7 +91,7 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
 // #982 adds a Git-ignore preflight before verification arming. S32's producer
 // identity and completion drift routes retain their earlier geometry; this
 // binding is current source evidence, separate from the historical reviews.
-export const MARKER_PREFLIGHT_BLOB='9b1bf6c294d2411d1738264aa498ffbd88ec8e6c';
+export const MARKER_PREFLIGHT_BLOB='3bd569c1cbc9be1d25da7bff51429c0cd60793af';
 // #1054 caches packaged schema patterns and default presentation assets after
 // validation. Rendered artifact semantics and the reviewed map stay the same.
 export const SCHEMA_CACHE_RENDER_BLOB='916287678b836f1bf9a98782dc8e7d0bb58d6986';
