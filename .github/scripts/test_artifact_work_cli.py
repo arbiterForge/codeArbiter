@@ -118,6 +118,10 @@ class WorkCLITest(unittest.TestCase):
         continued = self.run_work("list", "--offset", str(page["next_offset"]),
                                   "--limit", "1", "--membership-sha256", page["membership_sha256"])
         self.assertEqual((len(continued["entries"]), continued["next_offset"]), (1, None))
+        self.assertEqual(
+            {entry["origin"] for entry in page["entries"] + continued["entries"]},
+            {"DECOMP-1#WORK-1", "DECOMP-1#WORK-2"},
+        )
         self.assertIn("(from DECOMP-1#WORK-1)", board.read_text(encoding="utf-8"))
         self.assertFalse((self.root / ".codearbiter" / "work").exists())
 
@@ -155,14 +159,16 @@ class WorkCLITest(unittest.TestCase):
             code = work.main(["create", "--title", "Unbound", "--intent", "Uncertain response", "--type", "fix"])
         self.assertEqual(code, 1)
         self.assertIn("--operation-id or --origin", json.loads(output.getvalue())["error"])
+        source = "checkpoint-2026-10-30#triage-1"
         first = self.run_work("create", "--title", "Promoted", "--intent", "Same logical work",
-                              "--type", "fix", "--origin", "DECOMP-CLI#WORK-001")
+                              "--type", "fix", "--origin", source)
         retried = self.run_work("create", "--title", "Promoted", "--intent", "Same logical work",
-                                "--type", "fix", "--origin", "DECOMP-CLI#WORK-001")
+                                "--type", "fix", "--origin", source)
         self.assertEqual((first["work_id"], first["operation_id"]),
                          (retried["work_id"], retried["operation_id"]))
+        self.assertEqual(self.run_work("list")["entries"][0]["origin"], source)
         changed = self.run_work("create", "--title", "Promoted again", "--intent", "Changed wording",
-                                "--type", "fix", "--origin", "DECOMP-CLI#WORK-001")
+                                "--type", "fix", "--origin", source)
         self.assertEqual(changed["work_id"], first["work_id"])
         self.assertNotEqual(changed["operation_id"], first["operation_id"])
         self.assertTrue(changed["input_differs"])

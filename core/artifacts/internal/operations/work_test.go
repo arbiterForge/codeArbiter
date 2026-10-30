@@ -377,7 +377,11 @@ func TestWorkListPagesArchiveAndRejectsChangedMembership(t *testing.T) {
 	call("init-store", object{})
 	created := []object{}
 	for i := 1; i <= 3; i++ {
-		created = append(created, call("work-create", object{"operation_id": fmt.Sprintf("list-create-%03d", i), "title": fmt.Sprintf("Item %d", i), "intent": "Page safely", "work_type": "chore"}))
+		request := object{"operation_id": fmt.Sprintf("list-create-%03d", i), "title": fmt.Sprintf("Item %d", i), "intent": "Page safely", "work_type": "chore"}
+		if i == 1 {
+			request["origin"] = "checkpoint-2026-10-30#triage-1"
+		}
+		created = append(created, call("work-create", request))
 	}
 	archived := call("work-update", object{"operation_id": "list-archive-001", "work_id": created[0]["work_id"], "action": "archive", "expected": object{"revision": created[0]["revision"], "model_sha256": created[0]["model_sha256"]}})
 	if archived["state"] != "archived" {
@@ -392,12 +396,17 @@ func TestWorkListPagesArchiveAndRejectsChangedMembership(t *testing.T) {
 		t.Fatalf("second page did not terminate: %+v", second)
 	}
 	states := map[string]string{}
+	origins := map[string]string{}
 	for _, item := range append(model.A(first["entries"]), model.A(second["entries"])...) {
 		row := model.M(item)
 		states[model.S(row["work_id"])] = model.S(row["state"])
+		origins[model.S(row["work_id"])] = model.S(row["origin"])
 	}
 	if len(states) != 3 || states[model.S(created[0]["work_id"])] != "archived" {
 		t.Fatalf("archived work missing from bounded list: %+v", states)
+	}
+	if origins[model.S(created[0]["work_id"])] != "checkpoint-2026-10-30#triage-1" {
+		t.Fatalf("archived work origin missing from bounded list: %+v", origins)
 	}
 	call("work-create", object{"operation_id": "list-create-004", "title": "New member", "intent": "Change membership", "work_type": "chore"})
 	_, err := Run(root, "work-list", object{"protocol": Protocol, "offset": first["next_offset"], "membership_sha256": first["membership_sha256"]})
