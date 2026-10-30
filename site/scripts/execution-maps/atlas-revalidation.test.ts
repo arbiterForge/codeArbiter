@@ -423,7 +423,22 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.commit).toBe(REVIEWED_AT);
     expect(atlas.scope).toContain(REVALIDATED_AT);
     expect(atlas.sources).toEqual(original.sources);
-    expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
+    const current = structuredClone(atlas.views);
+    // The selected-work overlay updates three labels, while the reviewed
+    // original and every position, edge, route, and source stay intact.
+    for (const [viewId, nodeId] of [
+      ['knowledge-operations', 'k-writer'],
+      ['knowledge-operations', 'k-board'],
+      ['debug-handoff', 'd-task'],
+    ]) {
+      const node = current.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
+      const baseline = original.views.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
+      expect(node).toBeDefined();
+      expect(baseline).toBeDefined();
+      node!.title = baseline!.title;
+      node!.body = baseline!.body;
+    }
+    expect(current.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
   });
 
   it('binds only the three reviewed runtime compatibility owners and preserves cited document ranges', () => {

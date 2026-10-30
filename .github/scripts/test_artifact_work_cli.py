@@ -78,7 +78,9 @@ class WorkCLITest(unittest.TestCase):
                         "-m", "Record first work"], check=True,
                        capture_output=True, text=True)
         with tempfile.TemporaryDirectory(prefix="ca-work-clone-") as directory:
-            clone = Path(directory) / "clone"
+            # macOS temp paths may start at /var, a link to /private/var.
+            # Pass the real parent to the engine's strict root guard.
+            clone = Path(directory).resolve(strict=True) / "clone"
             subprocess.run(["git", "clone", "--quiet", str(self.root), str(clone)],
                            check=True, capture_output=True, text=True)
             self.assertFalse((clone / ".codearbiter" / ".artifacts").exists())

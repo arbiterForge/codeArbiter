@@ -1113,7 +1113,7 @@ class DebugTerminalBoardTest(CollectorCompatibleTestCase):
         handoff = " ".join(owner.split("## Phase 5", 1)[1].split("## Hard rules", 1)[0].split())
         self.assertRegex(
             handoff,
-            r"separately authorized concrete follow-up.{0,300}/task.{0,140}taskwrite.py",
+            r"separately authorized concrete follow-up.{0,300}/task.{0,140}work.py",
         )
         self.assertIn("taskwrite.py", handoff)
         self.assertIn("--desc", handoff)
@@ -1121,15 +1121,17 @@ class DebugTerminalBoardTest(CollectorCompatibleTestCase):
         self.assertIn("helper-invocation.md", task_owner)
         self.assertIn("Keep every option before `--`", task_owner)
         self.assertIn("pass user text as one literal argument", task_owner)
-        self.assertIn("selected installed `taskwrite.py` helper", handoff)
+        self.assertIn("selected installed `work.py` helper", handoff)
+        self.assertIn("Legacy mode delegates to `taskwrite.py`", handoff)
+        self.assertIn("Native mode retains the returned stable work ID", handoff)
         self.assertIn("Python interpreter", handoff)
         self.assertIn("helper-invocation.md", handoff)
         self.assertRegex(
             handoff,
-            r"--desc.{0,120}options before `--`.{0,120}literal task description after `--`",
+            r"--desc.{0,120}options before `--`.{0,120}literal task description follows `--`",
         )
         self.assertNotIn('taskwrite.py add "<description>" --desc "<reason>"', handoff)
-        self.assertIn("never by appending to the file", handoff)
+        self.assertIn("neither mode appends directly to the board", handoff)
         self.assertIn("once per authorized item", handoff)
         self.assertIn("action, provenance, and completion evidence", handoff)
         self.assertIn("the debug disposition itself never calls that helper", handoff)

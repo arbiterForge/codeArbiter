@@ -295,6 +295,31 @@ export function originalAtlas():Atlas {
   const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
   return atlas;
 }
+/** Current selected-work labels over the immutable original atlas snapshot. */
+function applySelectedWorkRoute(atlas:Atlas):void {
+  const task=atlas.commands.find(command=>command.name==='task');
+  if(!task)throw new Error('Task route missing from atlas');
+  task.owner='work.py → native engine or legacy taskwrite.py → _taskboardlib';
+  task.steps=['Select native work or legacy board owner',
+    'Validate add, start or done through the selected writer',
+    'Persist native work state or dated board transition'];
+  task.context=['Selected work ID or legacy open-tasks.md row and current state',
+    'Requested task or harvested work'];
+  task.output='Native work item or legacy task-board transition, separate from typed plan acceptance.';
+  task.gates='Native updates require stable work ID, replay identity and expected revision/hash; legacy start stamps date and done requires in-progress. Never delete a task to complete it. A debug disposition alone never authorizes a task write; a concrete follow-up needs separate task authority.';
+  const setNode=(viewId:string,nodeId:string,title:string|undefined,body:string):void=>{
+    const node=atlas.views.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
+    if(!node || !node.layout.body)throw new Error(`Selected-work atlas node missing: ${nodeId}`);
+    if(title!==undefined){node.title=title;node.layout.title.lengths=title.split('\n').map(line=>Array.from(line).length);}
+    node.body=body;node.layout.body.lengths=body.split('\n').map(line=>Array.from(line).length);
+  };
+  setNode('knowledge-operations','k-writer','work.py → selected owner',
+    'Native work.py; legacy taskwrite.py\nStart stamps date; done needs in-progress\nNever delete an entry to mark it done');
+  setNode('knowledge-operations','k-board','Selected work transition',
+    'Native HTML or open-tasks.md state\nNot a typed-plan acceptance receipt\nLater work still selects its own lane');
+  setNode('debug-handoff','d-task',undefined,
+    'A needed task needs separate authorization, action, provenance and completion evidence.\nThe selected task owner uses work.py; legacy boards delegate to taskwrite.py.\nA design question may lead to an attributed ADR later, never by automatic conversion.');
+}
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
@@ -347,7 +372,8 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const expected=execFileSync('git',['--no-replace-objects','ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
-  atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
+  applySelectedWorkRoute(atlas);
+  atlas.scope+=` Original source links and spatial positions retained; task labels show the selected work owner. Source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
   atlas.sourceUpdate=structuredClone(assistiveUpdate);
   atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Current assistive source bindings identify inspected implementation bytes, with ${assistiveUpdate.revision} as the committed source base. Live host qualification and release are separate evidence. `+atlas.scope;

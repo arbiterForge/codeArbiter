@@ -21,7 +21,13 @@ describe('atlas source and original-composition regression contract',{timeout:30
     expect(a.commands.map(c=>c.name).sort()).toEqual([...Object.keys(catalog.commands),...Object.keys(RETIRED_COMMANDS)].sort());expect(validateAtlas(a)).toEqual([]);
     expect(a.commands.find(c=>c.name==='prune')!.invocations!.codex).toBeNull();expect(a.commands.find(c=>c.name==='statusline')!.invocations!.pi).toBeNull();
     expect(a.commands.find(c=>c.name==='cleanup')!.replacement).toBe('pr --cleanup');expect(a.commands.find(c=>c.name==='conflict')!.visibility).toBe('internal');for(const name of Object.keys(RETIRED_COMMANDS)){const retired=a.commands.find(c=>c.name===name)!;expect(name in catalog.commands).toBe(false);expect(retired.removed).toBe('2026-10-23');expect(Object.values(retired.invocations!).every(form=>form===null)).toBe(true);}expect(a.lensCount).toBe(13);
-    for(const c of originalAtlas().commands){const current=a.commands.find(x=>x.name===c.name)!;for(const key of ['steps','context','output','gates','source_ids'] as const)expect(current[key]).toEqual(c[key]);}
+    for(const c of originalAtlas().commands){const current=a.commands.find(x=>x.name===c.name)!;if(c.name==='task')continue;for(const key of ['steps','context','output','gates','source_ids'] as const)expect(current[key]).toEqual(c[key]);}
+    const task=a.commands.find(c=>c.name==='task')!;
+    expect(task.owner).toContain('work.py');
+    expect(task.owner).toContain('taskwrite.py');
+    expect(task.context.join(' ')).toContain('Selected work ID');
+    expect(a.views.find(v=>v.id==='knowledge-operations')!.nodes.find(n=>n.id==='k-writer')!.body).toContain('Native work.py; legacy taskwrite.py');
+    expect(a.views.find(v=>v.id==='debug-handoff')!.nodes.find(n=>n.id==='d-task')!.body).toContain('selected task owner uses work.py');
   });
   it('matches every original box, routed edge, label, route membership and panel',()=>{
     const a=originalAtlas();

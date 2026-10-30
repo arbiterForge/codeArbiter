@@ -71,7 +71,18 @@ describe('assistive candidate versus retained historical routes',()=>{
     expect(original.sourceUpdate).toBeUndefined();
     expect(atlas.commit).toBe(REVIEWED_AT);
     expect(atlas.sources).toEqual(original.sources);
-    expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
+    const current=structuredClone(atlas.views);
+    for(const [viewId,nodeId] of [
+      ['knowledge-operations','k-writer'],
+      ['knowledge-operations','k-board'],
+      ['debug-handoff','d-task'],
+    ]){
+      const node=current.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
+      const baseline=original.views.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
+      expect(node).toBeDefined();expect(baseline).toBeDefined();
+      node!.title=baseline!.title;node!.body=baseline!.body;
+    }
+    expect(current.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
     expect(atlas.scope).toMatch(/^Historical route snapshot/);
     expect(atlas.caveats.every(note=>note.startsWith('Historical snapshot: '))).toBe(true);
     expect(validateAtlas(atlas)).toEqual([]);
