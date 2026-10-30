@@ -260,6 +260,7 @@ EXPECTED_SUITES = {
         "test_legacy_owner_refuses_orphan_native_work_files",
         "test_legacy_title_with_origin_words_does_not_strand_create",
         "test_legacy_update_stale_snapshot_preserves_later_edit",
+        "test_legacy_work_keeps_option_like_values_as_data",
         "test_legacy_work_updates_keep_unknown_check_and_exact_identity",
         "test_local_journey_has_stable_identity_and_unknown_check",
         "test_origin_retry_repairs_archived_work_attachment",
