@@ -212,15 +212,20 @@
               "minLength": 1,
               "maxLength": 40
             },
+            "work_id": {
+              "type": "string",
+              "pattern": "^WORK-[A-F0-9]{32}$"
+            },
             "origin": {
               "type": "string",
               "minLength": 1,
               "maxLength": 200
             }
           },
-          "required": [
-            "board_id",
-            "origin"
+          "oneOf": [
+            {"type": "null"},
+            {"type": "object", "required": ["origin", "board_id"]},
+            {"type": "object", "required": ["origin", "work_id"]}
           ],
           "additionalProperties": false
         }

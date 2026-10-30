@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-10-30
+
+### Added
+
+- Expose the local work-system journey through the Codex host, including
+  stable IDs, selected context, bounded lists, and retry-safe origin links.
+- Keep existing Markdown boards authoritative until a project selects native work.
+
 ## [0.22.5] - 2026-10-30
 
 ### Fixed

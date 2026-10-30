@@ -6,7 +6,7 @@ import (
 )
 
 func TestContractsAreClosedOrderedAndKindNeutral(t *testing.T) {
-	wantNames := []string{"spec", "plan", "context", "knowledge", "decomposition"}
+	wantNames := []string{"spec", "plan", "context", "knowledge", "decomposition", "work"}
 	if got := Names(); !reflect.DeepEqual(got, wantNames) {
 		t.Fatalf("Names() = %v, want %v", got, wantNames)
 	}
@@ -17,6 +17,7 @@ func TestContractsAreClosedOrderedAndKindNeutral(t *testing.T) {
 		"context":       {Name: "context", Directory: ".codearbiter", Schema: "context"},
 		"knowledge":     {Name: "knowledge", Directory: ".codearbiter/context", Schema: "knowledge"},
 		"decomposition": {Name: "decomposition", Directory: ".codearbiter/decomposition", Schema: "decomposition"},
+		"work":          {Name: "work", Directory: ".codearbiter/work", Schema: "work"},
 	}
 	for _, name := range wantNames {
 		got, ok := Lookup(name)
@@ -27,7 +28,7 @@ func TestContractsAreClosedOrderedAndKindNeutral(t *testing.T) {
 			t.Fatalf("Lookup(%q) = %#v, want %#v", name, got, want[name])
 		}
 	}
-	for id, want := range map[string]string{"CTX-TECH-STACK": "knowledge", "DECOMP-PROJECT": "decomposition", "CONTEXT-X": "context"} {
+	for id, want := range map[string]string{"CTX-TECH-STACK": "knowledge", "DECOMP-PROJECT": "decomposition", "CONTEXT-X": "context", "WORK-ABC": "work"} {
 		if got := ForID(id); got != want {
 			t.Fatalf("ForID(%q) = %q, want %q", id, got, want)
 		}

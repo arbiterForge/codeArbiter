@@ -73,6 +73,7 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
+| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-context`, `work-update` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -244,7 +245,9 @@ A record has `type`, `title`, `statement`, `basis` (`user-reported`,
 source. A `command` record carries `argv`, `cwd`, `purpose` and `run_state`
 (`unrun` until a run is reported; a reported state is not verification). A
 decomposition `question` carries `status` and `answer`; a `work_item` may carry
-its task-board `promotion` back-reference. `knowledge` documents also hold
+its stable `work_id` and origin in its `promotion` back-reference. Older
+`board_id` back-references remain readable until their selected owner upgrades
+them. `knowledge` documents also hold
 `notes`: unclassified text with its source `origin` (path and byte offsets).
 Nothing in a record is policy: CONTEXT.md frontmatter keeps activation and stage,
 and the scope blocks in `security-controls.md` stay the operative configuration.
@@ -283,6 +286,87 @@ and the scope blocks in `security-controls.md` stay the operative configuration.
 
 The host helper `hooks/knowledge.py` wraps these for skills; see
 `core/surface/includes/knowledge.md`.
+
+## Local work items (initial slice)
+
+`work-create` mints an opaque `WORK-` identity and, for a new native project,
+an opaque portable `PROJECT-` identity in `.codearbiter/work/project.json`.
+The project identity and each work HTML file are canonical tracked state;
+`.codearbiter/.artifacts` remains the local journal, not the only copy of the
+backlog. A repository with a legacy `open-tasks.md` still uses that board as its
+work owner. The local work.py facade routes create and selected reads to the
+existing board writer. New rows store a random portable WORK- ID beside the
+board's exact (from ...) origin. Older promoted rows with no stored work ID
+use a deterministic origin-derived ID, never a title or dotted board ID. A
+caller with no origin must provide an operation ID, which becomes the stable
+correlation key. A retry finds the same item even after it moves to
+done-tasks.md. Legacy create stores the operation ID with the row and refuses
+its reuse for a different origin. It can record intent, type and initial
+spec/plan IDs as board subfields; selected context reports its omissions.
+Existing rows without an origin need selected adoption and are not assigned
+a guessed ID. Legacy listing pages the origin-backed items and reports old
+unkeyed rows separately. Start, completion and archive use an exact origin
+selector and a hash of the selected board block checked inside the board
+writer's lock. A stale retry refuses rather than overwriting a later edit;
+legacy board updates do not claim the native journal's exact replay result.
+For a legacy update whose response might be lost, save the selected
+`board_sha256` from `work-get` before the first attempt and pass it as
+`--expected-model-sha256` on both attempts. Without that option, the CLI reads
+a fresh board hash for each invocation, so repeating the command after another
+edit could act on the changed row. A repeat after a successful update with the
+original hash refuses as stale; it does not return the original result.
+Completion can record already-performed work without inventing a start date
+and leaves its check unknown. Legacy rename, later attachment and reopen
+remain unsupported through this facade. Native creation still refuses while
+the legacy board owns the project.
+
+Work titles are labels, never lookup keys. `work-get` reads a selected ID
+directly, including archived work. `work-list` pages active and archived IDs,
+reading only the selected page's work models. Its membership digest rejects a
+continuation after a create; it is not a frozen content snapshot. `work-create`
+with a local `ARTIFACT#SYMBOL` origin scans active
+and archived items for that correlation key and returns the matching stable ID
+on retry. A retry with the same title, intent and type can fill a missing spec
+or plan attachment after an interrupted promotion, even when the item is
+archived. The repair checks the exact pair and journals only the selected work
+file; it returns `attachment_repaired: true` without changing progress or check
+status. A conflicting existing attachment or changed intent returns the
+current item with `input_differs: true` and does not overwrite it.
+The `work.py create` facade requires a caller-stable `--operation-id` or
+`--origin` so an uncertain response can be retried without minting a second
+item. A changed request with the same origin receives a distinct operation ID
+and reports the current item or the scoped attachment repair.
+The facade also requires `--operation-id` for updates. An exact retry supplies
+the same expected revision and model SHA-256; reusing the ID against later
+state refuses a changed request instead of overwriting that state.
+`work-update` uses revision plus model SHA-256 CAS and the ordinary journal for
+rename, attachment, start, completion, reopen and archive. Exact spec and plan
+IDs are checked when attached; the work HTML links to their canonical pages.
+Completion records local progress and leaves `check_status: unknown`. This
+slice has no operation to assert a passing check or remote delivery.
+
+Native `work-context` returns bounded selected work plus current attached
+document identities and concise summaries. Its `assessment: advisory` and
+`context_complete: false` fields prevent a summary from impersonating a full
+source read. Legacy `work-context` returns selected `work`,
+`context_complete: false`, and `omitted`; it does not include `assessment` or
+attached-document summaries. Read those attachments by exact artifact ID when
+needed. The native work page joins intent, progress, check status and
+links to the separate spec and plan. `hooks/work.py` exposes the same local
+journey to an agent without another approval workflow. Tracker providers,
+legacy adoption and broader task-board routing are future slices.
+
+The facade also accepts `--request -` with one UTF-8 JSON object of at most
+64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
+The closed operation set is `work-create`, `work-get`, `work-list`,
+`work-context` and `work-update`. The selected owner validates the
+operation-specific request and returns one JSON result. Native `work-update`
+requires `expected: {"revision": N, "model_sha256": "..."}`. Legacy
+`work-update` accepts `operation_id`, `work_id`, `action` (start, complete or
+archive), and `expected_board_sha256` instead of `expected`. The legacy
+`work-context` request accepts `work_id` and optional `budget`, but its result
+has the omissions described above. The stable operation ID and owner-specific
+CAS rules still apply, including on an uncertain retry.
 
 ## Advisory scheduling and ordinary progress
 
