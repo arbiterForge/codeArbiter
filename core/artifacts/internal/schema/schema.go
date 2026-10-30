@@ -21,6 +21,7 @@ var once sync.Once
 var registry map[string]any
 var initialization error
 var vocabulary = map[string]bool{}
+var packagedPatterns map[string]*regexp.Regexp
 
 func names() []string {
 	out := []string{"common"}
@@ -36,6 +37,7 @@ func initRegistry() {
 		vocabulary[k] = true
 	}
 	registry = map[string]any{}
+	packagedPatterns = map[string]*regexp.Regexp{}
 	for _, name := range names() {
 		b, e := source.ReadFile(name + ".schema.json")
 		if e != nil {
@@ -56,13 +58,13 @@ func initRegistry() {
 		registry[name] = v
 	}
 	for _, name := range names() {
-		if e := check(registry[name], 0); e != nil {
+		if e := check(registry[name], 0, packagedPatterns); e != nil {
 			initialization = e
 			return
 		}
 	}
 }
-func check(v any, depth int) error {
+func check(v any, depth int, patterns map[string]*regexp.Regexp) error {
 	if depth > 128 {
 		return fmt.Errorf("schema nesting too deep")
 	}
@@ -83,22 +85,26 @@ func check(v any, depth int) error {
 				return e
 			}
 		case "pattern":
-			if _, e := regexp.Compile(v.(string)); e != nil {
+			r, e := regexp.Compile(v.(string))
+			if e != nil {
 				return e
+			}
+			if patterns != nil {
+				patterns[v.(string)] = r
 			}
 		case "$defs", "properties":
 			for _, s := range v.(map[string]any) {
-				if e := check(s, depth+1); e != nil {
+				if e := check(s, depth+1, patterns); e != nil {
 					return e
 				}
 			}
 		case "items", "additionalProperties", "propertyNames":
-			if e := check(v, depth+1); e != nil {
+			if e := check(v, depth+1, patterns); e != nil {
 				return e
 			}
 		case "oneOf", "anyOf", "allOf":
 			for _, s := range v.([]any) {
-				if e := check(s, depth+1); e != nil {
+				if e := check(s, depth+1, patterns); e != nil {
 					return e
 				}
 			}
@@ -164,7 +170,7 @@ func ValidateWith(s any, v any) []fault.Error {
 	if initialization != nil {
 		return []fault.Error{{Code: "SCHEMA_PACKAGE_INVALID", Message: initialization.Error()}}
 	}
-	if e := check(s, 0); e != nil {
+	if e := check(s, 0, nil); e != nil {
 		return []fault.Error{{Code: "SCHEMA_PACKAGE_INVALID", Message: e.Error()}}
 	}
 	var out []fault.Error
@@ -372,7 +378,11 @@ func validateWithPatterns(s, v any, path string, depth int, out *[]fault.Error, 
 		if pattern, ok := m["pattern"].(string); ok {
 			r, cached := patterns[pattern]
 			if !cached {
-				r, _ = regexp.Compile(pattern)
+				r = packagedPatterns[pattern]
+				if r == nil {
+					// ValidateWith can supply a checked schema beyond the package.
+					r, _ = regexp.Compile(pattern)
+				}
 				patterns[pattern] = r
 			}
 			if r == nil || !r.MatchString(x) {
