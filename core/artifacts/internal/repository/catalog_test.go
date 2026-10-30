@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
@@ -104,4 +106,63 @@ func TestContextRepresentationBoundary(t *testing.T) {
 			t.Fatalf("legacy coexistence: %v", err)
 		}
 	})
+}
+
+func TestCatalogScanBoundsAncestorChecks(t *testing.T) {
+	root := testutil.Root(t)
+	dir := filepath.Join(root, ".codearbiter", "specs")
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 20; i++ {
+		v := testutil.Spec()
+		v["artifact_id"] = fmt.Sprintf("SPEC-ABSENT-%02d", i)
+		v["slug"] = fmt.Sprintf("absent-%02d", i)
+		body, err := render.Render(testutil.Seal(t, v))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("absent-%02d.html", i)), body, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	stats := &store.OpenStats{}
+	f.Stats = stats
+	if _, err := Scan(f); err != nil {
+		t.Fatal(err)
+	}
+	if stats.AncestorChecks > 8 || stats.FileOpens != 20 {
+		t.Fatalf("catalog scan repeated path descent or skipped view verification: %+v", stats)
+	}
+}
+
+func TestCatalogScanRejectsNonportableName(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows cannot create the nonportable filename")
+	}
+	root := testutil.Root(t)
+	dir := filepath.Join(root, ".codearbiter", "specs")
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	body, err := render.Render(testutil.Seal(t, testutil.Spec()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "CON.html"), body, 0600); err != nil {
+		t.Fatal(err)
+	}
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	if _, err := Scan(f); fault.Code(err) != "UNSAFE_PATH" {
+		t.Fatalf("nonportable catalog path: %v", err)
+	}
 }
