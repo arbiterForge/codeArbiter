@@ -12,6 +12,15 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-10-30
+
+### Added
+
+- Add a local work-system journey with stable work IDs, selected artifact
+  context, lifecycle updates, bounded lists, and retry-safe origin links.
+- Retain the Markdown board as the sole owner in existing projects while new
+  native projects use one work owner.
+
 ## [3.4.5] - 2026-10-30
 
 ### Fixed
