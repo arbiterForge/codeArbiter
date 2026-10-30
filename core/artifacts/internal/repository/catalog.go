@@ -9,6 +9,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
 	"os"
 	"path"
 	"strings"
@@ -67,28 +68,49 @@ func scanContracts(f *store.FS, contracts []kind.Contract, codecs map[string]kin
 			activeFound = true
 		}
 		dir := contract.Directory
-		files, e := f.List(dir)
+		anchor, e := f.OpenDir(dir)
 		if os.IsNotExist(e) {
 			continue
 		}
 		if e != nil {
 			return nil, e
 		}
+		defer anchor.Close()
+		files, e := anchor.Entries()
+		if e != nil {
+			return nil, e
+		}
+		// A strict catalog rejects indirection anywhere in its directory,
+		// including entries outside the active representation.
+		for _, file := range files {
+			if file.Type()&(os.ModeSymlink|os.ModeIrregular) != 0 {
+				return nil, fault.New("UNSAFE_PATH", "symlink or reparse point encountered in scanned directory")
+			}
+		}
 		for _, file := range files {
 			if file.IsDir() || !strings.HasSuffix(file.Name(), codec.Extension) {
 				continue
 			}
 			p := path.Join(dir, file.Name())
+			if !validate.Path(p, false) {
+				return nil, fault.At("UNSAFE_PATH", "", p, "nonportable artifact path")
+			}
 			if len(out.Order) >= MaxArtifacts {
 				return nil, fault.At("MAX_ARTIFACTS", "", p, "live artifact count exceeds 1024")
 			}
 			legacy := strings.TrimSuffix(p, codec.Extension) + ".md"
-			if _, err := f.Read(legacy, canonical.MaxBytes); err == nil {
-				return nil, fault.New("AMBIGUOUS_ARTIFACT", "HTML and Markdown coexist for a canonical slug; use reviewed pair cutover")
-			} else if !os.IsNotExist(err) {
+			legacyExists, err := anchor.Has(path.Base(legacy))
+			if err != nil {
 				return nil, err
 			}
-			b, e := f.Read(p, canonical.MaxBytes)
+			if legacyExists {
+				if _, err := f.Read(legacy, canonical.MaxBytes); err == nil {
+					return nil, fault.New("AMBIGUOUS_ARTIFACT", "HTML and Markdown coexist for a canonical slug; use reviewed pair cutover")
+				} else if !os.IsNotExist(err) {
+					return nil, err
+				}
+			}
+			b, _, e := anchor.ReadEntry(file, canonical.MaxBytes)
 			if e != nil {
 				return nil, e
 			}
@@ -109,6 +131,17 @@ func scanContracts(f *store.FS, contracts []kind.Contract, codecs map[string]kin
 			}
 			out.Entries[d.ID()] = Entry{p, b, d}
 			out.Order = append(out.Order, d.ID())
+		}
+		// Anchored reads avoid repeated ancestor opens. Verify that the path
+		// still names the directory we scanned before using its catalog.
+		parent, e := f.OpenDir(path.Dir(dir))
+		if e != nil {
+			return nil, e
+		}
+		e = parent.Current(path.Base(dir), anchor)
+		parent.Close()
+		if e != nil {
+			return nil, e
 		}
 	}
 	if !activeFound {
