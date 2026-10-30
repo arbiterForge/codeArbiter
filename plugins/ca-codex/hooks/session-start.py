@@ -48,6 +48,7 @@ from _standuplib import (  # noqa: E402
     stale_worktree_candidates,
 )
 import _taskboardlib  # noqa: E402 — shared task-board count/staleness logic
+from _arbiterstatelib import native_work_selected  # noqa: E402 — selected owner parity
 import _provenancelib  # noqa: E402 — shared provenance drift detection (T-16)
 import _knowledgelib  # noqa: E402 — narrative context format (no engine call)
 import _updatelib  # noqa: E402 — update-available notifier (cache read + notice text)
@@ -1291,8 +1292,8 @@ def main():
 
     ot = os.path.join(root, ".codearbiter", "open-tasks.md")
     ot_text = read_text(ot)
-    emit_task_summary(ot_text, native_work=os.path.lexists(
-        os.path.join(root, ".codearbiter", "work")))
+    emit_task_summary(ot_text, native_work=native_work_selected(
+        os.path.join(root, ".codearbiter")))
 
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
     _drift = provenance_drift_line(root, report_unknown=True)

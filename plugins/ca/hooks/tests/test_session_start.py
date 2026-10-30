@@ -66,6 +66,22 @@ STALE_CACHE_PIN = (
     '\\hooks\\statusline.py"')
 
 
+class TestSelectedTaskSummary(unittest.TestCase):
+    def test_empty_work_directory_keeps_legacy_summary(self):
+        with tempfile.TemporaryDirectory() as root:
+            cad = os.path.join(root, ".codearbiter")
+            os.mkdir(cad)
+            with open(os.path.join(cad, "open-tasks.md"), "w", encoding="utf-8") as f:
+                f.write("- [ ] t.t.0001 - a task\n")
+            os.mkdir(os.path.join(cad, "work"))
+            self.assertFalse(_mod.native_work_selected(cad))
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                _mod.emit_task_summary("- [ ] t.t.0001 - a task\n",
+                                       native_work=_mod.native_work_selected(cad))
+            self.assertIn("in-flight tasks: 1", output.getvalue())
+
+
 class TestHasSource(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()

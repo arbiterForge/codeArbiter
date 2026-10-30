@@ -158,6 +158,22 @@ def _arbiter_enabled(ctx_path, frontmatter_enabled=None, ctx_text=None):
         return False
 
 
+def native_work_selected(cad):
+    """Mirror work.py's owner choice without starting the artifact engine."""
+    work_dir = os.path.join(cad, "work")
+    if not os.path.isfile(os.path.join(cad, "open-tasks.md")):
+        return os.path.lexists(work_dir)
+    if not os.path.lexists(work_dir):
+        return False
+    if not os.path.isdir(work_dir) or os.path.islink(work_dir):
+        return True  # Invalid dual-owner state remains visible to the reader.
+    try:
+        with os.scandir(work_dir) as entries:
+            return next(entries, None) is not None
+    except OSError:
+        return True
+
+
 def arbiter_state(root, count_in_flight=None, read_board=None, frontmatter_enabled=None,
                    ctx_text=None, ot_text=None, oq_text=None):
     cad = os.path.join(root, ".codearbiter")
@@ -208,8 +224,8 @@ def _arbiter_state_uncached(cad, count_in_flight=None, read_board=None, frontmat
     ot_path = os.path.join(cad, "open-tasks.md")
     # Native work state belongs to the artifact engine. This hot status reader
     # cannot infer in-flight state from filenames or launch that engine on each
-    # render. A work directory also makes a retained legacy board ambiguous.
-    if os.path.lexists(os.path.join(cad, "work")):
+    # render. An empty work directory does not displace a retained legacy board.
+    if native_work_selected(cad):
         tasks = "?"
     elif count_in_flight is not None:
         board_text = ot_text if ot_text is not None else (read_board(ot_path) or "")
