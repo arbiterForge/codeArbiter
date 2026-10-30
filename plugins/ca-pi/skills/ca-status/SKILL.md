@@ -50,10 +50,14 @@ The orchestrator reads and presents:
    board's in-flight count if it reports `owner: legacy`
    (top-level `- ` bullets excluding done `- [x]`; the same `_taskboardlib` count the
    SessionStart hook uses).
-   Otherwise page `work.py list`
-   with its returned `next_offset` and `membership_sha256`. Count `queued` and
-   `active` entries; exclude `complete` and `archived`. Stop on an unavailable
-   page, changed membership, or an unsafe store and report the count as unknown.
+   Otherwise page `work.py list --limit 64` with its returned `next_offset` and
+   `membership_sha256`, up to 256 entries total. Count `queued` and `active`;
+   exclude `complete` and `archived`. If the first page reports more than 256
+   entries, or a later page remains after the cap, report the count as unknown
+   with the total and suggest `work.py list` for selected pages. Stop on an
+   unavailable page, changed membership, or an unsafe store and report the
+   count as unknown. This cap avoids repeated full-directory scans for one
+   display count.
    This selected read is for the explicit status command, not a new native-engine
    call on every statusline or SessionStart frame.
 4. **Open questions** — the count of unresolved `[CONFIRM-NN]` placeholders in

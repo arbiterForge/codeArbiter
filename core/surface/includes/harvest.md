@@ -40,10 +40,13 @@ as a **GitHub issue**, not the board.
    It drops an origin already present on the board or in the archive. Before
    applying any result, run the installed `work.py list --limit 1` owner check
    used by `{{CMD:task}}`; a dual owner refuses the write. If the board is absent,
-   page `work.py list` through `next_offset` and `membership_sha256`, collecting
-   the returned origins across active and archived work. Drop candidates whose
-   exact origin is already present. A stale page or failed read stops this
-   harvest without a partial preview. Neither path writes during preview.
+   first call `promote("", questions, candidates, mode="interactive", today=...)`
+   to omit decisions already filed in `open-questions.md`. Query the remaining
+   work origins in batches of at most 32 with the installed `work.py origins`
+   (`--origin=<source-key>` for each exact key). It checks active and archived
+   work in one bounded native read per batch. Omit matched work origins from
+   the preview; a failed query stops this harvest without a partial preview.
+   Neither path writes during preview.
 3. **Confirm.**
    - **Interactive (`/feature`, manual):** present the fresh list as ONE batch — promote
      these N? The user may edit/drop/re-tag before yes. On **decline**, write nothing to

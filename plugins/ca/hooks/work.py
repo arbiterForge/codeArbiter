@@ -66,6 +66,8 @@ def _parser():
     listing.add_argument("--limit", type=int, default=32)
     listing.add_argument("--membership-sha256")
     listing.add_argument("--budget", type=int, default=16384)
+    origins = sub.add_parser("origins", help="Find exact source keys across active and archived work")
+    origins.add_argument("--origin", action="append", required=True)
     for verb in ("rename", "attach", "start", "complete", "reopen", "archive"):
         command = sub.add_parser(verb)
         command.add_argument("work_id")
@@ -105,6 +107,8 @@ def _dispatch(args, client):
         if args.membership_sha256:
             request["membership_sha256"] = args.membership_sha256
         return client.call("work-list", request)
+    if args.verb == "origins":
+        return client.call("work-origins", {"origins": args.origin})
 
     if not args.operation_id:
         raise ValueError(f"{args.verb} needs --operation-id so an uncertain result can be retried without overwriting later work")
@@ -148,7 +152,7 @@ def _dispatch_request(payload, client):
         raise ValueError("unsupported work request schema")
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
-        "work-create", "work-get", "work-context", "work-list", "work-update"
+        "work-create", "work-get", "work-context", "work-list", "work-origins", "work-update"
     }:
         raise ValueError("unsupported work operation")
     if type(payload["request"]) is not dict:
