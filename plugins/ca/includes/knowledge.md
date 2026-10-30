@@ -42,6 +42,20 @@ never adds, removes or relaxes a control.
   commands.
 - A plan task's `task-context` packet already includes its relevant knowledge.
 
+For a selected project work item, resolve the installed `hooks/work.py` through
+`includes/helper-invocation.md` and read `work.py context <work_id>` once. The
+result identifies the selected work and its attached spec/plan, but explicitly
+reports `context_complete: false`; it is not a source or check result. If a
+plan task is selected, use that plan's `task-context` with its current model
+hash: it batches the task, referenced criteria, dependencies and path-scoped
+knowledge. For work without a selected plan task, identify the actual source
+paths from the work and current repository, then make one `knowledge.py relevant`
+call with those paths. Read named omitted or unresolved records by exact ID
+when needed. Do not scan every spec or plan to guess a match from a title.
+Read existing open questions and relevant ADR headings index-first when a
+decision matters; neither work context nor knowledge records replace those
+owners. In a Markdown project, use its existing context documents directly.
+
 A missing or unknown fact is a gap to note or ask about when it matters to the
 task in hand, not a reason to stop unrelated work.
 
