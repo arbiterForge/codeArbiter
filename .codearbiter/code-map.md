@@ -17,14 +17,14 @@ catalogs; source inspection is not live-host or publication qualification.
 ## Native artifact engine
 
 - `core/artifacts/cmd/ca-artifact/` — Native CLI accepting bounded JSON requests and returning protocol envelopes.
-- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, and context-document operations.
+- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle.
 - `core/artifacts/internal/model/` — Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.
 - `core/artifacts/schemas/` — Versioned JSON contracts for typed artifacts and operations.
-- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan HTML, knowledge/decomposition HTML, and project-context Markdown.
+- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan, knowledge/decomposition, and work HTML, plus project-context Markdown.
 - `core/artifacts/internal/read/` — Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.
 - `core/artifacts/internal/symbol/` — Stable symbol references and resolution.
 - `core/artifacts/internal/evidence/` — Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.
-- `core/artifacts/internal/render/` — Deterministic offline HTML with stable anchors, safe escaping, and separate progress/evidence labels.
+- `core/artifacts/internal/render/` — Deterministic offline HTML for artifacts and work with stable anchors, safe escaping, and separate progress/evidence labels.
 - `core/artifacts/internal/store/` — Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.
 - `core/artifacts/internal/contextdocument/` — Five-document Markdown ownership, bounded typed content, preview/apply, provenance contracts, and Markdown-to-HTML knowledge conversion.
 - `tools/build-artifacts.py` — Pinned-toolchain native payload build and qualification metadata.
@@ -38,7 +38,8 @@ catalogs; source inspection is not live-host or publication qualification.
 - `core/pysrc/_reconciliationlib.py` — Legacy reconciliation history and captured-reply recovery preserving original observations, operation IDs, and revision bindings.
 - `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.
 - `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.
-- `core/pysrc/_taskboardlib.py` — Board schema and counters; taskwrite.py owns mutations and archival.
+- `core/pysrc/_taskboardlib.py` — Legacy board schema and counters; taskwrite.py owns its mutations and archival.
+- `core/pysrc/_worklib.py` and `work.py` — Selected legacy-board adapter and native work CLI; stable work IDs select lifecycle and context operations.
 - `core/pysrc/knowledge.py` — Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.
 - `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.
 
@@ -65,8 +66,9 @@ without restoring an extra permission layer for already-authorized work.
 
 ## Project records
 
-- `.codearbiter/` — Five context documents, provenance, specs/plans, open decisions, protected release declarations, task boards, and audit records.
-- `.codearbiter/open-tasks.md` — Helper-only mutable board; done-tasks.md is append-only archived history.
+- `.codearbiter/` — Five context documents, provenance, specs/plans, native work, open decisions, protected release declarations, legacy task boards, and audit records.
+- `.codearbiter/work/` and `.codearbiter/work/project.json` — Portable native work items and project identity in repositories that select the native owner.
+- `.codearbiter/open-tasks.md` — Legacy work owner when present; helper-only mutable board with done-tasks.md as append-only archived history.
 - `.codearbiter/decisions/` — Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043's assistive contract.
 - `.codearbiter/release-targets.md` — Four protected executable target declarations with pre-tag/build/generation ownership.
 

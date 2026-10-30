@@ -82,8 +82,9 @@ selected legacy path until an explicit supported migration; small work remains
 inline. Neither a capability failure nor a format change authorizes a raw rewrite.
 
 The five project-context documents are Markdown; their safe writer and provenance
-format are separate from spec/plan HTML. Task boards, questions, audit logs,
-release targets, and ADR history retain their existing owners. Reading state
+format are separate from spec/plan HTML. Legacy task boards keep their owner;
+new local work can use portable native work records and a project identity.
+Questions, audit logs, release targets, and ADR history retain their owners. Reading state
 does not establish that it is fresh, verified, accepted, or released.
 
 ## Domain vocabulary
