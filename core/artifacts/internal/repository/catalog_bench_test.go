@@ -12,7 +12,7 @@ import (
 )
 
 func BenchmarkCatalogScan(b *testing.B) {
-	for _, count := range []int{0, 20, 200} {
+	for _, count := range []int{0, 20, 200, MaxArtifacts} {
 		b.Run(fmt.Sprintf("artifacts-%d", count), func(b *testing.B) {
 			root := testutil.Root(b)
 			dir := filepath.Join(root, ".codearbiter", "specs")
@@ -48,6 +48,7 @@ func BenchmarkCatalogScan(b *testing.B) {
 			}
 			b.ReportMetric(float64(stats.DirOpens)/float64(b.N), "dir-opens/op")
 			b.ReportMetric(float64(stats.FileOpens)/float64(b.N), "file-opens/op")
+			b.ReportMetric(float64(stats.AncestorChecks)/float64(b.N), "ancestor-checks/op")
 			b.ReportMetric(float64(stats.EntryChecks)/float64(b.N), "entry-checks/op")
 		})
 	}

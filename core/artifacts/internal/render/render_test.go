@@ -3,9 +3,11 @@ package render_test
 import (
 	"bytes"
 	"encoding/base64"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
+	"strings"
 	"testing"
 )
 
@@ -91,6 +93,9 @@ func TestSafeBrand(t *testing.T) {
 	if e := render.CheckLogo(render.DefaultLogo()); e != nil {
 		t.Fatal(e)
 	}
+	if e := render.CheckLogo(render.DefaultLogo() + " "); e == nil {
+		t.Fatal("changed embedded logo URI bypassed canonical validation")
+	}
 	for _, s := range []string{`<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"></svg>`, `<svg><script/></svg>`, `<svg><image href="https://x"/></svg>`, `<!DOCTYPE svg><svg/>`, `<svg><path fill="url(https://x)"/></svg>`, `<svg><foreignObject/></svg>`, `<svg width="100000"/>`, `<svg><path fill="url(#absent)"/></svg>`} {
 		if _, e := render.Logo("image/svg+xml", []byte(s)); e == nil {
 			t.Errorf("unsafe logo: %s", s)
@@ -98,5 +103,13 @@ func TestSafeBrand(t *testing.T) {
 	}
 	if e := render.CheckLogo("data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("fake"))); e == nil {
 		t.Fatal("fake PNG accepted")
+	}
+}
+
+func TestRenderStillRejectsChangedStylesheetIdentity(t *testing.T) {
+	v := testutil.Spec()
+	model.M(v["presentation"])["stylesheet_sha256"] = strings.Repeat("0", 64)
+	if _, err := render.Render(testutil.Seal(t, v)); fault.Code(err) != "STYLE_MISMATCH" {
+		t.Fatalf("changed stylesheet identity was accepted: %v", err)
 	}
 }
