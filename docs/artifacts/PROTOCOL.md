@@ -316,9 +316,10 @@ the legacy board owns the project.
 
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
-reading only the selected page's work models. Its membership digest rejects a
-continuation after a create; it is not a frozen content snapshot. `work-create`
-with a local `ARTIFACT#SYMBOL` origin scans active
+reading only the selected page's work models, including each origin for
+deduplication. Its membership digest rejects a continuation after a create; it
+is not a frozen content snapshot. `work-create` with a bounded local
+`SOURCE#ITEM` origin (including `ARTIFACT#SYMBOL` and harvest source keys) scans active
 and archived items for that correlation key and returns the matching stable ID
 on retry. A retry with the same title, intent and type can fill a missing spec
 or plan attachment after an interrupted promotion, even when the item is
@@ -344,8 +345,9 @@ identities and concise summaries. Its `assessment: advisory` and
 `context_complete: false` fields prevent a summary from impersonating a full
 source read. The generated work page joins intent, progress, check status and
 links to the separate spec and plan. `hooks/work.py` exposes the same local
-journey to an agent without another approval workflow. Tracker providers,
-legacy adoption and broader task-board routing are future slices.
+journey to an agent without another approval workflow. Task and status callers
+select the existing legacy board or native work owner; broader caller routing,
+tracker providers and legacy adoption remain future slices.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
