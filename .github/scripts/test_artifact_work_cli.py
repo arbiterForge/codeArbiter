@@ -149,6 +149,22 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(output.getvalue())["code"], "RESPONSE_TOO_LARGE")
 
+    def test_legacy_work_keeps_option_like_values_as_data(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        request = {"operation_id": "dash-values-001", "title": "-h",
+                   "intent": "-MVP login.", "work_type": "fix", "origin": "-a#1"}
+        created = _worklib.dispatch(str(self.root), "work-create", request)
+        self.assertEqual((created["title"], created["intent"], created["origin"]),
+                         ("-h", "-MVP login.", "-a#1"))
+        started = _worklib.dispatch(str(self.root), "work-update", {
+            "operation_id": "dash-values-start-001", "work_id": created["work_id"],
+            "expected_board_sha256": created["board_sha256"], "action": "start",
+        })
+        self.assertEqual((started["work_id"], started["state"]),
+                         (created["work_id"], "active"))
+
     def test_create_requires_a_replay_identity_and_origin_reuses_one_item(self) -> None:
         output = io.StringIO()
         with contextlib.redirect_stdout(output):

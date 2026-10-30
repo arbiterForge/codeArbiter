@@ -653,7 +653,7 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight",
                                or "(" in origin or ")" in origin):
         return "bad --from: expected bounded single-line text without parentheses"
     if work_type is not None and work_type not in ("feature", "fix", "chore", "spike", "unknown"):
-        return "bad --work-type: expected feature, fix, chore or spike"
+        return "bad --work-type: expected feature, fix, chore, spike or unknown"
     if work_id is not None and (not isinstance(work_id, str)
                                or re.fullmatch(r"WORK-[A-F0-9]{32}", work_id) is None):
         return "bad --work-id: expected one opaque work ID"

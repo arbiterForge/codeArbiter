@@ -179,13 +179,14 @@ def dispatch(root, operation, request):
         for field in ("spec_id", "plan_id"):
             if request.get(field) is not None and not isinstance(request[field], str):
                 raise ValueError(f"{field} must be one artifact ID")
-        args = ["add", request["title"], "--from", source, "--desc", request["intent"],
-                "--work-type", request["work_type"],
+        args = ["add", "--from=" + source, "--desc=" + request["intent"],
+                "--work-type=" + request["work_type"],
                 "--work-id", "WORK-" + secrets.token_hex(16).upper(),
-                "--work-operation-id", operation_id]
+                "--work-operation-id=" + operation_id]
         for field, flag in (("spec_id", "--spec-id"), ("plan_id", "--plan-id")):
             if request.get(field) is not None:
-                args.extend((flag, request[field]))
+                args.append(flag + "=" + request[field])
+        args.extend(("--", request["title"]))
         output, errors = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
             code = taskwrite.main(args, root=root)
@@ -265,7 +266,7 @@ def dispatch(root, operation, request):
             raise ValueError("legacy work update needs an expected board SHA-256")
         current = dispatch(root, "work-get", {"work_id": request.get("work_id")})
         args = [("done" if action == "complete" else action),
-                current["work_id"], "--from", current["origin"]]
+                current["work_id"], "--from=" + current["origin"]]
         output, errors = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
             code = taskwrite.main(args, root=root, expected_work_id=current["work_id"],
