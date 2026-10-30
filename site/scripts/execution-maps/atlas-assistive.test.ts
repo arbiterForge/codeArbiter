@@ -1,4 +1,5 @@
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beforeAll,describe,expect,it} from 'vitest';
@@ -12,6 +13,9 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
+    const historical=readFileSync(new URL('./atlas-data/assistive-update.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
+    expect(createHash('sha256').update(historical).digest('hex'))
+      .toBe('13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50');
     const update=atlas.sourceUpdate!;
     expect(update.revision).toBe('3549ed56f5d5849116aef8d5e946423d8ee677fc');
     expect(update.changes).toHaveLength(67);
