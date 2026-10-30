@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-10-30
+
+### Added
+
+- Expose the local work-system journey through the Pi host, including stable
+  IDs, selected context, bounded lists, and retry-safe origin links.
+- Keep existing Markdown boards authoritative until a project selects native work.
+
 ## [0.23.5] - 2026-10-30
 
 ### Fixed
