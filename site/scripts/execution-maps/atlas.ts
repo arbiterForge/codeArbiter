@@ -178,11 +178,11 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/includes/reference-map.md':'4a024e9c0afbf3a07472e28cd66d41298c73db35',
   'core/surface/includes/routing-table.md':'6064c94e7507d0fa3f10fd32d0a96f23eca0c7c7',
   'core/surface/skills/brainstorming/SKILL.md':'9d53f27511dc063341068498c45766ae042f5b4d',
-  'core/surface/skills/commit-gate/SKILL.md':'53e4ddcdb2a847fc52f329d5bd8e2a3244495b17',
+  'core/surface/skills/commit-gate/SKILL.md':'b009fa35e839f2ae929451a7114ac2a05e26c9db',
   'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
   'core/surface/skills/context-creation/SKILL.md':'dff4947f37e686afb5d43dbe1ce83580aa9ccc5c',
   'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
-  'core/surface/skills/decompose/SKILL.md':'d6d1a4c2570c251af395ccdb5ea6f8d8c28c5542',
+  'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
