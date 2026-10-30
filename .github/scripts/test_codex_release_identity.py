@@ -6,6 +6,7 @@ import contextlib
 import importlib.util
 import io
 import os
+import re
 import unittest
 from unittest import mock
 
@@ -49,6 +50,34 @@ class CodexReleaseIdentityTest(unittest.TestCase):
         step = codex[preflight:publisher]
         self.assertIn("validate_codex_distribution_identity.py", step)
         self.assertNotIn("PRIVATE_KEY", step)
+
+    def test_workflow_mappings_drive_identity_preflight(self):
+        workflow = (REPO / ".github/workflows/release.yml").read_text(encoding="utf-8")
+        codex = workflow.split("\n  release-codex:\n", 1)[1].split("\n  release-", 1)[0]
+        step = codex.split("- name: Validate Codex distribution identities", 1)[1]
+        step = step.split("\n      - name:", 1)[0]
+        mappings = dict(re.findall(
+            r"(?m)^          ([A-Z_]+): \$\{\{ secrets\.([A-Z_]+) \}\}$", step))
+        self.assertEqual(mappings, {
+            "PUBLISHER_APP_ID": "CODEX_DISTRIBUTION_APP_ID",
+            "PUBLISHER_INSTALLATION_ID": "CODEX_DISTRIBUTION_APP_INSTALLATION_ID",
+            "VERIFIER_APP_ID": "CODEX_RULESET_VERIFIER_APP_ID",
+            "VERIFIER_INSTALLATION_ID": "CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID",
+        })
+        base = dict(zip(mappings.values(), ("12345", "56789", "23456", "67890")))
+        for changed, expected in (
+            ({}, 0),
+            ({"CODEX_RULESET_VERIFIER_APP_ID": "12345"}, 1),
+            ({"CODEX_DISTRIBUTION_APP_ID": ""}, 1),
+            ({"CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID": ""}, 1),
+        ):
+            with self.subTest(changed=changed):
+                secrets = {**base, **changed}
+                environment = {key: secrets[value] for key, value in mappings.items()}
+                with mock.patch.dict(os.environ, environment, clear=True), \
+                        contextlib.redirect_stdout(io.StringIO()), \
+                        contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(IDENTITY.main(), expected)
 
     def test_verifier_token_is_required(self):
         workflow = (REPO / ".github/workflows/release.yml").read_text(encoding="utf-8")
