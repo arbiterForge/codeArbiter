@@ -73,7 +73,7 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-update` |
+| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `work-update` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -347,18 +347,27 @@ slice has no operation to assert a passing check or remote delivery.
 `work-context` returns bounded selected work plus current attached document
 identities and concise summaries. Its `assessment: advisory` and
 `context_complete: false` fields prevent a summary from impersonating a full
-source read. The generated work page joins intent, progress, check status and
-links to the separate spec and plan. `hooks/work.py` exposes the same local
-journey to an agent without another approval workflow. Task and status callers
-select the existing legacy board or native work owner; broader caller routing,
-tracker providers and legacy adoption remain future slices.
+source read. The canonical work page joins intent, progress, check status and links to
+the separate spec and plan. `work-view` reads that selected work and its exact
+attachments through `work-context`, then returns a self-contained HTML
+overview. Progress, checks, delivery and tracker sync remain separate; unknown
+check or delivery state is never inferred from completion. The overview has no
+canonical model container, is not stored by the engine and is rejected by
+`render.Parse`. `hooks/work.py view <WORK-ID>` prints the HTML to stdout. The
+response also provides `view_path: .codearbiter/views/work/<WORK-ID>.html`;
+saving the HTML there makes its relative spec and plan links valid. This
+derived location stays outside canonical artifact discovery. The command does
+not write a second work owner or scan unrelated artifacts. Project, architecture and cycle
+overviews remain future work.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
-`work-context` and `work-update`; the installed native protocol validates the
-operation-specific request. It returns one JSON result. The stable operation
-ID and CAS rules above still apply, including on an uncertain retry.
+`work-context`, `work-view` and `work-update`; the installed native protocol
+validates the operation-specific request. It returns one JSON result; the
+ordinary CLI `view` verb prints raw HTML for an explicit human-view action.
+The stable operation ID and CAS rules above still apply to mutations, including
+on an uncertain retry.
 
 ## Advisory scheduling and ordinary progress
 
