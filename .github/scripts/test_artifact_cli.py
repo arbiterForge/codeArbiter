@@ -357,14 +357,16 @@ class CliTests(unittest.TestCase):
     def test_revision_conflict_cli_json_and_exit_class(self):
         spec, plan = self.initial_draft_pair()
         request = self.draft_bind_request(spec, plan)
-        request["expected"] = {**request["expected"],
-                               "revision": request["expected"]["revision"] + 1}
-        result, envelope = self.invoke("plan-bind", request)
-        self.assert_error(result, envelope, "REVISION_CONFLICT")
-        self.assertEqual(result.returncode, 3,
-                         "host adapters distinguish revision conflicts from invalid requests")
-        self.assertEqual(set(envelope), {"protocol", "operation", "ok", "error"})
-        self.assertEqual(envelope["operation"], "plan-bind")
+        for member in ("expected", "spec_expected"):
+            with self.subTest(stale_member=member):
+                stale = {**request, member: {**request[member],
+                         "revision": request[member]["revision"] + 1}}
+                result, envelope = self.invoke("plan-bind", stale)
+                self.assert_error(result, envelope, "REVISION_CONFLICT")
+                self.assertEqual(result.returncode, 3,
+                                 "host adapters distinguish revision conflicts from invalid requests")
+                self.assertEqual(set(envelope), {"protocol", "operation", "ok", "error"})
+                self.assertEqual(envelope["operation"], "plan-bind")
 
     def test_draft_rebind_rejects_cross_spec_selection(self):
         from test_artifact_authoring import spec_normative
