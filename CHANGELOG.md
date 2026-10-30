@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.4.5] - 2026-10-30
+
+### Fixed
+
+- Refuse verification before arming when runtime markers are visible to Git,
+  with a project ignore-rule remedy that preserves completion drift checks.
+
 ## [3.4.4] - 2026-10-29
 
 ### Fixed
