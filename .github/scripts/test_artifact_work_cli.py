@@ -160,6 +160,7 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("--operation-id or --origin", json.loads(output.getvalue())["error"])
         source = "checkpoint-2026-10-30#triage-1"
+        self.assertEqual(self.run_work("origins", "--origin", source)["matches"], [])
         first = self.run_work("create", "--title", "Promoted", "--intent", "Same logical work",
                               "--type", "fix", "--origin", source)
         retried = self.run_work("create", "--title", "Promoted", "--intent", "Same logical work",
@@ -167,6 +168,7 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual((first["work_id"], first["operation_id"]),
                          (retried["work_id"], retried["operation_id"]))
         self.assertEqual(self.run_work("list")["entries"][0]["origin"], source)
+        self.assertEqual(self.run_work("origins", "--origin", source)["matches"][0]["work_id"], first["work_id"])
         changed = self.run_work("create", "--title", "Promoted again", "--intent", "Changed wording",
                                 "--type", "fix", "--origin", source)
         self.assertEqual(changed["work_id"], first["work_id"])
@@ -188,6 +190,7 @@ class WorkCLITest(unittest.TestCase):
         archived = self.run_work("get", first["work_id"])
         self.assertEqual(archived["state"], "archived")
         self.assertEqual(archived["work_id"], first["work_id"])
+        self.assertEqual(self.run_work("origins", "--origin", first["origin"])["matches"][0]["state"], "archived")
         replay = self.run_work("create", "--title", "Archived work",
                                "--intent", "Keep identity through archive",
                                "--type", "chore", "--origin", first["origin"])
@@ -229,6 +232,10 @@ class WorkCLITest(unittest.TestCase):
         code, refused = invoke({**payload, "request": {**payload["request"], "origin": ["bad"]}})
         self.assertEqual(code, 1)
         self.assertIn("origin must be text", refused["error"])
+        code, refused = invoke({"schema": payload["schema"], "operation": "work-origins",
+                                "request": {"origins": [["not a source key"]]}})
+        self.assertEqual(code, 1)
+        self.assertIn("invalid legacy origin query", refused["error"])
 
     def test_legacy_oversize_board_refuses_before_a_write(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"

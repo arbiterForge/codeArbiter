@@ -415,6 +415,76 @@ func TestWorkListPagesArchiveAndRejectsChangedMembership(t *testing.T) {
 	}
 }
 
+func TestWorkListBeforeFirstCreateIsEmptyButOrphansRefuse(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	value, err := Run(root, "work-list", object{"protocol": Protocol, "limit": int64(1)})
+	if err != nil {
+		t.Fatalf("fresh native project must have an empty selected listing: %v", err)
+	}
+	listed := model.M(value)
+	if listed["total"] != int64(0) || len(model.A(listed["entries"])) != 0 || listed["next_offset"] != nil {
+		t.Fatalf("fresh listing is not empty: %+v", listed)
+	}
+	if _, err := os.Stat(filepath.Join(root, filepath.FromSlash(projectPath))); !os.IsNotExist(err) {
+		t.Fatalf("listing created project identity before a write: %v", err)
+	}
+	created, err := Run(root, "work-create", object{"protocol": Protocol, "operation_id": "first-work-001", "title": "First", "intent": "Retain first identity", "work_type": "chore"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	value, err = Run(root, "work-list", object{"protocol": Protocol, "limit": int64(1)})
+	if err != nil || model.M(value)["total"] != int64(1) || model.M(model.A(model.M(value)["entries"])[0])["work_id"] != model.M(created)["work_id"] {
+		t.Fatalf("first work did not appear after the empty listing: %v, %+v", err, value)
+	}
+
+	orphanRoot := testutil.Root(t)
+	if _, err := Run(orphanRoot, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	orphanDir := filepath.Join(orphanRoot, ".codearbiter", "work")
+	if err := os.MkdirAll(orphanDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(orphanDir, "WORK-"+strings.Repeat("A", 32)+".html"), []byte("orphan"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Run(orphanRoot, "work-list", object{"protocol": Protocol}); err == nil || !strings.Contains(err.Error(), "INVALID_PROJECT") {
+		t.Fatalf("orphan work without project identity was accepted: %v", err)
+	}
+}
+
+func TestWorkOriginsFindsArchivedIdentityInOneBoundedRead(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, fields object) object {
+		t.Helper()
+		fields["protocol"] = Protocol
+		value, err := Run(root, op, fields)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	origin := "checkpoint-2026-10-30#triage-1"
+	query := object{"origins": []any{origin, "checkpoint-2026-10-30#triage-2"}}
+	if got := call("work-origins", query); len(model.A(got["matches"])) != 0 {
+		t.Fatalf("fresh project reported an origin match: %+v", got)
+	}
+	created := call("work-create", object{"operation_id": "origin-batch-001", "title": "Archived", "intent": "Retain correlation", "work_type": "chore", "origin": origin})
+	call("work-update", object{"operation_id": "origin-batch-002", "work_id": created["work_id"], "action": "archive", "expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	got := call("work-origins", query)
+	rows := model.A(got["matches"])
+	if len(rows) != 1 || model.M(rows[0])["origin"] != origin || model.M(rows[0])["work_id"] != created["work_id"] || model.M(rows[0])["state"] != "archived" {
+		t.Fatalf("archived correlation was not returned exactly once: %+v", got)
+	}
+	if _, err := Run(root, "work-origins", object{"protocol": Protocol, "origins": []any{origin, origin}}); err == nil {
+		t.Fatal("duplicate origin query was accepted")
+	}
+}
+
 func TestWorkConcurrentCreatesShareProjectButNotIdentity(t *testing.T) {
 	root := testutil.Root(t)
 	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
