@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, WORK_SYSTEM_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, WORK_SYSTEM_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -326,9 +326,10 @@ describe('atlas source compatibility revalidation', () => {
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
-    // Historical runtime pin remains tested below; the current hook owner
-    // has a later exact binding in the assistive source record.
-    expect(git('hash-object', '--', path).trim()).toBe(ASSISTIVE_SOURCE_BLOBS[path] ?? RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
+    // Retain the historical assistive binding while checking the newer
+    // runtime-marker preflight against its own exact source blob.
+    expect(ASSISTIVE_SOURCE_BLOBS[path]).toBe(RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
+    expect(git('hash-object', '--', path).trim()).toBe(MARKER_PREFLIGHT_BLOB);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
     expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),
@@ -541,9 +542,10 @@ describe('atlas source compatibility revalidation', () => {
     });
     const owners = Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
-      'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
       ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS,
       ...COMMAND_REMOVAL_SOURCE_BLOBS, ...CONTEXT_KNOWLEDGE_SOURCE_BLOBS, ...TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS,
+      'core/pysrc/_artifactauthoritylib.py': MARKER_PREFLIGHT_BLOB,
+      'core/artifacts/internal/render/render.go': SCHEMA_CACHE_RENDER_BLOB,
       ...WORK_SYSTEM_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
