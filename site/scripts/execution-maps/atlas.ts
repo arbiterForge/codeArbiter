@@ -168,9 +168,22 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
 // and a work document rendering. Existing review routes retain their geometry;
 // these are the current reviewed source bytes for those shared owners.
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_artifactlib.py':'733c7869a788723365bd1a147578dba4ed4e53c6',
+  'core/pysrc/_artifactlib.py':'adb2696ed5ef1288ac110b01e5566de38861b2a4',
   'core/artifacts/internal/render/render.go':'1ea6066acf90a463920584608d73724eb291c7e7',
-  'core/artifacts/internal/operations/protocol.go':'ce02c7d8d83fafa58f78f499039335093d0c3954',
+  'core/artifacts/internal/operations/protocol.go':'11f21e2ab9e0cfcfcaa3415546b9fd1381f18e44',
+  'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
+  'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
+  'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
+  'core/surface/commands/task.md':'5bf344c907f9af13689e3ce71c7f036f4b26d61f',
+  'core/surface/includes/reference-map.md':'4a024e9c0afbf3a07472e28cd66d41298c73db35',
+  'core/surface/includes/routing-table.md':'6064c94e7507d0fa3f10fd32d0a96f23eca0c7c7',
+  'core/surface/skills/brainstorming/SKILL.md':'9d53f27511dc063341068498c45766ae042f5b4d',
+  'core/surface/skills/commit-gate/SKILL.md':'53e4ddcdb2a847fc52f329d5bd8e2a3244495b17',
+  'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
+  'core/surface/skills/context-creation/SKILL.md':'dff4947f37e686afb5d43dbe1ce83580aa9ccc5c',
+  'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
+  'core/surface/skills/decompose/SKILL.md':'d6d1a4c2570c251af395ccdb5ea6f8d8c28c5542',
+  'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those
@@ -309,7 +322,9 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   // Product owners must still match. Site-design pointers are historical
   // integration evidence, not product claims; this PR intentionally changes them.
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
-  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,blob);
+  // Retain the historical assistive packet while checking later work-system
+  // owner changes against their separately reviewed current blobs.
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
   for(const command of atlas.commands) {
     if(RETIRED_COMMANDS[command.name]) {
       const owner=commandMetadata(command.name,historical);
