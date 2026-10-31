@@ -42,7 +42,10 @@ something it could stop.
 Each host's uninstall command has a different effect:
 
 - **Claude Code removes** the plugin payload (hooks, commands, agents, and skills) from its plugin
-  cache. Hooks, commands, and statusline wiring stop loading from the next session onward.
+  cache. Hooks and commands stop loading from the next session onward. Statusline wiring lives in
+  `~/.claude/settings.json`, outside the plugin, so uninstall leaves it behind: run
+  `/ca:statusline uninstall` first, or remove the entry by hand afterward
+  ([Remove the Claude Code Statusline](/guides/uninstalling/#1-remove-the-claude-code-statusline)).
   `claude plugin update` is **not** sufficient for a full removal: it can leave a stale cached payload
   behind when the marketplace version string has not changed, so `uninstall` is the clean path.
 - **Codex removes** the `ca-codex@codearbiter` plugin registration and stops discovering its packaged

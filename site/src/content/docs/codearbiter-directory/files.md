@@ -10,8 +10,11 @@ journey:
   proof: "You can name the writer, reader and recovery path for the file you looked up."
 ---
 
-Lookup entries for every stock path in `.codearbiter/`. For what the directory is, its two context
-formats and a one-table map of writers and readers, start with
+Lookup entries for the Markdown-format files, logs and shared state in `.codearbiter/`. The native
+HTML knowledge files (`context/*.html`, `decomposition/project.html`) and `.gitattributes` have no
+entry here. The [writer and reader table](/codearbiter-directory/#at-a-glance) covers them: change
+knowledge records through `knowledge.py`, never by hand, and keep `.gitattributes`. For what the
+directory is and its two context formats, start with
 [The .codearbiter/ Directory](/codearbiter-directory/).
 
 ## CONTEXT.md

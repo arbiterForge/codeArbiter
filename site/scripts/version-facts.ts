@@ -110,6 +110,19 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
   if (!nodeMinimum) {
     throw new Error(`Version fact node.minimum: ${SOURCES.piPackage} engines.node must be ">=X.Y.Z"`);
   }
+  // The runtime enforces MINIMUM_NODE; a floor changed in only one place must not publish.
+  const enforcedNode = exactlyOne(
+    piSource,
+    /const MINIMUM_NODE = \[\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\] as const;/,
+    "node.minimum",
+    SOURCES.piCompatibility,
+  ).slice(1, 4).join(".");
+  if (enforcedNode !== nodeMinimum[1]) {
+    throw new Error(
+      `Version fact node.minimum: ${SOURCES.piPackage} engines.node >=${nodeMinimum[1]} disagrees with ` +
+        `MINIMUM_NODE ${enforcedNode} in ${SOURCES.piCompatibility}`,
+    );
+  }
   add("node.minimum", nodeMinimum[1], SOURCES.piPackage);
 
   const ciSource = read(SOURCES.ciWorkflow);
@@ -226,7 +239,8 @@ export function repositoryVersionFacts(): VersionFacts {
 /** Replace every `%%fact=<name>%%` token; throw on an unknown name or malformed residue. */
 export function resolveFactTokens(text: string, facts: VersionFacts, where: string): string {
   const resolved = text.replace(TOKEN, (_token, name: string) => {
-    const fact = facts[name];
+    // Own properties only: `constructor` and friends are not facts.
+    const fact = Object.hasOwn(facts, name) ? facts[name] : undefined;
     if (!fact) throw new Error(`Unknown version fact "${name}" in ${where}`);
     return fact.value;
   });

@@ -101,7 +101,7 @@ describe("version literal drift gate", () => {
     for (const file of scannedFiles()) {
       // Syntax descriptions such as `%%fact=<name>%%` are not references; the build rejects malformed tokens.
       for (const match of readFileSync(join(siteRoot, file), "utf8").matchAll(/%%fact=([a-zA-Z][\w.-]*)%%/g)) {
-        if (!facts[match[1]]) unknown.push(`${file} ${match[1]}`);
+        if (!Object.hasOwn(facts, match[1])) unknown.push(`${file} ${match[1]}`);
       }
     }
     expect(unknown).toEqual([]);

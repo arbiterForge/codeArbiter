@@ -53,6 +53,13 @@ describe("version facts", () => {
     ))).toThrow(/codex\.minimum.*lowest CI-verified/);
   });
 
+  it("rejects a Node floor that disagrees with the enforced runtime minimum", () => {
+    expect(() => loadVersionFacts(withSource(
+      "plugins/ca-pi/tools/src/compatibility.ts",
+      (text) => text.replace(/MINIMUM_NODE = \[[^\]]*\]/, "MINIMUM_NODE = [24, 0, 0]"),
+    ))).toThrow(/node\.minimum.*MINIMUM_NODE/);
+  });
+
   it("treats an unreadable release record as an error, not an absent one", () => {
     const read: SourceReader = (path) => {
       if (path === "site/src/generated/release-applicability.json") throw Object.assign(new Error("denied"), { code: "EACCES" });
@@ -71,6 +78,8 @@ describe("fact tokens", () => {
 
   it.each([
     ["unknown", "Pi %%fact=pi.nope%%", /Unknown version fact "pi\.nope"/],
+    // An inherited Object property is not a fact (review, #1070).
+    ["inherited", "Pi %%fact=constructor%%", /Unknown version fact "constructor"/],
     ["malformed", "Pi %%fact= pi.supported%%", /Malformed version fact token/],
     // A markdown extension (Starlight's text directives took `:name`) can split a token apart.
     ["split", "Pi %%fact", /Malformed version fact token/],
