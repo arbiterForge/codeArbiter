@@ -26,7 +26,7 @@
 #   dates   (started YYYY-MM-DD) / (done YYYY-MM-DD)
 #
 # Public API:
-#   count_in_flight(text) -> int         top-level "- " lines (with content) excluding "- [x]"
+#   count_in_flight(text) -> int         task "- " lines (with content) excluding "- [x]"
 #   parse_board(text) -> list[Task]      structured entries (partial fields ok)
 #   validate_id(s) -> bool               the dotted-ID grammar
 #   duplicate_ids(text) -> list[str]     IDs appearing more than once, first-seen order
@@ -127,6 +127,13 @@ _STRAY_MARKER_RE = re.compile(r"^\s*[-*+]?\s*\[[ xX~]\]")
 _CANON_TASK_RE = re.compile(r"^- \[[ xX~]\] ")      # a well-formed marked task line
 
 _STATE_BY_MARK = {" ": "queued", "~": "in_progress", "x": "done", "X": "done"}
+_SCAFFOLD_SCHEMA = "Schema (one task = a lifecycle line + indented content sub-bullets):"
+_SCAFFOLD_NOTES = (
+    "- Marker: `[ ]` queued | `[~]` in-progress | `[x]` done. In-progress and done",
+    "- ID `<group>.<type>.<seq>`: `group` = build phase (poc/mvp1/v1...), `type` =",
+    "- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).",
+)
+_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 # classify_board_diff helpers — strip markers/stamps for content-equality comparison.
 _STAMP_FULL_RE = re.compile(r'\s*\((?:started|done)\s+\d{4}-\d{2}-\d{2}\)')
@@ -163,17 +170,57 @@ def _has_content(line):
     return bool(m and m.group(2).strip())
 
 
+def task_rows_text(text, *, strict=False):
+    """Mask fenced examples and known scaffold notes, retaining task line numbers.
+
+    Strict adoption refuses ambiguous scaffold bullets or unfinished fences.
+    Ordinary readers leave ambiguous content visible so it cannot disappear.
+    """
+    lines = text.splitlines() if text else []
+    masked = list(lines)
+    fence = None
+    scaffold = False
+    before_section = True
+    for index, line in enumerate(lines):
+        marker = _FENCE_RE.match(line)
+        if fence is not None:
+            masked[index] = "#"
+            if (marker and marker.group(1)[0] == fence[0]
+                    and len(marker.group(1)) >= fence[1]
+                    and not marker.group(2).strip()):
+                fence = None
+            continue
+        if marker:
+            fence = (marker.group(1)[0], len(marker.group(1)))
+            masked[index] = "#"
+            continue
+        if line.startswith("## "):
+            before_section = False
+        if before_section and line == _SCAFFOLD_SCHEMA:
+            scaffold = True
+        if scaffold and before_section and line.startswith("- "):
+            if line in _SCAFFOLD_NOTES:
+                masked[index] = "#"
+            elif strict and not _CANON_TASK_RE.match(line):
+                raise ValueError("unaccounted scaffold preamble bullet; move work into a task section")
+    if fence is not None:
+        if strict:
+            raise ValueError("unterminated Markdown fence in legacy board")
+        return text
+    return "\n".join(masked)
+
+
 def count_in_flight(text):
-    """In-flight count = top-level '- ' lines WITH content, excluding done.
+    """In-flight count = task '- ' lines WITH content, excluding done.
 
     Counts queued ('- [ ]'), in-progress ('- [~]') AND legacy bare '- ' bullets
-    (backward-compatible with the pre-schema file); excludes done ('- [x]') and
-    empty placeholder bullets. Indented sub-bullets are never counted. This is
-    the single source both readers use.
+    (backward-compatible with the pre-schema file); excludes done ('- [x]'),
+    scaffold notes, fenced examples and empty placeholders. Indented sub-bullets
+    are never counted. This is the single source both readers use.
     """
     if not text:
         return 0
-    return sum(1 for ln in text.splitlines()
+    return sum(1 for ln in task_rows_text(text).splitlines()
                if _TOP_RE.match(ln) and not _DONE_RE.match(ln) and _has_content(ln))
 
 
@@ -217,7 +264,7 @@ def parse_board(text):
         if cur is not None:
             tasks.append(Task(**cur))
 
-    for i, raw in enumerate(text.splitlines() if text else []):
+    for i, raw in enumerate(task_rows_text(text).splitlines()):
         if _TOP_RE.match(raw):
             mark_m = re.match(r"^- \[([ xX~])\]\s*(.*)$", raw)
             if mark_m:
@@ -343,7 +390,7 @@ def lint_board(text):
     warnings = []
     if not text:
         return warnings
-    stray = [i for i, ln in enumerate(text.splitlines(), 1)
+    stray = [i for i, ln in enumerate(task_rows_text(text).splitlines(), 1)
              if _STRAY_MARKER_RE.match(ln) and not _CANON_TASK_RE.match(ln)]
     if stray:
         warnings.append(

@@ -371,6 +371,12 @@ class ScaffoldTest(unittest.TestCase):
         tmpl = mod.OPEN_TASKS
         for token in ("[ ]", "[~]", "[x]", "group", "type", "Done when", "Boundaries"):
             self.assertIn(token, tmpl, token)
+        self.assertEqual(tb.count_in_flight(tmpl), 0)
+        self.assertEqual(tb.parse_board(tmpl), [])
+        self.assertEqual(tb.lint_board(tmpl), [])
+        with_task = tmpl + "\n## In-flight\n- [ ] demo.feat.0001 - Actual work\n"
+        self.assertEqual(tb.count_in_flight(with_task), 1)
+        self.assertEqual([task.id for task in tb.parse_board(with_task)], ["demo.feat.0001"])
 
 
 class SetStateGuardTest(unittest.TestCase):
