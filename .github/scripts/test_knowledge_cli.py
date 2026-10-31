@@ -231,6 +231,39 @@ class KnowledgeCli(unittest.TestCase):
         self.assertEqual(record["promotion"]["work_id"], first["work_id"])
         self.assertFalse(board.exists())
 
+    def test_initialized_brownfield_keeps_observation_candidate_and_identity_separate(self):
+        self.scaffold()
+        board = self.root / ".codearbiter/open-tasks.md"
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        board.unlink(missing_ok=True)  # disposable empty-board fixture selects native ownership
+        before = (self.root / CONTEXT).read_bytes()
+        source = self.root / "src/service.py"
+        source.parent.mkdir()
+        source.write_text("def run():\n    return None\n", encoding="utf-8")
+        cited = self.knowledge("add", "decomposition", "--collection", "sources", "--record",
+                               json.dumps({"title": "Service source", "type": "repository", "url": None,
+                                           "locator": "src/service.py", "note": "Observed brownfield source"}))
+        observed = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "capability", "title": "Service entry point", "statement": "Source defines run().",
+            "basis": "source-observed", "scope": {"paths": ["src/service.py"]},
+            "related_refs": [], "source_refs": [cited["record"]]}))
+        candidate = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "work_item", "title": "Review service failure path",
+            "statement": "Check the service failure path before choosing a change.",
+            "basis": "proposed", "scope": {"paths": ["src/service.py"]},
+            "related_refs": [observed["record"]], "source_refs": [cited["record"]]}))
+        self.assertEqual((self.root / CONTEXT).read_bytes(), before)
+        self.assertFalse(board.exists())
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
+                         "observation silently published a candidate")
+        promoted = self.knowledge("promote", candidate["record"])
+        self.assertEqual(promoted["owner"], "native")
+        self.assertEqual(self.knowledge("promote", candidate["record"])["work_id"], promoted["work_id"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), before)
+        self.assertEqual(self.knowledge("read", "decomposition", observed["record"])["records"][0]["basis"],
+                         "source-observed")
+
 
     def git(self, *arguments):
         subprocess.run(["git", "-c", "core.hooksPath=" + os.devnull, "-c", "user.name=t", "-c", "user.email=t@example.invalid",
