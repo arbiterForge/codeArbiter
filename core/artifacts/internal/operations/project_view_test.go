@@ -100,3 +100,30 @@ func TestProjectViewPresentsBoundedCanonicalWork(t *testing.T) {
 		t.Fatalf("HTML project view accepted a misleading JSON response budget: %v", err)
 	}
 }
+
+func TestProjectViewShowsBoundedRecordedArchitecture(t *testing.T) {
+	f := newAssistiveFixture(t)
+	f.createKnowledge("knowledge", "CTX-CODE-MAP", "code-map")
+	f.addKnowledge("CTX-CODE-MAP",
+		knowledgeRecord("component", "API <gateway>", "Receives local requests.", "inferred", []string{"api/**"}),
+		knowledgeRecord("interface", "Worker boundary", "Passes jobs to workers.", "inferred", []string{"worker/**"}),
+		knowledgeRecord("fact", "Unrelated detail", "Not an architecture record.", "inferred", nil),
+		knowledgeRecord("component", "Storage", "Persists records.", "proposed", []string{"store/**"}),
+		knowledgeRecord("component", "UI", "Shows work.", "inferred", []string{"ui/**"}),
+		knowledgeRecord("component", "CLI", "Routes commands.", "inferred", []string{"cli/**"}),
+	)
+	f.call("work-create", object{"operation_id": f.next(), "title": "Build interface", "intent": "Explain system boundaries", "work_type": "feature"})
+	view := f.call("project-view", object{"limit": int64(1)})
+	html := view["html"].(string)
+	for _, required := range []string{"Recorded architecture", "API &lt;gateway&gt;", "Worker boundary", "Storage", "UI", "More architecture records", "../../context/code-map.html"} {
+		if !strings.Contains(html, required) {
+			t.Fatalf("architecture summary omitted %q: %s", required, html)
+		}
+	}
+	if strings.Contains(html, "API <gateway>") || strings.Contains(html, "Unrelated detail") || strings.Contains(html, "CLI</h3>") {
+		t.Fatal("architecture summary escaped incorrectly or exceeded its four-record bound")
+	}
+	if _, claimed := view["architecture_complete"]; claimed || view["architecture_omitted"] != int64(1) {
+		t.Fatalf("architecture summary claimed completeness or lost omissions: %v", view)
+	}
+}

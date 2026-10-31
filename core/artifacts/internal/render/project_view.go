@@ -10,16 +10,23 @@ import (
 // ProjectViewData is a bounded page of validated native work, not a second
 // project or work model. The caller owns membership and continuation checks.
 type ProjectViewData struct {
-	ID               string
-	Offset           int64
-	Total            int64
-	NextOffset       *int64
-	MembershipSHA256 string
-	Entries          []ProjectViewEntry
+	ID                  string
+	Offset              int64
+	Total               int64
+	NextOffset          *int64
+	MembershipSHA256    string
+	Entries             []ProjectViewEntry
+	Architecture        []ProjectArchitectureEntry
+	ArchitectureState   string
+	ArchitectureOmitted int64
 }
 
 type ProjectViewEntry struct {
 	ID, Title, WorkType, State, CheckStatus, Href string
+}
+
+type ProjectArchitectureEntry struct {
+	Title, Statement, Kind, Basis string
 }
 
 // ProjectView renders an inert, read-only page. Canonical work remains at its
@@ -31,7 +38,31 @@ func ProjectView(data ProjectViewData) ([]byte, error) {
 	w.Write(CSS())
 	w.WriteString(workViewStyle)
 	w.WriteString(`</style></head><body><a class="skip" href="#main-content">Skip to project work</a><div class="layout"><aside class="sidebar"><img src="`)
-	w.WriteString(esc(DefaultLogo()) + `" alt="codeArbiter"><p class="identity">` + esc(data.ID) + `</p><h2>In this project</h2><nav aria-label="Project sections"><a href="#work">Work</a><a href="#delivery">Delivery</a><a href="#sync">Tracker sync</a></nav><p>Derived from current local work records. Refresh this view after work changes.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / project</p><h1>Project work</h1><p class="deck">Local progress and checks are reported separately. Delivery and tracker state require their own evidence.</p></header>`)
+	w.WriteString(esc(DefaultLogo()) + `" alt="codeArbiter"><p class="identity">` + esc(data.ID) + `</p><h2>In this project</h2><nav aria-label="Project sections"><a href="#architecture">Architecture</a><a href="#work">Work</a><a href="#delivery">Delivery</a><a href="#sync">Tracker sync</a></nav><p>Derived from current local records. Refresh this view after they change.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / project</p><h1>Project work</h1><p class="deck">Local progress and checks are reported separately. Delivery and tracker state require their own evidence.</p></header>`)
+	w.WriteString(`<section class="work-card" id="architecture"><h2>Recorded architecture</h2>`)
+	switch data.ArchitectureState {
+	case "unrecorded":
+		w.WriteString(`<p>No native code-map record is available in this project.</p>`)
+	case "unavailable":
+		w.WriteString(`<p>The native code map cannot be read as a valid knowledge document. Inspect its canonical file.</p>`)
+	case "recorded":
+		if len(data.Architecture) == 0 {
+			w.WriteString(`<p>The code map has no component or interface records.</p>`)
+		} else {
+			w.WriteString(`<div class="work-grid">`)
+			for _, item := range data.Architecture {
+				w.WriteString(`<section class="work-card"><h3>` + esc(item.Title) + `</h3><p>` + esc(item.Statement) + `</p><p class="identity">` + esc(item.Kind) + ` · ` + esc(item.Basis) + `</p></section>`)
+			}
+			w.WriteString(`</div>`)
+		}
+		if data.ArchitectureOmitted > 0 {
+			w.WriteString(`<p>More architecture records remain (` + strconv.FormatInt(data.ArchitectureOmitted, 10) + ` omitted from this summary).</p>`)
+		}
+		w.WriteString(`<p><a href="../../context/code-map.html">Open the complete code map</a></p>`)
+	default:
+		return nil, fault.New("INVALID_VIEW", "project architecture state is invalid")
+	}
+	w.WriteString(`</section>`)
 	w.WriteString(`<section class="work-card" id="work"><h2>Work</h2><p>Showing ` + strconv.Itoa(len(data.Entries)) + ` of ` + strconv.FormatInt(data.Total, 10) + ` work items on this page.</p>`)
 	if len(data.Entries) == 0 {
 		w.WriteString(`<p>No work items on this page.</p>`)
