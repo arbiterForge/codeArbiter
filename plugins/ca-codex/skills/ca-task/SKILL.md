@@ -74,10 +74,12 @@ board edits remain invalid.
 ## Related owners
 
 - Harvest promotes selected follow-ups through the current work owner.
-- `$ca-standup` owns archival. It uses selected native work or the
-  legacy writer as appropriate and preserves undated historical rows.
-- Work lifecycle changes ride their associated work commit under ADR-0008;
-  do not open a separate board-only PR to make progress appear complete.
+- `$ca-standup` owns archival and preserves undated historical rows. Native
+  items use `work.py`; legacy rows stay with `taskwrite.py` for that selected
+  archive.
+- Work lifecycle changes ride their associated work commit through
+  `commit-gate` under ADR-0008. A separate `chore(board)` PR for an ordinary
+  transition is the anti-pattern; it can claim progress before the work lands.
 
 ## Hard gate
 
