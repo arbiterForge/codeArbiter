@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.7.1] - 2026-10-31
+
+### Fixed
+
+- A read-only `sed` on an ADR or audit log is no longer blocked as a
+  write; `sed -i`, `--in-place` and `w` commands still are.
+
 ## [3.7.0] - 2026-10-30
 
 ### Added

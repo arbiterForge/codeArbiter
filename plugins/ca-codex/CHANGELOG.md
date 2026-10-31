@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.25.1] - 2026-10-31
+
+### Fixed
+
+- A read-only `sed` on an ADR or audit log is no longer blocked as a
+  write; `sed -i`, `--in-place` and `w` commands still are.
+
 ## [0.25.0] - 2026-10-30
 
 ### Added
