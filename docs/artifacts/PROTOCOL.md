@@ -495,8 +495,13 @@ Optional GitHub Projects v2 effects use a second portable binding at
 `.codearbiter/work/project-provider.json`. It names a selected Project node ID
 and binds to the existing issue provider's repository and generation; it
 stores no credential. `work.py project-configure` does not change the issue
-binding. After an issue is verified and synchronized, `project-stage` saves a
-separate pending add-item intent. `project-sync` checks the exact issue and
+binding. `project-discover --project-url` reads a user or organization Projects
+v2 URL and resolves its node ID through GitHub. `project-configure --project-url`
+does the same read before saving the binding; callers can still supply an
+already known `--project-node-id`. Discovery requires the configured issue
+provider and its owning-process credential, and does not add an issue or write
+to the remote Project. After an issue is verified and synchronized,
+`project-stage` saves a separate pending add-item intent. `project-sync` checks the exact issue and
 Project item list, records `outcome_unknown` before a send, adds the item only
 when no matching item was found, and reads the result back. A lost response
 leaves the Project effect unknown while the issue stays bound;

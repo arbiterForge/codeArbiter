@@ -154,6 +154,8 @@ normal operating mode.
 Native GitHub issue synchronization is explicit. An optional Projects v2
 binding can attach a verified issue and update a selected single-select field; its
 pending or uncertain result is stored separately from the issue binding.
+`project-discover --project-url` reads a Projects v2 board from its normal
+GitHub URL, and `project-configure --project-url` resolves and saves its ID.
 `work.py project-reconcile` reads back an uncertain add without sending a
 second item. `project-fields` discovers field and option IDs, and
 `project-field-observe` reads the current option. Staging an update reads its
