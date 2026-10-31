@@ -273,6 +273,7 @@ EXPECTED_SUITES = {
         "test_native_provider_cli_stages_portable_intent_without_sending",
         "test_origin_retry_repairs_archived_work_attachment",
         "test_project_view_pages_native_work_without_writing_a_second_owner",
+        "test_cycle_view_uses_canonical_membership_and_keeps_checks_unknown",
         "test_selected_view_is_inert_html_and_leaves_no_second_owner",
         "test_status_cli_stages_only_a_verified_issue_binding",
         "test_update_requires_replay_identity_to_preserve_later_edit",

@@ -55,6 +55,7 @@ def _parser():
     create.add_argument("--spec-id")
     create.add_argument("--plan-id")
     create.add_argument("--origin", help="Stable source key; also makes uncertain creates retryable")
+    create.add_argument("--cycle-id", help="Optional local cycle grouping key")
     create.add_argument("--operation-id", help="Stable request ID; reuse it when retrying an uncertain create (required without --origin)")
     get = sub.add_parser("get", help="Read one work item by stable ID")
     get.add_argument("work_id")
@@ -74,6 +75,11 @@ def _parser():
     project_view.add_argument("--offset", type=int, default=0)
     project_view.add_argument("--limit", type=int, default=16)
     project_view.add_argument("--membership-sha256")
+    cycle_view = sub.add_parser("cycle-view", help="Print a bounded, derived view of one cycle")
+    cycle_view.add_argument("cycle_id")
+    cycle_view.add_argument("--offset", type=int, default=0)
+    cycle_view.add_argument("--limit", type=int, default=16)
+    cycle_view.add_argument("--membership-sha256")
     origins = sub.add_parser("origins", help="Find exact source keys across active and archived work")
     origins.add_argument("--origin", action="append", required=True)
     sub.add_parser("adopt-preview", help="Inventory legacy board rows and preimages without changing ownership")
@@ -111,7 +117,7 @@ def _parser():
     observe_pr.add_argument("--number", type=int, required=True)
     observe_pr.add_argument("--credential-ref", choices=("GH_TOKEN", "GITHUB_TOKEN", "CODEARBITER_GITHUB_TOKEN"), default="CODEARBITER_GITHUB_TOKEN")
     observe_pr.add_argument("--operation-id", required=True, help="Stable ID for an uncertain local record retry")
-    for verb in ("rename", "attach", "start", "complete", "reopen", "archive"):
+    for verb in ("rename", "attach", "start", "complete", "reopen", "archive", "set-cycle"):
         command = sub.add_parser(verb)
         command.add_argument("work_id")
         command.add_argument("--operation-id", help="Stable request ID; reuse it with the same expected revision when retrying")
@@ -122,6 +128,10 @@ def _parser():
         if verb == "attach":
             command.add_argument("--spec-id")
             command.add_argument("--plan-id")
+        if verb == "set-cycle":
+            cycle = command.add_mutually_exclusive_group(required=True)
+            cycle.add_argument("--cycle-id")
+            cycle.add_argument("--clear", action="store_true")
     return parser
 
 
@@ -132,10 +142,10 @@ def _dispatch(args, client):
         operation_id = args.operation_id or _operation_id(
             "create", args.origin, None,
             {"title": args.title, "intent": args.intent, "work_type": args.type,
-             "spec_id": args.spec_id, "plan_id": args.plan_id})
+             "spec_id": args.spec_id, "plan_id": args.plan_id, "cycle_id": args.cycle_id})
         request = {"operation_id": operation_id, "title": args.title, "intent": args.intent,
                    "work_type": args.type}
-        for field in ("spec_id", "plan_id", "origin"):
+        for field in ("spec_id", "plan_id", "origin", "cycle_id"):
             if value := getattr(args, field):
                 request[field] = value
         result = client.call("work-create", request)
@@ -152,13 +162,15 @@ def _dispatch(args, client):
         return client.call("work-context", request)
     if args.verb == "view":
         return client.call("work-view", {"work_id": args.work_id})
-    if args.verb in ("list", "project-view"):
+    if args.verb in ("list", "project-view", "cycle-view"):
         request = {"offset": args.offset, "limit": args.limit}
         if args.verb == "list":
             request["budget"] = args.budget
         if args.membership_sha256:
             request["membership_sha256"] = args.membership_sha256
-        return client.call("work-list" if args.verb == "list" else "project-view", request)
+        if args.verb == "cycle-view":
+            request["cycle_id"] = args.cycle_id
+        return client.call({"list": "work-list", "project-view": "project-view", "cycle-view": "cycle-view"}[args.verb], request)
     if args.verb == "origins":
         return client.call("work-origins", {"origins": args.origin})
     if args.verb == "adopt-preview":
@@ -208,6 +220,8 @@ def _dispatch(args, client):
     if not args.operation_id:
         raise ValueError(f"{args.verb} needs --operation-id so an uncertain result can be retried without overwriting later work")
     if getattr(client, "legacy", False):
+        if args.verb == "set-cycle":
+            raise ValueError("cycle grouping requires selected native work ownership")
         if args.expected_revision is not None:
             raise ValueError("legacy work uses an expected board SHA-256, not a native revision")
         current = client.call("work-get", {"work_id": args.work_id})
@@ -237,6 +251,8 @@ def _dispatch(args, client):
                   if (value := getattr(args, field)) is not None}
         if not fields:
             raise ValueError("attach needs --spec-id or --plan-id")
+    if args.verb == "set-cycle":
+        fields = {"cycle_id": None if args.clear else args.cycle_id}
     operation_id = args.operation_id
     result = client.call("work-update", {"operation_id": operation_id, "work_id": args.work_id,
                                          "expected": expected, "action": args.verb, **fields})
@@ -252,7 +268,7 @@ def _dispatch_request(payload, client):
         raise ValueError("unsupported work request schema")
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
-        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view",
+        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view", "cycle-view",
         "work-provider-get", "work-provider-configure", "work-effect-stage"
     }:
         raise ValueError("unsupported work operation")
@@ -273,7 +289,7 @@ def main(argv=None):
         else:
             args = _parser().parse_args(argv)
             result = _dispatch(args, _selected_client(project_root()))
-            raw_view = args.verb in ("view", "project-view")
+            raw_view = args.verb in ("view", "project-view", "cycle-view")
     except _artifactlib.ArtifactError as exc:
         print(json.dumps({"ok": False, "code": exc.code, "error": str(exc)}))
         return 1

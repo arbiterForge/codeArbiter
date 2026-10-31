@@ -130,3 +130,59 @@ func TestProjectViewShowsBoundedRecordedArchitecture(t *testing.T) {
 		t.Fatalf("architecture summary claimed completeness or lost omissions: %v", view)
 	}
 }
+
+func TestCycleViewGroupsCanonicalWorkWithoutCopyingIt(t *testing.T) {
+	f := newAssistiveFixture(t)
+	first := f.call("work-create", object{"operation_id": f.next(), "title": "First delivery", "intent": "Ship first slice", "work_type": "feature"})
+	second := f.call("work-create", object{"operation_id": f.next(), "title": "Second delivery", "intent": "Ship second slice", "work_type": "fix"})
+	other := f.call("work-create", object{"operation_id": f.next(), "title": "Outside cycle", "intent": "Separate work", "work_type": "chore"})
+	assign := func(item object, cycle string) object {
+		t.Helper()
+		return f.call("work-update", object{"operation_id": f.next(), "work_id": item["work_id"], "action": "set-cycle", "cycle_id": cycle,
+			"expected": object{"revision": item["revision"], "model_sha256": item["model_sha256"]}})
+	}
+	first = assign(first, "october-sprint")
+	second = assign(second, "october-sprint")
+	other = assign(other, "later-sprint")
+	second = f.call("work-update", object{"operation_id": f.next(), "work_id": second["work_id"], "action": "complete",
+		"expected": object{"revision": second["revision"], "model_sha256": second["model_sha256"]}})
+	view := f.call("cycle-view", object{"cycle_id": "october-sprint", "limit": int64(1)})
+	if view["total"] != int64(2) || view["next_offset"] != int64(1) || view["canonical"] != false || view["content_snapshot"] != false {
+		t.Fatalf("cycle page lost bounded derived membership: %v", view)
+	}
+	html := view["html"].(string)
+	if !strings.Contains(html, "First delivery") && !strings.Contains(html, "Second delivery") {
+		t.Fatal("cycle page omitted its selected member")
+	}
+	if strings.Contains(html, "Outside cycle") || strings.Contains(html, `id="ca-artifact-model"`) || !strings.Contains(html, "Checks") {
+		t.Fatal("cycle page leaked another cycle, claimed authority or hid check state")
+	}
+	if _, err := render.Parse([]byte(html)); err == nil {
+		t.Fatal("derived cycle page parsed as canonical work")
+	}
+	view2 := f.call("cycle-view", object{"cycle_id": "october-sprint", "offset": int64(1), "limit": int64(1), "membership_sha256": view["membership_sha256"]})
+	if view2["total"] != int64(2) || view2["next_offset"] != nil {
+		t.Fatalf("cycle continuation is wrong: %v", view2)
+	}
+	if _, err := Run(f.root, "cycle-view", object{"protocol": Protocol, "cycle_id": "october-sprint", "offset": int64(1), "limit": int64(1), "membership_sha256": strings.Repeat("0", 64)}); err == nil || !strings.Contains(err.Error(), "STALE_CURSOR") {
+		t.Fatalf("cycle page accepted a stale cursor: %v", err)
+	}
+	if _, err := Run(f.root, "cycle-view", object{"protocol": Protocol, "cycle_id": "missing-sprint"}); err == nil || !strings.Contains(err.Error(), "NOT_FOUND") {
+		t.Fatalf("missing cycle was presented as recorded: %v", err)
+	}
+	if got := f.call("work-get", object{"work_id": first["work_id"]}); got["cycle_id"] != "october-sprint" || got["work_id"] != first["work_id"] {
+		t.Fatalf("cycle assignment changed work identity: %v", got)
+	}
+	if got := f.call("work-get", object{"work_id": other["work_id"]}); got["cycle_id"] != "later-sprint" {
+		t.Fatalf("other cycle changed: %v", got)
+	}
+	cleared := f.call("work-update", object{"operation_id": f.next(), "work_id": first["work_id"], "action": "set-cycle", "cycle_id": nil,
+		"expected": object{"revision": first["revision"], "model_sha256": first["model_sha256"]}})
+	if cleared["cycle_id"] != nil || cleared["work_id"] != first["work_id"] {
+		t.Fatalf("clearing cycle changed the work identity: %v", cleared)
+	}
+	if _, err := Run(f.root, "work-update", object{"protocol": Protocol, "operation_id": f.next(), "work_id": first["work_id"], "action": "set-cycle", "cycle_id": "later-sprint",
+		"expected": object{"revision": first["revision"], "model_sha256": first["model_sha256"]}}); err == nil || !strings.Contains(err.Error(), "REVISION_CONFLICT") {
+		t.Fatalf("stale cycle assignment overwrote a later edit: %v", err)
+	}
+}

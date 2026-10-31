@@ -20,6 +20,7 @@
         "title": {"type": "string", "minLength": 1, "maxLength": 240},
         "summary": {"type": "string", "minLength": 1, "maxLength": 4000},
         "work_type": {"enum": ["feature", "fix", "chore", "spike", "unknown"]},
+        "cycle_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}]},
         "spec_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^SPEC-[A-Z0-9-]{1,74}$"}]},
         "plan_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^PLAN-[A-Z0-9-]{1,74}$"}]},
         "spec_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/specs/[a-z][a-z0-9-]*\\.html$"}]},

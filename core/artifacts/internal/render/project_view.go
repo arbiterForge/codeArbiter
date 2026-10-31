@@ -22,7 +22,7 @@ type ProjectViewData struct {
 }
 
 type ProjectViewEntry struct {
-	ID, Title, WorkType, State, CheckStatus, Href string
+	ID, Title, WorkType, CycleID, State, CheckStatus, Href string
 }
 
 type ProjectArchitectureEntry struct {
@@ -73,7 +73,11 @@ func ProjectView(data ProjectViewData) ([]byte, error) {
 			if check == "" {
 				check = "unknown"
 			}
-			w.WriteString(`<section class="work-card"><h3><a href="` + esc(item.Href) + `">` + esc(item.Title) + `</a></h3><p class="identity">` + esc(item.ID) + ` · ` + esc(item.WorkType) + `</p><p><strong>Local progress:</strong> ` + esc(item.State) + `</p><p><strong>Checks:</strong> ` + esc(check) + `</p></section>`)
+			w.WriteString(`<section class="work-card"><h3><a href="` + esc(item.Href) + `">` + esc(item.Title) + `</a></h3><p class="identity">` + esc(item.ID) + ` · ` + esc(item.WorkType) + `</p>`)
+			if item.CycleID != "" {
+				w.WriteString(`<p>Cycle: ` + esc(item.CycleID) + `</p>`)
+			}
+			w.WriteString(`<p><strong>Local progress:</strong> ` + esc(item.State) + `</p><p><strong>Checks:</strong> ` + esc(check) + `</p></section>`)
 		}
 		w.WriteString(`</div>`)
 	}

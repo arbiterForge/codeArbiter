@@ -11,14 +11,14 @@ import (
 // WorkViewData is a selected, already validated projection. A work view is
 // generated for human orientation and contains no canonical artifact model.
 type WorkViewData struct {
-	ID, ProjectID, Title, Intent, WorkType         string
-	State, CheckStatus, StartedAt, CompletedAt     string
-	Revision                                       int64
-	ModelSHA256                                    string
-	Spec, Plan                                     *WorkViewAttachment
-	ProviderEffectKind, ProviderEffectStatus       string
-	RemoteIssueURL, RemoteState, DesiredState      string
-	DeliveryState, DeliveryURL, DeliveryObservedAt string
+	ID, ProjectID, CycleID, Title, Intent, WorkType string
+	State, CheckStatus, StartedAt, CompletedAt      string
+	Revision                                        int64
+	ModelSHA256                                     string
+	Spec, Plan                                      *WorkViewAttachment
+	ProviderEffectKind, ProviderEffectStatus        string
+	RemoteIssueURL, RemoteState, DesiredState       string
+	DeliveryState, DeliveryURL, DeliveryObservedAt  string
 }
 
 type WorkViewAttachment struct {
@@ -104,7 +104,11 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	w.WriteString(workViewStyle)
 	w.WriteString(`</style></head><body><a class="skip" href="#main-content">Skip to work</a><div class="layout"><aside class="sidebar"><img src="`)
 	w.WriteString(esc(DefaultLogo()) + `" alt="codeArbiter"><p class="identity">` + esc(data.ID) + `</p><h2>In this work</h2><nav aria-label="Work sections"><a href="#progress">Progress</a><a href="#checks">Checks</a><a href="#delivery">Delivery</a><a href="#sync">Tracker sync</a><a href="#spec">Specification</a><a href="#plan">Plan</a></nav><p>Derived from the selected local work record. Refresh this view after the work changes.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / work</p><h1>`)
-	w.WriteString(esc(data.Title) + `</h1><p class="deck">` + esc(data.Intent) + `</p><div class="meta"><span>` + esc(data.ID) + `</span><span>` + esc(data.WorkType) + `</span></div></header>`)
+	w.WriteString(esc(data.Title) + `</h1><p class="deck">` + esc(data.Intent) + `</p><div class="meta"><span>` + esc(data.ID) + `</span><span>` + esc(data.WorkType) + `</span>`)
+	if data.CycleID != "" {
+		w.WriteString(`<span>Cycle ` + esc(data.CycleID) + `</span>`)
+	}
+	w.WriteString(`</div></header>`)
 	w.WriteString(`<section class="work-card work-snapshot" aria-labelledby="snapshot-title"><h2 id="snapshot-title">At a glance</h2><dl><div><dt>Current situation</dt><dd>` + esc(strings.ToUpper(data.State)) + ` locally</dd></div><div><dt>Recorded change</dt><dd>` + esc(change) + `</dd></div><div><dt>Remaining obstacle</dt><dd>` + esc(obstacle) + `</dd></div><div><dt>Next action</dt><dd>` + esc(next) + `</dd></div></dl></section>`)
 	w.WriteString(`<nav class="work-nav" aria-label="Jump to work status"><a href="#progress">Progress</a><a href="#checks">Checks</a><a href="#delivery">Delivery</a><a href="#sync">Tracker sync</a></nav><div class="work-grid">`)
 	w.WriteString(`<section class="work-card" id="progress"><h2>Local progress</h2><p class="state">` + esc(strings.ToUpper(data.State)) + `</p>`)

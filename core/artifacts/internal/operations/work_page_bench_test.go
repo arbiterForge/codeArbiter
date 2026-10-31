@@ -46,6 +46,40 @@ func BenchmarkWorkListPage(b *testing.B) {
 	}
 }
 
+// BenchmarkCycleView measures a read of every member reference for aggregate
+// progress, without conflating that scan with retained journal recovery.
+func BenchmarkCycleView(b *testing.B) {
+	for _, count := range []int{8, 32, 200} {
+		b.Run(fmt.Sprintf("items-%d", count), func(b *testing.B) {
+			root := testutil.Root(b)
+			for i := 0; i < count; i++ {
+				_, err := Run(root, "work-create", object{
+					"protocol": Protocol, "operation_id": fmt.Sprintf("cycle-bench-%04d", i),
+					"title": fmt.Sprintf("Work item %03d", i), "intent": "Measure cycle overview",
+					"work_type": "chore", "cycle_id": "bench-cycle",
+				})
+				if err != nil {
+					b.Fatal(err)
+				}
+			}
+			f, err := store.Open(root)
+			if err != nil {
+				b.Fatal(err)
+			}
+			defer f.Close()
+			e := &Engine{FS: f}
+			r := object{"cycle_id": "bench-cycle", "limit": int64(16)}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				if _, err := e.cycleView(r); err != nil {
+					b.Fatal(err)
+				}
+			}
+		})
+	}
+}
+
 // BenchmarkWorkSelectedReadWithRetainedHistory includes Run's journal recovery
 // and locking path. The first create leaves one journal; each rename adds one.
 // The labels count extra retained journals, never removed fixture history.

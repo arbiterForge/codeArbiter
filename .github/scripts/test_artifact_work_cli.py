@@ -218,6 +218,39 @@ class WorkCLITest(unittest.TestCase):
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", first["work_id"])["state"], "queued")
 
+    def test_cycle_view_uses_canonical_membership_and_keeps_checks_unknown(self) -> None:
+        first = self.run_work("create", "--title", "Cycle <first>", "--intent", "First result",
+                              "--type", "fix", "--cycle-id", "october-sprint",
+                              "--operation-id", "cycle-cli-create-001")
+        second = self.run_work("create", "--title", "Second result", "--intent", "Next result",
+                               "--type", "feature", "--operation-id", "cycle-cli-create-002")
+        grouped = self.run_work("set-cycle", second["work_id"], "--cycle-id", "october-sprint",
+                                "--operation-id", "cycle-cli-assign-002")
+        self.assertEqual(grouped["work_id"], second["work_id"])
+        self.run_work("complete", second["work_id"], "--operation-id", "cycle-cli-complete-002")
+        page = self.client.call("cycle-view", {"cycle_id": "october-sprint", "limit": 1})
+        self.assertEqual((page["total"], page["next_offset"]), (2, 1))
+        self.assertEqual((page["progress"]["complete"], page["checks"]["unknown"]), (1, 2))
+        self.assertFalse(page["canonical"])
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["cycle-view", "october-sprint", "--limit", "1"]), 0)
+        html = output.getvalue()
+        self.assertTrue(html.startswith("<!doctype html>"))
+        self.assertIn("Checks:", html)
+        self.assertIn("2 unknown", html)
+        self.assertIn("work.py cycle-view october-sprint --offset 1 --membership-sha256", html)
+        self.assertNotIn("Cycle <first>", html)
+        self.assertFalse((self.root / ".codearbiter" / "views").exists())
+        self.assertEqual(self.run_work("get", first["work_id"])["cycle_id"], "october-sprint")
+        cleared = self.run_work("set-cycle", first["work_id"], "--clear",
+                                "--operation-id", "cycle-cli-clear-001")
+        self.assertIsNone(cleared["cycle_id"])
+        with contextlib.redirect_stdout(output := io.StringIO()):
+            self.assertEqual(work.main(["cycle-view", "october-sprint", "--offset", "1",
+                                        "--membership-sha256", page["membership_sha256"]]), 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "STALE_CURSOR")
+
     def test_legacy_board_remains_owner_and_create_returns_stable_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)

@@ -48,7 +48,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -271,6 +271,7 @@ func RequestSchema(op string) (object, error) {
 		add("title", text(), true)
 		add("intent", text(), true)
 		add("work_type", enum("feature", "fix", "chore", "spike", "unknown"), true)
+		add("cycle_id", object{"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}, false)
 		add("spec_id", idType(), false)
 		add("plan_id", idType(), false)
 		add("origin", object{"type": "string", "maxLength": int64(256), "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"}, false)
@@ -336,14 +337,17 @@ func RequestSchema(op string) (object, error) {
 		budget()
 	case "work-view":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
-	case "work-list", "project-view":
+	case "work-list", "project-view", "cycle-view":
 		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		maximum := int64(64)
-		if op == "project-view" {
+		if op == "project-view" || op == "cycle-view" {
 			maximum = 16
 		}
 		add("limit", object{"type": "integer", "minimum": int64(1), "maximum": maximum}, false)
 		add("membership_sha256", digestType(), false)
+		if op == "cycle-view" {
+			add("cycle_id", object{"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}, true)
+		}
 		if op == "work-list" {
 			budget()
 		}
@@ -354,7 +358,8 @@ func RequestSchema(op string) (object, error) {
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
-		add("action", enum("rename", "attach", "start", "complete", "reopen", "archive", "observe-delivery"), true)
+		add("action", enum("rename", "attach", "start", "complete", "reopen", "archive", "observe-delivery", "set-cycle"), true)
+		add("cycle_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}}}, false)
 		add("title", text(), false)
 		add("spec_id", idType(), false)
 		add("plan_id", idType(), false)

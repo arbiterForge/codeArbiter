@@ -41,7 +41,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-view", "work-list", "work-origins", "project-view", "work-provider-get":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -223,6 +223,8 @@ func Run(root, op string, input object) (any, error) {
 		return engine.workOrigins(r)
 	case "project-view":
 		return engine.projectView(r)
+	case "cycle-view":
+		return engine.cycleView(r)
 	}
 	if op == "capture-observation" {
 		observedSource, _, sourceErr := authority.LoadSource(f, model.S(r["source_ref"]), model.S(r["source_sha256"]))

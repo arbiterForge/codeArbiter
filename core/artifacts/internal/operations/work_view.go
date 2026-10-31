@@ -44,7 +44,7 @@ func (e *Engine) workView(r object) (any, error) {
 		return nil, err
 	}
 	data := render.WorkViewData{
-		ID: model.S(work["work_id"]), ProjectID: model.S(work["project_id"]),
+		ID: model.S(work["work_id"]), ProjectID: model.S(work["project_id"]), CycleID: model.S(work["cycle_id"]),
 		Title: model.S(work["title"]), Intent: model.S(work["intent"]),
 		WorkType: model.S(work["work_type"]), State: model.S(work["state"]),
 		CheckStatus: model.S(work["check_status"]), StartedAt: model.S(work["started_at"]),
