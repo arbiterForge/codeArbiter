@@ -169,9 +169,12 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
 // page read; existing review routes retain their geometry. These are the
 // current reviewed source bytes for those shared owners.
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_artifactlib.py':'3b0a1b6e5e6c64465428ab8baa504a0e868912dd',
-  'core/artifacts/internal/render/render.go':'1ea6066acf90a463920584608d73724eb291c7e7',
-  'core/artifacts/internal/operations/protocol.go':'5074b80706fcbbcd6236ac38eeaed6e134eb2ff5',
+  // Init now sends initialized Markdown acquisition through decompose and
+  // refresh through context-check; the historical route layout is unchanged.
+  'core/surface/commands/init.md':'ed0f32b734097fa549cd95738ceaa30c56b7b849',
+  'core/pysrc/_artifactlib.py':'0cbc621fe6eeab05e7eb2bf96ebbee6c58d21c38',
+  'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
+  'core/artifacts/internal/operations/protocol.go':'0fb2db079a80621a3488b72ff2997aad07a9e2d0',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
   'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
