@@ -341,6 +341,8 @@ native `work-adopt` transaction. That transaction compares exact board bytes and
 derives each accepted work field again from its hashed source block before cutover,
 creates the project identity and all native work HTML, saves byte-for-byte
 snapshots in `.codearbiter/legacy/`, and removes the two writable board paths.
+One cutover supports at most 507 task rows so its journal stays within 512
+edits; a larger board is refused before ownership changes.
 Old board writers then refuse the absent board. Repeating the same operation
 ID reconstructs the request from the snapshots and returns its recorded result;
 a different operation cannot silently re-adopt an already native project.

@@ -63,16 +63,17 @@ The facade reads the selected revision for an ordinary update and applies the
 owner's exact change check. When a caller already holds the preimage, pass
 `--expected-revision` and `--expected-model-sha256` together for native work,
 or `--expected-model-sha256` with the returned board hash for legacy work.
-Keep the same request ID and preimage for an exact retry after an uncertain
-result. A changed item is a conflict to inspect; do not overwrite it by
-minting a fresh request ID.
+Keep the same request ID and preimage after an uncertain result. Native work
+returns its journaled result on an exact retry. A legacy update refuses a
+stale preimage, including one already applied; inspect the selected row before
+acting again. Do not overwrite a changed item by minting a fresh request ID.
 
 For a historical board row that cannot be selected through a stable `WORK-ID`,
-including an originless row with an existing dotted ID, `hooks/taskwrite.py`
-remains an explicit compatibility or repair path. Inspect the exact row and
-use its dotted ID, or the unique title for an ID-less row, with the documented
-selector and board lock;
-do not teach best-effort title matching as the normal /task route. Direct
+including an originless row with an existing dotted ID,
+`hooks/taskwrite.py` remains an explicit compatibility or repair path. Inspect
+the exact row and use its dotted ID, or the unique title for an ID-less row,
+with the documented selector and board lock; do not teach best-effort title
+matching as the normal /task route. Direct
 board edits remain invalid.
 
 ## Related owners
