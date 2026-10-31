@@ -6,6 +6,11 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- Stage and reconcile explicit GitHub issue status updates for bound native work,
+  with readback and a recorded conflict when the observed remote status changes.
+
 ## [0.25.1] - 2026-10-31
 
 ### Added

@@ -12,6 +12,11 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+### Added
+
+- Stage and reconcile explicit GitHub issue status updates for bound native work,
+  with readback and a recorded conflict when the observed remote status changes.
+
 ## [3.7.1] - 2026-10-31
 
 ### Added

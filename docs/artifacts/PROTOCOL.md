@@ -415,8 +415,8 @@ inside the canonical work model. `work-provider-configure` accepts a finite
 GitHub repository, credential reference and `after_merge` or `immediate`
 timing. It stores the reference, never the credential. `work-effect-stage`
 records pending intent; `work-effect-claim` journals `outcome_unknown` before
-any network send; `work-effect-record` stores the exact issue number and URL
-after readback. The fixed `hooks/work.py sync <WORK-ID>` adapter checks Git
+any network send; `work-effect-record` stores the exact issue number, URL and
+observed state after readback. The fixed `hooks/work.py sync <WORK-ID>` adapter checks Git
 origin against the binding. For the default `after_merge` timing, pass
 `--pull-number N`: the adapter reads the merged PR, checks its default-branch
 base and local HEAD ancestry, and reads the pending canonical work model at
@@ -429,7 +429,21 @@ posts another issue. A user-supplied raw native claim is structurally checked
 but does not itself perform remote verification; use the adapter for the
 verified send. The facade's raw JSON request route excludes claim and record;
 the native protocol still trusts its cooperating caller for those fields.
-GitHub Projects and remote issue updates are not yet supported.
+For a bound issue, `hooks/work.py stage-status <WORK-ID> --state open|closed
+--operation-id <stable-id>` records an explicit status intent. `sync` first
+reads the exact correlated issue. A changed remote state is recorded as a
+conflict without a PATCH; restaging after inspection is explicit. A permitted
+send changes only the issue state, then reads it back. A lost PATCH response
+stays `outcome_unknown`; `reconcile-status` reads the same issue and never
+repeats the PATCH. If the remote state differs, it stays uncertain until
+`reconcile-status --accept-remote` explicitly records the observed state as a
+conflict tied to the original attempt. A subsequent `stage-status` is a new
+selected intent. Assignee, title and body are outside this status effect.
+GitHub's REST API does not support conditional PATCH for issues, so a human
+edit in the interval between the last read and PATCH cannot be ruled out by
+this adapter. [GitHub's REST guidance](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api#use-conditional-requests)
+limits conditional requests on unsafe methods. GitHub Projects and issue
+title/body updates remain unsupported.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.

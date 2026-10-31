@@ -4,6 +4,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Stage and reconcile explicit GitHub issue status updates for bound native work,
+  with readback and a recorded conflict when the observed remote status changes.
+
 ## [0.26.1] - 2026-10-31
 
 ### Fixed
