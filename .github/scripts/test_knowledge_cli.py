@@ -291,6 +291,48 @@ class KnowledgeCli(unittest.TestCase):
         self.assertEqual(json.loads(self.script("work.py", "get", promoted["work_id"]).stdout)["title"],
                          "Inspect another path")
 
+    def test_initialized_brownfield_partial_acquisition_keeps_unknowns_and_candidates_local(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        board = self.root / ".codearbiter/open-tasks.md"
+        board.unlink(missing_ok=True)  # disposable no-backlog native fixture
+        context = (self.root / CONTEXT).read_bytes()
+        decision = self.root / ".codearbiter/decisions/ADR-0001.md"
+        decision.parent.mkdir(exist_ok=True)
+        decision.write_bytes(b"# Existing decision\nHuman rationale stays here.\n")
+        prior = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "question", "title": "Deployment target", "statement": "Deployment target is not known.",
+            "basis": "unknown", "scope": {"paths": []}, "related_refs": [], "source_refs": [],
+            "status": "open", "answer": None}))
+        denied = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "component", "title": "Restricted service", "statement": "Source inspection was denied; behavior is unknown.",
+            "basis": "unknown", "scope": {"paths": ["src/restricted/**"]},
+            "related_refs": [prior["record"]], "source_refs": []}))
+        phase = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "phase", "title": "Inspect accessible services", "statement": "Inspect permitted paths before selecting a change.",
+            "basis": "proposed", "scope": {"paths": ["src/public/**"]},
+            "related_refs": [denied["record"]], "source_refs": []}))
+        work = {"type": "work_item", "title": "Review public service", "statement": "Review one accessible path.",
+                "basis": "proposed", "scope": {"paths": ["src/public/**"]},
+                "related_refs": [phase["record"]], "source_refs": []}
+        candidate = self.knowledge("add", "decomposition", "--record", json.dumps(work))
+        # A second process sees the same saved candidate after interrupted synthesis.
+        resumed = self.knowledge("add", "decomposition", "--record", json.dumps(work))
+        self.assertEqual(resumed["record"], candidate["record"])
+        self.assertTrue(resumed["reused"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), context)
+        self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
+                         "candidate or interrupted synthesis published work")
+        self.assertFalse(board.exists(), "acquisition recreated an empty legacy backlog")
+        self.assertEqual(self.knowledge("read", "decomposition", denied["record"])["records"][0]["basis"],
+                         "unknown")
+        promoted = self.knowledge("promote", candidate["record"])
+        self.assertEqual(self.knowledge("promote", candidate["record"])["work_id"], promoted["work_id"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), context)
+        self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
+
 
     def git(self, *arguments):
         subprocess.run(["git", "-c", "core.hooksPath=" + os.devnull, "-c", "user.name=t", "-c", "user.email=t@example.invalid",
