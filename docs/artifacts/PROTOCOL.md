@@ -408,7 +408,9 @@ does not save the page or include it in artifact discovery. The project page
 also reads the one canonical native code map and shows at most four recorded
 components or interfaces with their evidence basis. It names omitted records
 and links to the complete code map; an absent or invalid map is labeled without
-hiding work. No cycle model or cycle overview is shipped yet. Legacy projects
+hiding work. Its delivery and tracker cards direct readers to individual work
+items; the project page does not aggregate remote observations. No cycle model
+or cycle overview is shipped yet. Legacy projects
 continue to use their board; this native-only derived view reports unsupported
 through the legacy facade.
 
@@ -421,6 +423,8 @@ observation time in the work model; it does not change local progress, checks or
 the separate issue effect. The derived work page labels this as a recorded
 observation, not a release or deployment. It is a bounded correlation check,
 not full validation of the PR-head artifact or an independent review result.
+Exact GitHub PR and issue URLs become navigable links in the work view; other
+URL text is not used as a navigation target.
 Observing a later state is explicit; viewing a saved page never makes a network
 request. The native `work-update` action accepts the structured observation
 from a cooperating caller, while the CLI performs the GitHub readback.
