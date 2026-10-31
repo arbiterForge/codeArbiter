@@ -39,6 +39,24 @@ class AdoptionInventoryTest(unittest.TestCase):
         self.assertTrue(result["rows"][1]["origin"].startswith("legacy:open#"))
         self.assertNotEqual(result["rows"][0]["work_id"], result["rows"][1]["work_id"])
 
+    def test_scaffold_instructions_and_fenced_example_are_not_adopted(self):
+        raw = ("# Open tasks\n\n"
+               "Schema (one task = a lifecycle line + indented content sub-bullets):\n\n"
+               "```\n- [~] poc.auth.0001 - Example (started 2026-06-18)\n```\n\n"
+               "- Marker: `[ ]` queued | `[~]` in-progress | `[x]` done. In-progress and done\n"
+               "- ID `<group>.<type>.<seq>`: `group` = build phase (poc/mvp1/v1...), `type` =\n"
+               "- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).\n\n"
+               "## In-flight\n"
+               "- [ ] demo.feat.0001 - Actual work\n").encode("utf-8")
+        self.board.write_bytes(raw)
+        result = _workadopt.preview(self.root)
+        self.assertEqual(result["count"], 1)
+        self.assertEqual(result["rows"][0]["alias"], "demo.feat.0001")
+        self.assertEqual(self.board.read_bytes(), raw)
+        self.board.write_bytes(raw.replace(b"## In-flight", b"- Unrecognized preamble note\n## In-flight"))
+        with self.assertRaisesRegex(ValueError, "unaccounted scaffold preamble"):
+            _workadopt.preview(self.root)
+
     def test_refuses_malformed_marker_and_duplicate_alias(self):
         self.board.write_text("# Open\n* [ ] Missed row\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "malformed"):

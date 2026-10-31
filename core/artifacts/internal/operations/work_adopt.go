@@ -23,6 +23,15 @@ const legacyArchivePath = ".codearbiter/done-tasks.md"
 var legacyAliasPattern = regexp.MustCompile(`^[a-z][a-z0-9]*\.[a-z][a-z0-9]*\.[0-9]{4,}$`)
 var legacyStrayMarkerPattern = regexp.MustCompile(`^\s*[-*+]?\s*\[[ xX~]\]`)
 var legacyCanonicalTaskPattern = regexp.MustCompile(`^- \[[ xX~]\] `)
+var legacyFencePattern = regexp.MustCompile("^ {0,3}(`{3,}|~{3,})(.*)$")
+
+const legacyScaffoldSchema = "Schema (one task = a lifecycle line + indented content sub-bullets):"
+
+var legacyScaffoldNotes = map[string]bool{
+	"- Marker: `[ ]` queued | `[~]` in-progress | `[x]` done. In-progress and done":   true,
+	"- ID `<group>.<type>.<seq>`: `group` = build phase (poc/mvp1/v1...), `type` =":   true,
+	"- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).": true,
+}
 
 func digestBytes(b []byte) string { return fmt.Sprintf("%x", sha256.Sum256(b)) }
 
@@ -36,8 +45,45 @@ func adoptionBlocks(raw []byte) (map[int64]string, error) {
 	if len(lines) > 0 && lines[len(lines)-1] == "" {
 		lines = lines[:len(lines)-1]
 	}
+	skipped := make([]bool, len(lines))
+	fenceChar, fenceWidth := byte(0), 0
+	scaffold, beforeSection := false, true
+	for i, line := range lines {
+		marker := legacyFencePattern.FindStringSubmatch(line)
+		if fenceChar != 0 {
+			skipped[i] = true
+			if marker != nil && marker[1][0] == fenceChar && len(marker[1]) >= fenceWidth && strings.TrimSpace(marker[2]) == "" {
+				fenceChar, fenceWidth = 0, 0
+			}
+			continue
+		}
+		if marker != nil {
+			fenceChar, fenceWidth = marker[1][0], len(marker[1])
+			skipped[i] = true
+			continue
+		}
+		if strings.HasPrefix(line, "## ") {
+			beforeSection = false
+		}
+		if beforeSection && line == legacyScaffoldSchema {
+			scaffold = true
+		}
+		if scaffold && beforeSection && strings.HasPrefix(line, "- ") {
+			if legacyScaffoldNotes[line] {
+				skipped[i] = true
+			} else if !legacyCanonicalTaskPattern.MatchString(line) {
+				return nil, fault.New("INVALID_LEGACY_BOARD", "unaccounted scaffold preamble bullet")
+			}
+		}
+	}
+	if fenceChar != 0 {
+		return nil, fault.New("INVALID_LEGACY_BOARD", "unterminated Markdown fence in legacy board")
+	}
 	blocks := map[int64]string{}
 	for i, line := range lines {
+		if skipped[i] {
+			continue
+		}
 		if legacyStrayMarkerPattern.MatchString(line) && !legacyCanonicalTaskPattern.MatchString(line) {
 			return nil, fault.New("INVALID_LEGACY_BOARD", "legacy board has a malformed task marker")
 		}

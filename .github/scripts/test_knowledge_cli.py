@@ -264,6 +264,33 @@ class KnowledgeCli(unittest.TestCase):
         self.assertEqual(self.knowledge("read", "decomposition", observed["record"])["records"][0]["basis"],
                          "source-observed")
 
+    def test_initialized_brownfield_preserves_legacy_backlog_through_selected_adoption(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        context = (self.root / CONTEXT).read_bytes()
+        board = self.root / ".codearbiter/open-tasks.md"
+        self.script("taskwrite.py", "add", "Keep the pre-existing task")
+        original_board = board.read_bytes()
+        candidate = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "work_item", "title": "Inspect another path", "statement": "Review the observed gap.",
+            "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}))
+        self.assertEqual(board.read_bytes(), original_board, "candidate publication changed the legacy backlog")
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists())
+
+        promoted = self.knowledge("promote", candidate["record"])
+        self.assertEqual(promoted["owner"], "legacy")
+        self.assertIn(b"Keep the pre-existing task", board.read_bytes())
+        self.assertIn(b"Inspect another path", board.read_bytes())
+        adopted = json.loads(self.script("work.py", "adopt", "--operation-id", "brownfield-adopt-001").stdout)
+        self.assertEqual(adopted["adopted_count"], 2)
+        self.assertFalse(board.exists())
+        replay = self.knowledge("promote", candidate["record"])
+        self.assertEqual(replay["work_id"], promoted["work_id"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), context)
+        self.assertEqual(json.loads(self.script("work.py", "get", promoted["work_id"]).stdout)["title"],
+                         "Inspect another path")
+
 
     def git(self, *arguments):
         subprocess.run(["git", "-c", "core.hooksPath=" + os.devnull, "-c", "user.name=t", "-c", "user.email=t@example.invalid",

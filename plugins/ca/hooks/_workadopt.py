@@ -18,6 +18,13 @@ from _hooklib import acquire_lock, release_lock
 _ORIGIN = re.compile(r"[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}\Z")
 _ID = re.compile(r"WORK-[A-F0-9]{32}\Z")
 _META = re.compile(r"  - (Work origin|Work type|Work ID|Work operation ID|Spec ID|Plan ID): (.*)\Z")
+_SCAFFOLD_SCHEMA = "Schema (one task = a lifecycle line + indented content sub-bullets):"
+_SCAFFOLD_NOTES = (
+    "- Marker: `[ ]` queued | `[~]` in-progress | `[x]` done. In-progress and done",
+    "- ID `<group>.<type>.<seq>`: `group` = build phase (poc/mvp1/v1...), `type` =",
+    "- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).",
+)
+_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 
 def _read(path, limit, *, optional=False):
@@ -38,13 +45,47 @@ def _read(path, limit, *, optional=False):
         raise ValueError(f"legacy {path.name} is not UTF-8") from exc
 
 
+def _inventory_text(lines):
+    """Hide Markdown examples and known scaffold notes without shifting row lines."""
+    masked = list(lines)
+    fence = None
+    scaffold = False
+    before_section = True
+    for index, line in enumerate(lines):
+        marker = _FENCE.match(line)
+        if fence is not None:
+            masked[index] = "#"
+            if (marker and marker.group(1)[0] == fence[0]
+                    and len(marker.group(1)) >= fence[1]
+                    and not marker.group(2).strip()):
+                fence = None
+            continue
+        if marker:
+            fence = (marker.group(1)[0], len(marker.group(1)))
+            masked[index] = "#"
+            continue
+        if line.startswith("## "):
+            before_section = False
+        if before_section and line == _SCAFFOLD_SCHEMA:
+            scaffold = True
+        if scaffold and before_section and line.startswith("- "):
+            if line in _SCAFFOLD_NOTES:
+                masked[index] = "#"
+            elif not re.match(r"^- \[[ xX~]\] ", line):
+                raise ValueError("unaccounted scaffold preamble bullet; move work into a task section")
+    if fence is not None:
+        raise ValueError("unterminated Markdown fence in legacy board")
+    return "\n".join(masked)
+
+
 def _rows(text, location):
-    warnings = board.lint_board(text)
+    lines = text.splitlines()
+    inventory_text = _inventory_text(lines)
+    warnings = board.lint_board(inventory_text)
     if warnings:
         raise ValueError("malformed or duplicate legacy task: " + warnings[0])
-    lines = text.splitlines()
-    tasks = board.parse_board(text)
-    if len(tasks) != sum(line.startswith("- ") for line in lines):
+    tasks = board.parse_board(inventory_text)
+    if len(tasks) != sum(line.startswith("- ") for line in inventory_text.splitlines()):
         raise ValueError("legacy board has an unaccounted task row")
     result = []
     for task in tasks:

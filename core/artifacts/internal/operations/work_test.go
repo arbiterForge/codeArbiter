@@ -113,6 +113,20 @@ func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
 	}
 }
 
+func TestAdoptionBlocksIgnoreScaffoldDocumentation(t *testing.T) {
+	board := []byte("# Open tasks\n" +
+		"Schema (one task = a lifecycle line + indented content sub-bullets):\n" +
+		"```\n- [~] poc.auth.0001 - Example (started 2026-06-18)\n```\n" +
+		"- Marker: `[ ]` queued | `[~]` in-progress | `[x]` done. In-progress and done\n" +
+		"- ID `<group>.<type>.<seq>`: `group` = build phase (poc/mvp1/v1...), `type` =\n" +
+		"- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).\n" +
+		"## In-flight\n- [ ] demo.feat.0001 - Actual work\n")
+	blocks, err := adoptionBlocks(board)
+	if err != nil || len(blocks) != 1 || blocks[10] != digestBytes([]byte("- [ ] demo.feat.0001 - Actual work")) {
+		t.Fatalf("scaffold was inventoried as work: blocks=%v err=%v", blocks, err)
+	}
+}
+
 func TestWorkAdoptRefusesStaleBoardAndUncoveredRows(t *testing.T) {
 	root := testutil.Root(t)
 	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {

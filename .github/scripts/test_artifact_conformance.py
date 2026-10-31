@@ -283,6 +283,7 @@ EXPECTED_SUITES = {
         "test_facade_exposes_read_only_preview",
         "test_archived_row_is_inventoried_and_cross_board_alias_collision_refused",
         "test_keyed_legacy_row_keeps_its_pre_adoption_work_id",
+        "test_scaffold_instructions_and_fenced_example_are_not_adopted",
     },
     "test_work_github.py": {
         "test_lost_create_response_never_reposts",
