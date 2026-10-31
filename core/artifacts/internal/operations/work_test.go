@@ -19,6 +19,15 @@ import (
 	"testing"
 )
 
+// Linux init-store locks the repository directory without creating the legacy
+// board parent. Tests that fabricate a legacy board must create that fixture.
+func ensureLegacyBoardFixtureDir(t *testing.T, root string) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Join(root, ".codearbiter"), 0755); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestWorkIdentityStableAcrossRenameAndArchive(t *testing.T) {
 	root := testutil.Root(t)
 	request := func(op string, fields object) object {
@@ -70,6 +79,7 @@ func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
 		t.Fatal(err)
 	}
 	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
 	board := []byte("# Work\n- [ ] demo.feat.0001 - Build parser\n  - Desc: Parse safely\n")
 	if err := os.WriteFile(boardPath, board, 0644); err != nil {
 		t.Fatal(err)
@@ -109,6 +119,7 @@ func TestWorkAdoptRefusesStaleBoardAndUncoveredRows(t *testing.T) {
 		t.Fatal(err)
 	}
 	path := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
 	before := []byte("- [ ] First row\n")
 	if err := os.WriteFile(path, before, 0644); err != nil {
 		t.Fatal(err)
@@ -140,6 +151,7 @@ func TestWorkAdoptRefusesHiddenMalformedTaskMarker(t *testing.T) {
 	}
 	board := []byte("- [ ] Visible row\n* [ ] Hidden row\n")
 	path := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
 	if err := os.WriteFile(path, board, 0644); err != nil {
 		t.Fatal(err)
 	}
@@ -165,6 +177,7 @@ func TestLegacyBoardLockRefusesExternalHardLink(t *testing.T) {
 		t.Fatal(err)
 	}
 	link := filepath.Join(root, ".codearbiter", "open-tasks.md.lock")
+	ensureLegacyBoardFixtureDir(t, root)
 	if err := os.Link(external, link); err != nil {
 		t.Skipf("hard links unavailable: %v", err)
 	}
@@ -187,6 +200,7 @@ func TestWorkAdoptRecoveryPreservesLaterBoardEdit(t *testing.T) {
 		t.Fatal(err)
 	}
 	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
 	board := []byte("- [ ] Recover row\n")
 	if err := os.WriteFile(boardPath, board, 0644); err != nil {
 		t.Fatal(err)
