@@ -10,6 +10,8 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import boardsync  # noqa: E402
@@ -159,6 +161,41 @@ class TestReconcileMain(unittest.TestCase):
             sys.stdin = old_stdin
         out = buf.getvalue()
         self.assertIsInstance(out, str)  # printed something; no exception
+
+    def test_native_owner_does_not_report_legacy_board_clean(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cad = Path(tmp) / ".codearbiter"
+            work = cad / "work"
+            work.mkdir(parents=True)
+            board = cad / "open-tasks.md"
+            board.write_text("## Backlog\n- [ ] legacy task\n", encoding="utf-8")
+            (work / f"WORK-{'A' * 32}.html").write_text("selected work", encoding="utf-8")
+            with mock.patch.object(boardsync.tb, "read_board", side_effect=AssertionError("legacy board read")):
+                out = self._run_reconcile(str(board), "fix: merged work\n")
+            self.assertIn("both legacy and native work owners", out.lower())
+            self.assertNotIn("no drift detected", out.lower())
+
+    def test_native_owner_without_board_is_not_reported_clean(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cad = Path(tmp) / ".codearbiter"
+            work = cad / "work"
+            work.mkdir(parents=True)
+            (work / f"WORK-{'A' * 32}.html").write_text("selected work", encoding="utf-8")
+            board = cad / "open-tasks.md"
+            with mock.patch.object(boardsync.tb, "read_board", side_effect=AssertionError("legacy board read")):
+                out = self._run_reconcile(str(board), "fix: merged work\n")
+            self.assertIn("native work is selected", out.lower())
+            self.assertNotIn("no drift detected", out.lower())
+
+    def test_empty_native_directory_keeps_legacy_board_owner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cad = Path(tmp) / ".codearbiter"
+            (cad / "work").mkdir(parents=True)
+            board = cad / "open-tasks.md"
+            board.write_text("## In-flight\n- [~] poc.auth.0001 - Example check  (started 2026-06-18)\n", encoding="utf-8")
+            out = self._run_reconcile(str(board), "fix: poc.auth.0001 merged\n")
+            self.assertIn("DRIFTED", out)
+            self.assertNotIn("native work", out.lower())
 
     # AC-12 read-only proof --------------------------------------------------------
     def test_board_file_byte_identical_after_reconcile(self):

@@ -10,7 +10,7 @@
   "source_commit": "abe508e1b89912adde45528136c3221eb69acdd7",
   "result": "PASS",
   "source_tag": "v1.1.0",
-  "reviewed_at": "2026-10-27",
+  "reviewed_at": "2026-10-30",
   "reviewer": "ca-add-dep:C019-DEPENDENCY",
   "licenses": {
     "result": "PASS",
@@ -28,18 +28,18 @@
     "production": {
       "info": 0,
       "low": 0,
-      "moderate": 0,
+      "moderate": 1,
       "high": 1,
       "critical": 0,
-      "total": 1
+      "total": 2
     },
     "all": {
       "info": 0,
       "low": 0,
-      "moderate": 0,
+      "moderate": 1,
       "high": 1,
       "critical": 0,
-      "total": 1
+      "total": 2
     }
   },
   "lifecycle_scripts": {
@@ -125,6 +125,15 @@
       "version": "8.10.2",
       "severity": "moderate",
       "reason": "Decompress interceptor exception denial of service. Re-reviewed 2026-10-27. Pi 1.1.0 and latest 1.4.0 pin undici 8.10.2; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, and general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with patched undici.",
+      "baseline_version": "1.0.2",
+      "backstop": "2026-11-08"
+    },
+    {
+      "ghsa": "GHSA-g3hv-75wg-m249",
+      "package": "minimatch",
+      "version": "10.2.6",
+      "severity": "moderate",
+      "reason": "Glob-pattern amplification can exhaust CPU and memory at optimization level 2 or higher. Published and reviewed 2026-10-30. Pi 1.1.0 and latest 1.4.0 pin minimatch 10.2.6; the same version is in the 1.0.2 baseline. The adapter contract uses offline fixtures, while general Pi runtime applicability has not been ruled out. ADR-0041 dated retention pending an upstream Pi release with minimatch 11.0.1 or later.",
       "baseline_version": "1.0.2",
       "backstop": "2026-11-08"
     }

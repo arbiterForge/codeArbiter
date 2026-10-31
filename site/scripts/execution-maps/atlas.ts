@@ -165,12 +165,13 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/refactor/SKILL.md':'3f96c8640832c34d7fb91d59fd5928b8fa68ecfc',
 });
 // The local work owner adds selected work operations to the artifact bridge
-// and a work document rendering. Existing review routes retain their geometry;
-// these are the current reviewed source bytes for those shared owners.
+// and a work document rendering. The bridge now also admits a derived project
+// page read; existing review routes retain their geometry. These are the
+// current reviewed source bytes for those shared owners.
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_artifactlib.py':'adb2696ed5ef1288ac110b01e5566de38861b2a4',
+  'core/pysrc/_artifactlib.py':'3b0a1b6e5e6c64465428ab8baa504a0e868912dd',
   'core/artifacts/internal/render/render.go':'1ea6066acf90a463920584608d73724eb291c7e7',
-  'core/artifacts/internal/operations/protocol.go':'11f21e2ab9e0cfcfcaa3415546b9fd1381f18e44',
+  'core/artifacts/internal/operations/protocol.go':'5074b80706fcbbcd6236ac38eeaed6e134eb2ff5',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
   'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',

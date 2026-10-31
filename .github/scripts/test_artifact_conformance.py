@@ -265,6 +265,7 @@ EXPECTED_SUITES = {
         "test_legacy_work_updates_keep_unknown_check_and_exact_identity",
         "test_local_journey_has_stable_identity_and_unknown_check",
         "test_origin_retry_repairs_archived_work_attachment",
+        "test_project_view_pages_native_work_without_writing_a_second_owner",
         "test_selected_view_is_inert_html_and_leaves_no_second_owner",
         "test_update_requires_replay_identity_to_preserve_later_edit",
         "test_versioned_stdin_request_uses_only_native_work_operations",

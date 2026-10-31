@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-10-30
+
+### Added
+
+- Render a bounded, read-only native project work page with links to canonical
+  work records and separate progress, check, delivery, and tracker labels.
+
+### Fixed
+
+- Report native or mixed work ownership during legacy board drift checks.
+
 ## [0.24.0] - 2026-10-30
 
 ### Added
