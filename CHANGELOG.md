@@ -23,6 +23,10 @@ predate the plugin rewrite and are grouped by date.
 - Summarize recorded code-map components and interfaces on the derived project page.
 - Record a bounded GitHub PR observation on selected work while keeping local progress, checks and issue sync distinct.
 
+### Fixed
+
+- Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+
 ## [3.7.1] - 2026-10-31
 
 ### Added

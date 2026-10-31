@@ -321,7 +321,10 @@ remain unsupported through this facade. Native creation still refuses while
 the legacy board owns the project.
 
 `hooks/work.py adopt-preview` inventories every active and archived top-level
-row while holding the legacy board writer's lock. It reports board byte hashes,
+task row while holding the legacy board writer's lock. Fenced examples and the
+known `init-codearbiter.py` schema notes are retained in the byte-for-byte board
+snapshot, but are not promoted as work; unfamiliar bullets in that schema
+preamble stop cutover for inspection. The preview reports board byte hashes,
 candidate native IDs and origins, and refuses malformed markers, duplicate
 identities, linked boards and an existing native owner. Unkeyed rows receive a
 deterministic candidate origin from their board location and exact block, not
