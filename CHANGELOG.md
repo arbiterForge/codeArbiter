@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.7.0] - 2026-10-30
+
+### Added
+
+- Render a bounded, read-only native project work page with links to canonical
+  work records and separate progress, check, delivery, and tracker labels.
+
+### Fixed
+
+- Report native or mixed work ownership during legacy board drift checks.
+
 ## [3.6.0] - 2026-10-30
 
 ### Added

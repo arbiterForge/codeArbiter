@@ -4,6 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-10-30
+
+### Added
+
+- Render a bounded, read-only native project work page with links to canonical
+  work records and separate progress, check, delivery, and tracker labels.
+
+### Fixed
+
+- Report native or mixed work ownership during legacy board drift checks.
+
 ## [0.25.0] - 2026-10-30
 
 ### Added
