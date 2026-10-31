@@ -240,6 +240,14 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(context["requested_paths"], ["src/stage1.go"])
         self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
         self.assertTrue(any("does not join selected knowledge" in note for note in context["omitted"]))
+
+    def test_legacy_title_omits_date_before_origin_marker(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [~] demo.feat.0001 - Build parser (started 2026-10-30) "
+                         "(from DECOMP#DATE)\n  - Desc: Parse safely\n", encoding="utf-8")
+        selected = self.run_work("get", _worklib._id("DECOMP#DATE"))
+        self.assertEqual(selected["title"], "Build parser")
         large = self.run_work("create", "--title", "Large work", "--intent", "x" * 3000,
                               "--type", "fix", "--origin", "DECOMP#LARGE")
         output = io.StringIO()

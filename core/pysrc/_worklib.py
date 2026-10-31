@@ -60,7 +60,9 @@ def _title(task, source):
         body = body[len(task.id):].lstrip()
         body = re.sub(r"^[—–-]+\s*", "", body)
     body = re.sub(r"\s*\((?:started|done)\s+[^)]*\)\s*$", "", body)
-    return body.removesuffix(f"(from {source})").strip()
+    body = body.removesuffix(f"(from {source})").strip()
+    # Board edits can put the date before the trailing correlation marker.
+    return re.sub(r"\s*\((?:started|done)\s+[^)]*\)\s*$", "", body).strip()
 
 
 def _read_bounded(path, limit, *, optional=False):
