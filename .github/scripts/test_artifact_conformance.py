@@ -291,6 +291,8 @@ EXPECTED_SUITES = {
         "test_scaffold_instructions_and_fenced_example_are_not_adopted",
     },
     "test_work_github.py": {
+        "test_project_url_discovery_resolves_user_and_org_boards_without_writing",
+        "test_project_url_discovery_rejects_redirects_and_mismatched_readback",
         "test_transport_refuses_unbounded_project_graphql_variables",
         "test_project_add_readback_keeps_bound_issue",
         "test_project_wrong_issue_readback_refuses_before_claim",

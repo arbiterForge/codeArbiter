@@ -85,6 +85,13 @@ class FakeProjectGithub(FakeGithub):
         return status, result
 
     def graphql(self, query, variables, token):
+        if "owner: user(" in query or "owner: organization(" in query:
+            self.calls.append(("GRAPHQL", "project-lookup"))
+            assert token == "fixture-token"
+            kind = "users" if "owner: user(" in query else "orgs"
+            return {"data": {"owner": {"projectV2": {
+                "id": self.project_id,
+                "url": f"https://github.com/{kind}/{variables['login']}/projects/{variables['number']}"}}}}
         action = ("add" if "addProjectV2ItemById" in query else
                   "field-update" if "updateProjectV2ItemFieldValue" in query else
                   "field-read" if "fieldValues(" in query else
@@ -652,6 +659,49 @@ class GithubWorkTest(unittest.TestCase):
             "expected": {"revision": issue["revision"], "model_sha256": issue["model_sha256"]}})
         return config, staged
 
+    def test_project_url_discovery_resolves_user_and_org_boards_without_writing(self):
+        class DiscoveryTransport:
+            def __init__(self):
+                self.calls = []
+
+            def graphql(self, query, variables, token):
+                self.calls.append((query, variables))
+                assert token == "fixture-token"
+                owner = "user" if "owner: user(" in query else "organization"
+                return {"data": {"owner": {"projectV2": {
+                    "id": "PVT_fixture12345678",
+                    "url": f"https://github.com/{'users' if owner == 'user' else 'orgs'}/{variables['login']}/projects/{variables['number']}"}}}}
+
+        transport = DiscoveryTransport()
+        project_binding = self.root / ".codearbiter/work/project-provider.json"
+        self.assertFalse(project_binding.exists())
+        for url in ("https://github.com/users/SUaDtL/projects/1",
+                    "https://github.com/orgs/arbiterForge/projects/12"):
+            result = _workgithub.discover_project(self.root, self.client, url,
+                                                  transport, lambda _: "fixture-token")
+            self.assertEqual(result, {"project_node_id": "PVT_fixture12345678", "project_url": url})
+        self.assertEqual(len(transport.calls), 2)
+        self.assertFalse(project_binding.exists())
+
+    def test_project_url_discovery_rejects_redirects_and_mismatched_readback(self):
+        class DiscoveryTransport:
+            def graphql(self, query, variables, token):
+                return {"data": {"owner": {"projectV2": {
+                    "id": "PVT_fixture12345678", "url": "https://github.com/users/other/projects/1"}}}}
+
+        transport = DiscoveryTransport()
+        for url in ("http://github.com/users/SUaDtL/projects/1",
+                    "https://github.com.evil.test/users/SUaDtL/projects/1",
+                    "https://github.com/users/SUaDtL/projects/1?x=1"):
+            with self.subTest(url=url), self.assertRaises(_workgithub.WorkSyncError):
+                _workgithub.discover_project(self.root, self.client, url,
+                                             transport, lambda _: "fixture-token")
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.discover_project(self.root, self.client,
+                "https://github.com/users/SUaDtL/projects/1", transport,
+                lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "REMOTE_BINDING_UNVERIFIED")
+
     def test_project_add_readback_keeps_bound_issue(self):
         transport = FakeProjectGithub()
         self._project_ready(transport)
@@ -835,6 +885,8 @@ class GithubWorkTest(unittest.TestCase):
             (_workgithub._PROJECT_READ, {**base, "after": "x" * 513}),
             (_workgithub._PROJECT_READ, {**base, "project": "https://example.invalid"}),
             (_workgithub._PROJECT_READ, {**base, "issue": ["I_fixture12345678"]}),
+            (_workgithub._PROJECT_USER_LOOKUP, {"login": "bad/owner", "number": 1}),
+            (_workgithub._PROJECT_ORG_LOOKUP, {"login": "arbiterForge", "number": 0}),
         ):
             with self.subTest(query=query[:20], variables=variables), self.assertRaises(_workgithub.WorkSyncError) as raised:
                 transport.graphql(query, variables, "fixture-token")

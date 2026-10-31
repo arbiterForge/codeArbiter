@@ -72,8 +72,15 @@ _PROJECT_FIELDS = """query($project: ID!) {
     }
   } }
 }"""
+_PROJECT_USER_LOOKUP = """query($login: String!, $number: Int!) {
+  owner: user(login: $login) { projectV2(number: $number) { id url } }
+}"""
+_PROJECT_ORG_LOOKUP = """query($login: String!, $number: Int!) {
+  owner: organization(login: $login) { projectV2(number: $number) { id url } }
+}"""
 _GLOBAL_NODE_ID = re.compile(r"[A-Za-z0-9_+/=-]{8,256}\Z")
 _OPTION_ID = re.compile(r"[A-Za-z0-9_+/=-]{1,128}\Z")
+_PROJECT_URL_PATH = re.compile(r"/(users|orgs)/([A-Za-z0-9][A-Za-z0-9-]{0,38})/projects/([1-9][0-9]{0,8})\Z")
 
 
 class WorkSyncError(ValueError):
@@ -130,6 +137,8 @@ class GithubTransport:
             _PROJECT_FIELD_READ: {"project", "issue", "item", "field", "after"},
             _PROJECT_FIELD_UPDATE: {"project", "item", "field", "option"},
             _PROJECT_FIELDS: {"project"},
+            _PROJECT_USER_LOOKUP: {"login", "number"},
+            _PROJECT_ORG_LOOKUP: {"login", "number"},
         }
         if query not in variable_sets or type(variables) is not dict:
             raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL operation is outside the fixed Projects contract")
@@ -144,6 +153,12 @@ class GithubTransport:
         if "option" in variables and (type(variables["option"]) is not str
                                       or _OPTION_ID.fullmatch(variables["option"]) is None):
             raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL option ID is invalid")
+        if "login" in variables and (type(variables["login"]) is not str
+                                     or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}", variables["login"]) is None):
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub Projects owner is invalid")
+        if "number" in variables and (type(variables["number"]) is not int
+                                      or not 1 <= variables["number"] <= 999_999_999):
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub Projects number is invalid")
         payload = json.dumps({"query": query, "variables": variables}, separators=(",", ":")).encode("utf-8")
         req = request.Request(_BASE + "/graphql", data=payload, method="POST", headers={
             "Accept": "application/vnd.github+json", "Content-Type": "application/json",
@@ -469,6 +484,35 @@ def _graph_data(response):
     if type(response) is not dict or response.get("errors") or type(response.get("data")) is not dict:
         raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub Projects returned a partial or malformed GraphQL result")
     return response["data"]
+
+
+def discover_project(root, client, project_url, transport=None, token_lookup=None):
+    """Resolve one explicit GitHub Projects v2 URL through its owning user or org."""
+    if type(project_url) is not str or len(project_url) > 256:
+        raise WorkSyncError("INVALID_PROJECT_URL", "Supply a GitHub Projects v2 board URL")
+    parsed = parse.urlsplit(project_url)
+    match = _PROJECT_URL_PATH.fullmatch(parsed.path)
+    if (parsed.scheme != "https" or parsed.netloc != "github.com"
+            or parsed.query or parsed.fragment or match is None):
+        raise WorkSyncError("INVALID_PROJECT_URL", "Supply a canonical GitHub Projects v2 board URL")
+    owner_kind, login, number_text = match.groups()
+    config = client.call("work-provider-get", {})
+    if (config.get("adapter") != "github" or type(config.get("repository")) is not str
+            or _REPOSITORY.fullmatch(config["repository"]) is None
+            or _origin_repository(Path(root)).casefold() != config["repository"].casefold()):
+        raise WorkSyncError("PROVIDER_BINDING_CHANGED", "A selected GitHub issue provider is required")
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    token = _credential(config, token_lookup)
+    query = _PROJECT_USER_LOOKUP if owner_kind == "users" else _PROJECT_ORG_LOOKUP
+    data = _graph_data(transport.graphql(query, {"login": login, "number": int(number_text)}, token))
+    owner = data.get("owner")
+    project = owner.get("projectV2") if type(owner) is dict else None
+    if (type(project) is not dict or type(project.get("id")) is not str
+            or _GLOBAL_NODE_ID.fullmatch(project["id"]) is None
+            or project.get("url") != project_url):
+        raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "GitHub Projects URL did not resolve to the selected board")
+    return {"project_node_id": project["id"], "project_url": project_url}
 
 
 def _find_project_item(transport, project_id, issue_id, token):

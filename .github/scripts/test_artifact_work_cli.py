@@ -208,8 +208,23 @@ class WorkCLITest(unittest.TestCase):
             "remote_state": "open",
             "expected": {"revision": item["revision"], "model_sha256": item["model_sha256"]}})
         self.assertEqual(bound["provider_effect"]["status"], "synchronized")
-        config = self.run_work("project-configure", "--project-node-id", "PVT_fixture12345678",
-                               "--operation-id", "project-cli-config-001")
+        from test_work_github import FakeProjectGithub
+        import _workgithub
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "remote", "add", "origin",
+                        "https://github.com/arbiterForge/disposable.git"], check=True,
+                       capture_output=True, text=True)
+        transport = FakeProjectGithub()
+        transport.work_id = item["work_id"]
+        with mock.patch.object(_workgithub, "GithubTransport", return_value=transport), \
+             mock.patch.dict(os.environ, {"GH_TOKEN": "fixture-token"}):
+            discovered = self.run_work("project-discover", "--project-url",
+                "https://github.com/users/SUaDtL/projects/1")
+            self.assertEqual(discovered["project_node_id"], transport.project_id)
+            config = self.run_work("project-configure", "--project-url",
+                "https://github.com/users/SUaDtL/projects/1",
+                "--operation-id", "project-cli-config-001")
         self.assertEqual(self.run_work("project-get")["binding_generation"], config["binding_generation"])
         staged = self.run_work("project-stage", item["work_id"],
                                "--operation-id", "project-cli-stage-001")
@@ -225,15 +240,6 @@ class WorkCLITest(unittest.TestCase):
             "binding_generation": config["binding_generation"],
             "attempt_id": "project-cli-attempt-001", "remote_item_id": "PVTI_fixture12345678",
             "expected": {"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}})
-        from test_work_github import FakeProjectGithub
-        import _workgithub
-        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
-                       capture_output=True, text=True)
-        subprocess.run(["git", "-C", str(self.root), "remote", "add", "origin",
-                        "https://github.com/arbiterForge/disposable.git"], check=True,
-                       capture_output=True, text=True)
-        transport = FakeProjectGithub()
-        transport.work_id = item["work_id"]
         transport.item_id = attached["project_effect"]["remote_item_id"]
         with mock.patch.object(_workgithub, "GithubTransport", return_value=transport), \
              mock.patch.dict(os.environ, {"GH_TOKEN": "fixture-token"}):

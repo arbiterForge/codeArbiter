@@ -93,8 +93,12 @@ def _parser():
     configure.add_argument("--operation-id", required=True)
     configure.add_argument("--expected-config-sha256")
     sub.add_parser("project-get", help="Read the selected optional GitHub Project binding")
+    project_discover = sub.add_parser("project-discover", help="Resolve a GitHub Projects v2 board URL to its node ID")
+    project_discover.add_argument("--project-url", required=True)
     project_configure = sub.add_parser("project-configure", help="Bind one GitHub Projects v2 board to this issue provider")
-    project_configure.add_argument("--project-node-id", required=True)
+    project_choice = project_configure.add_mutually_exclusive_group(required=True)
+    project_choice.add_argument("--project-url", help="Canonical user or organization Projects v2 URL")
+    project_choice.add_argument("--project-node-id", help="Already known GitHub Projects v2 node ID")
     project_configure.add_argument("--operation-id", required=True)
     project_configure.add_argument("--expected-config-sha256")
     project_stage = sub.add_parser("project-stage", help="Save a Project item intent for an already bound issue")
@@ -218,8 +222,19 @@ def _dispatch(args, client):
         return client.call("work-provider-configure", request)
     if args.verb == "project-get":
         return client.call("work-project-get", {})
+    if args.verb == "project-discover":
+        if getattr(client, "legacy", False):
+            raise ValueError("GitHub Projects require selected native work ownership")
+        import _workgithub
+        return _workgithub.discover_project(client.root, client, args.project_url)
     if args.verb == "project-configure":
-        request = {"operation_id": args.operation_id, "project_node_id": args.project_node_id}
+        project_node_id = args.project_node_id
+        if args.project_url:
+            if getattr(client, "legacy", False):
+                raise ValueError("GitHub Projects require selected native work ownership")
+            import _workgithub
+            project_node_id = _workgithub.discover_project(client.root, client, args.project_url)["project_node_id"]
+        request = {"operation_id": args.operation_id, "project_node_id": project_node_id}
         if args.expected_config_sha256:
             request["expected_config_sha256"] = args.expected_config_sha256
         return client.call("work-project-configure", request)
