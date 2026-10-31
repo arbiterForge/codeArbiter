@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   createReleaseApplicabilityRecord,
   deriveVerifiedGovernanceReleases,
+  PI_COMPATIBILITY_SOURCE,
   repositoryGit,
   resolveDocumentationBuildIdentity,
   selectCurrentGovernanceReleases,
@@ -494,9 +495,15 @@ describe("deterministic release applicability record", () => {
     },
   ];
 
-  function proofGit(publishedHook: string): ReleaseApplicabilityGit {
+  const publishedPi = 'const SUPPORTED_PI_VERSIONS = new Set(["1.1.0", "1.0.10"]);\n';
+
+  function proofGit(publishedHook: string, piCompatibility = publishedPi): ReleaseApplicabilityGit {
     return {
       readAtCommit(commit, path) {
+        if (path === PI_COMPATIBILITY_SOURCE) {
+          expect(commit).toBe(releases[2].publicationCommit);
+          return piCompatibility;
+        }
         expect([commit, path]).toEqual([sha, proof.source]);
         return publishedHook;
       },
@@ -627,7 +634,7 @@ describe("deterministic release applicability record", () => {
     });
 
     expect(record).toMatchObject({
-      schemaVersion: 2,
+      schemaVersion: 3,
       evidenceBoundary: {
         claim: "release-and-build-identity",
         doesNotCertify: [
@@ -680,6 +687,11 @@ describe("deterministic release applicability record", () => {
       { kind: "direct-hook-replay", path: "site/src/assets/proof/hook-proof.json" },
       { kind: "current-hook-source", path: proof.source },
       { kind: "published-hook-source", path: proof.source, commit: sha },
+      {
+        kind: "published-pi-compatibility",
+        path: "plugins/ca-pi/tools/src/compatibility.ts",
+        commit: "2222222222222222222222222222222222222222",
+      },
     ]);
     expect(serializeReleaseApplicabilityRecord(record)).toBe(
       serializeReleaseApplicabilityRecord(reordered),
@@ -687,6 +699,77 @@ describe("deterministic release applicability record", () => {
     expect(serializeReleaseApplicabilityRecord(record)).toBe(
       `${JSON.stringify(record, null, 2)}\n`,
     );
+  });
+});
+
+describe("published Pi support (#1071)", () => {
+  const currentHook = "current and published hook bytes\n";
+  const proof: DirectHookReplayEvidence = {
+    evidenceKind: "direct-hook-invocation-rendered-replay",
+    hostDiscoveryProven: false,
+    source: "plugins/ca/hooks/pre-bash.py",
+    // Pi support does not depend on replay applicability; any 64-hex digest is valid input.
+    sourceSha256: "a".repeat(64),
+  };
+  const piCommit = "2".repeat(40);
+  const releases: VerifiedGovernanceRelease[] = [
+    {
+      target: "ca", version: "3.7.0", tag: "v3.7.0", publicationCommit: sha,
+      originalPublicationReceipt: "not-recorded",
+      manifestPath: "plugins/ca/.claude-plugin/plugin.json", manifestPaths: ["plugins/ca/.claude-plugin/plugin.json"],
+    },
+    {
+      target: "ca-codex", version: "0.25.0", tag: "ca-codex-v0.25.0", publicationCommit: sha,
+      originalPublicationReceipt: "not-recorded",
+      manifestPath: "plugins/ca-codex/.codex-plugin/plugin.json", manifestPaths: ["plugins/ca-codex/.codex-plugin/plugin.json"],
+    },
+    {
+      target: "ca-pi", version: "0.26.0", tag: "ca-pi-v0.26.0", publicationCommit: piCommit,
+      originalPublicationReceipt: "not-recorded",
+      manifestPath: "plugins/ca-pi/package.json", manifestPaths: ["plugins/ca-pi/package.json", "package.json"],
+    },
+  ];
+
+  function record(piCompatibility: () => string) {
+    return createReleaseApplicabilityRecord({
+      build: { mode: "local", commit: sha, dirty: false },
+      releases,
+      proof,
+      currentHookSource: currentHook,
+      git: {
+        readAtCommit(commit, path) {
+          if (path === PI_COMPATIBILITY_SOURCE) {
+            expect(commit).toBe(piCommit);
+            return piCompatibility();
+          }
+          return currentHook;
+        },
+        head: () => sha,
+        isDirty: () => false,
+        listReleaseTags: () => [],
+      },
+    });
+  }
+
+  it("records the Pi versions the selected ca-pi tag supports, read at that tag's commit", () => {
+    expect(record(() => 'const SUPPORTED_PI_VERSIONS = new Set(["1.1.0", "1.0.10"]);\n').publishedPiSupport)
+      .toEqual({
+        target: "ca-pi",
+        tag: "ca-pi-v0.26.0",
+        publicationCommit: piCommit,
+        path: "plugins/ca-pi/tools/src/compatibility.ts",
+        versions: ["1.0.10", "1.1.0"],
+      });
+  });
+
+  it.each([
+    ["an unreadable object", () => { throw new Error("missing object"); }, /published Pi compatibility/i],
+    ["a missing declaration", () => "const OTHER = 1;\n", /SUPPORTED_PI_VERSIONS.*found 0/],
+    ["a duplicated declaration", () => 'const SUPPORTED_PI_VERSIONS = new Set(["1.1.0"]);\n'.repeat(2), /SUPPORTED_PI_VERSIONS.*found 2/],
+    ["an empty set", () => "const SUPPORTED_PI_VERSIONS = new Set([]);\n", /SUPPORTED_PI_VERSIONS.*empty/],
+    ["a non-SemVer entry", () => 'const SUPPORTED_PI_VERSIONS = new Set(["latest"]);\n', /SUPPORTED_PI_VERSIONS.*latest/],
+  ])("fails closed on %s", (_case, piCompatibility, message) => {
+    expect(() => record(piCompatibility)).toThrow(message);
   });
 });
 

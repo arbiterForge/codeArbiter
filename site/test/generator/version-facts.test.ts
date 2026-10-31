@@ -21,33 +21,44 @@ function withSource(path: string, transform: (text: string) => string): SourceRe
 describe("version facts", () => {
   it("reads each fact from its owning source", () => {
     const facts = repositoryVersionFacts();
-    expect(facts["pi.supported"].source).toBe("plugins/ca-pi/tools/src/compatibility.ts");
-    // One fact may list several versions ("1.1.0 or 1.2.0"); each is its own source entry.
-    const piSource = real("plugins/ca-pi/tools/src/compatibility.ts");
-    for (const version of facts["pi.supported"].value.split(" or ")) {
-      expect(piSource).toContain(`"${version}"`);
-    }
+    const record = JSON.parse(real("site/src/generated/release-applicability.json"));
+    expect(facts["pi.supported"].source).toBe("site/src/generated/release-applicability.json");
+    expect(facts["pi.supported"].value).toBe(record.publishedPiSupport.versions.join(" or "));
     expect(real(".github/workflows/ci.yml")).toContain(`"${facts["codex.minimum"].value}"`);
     expect(real("plugins/ca/hooks/_adrlifecyclegit.py")).toContain(`Git ${facts["git.adrMinimum"].value}+`);
     expect(JSON.parse(real("plugins/ca/.claude-plugin/plugin.json")).version).toBe(facts["ca.version"].value);
     expect(facts["receipt.current"].value).not.toBe(facts["receipt.legacy"].value);
   });
 
-  it("follows a changed declaration instead of keeping the published number", () => {
+  // #1071: the install example pins the published ca-pi tag, so the Pi it requires
+  // comes from that tag, and an unreleased promotion cannot change it.
+  it("keeps the published Pi prerequisite when only the development tree changes", () => {
+    const published = repositoryVersionFacts()["pi.supported"].value;
     const facts = loadVersionFacts(withSource(
       "plugins/ca-pi/tools/src/compatibility.ts",
       (text) => text.replace(/new Set\(\[[^\]]*\]\)/, 'new Set(["9.8.7", "9.8.10"])'),
     ));
-    expect(facts["pi.supported"].value).toBe("9.8.7 or 9.8.10");
+    expect(facts["pi.supported"].value).toBe(published);
+  });
+
+  const withPiSupport = (versions: unknown) => withSource(
+    "site/src/generated/release-applicability.json",
+    (text) => {
+      const record = JSON.parse(text);
+      return JSON.stringify({ ...record, publishedPiSupport: { ...record.publishedPiSupport, versions } });
+    },
+  );
+
+  it("follows the Pi support recorded for the published ca-pi tag", () => {
+    expect(loadVersionFacts(withPiSupport(["9.8.7", "9.8.10"]))["pi.supported"].value).toBe("9.8.7 or 9.8.10");
   });
 
   it.each([
-    ["a missing declaration", (text: string) => text.replace(/SUPPORTED_PI_VERSIONS = /, "RENAMED = ")],
-    ["a duplicated declaration", (text: string) => `${text}\nconst SUPPORTED_PI_VERSIONS = new Set(["1.0.0"]);\n`],
-    ["a non-SemVer entry", (text: string) => text.replace(/new Set\(\[[^\]]*\]\)/, 'new Set(["latest"])')],
-  ])("fails closed on %s", (_case, transform) => {
-    expect(() => loadVersionFacts(withSource("plugins/ca-pi/tools/src/compatibility.ts", transform)))
-      .toThrow(/pi\.supported/);
+    ["no recorded versions", undefined],
+    ["an empty version list", []],
+    ["a non-SemVer entry", ["latest"]],
+  ])("fails closed on %s", (_case, versions) => {
+    expect(() => loadVersionFacts(withPiSupport(versions))).toThrow(/pi\.supported/);
   });
 
   it("rejects a Codex minimum that disagrees with the lowest CI-verified host", () => {

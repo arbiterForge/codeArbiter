@@ -14,6 +14,10 @@ const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.
 const COMMIT_SHA = /^[0-9a-f]{40}$/i;
 const NONZERO_LOWER_COMMIT_SHA = /^(?!0{40}$)[0-9a-f]{40}$/;
 const DIRECT_HOOK_SOURCE = "plugins/ca/hooks/pre-bash.py";
+/** Where ca-pi declares the exact Pi versions it accepts (#1071). */
+export const PI_COMPATIBILITY_SOURCE = "plugins/ca-pi/tools/src/compatibility.ts";
+const PI_SUPPORT_DECLARATION = /const SUPPORTED_PI_VERSIONS = new Set\(\[([^\]]*)\]\)/g;
+const EXACT_VERSION = /^\d+\.\d+\.\d+$/;
 const DIRECT_HOOK_EVIDENCE_KIND = "direct-hook-invocation-rendered-replay";
 const ORIGINAL_LEDGER_PATH = ".github/published-tags.json";
 const LEDGER_NAMESPACES = ["v*", "ca-sandbox-v*", "ca-codex-v*", "ca-pi-v*"] as const;
@@ -62,8 +66,17 @@ export interface DirectHookReplayEvidence {
   sourceSha256: string;
 }
 
+/** The Pi versions the selected ca-pi tag accepts, read at that tag's commit. */
+export interface PublishedPiSupport {
+  target: "ca-pi";
+  tag: string;
+  publicationCommit: string;
+  path: string;
+  versions: string[];
+}
+
 export interface ReleaseApplicabilityRecord {
-  schemaVersion: 2;
+  schemaVersion: 3;
   evidenceBoundary: {
     claim: "release-and-build-identity";
     doesNotCertify: [
@@ -75,6 +88,7 @@ export interface ReleaseApplicabilityRecord {
   };
   build: DocumentationBuildIdentity;
   hosts: VerifiedGovernanceRelease[];
+  publishedPiSupport: PublishedPiSupport;
   proof: {
     claim: "direct-hook-replay-source-applicability";
     evidenceKind: string;
@@ -495,6 +509,31 @@ export function deriveVerifiedGovernanceReleases(
   });
 }
 
+/**
+ * The exact Pi versions in a ca-pi tag's `SUPPORTED_PI_VERSIONS`, sorted. The
+ * published install instructions pin that tag, so a promotion merged but not yet
+ * released must not change what they require.
+ */
+function parsePublishedPiSupport(text: string, tag: string): string[] {
+  const declarations = [...text.matchAll(PI_SUPPORT_DECLARATION)];
+  const where = `Published Pi compatibility for ${tag}`;
+  if (declarations.length !== 1) {
+    throw new Error(
+      `${where}: expected exactly one SUPPORTED_PI_VERSIONS declaration, found ${declarations.length}`,
+    );
+  }
+  const entries = declarations[0][1].split(",").map((entry) => entry.trim()).filter((entry) => entry !== "");
+  if (entries.length === 0) throw new Error(`${where}: SUPPORTED_PI_VERSIONS is empty`);
+  const versions = entries.map((entry) => {
+    const quoted = /^"([^"]*)"$/.exec(entry) ?? /^'([^']*)'$/.exec(entry);
+    if (!quoted || !EXACT_VERSION.test(quoted[1])) {
+      throw new Error(`${where}: SUPPORTED_PI_VERSIONS entry ${entry} is not an exact X.Y.Z version`);
+    }
+    return quoted[1];
+  });
+  return [...new Set(versions)].sort((left, right) => compareVersions(parseVersion(left)!, parseVersion(right)!));
+}
+
 export function resolveDocumentationBuildIdentity(
   git: ReleaseApplicabilityGit,
   environment: Readonly<Record<string, string | undefined>>,
@@ -573,6 +612,23 @@ export function createReleaseApplicabilityRecord({
     );
   }
 
+  const publishedPi = hosts[2];
+  let publishedPiSource: string;
+  try {
+    publishedPiSource = git.readAtCommit(publishedPi.publicationCommit, PI_COMPATIBILITY_SOURCE);
+  } catch {
+    throw new Error(
+      `Cannot read published Pi compatibility ${PI_COMPATIBILITY_SOURCE} for ${publishedPi.tag} from ${publishedPi.publicationCommit}`,
+    );
+  }
+  const publishedPiSupport: PublishedPiSupport = {
+    target: "ca-pi",
+    tag: publishedPi.tag,
+    publicationCommit: publishedPi.publicationCommit,
+    path: PI_COMPATIBILITY_SOURCE,
+    versions: parsePublishedPiSupport(publishedPiSource, publishedPi.tag),
+  };
+
   const replayDigest = proof.sourceSha256.toLowerCase();
   const currentDigest = sha256(currentHookSource);
   const publishedDigest = sha256(publishedHookSource);
@@ -585,7 +641,7 @@ export function createReleaseApplicabilityRecord({
       + `latest published ca artifact source ${publishedMatches ? "matches" : "does not match"}.`;
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     evidenceBoundary: {
       claim: "release-and-build-identity",
       doesNotCertify: [
@@ -601,6 +657,7 @@ export function createReleaseApplicabilityRecord({
       dirty: build.dirty,
     },
     hosts,
+    publishedPiSupport,
     proof: {
       claim: "direct-hook-replay-source-applicability",
       evidenceKind: proof.evidenceKind,
@@ -636,6 +693,11 @@ export function createReleaseApplicabilityRecord({
         kind: "published-hook-source",
         path: proof.source,
         commit: publishedCa.publicationCommit,
+      },
+      {
+        kind: "published-pi-compatibility",
+        path: PI_COMPATIBILITY_SOURCE,
+        commit: publishedPi.publicationCommit,
       },
     ],
   };
