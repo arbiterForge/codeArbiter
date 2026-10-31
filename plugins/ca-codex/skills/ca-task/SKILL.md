@@ -24,10 +24,12 @@ not interpolate it into shell syntax or search for a source/cache copy.
 
 ## Ordinary actions
 
-- **List or select:** `work.py list --limit 32`, then `work.py get <WORK-ID>`
-  for the selected item. Use the returned `work_id`, not a title or dotted
-  legacy alias. If the item is absent or selection is ambiguous, stop and
-  report it.
+- **List or select:** `work.py list --limit 32`; continue with
+  `work.py list --offset <next_offset> --membership-sha256 <returned-sha256>`
+  until the item is found or the listing is exhausted. Then use
+  `work.py get <WORK-ID>` for the selected item. Use the returned `work_id`,
+  not a title or dotted legacy alias. If the complete
+  listing has no item or selection is ambiguous, stop and report it.
 - **Add:** `work.py create --title <description> --intent <description>
   --type unknown --operation-id <stable-request-id>`. Pass `--origin <source-key>`
   when work comes from a durable source. A distinct action gets a new request
@@ -65,9 +67,11 @@ Keep the same request ID and preimage for an exact retry after an uncertain
 result. A changed item is a conflict to inspect; do not overwrite it by
 minting a fresh request ID.
 
-For a historical ID-less board row that cannot be selected through a stable
-`WORK-ID`, `hooks/taskwrite.py` remains an explicit compatibility or repair
-path. Inspect the exact row and use its documented selector and board lock;
+For a historical board row that cannot be selected through a stable `WORK-ID`,
+including an originless row with an existing dotted ID, `hooks/taskwrite.py`
+remains an explicit compatibility or repair path. Inspect the exact row and
+use its dotted ID, or the unique title for an ID-less row, with the documented
+selector and board lock;
 do not teach best-effort title matching as the normal /task route. Direct
 board edits remain invalid.
 

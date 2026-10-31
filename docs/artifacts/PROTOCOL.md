@@ -545,7 +545,8 @@ text. `project-field-sync` compares the live selected field with that baseline
 before the mutation and reads it back afterward. A changed option becomes a
 conflict; uncertain sends require `project-field-reconcile`. If the field still
 has its saved baseline value, reconciliation retries the selected option and
-reads it back; a different value remains a conflict. GitHub's
+reads it back; if it already has the desired option, reconciliation records
+success without another mutation. Any other value remains a conflict. GitHub's
 [field mutation input](https://docs.github.com/en/graphql/reference/projects#updateprojectv2itemfieldvalueinput)
 has no conditional version, so a concurrent edit between the comparison and
 mutation cannot be excluded. Do not present this as remote atomic CAS. Project
