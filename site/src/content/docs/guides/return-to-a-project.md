@@ -33,7 +33,7 @@ run the host's doctor command before starting changes.
 | What does this project intend to build? | Project context and, for greenfield work, the architecture, phased plan and backlog |
 | What does this change promise? | Its specification and current acceptance criteria |
 | What remains to implement or verify? | Its plan, dependencies, scope state and current evidence |
-| What has been queued or assigned? | `open-tasks.md`, through the task command |
+| What has been queued or assigned? | The selected work owner through the task command or `work.py list`; legacy projects retain `open-tasks.md` |
 | Who must answer an unresolved fact? | The relevant `[CONFIRM-NN]` in `open-questions.md` |
 | Which architectural choice governs this path? | Its accepted ADR, governing paths and supersession chain |
 
@@ -81,7 +81,7 @@ Before stopping, ask for the artifact paths, accepted versus remaining work, unr
 last verification and its source identity, and the next safe action. Confirm important records
 actually reached disk. A conversation summary is useful orientation, not durable proof.
 
-Use the task command for board transitions; use the owning lane for typed-plan transitions.
+Use the task command for selected work transitions; use the owning lane for typed-plan transitions.
 Do not hand-edit protected records to make them match a desired completion claim.
 For a complete example, follow [Your first feature](/guides/first-feature/).
 

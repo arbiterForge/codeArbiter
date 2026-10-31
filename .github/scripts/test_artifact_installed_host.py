@@ -872,6 +872,23 @@ def assistive_phase(args, bridge, installation: Path) -> dict[str, object]:
             "accept-scope", "PLAN-FLOW", scope="CP-01",
             reason="Fixture implementation reported complete; tests and review unassessed.",
         )
+        create_request = {
+            "operation_id": workflow.operation_id("work-create"),
+            "origin": "SPEC-FLOW#AC-001", "title": "Implement selected flow",
+            "intent": "Deliver one attached local outcome.", "work_type": "feature",
+            "spec_id": "SPEC-FLOW", "plan_id": "PLAN-FLOW",
+        }
+        created = client.call("work-create", create_request)
+        replay = client.call("work-create", create_request)
+        if created["work_id"] != replay["work_id"] or replay["transaction"]["replay"] is not True:
+            raise AssertionError("installed work creation did not retain stable identity on retry")
+        for action in ("start", "complete"):
+            current = client.call("work-get", {"work_id": created["work_id"]})
+            client.call("work-update", {
+                "operation_id": workflow.operation_id("work-" + action),
+                "work_id": created["work_id"], "action": action,
+                "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]},
+            })
         return {"progress": "recorded", "evidence_claimed": False}
     if args.phase == "assistive-readback":
         plan_identity = client.call("identity", {"artifact_id": "PLAN-FLOW"})
@@ -888,6 +905,18 @@ def assistive_phase(args, bridge, installation: Path) -> dict[str, object]:
             or checks[-1]["evidence_assessed"] is not False
         ):
             raise AssertionError("restarted ordinary workflow promoted progress to proof")
+        matches = client.call("work-origins", {"origins": ["SPEC-FLOW#AC-001"]})["matches"]
+        if len(matches) != 1:
+            raise AssertionError("restarted installed host lost the selected work identity")
+        work_id = matches[0]["work_id"]
+        work = client.call("work-get", {"work_id": work_id})
+        context = client.call("work-context", {"work_id": work_id, "budget": 4096})
+        page = client.call("work-view", {"work_id": work_id})
+        if (work["state"] != "complete" or work["check_status"] != "unknown"
+                or context["spec"]["artifact_id"] != "SPEC-FLOW"
+                or context["plan"]["artifact_id"] != "PLAN-FLOW"
+                or work_id not in page["html"]):
+            raise AssertionError("restarted work changed identity, attachments or check state")
         receipts = args.repository / ".codearbiter" / ".artifacts" / "receipts"
         if receipts.exists() and any(receipts.rglob("*.json")):
             raise AssertionError("ordinary progress minted a historical authority receipt")
@@ -1162,12 +1191,20 @@ def main() -> int:
         binary_sha256=args.expected_binary_sha256,
         permit_verifier_children=args.phase is None,
     )
-    if args.phase:
-        bridge = load_bridge(args.plugin_root)
-        result = phase_run(args, bridge, installation)
-    else:
-        assert_offline_bridge((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes())
-        result = orchestrate_context(args, installation) if args.context_kind else orchestrate(args, installation)
+    # The real installed entry point starts in hooks/. Keep that package path
+    # while exercising a bridge loaded by file path so its lazy local imports
+    # resolve from the extracted installation, not the development checkout.
+    hooks = str((args.plugin_root / "hooks").resolve(strict=True))
+    sys.path.insert(0, hooks)
+    try:
+        if args.phase:
+            bridge = load_bridge(args.plugin_root)
+            result = phase_run(args, bridge, installation)
+        else:
+            assert_offline_bridge((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes())
+            result = orchestrate_context(args, installation) if args.context_kind else orchestrate(args, installation)
+    finally:
+        sys.path.remove(hooks)
     json.dump(result, sys.stdout, sort_keys=True, separators=(",", ":"))
     sys.stdout.write("\n")
     return 0

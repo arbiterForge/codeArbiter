@@ -12,12 +12,46 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+### Added
+
+- Stage and reconcile explicit GitHub issue status updates for bound native work,
+  with readback and a recorded conflict when the observed remote status changes.
+- Adopt an existing correlated GitHub issue without creating a duplicate.
+- Keep newly discovered context gaps as candidates and route selected promotion
+  through the current work owner.
+- Show observed and intended GitHub issue status in the derived work view.
+- Summarize recorded code-map components and interfaces on the derived project page.
+- Record a bounded GitHub PR observation on selected work while keeping local progress, checks and issue sync distinct.
+
+### Fixed
+
+- Require the selected work file in a merged PR's changed-file list before
+  releasing a contingent GitHub effect.
+- Support selected legacy work rename, attachment, and reopen through the
+  identity-bound board writer; keep PR views clear about unverified delivery.
+- Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+- Keep scaffold documentation out of legacy startup counts and work listings.
+
+## [3.7.1] - 2026-10-31
+
+### Added
+
+- Inventory legacy task boards for selected native work adoption and expose
+  bounded, selected work context with GitHub issue synchronization.
+
+### Fixed
+
+- Preserve board bytes through journaled adoption and reject old board writes
+  after cutover.
+
 ## [3.7.0] - 2026-10-30
 
 ### Added
 
 - Render a bounded, read-only native project work page with links to canonical
   work records and separate progress, check, delivery, and tracker labels.
+- Group native work into optional cycles and render bounded cycle summaries
+  without copying work items or asserting remote delivery.
 
 ### Fixed
 

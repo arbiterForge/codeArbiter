@@ -85,7 +85,7 @@ escape hatch only for gates that permit bypass; H-18 deliberately does not.
 | **H-20** | `--no-verify` and its supported short forms cannot bypass the repository's pre-commit or pre-push backstop. |
 | **H-21** | A write or edit envelope the host adapter cannot decompose into guardable per-file operations is refused instead of being allowed through uninspected. Retry as a plain supported patch or split the operation. |
 
-H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. The board-sync behavior implied by the commit gate (only `/ca:task` writes `open-tasks.md`) follows from ADR-0008. For the design rationale behind both, see [Selected Hardening Notes](/concepts/hardening-history/).
+H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. ADR-0008 co-locates selected work state with its commit: the legacy writer owns `open-tasks.md` until explicit adoption, then native work records own progress. For the design rationale, see [Selected Hardening Notes](/concepts/hardening-history/).
 
 ## Advisory, Non-Blocking Reminders
 

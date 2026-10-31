@@ -20,6 +20,8 @@ import _artifactlib  # noqa: E402
 import work  # noqa: E402
 import taskwrite  # noqa: E402
 import _worklib  # noqa: E402
+import _workadopt  # noqa: E402
+from _hooklib import acquire_lock, release_lock  # noqa: E402
 
 
 class WorkCLITest(unittest.TestCase):
@@ -116,8 +118,12 @@ class WorkCLITest(unittest.TestCase):
         self.run_work("start", work_id, "--operation-id", "cli-work-start-001")
         completed = self.run_work("complete", work_id, "--operation-id", "cli-work-complete-001")
         self.assertEqual((completed["state"], completed["check_status"]), ("complete", "unknown"))
-        context = self.run_work("context", work_id, "--budget", "4096")
+        context = self.run_work("context", work_id, "--budget", "4096", "--path", "src/stage1.go",
+                                "--knowledge-ref", "CTX-TECH-STACK#FACT-001")
         self.assertFalse(context["context_complete"])
+        self.assertEqual(context["requested_paths"], ["src/stage1.go"])
+        self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
+        self.assertEqual(context["knowledge_unresolved_references"], ["CTX-TECH-STACK#FACT-001"])
         self.assertEqual(context["spec"]["artifact_id"], "SPEC-CLI")
         self.assertEqual(context["plan"]["artifact_id"], "PLAN-CLI")
         self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
@@ -150,6 +156,44 @@ class WorkCLITest(unittest.TestCase):
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
 
+    def test_native_provider_cli_stages_portable_intent_without_sending(self) -> None:
+        item = self.run_work("create", "--title", "Track one result", "--intent", "Stay local first",
+                             "--type", "fix", "--operation-id", "provider-cli-create-001")
+        config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                               "--credential-ref", "GH_TOKEN", "--operation-id", "provider-cli-configure-001")
+        self.assertEqual(config["effect_timing"], "after_merge")
+        self.assertEqual(self.run_work("provider-get")["binding_generation"], config["binding_generation"])
+        staged = self.run_work("stage-sync", item["work_id"], "--operation-id", "provider-cli-stage-001")
+        self.assertEqual(staged["provider_effect"]["status"], "pending")
+        self.assertEqual(self.run_work("get", item["work_id"])["provider_effect"]["status"], "pending")
+
+    def test_status_cli_stages_only_a_verified_issue_binding(self) -> None:
+        item = self.run_work("create", "--title", "Bound result", "--intent", "One issue",
+                             "--type", "fix", "--operation-id", "status-cli-create-001")
+        config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                               "--credential-ref", "GH_TOKEN", "--timing", "immediate",
+                               "--operation-id", "status-cli-configure-001")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["stage-status", item["work_id"], "--state", "closed",
+                                        "--operation-id", "status-cli-unbound-001"]), 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "EFFECT_NOT_BOUND")
+        staged = self.run_work("stage-sync", item["work_id"], "--operation-id", "status-cli-stage-create-001")
+        claim = self.client.call("work-effect-claim", {"operation_id": "status-cli-claim-create-001",
+            "work_id": item["work_id"], "binding_generation": config["binding_generation"],
+            "attempt_id": "status-cli-attempt-001",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        self.client.call("work-effect-record", {"operation_id": "status-cli-record-create-001",
+            "work_id": item["work_id"], "binding_generation": config["binding_generation"],
+            "attempt_id": "status-cli-attempt-001", "remote_issue_number": 7,
+            "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open",
+            "expected": {"revision": claim["revision"], "model_sha256": claim["model_sha256"]}})
+        status = self.run_work("stage-status", item["work_id"], "--state", "closed",
+                               "--operation-id", "status-cli-stage-close-001")
+        self.assertEqual(status["provider_effect"]["kind"], "status_update")
+        self.assertEqual(status["provider_effect"]["desired_state"], "closed")
+        self.assertEqual(status["provider_effect"]["remote_issue_number"], 7)
+
     def test_project_view_pages_native_work_without_writing_a_second_owner(self) -> None:
         first = self.run_work("create", "--title", "Fix <input>", "--intent", "First result",
                               "--type", "fix", "--operation-id", "project-cli-create-001")
@@ -173,6 +217,39 @@ class WorkCLITest(unittest.TestCase):
         self.assertNotIn('id="ca-artifact-model"', html)
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", first["work_id"])["state"], "queued")
+
+    def test_cycle_view_uses_canonical_membership_and_keeps_checks_unknown(self) -> None:
+        first = self.run_work("create", "--title", "Cycle <first>", "--intent", "First result",
+                              "--type", "fix", "--cycle-id", "october-sprint",
+                              "--operation-id", "cycle-cli-create-001")
+        second = self.run_work("create", "--title", "Second result", "--intent", "Next result",
+                               "--type", "feature", "--operation-id", "cycle-cli-create-002")
+        grouped = self.run_work("set-cycle", second["work_id"], "--cycle-id", "october-sprint",
+                                "--operation-id", "cycle-cli-assign-002")
+        self.assertEqual(grouped["work_id"], second["work_id"])
+        self.run_work("complete", second["work_id"], "--operation-id", "cycle-cli-complete-002")
+        page = self.client.call("cycle-view", {"cycle_id": "october-sprint", "limit": 1})
+        self.assertEqual((page["total"], page["next_offset"]), (2, 1))
+        self.assertEqual((page["progress"]["complete"], page["checks"]["unknown"]), (1, 2))
+        self.assertFalse(page["canonical"])
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["cycle-view", "october-sprint", "--limit", "1"]), 0)
+        html = output.getvalue()
+        self.assertTrue(html.startswith("<!doctype html>"))
+        self.assertIn("Checks:", html)
+        self.assertIn("2 unknown", html)
+        self.assertIn("work.py cycle-view october-sprint --offset 1 --membership-sha256", html)
+        self.assertNotIn("Cycle <first>", html)
+        self.assertFalse((self.root / ".codearbiter" / "views").exists())
+        self.assertEqual(self.run_work("get", first["work_id"])["cycle_id"], "october-sprint")
+        cleared = self.run_work("set-cycle", first["work_id"], "--clear",
+                                "--operation-id", "cycle-cli-clear-001")
+        self.assertIsNone(cleared["cycle_id"])
+        with contextlib.redirect_stdout(output := io.StringIO()):
+            self.assertEqual(work.main(["cycle-view", "october-sprint", "--offset", "1",
+                                        "--membership-sha256", page["membership_sha256"]]), 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "STALE_CURSOR")
 
     def test_legacy_board_remains_owner_and_create_returns_stable_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
@@ -218,9 +295,13 @@ class WorkCLITest(unittest.TestCase):
         board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
         created = self.run_work("create", "--title", "Selected work", "--intent", "Keep context honest",
                                 "--type", "fix", "--origin", "DECOMP#CONTEXT")
-        context = self.run_work("context", created["work_id"], "--budget", "4096")
+        context = self.run_work("context", created["work_id"], "--budget", "4096",
+                                "--path", "src/stage1.go", "--knowledge-ref", "CTX-TECH-STACK#FACT-001")
         self.assertEqual(context["work"]["work_id"], created["work_id"])
         self.assertFalse(context["context_complete"])
+        self.assertEqual(context["requested_paths"], ["src/stage1.go"])
+        self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
+        self.assertTrue(any("does not join selected knowledge" in note for note in context["omitted"]))
         large = self.run_work("create", "--title", "Large work", "--intent", "x" * 3000,
                               "--type", "fix", "--origin", "DECOMP#LARGE")
         output = io.StringIO()
@@ -228,6 +309,61 @@ class WorkCLITest(unittest.TestCase):
             code = work.main(["context", large["work_id"], "--budget", "1024"])
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(output.getvalue())["code"], "RESPONSE_TOO_LARGE")
+
+    def test_legacy_title_omits_date_before_origin_marker(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [~] demo.feat.0001 - Build parser (started 2026-10-30) "
+                         "(from DECOMP#DATE)\n  - Desc: Parse safely\n", encoding="utf-8")
+        selected = self.run_work("get", _worklib._id("DECOMP#DATE"))
+        self.assertEqual(selected["title"], "Build parser")
+
+    def test_selected_adoption_keeps_exact_board_and_old_writer_refuses(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Work\n- [ ] demo.feat.0001 - First row\n  - Desc: One\n", encoding="utf-8")
+        archive = board.with_name("done-tasks.md")
+        archive.write_text("# Done\n- [x] demo.feat.0002 - Archived (done 2026-10-30)\n", encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 2)
+        board.write_text(board.read_text(encoding="utf-8") + "- [ ] Later edit\n", encoding="utf-8")
+        original, original_archive = board.read_bytes(), archive.read_bytes()
+        adopted = self.run_work("adopt", "--operation-id", "adopt-cli-001")
+        self.assertEqual(adopted["adopted_count"], 3)
+        self.assertFalse(board.exists())
+        self.assertFalse(archive.exists())
+        self.assertEqual((self.root / ".codearbiter" / "legacy" / "open-tasks.md").read_bytes(), original)
+        self.assertEqual((self.root / ".codearbiter" / "legacy" / "done-tasks.md").read_bytes(), original_archive)
+        self.assertEqual(self.run_work("list")["total"], 3)
+        replay = self.run_work("adopt", "--operation-id", "adopt-cli-001")
+        self.assertEqual(replay["project_id"], adopted["project_id"])
+        output = io.StringIO()
+        errors = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
+            code = taskwrite.main(["start", "demo.feat.0001"], root=str(self.root))
+        self.assertNotEqual(code, 0)
+        self.assertIn("no board", errors.getvalue())
+        self.assertFalse(board.exists())
+
+    def test_direct_native_adoption_respects_legacy_writer_lock(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [ ] Locked row\n", encoding="utf-8")
+        inventory = _workadopt.preview(self.root)
+        request = {"operation_id": "adopt-locked-001",
+                   "expected_board_sha256": inventory["boards"]["open"]["sha256"],
+                   "expected_archive_sha256": None,
+                   "rows": [{key: value for key, value in row.items() if key != "legacy_origin"}
+                            for row in inventory["rows"]]}
+        lock = acquire_lock(board)
+        self.assertIsNotNone(lock)
+        try:
+            with self.assertRaises(_artifactlib.ArtifactError) as failure:
+                self.client.call("work-adopt", request)
+            self.assertEqual(failure.exception.code, "LEGACY_LOCK_TIMEOUT")
+        finally:
+            release_lock(lock)
+        self.assertTrue(board.exists())
 
     def test_legacy_work_keeps_option_like_values_as_data(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
@@ -425,6 +561,73 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(archived["state"], "archived")
         self.assertEqual(self.run_work("get", first["work_id"])["work_id"], first["work_id"])
 
+    def test_legacy_common_update_verbs_preserve_work_identity(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        for action in ("rename", "attach", "reopen"):
+            with self.subTest(action=action):
+                created = self.run_work("create", "--title", "Original title",
+                                        "--intent", "Keep this identity", "--type", "fix",
+                                        "--origin", "DECOMP#" + action.upper())
+                work_id = created["work_id"]
+                if action == "rename":
+                    changed = self.run_work("rename", work_id, "--title", "Revised title",
+                                            "--operation-id", "legacy-rename-001")
+                    self.assertEqual(changed["title"], "Revised title")
+                elif action == "attach":
+                    changed = self.run_work("attach", work_id, "--spec-id", "SPEC-LEGACY",
+                                            "--plan-id", "PLAN-LEGACY",
+                                            "--operation-id", "legacy-attach-001")
+                    self.assertEqual((changed["spec_id"], changed["plan_id"]),
+                                     ("SPEC-LEGACY", "PLAN-LEGACY"))
+                else:
+                    self.run_work("complete", work_id, "--operation-id", "legacy-complete-reopen-001")
+                    changed = self.run_work("reopen", work_id,
+                                            "--operation-id", "legacy-reopen-001")
+                    self.assertEqual((changed["state"], changed["check_status"]),
+                                     ("active", "unknown"))
+                    self.assertIsNone(changed["completed_at"])
+                self.assertEqual(changed["work_id"], work_id)
+                self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
+
+    def test_legacy_rename_refuses_a_second_origin_marker(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        created = self.run_work("create", "--title", "Original title", "--intent", "Keep one row",
+                                "--type", "fix", "--origin", "DECOMP#SAFE")
+        before = board.read_bytes()
+        with self.assertRaises(ValueError):
+            _worklib.dispatch(str(self.root), "work-update", {
+                "operation_id": "legacy-unsafe-rename", "work_id": created["work_id"],
+                "expected_board_sha256": created["board_sha256"], "action": "rename",
+                "title": "Spoof (from DECOMP#OTHER)"})
+        self.assertEqual(board.read_bytes(), before)
+
+    def test_legacy_edit_writer_requires_selected_work_binding(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        created = self.run_work("create", "--title", "Original", "--intent", "Keep one row",
+                                "--type", "fix", "--origin", "DECOMP#BOUND")
+        before = board.read_bytes()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = taskwrite.main(["rename", created["work_id"], "--from=DECOMP#BOUND",
+                                   "--title=Wrong caller"], root=str(self.root))
+        self.assertNotEqual(code, 0)
+        self.assertEqual(board.read_bytes(), before)
+        self.run_work("create", "--title", "Other", "--intent", "Separate row",
+                      "--type", "fix", "--origin", "DECOMP#OTHER")
+        before = board.read_bytes()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = taskwrite.main(["rename", created["work_id"], "--from=DECOMP#OTHER",
+                                   "--title=Wrong row"], root=str(self.root),
+                                  expected_work_id=created["work_id"],
+                                  expected_board_sha256=created["board_sha256"])
+        self.assertNotEqual(code, 0)
+        self.assertEqual(board.read_bytes(), before)
+
     def test_legacy_update_stale_snapshot_preserves_later_edit(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)
@@ -512,6 +715,11 @@ class WorkCLITest(unittest.TestCase):
                                            "request": {}}))
         self.assertEqual(code, 1)
         self.assertIn("work operation", refused["error"])
+        for internal in ("work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt"):
+            code, refused = invoke(json.dumps({"schema": create["schema"], "operation": internal,
+                                               "request": {}}))
+            self.assertEqual(code, 1)
+            self.assertIn("work operation", refused["error"])
         code, refused = invoke(json.dumps({"schema": create["schema"], "operation": [],
                                            "request": {}}))
         self.assertEqual(code, 1)

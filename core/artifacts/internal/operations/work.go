@@ -120,7 +120,7 @@ func (e *Engine) workCreate(r object) (any, error) {
 			}
 			requestedSpec, requestedPlan := model.S(r["spec_id"]), model.S(r["plan_id"])
 			currentSpec, currentPlan := model.S(n["spec_id"]), model.S(n["plan_id"])
-			matchingIntent := model.S(n["title"]) == model.S(r["title"]) && model.S(n["summary"]) == model.S(r["intent"]) && model.S(n["work_type"]) == model.S(r["work_type"])
+			matchingIntent := model.S(n["title"]) == model.S(r["title"]) && model.S(n["summary"]) == model.S(r["intent"]) && model.S(n["work_type"]) == model.S(r["work_type"]) && model.S(n["cycle_id"]) == model.S(r["cycle_id"])
 			canRepair := matchingIntent && (requestedSpec != "" || requestedPlan != "") &&
 				(currentSpec == "" || requestedSpec == "" || currentSpec == requestedSpec) &&
 				(currentPlan == "" || requestedPlan == "" || currentPlan == requestedPlan) &&
@@ -171,7 +171,7 @@ func (e *Engine) workCreate(r object) (any, error) {
 			}
 			out := workSummary(prior, path)
 			out["reused"] = true
-			out["input_differs"] = model.S(n["title"]) != model.S(r["title"]) || model.S(n["summary"]) != model.S(r["intent"]) || model.S(n["work_type"]) != model.S(r["work_type"]) || model.S(n["spec_id"]) != model.S(r["spec_id"]) || model.S(n["plan_id"]) != model.S(r["plan_id"])
+			out["input_differs"] = model.S(n["title"]) != model.S(r["title"]) || model.S(n["summary"]) != model.S(r["intent"]) || model.S(n["work_type"]) != model.S(r["work_type"]) || model.S(n["cycle_id"]) != model.S(r["cycle_id"]) || model.S(n["spec_id"]) != model.S(r["spec_id"]) || model.S(n["plan_id"]) != model.S(r["plan_id"])
 			return out, nil
 		}
 	}
@@ -205,6 +205,9 @@ func (e *Engine) workCreate(r object) (any, error) {
 	}
 	slug := "work-" + strings.ToLower(strings.TrimPrefix(id, "WORK-"))
 	norm := object{"project_id": projectID, "title": r["title"], "summary": r["intent"], "work_type": r["work_type"], "spec_id": nil, "plan_id": nil, "spec_path": nil, "plan_path": nil, "origin": nil, "aliases": []any{}}
+	if r["cycle_id"] != nil {
+		norm["cycle_id"] = r["cycle_id"]
+	}
 	if specPath != "" {
 		norm["spec_path"] = specPath
 	}
@@ -313,7 +316,14 @@ func (e *Engine) readWorkWithProject(id, projectID string) (*model.Document, []b
 
 func workSummary(d *model.Document, p string) object {
 	n, ex := d.Norm(), model.M(d.Data["execution"])
-	return object{"work_id": d.ID(), "project_id": n["project_id"], "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "title": n["title"], "intent": n["summary"], "work_type": n["work_type"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "spec_path": n["spec_path"], "plan_path": n["plan_path"], "origin": n["origin"], "aliases": n["aliases"], "state": ex["state"], "check_status": ex["check_status"], "started_at": ex["started_at"], "completed_at": ex["completed_at"]}
+	out := object{"work_id": d.ID(), "project_id": n["project_id"], "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "title": n["title"], "intent": n["summary"], "work_type": n["work_type"], "cycle_id": n["cycle_id"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "spec_path": n["spec_path"], "plan_path": n["plan_path"], "origin": n["origin"], "aliases": n["aliases"], "state": ex["state"], "check_status": ex["check_status"], "started_at": ex["started_at"], "completed_at": ex["completed_at"]}
+	if effect := ex["provider_effect"]; effect != nil {
+		out["provider_effect"] = effect
+	}
+	if observation := ex["delivery_observation"]; observation != nil {
+		out["delivery_observation"] = observation
+	}
+	return out
 }
 
 func (e *Engine) workGet(r object) (any, error) {
@@ -397,7 +407,7 @@ func (e *Engine) workList(r object) (any, error) {
 		}
 		n := d.Norm()
 		ex := model.M(d.Data["execution"])
-		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "state": ex["state"], "check_status": ex["check_status"], "completed_at": ex["completed_at"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "origin": n["origin"]}
+		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "cycle_id": n["cycle_id"], "state": ex["state"], "check_status": ex["check_status"], "completed_at": ex["completed_at"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "origin": n["origin"]}
 		row, err := json.Marshal(item)
 		if err != nil {
 			return nil, err
@@ -507,6 +517,9 @@ func (e *Engine) workContext(r object) (any, error) {
 	if b := model.I(r["budget"]); b != 0 {
 		budget = b
 	}
+	if budget < 4096 || budget > 65536 {
+		return nil, fault.New("INVALID_BUDGET", "selected work context budget must be 4096..65536 bytes")
+	}
 	n := d.Norm()
 	w := workSummary(d, p)
 	w["intent"] = boundedText(model.S(w["intent"]), 1024)
@@ -540,6 +553,25 @@ func (e *Engine) workContext(r object) (any, error) {
 		}
 		out[pair.name] = object{"artifact_id": attached.ID(), "path": attachedPath, "revision": attached.Revision(), "model_sha256": attached.Hash(), "normative_sha256": attached.NormHash(), "title": boundedText(model.S(attached.Norm()["title"]), 240), "summary": boundedText(model.S(attached.Norm()["summary"]), 512)}
 	}
+	if r["paths"] != nil || r["knowledge_refs"] != nil {
+		base, err := json.Marshal(out)
+		if err != nil {
+			return nil, err
+		}
+		knowledgeBudget := int(budget) - len(base) - 512
+		if knowledgeBudget < 512 {
+			return nil, fault.New("RESPONSE_TOO_LARGE", "selected work leaves no room for knowledge diagnostics; request a larger budget")
+		}
+		paths := []any{}
+		for _, p := range model.Strings(r["paths"]) {
+			paths = append(paths, object{"path": p})
+		}
+		for k, v := range e.taskKnowledge(object{"paths": paths, "knowledge_refs": r["knowledge_refs"]}, knowledgeBudget) {
+			out[k] = v
+		}
+		out["requested_paths"] = r["paths"]
+		out["requested_knowledge_refs"] = r["knowledge_refs"]
+	}
 	b, err := json.Marshal(out)
 	if err != nil {
 		return nil, err
@@ -569,6 +601,15 @@ func (e *Engine) workUpdate(r object) (any, error) {
 	}
 	norm, ex := next.Norm(), model.M(next.Data["execution"])
 	switch model.S(r["action"]) {
+	case "set-cycle":
+		if _, supplied := r["cycle_id"]; !supplied {
+			return nil, fault.New("INVALID_WORK_UPDATE", "set-cycle needs a cycle ID or null to clear it")
+		}
+		if r["cycle_id"] == nil {
+			delete(norm, "cycle_id")
+		} else {
+			norm["cycle_id"] = r["cycle_id"]
+		}
 	case "rename":
 		if title := model.S(r["title"]); title != "" {
 			norm["title"] = title
@@ -621,6 +662,20 @@ func (e *Engine) workUpdate(r object) (any, error) {
 			return nil, fault.New("INVALID_WORK_TRANSITION", "work is already archived")
 		}
 		ex["state"] = "archived"
+	case "observe-delivery":
+		repository := model.S(r["repository"])
+		pullNumber := model.I(r["pull_number"])
+		state := model.S(r["pull_state"])
+		observedAt := model.S(r["observed_at"])
+		parsed, parseErr := time.Parse("2006-01-02T15:04:05Z", observedAt)
+		if !workRepositoryPattern.MatchString(repository) || pullNumber < 1 ||
+			(state != "open" && state != "closed" && state != "merged") ||
+			parseErr != nil || parsed.UTC().Format("2006-01-02T15:04:05Z") != observedAt {
+			return nil, fault.New("INVALID_DELIVERY_OBSERVATION", "supply a valid GitHub PR identity, state and UTC observation time")
+		}
+		url := "https://github.com/" + repository + "/pull/" + strconv.FormatInt(pullNumber, 10)
+		ex["delivery_observation"] = object{"repository": repository, "pull_number": pullNumber,
+			"pull_url": url, "state": state, "observed_at": observedAt}
 	default:
 		return nil, fault.New("INVALID_WORK_UPDATE", "unknown work action")
 	}

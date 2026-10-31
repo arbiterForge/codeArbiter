@@ -165,13 +165,20 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/refactor/SKILL.md':'3f96c8640832c34d7fb91d59fd5928b8fa68ecfc',
 });
 // The local work owner adds selected work operations to the artifact bridge
-// and a work document rendering. The bridge now also admits a derived project
-// page read; existing review routes retain their geometry. These are the
+// and a work document rendering. The bridge also admits a derived project
+// page read, an optional derived cycle view and an explicit recorded PR
+// observation. The cycle operation adds no gate or approval route; existing
+// review routes retain their geometry. These are the
 // current reviewed source bytes for those shared owners.
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_artifactlib.py':'3b0a1b6e5e6c64465428ab8baa504a0e868912dd',
-  'core/artifacts/internal/render/render.go':'1ea6066acf90a463920584608d73724eb291c7e7',
-  'core/artifacts/internal/operations/protocol.go':'5074b80706fcbbcd6236ac38eeaed6e134eb2ff5',
+  // Init now sends initialized Markdown acquisition through decompose and
+  // refresh through context-check; the historical route layout is unchanged.
+  // Duplicate external candidate guidance preserves the same route and leaves
+  // publication to selected work promotion.
+  'core/surface/commands/init.md':'ed0f32b734097fa549cd95738ceaa30c56b7b849',
+  'core/pysrc/_artifactlib.py':'0cbc621fe6eeab05e7eb2bf96ebbee6c58d21c38',
+  'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
+  'core/artifacts/internal/operations/protocol.go':'efdb94687c9b3bed61ba646d329d280fdc201c92',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
   'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
@@ -181,9 +188,9 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/brainstorming/SKILL.md':'9d53f27511dc063341068498c45766ae042f5b4d',
   'core/surface/skills/commit-gate/SKILL.md':'b009fa35e839f2ae929451a7114ac2a05e26c9db',
   'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
-  'core/surface/skills/context-creation/SKILL.md':'dff4947f37e686afb5d43dbe1ce83580aa9ccc5c',
+  'core/surface/skills/context-creation/SKILL.md':'5e6922b5ad4da78159a19b316480f3849827ab7f',
   'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
-  'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
+  'core/surface/skills/decompose/SKILL.md':'e4f3dbd54dbf141798e078a36c43bc5a1cc91835',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their

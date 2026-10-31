@@ -46,10 +46,13 @@ answers and current user direction are considered.
 
 Save discovered gaps as decomposition `work_item` candidates. Do not call
 `knowledge.py promote` or create an external issue merely because a gap was
-recorded. When the user selects promotion, check the candidate's stable origin
-against the selected work owner, including archived work, and retain the actual
-returned `work_id`; a retry repairs the same link. Reinspect only affected
-records on later source changes through `context-check`. Continue with
+recorded. If multiple candidates cite the same external item, keep them as
+separate proposals until their scope and identity are resolved; a shared title
+or citation does not select one or authorize publishing both. When the user
+selects promotion, check the candidate's stable origin against the selected
+work owner, including archived work, and retain the actual returned `work_id`;
+a retry repairs the same link. Reinspect only affected records on later source
+changes through `context-check`. Continue with
 independent useful work when a separate choice remains open. Report the
 selected records and remaining unknowns, then return to the requested work;
 the greenfield interview and initialization steps below do not run on this path.
