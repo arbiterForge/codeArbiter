@@ -429,6 +429,9 @@ posts another issue. A user-supplied raw native claim is structurally checked
 but does not itself perform remote verification; use the adapter for the
 verified send. The facade's raw JSON request route excludes claim and record;
 the native protocol still trusts its cooperating caller for those fields.
+`hooks/work.py adopt-issue <WORK-ID> --number N --operation-id <stable-id>`
+can bind an already correlated issue after exact readback. It never posts a
+second issue, and it refuses an existing binding or an uncertain create.
 For a bound issue, `hooks/work.py stage-status <WORK-ID> --state open|closed
 --operation-id <stable-id>` records an explicit status intent. `sync` first
 reads the exact correlated issue. A changed remote state is recorded as a
