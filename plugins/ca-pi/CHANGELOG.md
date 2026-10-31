@@ -18,6 +18,7 @@ All notable changes to `ca-pi` are documented in this file.
 ### Fixed
 
 - Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+- Keep scaffold documentation out of legacy startup counts and work listings.
 
 ## [0.26.1] - 2026-10-31
 

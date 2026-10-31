@@ -324,9 +324,11 @@ the legacy board owns the project.
 task row while holding the legacy board writer's lock. Fenced examples and the
 known `init-codearbiter.py` schema notes are retained in the byte-for-byte board
 snapshot, but are not promoted as work; unfamiliar bullets in that schema
-preamble stop cutover for inspection. The preview reports board byte hashes,
-candidate native IDs and origins, and refuses malformed markers, duplicate
-identities, linked boards and an existing native owner. Unkeyed rows receive a
+preamble stop cutover for inspection. The shared legacy task reader likewise
+excludes those examples and notes from startup counts and selected work listings.
+The preview reports board byte hashes, candidate native IDs and origins, and
+refuses malformed markers, duplicate identities, linked boards and an existing
+native owner. Unkeyed rows receive a
 deterministic candidate origin from their board location and exact block, not
 their title. Historical keyed origins outside the native `SOURCE#ITEM` grammar
 receive a deterministic native origin; their legacy Work ID stays the same,

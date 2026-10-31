@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 ### Fixed
 
 - Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+- Keep scaffold documentation out of legacy startup counts and work listings.
 
 ## [3.7.1] - 2026-10-31
 

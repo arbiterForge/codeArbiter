@@ -20,6 +20,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ### Fixed
 
 - Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+- Keep scaffold documentation out of legacy startup counts and work listings.
 
 ## [0.25.1] - 2026-10-31
 
