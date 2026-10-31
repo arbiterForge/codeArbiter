@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # codeArbiter — the sanctioned task-board mutator behind /ca:task (resolves D-1).
 #
-# The ONLY blessed way to write .codearbiter/open-tasks.md: add a queued task,
-# start one (flip to [~] + stamp the date, minting a dotted ID on pick-up), or
-# mark an in-progress task done. All board LOGIC is the pure text->text transforms in
+# The ONLY blessed way to write .codearbiter/open-tasks.md: add, start, done,
+# archive, or edit one selected work row. All board LOGIC is the pure text->text transforms in
 # _taskboardlib; this is the thin I/O wrapper (read board -> transform -> write),
 # the same shape as doctor.py / security-pass.py.
 #
@@ -18,6 +17,7 @@
 #   done  <ID-or-"title"> [--date YYYY-MM-DD]
 #   archive <ID-or-"title"> [--allow-undated]  move a done item into
 #           done-tasks.md: append THERE first, then remove here
+#   rename/attach/reopen <work-id> --from ORIGIN  selected legacy work edits
 #
 # Rerun-safe: start/done are no-ops on an already-matching state; a missing target
 # is reported, never a partial write.
@@ -238,6 +238,19 @@ def _apply(args, text):
                            work_operation_id=args.work_operation_id)
         return new, f"added queued task: {args.desc}"
 
+    if args.verb in ("rename", "attach", "reopen"):
+        day = _date(args.date) if args.verb == "reopen" else None
+        try:
+            new = tb.edit_work_entry(text, args.source_origin, args.verb,
+                                     title=getattr(args, "title", None),
+                                     spec_id=getattr(args, "spec_id", None),
+                                     plan_id=getattr(args, "plan_id", None), today=day)
+        except ValueError as exc:
+            return None, str(exc)
+        if new == text:
+            return None, f"no change to selected legacy work: {args.verb}"
+        return new, f"edited legacy work: {args.verb}"
+
     # start / done
     state = "in_progress" if args.verb == "start" else "done"
     day = _date(args.date)
@@ -296,7 +309,25 @@ def main(argv=None, *, root=None, expected_work_id=None,
                           "requires deliberate per-item confirmation")
     par.add_argument("--from", dest="source_origin")
 
+    for verb in ("rename", "attach", "reopen"):
+        edit = sub.add_parser(verb)
+        edit.add_argument("target")
+        edit.add_argument("--from", dest="source_origin", required=True)
+        if verb == "rename":
+            edit.add_argument("--title", required=True)
+        elif verb == "attach":
+            edit.add_argument("--spec-id")
+            edit.add_argument("--plan-id")
+        else:
+            edit.add_argument("--date", default=None)
+
     args = p.parse_args(argv)
+
+    if args.verb in ("rename", "attach", "reopen") and (
+            expected_work_id is None or expected_board_sha256 is None):
+        print("selected legacy work edits require work.py identity and revision binding",
+              file=sys.stderr)
+        return 1
 
     root = project_root() if root is None else root
     board_path = os.path.join(root, ".codearbiter", "open-tasks.md")
@@ -338,6 +369,12 @@ def main(argv=None, *, root=None, expected_work_id=None,
                 return 1
             if selected["board_sha256"] != expected_board_sha256:
                 print("legacy work revision conflict: selected board row changed; no changes were written",
+                      file=sys.stderr)
+                return 1
+            if args.verb in ("rename", "attach", "reopen") and (
+                    args.target != selected["work_id"]
+                    or args.source_origin != selected["origin"]):
+                print("legacy work identity and origin do not select the same row; no changes were written",
                       file=sys.stderr)
                 return 1
 

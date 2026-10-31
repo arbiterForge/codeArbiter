@@ -1092,6 +1092,76 @@ def set_state(text, target, state, today, *, assign=None, origin=None):
     return _join(lines, text)
 
 
+def edit_work_entry(text, origin, action, *, title=None, spec_id=None,
+                    plan_id=None, today=None):
+    """Edit one selected legacy work block without changing its identity or neighbors."""
+    if not isinstance(origin, str) or not origin:
+        raise ValueError("legacy work edit needs an exact origin")
+    lines = text.splitlines()
+    idx = _find_task_line(lines, origin, origin=origin)
+    if idx == -2:
+        raise ValueError(f"duplicate or ambiguous legacy work origin {origin!r}")
+    if idx < 0:
+        raise ValueError(f"legacy work origin {origin!r} is not on the active board")
+    task = parse_board(lines[idx])[0]
+    if action == "attach":
+        if spec_id is None and plan_id is None:
+            raise ValueError("attach needs a spec or plan ID")
+        for label, value, prefix in (("spec", spec_id, "SPEC-"),
+                                     ("plan", plan_id, "PLAN-")):
+            if value is None:
+                continue
+            if (not isinstance(value, str) or not value.startswith(prefix)
+                    or re.fullmatch(re.escape(prefix) + r"[A-Z0-9-]{1,74}", value) is None):
+                raise ValueError(f"bad {label} ID for legacy work attachment")
+            block = task_block(lines, task)
+            if block is None:
+                raise ValueError("legacy work block is not selectable")
+            field = "  - " + label.capitalize() + " ID: "
+            found = [i for i in range(block[0] + 1, block[1]) if lines[i].startswith(field)]
+            if len(found) > 1:
+                raise ValueError(f"duplicate legacy {label} ID metadata")
+            if found:
+                lines[found[0]] = field + value
+            else:
+                lines.insert(block[1], field + value)
+        return _join(lines, text)
+
+    raw = lines[idx]
+    match = re.fullmatch(r"(- \[[ xX~]\] )(.*)", raw)
+    if match is None:
+        raise ValueError("legacy work line has no editable lifecycle marker")
+    prefix, body = match.groups()
+    suffix = []
+    token = re.compile(r"\s+\((?:from " + re.escape(origin)
+                       + r"|started [^)]*|done [^)]*)\)$")
+    while found := token.search(body):
+        suffix.insert(0, body[found.start():])
+        body = body[:found.start()]
+    if action == "rename":
+        if (not isinstance(title, str) or not title.strip() or len(title) > 240
+                or _LINE_BREAK_RE.search(title)
+                or re.search(r"\((?:from|started|done) [^)]*\)", title)):
+            raise ValueError("rename needs a bounded single-line title")
+        if task.id:
+            lead = task.id + " - "
+            if not body.startswith(lead):
+                raise ValueError("legacy work ID prefix is not editable")
+        else:
+            lead = ""
+        if not body[len(lead):].strip():
+            raise ValueError("legacy work title is not selectable")
+        lines[idx] = prefix + lead + title.strip() + "".join(suffix)
+    elif action == "reopen":
+        if task.state != "done" or today is None:
+            raise ValueError("only completed legacy work can reopen")
+        suffix = [part for part in suffix if not part.lstrip().startswith("(done ")]
+        lines[idx] = "- [~] " + body + "".join(suffix) + f"  (started {today.isoformat()})"
+    else:
+        raise ValueError(f"unsupported legacy work edit {action}")
+    return _join(lines, text)
+
+
 def promoted_entry(text, origin, archive_text=""):
     """The first board or archive entry carrying `(from <origin>)`, or None.
 

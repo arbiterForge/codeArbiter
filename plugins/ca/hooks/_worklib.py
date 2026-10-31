@@ -160,7 +160,8 @@ def dispatch(root, operation, request):
         "work-context": {"work_id", "budget", "paths", "knowledge_refs"},
         "work-list": {"offset", "limit", "budget", "membership_sha256"},
         "work-origins": {"origins"},
-        "work-update": {"operation_id", "work_id", "expected_board_sha256", "action"},
+        "work-update": {"operation_id", "work_id", "expected_board_sha256", "action",
+                        "title", "spec_id", "plan_id"},
     }.get(operation)
     if fields is None:
         raise ValueError(f"{operation} is not yet supported by the legacy board adapter")
@@ -287,8 +288,8 @@ def dispatch(root, operation, request):
                 "content_snapshot": False}
     if operation == "work-update":
         action = request.get("action")
-        if action not in ("start", "complete", "archive"):
-            raise ValueError("legacy work update supports start, complete and archive")
+        if action not in ("start", "complete", "archive", "reopen", "rename", "attach"):
+            raise ValueError("unsupported legacy work update action")
         if (not isinstance(request.get("operation_id"), str)
                 or not request["operation_id"].strip()):
             raise ValueError("legacy work update needs a stable operation_id")
@@ -298,6 +299,16 @@ def dispatch(root, operation, request):
         current = dispatch(root, "work-get", {"work_id": request.get("work_id")})
         args = [("done" if action == "complete" else action),
                 current["work_id"], "--from=" + current["origin"]]
+        if action == "rename":
+            if not isinstance(request.get("title"), str):
+                raise ValueError("legacy rename needs a title")
+            args.append("--title=" + request["title"])
+        if action == "attach":
+            for field, flag in (("spec_id", "--spec-id"), ("plan_id", "--plan-id")):
+                if field in request:
+                    if not isinstance(request[field], str):
+                        raise ValueError(f"legacy {field} must be text")
+                    args.append(flag + "=" + request[field])
         output, errors = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
             code = taskwrite.main(args, root=root, expected_work_id=current["work_id"],

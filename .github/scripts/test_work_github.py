@@ -36,6 +36,8 @@ class FakeGithub:
         if path.endswith("/pulls/3"):
             return 200, {"merged_at": "2026-10-31T12:00:00Z", "merge_commit_sha": self.merge_sha,
                          "base": {"ref": "main", "repo": {"full_name": "arbiterForge/disposable"}}}
+        if path.endswith("/pulls/3/files?per_page=100&page=1"):
+            return 200, [{"filename": ".codearbiter/work/" + self.work_id + ".html", "status": "modified"}]
         if "/contents/.codearbiter/work/" in path:
             return 200, {"encoding": "base64", "content": base64.b64encode(self.merged_work).decode("ascii")}
         if method == "POST":
@@ -380,9 +382,40 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(result["provider_effect"]["status"], "synchronized")
         self.assertEqual(result["provider_effect"]["merge_pull_number"], 3)
         self.assertEqual(result["provider_effect"]["merge_commit_sha"], sha)
-        self.assertEqual([path for _, path in transport.calls[:3]],
+        self.assertEqual([path for _, path in transport.calls[:4]],
                          ["/repos/arbiterForge/disposable/pulls/3", "/repos/arbiterForge/disposable",
+                          "/repos/arbiterForge/disposable/pulls/3/files?per_page=100&page=1",
                           "/repos/arbiterForge/disposable/contents/.codearbiter/work/" + self.work_id + ".html?ref=" + sha])
+
+    def test_contingent_effect_rejects_unrelated_merge_with_preexisting_work(self):
+        old = self.client.call("work-provider-get", {})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        new = self.client.call("work-provider-configure", {
+            "operation_id": "github-fixture-configure-unrelated", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        self.client.call("work-effect-stage", {"operation_id": "github-fixture-stage-unrelated",
+            "work_id": self.work_id, "binding_generation": new["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+        sha = self._commit_pending_effect()
+
+        class UnrelatedMerge(FakeGithub):
+            def request(self, method, path, body, token):
+                if path.endswith("/pulls/3/files?per_page=100&page=1"):
+                    self.calls.append((method, path))
+                    return 200, [{"filename": "README.md", "status": "modified"}]
+                return super().request(method, path, body, token)
+
+        transport = UnrelatedMerge()
+        transport.work_id = self.work_id
+        transport.merge_sha = sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "MERGE_UNVERIFIED")
+        self.assertFalse(any(method == "POST" for method, _ in transport.calls))
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"], "pending")
 
     def test_contingent_effect_rejects_merged_snapshot_without_matching_intent(self):
         old = self.client.call("work-provider-get", {})

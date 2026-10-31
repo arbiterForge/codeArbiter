@@ -208,15 +208,20 @@ def _dispatch(args, client):
     if not args.operation_id:
         raise ValueError(f"{args.verb} needs --operation-id so an uncertain result can be retried without overwriting later work")
     if getattr(client, "legacy", False):
-        if args.verb not in ("start", "complete", "archive"):
-            raise ValueError(f"{args.verb} is not yet supported by the legacy board adapter")
         if args.expected_revision is not None:
             raise ValueError("legacy work uses an expected board SHA-256, not a native revision")
         current = client.call("work-get", {"work_id": args.work_id})
         expected = args.expected_model_sha256 or current["board_sha256"]
+        fields = {"title": args.title} if args.verb == "rename" else {}
+        if args.verb == "attach":
+            fields = {field: value for field in ("spec_id", "plan_id")
+                      if (value := getattr(args, field)) is not None}
+            if not fields:
+                raise ValueError("attach needs --spec-id or --plan-id")
         return client.call("work-update", {
             "operation_id": args.operation_id, "work_id": args.work_id,
             "expected_board_sha256": expected, "action": args.verb,
+            **fields,
         })
     supplied = (args.expected_revision is not None, args.expected_model_sha256 is not None)
     if supplied[0] != supplied[1]:

@@ -111,6 +111,9 @@ func TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue(t *testing.T) {
 			t.Fatalf("selected work view omitted %q", required)
 		}
 	}
+	if strings.Contains(html, "The PR changed a file with this Work ID") {
+		t.Fatal("native delivery observation claimed PR diff verification it did not perform")
+	}
 	if strings.Contains(html, "Merged") || strings.Contains(html, "Checks</h2><p class=\"state\">Passed") {
 		t.Fatal("open PR observation implied a merge or passing checks")
 	}

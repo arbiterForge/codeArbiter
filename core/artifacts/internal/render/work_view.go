@@ -119,7 +119,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	if data.DeliveryState == "" {
 		w.WriteString(`<p class="state">Unobserved</p><p>This local record does not establish a merge, release or deployment.</p>`)
 	} else {
-		w.WriteString(`<p class="state">Recorded PR ` + esc(data.DeliveryState) + `</p><p>Observed ` + esc(data.DeliveryObservedAt) + `. The PR changed a file with this Work ID; review its diff and checks. Refresh this observation for later changes. It does not establish a release or deployment.</p>`)
+		w.WriteString(`<p class="state">Recorded PR ` + esc(data.DeliveryState) + `</p><p>Observed ` + esc(data.DeliveryObservedAt) + `. Review the PR diff and checks to verify this work. Refresh this observation for later changes. It does not establish a release or deployment.</p>`)
 		workExternalLink(&w, data.DeliveryURL)
 	}
 	w.WriteString(`</section>`)

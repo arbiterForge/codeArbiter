@@ -528,6 +528,73 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(archived["state"], "archived")
         self.assertEqual(self.run_work("get", first["work_id"])["work_id"], first["work_id"])
 
+    def test_legacy_common_update_verbs_preserve_work_identity(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        for action in ("rename", "attach", "reopen"):
+            with self.subTest(action=action):
+                created = self.run_work("create", "--title", "Original title",
+                                        "--intent", "Keep this identity", "--type", "fix",
+                                        "--origin", "DECOMP#" + action.upper())
+                work_id = created["work_id"]
+                if action == "rename":
+                    changed = self.run_work("rename", work_id, "--title", "Revised title",
+                                            "--operation-id", "legacy-rename-001")
+                    self.assertEqual(changed["title"], "Revised title")
+                elif action == "attach":
+                    changed = self.run_work("attach", work_id, "--spec-id", "SPEC-LEGACY",
+                                            "--plan-id", "PLAN-LEGACY",
+                                            "--operation-id", "legacy-attach-001")
+                    self.assertEqual((changed["spec_id"], changed["plan_id"]),
+                                     ("SPEC-LEGACY", "PLAN-LEGACY"))
+                else:
+                    self.run_work("complete", work_id, "--operation-id", "legacy-complete-reopen-001")
+                    changed = self.run_work("reopen", work_id,
+                                            "--operation-id", "legacy-reopen-001")
+                    self.assertEqual((changed["state"], changed["check_status"]),
+                                     ("active", "unknown"))
+                    self.assertIsNone(changed["completed_at"])
+                self.assertEqual(changed["work_id"], work_id)
+                self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
+
+    def test_legacy_rename_refuses_a_second_origin_marker(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        created = self.run_work("create", "--title", "Original title", "--intent", "Keep one row",
+                                "--type", "fix", "--origin", "DECOMP#SAFE")
+        before = board.read_bytes()
+        with self.assertRaises(ValueError):
+            _worklib.dispatch(str(self.root), "work-update", {
+                "operation_id": "legacy-unsafe-rename", "work_id": created["work_id"],
+                "expected_board_sha256": created["board_sha256"], "action": "rename",
+                "title": "Spoof (from DECOMP#OTHER)"})
+        self.assertEqual(board.read_bytes(), before)
+
+    def test_legacy_edit_writer_requires_selected_work_binding(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        created = self.run_work("create", "--title", "Original", "--intent", "Keep one row",
+                                "--type", "fix", "--origin", "DECOMP#BOUND")
+        before = board.read_bytes()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = taskwrite.main(["rename", created["work_id"], "--from=DECOMP#BOUND",
+                                   "--title=Wrong caller"], root=str(self.root))
+        self.assertNotEqual(code, 0)
+        self.assertEqual(board.read_bytes(), before)
+        self.run_work("create", "--title", "Other", "--intent", "Separate row",
+                      "--type", "fix", "--origin", "DECOMP#OTHER")
+        before = board.read_bytes()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = taskwrite.main(["rename", created["work_id"], "--from=DECOMP#OTHER",
+                                   "--title=Wrong row"], root=str(self.root),
+                                  expected_work_id=created["work_id"],
+                                  expected_board_sha256=created["board_sha256"])
+        self.assertNotEqual(code, 0)
+        self.assertEqual(board.read_bytes(), before)
+
     def test_legacy_update_stale_snapshot_preserves_later_edit(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)

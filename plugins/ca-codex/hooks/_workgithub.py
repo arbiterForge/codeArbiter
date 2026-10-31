@@ -158,6 +158,21 @@ def _verified_merge(root, transport, config, work, pull_number, token):
     status, repository = transport.request("GET", f"/repos/{repo}", None, token)
     if status != 200 or base.get("ref") != repository.get("default_branch"):
         raise WorkSyncError("MERGE_UNVERIFIED", "The PR did not merge into the repository default branch")
+    work_path = f".codearbiter/work/{work['work_id']}.html"
+    changed = False
+    for page in range(1, 31):
+        files_status, files = transport.request(
+            "GET", f"/repos/{repo}/pulls/{pull_number}/files?per_page=100&page={page}", None, token)
+        if files_status != 200 or type(files) is not list or len(files) > 100:
+            raise WorkSyncError("MERGE_UNVERIFIED", "Merged PR files cannot be verified")
+        if any(type(item) is dict and item.get("filename") == work_path
+               and item.get("status") in ("added", "modified", "renamed") for item in files):
+            changed = True
+            break
+        if len(files) < 100:
+            break
+    if not changed:
+        raise WorkSyncError("MERGE_UNVERIFIED", "Merged PR did not change the selected work item")
     result = subprocess.run([git_executable(), "merge-base", "--is-ancestor", sha, "HEAD"],
                             cwd=root, env=root_bound_git_env(), capture_output=True)
     if result.returncode != 0:
