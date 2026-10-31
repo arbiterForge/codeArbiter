@@ -11,6 +11,7 @@ All notable changes to `ca-pi` are documented in this file.
 - Adopt an existing correlated GitHub issue without creating a duplicate.
 - Keep newly discovered context gaps as candidates and route selected promotion
   through the current work owner.
+- Show observed and intended GitHub issue status in the derived work view.
 
 ## [0.26.1] - 2026-10-31
 

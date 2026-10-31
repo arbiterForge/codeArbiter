@@ -19,6 +19,7 @@ predate the plugin rewrite and are grouped by date.
 - Adopt an existing correlated GitHub issue without creating a duplicate.
 - Keep newly discovered context gaps as candidates and route selected promotion
   through the current work owner.
+- Show observed and intended GitHub issue status in the derived work view.
 
 ## [3.7.1] - 2026-10-31
 
