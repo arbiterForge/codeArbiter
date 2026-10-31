@@ -187,11 +187,11 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
-// H-05 and H-11 now read a `sed` without in-place or a `w` command as a read,
-// as H-18 already did. The shared shell guard only refuses less; the recovery,
-// read and proof routes that cite it keep their geometry.
+// H-05, H-11 and H-18 read a `sed` as a read only when its options and visible
+// script cannot write. The shared shell guard changes what it refuses, not
+// where; the recovery, read and proof routes that cite it keep their geometry.
 export const SED_READ_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_bashguardlib.py':'4a5031649063644286042b84f61451d21db4bd03',
+  'core/pysrc/_bashguardlib.py':'3a97db7fff0752d31f22593c8b56300274b586e6',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those
