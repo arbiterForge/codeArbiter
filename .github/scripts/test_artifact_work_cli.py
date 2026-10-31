@@ -615,7 +615,7 @@ class WorkCLITest(unittest.TestCase):
                                            "request": {}}))
         self.assertEqual(code, 1)
         self.assertIn("work operation", refused["error"])
-        for internal in ("work-effect-claim", "work-effect-record", "work-effect-conflict"):
+        for internal in ("work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt"):
             code, refused = invoke(json.dumps({"schema": create["schema"], "operation": internal,
                                                "request": {}}))
             self.assertEqual(code, 1)

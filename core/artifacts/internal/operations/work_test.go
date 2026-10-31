@@ -699,6 +699,41 @@ func TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict(t *testing.T) 
 	}
 }
 
+func TestWorkIssueAdoptionRequiresUnboundIdentityAndExactRepository(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	created := call("work-create", object{"operation_id": "adopt-create-001", "title": "Adopt issue", "intent": "Keep existing issue", "work_type": "fix"})
+	id := model.S(created["work_id"])
+	config := call("work-provider-configure", object{"operation_id": "adopt-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "after_merge"})
+	request := object{"protocol": Protocol, "operation_id": "adopt-issue-001", "work_id": id,
+		"binding_generation": config["binding_generation"], "remote_issue_number": int64(7),
+		"remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open",
+		"expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}}
+	request["remote_issue_url"] = "https://github.com/arbiterForge/other/issues/7"
+	if _, err := Run(root, "work-effect-adopt", request); fault.Code(err) != "INVALID_REMOTE_BINDING" {
+		t.Fatalf("cross-repository adoption was accepted: %v", err)
+	}
+	request["remote_issue_url"] = "https://github.com/arbiterForge/disposable/issues/7"
+	adopted := call("work-effect-adopt", request)
+	effect := model.M(adopted["provider_effect"])
+	if model.S(effect["status"]) != "synchronized" || model.I(effect["remote_issue_number"]) != 7 || model.S(effect["remote_state"]) != "open" {
+		t.Fatalf("verified remote binding was not retained: %v", effect)
+	}
+	request["operation_id"] = "adopt-issue-002"
+	request["expected"] = object{"revision": adopted["revision"], "model_sha256": adopted["model_sha256"]}
+	if _, err := Run(root, "work-effect-adopt", request); fault.Code(err) != "EFFECT_ALREADY_SENT" {
+		t.Fatalf("duplicate adoption was accepted: %v", err)
+	}
+}
+
 func TestWorkEffectBindingChangeDoesNotSend(t *testing.T) {
 	root := testutil.Root(t)
 	call := func(op string, request object) object {

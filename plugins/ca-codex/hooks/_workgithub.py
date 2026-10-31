@@ -127,9 +127,11 @@ def _verified_issue(transport, config, work_id, number, token):
         raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub did not return a valid issue number")
     status, issue = transport.request("GET", _issue_path(config["repository"], number), None, token)
     want_url = f"https://github.com/{config['repository']}/issues/{number}"
+    markers = re.findall(r"<!-- codearbiter-work: (WORK-[A-F0-9]{32}) -->",
+                         str(issue.get("body", "")))
     if (status != 200 or issue.get("number") != number
             or str(issue.get("html_url", "")).casefold() != want_url.casefold()
-            or _MARKER.format(work_id) not in str(issue.get("body", ""))
+            or markers != [work_id]
             or issue.get("pull_request") is not None
             or issue.get("state") not in ("open", "closed")):
         raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "GitHub issue readback did not match this work identity")
@@ -274,6 +276,24 @@ def reconcile_issue(root, client, work_id, number, transport=None, token_lookup=
     return client.call("work-effect-record", {
         "operation_id": "github-reconcile-" + secrets.token_hex(12), "work_id": work_id,
         "binding_generation": config["binding_generation"], "attempt_id": effect["attempt_id"],
+        "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+
+
+def adopt_issue(root, client, work_id, number, transport=None, token_lookup=None,
+                operation_id=None):
+    """Bind an already correlated issue without a create request or merge claim."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    config, work = _selected(Path(root), client, work_id)
+    effect = work.get("provider_effect") or {}
+    if effect and (effect.get("kind") != "create_issue" or effect.get("status") != "pending"):
+        raise WorkSyncError("EFFECT_ALREADY_SENT", "Existing issue binding or uncertain send must be reconciled first")
+    token = _credential(config, token_lookup)
+    url, remote_state = _verified_issue(transport, config, work_id, number, token)
+    return client.call("work-effect-adopt", {
+        "operation_id": operation_id or "github-adopt-" + secrets.token_hex(12),
+        "work_id": work_id, "binding_generation": config["binding_generation"],
         "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
         "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
 

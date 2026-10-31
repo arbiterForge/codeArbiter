@@ -112,6 +112,38 @@ class GithubWorkTest(unittest.TestCase):
             _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
         self.assertEqual(len(transport.calls), 2)
 
+    def test_existing_correlated_issue_can_be_adopted_without_post(self):
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        adopted = _workgithub.adopt_issue(self.root, self.client, self.work_id, 7,
+                                          transport, lambda _: "fixture-token",
+                                          operation_id="github-adopt-001")
+        self.assertEqual(transport.calls, [("GET", "/repos/arbiterForge/disposable/issues/7")])
+        self.assertEqual(adopted["provider_effect"]["remote_issue_number"], 7)
+        self.assertEqual(adopted["provider_effect"]["status"], "synchronized")
+        with self.assertRaises(_workgithub.WorkSyncError):
+            _workgithub.adopt_issue(self.root, self.client, self.work_id, 7,
+                                    transport, lambda _: "fixture-token",
+                                    operation_id="github-adopt-002")
+        self.assertEqual(len(transport.calls), 1)
+
+    def test_adoption_refuses_ambiguous_work_markers(self):
+        class AmbiguousIssue(FakeGithub):
+            def request(self, method, path, body, token):
+                status, result = super().request(method, path, body, token)
+                if method == "GET" and path.endswith("/issues/7"):
+                    result["body"] += "\n<!-- codearbiter-work: WORK-" + "F" * 32 + " -->"
+                return status, result
+
+        transport = AmbiguousIssue()
+        transport.work_id = self.work_id
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.adopt_issue(self.root, self.client, self.work_id, 7,
+                                    transport, lambda _: "fixture-token",
+                                    operation_id="github-adopt-ambiguous-001")
+        self.assertEqual(raised.exception.code, "REMOTE_BINDING_UNVERIFIED")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"], "pending")
+
     def test_status_update_preserves_remote_assignee_and_binds_readback(self):
         transport = FakeGithub()
         transport.work_id = self.work_id

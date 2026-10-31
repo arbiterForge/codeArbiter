@@ -287,6 +287,8 @@ EXPECTED_SUITES = {
     "test_work_github.py": {
         "test_lost_create_response_never_reposts",
         "test_success_requires_readback_and_records_one_binding",
+        "test_existing_correlated_issue_can_be_adopted_without_post",
+        "test_adoption_refuses_ambiguous_work_markers",
         "test_uncertain_create_reconciles_by_exact_readback_without_post",
         "test_unmatched_readback_keeps_create_unknown",
         "test_missing_credential_refuses_before_claim",

@@ -139,6 +139,18 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 	ex := model.M(next.Data["execution"])
 	current := model.M(ex["provider_effect"])
 	switch action {
+	case "adopt":
+		if len(current) != 0 && (model.S(current["kind"]) != "create_issue" || model.S(current["status"]) != "pending") {
+			return nil, fault.At("EFFECT_ALREADY_SENT", id, p, "an existing send or issue binding cannot be replaced by adoption")
+		}
+		number := model.I(r["remote_issue_number"])
+		url := model.S(r["remote_issue_url"])
+		want := fmt.Sprintf("https://github.com/%s/issues/%d", model.S(config["repository"]), number)
+		if !strings.EqualFold(url, want) {
+			return nil, fault.At("INVALID_REMOTE_BINDING", id, p, "remote issue URL does not match the configured GitHub repository and number")
+		}
+		ex["provider_effect"] = object{"kind": "create_issue", "status": "synchronized", "binding_generation": generation,
+			"attempt_id": nil, "remote_issue_number": number, "remote_issue_url": url, "remote_state": r["remote_state"]}
 	case "stage":
 		kind := model.S(r["kind"])
 		if kind == "" {

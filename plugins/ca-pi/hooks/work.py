@@ -99,6 +99,10 @@ def _parser():
     reconcile = sub.add_parser("reconcile-issue", help="Read back an exact issue after an uncertain create")
     reconcile.add_argument("work_id")
     reconcile.add_argument("--number", type=int, required=True)
+    adopt_issue = sub.add_parser("adopt-issue", help="Bind an existing issue with this work identity marker")
+    adopt_issue.add_argument("work_id")
+    adopt_issue.add_argument("--number", type=int, required=True)
+    adopt_issue.add_argument("--operation-id", required=True)
     reconcile_status = sub.add_parser("reconcile-status", help="Read back an uncertain issue status update without resending")
     reconcile_status.add_argument("work_id")
     reconcile_status.add_argument("--accept-remote", action="store_true", help="After inspection, retain the observed remote status as a conflict")
@@ -178,7 +182,7 @@ def _dispatch(args, client):
         if args.verb == "stage-status":
             request.update(kind="status_update", desired_state=args.state)
         return client.call("work-effect-stage", request)
-    if args.verb in ("sync", "reconcile-issue", "reconcile-status"):
+    if args.verb in ("sync", "reconcile-issue", "reconcile-status", "adopt-issue"):
         if getattr(client, "legacy", False):
             raise ValueError("GitHub effects require selected native work ownership")
         import _workgithub
@@ -186,6 +190,9 @@ def _dispatch(args, client):
             return _workgithub.sync(client.root, client, args.work_id, pull_number=args.pull_number)
         if args.verb == "reconcile-issue":
             return _workgithub.reconcile_issue(client.root, client, args.work_id, args.number)
+        if args.verb == "adopt-issue":
+            return _workgithub.adopt_issue(client.root, client, args.work_id, args.number,
+                                           operation_id=args.operation_id)
         return _workgithub.reconcile_status(client.root, client, args.work_id,
                                             accept_remote=args.accept_remote)
 
