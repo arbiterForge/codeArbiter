@@ -39,3 +39,25 @@ func TestWorkViewNamesFailedChecksAfterLocalCompletion(t *testing.T) {
 		t.Fatal("completed work concealed failed checks or offered the wrong next action")
 	}
 }
+
+func TestWorkViewExplainsBoundStatusConflictWithoutClaimingDelivery(t *testing.T) {
+	html, err := WorkView(WorkViewData{
+		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+		Title: "Reopen issue", Intent: "Keep local and remote progress distinct", WorkType: "fix",
+		State: "complete", CheckStatus: "unknown", CompletedAt: "2026-10-31", ProviderEffectKind: "status_update",
+		ProviderEffectStatus: "conflict", RemoteState: "open", DesiredState: "closed",
+		RemoteIssueURL: "https://github.com/owner/repo/issues/7",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	view := string(html)
+	for _, required := range []string{"Remote issue is open", "Local intent was closed", "Inspect the remote issue", "Checks", "Unobserved"} {
+		if !strings.Contains(view, required) {
+			t.Fatalf("work view omitted %q", required)
+		}
+	}
+	if strings.Contains(view, "Checks</h2><p class=\"state\">Passed") {
+		t.Fatal("remote conflict falsely established passing checks")
+	}
+}

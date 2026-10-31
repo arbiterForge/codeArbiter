@@ -52,8 +52,11 @@ func (e *Engine) workView(r object) (any, error) {
 		ModelSHA256: model.S(work["model_sha256"]), Spec: spec, Plan: plan,
 	}
 	if effect := model.M(work["provider_effect"]); len(effect) != 0 {
+		data.ProviderEffectKind = model.S(effect["kind"])
 		data.ProviderEffectStatus = model.S(effect["status"])
 		data.RemoteIssueURL = model.S(effect["remote_issue_url"])
+		data.RemoteState = model.S(effect["remote_state"])
+		data.DesiredState = model.S(effect["desired_state"])
 	}
 	html, err := render.WorkView(data)
 	if err != nil {

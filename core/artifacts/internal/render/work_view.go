@@ -15,7 +15,8 @@ type WorkViewData struct {
 	Revision                                   int64
 	ModelSHA256                                string
 	Spec, Plan                                 *WorkViewAttachment
-	ProviderEffectStatus, RemoteIssueURL       string
+	ProviderEffectKind, ProviderEffectStatus   string
+	RemoteIssueURL, RemoteState, DesiredState  string
 }
 
 type WorkViewAttachment struct {
@@ -71,15 +72,18 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	if checkStatus == "failed" {
 		obstacle = "Checks failed; local completion does not resolve them."
 		next = "Investigate the failed check and repeat the affected verification."
+	} else if data.ProviderEffectStatus == "outcome_unknown" {
+		obstacle = "The remote issue outcome is unknown."
+		next = "Reconcile the remote issue before any new send."
+	} else if data.ProviderEffectStatus == "conflict" {
+		obstacle = "The remote issue status differs from the last local observation."
+		next = "Inspect the remote issue and select a new status intent if needed."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."
 		if data.Plan != nil {
 			next = "Review the attached plan's verification evidence and record the result."
 		}
-	} else if data.ProviderEffectStatus == "outcome_unknown" {
-		obstacle = "The remote issue outcome is unknown."
-		next = "Reconcile the remote issue before any new send."
 	}
 	w.WriteString(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>`)
@@ -103,7 +107,11 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	w.WriteString(`<section class="work-card" id="sync"><h2>Tracker sync</h2>`)
 	switch data.ProviderEffectStatus {
 	case "pending":
-		w.WriteString(`<p class="state">Pending</p><p>Local intent is saved; no remote issue is confirmed.</p>`)
+		if data.ProviderEffectKind == "status_update" {
+			w.WriteString(`<p class="state">Pending</p><p>The bound issue has a local status intent; no update is confirmed.</p>`)
+		} else {
+			w.WriteString(`<p class="state">Pending</p><p>Local intent is saved; no remote issue is confirmed.</p>`)
+		}
 	case "outcome_unknown":
 		w.WriteString(`<p class="state">Outcome unknown</p><p>A send may have succeeded. Reconcile the remote issue before retrying.</p>`)
 	case "synchronized":
@@ -112,9 +120,18 @@ func WorkView(data WorkViewData) ([]byte, error) {
 			w.WriteString(`<p>` + esc(data.RemoteIssueURL) + `</p>`)
 		}
 	case "conflict":
-		w.WriteString(`<p class="state">Conflict</p><p>Remote state needs a selected reconciliation.</p>`)
+		w.WriteString(`<p class="state">Conflict</p><p>Inspect the remote issue before selecting another status intent.</p>`)
 	default:
 		w.WriteString(`<p class="state">Unconfigured</p><p>No provider binding or remote result is recorded in this local work model.</p>`)
+	}
+	if data.RemoteState != "" {
+		w.WriteString(`<p>Remote issue is ` + esc(data.RemoteState) + `.</p>`)
+	}
+	if data.DesiredState != "" {
+		w.WriteString(`<p>Local intent was ` + esc(data.DesiredState) + `.</p>`)
+	}
+	if data.ProviderEffectStatus != "synchronized" && data.RemoteIssueURL != "" {
+		w.WriteString(`<p>` + esc(data.RemoteIssueURL) + `</p>`)
 	}
 	w.WriteString(`</section>`)
 	workViewAttachment(&w, "Specification", "spec", data.Spec)

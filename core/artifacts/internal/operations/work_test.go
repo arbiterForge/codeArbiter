@@ -668,6 +668,10 @@ func TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict(t *testing.T) 
 	if model.S(model.M(conflict["provider_effect"])["status"]) != "conflict" {
 		t.Fatalf("remote change was not retained for explicit reconciliation: %v", conflict)
 	}
+	view := call("work-view", object{"work_id": id})
+	if html := model.S(view["html"]); !strings.Contains(html, "Remote issue is closed") || !strings.Contains(html, "Local intent was closed") {
+		t.Fatalf("selected work view omitted the remote conflict state: %s", html)
+	}
 	staged = call("work-effect-stage", object{"operation_id": "status-stage-open-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "open", "expected": expected(conflict)})
 	claimed = call("work-effect-claim", object{"operation_id": "status-claim-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "expected": expected(staged)})
 	record := object{"protocol": Protocol, "operation_id": "status-record-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "closed", "expected": expected(claimed)}
