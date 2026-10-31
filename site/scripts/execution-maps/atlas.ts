@@ -165,8 +165,9 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/surface/skills/refactor/SKILL.md':'3f96c8640832c34d7fb91d59fd5928b8fa68ecfc',
 });
 // The local work owner adds selected work operations to the artifact bridge
-// and a work document rendering. The bridge now also admits a derived project
-// page read; existing review routes retain their geometry. These are the
+// and a work document rendering. The bridge also admits a derived project
+// page read and an explicit recorded PR observation; existing review routes
+// retain their geometry. These are the
 // current reviewed source bytes for those shared owners.
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   // Init now sends initialized Markdown acquisition through decompose and
@@ -174,7 +175,7 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/commands/init.md':'ed0f32b734097fa549cd95738ceaa30c56b7b849',
   'core/pysrc/_artifactlib.py':'0cbc621fe6eeab05e7eb2bf96ebbee6c58d21c38',
   'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
-  'core/artifacts/internal/operations/protocol.go':'7ef022b4e8e918d8aa3da956961e1d5aeaced77e',
+  'core/artifacts/internal/operations/protocol.go':'ac60f78900de5f7d235aca6d757eb81433fce9dd',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
   'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
