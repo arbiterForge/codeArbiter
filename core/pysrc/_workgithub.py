@@ -17,6 +17,8 @@ import secrets
 import subprocess
 from urllib import error, parse, request
 
+from _gitexec import git_executable, root_bound_git_env
+
 
 _REPOSITORY = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\Z")
 _BASE = "https://api.github.com"
@@ -66,8 +68,9 @@ class GithubTransport:
 
 
 def _origin_repository(root):
-    result = subprocess.run(["git", "remote", "get-url", "origin"], cwd=root,
-                            capture_output=True, text=True, encoding="utf-8")
+    result = subprocess.run([git_executable(), "remote", "get-url", "origin"], cwd=root,
+                            env=root_bound_git_env(), capture_output=True,
+                            text=True, encoding="utf-8")
     if result.returncode != 0:
         raise WorkSyncError("ORIGIN_UNAVAILABLE", "Git origin is unavailable; no provider effect was claimed")
     value = result.stdout.strip()
@@ -143,8 +146,8 @@ def _verified_merge(root, transport, config, work, pull_number, token):
     status, repository = transport.request("GET", f"/repos/{repo}", None, token)
     if status != 200 or base.get("ref") != repository.get("default_branch"):
         raise WorkSyncError("MERGE_UNVERIFIED", "The PR did not merge into the repository default branch")
-    result = subprocess.run(["git", "merge-base", "--is-ancestor", sha, "HEAD"],
-                            cwd=root, capture_output=True)
+    result = subprocess.run([git_executable(), "merge-base", "--is-ancestor", sha, "HEAD"],
+                            cwd=root, env=root_bound_git_env(), capture_output=True)
     if result.returncode != 0:
         raise WorkSyncError("MERGE_UNVERIFIED", "The observed merge commit is absent from this checkout's HEAD ancestry")
     path = f"/repos/{repo}/contents/.codearbiter/work/{work['work_id']}.html?ref={sha}"
