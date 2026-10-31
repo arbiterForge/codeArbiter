@@ -346,6 +346,13 @@ def _git_out(root, *arguments):
     return result.stdout
 
 
+def _git_paths(root, *arguments):
+    result = subprocess.run([git_executable(), *arguments, "-z"], cwd=root, capture_output=True)
+    if result.returncode != 0:
+        raise ValueError(f"git {arguments[0]} failed: {result.stderr.decode('utf-8', errors='replace').strip()}")
+    return {path for path in result.stdout.decode("utf-8").split("\0") if path}
+
+
 def _stale(client, root, docs):
     """Advisory freshness: which records may need a look, never a verdict.
 
@@ -354,6 +361,9 @@ def _stale(client, root, docs):
     nothing, and nothing here blocks work or resets other records."""
     from _scopelib import _glob_to_re
     head = _git_out(root, "rev-parse", "HEAD").strip()
+    local_changed = _git_paths(root, "diff", "--no-renames", "--name-only")
+    local_changed.update(_git_paths(root, "diff", "--cached", "--no-renames", "--name-only"))
+    local_changed.update(_git_paths(root, "ls-files", "--others", "--exclude-standard"))
     report = []
     for doc in docs:
         doc_id = _doc_id(doc)
@@ -363,11 +373,9 @@ def _stale(client, root, docs):
             report.append({"artifact_id": doc_id, "baseline": None,
                            "note": "no baseline commit; run rebaseline after checking the records"})
             continue
-        if baseline == head:
-            report.append({"artifact_id": doc_id, "baseline": baseline, "stale": []})
-            continue
-        changed = [p for p in _git_out(root, "diff", "--name-only", f"{baseline}..HEAD").splitlines() if p]
-        changed += [p for p in _git_out(root, "diff", "--name-only").splitlines() if p and p not in changed]
+        changed = set(local_changed)
+        if baseline != head:
+            changed.update(_git_paths(root, "diff", "--no-renames", "--name-only", f"{baseline}..HEAD"))
         sources = {s["id"]: s.get("locator", "") for s in _records(client, doc_id, "sources")}
         stale = []
         for record in _records(client, doc_id):

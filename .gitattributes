@@ -20,6 +20,7 @@ core/artifacts/** text eol=lf
 /.codearbiter/plans/*.html -text
 /.codearbiter/work/*.html -text
 /.codearbiter/work/project.json -text
+/.codearbiter/legacy/*.md -text
 /.codearbiter/.artifacts/** -text
 
 # Enrolled context pairs bind the writer's exact bytes. Preserve the selected

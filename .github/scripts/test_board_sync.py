@@ -531,14 +531,10 @@ def test_done_flip_retained():
 
 
 def test_context_creation_board_route():
-    """B-18/T-55: `context-creation` seeds open-tasks.md through the board
-    helper, one call per task, never by writing entries into the file.
+    """Context creation routes selected work through the owning work helper.
 
-    It used to POPULATE the file with the Write tool during doc-writing.
-    Once open-tasks.md is enrolled `helper-only`, that write is refused
-    outright -- so the instruction would survive as one nobody can follow.
-    Seeding through repeated `taskwrite add` also means the backlog cannot
-    drift from the schema the SessionStart hook and statusline parse.
+    B-18/T-55 still forbids direct board writes for legacy projects. Native
+    projects retain stable Work IDs, and unselected gaps remain candidates.
     """
     copies = [
         "core/surface/skills/context-creation/SKILL.md",
@@ -552,14 +548,24 @@ def test_context_creation_board_route():
             continue
         seen += 1
         text = read_repo(relative)
-        check("taskwrite.py" in text,
-              f"{relative}: open-tasks seeding does not name the board helper")
-        check("one call per item" in text,
-              f"{relative}: nothing states the per-item helper contract")
-        check("never by writing entries into the file directly" in text,
-              f"{relative}: nothing forbids the direct write it replaced")
+        check("hooks/work.py list --limit 1" in text,
+              f"{relative}: selected work owner is not queried")
+        check("knowledge.py promote" in text,
+              f"{relative}: selected candidate promotion is missing")
+        check("legacy projects use the board helper" in text,
+              f"{relative}: legacy board helper route is missing")
+        check("Never write task rows directly" in text,
+              f"{relative}: direct board writes are not forbidden")
+        check("until the user selects promotion" in text,
+              f"{relative}: discovered gaps are published without selection")
     check(seen >= 4,
           f"expected at least 4 rendered context-creation copies, found {seen}")
+    markdown_reference = read_repo(
+        "core/surface/skills/context-creation/references/markdown-format.md")
+    check("taskwrite.py" in markdown_reference,
+          "legacy Markdown procedure does not name the board helper")
+    check("never writes the old board" in markdown_reference,
+          "Markdown procedure allows native work to write the legacy board")
 
 
 TESTS = [

@@ -2229,3 +2229,28 @@ Securable: the publish credential is short-lived and the attestation must name t
 Update release.yml, publish-target/action.yml, _npm_publishlib.py, focused tests and security controls. The account-side npm trusted publisher must allow npm publish for arbiterForge/codeArbiter release.yml; its actual configuration and a live OIDC publish remain separately verified.
 
 ---
+
+## DECISION-0078 — adr-0045-ratified — Defer contingent GitHub work effects
+
+**Date:** 2026-10-31
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — "go with whatever a full lens SMARTS read says"; the full-lens read recommended merge-observed delivery by default.
+**Decision category:** work-system-architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The work-system specification proposes merge-observed default delivery for contingent GitHub effects with explicit immediate handling for independent discovery.
+- **Scaffold position:** ADR-0008 covers atomic local board co-location but does not give network effects Git merge atomicity.
+- **Status type:** open-decision-closure
+
+### Decision
+Adopt the full-lens SMARTS recommendation: keep contingent issue creation and status changes local until an explicit sync verifies the merged work intent. Permit immediate independent discovery and separate Project sync-now actions only when explicitly requested; do not add another approval layer or claim automatic remote rollback.
+
+### SMARTS rationale
+Reliable and Securable favor checking the merged default-branch work before a contingent issue effect is sent. Maintainable favors the existing staged-effect and readback machinery rather than a background watcher or compensating transaction. Traceable and Scalable favor an explicit pending state and a bounded sync operation. Speed favors immediate independent discovery when the caller chooses it; this does not outweigh the abandonment risk for contingent work. The recommendation strength was moderate because explicit sync-now remains a caller responsibility.
+
+### Implementation implication
+Record ADR-0045 and bind DECISION-REMOTE-TIMING in the native work-system specification. Keep the issue provider's after_merge default and exact-work merge proof, retain explicit immediate configuration and Project sync commands, and report pending, conflict, and outcome-unknown states in the CLI and work view.
+
+---

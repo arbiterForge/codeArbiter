@@ -63,7 +63,7 @@ skill is invoked — never bulk-read this directory.
 | `/ca-doctor` | Verify the active host install, package, command ownership, enforcement, wrapper self-test, and active-dispatch coverage gap. Read-only. |
 | `/ca-override` | Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed. |
 | `/ca-status` | Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only. |
-| `/ca-task` | Add, start, or complete selected local work through its owning store. |
+| `/ca-task` | Add, select, start, complete, or reopen local work through its owning store. |
 
 ## Advanced
 

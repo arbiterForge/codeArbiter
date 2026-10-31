@@ -73,6 +73,26 @@ paths move. `/ca:context-check` reports that drift and offers re-scout, re-basel
 
 ## open-tasks.md
 
+This path is the writable work owner only in a legacy project. A project with
+native `work/project.json` and work HTML uses `work.py` for creation, progress,
+context and archival. `work.py adopt-preview` inventories a legacy board without
+changing it. `work.py adopt --operation-id <stable-id>` performs an explicitly
+selected cutover, retaining the original board bytes under `legacy/`. A mixed
+writable board and native work store is an owner conflict to inspect, not a
+normal operating mode.
+
+Native GitHub issue synchronization is explicit. An optional Projects v2
+binding can attach a verified issue and update a selected single-select field; its
+pending or uncertain result is stored separately from the issue binding.
+`project-discover --project-url` reads a Projects v2 board from its normal
+GitHub URL, and `project-configure --project-url` resolves and saves its ID.
+`work.py project-reconcile` reads back an uncertain add without sending a
+second item. `project-fields` discovers field and option IDs, and
+`project-field-observe` reads the current option. Staging an update reads its
+baseline automatically. Project field updates compare that option before sending,
+but GitHub provides no conditional version for the mutation, so a concurrent
+edit during the send remains possible. Local work does not need a provider.
+
 The [board](/glossary/#board): one top-level `- ` bullet per task, in one of three states:
 queued (`- [ ]`), in-progress (`- [~]`, always carrying a started date), or done (`- [x]`). The
 only sanctioned writer is `/ca:task` (`add` / `start` / `done`), which calls the pure
@@ -86,10 +106,14 @@ count and staleness). **Editable by hand?** No: guarded to the one writer, and t
 enforced rather than advisory. The file is enrolled in the protected-state registry as
 `helper-only` (hook `H-22`), so a hand-rolled Write, Edit, shell redirect, write verb, or
 interpreter one-liner naming it is refused across all three flanks. Reading it is untouched.
-**Delete it:** the board is empty going forward; nothing else breaks, but every count that reads
-it (statusline, `/ca:status`) reports zero until tasks are re-added.
+**Delete it:** legacy work identities and task history can disappear from the
+selected owner. Restore through the owning recovery path; do not treat absence
+as proof that the project has no work.
 
 ## done-tasks.md
+
+This is the legacy archive. Native archived items remain at their stable
+`work/WORK-<id>.html` paths and are returned by selected work reads.
 
 The permanent record of archived work. `/ca:task archive` (and `/ca:standup`'s per-item archival
 sweep) moves a long-done task here so the board keeps reporting current work rather than history.

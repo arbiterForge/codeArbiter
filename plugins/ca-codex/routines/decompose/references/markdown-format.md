@@ -29,10 +29,12 @@ historical rationale or an accepted choice. Ask only consequential unknowns
 that affect the selected target.
 
 Candidates are not tasks or tracker tickets. When the user selects promotion,
-check the stable origin against active and archived work through the selected
-work owner. Retain the returned work ID in the candidate and repair that same
-link on retry. The legacy task-board writer remains the owner in an unconverted
-project; do not create a parallel native work record. Report changed documents,
+resolve candidates that cite the same external item by their actual scope and
+identity; a matching title or citation does not publish either candidate.
+Then check the stable origin against active and archived work through the
+selected work owner. Retain the returned work ID in the candidate and repair
+that same link on retry. The legacy task-board writer remains the owner in an
+unconverted project; do not create a parallel native work record. Report changed documents,
 source scope and remaining unknowns, then return to the requested work. The
 greenfield interview and initialization steps below do not run on this path.
 

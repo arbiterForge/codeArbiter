@@ -308,7 +308,7 @@
     },
     "task": {
       "name": "task",
-      "description": "Add, start, or complete selected local work through its owning store.",
+      "description": "Add, select, start, complete, or reopen local work through its owning store.",
       "commandPath": "commands/task.md",
       "visibility": "core",
       "workflow": "operate",

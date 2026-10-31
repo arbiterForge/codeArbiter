@@ -73,7 +73,8 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `work-update` |
+| Local work | `work-create`, `work-adopt`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update` |
+| Work provider effects | `work-provider-get`, `work-provider-configure`, `work-effect-stage`, `work-effect-claim`, `work-effect-record`, `work-effect-conflict`, `work-effect-adopt`, `work-project-get`, `work-project-configure`, `work-project-stage`, `work-project-stage-field`, `work-project-claim`, `work-project-record`, `work-project-conflict` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -316,9 +317,48 @@ a fresh board hash for each invocation, so repeating the command after another
 edit could act on the changed row. A repeat after a successful update with the
 original hash refuses as stale; it does not return the original result.
 Completion can record already-performed work without inventing a start date
-and leaves its check unknown. Legacy rename, later attachment and reopen
-remain unsupported through this facade. Native creation still refuses while
+and leaves its check unknown. Selected legacy rename, later attachment and
+reopen use the same board writer and revision binding. Cycle grouping requires
+native work ownership. Native creation still refuses while
 the legacy board owns the project.
+
+`hooks/work.py adopt-preview` inventories every active and archived top-level
+task row while holding the legacy board writer's lock. Fenced examples and the
+known `init-codearbiter.py` schema notes are retained in the byte-for-byte board
+snapshot, but are not promoted as work; unfamiliar bullets in that schema
+preamble stop cutover for inspection. The shared legacy task reader likewise
+excludes those examples and notes from startup counts and selected work listings.
+The preview reports board byte hashes, candidate native IDs and origins, and
+refuses malformed markers, duplicate identities, linked boards and an existing
+native owner. Unkeyed rows receive a
+deterministic candidate origin from their board location and exact block, not
+their title. Historical keyed origins outside the native `SOURCE#ITEM` grammar
+receive a deterministic native origin; their legacy Work ID stays the same,
+while origin lookup after cutover uses the previewed native origin. The preview
+changes no work ownership. `hooks/work.py adopt
+--operation-id <stable-id>` re-inventories under the same lock, then calls the
+native `work-adopt` transaction. That transaction compares exact board bytes and
+derives each accepted work field again from its hashed source block before cutover,
+creates the project identity and all native work HTML, saves byte-for-byte
+snapshots in `.codearbiter/legacy/`, and removes the two writable board paths.
+One cutover supports at most 507 task rows so its journal stays within 512
+edits; a larger board is refused before ownership changes.
+Old board writers then refuse the absent board. Repeating the same operation
+ID reconstructs the request from the snapshots and returns its recorded result;
+a different operation cannot silently re-adopt an already native project.
+Each adopted work item retains a source-bound pointer to its individual block
+in that snapshot. Selected `work-context` reads verify the block digest and
+return its original details, including completion conditions and boundaries,
+in UTF-8-safe pages via `--legacy-offset`. A changed or missing snapshot
+refuses the selected read. The snapshot is historical context, not a second
+writable board or a new security policy.
+
+New consumer scaffolds protect `.codearbiter/work/*.html`, all portable
+`.codearbiter/work/*.json` bindings, and `.codearbiter/legacy/*.md` from Git
+line-ending conversion. Existing installations can run
+`init-codearbiter.py --repair-work-attributes --root <project>` to append only
+missing rules to their `.codearbiter/.gitattributes`; the repair preserves
+custom rules and is safe to repeat.
 
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
@@ -347,21 +387,42 @@ The facade also requires `--operation-id` for updates. An exact retry supplies
 the same expected revision and model SHA-256; reusing the ID against later
 state refuses a changed request instead of overwriting that state.
 `work-update` uses revision plus model SHA-256 CAS and the ordinary journal for
-rename, attachment, start, completion, reopen and archive. Exact spec and plan
+rename, attachment, start, completion, reopen, archive and cycle assignment.
+`cycle_id` is an optional key on canonical work; `set-cycle` changes it or clears
+it with null without copying requirements or tasks. Exact spec and plan
 IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
-slice has no operation to assert a passing check or remote delivery.
+slice has no operation to assert a passing check, merge, release or deployment.
+
+An older binary can read a work item that still uses its known fields. Once a
+newer binary adds a cycle or other newer work field, that older binary rejects
+the selected item as `INVALID_WORK`; it must not be used to update that item or
+to restore an older copy over later edits. Continue with a compatible binary.
+The disposable two-binary probe in `tools/test-artifact-work-old-client.py`
+checks the old read, refusal of the upgraded read and write, and preservation
+of a later new-client edit. This is a source/candidate compatibility test, not
+a promise that an older installed host has been upgraded.
 
 Native `work-context` returns bounded selected work plus current attached
 document identities and concise summaries. Its `assessment: advisory` and
 `context_complete: false` fields prevent a summary from impersonating a full
-source read. Legacy `work-context` returns selected `work`,
+source read. Optional `paths` and `knowledge_refs` select relevant stored
+knowledge in the same bounded response. The response names requested inputs,
+unreadable optional documents, unresolved refs and records omitted by the
+budget; the caller supplies these refs because this first work model does not
+persist code-path scope. `hooks/work.py context` accepts `--path` and
+`--knowledge-ref`. Legacy `work-context` returns selected `work`,
 `context_complete: false`, and `omitted`; it does not include `assessment` or
-attached-document summaries. Read those attachments by exact artifact ID when
-needed. The canonical native work page joins intent, progress, check status
-and links to the separate spec and plan. Native `work-view` reads the selected
+attached-document summaries. When optional knowledge selectors are supplied,
+it reports them and explicitly says the legacy adapter cannot join knowledge.
+Read those attachments by exact artifact ID when needed. The canonical native
+work page joins intent, progress, check status and links to the separate spec
+and plan. Native `work-view` reads the selected
 work and its exact attachments through `work-context`, then returns an HTML
-overview. Progress, checks, delivery and tracker sync remain separate; unknown
+overview. With an attached plan, context and the view derive the active,
+review, or next eligible task, source-binding freshness, and the latest
+reported check without treating that report as verified evidence. Progress,
+checks, delivery and tracker sync remain separate; unknown
 check or delivery state is never inferred from completion. The overview has no
 canonical model container, is not stored by the engine and is rejected by
 `render.Parse`. `hooks/work.py view <WORK-ID>` prints the HTML to stdout. The
@@ -370,8 +431,8 @@ saving the HTML there makes its relative spec and plan links valid. This
 derived location stays outside canonical artifact discovery. The command does
 not write a second work owner or scan unrelated artifacts. Native
 `project-view` renders one bounded `work-list` page as an inert project work
-overview. It shows local progress and checks separately, labels delivery as
-unobserved and tracker sync as unconfigured, and links to the existing
+overview. It shows local progress and checks separately, directs delivery and
+tracker state to each work item, and links to the existing
 canonical work pages.
 Its `offset`, `limit` (at most 16), `membership_sha256`, `next_offset`,
 `total`, and `content_snapshot: false` have the same membership-only
@@ -380,22 +441,138 @@ identity. `hooks/work.py project-view` prints HTML; the response's
 `.codearbiter/views/project/<PROJECT-ID>-<offset>.html` path is derived and
 optional. When another page exists, the HTML includes the next offset and
 membership digest in a complete `work.py project-view` command. The engine
-does not save the page or include it in artifact discovery.
-Legacy projects continue to use their board; this native-only derived view
-reports unsupported through the legacy facade. Architecture and cycle
-overviews remain future work.
+does not save the page or include it in artifact discovery. The project page
+also reads the one canonical native code map and shows at most four recorded
+components or interfaces with their evidence basis. It names omitted records
+and links to the complete code map; an absent or invalid map is labeled without
+hiding work. Its delivery and tracker cards direct readers to individual work
+items; the project page does not aggregate remote observations. `cycle-view`
+derives membership and aggregate local progress/check counts from canonical
+work records with the selected `cycle_id`; it has no writable cycle backlog.
+It pages at most 16 members, reports a membership digest for continuation, and
+labels counts as read-time local observations rather than delivery or tracker
+proof. Its HTML is inert and optional at
+`.codearbiter/views/cycle/<cycle-id>-<offset>.html`. The scan is bounded to the
+work directory; a missing cycle is not presented as recorded. Legacy projects
+continue to use their board; this native-only derived view reports unsupported
+through the legacy facade.
+
+`hooks/work.py observe-pr <WORK-ID> --number N --operation-id <stable-id>`
+reads a GitHub PR from the checkout's origin using an approved owning-process
+credential reference. It requires the changed-file listing to include this
+canonical work path and checks the Work ID and project ID in the file at the PR
+head. A successful read records the PR URL, open/closed/merged state and UTC
+observation time in the work model; it does not change local progress, checks or
+the separate issue effect. The derived work page labels this as a recorded
+observation, not a release or deployment. It is a bounded correlation check,
+not full validation of the PR-head artifact or an independent review result.
+Exact GitHub PR and issue URLs become navigable links in the work view; other
+URL text is not used as a navigation target.
+Observing a later state is explicit; viewing a saved page never makes a network
+request. The native `work-update` action accepts the structured observation
+from a cooperating caller, while the CLI performs the GitHub readback.
+
+Native GitHub issue effects use a separate portable
+`.codearbiter/work/provider.json` binding and an optional `provider_effect`
+inside the canonical work model. `work-provider-configure` accepts a finite
+GitHub repository, credential reference and `after_merge` or `immediate`
+timing. It stores the reference, never the credential. `work-effect-stage`
+records pending intent; `work-effect-claim` journals `outcome_unknown` before
+any network send; `work-effect-record` stores the exact issue number, URL and
+observed state after readback. The fixed `hooks/work.py sync <WORK-ID>` adapter checks Git
+origin against the binding. For the default `after_merge` timing, pass
+`--pull-number N`: the adapter reads the merged PR, checks its default-branch
+base and local HEAD ancestry, and reads the pending canonical work model at
+the merge commit and the current default branch before claiming the effect. It
+requires the same immutable intent ID staged in both snapshots, so an older
+merged PR with equivalent issue content cannot release a later status intent.
+An exact replay keeps the ID; a new staging operation receives a different ID.
+The adapter checks the current default branch again after the claim and before
+sending. A
+changed or unreadable current intent refuses the send; after a claim it remains
+uncertain for reconciliation. The persisted claim records that
+PR number and merge commit. A failed merge check leaves intent pending.
+`immediate` needs no PR number. A lost create response stays
+`outcome_unknown`; `hooks/work.py reconcile-issue <WORK-ID> --number N`
+verifies an exact remote work-ID marker before recording the binding and never
+posts another issue. A user-supplied raw native claim is structurally checked
+but does not itself perform remote verification; use the adapter for the
+verified send. The facade's raw JSON request route excludes claim and record;
+the native protocol still trusts its cooperating caller for those fields.
+`hooks/work.py adopt-issue <WORK-ID> --number N --operation-id <stable-id>`
+can bind an already correlated issue after exact readback. It never posts a
+second issue, and it refuses an existing binding or an uncertain create.
+For a bound issue, `hooks/work.py stage-status <WORK-ID> --state open|closed
+--operation-id <stable-id>` records an explicit status intent. `sync` first
+reads the exact correlated issue. A changed remote state is recorded as a
+conflict without a PATCH; restaging after inspection is explicit. A permitted
+send changes only the issue state, then reads it back. A lost PATCH response
+stays `outcome_unknown`; `reconcile-status` reads the same issue and never
+repeats the PATCH. If the remote state differs, it stays uncertain until
+`reconcile-status --accept-remote` explicitly records the observed state as a
+conflict tied to the original attempt. A subsequent `stage-status` is a new
+selected intent. Assignee, title and body are outside this status effect.
+GitHub's REST API does not support conditional PATCH for issues, so a human
+edit in the interval between the last read and PATCH cannot be ruled out by
+this adapter. [GitHub's REST guidance](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api#use-conditional-requests)
+limits conditional requests on unsafe methods. Issue title/body updates remain
+unsupported.
+
+Optional GitHub Projects v2 effects use a second portable binding at
+`.codearbiter/work/project-provider.json`. It names a selected Project node ID
+and binds to the existing issue provider's repository and generation; it
+stores no credential. `work.py project-configure` does not change the issue
+binding. `project-discover --project-url` reads a user or organization Projects
+v2 URL and resolves its node ID through GitHub. `project-configure --project-url`
+does the same read before saving the binding; callers can still supply an
+already known `--project-node-id`. Discovery requires the configured issue
+provider and its owning-process credential, and does not add an issue or write
+to the remote Project. After an issue is verified and synchronized,
+`project-stage` saves a separate pending add-item intent. `project-sync` checks the exact issue and
+Project item list, records `outcome_unknown` before a send, adds the item only
+when no matching item was found, and reads the result back. A lost response
+leaves the Project effect unknown while the issue stays bound;
+`project-reconcile` reads the item and, if absent, retries GitHub's idempotent
+add before readback. GitHub returns the existing item ID when the issue is
+already in that Project. Pagination and
+responses are bounded, and a changed binding stops the affected effect.
+
+`project-fields` reads bounded single-select field and option IDs and names
+from the attached Project item; `project-field-observe` reads the current option
+for one selected field. These are explicit remote reads and never stage a write.
+`project-field-stage` takes the selected field and desired option IDs, reads the
+current remote option automatically and saves it as the expected baseline. The
+portable intent stores opaque IDs rather than field labels or free-form Project
+text. `project-field-sync` compares the live selected field with that baseline
+before the mutation and reads it back afterward. A changed option becomes a
+conflict; uncertain sends require `project-field-reconcile`. If the field still
+has its saved baseline value, reconciliation retries the selected option and
+reads it back; if it already has the desired option, reconciliation records
+success without another mutation. Any other value remains a conflict. GitHub's
+[field mutation input](https://docs.github.com/en/graphql/reference/projects#updateprojectv2itemfieldvalueinput)
+has no conditional version, so a concurrent edit between the comparison and
+mutation cannot be excluded. Do not present this as remote atomic CAS. Project
+operations need the owning GitHub credential's Projects scopes; fixture tests
+alone do not establish live account readiness. Other Project field types and
+Jira/Linear remain unsupported.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
-`work-context`, `work-view`, `project-view` and `work-update`. The selected owner validates the
+`work-context`, `work-view`, `project-view`, `cycle-view`, `work-update`, `work-provider-get`,
+`work-provider-configure`, `work-effect-stage`, `work-project-get`,
+`work-project-configure`, `work-project-stage` and `work-project-stage-field`.
+The selected owner validates the
 operation-specific request and returns one JSON result; the ordinary CLI
-`view` and `project-view` verbs print raw HTML for an explicit human-view action. Native
+`view`, `project-view` and `cycle-view` verbs print raw HTML for an explicit human-view action. Native
 `work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.
 Legacy `work-update` accepts `operation_id`, `work_id`, `action` (start,
-complete or archive), and `expected_board_sha256` instead of `expected`.
+complete, reopen, archive, rename or attach), optional `title` for rename,
+optional `spec_id`/`plan_id` for attach, and `expected_board_sha256` instead
+of `expected`. `set-cycle` and `observe-delivery` are native-only.
 The legacy `work-context` request accepts `work_id` and optional `budget`,
-with the omissions described above. The stable operation ID and owner-specific
+`paths` and `knowledge_refs`, with the omissions described above. The stable
+operation ID and owner-specific
 CAS rules still apply to mutations, including an uncertain retry.
 
 ## Advisory scheduling and ordinary progress

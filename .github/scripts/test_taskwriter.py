@@ -364,6 +364,25 @@ class TaskwriteCliTest(unittest.TestCase):
             f.write("# Open tasks\n\n## In-flight\n- [ ] a.b.0001 - seed\n")
         return d, p
 
+    def test_direct_legacy_writer_refuses_when_native_owner_is_present(self):
+        import contextlib
+        import io
+        import taskwrite
+        d, p = self._board()
+        work = os.path.join(d, ".codearbiter", "work")
+        os.makedirs(work)
+        with open(os.path.join(work, "project.json"), "w", encoding="utf-8") as f:
+            f.write("{}")
+        with open(p, "rb") as f:
+            before = f.read()
+        error = io.StringIO()
+        with contextlib.redirect_stderr(error):
+            result = taskwrite.main(["add", "must not write"], root=d)
+        self.assertEqual(result, 1)
+        self.assertIn("native work", error.getvalue())
+        with open(p, "rb") as f:
+            self.assertEqual(f.read(), before)
+
     def test_bad_date_returns_1_no_crash(self):
         import taskwrite
         d, p = self._board()

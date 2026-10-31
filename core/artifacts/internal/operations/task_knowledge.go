@@ -97,6 +97,11 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 	for _, p := range model.A(task["paths"]) {
 		taskPaths = append(taskPaths, model.S(model.M(p)["path"]))
 	}
+	explicit := map[string]bool{}
+	for _, ref := range model.Strings(task["knowledge_refs"]) {
+		explicit[ref] = true
+	}
+	foundExplicit := map[string]bool{}
 	selected := map[string]bool{}
 	candidates := []knowledgeCandidate{}
 	unmatched := int64(0)
@@ -104,6 +109,9 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 		for _, v := range model.A(entry.Doc.Norm()["records"]) {
 			r := model.M(v)
 			ref := entry.Doc.ID() + "#" + model.S(r["id"])
+			if explicit[ref] {
+				foundExplicit[ref] = true
+			}
 			typ := model.S(r["type"])
 			scope := model.Strings(model.M(r["scope"])["paths"])
 			reason := ""
@@ -116,6 +124,9 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 			}
 			if reason == "" && len(scope) == 0 && globalKnowledge[typ] {
 				reason = "global"
+			}
+			if reason == "" && explicit[ref] {
+				reason = "linked"
 			}
 			if reason != "" && (typ == "constraint" || typ == "exclusion") {
 				reason = typ
@@ -130,6 +141,12 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 	}
 	// One explicit hop: follow related references of selected records only.
 	unresolved := []any{}
+	for ref := range explicit {
+		if !foundExplicit[ref] {
+			unresolved = append(unresolved, ref)
+			selected[ref] = true
+		}
+	}
 	for _, c := range append([]knowledgeCandidate{}, candidates...) {
 		home, _, _ := symbol.Split(c.ref)
 		for _, rel := range model.Strings(c.record["related_refs"]) {
@@ -156,6 +173,7 @@ func (e *Engine) taskKnowledge(task map[string]any, budget int) object {
 			unmatched--
 		}
 	}
+	sort.Slice(unresolved, func(i, j int) bool { return model.S(unresolved[i]) < model.S(unresolved[j]) })
 	// Stable order: rank, then reference.
 	sort.SliceStable(candidates, func(i, j int) bool {
 		a, b := candidates[i], candidates[j]

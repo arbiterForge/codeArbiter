@@ -130,6 +130,19 @@ EXPECTED_DEFAULT_BODY_SHA256.update({
     'status': '972981829db1cc13bf766cdaeb5d17b004cc2953ef34919bb19ea250a21c1939',
 })
 
+# The work-system handoff routes selected brownfield work through the chosen
+# owner while preserving the legacy board helper for Markdown projects.
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': '625326dfbac5b31f62f67368e1b935a26b3f04f45a8cbae7942e3421a4fd28ca',
+})
+# PR #1069 keeps unresolved greenfield status in the global question owner;
+# decomposition records answered interview history. Preserve that owner body.
+OWNER_OPERATIONAL_SHA256['decompose'] = '867ca700f47c599b5fc48911d911c9c43287905ed52cdb1542f9dd1c71e10614'
+LEGACY_FORMAT_REFERENCE_SHA256['create-context'] = (
+    'context-creation', '## Pre-flight\n',
+    '29e913606d90480243f89ef70e1e6a44d4518e01b90e04c7e843689eca8a00d3',
+)
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:

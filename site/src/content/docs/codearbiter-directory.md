@@ -62,8 +62,12 @@ review, progress and recovery boundaries.
 | `context/*.html` | HTML-format context workflows through `knowledge.py` and the native engine | `knowledge.py relevant`, `task-context`, reviewers | No: change records with `knowledge.py`; a Git conflict uses `knowledge.py merge-conflict` |
 | `decomposition/project.html` | HTML-format `/ca:decompose` | Interview resume, `reconcile`, `knowledge.py promote` | No: change records with `knowledge.py` |
 | `.gitattributes` | `/ca:init` (HTML format) and `knowledge.py convert --finish` | Git | Keep it: it stops line-ending conversion of native HTML artifacts |
-| `open-tasks.md` | `/ca:task` only | `/ca:status`, the statusline, `SessionStart` | No: guarded to `/ca:task` (hook `H-22`, helper-only) |
-| `done-tasks.md` | `/ca:task archive`, `/ca:standup`'s per-item archival sweep | the permanent record; read on demand | No: guarded (hook `H-22`, append-only) |
+| `open-tasks.md` (legacy owner) | `/ca:task` through `taskwrite.py` | selected work facade, statusline, `SessionStart` | No: guarded to the legacy writer (hook `H-22`) |
+| `done-tasks.md` (legacy owner) | `/ca:standup`'s selected archival sweep | legacy history, read on demand | No: guarded (hook `H-22`, append-only) |
+| `work/project.json`, `work/*.html` (native owner) | `work.py` through the native engine | selected work calls and derived views | No: use stable Work IDs and native operations |
+| `work/provider.json` | `work.py provider-configure` | explicit GitHub sync | No: finite provider binding; no credential value is stored |
+| `work/project-provider.json` | `work.py project-configure` | optional GitHub Projects item and single-select effects | No: binds to the issue provider; no credential value is stored |
+| `legacy/open-tasks.md`, `legacy/done-tasks.md` | selected journaled work adoption | historical byte-exact snapshots | No: retained originals, not writable boards |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
 | `specs/*.md` | Legacy feature/sprint workflows already owned by Markdown | `writing-plans`, `/ca:status` | Yes |

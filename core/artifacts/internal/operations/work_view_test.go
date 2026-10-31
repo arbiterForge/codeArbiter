@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
@@ -82,5 +83,68 @@ func TestGeneratedWorkViewIsNotCanonical(t *testing.T) {
 	}
 	if _, err := Run(root, "index", object{"protocol": Protocol}); err != nil {
 		t.Fatalf("derived view interfered with canonical discovery: %v", err)
+	}
+}
+
+func TestWorkViewSelectsActualPlanTaskWithoutPromotingChecks(t *testing.T) {
+	f := newAssistiveFixture(t)
+	created := f.call("work-create", object{"operation_id": "plan-work-view-001", "title": "Carry the plan",
+		"intent": "Show the selected next task", "work_type": "feature",
+		"spec_id": "SPEC-EXAMPLE", "plan_id": "PLAN-EXAMPLE"})
+	context := f.call("work-context", object{"work_id": created["work_id"]})
+	task := model.M(context["plan_task"])
+	if task["id"] != "T-001" || task["title"] != "Implement and verify stage 1" || task["binding_current"] != true {
+		t.Fatalf("selected work context omitted the current plan task: %v", task)
+	}
+	html := model.S(f.call("work-view", object{"work_id": created["work_id"]})["html"])
+	for _, want := range []string{"T-001", "Implement and verify stage 1", "Source binding current", "No check report recorded"} {
+		if !strings.Contains(html, want) {
+			t.Fatalf("plan work view omitted %q", want)
+		}
+	}
+	if strings.Contains(html, "Checks passed") {
+		t.Fatal("derived plan task promoted an unassessed check")
+	}
+}
+
+func TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		result, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return result.(object)
+	}
+	call("init-store", object{})
+	work := call("work-create", object{"operation_id": "delivery-work-create-001", "title": "Finish the fix", "intent": "Keep delivery distinct", "work_type": "fix"})
+	completed := call("work-update", object{"operation_id": "delivery-work-complete-001", "work_id": work["work_id"], "action": "complete", "expected": object{"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+	observed := call("work-update", object{"operation_id": "delivery-work-observe-001", "work_id": work["work_id"], "action": "observe-delivery", "expected": object{"revision": completed["revision"], "model_sha256": completed["model_sha256"]},
+		"repository": "owner/repo", "pull_number": int64(12), "pull_state": "open", "observed_at": "2026-10-31T12:00:00Z"})
+	if observed["check_status"] != "unknown" || observed["state"] != "complete" {
+		t.Fatalf("delivery observation changed local progress or checks: %v", observed)
+	}
+	view := call("work-view", object{"work_id": work["work_id"]})
+	html := view["html"].(string)
+	for _, required := range []string{"PR open", "Observed 2026-10-31T12:00:00Z", `<a href="https://github.com/owner/repo/pull/12">`, "Check evidence is unknown", "Tracker sync", "Unconfigured"} {
+		if !strings.Contains(html, required) {
+			t.Fatalf("selected work view omitted %q", required)
+		}
+	}
+	if strings.Contains(html, "The PR changed a file with this Work ID") {
+		t.Fatal("native delivery observation claimed PR diff verification it did not perform")
+	}
+	if strings.Contains(html, "Merged") || strings.Contains(html, "Checks</h2><p class=\"state\">Passed") {
+		t.Fatal("open PR observation implied a merge or passing checks")
+	}
+	if _, err := Run(root, "work-update", object{"protocol": Protocol, "operation_id": "delivery-work-observe-invalid", "work_id": work["work_id"], "action": "observe-delivery", "expected": object{"revision": observed["revision"], "model_sha256": observed["model_sha256"]},
+		"repository": "owner/other", "pull_number": int64(0), "pull_state": "merged", "observed_at": "2026-10-31T12:00:00Z"}); err == nil {
+		t.Fatal("invalid PR identity was recorded")
+	}
+	reopened := call("work-update", object{"operation_id": "delivery-work-reopen-001", "work_id": work["work_id"], "action": "reopen", "expected": object{"revision": observed["revision"], "model_sha256": observed["model_sha256"]}})
+	if reopened["delivery_observation"] == nil || reopened["check_status"] != "unknown" {
+		t.Fatal("local lifecycle erased the independent delivery observation or check state")
 	}
 }

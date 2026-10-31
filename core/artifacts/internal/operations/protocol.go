@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-update", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -271,24 +271,110 @@ func RequestSchema(op string) (object, error) {
 		add("title", text(), true)
 		add("intent", text(), true)
 		add("work_type", enum("feature", "fix", "chore", "spike", "unknown"), true)
+		add("cycle_id", object{"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}, false)
 		add("spec_id", idType(), false)
 		add("plan_id", idType(), false)
 		add("origin", object{"type": "string", "maxLength": int64(256), "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"}, false)
+	case "work-adopt":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("expected_board_sha256", digestType(), true)
+		nullableDigest := object{"oneOf": []any{digestType(), object{"type": "null"}}}
+		add("expected_archive_sha256", nullableDigest, true)
+		nullableText := func(v object) object { return object{"oneOf": []any{v, object{"type": "null"}}} }
+		row := closed(object{
+			"location": enum("open", "archive"), "line": object{"type": "integer", "minimum": int64(1)}, "block_sha256": digestType(),
+			"work_id":      object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"},
+			"origin":       object{"type": "string", "maxLength": int64(256), "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"},
+			"alias":        nullableText(object{"type": "string", "minLength": int64(1), "maxLength": int64(120)}),
+			"title":        object{"type": "string", "minLength": int64(1), "maxLength": int64(240)},
+			"intent":       object{"type": "string", "minLength": int64(1), "maxLength": int64(4000)},
+			"work_type":    enum("feature", "fix", "chore", "spike", "unknown"),
+			"state":        enum("queued", "active", "complete", "archived"),
+			"started_at":   nullableText(object{"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}),
+			"completed_at": nullableText(object{"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}),
+			"spec_id":      nullableText(object{"type": "string", "pattern": "^SPEC-[A-Z0-9-]{1,74}$"}),
+			"plan_id":      nullableText(object{"type": "string", "pattern": "^PLAN-[A-Z0-9-]{1,74}$"}),
+		}, "location", "line", "block_sha256", "work_id", "origin", "alias", "title", "intent", "work_type", "state", "started_at", "completed_at", "spec_id", "plan_id")
+		add("rows", object{"type": "array", "items": row, "minItems": int64(0), "maxItems": int64(maxAdoptionRows)}, true)
 	case "work-get":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+	case "work-provider-get":
+	case "work-project-get":
+	case "work-project-configure":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("project_node_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)
+		add("expected_config_sha256", digestType(), false)
+	case "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+		add("binding_generation", digestType(), true)
+		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		if op == "work-project-claim" || op == "work-project-record" {
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		}
+		if op == "work-project-record" {
+			add("remote_item_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)
+			add("observed_option_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}, false)
+		}
+		if op == "work-project-stage-field" {
+			add("field_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)
+			add("desired_option_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}, true)
+			add("expected_remote_option_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}}}, true)
+		}
+		if op == "work-project-conflict" {
+			add("observed_option_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}}}, true)
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, false)
+		}
+	case "work-provider-configure":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("repository", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"}, true)
+		add("credential_ref", enum("GH_TOKEN", "GITHUB_TOKEN", "CODEARBITER_GITHUB_TOKEN"), true)
+		add("effect_timing", enum("after_merge", "immediate"), true)
+		add("expected_config_sha256", digestType(), false)
+	case "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+		add("binding_generation", digestType(), true)
+		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		if op == "work-effect-stage" {
+			add("kind", enum("create_issue", "status_update"), false)
+			add("desired_state", enum("open", "closed"), false)
+		}
+		if op == "work-effect-claim" || op == "work-effect-record" {
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		}
+		if op == "work-effect-claim" {
+			add("merge_pull_number", object{"type": "integer", "minimum": int64(1)}, false)
+			add("merge_commit_sha", object{"type": "string", "pattern": "^[a-f0-9]{40}$"}, false)
+		}
+		if op == "work-effect-record" || op == "work-effect-adopt" {
+			add("remote_issue_number", object{"type": "integer", "minimum": int64(1)}, true)
+			add("remote_issue_url", object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, true)
+			add("remote_state", enum("open", "closed"), op == "work-effect-adopt")
+		}
+		if op == "work-effect-conflict" {
+			add("remote_state", enum("open", "closed"), true)
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, false)
+		}
 	case "work-context":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+		add("legacy_offset", object{"type": "integer", "minimum": int64(0), "maximum": int64(8 << 20)}, false)
+		add("paths", array(object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, 1), false)
+		add("knowledge_refs", array(object{"type": "string", "maxLength": int64(160), "pattern": "^(CTX|DECOMP)-[A-Z0-9-]+#[A-Z][A-Z0-9-]+$"}, 1), false)
 		budget()
 	case "work-view":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
-	case "work-list", "project-view":
+	case "work-list", "project-view", "cycle-view":
 		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		maximum := int64(64)
-		if op == "project-view" {
+		if op == "project-view" || op == "cycle-view" {
 			maximum = 16
 		}
 		add("limit", object{"type": "integer", "minimum": int64(1), "maximum": maximum}, false)
 		add("membership_sha256", digestType(), false)
+		if op == "cycle-view" {
+			add("cycle_id", object{"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}, true)
+		}
 		if op == "work-list" {
 			budget()
 		}
@@ -299,10 +385,15 @@ func RequestSchema(op string) (object, error) {
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
-		add("action", enum("rename", "attach", "start", "complete", "reopen", "archive"), true)
+		add("action", enum("rename", "attach", "start", "complete", "reopen", "archive", "observe-delivery", "set-cycle"), true)
+		add("cycle_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}}}, false)
 		add("title", text(), false)
 		add("spec_id", idType(), false)
 		add("plan_id", idType(), false)
+		add("repository", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"}, false)
+		add("pull_number", object{"type": "integer", "minimum": int64(1)}, false)
+		add("pull_state", enum("open", "closed", "merged"), false)
+		add("observed_at", object{"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"}, false)
 	case "task-context":
 		artifact()
 		add("task", idType(), true)

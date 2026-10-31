@@ -18,6 +18,7 @@ import _taskboardlib as board
 import taskwrite
 
 _WORK_ID = re.compile(r"WORK-[A-F0-9]{32}\Z")
+_KNOWLEDGE_REF = re.compile(r"(?:CTX|DECOMP)-[A-Z0-9-]+#[A-Z][A-Z0-9-]+\Z")
 _BOARD_MAX = 1 << 20
 _ARCHIVE_MAX = 16 << 20
 
@@ -59,7 +60,9 @@ def _title(task, source):
         body = body[len(task.id):].lstrip()
         body = re.sub(r"^[—–-]+\s*", "", body)
     body = re.sub(r"\s*\((?:started|done)\s+[^)]*\)\s*$", "", body)
-    return body.removesuffix(f"(from {source})").strip()
+    body = body.removesuffix(f"(from {source})").strip()
+    # Board edits can put the date before the trailing correlation marker.
+    return re.sub(r"\s*\((?:started|done)\s+[^)]*\)\s*$", "", body).strip()
 
 
 def _read_bounded(path, limit, *, optional=False):
@@ -154,10 +157,11 @@ def dispatch(root, operation, request):
         "work-create": {"operation_id", "title", "intent", "work_type",
                         "origin", "spec_id", "plan_id"},
         "work-get": {"work_id"},
-        "work-context": {"work_id", "budget"},
+        "work-context": {"work_id", "budget", "paths", "knowledge_refs"},
         "work-list": {"offset", "limit", "budget", "membership_sha256"},
         "work-origins": {"origins"},
-        "work-update": {"operation_id", "work_id", "expected_board_sha256", "action"},
+        "work-update": {"operation_id", "work_id", "expected_board_sha256", "action",
+                        "title", "spec_id", "plan_id"},
     }.get(operation)
     if fields is None:
         raise ValueError(f"{operation} is not yet supported by the legacy board adapter")
@@ -218,9 +222,21 @@ def dispatch(root, operation, request):
         budget = request.get("budget", 16384)
         if type(budget) is not int or not 1024 <= budget <= 65536:
             raise ValueError("invalid legacy work context budget")
+        for field, pattern, maximum in (("paths", None, 512),
+                                        ("knowledge_refs", _KNOWLEDGE_REF, 160)):
+            values = request.get(field)
+            if values is not None and (type(values) is not list or not 1 <= len(values) <= 128
+                                       or any(type(value) is not str or not 1 <= len(value) <= maximum
+                                              or (pattern is not None and pattern.fullmatch(value) is None)
+                                              for value in values)):
+                raise ValueError(f"invalid legacy work context {field}")
         record = dispatch(root, "work-get", {"work_id": request.get("work_id")})
         result = {"work": record, "context_complete": False,
                   "omitted": ["legacy board stores only selected work; attached documents require exact artifact reads"]}
+        if request.get("paths") or request.get("knowledge_refs"):
+            result["requested_paths"] = request.get("paths", [])
+            result["requested_knowledge_refs"] = request.get("knowledge_refs", [])
+            result["omitted"].append("legacy board adapter does not join selected knowledge; use knowledge.py relevant or exact record reads")
         if len(json.dumps(result, ensure_ascii=False).encode("utf-8")) + 512 > budget:
             raise LegacyWorkError("RESPONSE_TOO_LARGE", "selected legacy work context exceeds budget")
         return result
@@ -272,8 +288,8 @@ def dispatch(root, operation, request):
                 "content_snapshot": False}
     if operation == "work-update":
         action = request.get("action")
-        if action not in ("start", "complete", "archive"):
-            raise ValueError("legacy work update supports start, complete and archive")
+        if action not in ("start", "complete", "archive", "reopen", "rename", "attach"):
+            raise ValueError("unsupported legacy work update action")
         if (not isinstance(request.get("operation_id"), str)
                 or not request["operation_id"].strip()):
             raise ValueError("legacy work update needs a stable operation_id")
@@ -283,6 +299,16 @@ def dispatch(root, operation, request):
         current = dispatch(root, "work-get", {"work_id": request.get("work_id")})
         args = [("done" if action == "complete" else action),
                 current["work_id"], "--from=" + current["origin"]]
+        if action == "rename":
+            if not isinstance(request.get("title"), str):
+                raise ValueError("legacy rename needs a title")
+            args.append("--title=" + request["title"])
+        if action == "attach":
+            for field, flag in (("spec_id", "--spec-id"), ("plan_id", "--plan-id")):
+                if field in request:
+                    if not isinstance(request[field], str):
+                        raise ValueError(f"legacy {field} must be text")
+                    args.append(flag + "=" + request[field])
         output, errors = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
             code = taskwrite.main(args, root=root, expected_work_id=current["work_id"],

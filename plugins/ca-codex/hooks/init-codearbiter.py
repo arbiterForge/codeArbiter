@@ -14,6 +14,7 @@
 #   python init-codearbiter.py --check        # report state, create nothing
 #   python init-codearbiter.py --check --passive --root PATH  # external pre-session read
 #   python init-codearbiter.py --repair-lock-exclusion [--root PATH]
+#   python init-codearbiter.py --repair-work-attributes [--root PATH]
 #   python init-codearbiter.py --root PATH --context-request FILE  # bounded writer bridge, including initialized refresh
 
 import argparse
@@ -109,7 +110,12 @@ specs/*.html -text
 plans/*.html -text
 context/*.html -text
 decomposition/*.html -text
+work/*.html -text
+work/*.json -text
+legacy/*.md -text
 """
+
+WORK_ATTRIBUTES = ("work/*.html -text", "work/*.json -text", "legacy/*.md -text")
 
 FILES = {
     "open-tasks.md": OPEN_TASKS,
@@ -225,6 +231,37 @@ def _create_scaffold_file(path, content, *, newline=None):
         handle.write(content)
 
 
+def _repair_work_attributes(cad):
+    """Append only absent exact-byte work rules to an existing scaffold."""
+    path = os.path.join(cad, ".gitattributes")
+    if not os.path.lexists(path):
+        _create_scaffold_file(path, GITATTRIBUTES, newline="\n")
+        return "created"
+    if not _regular_scaffold_entry(path, directory=False):
+        raise SystemExit(f"REFUSING: {path} is not a regular Git attributes file.")
+    flags = os.O_RDWR | os.O_APPEND | getattr(os, "O_NOFOLLOW", 0)
+    with os.fdopen(os.open(path, flags), "r+b", buffering=0) as handle:
+        info = os.fstat(handle.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size > 65536:
+            raise SystemExit("REFUSING: Git attributes file is not a bounded regular file.")
+        current = handle.read(65537)
+        if len(current) > 65536 or b"\0" in current:
+            raise SystemExit("REFUSING: Git attributes file is not bounded text.")
+        try:
+            lines = current.decode("utf-8").splitlines()
+        except UnicodeError:
+            raise SystemExit("REFUSING: Git attributes file is not UTF-8.") from None
+        missing = [rule for rule in WORK_ATTRIBUTES if rule not in lines]
+        if not missing:
+            return "already protected"
+        suffix = (b"" if not current or current.endswith(b"\n") else b"\n") + (
+            "\n".join(missing) + "\n").encode("utf-8")
+        if os.write(handle.fileno(), suffix) != len(suffix):
+            raise SystemExit("REFUSING: Git attributes repair was incomplete; inspect the file.")
+        os.fsync(handle.fileno())
+        return "updated"
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("--root")
@@ -245,13 +282,16 @@ def main(argv=None):
     ap.add_argument("--repair-lock-exclusion", action="store_true", help=(
         "repair only Git-local info/exclude for an existing scaffold; retain the "
         "task-board OS lock, never rewrite project state (cannot combine with --check/--stage)"))
+    ap.add_argument("--repair-work-attributes", action="store_true", help=(
+        "append missing exact-byte work rules to an existing scaffold's Git attributes"))
     args = ap.parse_args(argv)
     context_modes = sum(bool(value) for value in (
         args.context_request, args.context_draft, args.context_apply, args.context_finalize))
     if context_modes:
         if context_modes != 1:
             ap.error("select exactly one context request, draft, finalize, or apply")
-        if not args.root or args.stage is not None or args.check or args.passive or args.repair_lock_exclusion:
+        if (not args.root or args.stage is not None or args.check or args.passive
+                or args.repair_lock_exclusion or args.repair_work_attributes):
             ap.error("context writing requires --root and excludes scaffold flags")
         if (args.context_draft and (not args.document or not args.source or args.preview_sha256)
                 or args.context_apply and (not args.preview_sha256 or args.document or args.source)
@@ -287,7 +327,8 @@ def main(argv=None):
     if args.document or args.source or args.preview_sha256:
         ap.error("context options require --context-draft or --context-apply")
     if args.passive:
-        if not args.check or not args.root or args.stage is not None or args.repair_lock_exclusion:
+        if (not args.check or not args.root or args.stage is not None
+                or args.repair_lock_exclusion or args.repair_work_attributes):
             ap.error("--passive requires --check and --root; excludes --stage and repair")
         try:
             report = passive_activation_inventory(args.root)
@@ -297,6 +338,8 @@ def main(argv=None):
         return
     if args.repair_lock_exclusion and (args.check or args.stage is not None):
         ap.error("--repair-lock-exclusion cannot combine with --check or --stage")
+    if args.repair_work_attributes and (args.check or args.stage is not None or args.passive or args.repair_lock_exclusion):
+        ap.error("--repair-work-attributes requires an existing scaffold and no other scaffold mode")
     requested_stage = args.stage
     if args.stage is None:
         args.stage = 1
@@ -343,6 +386,13 @@ def main(argv=None):
         print(f"task lock exclusion: {result}")
         return
 
+    if args.repair_work_attributes:
+        if (not _regular_scaffold_entry(cad, directory=True) or
+                not _regular_scaffold_entry(ctx, directory=False)):
+            raise SystemExit("REFUSING: work attributes repair requires an existing scaffold.")
+        print("work Git attributes: " + _repair_work_attributes(cad))
+        return
+
     absent, recovering = _scaffold_inventory(cad, ctx, requested_stage)
     if recovering and not absent:
         raise SystemExit(
@@ -367,7 +417,7 @@ def main(argv=None):
         if fname in absent:
             # Match taskwrite's LF output for this shared append-only template
             # on Windows too; other scaffold files retain their existing EOLs.
-            newline = "\n" if fname == "done-tasks.md" else None
+            newline = "\n" if fname in {"done-tasks.md", ".gitattributes"} else None
             _create_scaffold_file(os.path.join(cad, fname), content, newline=newline)
             created.append(fname)
 

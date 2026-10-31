@@ -91,10 +91,10 @@ Concretely:
 - **Safe:** the orchestration mode. Each session's posture lives in its own file under
   `.codearbiter/.markers/mode.d/`, so two sessions entering or leaving `mode --dangerous` never
   write the same path and cannot revert or drop each other's mode.
-- **Not hardened, and not new to dual-host:** the task board (`open-tasks.md`) is mutated with a
-  lock-free read-modify-write. Two sessions racing the same mutation (both flipping the same task,
-  say) can drop an update, exactly as two concurrent Claude Code sessions on one checkout already
-  can. This is pre-existing, host-agnostic concurrency debt, not a Codex-specific gap.
+- **Selected work owner:** legacy board mutations use the board writer's OS lock; a
+  selected native cutover coordinates with that lock and checks the exact board bytes.
+  Native work mutations use revision checks and the journal. Separate worktrees
+  still need ordinary Git coordination before their changes are combined.
 
 Practical guidance: treat simultaneous *mutating* lanes (commit-gate, task-board writes) on one
 checkout as a race regardless of host mix, and sequence them. Read-only lanes

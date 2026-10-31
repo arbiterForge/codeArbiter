@@ -20,6 +20,8 @@ import _artifactlib  # noqa: E402
 import work  # noqa: E402
 import taskwrite  # noqa: E402
 import _worklib  # noqa: E402
+import _workadopt  # noqa: E402
+from _hooklib import acquire_lock, release_lock  # noqa: E402
 
 
 class WorkCLITest(unittest.TestCase):
@@ -62,16 +64,27 @@ class WorkCLITest(unittest.TestCase):
         return result
 
     def test_first_native_work_survives_fresh_clone(self) -> None:
+        scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
+                                   "--root", str(self.root)], capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        self.run_work("adopt", "--operation-id", "cli-portable-adopt-001")
         first = self.run_work("create", "--title", "Portable work", "--intent",
                               "Retain project identity", "--type", "fix",
                               "--operation-id", "cli-portable-work-001")
         project = self.root / ".codearbiter" / "work" / "project.json"
         self.assertTrue(project.is_file())
-        (self.root / ".gitattributes").write_bytes((REPO / ".gitattributes").read_bytes())
+        self.assertTrue((self.root / ".codearbiter" / ".gitattributes").is_file())
         subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
                        capture_output=True, text=True)
+        protected = [first["path"], ".codearbiter/work/project.json",
+                     ".codearbiter/work/provider.json", ".codearbiter/work/project-provider.json",
+                     ".codearbiter/legacy/open-tasks.md", ".codearbiter/legacy/done-tasks.md"]
+        attrs = subprocess.run(["git", "-C", str(self.root), "check-attr", "text", "--", *protected],
+                               check=True, capture_output=True, text=True).stdout
+        for path in protected:
+            self.assertIn(f"{path}: text: unset", attrs)
         subprocess.run(["git", "-C", str(self.root), "add", "--",
-                        ".gitattributes", ".codearbiter/work/project.json", first["path"]],
+                        ".codearbiter/.gitattributes", ".codearbiter/work/project.json", first["path"]],
                        check=True, capture_output=True, text=True)
         subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
                         "-c", "user.email=test@example.invalid", "commit", "--quiet",
@@ -81,13 +94,53 @@ class WorkCLITest(unittest.TestCase):
             # macOS temp paths may start at /var, a link to /private/var.
             # Pass the real parent to the engine's strict root guard.
             clone = Path(directory).resolve(strict=True) / "clone"
-            subprocess.run(["git", "clone", "--quiet", str(self.root), str(clone)],
+            subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet", str(self.root), str(clone)],
                            check=True, capture_output=True, text=True)
             self.assertFalse((clone / ".codearbiter" / ".artifacts").exists())
             restored = _artifactlib.ArtifactClient(clone, self.installation).call(
                 "work-get", {"work_id": first["work_id"]})
             self.assertEqual(restored["work_id"], first["work_id"])
             self.assertEqual(restored["title"], "Portable work")
+            subprocess.run(["git", "-C", str(self.root), "rm", "--quiet", "--cached",
+                            ".codearbiter/.gitattributes"], check=True, capture_output=True, text=True)
+            subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                            "-c", "user.email=test@example.invalid", "commit", "--quiet",
+                            "-m", "Remove work byte protection"], check=True,
+                           capture_output=True, text=True)
+            unprotected = Path(directory).resolve(strict=True) / "unprotected"
+            subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet",
+                            str(self.root), str(unprotected)], check=True,
+                           capture_output=True, text=True)
+            self.assertNotEqual((unprotected / first["path"]).read_bytes(),
+                                (self.root / first["path"]).read_bytes())
+            with self.assertRaises(_artifactlib.ArtifactError):
+                _artifactlib.ArtifactClient(unprotected, self.installation).call(
+                    "work-get", {"work_id": first["work_id"]})
+
+    def test_existing_scaffold_repairs_work_attributes_without_replacing_custom_rules(self) -> None:
+        script = str(REPO / "core/pysrc/init-codearbiter.py")
+        scaffold = subprocess.run([sys.executable, script, "--root", str(self.root)],
+                                  capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        attrs = self.root / ".codearbiter" / ".gitattributes"
+        original = attrs.read_bytes().replace(
+            b"work/*.html -text\nwork/*.json -text\nlegacy/*.md -text\n", b"")
+        original += b"custom/*.dat -text\n"
+        attrs.write_bytes(original)
+        for _ in range(2):
+            repair = subprocess.run([sys.executable, script, "--root", str(self.root),
+                                     "--repair-work-attributes"], capture_output=True, text=True)
+            self.assertEqual(repair.returncode, 0, repair.stderr)
+        repaired = attrs.read_bytes()
+        self.assertTrue(repaired.startswith(original))
+        self.assertEqual(repaired.count(b"work/*.html -text\n"), 1)
+        self.assertEqual(repaired.count(b"work/*.json -text\n"), 1)
+        self.assertEqual(repaired.count(b"legacy/*.md -text\n"), 1)
+        conflicting = subprocess.run([sys.executable, script, "--root", str(self.root),
+                                      "--passive", "--check", "--repair-work-attributes"],
+                                     capture_output=True, text=True)
+        self.assertNotEqual(conflicting.returncode, 0)
+        self.assertEqual(attrs.read_bytes(), repaired)
 
     def test_local_journey_has_stable_identity_and_unknown_check(self) -> None:
         self.client.call("create", {"operation_id": "cli-spec-create-001", "kind": "spec",
@@ -116,8 +169,12 @@ class WorkCLITest(unittest.TestCase):
         self.run_work("start", work_id, "--operation-id", "cli-work-start-001")
         completed = self.run_work("complete", work_id, "--operation-id", "cli-work-complete-001")
         self.assertEqual((completed["state"], completed["check_status"]), ("complete", "unknown"))
-        context = self.run_work("context", work_id, "--budget", "4096")
+        context = self.run_work("context", work_id, "--budget", "4096", "--path", "src/stage1.go",
+                                "--knowledge-ref", "CTX-TECH-STACK#FACT-001")
         self.assertFalse(context["context_complete"])
+        self.assertEqual(context["requested_paths"], ["src/stage1.go"])
+        self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
+        self.assertEqual(context["knowledge_unresolved_references"], ["CTX-TECH-STACK#FACT-001"])
         self.assertEqual(context["spec"]["artifact_id"], "SPEC-CLI")
         self.assertEqual(context["plan"]["artifact_id"], "PLAN-CLI")
         self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
@@ -150,6 +207,109 @@ class WorkCLITest(unittest.TestCase):
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
 
+    def test_native_provider_cli_stages_portable_intent_without_sending(self) -> None:
+        item = self.run_work("create", "--title", "Track one result", "--intent", "Stay local first",
+                             "--type", "fix", "--operation-id", "provider-cli-create-001")
+        config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                               "--credential-ref", "GH_TOKEN", "--operation-id", "provider-cli-configure-001")
+        self.assertEqual(config["effect_timing"], "after_merge")
+        self.assertEqual(self.run_work("provider-get")["binding_generation"], config["binding_generation"])
+        staged = self.run_work("stage-sync", item["work_id"], "--operation-id", "provider-cli-stage-001")
+        self.assertEqual(staged["provider_effect"]["status"], "pending")
+        self.assertEqual(self.run_work("get", item["work_id"])["provider_effect"]["status"], "pending")
+
+    def test_status_cli_stages_only_a_verified_issue_binding(self) -> None:
+        item = self.run_work("create", "--title", "Bound result", "--intent", "One issue",
+                             "--type", "fix", "--operation-id", "status-cli-create-001")
+        config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                               "--credential-ref", "GH_TOKEN", "--timing", "immediate",
+                               "--operation-id", "status-cli-configure-001")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["stage-status", item["work_id"], "--state", "closed",
+                                        "--operation-id", "status-cli-unbound-001"]), 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "EFFECT_NOT_BOUND")
+        staged = self.run_work("stage-sync", item["work_id"], "--operation-id", "status-cli-stage-create-001")
+        claim = self.client.call("work-effect-claim", {"operation_id": "status-cli-claim-create-001",
+            "work_id": item["work_id"], "binding_generation": config["binding_generation"],
+            "attempt_id": "status-cli-attempt-001",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        self.client.call("work-effect-record", {"operation_id": "status-cli-record-create-001",
+            "work_id": item["work_id"], "binding_generation": config["binding_generation"],
+            "attempt_id": "status-cli-attempt-001", "remote_issue_number": 7,
+            "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open",
+            "expected": {"revision": claim["revision"], "model_sha256": claim["model_sha256"]}})
+        status = self.run_work("stage-status", item["work_id"], "--state", "closed",
+                               "--operation-id", "status-cli-stage-close-001")
+        self.assertEqual(status["provider_effect"]["kind"], "status_update")
+        self.assertEqual(status["provider_effect"]["desired_state"], "closed")
+        self.assertEqual(status["provider_effect"]["remote_issue_number"], 7)
+
+    def test_project_cli_stages_item_and_selected_option_without_sending(self) -> None:
+        item = self.run_work("create", "--title", "Project result", "--intent", "One bound item",
+                             "--type", "fix", "--operation-id", "project-cli-create-001")
+        issue_config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                                     "--credential-ref", "GH_TOKEN", "--timing", "immediate",
+                                     "--operation-id", "project-cli-issue-config-001")
+        bound = self.client.call("work-effect-adopt", {
+            "operation_id": "project-cli-issue-adopt-001", "work_id": item["work_id"],
+            "binding_generation": issue_config["binding_generation"],
+            "remote_issue_number": 7,
+            "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7",
+            "remote_state": "open",
+            "expected": {"revision": item["revision"], "model_sha256": item["model_sha256"]}})
+        self.assertEqual(bound["provider_effect"]["status"], "synchronized")
+        from test_work_github import FakeProjectGithub
+        import _workgithub
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "remote", "add", "origin",
+                        "https://github.com/arbiterForge/disposable.git"], check=True,
+                       capture_output=True, text=True)
+        transport = FakeProjectGithub()
+        transport.work_id = item["work_id"]
+        with mock.patch.object(_workgithub, "GithubTransport", return_value=transport), \
+             mock.patch.dict(os.environ, {"GH_TOKEN": "fixture-token"}):
+            discovered = self.run_work("project-discover", "--project-url",
+                "https://github.com/users/SUaDtL/projects/1")
+            self.assertEqual(discovered["project_node_id"], transport.project_id)
+            config = self.run_work("project-configure", "--project-url",
+                "https://github.com/users/SUaDtL/projects/1",
+                "--operation-id", "project-cli-config-001")
+        self.assertEqual(self.run_work("project-get")["binding_generation"], config["binding_generation"])
+        staged = self.run_work("project-stage", item["work_id"],
+                               "--operation-id", "project-cli-stage-001")
+        self.assertEqual(staged["project_effect"]["status"], "pending")
+        self.assertEqual(staged["provider_effect"]["remote_issue_number"], 7)
+        claimed = self.client.call("work-project-claim", {
+            "operation_id": "project-cli-claim-001", "work_id": item["work_id"],
+            "binding_generation": config["binding_generation"],
+            "attempt_id": "project-cli-attempt-001",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        attached = self.client.call("work-project-record", {
+            "operation_id": "project-cli-record-001", "work_id": item["work_id"],
+            "binding_generation": config["binding_generation"],
+            "attempt_id": "project-cli-attempt-001", "remote_item_id": "PVTI_fixture12345678",
+            "expected": {"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}})
+        transport.item_id = attached["project_effect"]["remote_item_id"]
+        with mock.patch.object(_workgithub, "GithubTransport", return_value=transport), \
+             mock.patch.dict(os.environ, {"GH_TOKEN": "fixture-token"}):
+            fields = self.run_work("project-fields", item["work_id"])
+            self.assertEqual(fields["fields"][0]["name"], "Status")
+            observed = self.run_work("project-field-observe", item["work_id"],
+                                     "--field-id", transport.field_id)
+            self.assertIsNone(observed["option_id"])
+            field = self.run_work("project-field-stage", item["work_id"],
+                                  "--field-id", transport.field_id, "--option-id", "f75ad846",
+                                  "--operation-id", "project-cli-field-stage-001")
+            self.assertIsNone(self.run_work("project-field-observe", item["work_id"],
+                                             "--field-id", transport.field_id)["option_id"])
+        self.assertEqual(field["project_effect"]["kind"], "set_single_select")
+        self.assertIsNone(field["project_effect"]["expected_remote_option_id"])
+        self.assertEqual(field["project_effect"]["remote_item_id"],
+                         attached["project_effect"]["remote_item_id"])
+        self.assertEqual(transport.field_updates, 0)
+
     def test_project_view_pages_native_work_without_writing_a_second_owner(self) -> None:
         first = self.run_work("create", "--title", "Fix <input>", "--intent", "First result",
                               "--type", "fix", "--operation-id", "project-cli-create-001")
@@ -173,6 +333,39 @@ class WorkCLITest(unittest.TestCase):
         self.assertNotIn('id="ca-artifact-model"', html)
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", first["work_id"])["state"], "queued")
+
+    def test_cycle_view_uses_canonical_membership_and_keeps_checks_unknown(self) -> None:
+        first = self.run_work("create", "--title", "Cycle <first>", "--intent", "First result",
+                              "--type", "fix", "--cycle-id", "october-sprint",
+                              "--operation-id", "cycle-cli-create-001")
+        second = self.run_work("create", "--title", "Second result", "--intent", "Next result",
+                               "--type", "feature", "--operation-id", "cycle-cli-create-002")
+        grouped = self.run_work("set-cycle", second["work_id"], "--cycle-id", "october-sprint",
+                                "--operation-id", "cycle-cli-assign-002")
+        self.assertEqual(grouped["work_id"], second["work_id"])
+        self.run_work("complete", second["work_id"], "--operation-id", "cycle-cli-complete-002")
+        page = self.client.call("cycle-view", {"cycle_id": "october-sprint", "limit": 1})
+        self.assertEqual((page["total"], page["next_offset"]), (2, 1))
+        self.assertEqual((page["progress"]["complete"], page["checks"]["unknown"]), (1, 2))
+        self.assertFalse(page["canonical"])
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["cycle-view", "october-sprint", "--limit", "1"]), 0)
+        html = output.getvalue()
+        self.assertTrue(html.startswith("<!doctype html>"))
+        self.assertIn("Checks:", html)
+        self.assertIn("2 unknown", html)
+        self.assertIn("work.py cycle-view october-sprint --offset 1 --membership-sha256", html)
+        self.assertNotIn("Cycle <first>", html)
+        self.assertFalse((self.root / ".codearbiter" / "views").exists())
+        self.assertEqual(self.run_work("get", first["work_id"])["cycle_id"], "october-sprint")
+        cleared = self.run_work("set-cycle", first["work_id"], "--clear",
+                                "--operation-id", "cycle-cli-clear-001")
+        self.assertIsNone(cleared["cycle_id"])
+        with contextlib.redirect_stdout(output := io.StringIO()):
+            self.assertEqual(work.main(["cycle-view", "october-sprint", "--offset", "1",
+                                        "--membership-sha256", page["membership_sha256"]]), 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "STALE_CURSOR")
 
     def test_legacy_board_remains_owner_and_create_returns_stable_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
@@ -218,9 +411,13 @@ class WorkCLITest(unittest.TestCase):
         board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
         created = self.run_work("create", "--title", "Selected work", "--intent", "Keep context honest",
                                 "--type", "fix", "--origin", "DECOMP#CONTEXT")
-        context = self.run_work("context", created["work_id"], "--budget", "4096")
+        context = self.run_work("context", created["work_id"], "--budget", "4096",
+                                "--path", "src/stage1.go", "--knowledge-ref", "CTX-TECH-STACK#FACT-001")
         self.assertEqual(context["work"]["work_id"], created["work_id"])
         self.assertFalse(context["context_complete"])
+        self.assertEqual(context["requested_paths"], ["src/stage1.go"])
+        self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
+        self.assertTrue(any("does not join selected knowledge" in note for note in context["omitted"]))
         large = self.run_work("create", "--title", "Large work", "--intent", "x" * 3000,
                               "--type", "fix", "--origin", "DECOMP#LARGE")
         output = io.StringIO()
@@ -228,6 +425,156 @@ class WorkCLITest(unittest.TestCase):
             code = work.main(["context", large["work_id"], "--budget", "1024"])
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(output.getvalue())["code"], "RESPONSE_TOO_LARGE")
+
+    def test_legacy_title_omits_date_before_origin_marker(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [~] demo.feat.0001 - Build parser (started 2026-10-30) "
+                         "(from DECOMP#DATE)\n  - Desc: Parse safely\n", encoding="utf-8")
+        selected = self.run_work("get", _worklib._id("DECOMP#DATE"))
+        self.assertEqual(selected["title"], "Build parser")
+
+    def test_selected_adoption_keeps_exact_board_and_old_writer_refuses(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Work\n- [ ] demo.feat.0001 - First row\n  - Desc: One\n", encoding="utf-8")
+        archive = board.with_name("done-tasks.md")
+        archive.write_text("# Done\n- [x] demo.feat.0002 - Archived (done 2026-10-30)\n", encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 2)
+        board.write_text(board.read_text(encoding="utf-8") + "- [ ] Later edit\n", encoding="utf-8")
+        original, original_archive = board.read_bytes(), archive.read_bytes()
+        adopted = self.run_work("adopt", "--operation-id", "adopt-cli-001")
+        self.assertEqual(adopted["adopted_count"], 3)
+        self.assertFalse(board.exists())
+        self.assertFalse(archive.exists())
+        self.assertEqual((self.root / ".codearbiter" / "legacy" / "open-tasks.md").read_bytes(), original)
+        self.assertEqual((self.root / ".codearbiter" / "legacy" / "done-tasks.md").read_bytes(), original_archive)
+        self.assertEqual(self.run_work("list")["total"], 3)
+        replay = self.run_work("adopt", "--operation-id", "adopt-cli-001")
+        self.assertEqual(replay["project_id"], adopted["project_id"])
+        output = io.StringIO()
+        errors = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
+            code = taskwrite.main(["start", "demo.feat.0001"], root=str(self.root))
+        self.assertNotEqual(code, 0)
+        self.assertIn("no board", errors.getvalue())
+        self.assertFalse(board.exists())
+
+    def test_selected_adoption_accepts_more_than_123_rows(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Work\n" + "".join(
+            f"- [ ] demo.feat.{number:04d} - Task {number}\n"
+            for number in range(1, 131)), encoding="utf-8")
+        original = board.read_bytes()
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 130)
+        adopted = self.run_work("adopt", "--operation-id", "adopt-large-board-001")
+        self.assertEqual(adopted["adopted_count"], 130)
+        self.assertEqual(self.run_work("list", "--limit", "1")["total"], 130)
+        self.assertEqual((self.root / ".codearbiter/legacy/open-tasks.md").read_bytes(), original)
+        self.assertFalse(board.exists())
+
+    def test_adopted_task_details_remain_selected_and_readable(self) -> None:
+        scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
+                                   "--root", str(self.root)], capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True, exist_ok=True)
+        board.write_text("- [~] demo.feat.0001 - Café parser (from DECOMP#CAFE)\n"
+                         "  - Desc: Parse safely\n"
+                         "  - Done when: Café input has stable output\n"
+                         "  - Boundaries: keep the old format\n"
+                         "  - Rationale: preserve users' saved files\n"
+                         "  - Long note: " + "é" * 3000 + "\n"
+                         "  - Tail: final clue\n", encoding="utf-8")
+        archive = board.with_name("done-tasks.md")
+        archive.write_text("- [x] demo.feat.0002 - Archived item (from DECOMP#OLD)\n"
+                           "  - Desc: Preserve history\n"
+                           "  - Done when: archive is readable\n", encoding="utf-8")
+        original, original_archive = board.read_bytes(), archive.read_bytes()
+        self.run_work("adopt", "--operation-id", "adopt-detail-001")
+        selected = self.run_work("context", _worklib._id("DECOMP#CAFE"))
+        self.assertIn("Done when: Café input has stable output", selected["legacy_detail"]["text"])
+        self.assertIn("Boundaries: keep the old format", selected["legacy_detail"]["text"])
+        self.assertIn("Rationale: preserve users' saved files", selected["legacy_detail"]["text"])
+        self.assertEqual(selected["legacy_detail"]["source"]["location"], "open")
+        pages = [selected["legacy_detail"]["text"]]
+        next_offset = selected["legacy_detail"]["next_offset"]
+        while next_offset is not None:
+            page = self.run_work("context", _worklib._id("DECOMP#CAFE"),
+                                 "--legacy-offset", str(next_offset))["legacy_detail"]
+            pages.append(page["text"])
+            next_offset = page["next_offset"]
+        self.assertIn("Tail: final clue", "".join(pages))
+        self.assertEqual(len(pages), 2)
+        old = self.run_work("context", _worklib._id("DECOMP#OLD"))
+        self.assertIn("Done when: archive is readable", old["legacy_detail"]["text"])
+        self.assertEqual(old["legacy_detail"]["source"]["location"], "archive")
+        html = self.client.call("work-view", {"work_id": _worklib._id("DECOMP#CAFE")})["html"]
+        self.assertIn("Café input has stable output", html)
+        self.assertIn("keep the old format", html)
+        self.assertEqual((self.root / ".codearbiter/legacy/open-tasks.md").read_bytes(), original)
+        self.assertEqual((self.root / ".codearbiter/legacy/done-tasks.md").read_bytes(), original_archive)
+        renamed = self.run_work("rename", _worklib._id("DECOMP#CAFE"), "--title", "Café parser v2",
+                                "--operation-id", "adopt-detail-rename-001")
+        self.assertEqual(renamed["title"], "Café parser v2")
+        self.assertIn("Done when: Café input", self.run_work("context", renamed["work_id"])["legacy_detail"]["text"])
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "--",
+                        ".codearbiter/.gitattributes", ".codearbiter/work/project.json",
+                        renamed["path"], ".codearbiter/legacy/open-tasks.md",
+                        ".codearbiter/legacy/done-tasks.md"], check=True, capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                        "-c", "user.email=test@example.invalid", "commit", "--quiet", "-m", "Adopt work"],
+                       check=True, capture_output=True, text=True)
+        with tempfile.TemporaryDirectory(prefix="ca-adopt-detail-clone-") as directory:
+            clone = Path(directory).resolve(strict=True) / "clone"
+            subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet", str(self.root), str(clone)],
+                           check=True, capture_output=True, text=True)
+            restored = _artifactlib.ArtifactClient(clone, self.installation).call(
+                "work-context", {"work_id": renamed["work_id"]})
+            self.assertIn("Boundaries: keep the old format", restored["legacy_detail"]["text"])
+            saved = clone / ".codearbiter/legacy/open-tasks.md"
+            saved.write_bytes(saved.read_bytes().replace(b"keep the old format", b"change the old format"))
+            with self.assertRaises(_artifactlib.ArtifactError) as changed:
+                _artifactlib.ArtifactClient(clone, self.installation).call(
+                    "work-context", {"work_id": renamed["work_id"]})
+            self.assertEqual(changed.exception.code, "STALE_LEGACY_SOURCE")
+
+    def test_selected_adoption_preserves_trailing_origin_whitespace(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)  \n"
+                         "  - Work origin: DECOMP#PARSER\n", encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        selected = preview["rows"][0]
+        self.assertEqual(selected["title"], "Build parser (from DECOMP#PARSER)")
+        adopted = self.run_work("adopt", "--operation-id", "adopt-whitespace-001")
+        self.assertEqual(adopted["adopted_count"], 1)
+        self.assertEqual(self.run_work("get", selected["work_id"])["title"], selected["title"])
+
+    def test_direct_native_adoption_respects_legacy_writer_lock(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [ ] Locked row\n", encoding="utf-8")
+        inventory = _workadopt.preview(self.root)
+        request = {"operation_id": "adopt-locked-001",
+                   "expected_board_sha256": inventory["boards"]["open"]["sha256"],
+                   "expected_archive_sha256": None,
+                   "rows": [{key: value for key, value in row.items() if key != "legacy_origin"}
+                            for row in inventory["rows"]]}
+        lock = acquire_lock(board)
+        self.assertIsNotNone(lock)
+        try:
+            with self.assertRaises(_artifactlib.ArtifactError) as failure:
+                self.client.call("work-adopt", request)
+            self.assertEqual(failure.exception.code, "LEGACY_LOCK_TIMEOUT")
+        finally:
+            release_lock(lock)
+        self.assertTrue(board.exists())
 
     def test_legacy_work_keeps_option_like_values_as_data(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
@@ -425,6 +772,77 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(archived["state"], "archived")
         self.assertEqual(self.run_work("get", first["work_id"])["work_id"], first["work_id"])
 
+    def test_legacy_common_update_verbs_preserve_work_identity(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        for action in ("rename", "attach", "reopen"):
+            with self.subTest(action=action):
+                created = self.run_work("create", "--title", "Original title",
+                                        "--intent", "Keep this identity", "--type", "fix",
+                                        "--origin", "DECOMP#" + action.upper())
+                work_id = created["work_id"]
+                if action == "rename":
+                    changed = self.run_work("rename", work_id, "--title", "Revised title",
+                                            "--operation-id", "legacy-rename-001")
+                    self.assertEqual(changed["title"], "Revised title")
+                elif action == "attach":
+                    changed = self.run_work("attach", work_id, "--spec-id", "SPEC-LEGACY",
+                                            "--plan-id", "PLAN-LEGACY",
+                                            "--operation-id", "legacy-attach-001")
+                    self.assertEqual((changed["spec_id"], changed["plan_id"]),
+                                     ("SPEC-LEGACY", "PLAN-LEGACY"))
+                else:
+                    self.run_work("start", work_id, "--operation-id", "legacy-start-reopen-001")
+                    self.run_work("complete", work_id, "--operation-id", "legacy-complete-reopen-001")
+                    changed = self.run_work("reopen", work_id,
+                                            "--operation-id", "legacy-reopen-001")
+                    self.assertEqual((changed["state"], changed["check_status"]),
+                                     ("active", "unknown"))
+                    self.assertIsNone(changed["completed_at"])
+                    self.assertEqual(changed["title"], "Original title")
+                    self.assertEqual(self.run_work("get", work_id)["title"], "Original title")
+                    self.assertEqual(board.read_text(encoding="utf-8").count("(started "), 1)
+                self.assertEqual(changed["work_id"], work_id)
+                self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
+
+    def test_legacy_rename_refuses_a_second_origin_marker(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        created = self.run_work("create", "--title", "Original title", "--intent", "Keep one row",
+                                "--type", "fix", "--origin", "DECOMP#SAFE")
+        before = board.read_bytes()
+        with self.assertRaises(ValueError):
+            _worklib.dispatch(str(self.root), "work-update", {
+                "operation_id": "legacy-unsafe-rename", "work_id": created["work_id"],
+                "expected_board_sha256": created["board_sha256"], "action": "rename",
+                "title": "Spoof (from DECOMP#OTHER)"})
+        self.assertEqual(board.read_bytes(), before)
+
+    def test_legacy_edit_writer_requires_selected_work_binding(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
+        created = self.run_work("create", "--title", "Original", "--intent", "Keep one row",
+                                "--type", "fix", "--origin", "DECOMP#BOUND")
+        before = board.read_bytes()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = taskwrite.main(["rename", created["work_id"], "--from=DECOMP#BOUND",
+                                   "--title=Wrong caller"], root=str(self.root))
+        self.assertNotEqual(code, 0)
+        self.assertEqual(board.read_bytes(), before)
+        self.run_work("create", "--title", "Other", "--intent", "Separate row",
+                      "--type", "fix", "--origin", "DECOMP#OTHER")
+        before = board.read_bytes()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = taskwrite.main(["rename", created["work_id"], "--from=DECOMP#OTHER",
+                                   "--title=Wrong row"], root=str(self.root),
+                                  expected_work_id=created["work_id"],
+                                  expected_board_sha256=created["board_sha256"])
+        self.assertNotEqual(code, 0)
+        self.assertEqual(board.read_bytes(), before)
+
     def test_legacy_update_stale_snapshot_preserves_later_edit(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)
@@ -512,6 +930,11 @@ class WorkCLITest(unittest.TestCase):
                                            "request": {}}))
         self.assertEqual(code, 1)
         self.assertIn("work operation", refused["error"])
+        for internal in ("work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt"):
+            code, refused = invoke(json.dumps({"schema": create["schema"], "operation": internal,
+                                               "request": {}}))
+            self.assertEqual(code, 1)
+            self.assertIn("work operation", refused["error"])
         code, refused = invoke(json.dumps({"schema": create["schema"], "operation": [],
                                            "request": {}}))
         self.assertEqual(code, 1)
