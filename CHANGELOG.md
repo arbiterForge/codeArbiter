@@ -25,6 +25,10 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Require the selected work file in a merged PR's changed-file list before
+  releasing a contingent GitHub effect.
+- Support selected legacy work rename, attachment, and reopen through the
+  identity-bound board writer; keep PR views clear about unverified delivery.
 - Exclude scaffold instructions and fenced examples from selected legacy work adoption.
 - Keep scaffold documentation out of legacy startup counts and work listings.
 
