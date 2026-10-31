@@ -34,6 +34,13 @@ on:
       - ".github/scripts/check_site_voice.py"
       - "core/pysrc/_sloplib.py"
       - ".github/scripts/npm_audit_gate.py" # judges the site CVE gate's report
+      # Version facts (site/scripts/version-facts.ts SOURCES) outside site/** and plugins/ca/**.
+      - "plugins/ca-pi/tools/src/compatibility.ts"
+      - "plugins/ca-pi/package.json"
+      - "plugins/ca-codex/.codex-plugin/plugin.json"
+      - ".github/workflows/ci.yml"
+      - ".github/scripts/validate_codex_plugin.py"
+      - "core/artifacts/internal/authority/receipt.go"
   pull_request:
     branches: [main]
     paths:
@@ -46,6 +53,22 @@ on:
       - ".codearbiter/release-targets.md"
       - ".github/workflows/docs.yml"
       - ".github/scripts/npm_audit_gate.py"
+      - "plugins/ca-pi/tools/src/compatibility.ts"
+      - "plugins/ca-pi/package.json"
+      - "plugins/ca-codex/.codex-plugin/plugin.json"
+      - ".github/workflows/ci.yml"
+      - ".github/scripts/validate_codex_plugin.py"
+      - "core/artifacts/internal/authority/receipt.go"
+  # The release workflow pushes governance tags AFTER main's own docs build ran,
+  # and the site derives each host's latest release from those tags, so rebuild
+  # main once a release run finishes. Most release runs publish nothing; that
+  # rebuild then redeploys identical content, which is cheaper than gating deploy
+  # (build must stay unconditional). A release-triggered run never cancels a
+  # running build or deploy: see cancel-in-progress below.
+  workflow_run:
+    workflows: ["release"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 # Least-privilege: only the deploy job needs pages/id-token:write, granted at
@@ -59,7 +82,11 @@ permissions:
 # deploy (and each other).
 concurrency:
   group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  # A fork PR whose head branch is named main also completes a release run, so a
+  # release-triggered run waits instead of cancelling; otherwise an outside
+  # contributor could keep cancelling main's Pages deploy. The newest pending run
+  # still replaces an older pending one, and each newer run builds a newer main.
+  cancel-in-progress: ${{ github.event_name != 'workflow_run' }}
 
 jobs:
   # Gate the site's own test suite and typecheck. The Astro build (below) does
@@ -235,8 +262,9 @@ jobs:
   deploy:
     name: Site | [Deploy] - GitHub Pages
     needs: [build, site-check] # never publish a build whose tests/typecheck are red
-    # Push to main only - pull_request builds are validation-only.
-    if: github.event_name != 'pull_request'
+    # Allowlisted events on main only - pull_request builds are validation-only, and
+    # a new trigger never gains deploy rights by default.
+    if: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
