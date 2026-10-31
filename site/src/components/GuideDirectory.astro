@@ -88,7 +88,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .ca-guide-directory [hidden] { display: none !important; }
   .ca-guide-directory__filters { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ca-space-4); align-items: end; padding: var(--ca-space-5); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-md); background: var(--ca-bg-panel); }
   .ca-guide-directory label { display: block; margin-block-end: var(--ca-space-2); font-weight: 650; font-size: var(--ca-text-sm); }
-  .ca-guide-directory input, .ca-guide-directory select { box-sizing: border-box; inline-size: 100%; min-inline-size: 0; padding: var(--ca-space-3); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-sm); background: var(--ca-bg); color: var(--ca-ink); font: inherit; }
+  .ca-guide-directory input, .ca-guide-directory select { box-sizing: border-box; inline-size: 100%; min-inline-size: 0; padding: var(--ca-space-3); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-sm); background: var(--ca-bg); color: var(--ca-ink); font: inherit; line-height: 1.5; }
   .ca-guide-directory :is(input, select, button, a):focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 3px; }
   #guide-filter-note { grid-column: 1 / -1; color: var(--ca-ink-muted); font-size: var(--ca-text-xs); }
   .ca-guide-directory__count { margin-block: var(--ca-space-4); color: var(--ca-ink-muted); font-size: var(--ca-text-sm); }

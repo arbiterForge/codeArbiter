@@ -95,13 +95,14 @@
   isolation: isolate;
 }
 /* Soft gold haze behind the hero heading, echoing the banner.
-   Four-value inset contains the element within the hero bounds (flush at
-   bottom, 20% bloom above, 8% side bleed) — no height override, no dead
-   band below the hero content. */
+   The inset keeps the element flush with the hero at the bottom and sides
+   (20% bloom above): no height override, no dead band below the hero content.
+   A side bleed would widen the page past narrow viewports, and the gradient
+   has faded out long before the hero edge anyway. */
 .hero::before {
   content: "";
   position: absolute;
-  inset: -20% -8% 0 -8%;
+  inset: -20% 0 0;
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(
@@ -142,18 +143,21 @@
   border-radius: 0.6rem;
 }
 
-/* ---- Section headings on content pages: a subtle gold rule ---- */
-.sl-markdown-content h2 {
-  border-block-end: 1px solid var(--sl-color-gray-5);
-  padding-block-end: 0.25rem;
-}
-
 /* Tighten the lead-in gap before a section heading. Starlight's default
    (~1.5em above any heading that follows content) reads as too airy on the
    guides; cut it close to half so a new section sits nearer the prior one.
-   Unlayered customCss beats Starlight's layered rule regardless of specificity. */
+   Unlayered customCss beats Starlight's layered rule regardless of specificity.
+
+   Markdown headings are wrapped in .sl-heading-wrapper with the heading itself
+   inline, so the wrapper carries their margin: design-system.css owns the h2
+   section rule and spacing, and subsections tighten here. The plain selector
+   still covers raw headings authored inside components. */
 .sl-markdown-content :is(h2, h3, h4) {
   margin-block-start: 0.8em;
+}
+
+.sl-markdown-content :is(.sl-heading-wrapper.level-h3, .sl-heading-wrapper.level-h4) {
+  margin-block-start: 1em;
 }
 
 /* =========================================================
@@ -311,7 +315,7 @@
   font-size: 0.8rem;
   color: var(--ca-text-muted);
   text-align: center;
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-family: var(--ca-font-mono);
   letter-spacing: 0.04em;
 }
 
@@ -349,7 +353,7 @@
 .ca-art-banner {
   position: relative;
   margin-block: 1.75rem 2.25rem;
-  border: 1px solid color-mix(in srgb, var(--ca-gold) 24%, var(--ca-border));
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 24%, var(--ca-line));
   border-radius: 0.8rem;
   background: var(--ca-slate);
   box-shadow:
@@ -382,7 +386,7 @@
   z-index: 2;
   max-width: 38rem;
   margin: 0;
-  color: var(--ca-text);
+  color: var(--ca-ink);
   font: 600 clamp(0.78rem, 1.35vw, 0.92rem) / 1.45 var(--ca-font-sans);
   letter-spacing: 0.01em;
   text-shadow: 0 1px 1rem rgb(0 0 0 / 90%);
@@ -412,7 +416,7 @@
   background: #0b0f14;
   color: #f0f3f6;
   box-shadow: 0 0 0 2px rgb(150 92 230 / 72%);
-  font: 700 clamp(0.58rem, 1.25vw, 0.78rem) / 1 ui-monospace, "Cascadia Code", Consolas, monospace;
+  font: 700 clamp(0.58rem, 1.25vw, 0.78rem) / 1 var(--ca-font-mono);
 }
 
 .ca-statusline-map__marker--1 { left: 3.1%; top: 8%; }
@@ -435,7 +439,7 @@
   padding: 0;
   list-style: none;
   color: var(--ca-text-muted);
-  font: 0.78rem / 1.4 ui-monospace, "Cascadia Code", Consolas, monospace;
+  font: 0.78rem / 1.4 var(--ca-font-mono);
 }
 
 .ca-statusline-map__legend li {
@@ -451,7 +455,7 @@
   aspect-ratio: 1;
   border: 1px solid color-mix(in srgb, var(--ca-gold) 60%, transparent);
   border-radius: 50%;
-  color: var(--ca-text);
+  color: var(--ca-ink);
   font-weight: 700;
 }
 
