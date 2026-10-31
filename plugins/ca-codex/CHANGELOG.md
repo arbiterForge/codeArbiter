@@ -15,6 +15,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   through the current work owner.
 - Show observed and intended GitHub issue status in the derived work view.
 - Summarize recorded code-map components and interfaces on the derived project page.
+- Record a bounded GitHub PR observation on selected work while keeping local progress, checks and issue sync distinct.
 
 ## [0.25.1] - 2026-10-31
 

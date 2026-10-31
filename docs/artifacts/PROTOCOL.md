@@ -404,10 +404,26 @@ identity. `hooks/work.py project-view` prints HTML; the response's
 `.codearbiter/views/project/<PROJECT-ID>-<offset>.html` path is derived and
 optional. When another page exists, the HTML includes the next offset and
 membership digest in a complete `work.py project-view` command. The engine
-does not save the page or include it in artifact discovery.
-Legacy projects continue to use their board; this native-only derived view
-reports unsupported through the legacy facade. Architecture and cycle
-overviews remain future work.
+does not save the page or include it in artifact discovery. The project page
+also reads the one canonical native code map and shows at most four recorded
+components or interfaces with their evidence basis. It names omitted records
+and links to the complete code map; an absent or invalid map is labeled without
+hiding work. No cycle model or cycle overview is shipped yet. Legacy projects
+continue to use their board; this native-only derived view reports unsupported
+through the legacy facade.
+
+`hooks/work.py observe-pr <WORK-ID> --number N --operation-id <stable-id>`
+reads a GitHub PR from the checkout's origin using an approved owning-process
+credential reference. It requires the changed-file listing to include this
+canonical work path and checks the Work ID and project ID in the file at the PR
+head. A successful read records the PR URL, open/closed/merged state and UTC
+observation time in the work model; it does not change local progress, checks or
+the separate issue effect. The derived work page labels this as a recorded
+observation, not a release or deployment. It is a bounded correlation check,
+not full validation of the PR-head artifact or an independent review result.
+Observing a later state is explicit; viewing a saved page never makes a network
+request. The native `work-update` action accepts the structured observation
+from a cooperating caller, while the CLI performs the GitHub readback.
 
 Native GitHub issue effects use a separate portable
 `.codearbiter/work/provider.json` binding and an optional `provider_effect`
