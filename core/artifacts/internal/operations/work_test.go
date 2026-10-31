@@ -1,8 +1,11 @@
 package operations
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
@@ -58,6 +61,183 @@ func TestWorkIdentityStableAcrossRenameAndArchive(t *testing.T) {
 	other := request("work-get", object{"work_id": second["work_id"]})
 	if other["title"] != "Same title" || other["work_id"] != second["work_id"] {
 		t.Fatalf("same-title work was conflated: %+v", other)
+	}
+}
+
+func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	board := []byte("# Work\n- [ ] demo.feat.0001 - Build parser\n  - Desc: Parse safely\n")
+	if err := os.WriteFile(boardPath, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	block := []byte("- [ ] demo.feat.0001 - Build parser\n  - Desc: Parse safely")
+	id := "WORK-0123456789ABCDEF0123456789ABCDEF"
+	request := object{"protocol": Protocol, "operation_id": "adopt-one-board-001",
+		"expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(2), "block_sha256": fmt.Sprintf("%x", sha256.Sum256(block)),
+			"work_id": id, "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser", "intent": "Parse safely", "work_type": "feature", "state": "queued",
+			"started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}},
+	}
+	first, err := Run(root, "work-adopt", request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(boardPath); !os.IsNotExist(err) {
+		t.Fatalf("legacy board remains writable: %v", err)
+	}
+	snapshot, err := os.ReadFile(filepath.Join(root, ".codearbiter", "legacy", "open-tasks.md"))
+	if err != nil || string(snapshot) != string(board) {
+		t.Fatalf("legacy snapshot changed: %v", err)
+	}
+	selected, err := Run(root, "work-get", object{"protocol": Protocol, "work_id": id})
+	if err != nil || selected.(map[string]any)["title"] != "Build parser" {
+		t.Fatalf("adopted work is unreadable: %v", err)
+	}
+	replayed, err := Run(root, "work-adopt", request)
+	if err != nil || first.(map[string]any)["project_id"] != replayed.(map[string]any)["project_id"] {
+		t.Fatalf("cutover replay changed project identity: %v", err)
+	}
+}
+
+func TestWorkAdoptRefusesStaleBoardAndUncoveredRows(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	before := []byte("- [ ] First row\n")
+	if err := os.WriteFile(path, before, 0644); err != nil {
+		t.Fatal(err)
+	}
+	request := object{"protocol": Protocol, "operation_id": "adopt-refusal-001",
+		"expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(before)), "expected_archive_sha256": nil, "rows": []any{}}
+	if _, err := Run(root, "work-adopt", request); fault.Code(err) != "INCOMPLETE_ADOPTION" {
+		t.Fatalf("uncovered board was accepted: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".codearbiter", "work", "project.json")); !os.IsNotExist(err) {
+		t.Fatalf("native owner was partially published: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("- [ ] Later human edit\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Run(root, "work-adopt", request); fault.Code(err) != "REVISION_CONFLICT" {
+		t.Fatalf("stale preimage was accepted: %v", err)
+	}
+	actual, err := os.ReadFile(path)
+	if err != nil || string(actual) != "- [ ] Later human edit\n" {
+		t.Fatalf("later edit was lost: %v", err)
+	}
+}
+
+func TestWorkAdoptRefusesHiddenMalformedTaskMarker(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	board := []byte("- [ ] Visible row\n* [ ] Hidden row\n")
+	path := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	if err := os.WriteFile(path, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	r := object{"protocol": Protocol, "operation_id": "adopt-hidden-001", "expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": fmt.Sprintf("%x", sha256.Sum256([]byte("- [ ] Visible row"))),
+			"work_id": "WORK-22222222222222222222222222222222", "origin": "legacy:open#VISIBLE", "alias": nil,
+			"title": "Visible row", "intent": "Visible row", "work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+	if _, err := Run(root, "work-adopt", r); fault.Code(err) != "INVALID_LEGACY_BOARD" {
+		t.Fatalf("malformed hidden task was dropped: %v", err)
+	}
+	if _, err := os.Stat(path); err != nil {
+		t.Fatalf("board was removed: %v", err)
+	}
+}
+
+func TestLegacyBoardLockRefusesExternalHardLink(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	external := filepath.Join(t.TempDir(), "external")
+	if err := os.WriteFile(external, nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(root, ".codearbiter", "open-tasks.md.lock")
+	if err := os.Link(external, link); err != nil {
+		t.Skipf("hard links unavailable: %v", err)
+	}
+	file, err := openLegacyBoardLock(root)
+	if file != nil {
+		_ = file.Close()
+	}
+	if fault.Code(err) != "LEGACY_LOCK_FAILED" {
+		t.Fatalf("hardlinked lock was accepted: %v", err)
+	}
+	info, err := os.Stat(external)
+	if err != nil || info.Size() != 0 {
+		t.Fatalf("external file was changed: %v", err)
+	}
+}
+
+func TestWorkAdoptRecoveryPreservesLaterBoardEdit(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	board := []byte("- [ ] Recover row\n")
+	if err := os.WriteFile(boardPath, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	r := object{"protocol": Protocol, "operation_id": "adopt-recover-001", "expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": fmt.Sprintf("%x", sha256.Sum256([]byte("- [ ] Recover row"))),
+			"work_id": "WORK-11111111111111111111111111111111", "origin": "legacy:open#RECOVER", "alias": nil,
+			"title": "Recover row", "intent": "Recover row", "work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	hash, err := canonical.Hash(object{"operation": "work-adopt", "request": r})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Inject = func(step string) error {
+		if step == "after-replace-1" {
+			return errors.New("injected")
+		}
+		return nil
+	}
+	_, err = (&Engine{FS: f, RequestHash: hash}).workAdopt(r)
+	if err == nil {
+		t.Fatal("fault was not injected")
+	}
+	f.Inject = nil
+	later := []byte("- [ ] Later edit\n")
+	if err := os.WriteFile(boardPath, later, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.Recover("adopt-recover-001", "rollback"); err == nil {
+		t.Fatal("rollback overwrote a later board edit")
+	}
+	actual, err := os.ReadFile(boardPath)
+	if err != nil || string(actual) != string(later) {
+		t.Fatalf("later edit was lost: %v", err)
+	}
+	if err := os.WriteFile(boardPath, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.Recover("adopt-recover-001", "rollback"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".codearbiter", "work", "project.json")); !os.IsNotExist(err) {
+		t.Fatalf("rolled back project survived: %v", err)
+	}
+	actual, err = os.ReadFile(boardPath)
+	if err != nil || string(actual) != string(board) {
+		t.Fatalf("rollback did not restore board: %v", err)
 	}
 }
 

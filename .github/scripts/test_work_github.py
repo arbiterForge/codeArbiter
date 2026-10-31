@@ -200,6 +200,32 @@ class GithubWorkTest(unittest.TestCase):
         self.assertFalse(any(method == "POST" for method, _ in transport.calls))
         self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"], "pending")
 
+    def test_contingent_effect_rejects_local_title_after_merge(self):
+        old = self.client.call("work-provider-get", {})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        new = self.client.call("work-provider-configure", {
+            "operation_id": "github-fixture-configure-late-edit", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        self.client.call("work-effect-stage", {"operation_id": "github-fixture-stage-late-edit",
+            "work_id": self.work_id, "binding_generation": new["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+        sha = self._commit_pending_effect()
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        transport.merge_sha = sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        selected = self.client.call("work-get", {"work_id": self.work_id})
+        self.client.call("work-update", {"operation_id": "github-fixture-rename-late-edit",
+            "work_id": self.work_id, "action": "rename", "title": "Unmerged title",
+            "expected": {"revision": selected["revision"], "model_sha256": selected["model_sha256"]}})
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "MERGE_UNVERIFIED")
+        self.assertFalse(any(method == "POST" for method, _ in transport.calls))
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"], "pending")
+
     def test_contingent_effect_rejects_open_pr_and_nondefault_base(self):
         old = self.client.call("work-provider-get", {})
         current = self.client.call("work-get", {"work_id": self.work_id})
@@ -325,4 +351,4 @@ class GithubWorkTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

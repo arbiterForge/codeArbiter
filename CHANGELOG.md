@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.7.1] - 2026-10-31
+
+### Added
+
+- Inventory legacy task boards for selected native work adoption and expose
+  bounded, selected work context with GitHub issue synchronization.
+
+### Fixed
+
+- Preserve board bytes through journaled adoption and reject old board writes
+  after cutover.
+
 ## [3.7.0] - 2026-10-30
 
 ### Added

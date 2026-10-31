@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-update", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -274,6 +274,27 @@ func RequestSchema(op string) (object, error) {
 		add("spec_id", idType(), false)
 		add("plan_id", idType(), false)
 		add("origin", object{"type": "string", "maxLength": int64(256), "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"}, false)
+	case "work-adopt":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("expected_board_sha256", digestType(), true)
+		nullableDigest := object{"oneOf": []any{digestType(), object{"type": "null"}}}
+		add("expected_archive_sha256", nullableDigest, true)
+		nullableText := func(v object) object { return object{"oneOf": []any{v, object{"type": "null"}}} }
+		row := closed(object{
+			"location": enum("open", "archive"), "line": object{"type": "integer", "minimum": int64(1)}, "block_sha256": digestType(),
+			"work_id":      object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"},
+			"origin":       object{"type": "string", "maxLength": int64(256), "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"},
+			"alias":        nullableText(object{"type": "string", "minLength": int64(1), "maxLength": int64(120)}),
+			"title":        object{"type": "string", "minLength": int64(1), "maxLength": int64(240)},
+			"intent":       object{"type": "string", "minLength": int64(1), "maxLength": int64(4000)},
+			"work_type":    enum("feature", "fix", "chore", "spike", "unknown"),
+			"state":        enum("queued", "active", "complete", "archived"),
+			"started_at":   nullableText(object{"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}),
+			"completed_at": nullableText(object{"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}),
+			"spec_id":      nullableText(object{"type": "string", "pattern": "^SPEC-[A-Z0-9-]{1,74}$"}),
+			"plan_id":      nullableText(object{"type": "string", "pattern": "^PLAN-[A-Z0-9-]{1,74}$"}),
+		}, "location", "line", "block_sha256", "work_id", "origin", "alias", "title", "intent", "work_type", "state", "started_at", "completed_at", "spec_id", "plan_id")
+		add("rows", object{"type": "array", "items": row, "minItems": int64(0), "maxItems": int64(123)}, true)
 	case "work-get":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 	case "work-provider-get":

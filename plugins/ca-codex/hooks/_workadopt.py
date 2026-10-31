@@ -69,7 +69,9 @@ def _rows(text, location):
         else:
             seed = f"{location}\0{task.lineno}\0{block}".encode("utf-8")
             origin = "legacy:" + location + "#" + hashlib.sha256(seed).hexdigest()[:32]
-        work_id = metadata.get("Work ID") or _worklib._id(origin)
+        # Preserve IDs already exposed by the legacy adapter, even when the
+        # historical source does not fit the native origin grammar.
+        work_id = metadata.get("Work ID") or _worklib._id(legacy_origin or origin)
         if _ID.fullmatch(work_id) is None:
             raise ValueError("invalid legacy work ID")
         alias = task.id
@@ -80,6 +82,7 @@ def _rows(text, location):
                 or work_type not in {"feature", "fix", "chore", "spike", "unknown"}):
             raise ValueError("legacy task title, intent or work type cannot fit native work")
         result.append({
+            "location": location,
             "work_id": work_id, "origin": origin, "legacy_origin": legacy_origin,
             "alias": alias, "title": title, "intent": intent, "work_type": work_type,
             "state": "archived" if location == "archive" else {
@@ -92,33 +95,61 @@ def _rows(text, location):
     return result
 
 
-def preview(root):
-    """Inventory every task row and exact board preimage without writing."""
+def _inventory(root, *, snapshot=False):
+    """Read board or saved snapshot bytes; caller serializes live-board reads."""
     base = Path(root) / ".codearbiter"
-    board_path = base / "open-tasks.md"
+    if not snapshot:
+        work = base / "work"
+        if work.is_symlink() or (work.exists() and any(work.iterdir())):
+            raise ValueError("native work owner already exists; preserve it for inspection")
+    source = base / "legacy" if snapshot else base
+    active = _read(source / "open-tasks.md", 1 << 20)
+    archive = _read(source / "done-tasks.md", 8 << 20, optional=True)
+    rows = _rows(active[1], "open")
+    if archive:
+        rows.extend(_rows(archive[1], "archive"))
+    if len(rows) > 123:
+        raise ValueError("legacy board has too many rows for one native transaction")
+    for key in ("work_id", "origin", "alias"):
+        values = [row[key] for row in rows if row[key] is not None]
+        if len(values) != len(set(values)):
+            raise ValueError(f"duplicate legacy {key} across active and archive boards")
+    boards = {"open": {"sha256": hashlib.sha256(active[0]).hexdigest(), "size": len(active[0])},
+              "archive": None if archive is None else {
+                  "sha256": hashlib.sha256(archive[0]).hexdigest(), "size": len(archive[0])}}
+    return {"boards": boards, "rows": rows, "count": len(rows), "owner": "legacy"}
+
+
+def _locked(root, action):
+    board_path = Path(root) / ".codearbiter" / "open-tasks.md"
     if not board_path.is_file() or board_path.is_symlink():
         raise ValueError("legacy work owner is absent or linked")
     lock = acquire_lock(board_path)
     if lock is None:
         raise ValueError("legacy board writer is busy; retry adoption inventory")
     try:
-        work = base / "work"
-        if work.is_symlink() or (work.exists() and any(work.iterdir())):
-            raise ValueError("native work owner already exists; preserve it for inspection")
-        active = _read(board_path, 1 << 20)
-        archive = _read(base / "done-tasks.md", 8 << 20, optional=True)
-        rows = _rows(active[1], "open")
-        if archive:
-            rows.extend(_rows(archive[1], "archive"))
-        if len(rows) > 123:
-            raise ValueError("legacy board has too many rows for one native transaction")
-        for key in ("work_id", "origin", "alias"):
-            values = [row[key] for row in rows if row[key] is not None]
-            if len(values) != len(set(values)):
-                raise ValueError(f"duplicate legacy {key} across active and archive boards")
-        boards = {"open": {"sha256": hashlib.sha256(active[0]).hexdigest(), "size": len(active[0])},
-                  "archive": None if archive is None else {
-                      "sha256": hashlib.sha256(archive[0]).hexdigest(), "size": len(archive[0])}}
-        return {"boards": boards, "rows": rows, "count": len(rows), "owner": "legacy"}
+        return action()
     finally:
         release_lock(lock)
+
+
+def preview(root):
+    """Inventory every task row and exact board preimage without cutover."""
+    return _locked(root, lambda: _inventory(root))
+
+
+def adopt(root, native_client, operation_id, *, replay=False):
+    """Inventory under the board lock; native cutover reacquires it and checks hashes."""
+    def _apply():
+        inventory = _inventory(root, snapshot=replay)
+        rows = [{key: value for key, value in row.items() if key not in {"legacy_origin"}}
+                for row in inventory["rows"]]
+        return {
+            "operation_id": operation_id,
+            "expected_board_sha256": inventory["boards"]["open"]["sha256"],
+            "expected_archive_sha256": None if inventory["boards"]["archive"] is None
+            else inventory["boards"]["archive"]["sha256"],
+            "rows": rows,
+        }
+    request = _apply() if replay else _locked(root, _apply)
+    return native_client.call("work-adopt", request)

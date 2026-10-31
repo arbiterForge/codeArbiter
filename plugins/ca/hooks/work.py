@@ -77,6 +77,8 @@ def _parser():
     origins = sub.add_parser("origins", help="Find exact source keys across active and archived work")
     origins.add_argument("--origin", action="append", required=True)
     sub.add_parser("adopt-preview", help="Inventory legacy board rows and preimages without changing ownership")
+    adopt = sub.add_parser("adopt", help="Select one journaled cutover from the legacy board to native work")
+    adopt.add_argument("--operation-id", required=True, help="Stable ID for an uncertain cutover retry")
     sub.add_parser("provider-get", help="Read the selected native GitHub provider binding")
     configure = sub.add_parser("provider-configure", help="Save a finite native GitHub provider binding")
     configure.add_argument("--repository", required=True, help="GitHub owner/repository")
@@ -148,6 +150,10 @@ def _dispatch(args, client):
             raise ValueError("adoption preview requires selected legacy board ownership")
         import _workadopt
         return _workadopt.preview(client.root)
+    if args.verb == "adopt":
+        import _workadopt
+        return _workadopt.adopt(client.root, _client(client.root), args.operation_id,
+                                replay=not getattr(client, "legacy", False))
     if args.verb == "provider-get":
         return client.call("work-provider-get", {})
     if args.verb == "provider-configure":

@@ -6,6 +6,18 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.25.1] - 2026-10-31
+
+### Added
+
+- Inventory legacy task boards for selected native work adoption and expose
+  bounded, selected work context with GitHub issue synchronization.
+
+### Fixed
+
+- Preserve board bytes through journaled adoption and reject old board writes
+  after cutover.
+
 ## [0.25.0] - 2026-10-30
 
 ### Added

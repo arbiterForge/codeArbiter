@@ -20,6 +20,8 @@ import _artifactlib  # noqa: E402
 import work  # noqa: E402
 import taskwrite  # noqa: E402
 import _worklib  # noqa: E402
+import _workadopt  # noqa: E402
+from _hooklib import acquire_lock, release_lock  # noqa: E402
 
 
 class WorkCLITest(unittest.TestCase):
@@ -240,6 +242,13 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(context["requested_paths"], ["src/stage1.go"])
         self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
         self.assertTrue(any("does not join selected knowledge" in note for note in context["omitted"]))
+        large = self.run_work("create", "--title", "Large work", "--intent", "x" * 3000,
+                              "--type", "fix", "--origin", "DECOMP#LARGE")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = work.main(["context", large["work_id"], "--budget", "1024"])
+        self.assertEqual(code, 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "RESPONSE_TOO_LARGE")
 
     def test_legacy_title_omits_date_before_origin_marker(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
@@ -248,13 +257,53 @@ class WorkCLITest(unittest.TestCase):
                          "(from DECOMP#DATE)\n  - Desc: Parse safely\n", encoding="utf-8")
         selected = self.run_work("get", _worklib._id("DECOMP#DATE"))
         self.assertEqual(selected["title"], "Build parser")
-        large = self.run_work("create", "--title", "Large work", "--intent", "x" * 3000,
-                              "--type", "fix", "--origin", "DECOMP#LARGE")
+
+    def test_selected_adoption_keeps_exact_board_and_old_writer_refuses(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Work\n- [ ] demo.feat.0001 - First row\n  - Desc: One\n", encoding="utf-8")
+        archive = board.with_name("done-tasks.md")
+        archive.write_text("# Done\n- [x] demo.feat.0002 - Archived (done 2026-10-30)\n", encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 2)
+        board.write_text(board.read_text(encoding="utf-8") + "- [ ] Later edit\n", encoding="utf-8")
+        original, original_archive = board.read_bytes(), archive.read_bytes()
+        adopted = self.run_work("adopt", "--operation-id", "adopt-cli-001")
+        self.assertEqual(adopted["adopted_count"], 3)
+        self.assertFalse(board.exists())
+        self.assertFalse(archive.exists())
+        self.assertEqual((self.root / ".codearbiter" / "legacy" / "open-tasks.md").read_bytes(), original)
+        self.assertEqual((self.root / ".codearbiter" / "legacy" / "done-tasks.md").read_bytes(), original_archive)
+        self.assertEqual(self.run_work("list")["total"], 3)
+        replay = self.run_work("adopt", "--operation-id", "adopt-cli-001")
+        self.assertEqual(replay["project_id"], adopted["project_id"])
         output = io.StringIO()
-        with contextlib.redirect_stdout(output):
-            code = work.main(["context", large["work_id"], "--budget", "1024"])
-        self.assertEqual(code, 1)
-        self.assertEqual(json.loads(output.getvalue())["code"], "RESPONSE_TOO_LARGE")
+        errors = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
+            code = taskwrite.main(["start", "demo.feat.0001"], root=str(self.root))
+        self.assertNotEqual(code, 0)
+        self.assertIn("no board", errors.getvalue())
+        self.assertFalse(board.exists())
+
+    def test_direct_native_adoption_respects_legacy_writer_lock(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [ ] Locked row\n", encoding="utf-8")
+        inventory = _workadopt.preview(self.root)
+        request = {"operation_id": "adopt-locked-001",
+                   "expected_board_sha256": inventory["boards"]["open"]["sha256"],
+                   "expected_archive_sha256": None,
+                   "rows": [{key: value for key, value in row.items() if key != "legacy_origin"}
+                            for row in inventory["rows"]]}
+        lock = acquire_lock(board)
+        self.assertIsNotNone(lock)
+        try:
+            with self.assertRaises(_artifactlib.ArtifactError) as failure:
+                self.client.call("work-adopt", request)
+            self.assertEqual(failure.exception.code, "LEGACY_LOCK_TIMEOUT")
+        finally:
+            release_lock(lock)
+        self.assertTrue(board.exists())
 
     def test_legacy_work_keeps_option_like_values_as_data(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"

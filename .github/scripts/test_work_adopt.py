@@ -85,6 +85,15 @@ class AdoptionInventoryTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicate legacy alias"):
             _workadopt.preview(self.root)
 
+    def test_keyed_legacy_row_keeps_its_pre_adoption_work_id(self):
+        self.board.write_text("- [ ] demo.feat.0001 - Review follow-up "
+                              "(from review:pr854-integration)\n", encoding="utf-8")
+        before = _worklib.dispatch(str(self.root), "work-list", {"offset": 0, "limit": 10})
+        selected = before["entries"][0]["work_id"]
+        preview = _workadopt.preview(self.root)
+        self.assertEqual(preview["rows"][0]["work_id"], selected)
+        self.assertNotEqual(preview["rows"][0]["origin"], "review:pr854-integration")
+
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

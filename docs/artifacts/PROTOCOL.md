@@ -325,8 +325,17 @@ row while holding the legacy board writer's lock. It reports board byte hashes,
 candidate native IDs and origins, and refuses malformed markers, duplicate
 identities, linked boards and an existing native owner. Unkeyed rows receive a
 deterministic candidate origin from their board location and exact block, not
-their title. This is a read-only inventory; the legacy board remains the writer
-until a separate journaled cutover is implemented and selected.
+their title. Historical keyed origins outside the native `SOURCE#ITEM` grammar
+receive a deterministic native origin; their legacy Work ID stays the same,
+while origin lookup after cutover uses the previewed native origin. The preview
+changes no work ownership. `hooks/work.py adopt
+--operation-id <stable-id>` re-inventories under the same lock, then calls the
+native `work-adopt` transaction. That transaction compares exact board bytes,
+creates the project identity and all native work HTML, saves byte-for-byte
+snapshots in `.codearbiter/legacy/`, and removes the two writable board paths.
+Old board writers then refuse the absent board. Repeating the same operation
+ID reconstructs the request from the snapshots and returns its recorded result;
+a different operation cannot silently re-adopt an already native project.
 
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,

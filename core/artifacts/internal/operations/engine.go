@@ -193,6 +193,8 @@ func Run(root, op string, input object) (any, error) {
 	switch op {
 	case "work-create":
 		return engine.workCreate(r)
+	case "work-adopt":
+		return engine.workAdopt(r)
 	case "work-get":
 		return engine.workGet(r)
 	case "work-provider-get":

@@ -170,6 +170,8 @@ def _verified_merge(root, transport, config, work, pull_number, token):
             or not isinstance(model.get("normative"), dict)
             or model.get("artifact_id") != work["work_id"]
             or model["normative"].get("project_id") != work["project_id"]
+            or model["normative"].get("title") != work["title"]
+            or model["normative"].get("summary") != work["intent"]
             or effect.get("status") != "pending"
             or effect.get("binding_generation") != config["binding_generation"]):
         raise WorkSyncError("MERGE_UNVERIFIED", "Merged work intent does not match the selected pending effect")
