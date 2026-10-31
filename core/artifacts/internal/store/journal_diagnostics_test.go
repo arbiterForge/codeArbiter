@@ -333,7 +333,7 @@ func TestJournalRemovedBetweenListAndReadBlocksWithPath(t *testing.T) {
 	}
 	rel := journalPath(id)
 	f.SetReadHook(func(path string, anchored bool) {
-		if path == rel && !anchored {
+		if path == rel {
 			if err := os.Remove(filepath.Join(f.Root, filepath.FromSlash(rel))); err != nil {
 				t.Fatal(err)
 			}

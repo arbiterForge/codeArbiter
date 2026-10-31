@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -382,6 +383,12 @@ func (e *Engine) workList(r object) (any, error) {
 	}
 	out := object{"project_id": projectID, "membership_sha256": digest, "entries": []any{}, "offset": int64(offset), "total": int64(len(ids)), "next_offset": nil, "content_snapshot": false}
 	items := []any{}
+	base, err := json.Marshal(out)
+	if err != nil {
+		return nil, err
+	}
+	encodedSize := len(base)
+	nextOffsetSize := len("null")
 	next := offset
 	for next < len(ids) && int64(len(items)) < limit {
 		d, _, p, err := e.readWorkWithProject(ids[next], projectID)
@@ -391,17 +398,20 @@ func (e *Engine) workList(r object) (any, error) {
 		n := d.Norm()
 		ex := model.M(d.Data["execution"])
 		item := object{"work_id": d.ID(), "path": p, "revision": d.Revision(), "title": n["title"], "work_type": n["work_type"], "state": ex["state"], "check_status": ex["check_status"], "completed_at": ex["completed_at"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "origin": n["origin"]}
-		candidate := append(append([]any{}, items...), item)
-		out["entries"] = candidate
-		out["next_offset"] = int64(next + 1)
-		encoded, err := json.Marshal(out)
+		row, err := json.Marshal(item)
 		if err != nil {
 			return nil, err
 		}
-		if int64(len(encoded))+512 > budget {
+		cursorSize := len(strconv.Itoa(next + 1))
+		candidateSize := encodedSize + len(row) + cursorSize - nextOffsetSize
+		if len(items) > 0 {
+			candidateSize++ // JSON array separator.
+		}
+		if int64(candidateSize)+512 > budget {
 			break
 		}
-		items = candidate
+		items = append(items, item)
+		encodedSize, nextOffsetSize = candidateSize, cursorSize
 		next++
 	}
 	if len(items) == 0 && next < len(ids) {

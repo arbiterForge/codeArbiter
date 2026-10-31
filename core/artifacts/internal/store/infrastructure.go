@@ -3,6 +3,7 @@ package store
 import (
 	"encoding/hex"
 	"os"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -16,11 +17,21 @@ import (
 func (f *FS) Infrastructure() (map[string]bool, error) {
 	out := map[string]bool{}
 	hist := map[string]string{}
-	names, e := f.List(meta + "/transactions")
+	transactions, e := f.OpenDir(meta + "/transactions")
+	var names []os.DirEntry
 	if os.IsNotExist(e) {
-		names = nil
+		transactions = nil
 	} else if e != nil {
 		return nil, e
+	} else {
+		defer transactions.Close()
+		names, e = transactions.Entries()
+		if e != nil {
+			return nil, e
+		}
+		if e := strictScanEntries(names); e != nil {
+			return nil, e
+		}
 	}
 	for _, n := range names {
 		p := meta + "/transactions/" + n.Name()
@@ -31,7 +42,7 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 		if !opPattern.MatchString(id) {
 			return nil, fault.At("CORRUPT_JOURNAL", "", p, "invalid transaction filename; preserve and inspect it")
 		}
-		j, e := f.journal(id)
+		j, e := journalEntry(transactions, n, id)
 		if e != nil {
 			if os.IsNotExist(e) {
 				return nil, fault.At("RECOVERY_REQUIRED", "", p, "listed transaction journal disappeared; inspect store and retry")
@@ -49,11 +60,26 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 			}
 		}
 	}
-	names, e = f.List(meta + "/history")
+	if transactions != nil {
+		if e := f.metaDirCurrent("transactions", transactions); e != nil {
+			return nil, e
+		}
+	}
+	history, e := f.OpenDir(meta + "/history")
 	if os.IsNotExist(e) {
 		names = nil
+		history = nil
 	} else if e != nil {
 		return nil, e
+	} else {
+		defer history.Close()
+		names, e = history.Entries()
+		if e != nil {
+			return nil, e
+		}
+		if e := strictScanEntries(names); e != nil {
+			return nil, e
+		}
 	}
 	for _, n := range names {
 		p := meta + "/history/" + n.Name()
@@ -61,7 +87,7 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 		if !ok || n.IsDir() {
 			return nil, fault.At("ORPHAN_HISTORY", "", p, "unreferenced history entry; preserve and inspect it")
 		}
-		b, e := f.Read(p, canonical.MaxBytes)
+		b, _, e := history.ReadEntry(n, canonical.MaxBytes)
 		if e != nil {
 			if os.IsNotExist(e) {
 				return nil, fault.At("CORRUPT_JOURNAL", "", p, "before-image is missing")
@@ -77,6 +103,11 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 		out[p] = true
 		delete(hist, p)
 	}
+	if history != nil {
+		if e := f.metaDirCurrent("history", history); e != nil {
+			return nil, e
+		}
+	}
 	if len(hist) > 0 {
 		missing := make([]string, 0, len(hist))
 		for p := range hist {
@@ -86,6 +117,30 @@ func (f *FS) Infrastructure() (map[string]bool, error) {
 		return nil, fault.At("CORRUPT_JOURNAL", "", missing[0], "before-image is missing")
 	}
 	return out, nil
+}
+
+func (f *FS) metaDirCurrent(name string, dir *Dir) error {
+	parent, e := f.OpenDir(meta)
+	if e != nil {
+		return e
+	}
+	defer parent.Close()
+	return parent.Current(name, dir)
+}
+
+// strictScanEntries keeps the all-entry link refusal of FS.List before a
+// caller filters .next files or non-HTML entries from an anchored listing.
+func strictScanEntries(names []os.DirEntry) error {
+	links := os.ModeSymlink
+	if runtime.GOOS == "windows" || runtime.GOOS == "darwin" {
+		links |= os.ModeIrregular // Match the portable directory listing's reparse refusal.
+	}
+	for _, entry := range names {
+		if entry.Type()&links != 0 {
+			return fault.New("UNSAFE_PATH", "symlink or reparse point encountered in scanned directory")
+		}
+	}
+	return nil
 }
 
 // PutEvent only stores immutable captured workflow data. Authority.Load still

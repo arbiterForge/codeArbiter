@@ -36,6 +36,15 @@ func BenchmarkJournalScan(b *testing.B) {
 						b.Fatal(err)
 					}
 				}
+				b.StopTimer()
+				stats := &OpenStats{}
+				f.Stats = stats
+				if _, err := f.Pending(); err != nil {
+					b.Fatal(err)
+				}
+				f.Stats = nil
+				b.ReportMetric(float64(stats.AncestorChecks), "ancestor-checks/op")
+				b.ReportMetric(float64(stats.FileOpens), "file-opens/op")
 			})
 			b.Run("infrastructure", func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
@@ -43,6 +52,15 @@ func BenchmarkJournalScan(b *testing.B) {
 						b.Fatal(err)
 					}
 				}
+				b.StopTimer()
+				stats := &OpenStats{}
+				f.Stats = stats
+				if _, err := f.Infrastructure(); err != nil {
+					b.Fatal(err)
+				}
+				f.Stats = nil
+				b.ReportMetric(float64(stats.AncestorChecks), "ancestor-checks/op")
+				b.ReportMetric(float64(stats.FileOpens), "file-opens/op")
 			})
 		})
 	}

@@ -1,6 +1,7 @@
 package operations
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
@@ -418,6 +419,65 @@ func TestWorkListPagesArchiveAndRejectsChangedMembership(t *testing.T) {
 	_, err := Run(root, "work-list", object{"protocol": Protocol, "offset": first["next_offset"], "membership_sha256": first["membership_sha256"]})
 	if err == nil || !strings.Contains(err.Error(), "STALE_CURSOR") {
 		t.Fatalf("membership change did not invalidate continuation: %v", err)
+	}
+}
+
+func TestWorkListBudgetBoundaryMatchesEncodedPage(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 24; i++ {
+		_, err := Run(root, "work-create", object{
+			"protocol": Protocol, "operation_id": fmt.Sprintf("budget-create-%03d", i),
+			"title":  fmt.Sprintf("Item %02d %s", i, strings.Repeat("x", 90)),
+			"intent": "Keep page boundaries stable", "work_type": "chore",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	fullValue, err := Run(root, "work-list", object{"protocol": Protocol, "limit": int64(64), "budget": int64(65536)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	full := model.M(fullValue)
+	all := model.A(full["entries"])
+	if len(all) != 24 {
+		t.Fatalf("full page has %d entries", len(all))
+	}
+	for _, budget := range []int64{4096, 5000, 8000, 65536} {
+		want := 0
+		for n := 1; n <= len(all); n++ {
+			candidate := object{
+				"project_id": full["project_id"], "membership_sha256": full["membership_sha256"],
+				"entries": all[:n], "offset": int64(0), "total": int64(len(all)),
+				"next_offset": int64(n), "content_snapshot": false,
+			}
+			encoded, err := json.Marshal(candidate)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if int64(len(encoded))+512 > budget {
+				break
+			}
+			want = n
+		}
+		value, err := Run(root, "work-list", object{"protocol": Protocol, "limit": int64(64), "budget": budget})
+		if err != nil {
+			t.Fatalf("budget %d: %v", budget, err)
+		}
+		page := model.M(value)
+		if got := len(model.A(page["entries"])); got != want {
+			t.Fatalf("budget %d: %d entries, want %d", budget, got, want)
+		}
+		encoded, err := json.Marshal(page)
+		if err != nil || int64(len(encoded))+512 > budget {
+			t.Fatalf("budget %d: encoded page %d bytes, error %v", budget, len(encoded), err)
+		}
+		if want == len(all) && page["next_offset"] != nil {
+			t.Fatalf("budget %d: terminal page has a continuation", budget)
+		}
 	}
 }
 

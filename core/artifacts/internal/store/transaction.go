@@ -74,22 +74,38 @@ func (f *FS) journal(id string) (map[string]any, error) {
 	}
 	b, e := f.Read(journalPath(id), 4<<20)
 	if e != nil {
-		if os.IsNotExist(e) {
-			return nil, e
-		}
-		var known *fault.Error
-		if errors.As(e, &known) {
-			if known.Code == "MAX_BYTES" {
-				return nil, fault.At("CORRUPT_JOURNAL", "", journalPath(id), "journal exceeds its size limit; preserve bytes and reconcile manually")
-			}
-			copy := *known
-			if copy.Field == "" {
-				copy.Field = journalPath(id)
-			}
-			return nil, &copy
-		}
-		return nil, fault.At("IO_ERROR", "", journalPath(id), "journal cannot be read; restore access and retry")
+		return nil, journalReadError(id, e)
 	}
+	return decodeJournal(id, b)
+}
+
+func journalEntry(dir *Dir, entry os.DirEntry, id string) (map[string]any, error) {
+	b, _, e := dir.ReadEntry(entry, 4<<20)
+	if e != nil {
+		return nil, journalReadError(id, e)
+	}
+	return decodeJournal(id, b)
+}
+
+func journalReadError(id string, e error) error {
+	if os.IsNotExist(e) {
+		return e
+	}
+	var known *fault.Error
+	if errors.As(e, &known) {
+		if known.Code == "MAX_BYTES" {
+			return fault.At("CORRUPT_JOURNAL", "", journalPath(id), "journal exceeds its size limit; preserve bytes and reconcile manually")
+		}
+		copy := *known
+		if copy.Field == "" {
+			copy.Field = journalPath(id)
+		}
+		return &copy
+	}
+	return fault.At("IO_ERROR", "", journalPath(id), "journal cannot be read; restore access and retry")
+}
+
+func decodeJournal(id string, b []byte) (map[string]any, error) {
 	j, e := canonical.Object(b)
 	if e != nil {
 		return nil, fault.At("CORRUPT_JOURNAL", "", journalPath(id), "journal cannot be parsed; preserve bytes and reconcile manually")
@@ -184,11 +200,19 @@ func (f *FS) Lookup(id, requestHash string) (*Outcome, error) {
 	return &o, nil
 }
 func (f *FS) Pending() ([]string, error) {
-	names, e := f.List(meta + "/transactions")
+	dir, e := f.OpenDir(meta + "/transactions")
 	if os.IsNotExist(e) {
 		return []string{}, nil
 	}
 	if e != nil {
+		return nil, e
+	}
+	defer dir.Close()
+	names, e := dir.Entries()
+	if e != nil {
+		return nil, e
+	}
+	if e := strictScanEntries(names); e != nil {
 		return nil, e
 	}
 	out := []string{}
@@ -207,7 +231,7 @@ func (f *FS) Pending() ([]string, error) {
 		if !opPattern.MatchString(id) {
 			return nil, fault.At("CORRUPT_JOURNAL", "", entry, "invalid transaction filename; preserve and inspect it")
 		}
-		j, e := f.journal(id)
+		j, e := journalEntry(dir, n, id)
 		if e != nil {
 			if os.IsNotExist(e) {
 				return nil, fault.At("RECOVERY_REQUIRED", "", entry, "listed transaction journal disappeared; inspect store and retry")
@@ -217,6 +241,9 @@ func (f *FS) Pending() ([]string, error) {
 		if model.S(j["state"]) == "prepared" {
 			out = append(out, id)
 		}
+	}
+	if e := f.metaDirCurrent("transactions", dir); e != nil {
+		return nil, e
 	}
 	return out, nil
 }
