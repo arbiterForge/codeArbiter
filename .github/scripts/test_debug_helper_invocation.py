@@ -25,6 +25,8 @@ import test_debug_qualification as qualification
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE_ROOT = ROOT
 LITERAL_ARGS = ("add", "--", "--quoted 'text' \"here\"; $(echo no)", "caf\u00e9 path")
+CREATE_ARGS = ["create", "--title", LITERAL_ARGS[2], "--intent", LITERAL_ARGS[2],
+               "--type", "unknown", "--operation-id", "t026-create"]
 STDIN = b"opaque input\x00with newline\n"
 HELPER_SOURCE = r'''import base64
 import json
@@ -270,7 +272,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
         skill = package / "skills" / "ca-task" / "SKILL.md"
         skill.parent.mkdir(parents=True)
         skill.write_text(task, encoding="utf-8")
-        helper = package / "hooks" / "taskwrite.py"
+        helper = package / "hooks" / "work.py"
         helper.parent.mkdir(parents=True)
         if helper_present:
             helper.write_text(HELPER_SOURCE, encoding="utf-8", newline="\n")
@@ -291,6 +293,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             "T026_LOADED_RESOURCE": str(skill),
             "T026_PYTHON": sys.executable,
             "T026_TEXT": LITERAL_ARGS[2],
+            "T026_REQUEST_ID": "t026-create",
             "PYTHONDONTWRITEBYTECODE": "1",
             "TEMP": str(scratch),
             "TMP": str(scratch),
@@ -312,29 +315,31 @@ class TestDebugHelperInvocation(unittest.TestCase):
             shell = shutil.which("pwsh")
             self.assertIsNotNone(shell, "Windows installed-resource test requires PowerShell 7")
             resolve = self._fence(card, "Codex PowerShell resolution", "powershell")
-            invoke = self._fence(task, "PowerShell add invocation", "powershell")
+            invoke = self._fence(task, "PowerShell create invocation", "powershell")
             select = self._optional_fence(card, "Codex PowerShell interpreter selection", "powershell") if interpreter_mode is not None else ""
             bindings = "\n".join((
                 "$ErrorActionPreference = 'Stop'",
                 "$caLoadedResource = $env:T026_LOADED_RESOURCE",
-                "$caHelperRelative = 'hooks/taskwrite.py'",
+                "$caHelperRelative = 'hooks/work.py'",
                 "$caPython = ''" if interpreter_mode is not None else "$caPython = $env:T026_PYTHON",
                 "$caDescription = $env:T026_TEXT",
+                "$caRequestId = $env:T026_REQUEST_ID",
             ))
             command = [shell, "-NoProfile", "-NonInteractive", "-Command", "\n".join((bindings, resolve, select, invoke))]
         else:
             shell = shutil.which("sh")
             self.assertIsNotNone(shell, "installed-resource test requires POSIX sh")
             resolve = self._fence(card, "Codex POSIX resolution", "sh")
-            invoke = self._fence(task, "POSIX add invocation", "sh")
+            invoke = self._fence(task, "POSIX create invocation", "sh")
             select = self._optional_fence(card, "Codex POSIX interpreter selection", "sh") if interpreter_mode is not None else ""
             bindings = "\n".join((
                 "set -eu",
                 "PATH=/usr/bin:$PATH" if interpreter_mode is None else "PATH=$PATH",
                 "ca_loaded_resource=$T026_LOADED_RESOURCE",
-                "ca_helper_relative=hooks/taskwrite.py",
+                "ca_helper_relative=hooks/work.py",
                 "ca_python=''" if interpreter_mode is not None else "ca_python=$T026_PYTHON",
                 "ca_description=$T026_TEXT",
+                "ca_request_id=$T026_REQUEST_ID",
             ))
             command = [shell, "-c", "\n".join((bindings, resolve, select, invoke))]
         result = subprocess.run(
@@ -357,7 +362,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
                     self.assertEqual(result.returncode, 0, diagnostic)
                     self.assertIsNotNone(effect, "compatible Python 3 must reach the installed helper")
                     self.assertEqual(effect["attempt_count"], 1)
-                    self.assertEqual(effect["argv"], ["add", "--", LITERAL_ARGS[2]])
+                    self.assertEqual(effect["argv"], CREATE_ARGS)
                 else:
                     self.assertNotEqual(result.returncode, 0, "no compatible Python 3 must block")
                     self.assertIsNone(effect, "invalid interpreter must be rejected before helper")
@@ -370,7 +375,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             )
             self.assertIsNotNone(effect, "controlled refusal must come from the installed helper")
             self.assertEqual(effect["attempt_count"], 1, "do not replay under another interpreter")
-            self.assertEqual(effect["argv"], ["add", "--", LITERAL_ARGS[2]])
+            self.assertEqual(effect["argv"], CREATE_ARGS)
             self.assertEqual(result.returncode, 7, "preserve the writer's first exit code")
             self.assertEqual(result.stdout, b"controlled result\n")
             self.assertEqual(result.stderr, b"controlled refusal\n")
@@ -384,7 +389,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             self.assertEqual(result.returncode, 0, diagnostic)
             self.assertIsNotNone(effect, "compatible alternate must run the installed helper")
             self.assertEqual(effect["attempt_count"], 1)
-            self.assertEqual(effect["argv"], ["add", "--", LITERAL_ARGS[2]])
+            self.assertEqual(effect["argv"], CREATE_ARGS)
             self.assertGreaterEqual(effect["runtime_version"], [3, 8],
                                     "Python 3.7 cannot import the installed debug validator")
             self.assertEqual(Path(effect["interpreter"]).name.lower(),
@@ -396,7 +401,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", errors="replace"))
             self.assertIsNotNone(effect, "literal emitted invocation must reach the installed helper")
             self.assertEqual(effect["attempt_count"], 1)
-            self.assertEqual(effect["argv"], ["add", "--", LITERAL_ARGS[2]])
+            self.assertEqual(effect["argv"], CREATE_ARGS)
             self.assertEqual(effect["plugin_root_tokens"], {"CLAUDE_PLUGIN_ROOT": None, "PLUGIN_ROOT": None})
             self.assertEqual(Path(effect["cwd"]), Path(owned) / "arbitrary cwd" / "nested")
             self.assertTrue(helper.is_file())
@@ -404,7 +409,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
     def test_missing_helper_never_falls_back_to_source_or_cache_search(self):
         with tempfile.TemporaryDirectory(prefix="t026-missing-", dir=ROOT) as owned:
             scratch = Path(owned)
-            for relative in ("source clone/hooks/taskwrite.py", "plugin cache/hooks/taskwrite.py"):
+            for relative in ("source clone/hooks/work.py", "plugin cache/hooks/work.py"):
                 decoy = scratch / relative
                 decoy.parent.mkdir(parents=True)
                 decoy.write_text(HELPER_SOURCE, encoding="utf-8", newline="\n")
@@ -418,7 +423,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
     def test_posix_resolution_rejects_missing_or_relative_loaded_resource(self):
         task, card = self._emitted_guidance()
         resolve = self._fence(card, "Codex POSIX resolution", "sh")
-        invoke = self._fence(task, "POSIX add invocation", "sh")
+        invoke = self._fence(task, "POSIX create invocation", "sh")
         if os.name == "nt":
             shell = Path(shutil.which("sh") or r"C:\Program Files\Git\usr\bin\sh.exe")
             self.assertTrue(shell.is_file(), "Windows POSIX fixture requires installed Git sh")
@@ -444,7 +449,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             marker = package / ".codex-plugin" / "plugin.json"
             marker.parent.mkdir()
             marker.write_text('{"name":"ca-codex"}', encoding="utf-8")
-            helper = package / "hooks" / "taskwrite.py"
+            helper = package / "hooks" / "work.py"
             helper.parent.mkdir()
             helper.write_text(HELPER_SOURCE, encoding="utf-8", newline="\n")
             effects = scratch / "effects"
@@ -455,9 +460,10 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 "set -eu",
                 "PATH=/usr/bin:$PATH",
                 "ca_loaded_resource=$T026_LOADED_RESOURCE",
-                "ca_helper_relative=hooks/taskwrite.py",
+                "ca_helper_relative=hooks/work.py",
                 "ca_python=$T026_PYTHON",
                 "ca_description=$T026_TEXT",
+                "ca_request_id=$T026_REQUEST_ID",
             ))
             script = "\n".join((bindings, resolve, invoke))
             for label, resource, cwd, expected_valid in (
@@ -476,6 +482,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
                         "T026_LOADED_RESOURCE": resource,
                         "T026_PYTHON": shell_path(sys.executable),
                         "T026_TEXT": LITERAL_ARGS[2],
+                        "T026_REQUEST_ID": "t026-create",
                         "PYTHONDONTWRITEBYTECODE": "1",
                         "TEMP": str(scratch),
                         "TMP": str(scratch),
@@ -491,7 +498,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
                         self.assertEqual(result.returncode, 0, diagnostic)
                         self.assertTrue(effect_file.exists(), "valid emitted POSIX call must run installed helper")
                         effect = json.loads(effect_file.read_text(encoding="utf-8"))
-                        self.assertEqual(effect["argv"], ["add", "--", LITERAL_ARGS[2]])
+                        self.assertEqual(effect["argv"], CREATE_ARGS)
                         self.assertEqual(effect["attempt_count"], 1)
                     else:
                         self.assertNotEqual(result.returncode, 0, "invalid loaded entry must stop")
@@ -530,7 +537,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
         skill = package / "skills" / "ca-task" / "SKILL.md"
         skill.parent.mkdir(parents=True)
         skill.write_text("installed task entry\n", encoding="utf-8")
-        helper = package / "hooks" / "taskwrite.py"
+        helper = package / "hooks" / "work.py"
         helper.parent.mkdir(parents=True)
         helper.write_text(HELPER_SOURCE, encoding="utf-8", newline="\n")
         marker = package / ".codex-plugin" / "plugin.json"
@@ -560,9 +567,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 "$caPython = $env:T028_PYTHON",
                 "$caHelper = $env:T028_HELPER",
                 "$caDescription = $env:T026_TEXT",
-                "$caId = 'debug.note'",
-                "$caOrigin = '-review'",
-                "$caBoundaries = 'security,network'",
+                "$caRequestId = 't028-literal'",
             ))
             env.update({"T028_PYTHON": sys.executable, "T028_HELPER": str(helper)})
             command = [shell, "-NoProfile", "-NonInteractive", "-Command",
@@ -582,9 +587,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 "ca_python=$T028_PYTHON",
                 "ca_helper=$T028_HELPER",
                 "ca_description=$T026_TEXT",
-                "ca_id=debug.note",
-                "ca_origin=-review",
-                "ca_boundaries=security,network",
+                "ca_request_id=t028-literal",
             ))
             env.update({"T028_PYTHON": shell_path(sys.executable),
                         "T028_HELPER": shell_path(helper)})
@@ -606,7 +609,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
         for shell_kind in ("powershell", "posix"):
             if shell_kind == "powershell" and os.name != "nt":
                 continue
-            heading = "PowerShell add with options" if shell_kind == "powershell" else "POSIX add with options"
+            heading = "PowerShell create invocation" if shell_kind == "powershell" else "POSIX create invocation"
             for description in descriptions:
                 with self.subTest(shell=shell_kind, description=description), \
                         tempfile.TemporaryDirectory(prefix="t028-literal-", dir=ROOT) as owned:
@@ -617,9 +620,9 @@ class TestDebugHelperInvocation(unittest.TestCase):
                     self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", errors="replace"))
                     self.assertIsNotNone(effect, "emitted call must reach one installed helper")
                     self.assertEqual(effect["attempt_count"], 1)
-                    self.assertEqual(effect["argv"], ["add", "--id", "debug.note",
-                                                    "--from=-review", "--boundaries",
-                                                    "security,network", "--", description])
+                    self.assertEqual(effect["argv"], ["create", "--title", description,
+                                                    "--intent", description, "--type", "unknown",
+                                                    "--operation-id", "t028-literal"])
 
     def test_options_precede_separator_and_stdin_remains_bounded(self):
         _, card = self._emitted_guidance()
@@ -948,6 +951,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             self.assertEqual(hashlib.sha256(target.read_bytes()).digest(),
                              hashlib.sha256(source.read_bytes()).digest())
         source_hooks = SOURCE_ROOT / "plugins/ca-codex/hooks"
+        self.assertTrue((source_hooks / "work.py").is_file())
         self.assertTrue((source_hooks / "taskwrite.py").is_file())
         for source in source_hooks.glob("*.py"):
             target = package / "hooks" / source.name
@@ -1010,7 +1014,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
 
     def _run_actual_writer(self, scratch, package, board, cwd, description, *,
                            instrument, label, fail_replace=False):
-        """Run the literal emitted selection, resolution, and add invocation."""
+        """Run the literal emitted selection, resolution, and create invocation."""
         card = (package / "includes/helper-invocation.md").read_text(encoding="utf-8")
         task = (package / "skills/ca-task/SKILL.md").read_text(encoding="utf-8")
         resource = package / "skills/ca-task/SKILL.md"
@@ -1020,23 +1024,25 @@ class TestDebugHelperInvocation(unittest.TestCase):
             self.assertIsNotNone(shell, "literal PowerShell invocation requires pwsh")
             bindings = "\n".join(("$ErrorActionPreference = 'Stop'",
                                   "$caLoadedResource = $env:T030_RESOURCE",
-                                  "$caHelperRelative = 'hooks/taskwrite.py'",
-                                  "$caDescription = $env:T030_DESCRIPTION"))
+                                  "$caHelperRelative = 'hooks/work.py'",
+                                  "$caDescription = $env:T030_DESCRIPTION",
+                                  "$caRequestId = $env:T030_REQUEST_ID"))
             script = "\n".join((bindings,
                 self._fence(card, "Codex PowerShell interpreter selection", "powershell"),
                 self._fence(card, "Codex PowerShell resolution", "powershell"),
-                self._fence(task, "PowerShell add invocation", "powershell")))
+                self._fence(task, "PowerShell create invocation", "powershell")))
             command = [shell, "-NoProfile", "-NonInteractive", "-Command", script]
         else:
             shell = shutil.which("sh")
             self.assertIsNotNone(shell, "literal POSIX invocation requires sh")
             bindings = "\n".join(("set -eu", "ca_loaded_resource=$T030_RESOURCE",
-                                  "ca_helper_relative=hooks/taskwrite.py",
-                                  "ca_description=$T030_DESCRIPTION"))
+                                  "ca_helper_relative=hooks/work.py",
+                                  "ca_description=$T030_DESCRIPTION",
+                                  "ca_request_id=$T030_REQUEST_ID"))
             script = "\n".join((bindings,
                 self._fence(card, "Codex POSIX interpreter selection", "sh"),
                 self._fence(card, "Codex POSIX resolution", "sh"),
-                self._fence(task, "POSIX add invocation", "sh")))
+                self._fence(task, "POSIX create invocation", "sh")))
             command = [shell, "-c", script]
         effects = scratch / ("writer effects " + label)
         effects.mkdir()
@@ -1044,6 +1050,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
         env.pop("PLUGIN_ROOT", None)
         env["CLAUDE_PROJECT_DIR"] = str(board.parents[2] / "seed repository")
         env.update({"T030_RESOURCE": str(resource), "T030_DESCRIPTION": description,
+                    "T030_REQUEST_ID": "t030-" + label + "-create",
                     "T030_EFFECTS": str(effects), "T030_BOARD": str(board),
                     "T030_FAIL_REPLACE": "1" if fail_replace else "0",
                     "PYTHONPATH": str(instrument), "PYTHONNOUSERSITE": "1",
@@ -1058,9 +1065,11 @@ class TestDebugHelperInvocation(unittest.TestCase):
 
     def _assert_one_actual_writer(self, observed, cwd):
         writers = [row for row in observed if row["argv"] and
-                   Path(row["argv"][0]).name == "taskwrite.py"]
+                   Path(row["argv"][0]).name == "work.py"]
         self.assertEqual(len(writers), 1, observed)
-        self.assertEqual(writers[0]["argv"][1:3], ["add", "--"])
+        self.assertEqual(writers[0]["argv"][1:3], ["create", "--title"])
+        self.assertEqual(writers[0]["argv"][4], "--intent")
+        self.assertEqual(writers[0]["argv"][6:8], ["--type", "unknown"])
         self.assertEqual(Path(writers[0]["cwd"]), cwd)
         return writers[0]
 
@@ -1098,12 +1107,15 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 instrument=instrument, label="t038")
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
             writer = self._assert_one_actual_writer(observed, cwd)
-            self.assertEqual(Path(writer["argv"][0]), package / "hooks/taskwrite.py")
-            self.assertNotEqual(Path(writer["argv"][0]), SOURCE_ROOT / "plugins/ca-codex/hooks/taskwrite.py")
-            self.assertEqual(writer["argv"][1:], ["add", "--", description])
+            self.assertEqual(Path(writer["argv"][0]), package / "hooks/work.py")
+            self.assertNotEqual(Path(writer["argv"][0]), SOURCE_ROOT / "plugins/ca-codex/hooks/work.py")
+            self.assertEqual(writer["argv"][1:], ["create", "--title", description,
+                                                  "--intent", description, "--type", "unknown",
+                                                  "--operation-id", "t030-t038-create"])
             self.assertEqual(Path(writer["cwd"]), cwd)
             self.assertNotEqual(Path(writer["cwd"]), seed_board.parent.parent)
-            self.assertEqual(board.read_text(encoding="utf-8").count(description), 1)
+            self.assertEqual(board.read_text(encoding="utf-8").count(description), 2,
+                             "one created row carries the literal title and intent")
             self.assertEqual(seed_board.read_bytes(), seed_before)
 
     def test_codex_evidence_cannot_inherit_another_host_result(self):
@@ -1137,12 +1149,14 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 instrument=instrument, label="target")
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
             writer = self._assert_one_actual_writer(observed, cwd)
-            self.assertEqual(writer["argv"][3:], [description])
+            self.assertEqual(writer["argv"][3], description)
+            self.assertEqual(writer["argv"][5], description)
             self.assertEqual(seed_board.read_bytes(), seed_before,
                              "the seed repository board must remain untouched")
             after = board.read_bytes()
             self.assertNotEqual(after, initial)
-            self.assertEqual(after.decode("utf-8").count(description), 1)
+            self.assertEqual(after.decode("utf-8").count(description), 2,
+                             "one created row carries the literal title and intent")
             self.assertEqual(len(writer["renames"]), 1,
                              "the real writer must replace the board once")
             source, destination = map(Path, writer["renames"][0])
@@ -1163,8 +1177,10 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 instrument=instrument, label="literal")
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
             writer = self._assert_one_actual_writer(observed, cwd)
-            self.assertEqual(writer["argv"][3:], [description])
-            self.assertEqual(board.read_text(encoding="utf-8").count(description), 1)
+            self.assertEqual(writer["argv"][3], description)
+            self.assertEqual(writer["argv"][5], description)
+            self.assertEqual(board.read_text(encoding="utf-8").count(description), 2,
+                             "one created row carries the literal title and intent")
             self.assertEqual(seed_board.read_bytes(), seed_before)
 
             locked_before = board.read_bytes()
@@ -1194,7 +1210,8 @@ class TestDebugHelperInvocation(unittest.TestCase):
                     scratch, package, board, cwd, "T030 locked refusal",
                     instrument=instrument, label="locked")
                 self.assertEqual(refused.returncode, 1, refused.stderr.decode("utf-8", "replace"))
-                self.assertIn(b"could not acquire the task-board lock", refused.stderr)
+                self.assertIn("could not acquire the task-board lock",
+                              json.loads(refused.stdout)["error"])
                 refused_writer = self._assert_one_actual_writer(attempts, cwd)
                 self.assertEqual(refused_writer["renames"], [])
                 self.assertEqual(board.read_bytes(), locked_before)

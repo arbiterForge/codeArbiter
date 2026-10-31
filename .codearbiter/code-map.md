@@ -17,7 +17,7 @@ catalogs; source inspection is not live-host or publication qualification.
 ## Native artifact engine
 
 - `core/artifacts/cmd/ca-artifact/` — Native CLI accepting bounded JSON requests and returning protocol envelopes.
-- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle.
+- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle and provider-effect operations.
 - `core/artifacts/internal/model/` — Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.
 - `core/artifacts/schemas/` — Versioned JSON contracts for typed artifacts and operations.
 - `core/artifacts/internal/kind/` — Closed representation registry for spec/plan, knowledge/decomposition, and work HTML, plus project-context Markdown.
@@ -39,7 +39,8 @@ catalogs; source inspection is not live-host or publication qualification.
 - `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.
 - `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.
 - `core/pysrc/_taskboardlib.py` — Legacy board schema and counters; taskwrite.py owns its mutations and archival.
-- `core/pysrc/_worklib.py` and `work.py` — Selected legacy-board adapter and native work CLI; stable work IDs select lifecycle and context operations.
+- `core/pysrc/_worklib.py`, `_workadopt.py`, `work.py`, and `_workgithub.py` — Selected legacy-board adapter, native work CLI, and fixed GitHub Issues and optional Projects transport; stable work IDs select lifecycle and context operations.
+- `core/artifacts/internal/operations/work_adopt.go` — Journaled selected legacy-board cutover with native writer locking and exact board snapshots.
 - `core/pysrc/knowledge.py` — Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.
 - `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.
 
@@ -67,7 +68,7 @@ without restoring an extra permission layer for already-authorized work.
 ## Project records
 
 - `.codearbiter/` — Five context documents, provenance, specs/plans, native work, open decisions, protected release declarations, legacy task boards, and audit records.
-- `.codearbiter/work/` and `.codearbiter/work/project.json` — Portable native work items and project identity in repositories that select the native owner.
+- `.codearbiter/work/` and `.codearbiter/work/project.json` — Portable native work items, project identity, and finite provider binding in repositories that select the native owner.
 - `.codearbiter/open-tasks.md` — Legacy work owner when present; helper-only mutable board with done-tasks.md as append-only archived history.
 - `.codearbiter/decisions/` — Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043's assistive contract.
 - `.codearbiter/release-targets.md` — Four protected executable target declarations with pre-tag/build/generation ownership.

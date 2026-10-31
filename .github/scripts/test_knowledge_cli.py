@@ -231,10 +231,214 @@ class KnowledgeCli(unittest.TestCase):
         self.assertEqual(record["promotion"]["work_id"], first["work_id"])
         self.assertFalse(board.exists())
 
+    def test_initialized_brownfield_keeps_observation_candidate_and_identity_separate(self):
+        self.scaffold()
+        board = self.root / ".codearbiter/open-tasks.md"
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        board.unlink(missing_ok=True)  # disposable empty-board fixture selects native ownership
+        before = (self.root / CONTEXT).read_bytes()
+        source = self.root / "src/service.py"
+        source.parent.mkdir()
+        source.write_text("def run():\n    return None\n", encoding="utf-8")
+        cited = self.knowledge("add", "decomposition", "--collection", "sources", "--record",
+                               json.dumps({"title": "Service source", "type": "repository", "url": None,
+                                           "locator": "src/service.py", "note": "Observed brownfield source"}))
+        observed = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "capability", "title": "Service entry point", "statement": "Source defines run().",
+            "basis": "source-observed", "scope": {"paths": ["src/service.py"]},
+            "related_refs": [], "source_refs": [cited["record"]]}))
+        candidate = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "work_item", "title": "Review service failure path",
+            "statement": "Check the service failure path before choosing a change.",
+            "basis": "proposed", "scope": {"paths": ["src/service.py"]},
+            "related_refs": [observed["record"]], "source_refs": [cited["record"]]}))
+        self.assertEqual((self.root / CONTEXT).read_bytes(), before)
+        self.assertFalse(board.exists())
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
+                         "observation silently published a candidate")
+        promoted = self.knowledge("promote", candidate["record"])
+        self.assertEqual(promoted["owner"], "native")
+        self.assertEqual(self.knowledge("promote", candidate["record"])["work_id"], promoted["work_id"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), before)
+        self.assertEqual(self.knowledge("read", "decomposition", observed["record"])["records"][0]["basis"],
+                         "source-observed")
+
+    def test_initialized_brownfield_preserves_legacy_backlog_through_selected_adoption(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        context = (self.root / CONTEXT).read_bytes()
+        board = self.root / ".codearbiter/open-tasks.md"
+        self.script("taskwrite.py", "add", "Keep the pre-existing task")
+        original_board = board.read_bytes()
+        candidate = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "work_item", "title": "Inspect another path", "statement": "Review the observed gap.",
+            "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}))
+        self.assertEqual(board.read_bytes(), original_board, "candidate publication changed the legacy backlog")
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists())
+
+        promoted = self.knowledge("promote", candidate["record"])
+        self.assertEqual(promoted["owner"], "legacy")
+        self.assertIn(b"Keep the pre-existing task", board.read_bytes())
+        self.assertIn(b"Inspect another path", board.read_bytes())
+        adopted = json.loads(self.script("work.py", "adopt", "--operation-id", "brownfield-adopt-001").stdout)
+        self.assertEqual(adopted["adopted_count"], 2)
+        self.assertFalse(board.exists())
+        replay = self.knowledge("promote", candidate["record"])
+        self.assertEqual(replay["work_id"], promoted["work_id"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), context)
+        self.assertEqual(json.loads(self.script("work.py", "get", promoted["work_id"]).stdout)["title"],
+                         "Inspect another path")
+
+    def test_initialized_brownfield_partial_acquisition_keeps_unknowns_and_candidates_local(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        board = self.root / ".codearbiter/open-tasks.md"
+        board.unlink(missing_ok=True)  # disposable no-backlog native fixture
+        context = (self.root / CONTEXT).read_bytes()
+        decision = self.root / ".codearbiter/decisions/ADR-0001.md"
+        decision.parent.mkdir(exist_ok=True)
+        decision.write_bytes(b"# Existing decision\nHuman rationale stays here.\n")
+        prior = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "question", "title": "Deployment target", "statement": "Deployment target is not known.",
+            "basis": "unknown", "scope": {"paths": []}, "related_refs": [], "source_refs": [],
+            "status": "open", "answer": None}))
+        denied = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "component", "title": "Restricted service", "statement": "Source inspection was denied; behavior is unknown.",
+            "basis": "unknown", "scope": {"paths": ["src/restricted/**"]},
+            "related_refs": [prior["record"]], "source_refs": []}))
+        phase = self.knowledge("add", "decomposition", "--record", json.dumps({
+            "type": "phase", "title": "Inspect accessible services", "statement": "Inspect permitted paths before selecting a change.",
+            "basis": "proposed", "scope": {"paths": ["src/public/**"]},
+            "related_refs": [denied["record"]], "source_refs": []}))
+        work = {"type": "work_item", "title": "Review public service", "statement": "Review one accessible path.",
+                "basis": "proposed", "scope": {"paths": ["src/public/**"]},
+                "related_refs": [phase["record"]], "source_refs": []}
+        candidate = self.knowledge("add", "decomposition", "--record", json.dumps(work))
+        # A second process sees the same saved candidate after interrupted synthesis.
+        resumed = self.knowledge("add", "decomposition", "--record", json.dumps(work))
+        self.assertEqual(resumed["record"], candidate["record"])
+        self.assertTrue(resumed["reused"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), context)
+        self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
+
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
+                         "candidate or interrupted synthesis published work")
+        self.assertFalse(board.exists(), "acquisition recreated an empty legacy backlog")
+        self.assertEqual(self.knowledge("read", "decomposition", denied["record"])["records"][0]["basis"],
+                         "unknown")
+        promoted = self.knowledge("promote", candidate["record"])
+        self.assertEqual(self.knowledge("promote", candidate["record"])["work_id"], promoted["work_id"])
+        self.assertEqual((self.root / CONTEXT).read_bytes(), context)
+        self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
+
+    def test_initialized_brownfield_duplicate_external_candidates_need_selected_promotion(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        board = self.root / ".codearbiter/open-tasks.md"
+        board.unlink(missing_ok=True)
+        source = self.knowledge("add", "decomposition", "--collection", "sources", "--record",
+                                json.dumps({"title": "Existing issue", "type": "repository",
+                                            "url": "https://github.com/example/project/issues/7",
+                                            "locator": "example/project#7",
+                                            "note": "Observed external candidate; identity needs review"}))
+        candidates = []
+        for title in ("Investigate issue symptom", "Review issue reproduction"):
+            result = self.knowledge("add", "decomposition", "--record", json.dumps({
+                "type": "work_item", "title": title, "statement": "Candidate from an existing issue.",
+                "basis": "proposed", "scope": {"paths": []}, "related_refs": [],
+                "source_refs": [source["record"]]}))
+            candidates.append(result["record"])
+        self.assertNotEqual(*candidates)
+        self.assertFalse(board.exists())
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists())
+        self.assertTrue(all("promotion" not in self.knowledge("read", "decomposition", record)["records"][0]
+                            for record in candidates))
+        selected = self.knowledge("promote", candidates[0])
+        self.assertEqual(self.knowledge("promote", candidates[0])["work_id"], selected["work_id"])
+        self.assertNotIn("promotion", self.knowledge("read", "decomposition", candidates[1])["records"][0])
+
 
     def git(self, *arguments):
         subprocess.run(["git", "-c", "core.hooksPath=" + os.devnull, "-c", "user.name=t", "-c", "user.email=t@example.invalid",
                         *arguments], cwd=self.root, check=False, capture_output=True)
+
+    def test_stale_includes_unstaged_and_staged_source_changes(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        source = self.root / "src" / "service.py"
+        source.parent.mkdir()
+        source.write_text("version = 1\n", encoding="utf-8")
+        citation = {"title": "Service source", "type": "repository", "url": None,
+                    "locator": "src/service.py", "note": "Observed source path"}
+        self.knowledge("add", "tech-stack", "--collection", "sources", "--record", json.dumps(citation))
+        observed = {"type": "fact", "title": "Service", "statement": "Service source exists.",
+                    "basis": "source-observed", "scope": {"paths": ["src/**"]},
+                    "related_refs": [], "source_refs": ["SRC-001"]}
+        self.knowledge("add", "tech-stack", "--record", json.dumps(observed))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "baseline")
+        self.knowledge("rebaseline", "tech-stack")
+
+        source.write_text("version = 2\n", encoding="utf-8")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertTrue(report["stale"], report)
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/service.py"])
+
+        self.git("add", "src/service.py")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/service.py"])
+
+        self.git("commit", "-qm", "first source change")
+        extra = self.root / "src" / "extra.py"
+        extra.write_text("version = 1\n", encoding="utf-8")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/extra.py", "src/service.py"])
+        self.git("add", "src/extra.py")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/extra.py", "src/service.py"])
+
+    def test_stale_includes_renamed_source_old_path(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        source = self.root / "src" / "old.py"
+        source.parent.mkdir()
+        source.write_text("version = 1\n", encoding="utf-8")
+        self.knowledge("add", "tech-stack", "--collection", "sources", "--record", json.dumps({
+            "title": "Old source", "type": "repository", "url": None,
+            "locator": "src/old.py", "note": "Observed old path"}))
+        self.knowledge("add", "tech-stack", "--record", json.dumps({
+            "type": "fact", "title": "Old path", "statement": "Old path exists.",
+            "basis": "source-observed", "scope": {"paths": ["src/old.py"]},
+            "related_refs": [], "source_refs": ["SRC-001"]}))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "baseline")
+        self.knowledge("rebaseline", "tech-stack")
+        self.git("mv", "src/old.py", "src/new.py")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/old.py"])
+
+    def test_stale_preserves_untracked_unicode_path(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("add", "tech-stack", "--collection", "sources", "--record", json.dumps({
+            "title": "Unicode source", "type": "repository", "url": None,
+            "locator": "src/café.py", "note": "Observed Unicode path"}))
+        self.knowledge("add", "tech-stack", "--record", json.dumps({
+            "type": "fact", "title": "Unicode source", "statement": "Unicode path exists.",
+            "basis": "source-observed", "scope": {"paths": ["src/café.py"]},
+            "related_refs": [], "source_refs": ["SRC-001"]}))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "baseline")
+        self.knowledge("rebaseline", "tech-stack")
+        source = self.root / "src" / "café.py"
+        source.parent.mkdir()
+        source.write_text("version = 1\n", encoding="utf-8")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/café.py"])
 
     def test_git_conflict_merges_record_by_record(self):
         self.scaffold()

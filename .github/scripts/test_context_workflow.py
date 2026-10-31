@@ -1223,6 +1223,9 @@ class TestInitializedRefreshRoutes(unittest.TestCase):
         status_route = self._surface("commands/status.md")
         for text in (owner, create, init, status_route):
             self.assertIn("initialized refresh", text.lower())
+        self.assertIn("initialized brownfield", init)
+        self.assertIn("target/delta work to `{{CMD:decompose}}`", init)
+        self.assertNotIn("keeps its initial-population lock", init)
         self.assertIn("init-codearbiter.py\" --root", owner)
         self.assertIn("--context-request", owner)
         self.assertIn("join_scout_reports", owner)

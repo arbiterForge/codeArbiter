@@ -44,12 +44,41 @@ func (e *Engine) workView(r object) (any, error) {
 		return nil, err
 	}
 	data := render.WorkViewData{
-		ID: model.S(work["work_id"]), ProjectID: model.S(work["project_id"]),
+		ID: model.S(work["work_id"]), ProjectID: model.S(work["project_id"]), CycleID: model.S(work["cycle_id"]),
 		Title: model.S(work["title"]), Intent: model.S(work["intent"]),
 		WorkType: model.S(work["work_type"]), State: model.S(work["state"]),
 		CheckStatus: model.S(work["check_status"]), StartedAt: model.S(work["started_at"]),
 		CompletedAt: model.S(work["completed_at"]), Revision: model.I(work["revision"]),
 		ModelSHA256: model.S(work["model_sha256"]), Spec: spec, Plan: plan,
+	}
+	if detail := model.M(context["legacy_detail"]); len(detail) != 0 {
+		data.LegacyDetail = model.S(detail["text"])
+		data.LegacyMore = detail["next_offset"] != nil
+	}
+	if selected := model.M(context["plan_task"]); len(selected) != 0 {
+		data.PlanTask = &render.WorkViewTask{ID: model.S(selected["id"]), Title: model.S(selected["title"]),
+			State: model.S(selected["state"]), NextAction: model.S(selected["next_action"]),
+			BindingCurrent: selected["binding_current"] == true}
+		if report := model.M(selected["last_reported_check"]); len(report) != 0 {
+			data.PlanTask.ReportedOutcome = model.S(report["reported_outcome"])
+			data.PlanTask.ReportedFreshness = model.S(report["worktree_freshness"])
+		}
+	}
+	if effect := model.M(work["provider_effect"]); len(effect) != 0 {
+		data.ProviderEffectKind = model.S(effect["kind"])
+		data.ProviderEffectStatus = model.S(effect["status"])
+		data.RemoteIssueURL = model.S(effect["remote_issue_url"])
+		data.RemoteState = model.S(effect["remote_state"])
+		data.DesiredState = model.S(effect["desired_state"])
+	}
+	if effect := model.M(work["project_effect"]); len(effect) != 0 {
+		data.ProjectEffectKind = model.S(effect["kind"])
+		data.ProjectEffectStatus = model.S(effect["status"])
+	}
+	if delivery := model.M(work["delivery_observation"]); len(delivery) != 0 {
+		data.DeliveryState = model.S(delivery["state"])
+		data.DeliveryURL = model.S(delivery["pull_url"])
+		data.DeliveryObservedAt = model.S(delivery["observed_at"])
 	}
 	html, err := render.WorkView(data)
 	if err != nil {

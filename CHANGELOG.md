@@ -12,6 +12,50 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+### Added
+
+- Stage and reconcile explicit GitHub issue status updates for bound native work,
+  with readback and a recorded conflict when the observed remote status changes.
+- Adopt an existing correlated GitHub issue without creating a duplicate.
+- Keep newly discovered context gaps as candidates and route selected promotion
+  through the current work owner.
+- Show observed and intended GitHub issue status in the derived work view.
+- Summarize recorded code-map components and interfaces on the derived project page.
+- Record a bounded GitHub PR observation on selected work while keeping local progress, checks and issue sync distinct.
+
+### Fixed
+
+- Protect consumer work models, provider bindings, and adopted board snapshots
+  from Git line-ending conversion; offer an idempotent repair for existing scaffolds.
+- Expose source-bound adopted task details through selected, bounded context
+  pages and the derived work view, and identify the actual attached plan task.
+- Match after-merge GitHub issue effects to their exact staged intent so an old
+  merge cannot release a later equivalent status update.
+- Route ordinary task actions through the shared work facade and keep one
+  logical owner for unresolved decomposition question status.
+- Verify legacy adoption fields against the saved board, refuse stale GitHub
+  intent before sending, and safely retry uncertain Project effects after readback.
+- Require the selected work file in a merged PR's changed-file list before
+  releasing a contingent GitHub effect.
+- Support selected legacy work rename, attachment, and reopen through the
+  identity-bound board writer; keep PR views clear about unverified delivery.
+- Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+- Keep scaffold documentation out of legacy startup counts and work listings.
+
+## [3.7.1] - 2026-10-31
+
+### Added
+
+- Inventory legacy task boards for selected native work adoption and expose
+  bounded, selected work context with GitHub issue synchronization.
+- Group native work into optional cycles and render bounded cycle summaries
+  without copying work items or asserting remote delivery.
+
+### Fixed
+
+- Preserve board bytes through journaled adoption and reject old board writes
+  after cutover.
+
 ## [3.7.0] - 2026-10-30
 
 ### Added

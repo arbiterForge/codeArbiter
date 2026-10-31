@@ -24,10 +24,11 @@ describe('atlas source and original-composition regression contract',{timeout:30
     for(const c of originalAtlas().commands){const current=a.commands.find(x=>x.name===c.name)!;if(c.name==='task')continue;for(const key of ['steps','context','output','gates','source_ids'] as const)expect(current[key]).toEqual(c[key]);}
     const task=a.commands.find(c=>c.name==='task')!;
     expect(task.owner).toContain('work.py');
-    expect(task.owner).toContain('taskwrite.py');
+    expect(task.owner).toContain('legacy board writer');
     expect(task.context.join(' ')).toContain('Selected work ID');
-    expect(a.views.find(v=>v.id==='knowledge-operations')!.nodes.find(n=>n.id==='k-writer')!.body).toContain('Native work.py; legacy taskwrite.py');
-    expect(a.views.find(v=>v.id==='debug-handoff')!.nodes.find(n=>n.id==='d-task')!.body).toContain('selected task owner uses work.py');
+    expect(task.gates).toContain('Queued work already performed can complete directly');
+    expect(a.views.find(v=>v.id==='knowledge-operations')!.nodes.find(n=>n.id==='k-writer')!.body).toContain('One facade selects native or legacy work');
+    expect(a.views.find(v=>v.id==='debug-handoff')!.nodes.find(n=>n.id==='d-task')!.body).toContain('work.py facade routes native and legacy writes');
   });
   it('matches every original box, routed edge, label, route membership and panel',()=>{
     const a=originalAtlas();

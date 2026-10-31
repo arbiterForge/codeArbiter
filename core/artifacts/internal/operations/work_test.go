@@ -1,10 +1,16 @@
 package operations
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -12,6 +18,15 @@ import (
 	"sync"
 	"testing"
 )
+
+// Linux init-store locks the repository directory without creating the legacy
+// board parent. Tests that fabricate a legacy board must create that fixture.
+func ensureLegacyBoardFixtureDir(t *testing.T, root string) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Join(root, ".codearbiter"), 0755); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestWorkIdentityStableAcrossRenameAndArchive(t *testing.T) {
 	root := testutil.Root(t)
@@ -55,6 +70,295 @@ func TestWorkIdentityStableAcrossRenameAndArchive(t *testing.T) {
 	other := request("work-get", object{"work_id": second["work_id"]})
 	if other["title"] != "Same title" || other["work_id"] != second["work_id"] {
 		t.Fatalf("same-title work was conflated: %+v", other)
+	}
+}
+
+func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
+	blockText := "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)\n  - Desc: Parse safely\n  - Work origin: DECOMP#PARSER\n  - Work type: feature\n  - Work ID: WORK-0123456789ABCDEF0123456789ABCDEF"
+	board := []byte("# Work\n" + blockText + "\n")
+	if err := os.WriteFile(boardPath, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	block := []byte(blockText)
+	id := "WORK-0123456789ABCDEF0123456789ABCDEF"
+	request := object{"protocol": Protocol, "operation_id": "adopt-one-board-001",
+		"expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(2), "block_sha256": fmt.Sprintf("%x", sha256.Sum256(block)),
+			"work_id": id, "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser", "intent": "Parse safely", "work_type": "feature", "state": "queued",
+			"started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}},
+	}
+	first, err := Run(root, "work-adopt", request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(boardPath); !os.IsNotExist(err) {
+		t.Fatalf("legacy board remains writable: %v", err)
+	}
+	snapshot, err := os.ReadFile(filepath.Join(root, ".codearbiter", "legacy", "open-tasks.md"))
+	if err != nil || string(snapshot) != string(board) {
+		t.Fatalf("legacy snapshot changed: %v", err)
+	}
+	selected, err := Run(root, "work-get", object{"protocol": Protocol, "work_id": id})
+	if err != nil || selected.(map[string]any)["title"] != "Build parser" {
+		t.Fatalf("adopted work is unreadable: %v", err)
+	}
+	replayed, err := Run(root, "work-adopt", request)
+	if err != nil || first.(map[string]any)["project_id"] != replayed.(map[string]any)["project_id"] {
+		t.Fatalf("cutover replay changed project identity: %v", err)
+	}
+}
+
+func TestWorkAdoptRefusesTamperedSourceMeaning(t *testing.T) {
+	blockText := "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)\n  - Desc: Parse safely\n  - Work origin: DECOMP#PARSER\n  - Work ID: WORK-0123456789ABCDEF0123456789ABCDEF"
+	board := []byte(blockText + "\n")
+	mutations := []struct {
+		field string
+		value any
+	}{
+		{"work_id", "WORK-11111111111111111111111111111111"},
+		{"origin", "OTHER#PARSER"},
+		{"alias", "demo.feat.0002"},
+		{"title", "Wrong title"},
+		{"intent", "Wrong intent"},
+		{"work_type", "feature"},
+		{"state", "complete"},
+		{"started_at", "2026-01-01"},
+		{"completed_at", "2026-01-02"},
+		{"spec_id", "SPEC-OTHER"},
+		{"plan_id", "PLAN-OTHER"},
+	}
+	for _, mutation := range mutations {
+		t.Run(mutation.field, func(t *testing.T) {
+			root := testutil.Root(t)
+			if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+				t.Fatal(err)
+			}
+			ensureLegacyBoardFixtureDir(t, root)
+			boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+			if err := os.WriteFile(boardPath, board, 0644); err != nil {
+				t.Fatal(err)
+			}
+			row := object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(blockText)),
+				"work_id": "WORK-0123456789ABCDEF0123456789ABCDEF", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001",
+				"title": "Build parser", "intent": "Parse safely", "work_type": "unknown", "state": "queued",
+				"started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}
+			row[mutation.field] = mutation.value
+			r := object{"protocol": Protocol, "operation_id": "adopt-tampered-field-001", "expected_board_sha256": digestBytes(board),
+				"expected_archive_sha256": nil, "rows": []any{row}}
+			if _, err := Run(root, "work-adopt", r); fault.Code(err) != "INVALID_ADOPTION" {
+				t.Fatalf("tampered %s was accepted: %v", mutation.field, err)
+			}
+			if got, err := os.ReadFile(boardPath); err != nil || string(got) != string(board) {
+				t.Fatalf("refused cutover changed the legacy board: %v", err)
+			}
+			for _, path := range []string{filepath.Join(root, ".codearbiter", "work", "project.json"),
+				filepath.Join(root, ".codearbiter", "legacy", "open-tasks.md")} {
+				if _, err := os.Stat(path); !os.IsNotExist(err) {
+					t.Fatalf("refused cutover published %s: %v", path, err)
+				}
+			}
+		})
+	}
+}
+
+func TestWorkAdoptPreservesLegacyParserEdgeCases(t *testing.T) {
+	cases := []struct {
+		name  string
+		board string
+		row   object
+	}{
+		{"single digit date", "- [ ] demo.feat.0001 - Build parser (started 2026-1-2) (from DECOMP#PARSER)\n  - Work origin: DECOMP#PARSER\n",
+			object{"work_id": "WORK-729DA0937C368ABE6E3F1DC00CAE1323", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser", "intent": "Build parser", "started_at": "2026-01-02"}},
+		{"empty backref text", "- [ ] Build parser (from )\n",
+			object{"work_id": "WORK-7C6DD7AD5EBED8E35E14B787D46D15F9", "origin": "legacy:open#8739c345150d793740d390d3612f4f09", "alias": nil, "title": "Build parser", "intent": "Build parser", "started_at": nil}},
+		{"trailing whitespace after origin", "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)  \n  - Work origin: DECOMP#PARSER\n",
+			object{"work_id": "WORK-729DA0937C368ABE6E3F1DC00CAE1323", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser (from DECOMP#PARSER)", "intent": "Build parser (from DECOMP#PARSER)", "started_at": nil}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := testutil.Root(t)
+			if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+				t.Fatal(err)
+			}
+			ensureLegacyBoardFixtureDir(t, root)
+			if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), []byte(tc.board), 0644); err != nil {
+				t.Fatal(err)
+			}
+			block := strings.TrimSuffix(tc.board, "\n")
+			row := object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(block)),
+				"work_type": "unknown", "state": "queued", "completed_at": nil, "spec_id": nil, "plan_id": nil}
+			for key, value := range tc.row {
+				row[key] = value
+			}
+			r := object{"protocol": Protocol, "operation_id": "adopt-parser-edge-001", "expected_board_sha256": digestBytes([]byte(tc.board)),
+				"expected_archive_sha256": nil, "rows": []any{row}}
+			if _, err := Run(root, "work-adopt", r); err != nil {
+				t.Fatalf("Python-inventoried legacy row was refused: %v", err)
+			}
+		})
+	}
+}
+
+func TestAdoptionBlocksIgnoreScaffoldDocumentation(t *testing.T) {
+	board := []byte("# Open tasks\n" +
+		"Schema (one task = a lifecycle line + indented content sub-bullets):\n" +
+		"```\n- [~] poc.auth.0001 - Example (started 2026-06-18)\n```\n" +
+		"- Marker: `[ ]` queued | `[~]` in-progress | `[x]` done. In-progress and done\n" +
+		"- ID `<group>.<type>.<seq>`: `group` = build phase (poc/mvp1/v1...), `type` =\n" +
+		"- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).\n" +
+		"## In-flight\n- [ ] demo.feat.0001 - Actual work\n")
+	blocks, err := adoptionBlocks(board)
+	if err != nil || len(blocks) != 1 || blocks[10].digest != digestBytes([]byte("- [ ] demo.feat.0001 - Actual work")) {
+		t.Fatalf("scaffold was inventoried as work: blocks=%v err=%v", blocks, err)
+	}
+}
+
+func TestWorkAdoptRefusesStaleBoardAndUncoveredRows(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
+	before := []byte("- [ ] First row\n")
+	if err := os.WriteFile(path, before, 0644); err != nil {
+		t.Fatal(err)
+	}
+	request := object{"protocol": Protocol, "operation_id": "adopt-refusal-001",
+		"expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(before)), "expected_archive_sha256": nil, "rows": []any{}}
+	if _, err := Run(root, "work-adopt", request); fault.Code(err) != "INCOMPLETE_ADOPTION" {
+		t.Fatalf("uncovered board was accepted: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".codearbiter", "work", "project.json")); !os.IsNotExist(err) {
+		t.Fatalf("native owner was partially published: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("- [ ] Later human edit\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Run(root, "work-adopt", request); fault.Code(err) != "REVISION_CONFLICT" {
+		t.Fatalf("stale preimage was accepted: %v", err)
+	}
+	actual, err := os.ReadFile(path)
+	if err != nil || string(actual) != "- [ ] Later human edit\n" {
+		t.Fatalf("later edit was lost: %v", err)
+	}
+}
+
+func TestWorkAdoptRefusesHiddenMalformedTaskMarker(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	board := []byte("- [ ] Visible row\n* [ ] Hidden row\n")
+	path := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
+	if err := os.WriteFile(path, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	r := object{"protocol": Protocol, "operation_id": "adopt-hidden-001", "expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": fmt.Sprintf("%x", sha256.Sum256([]byte("- [ ] Visible row"))),
+			"work_id": "WORK-22222222222222222222222222222222", "origin": "legacy:open#VISIBLE", "alias": nil,
+			"title": "Visible row", "intent": "Visible row", "work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+	if _, err := Run(root, "work-adopt", r); fault.Code(err) != "INVALID_LEGACY_BOARD" {
+		t.Fatalf("malformed hidden task was dropped: %v", err)
+	}
+	if _, err := os.Stat(path); err != nil {
+		t.Fatalf("board was removed: %v", err)
+	}
+}
+
+func TestLegacyBoardLockRefusesExternalHardLink(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	external := filepath.Join(t.TempDir(), "external")
+	if err := os.WriteFile(external, nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(root, ".codearbiter", "open-tasks.md.lock")
+	ensureLegacyBoardFixtureDir(t, root)
+	if err := os.Link(external, link); err != nil {
+		t.Skipf("hard links unavailable: %v", err)
+	}
+	file, err := openLegacyBoardLock(root)
+	if file != nil {
+		_ = file.Close()
+	}
+	if fault.Code(err) != "LEGACY_LOCK_FAILED" {
+		t.Fatalf("hardlinked lock was accepted: %v", err)
+	}
+	info, err := os.Stat(external)
+	if err != nil || info.Size() != 0 {
+		t.Fatalf("external file was changed: %v", err)
+	}
+}
+
+func TestWorkAdoptRecoveryPreservesLaterBoardEdit(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	ensureLegacyBoardFixtureDir(t, root)
+	blockText := "- [ ] Recover row (from RECOVER#ONE)\n  - Work origin: RECOVER#ONE\n  - Work ID: WORK-11111111111111111111111111111111"
+	board := []byte(blockText + "\n")
+	if err := os.WriteFile(boardPath, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	r := object{"protocol": Protocol, "operation_id": "adopt-recover-001", "expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(blockText)),
+			"work_id": "WORK-11111111111111111111111111111111", "origin": "RECOVER#ONE", "alias": nil,
+			"title": "Recover row", "intent": "Recover row", "work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	hash, err := canonical.Hash(object{"operation": "work-adopt", "request": r})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Inject = func(step string) error {
+		if step == "after-replace-1" {
+			return errors.New("injected")
+		}
+		return nil
+	}
+	_, err = (&Engine{FS: f, RequestHash: hash}).workAdopt(r)
+	if err == nil {
+		t.Fatal("fault was not injected")
+	}
+	f.Inject = nil
+	later := []byte("- [ ] Later edit\n")
+	if err := os.WriteFile(boardPath, later, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.Recover("adopt-recover-001", "rollback"); err == nil {
+		t.Fatal("rollback overwrote a later board edit")
+	}
+	actual, err := os.ReadFile(boardPath)
+	if err != nil || string(actual) != string(later) {
+		t.Fatalf("later edit was lost: %v", err)
+	}
+	if err := os.WriteFile(boardPath, board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.Recover("adopt-recover-001", "rollback"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".codearbiter", "work", "project.json")); !os.IsNotExist(err) {
+		t.Fatalf("rolled back project survived: %v", err)
+	}
+	actual, err = os.ReadFile(boardPath)
+	if err != nil || string(actual) != string(board) {
+		t.Fatalf("rollback did not restore board: %v", err)
 	}
 }
 
@@ -324,6 +628,355 @@ func TestWorkSelectedReadIsolatedFromKnowledgeButNotSharedJournal(t *testing.T) 
 	_, err = Run(root, "work-get", object{"protocol": Protocol, "work_id": id})
 	if err == nil || !strings.Contains(err.Error(), "CORRUPT_JOURNAL") {
 		t.Fatalf("shared journal corruption was ignored: %v", err)
+	}
+}
+
+func TestWorkContextSelectsScopedKnowledgeAndNamesOmissions(t *testing.T) {
+	f := newAssistiveFixture(t)
+	seedTaskKnowledge(f)
+	f.createKnowledge("knowledge", "CTX-CODING-STANDARDS", "coding-standards")
+	f.addKnowledge("CTX-TECH-STACK", knowledgeRecord("fact", "Large relevant note", strings.Repeat("Relevant details. ", 190), "user-reported", []string{"src/stage1.go"}))
+	f.addKnowledge("CTX-CODE-MAP", knowledgeRecord("component", "Unrelated inventory", strings.Repeat("Unrelated details. ", 190), "user-reported", []string{"elsewhere/**"}))
+	created := f.call("work-create", object{"operation_id": f.next(), "title": "Improve stage one", "intent": "Keep selected context useful", "work_type": "fix"})
+	broken := filepath.Join(f.root, ".codearbiter", "context", "coding-standards.html")
+	if err := os.WriteFile(broken, []byte("<p>broken</p>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	out := f.call("work-context", object{
+		"work_id": created["work_id"], "paths": model.List("src/stage1.go"),
+		"knowledge_refs": model.List("CTX-TECH-STACK#FACT-001"), "budget": int64(4096),
+	})
+	refs := knowledgeRefs(out, "knowledge")
+	if refs["CTX-SECURITY-CONTROLS#CON-001"] == nil || refs["CTX-TECH-STACK#FACT-001"] == nil {
+		t.Fatalf("selected work omitted a path constraint or explicit capability reference: %v", refs)
+	}
+	if refs["CTX-CODE-MAP#COMP-002"] != nil {
+		t.Fatal("oversized unrelated inventory displaced selected knowledge")
+	}
+	if model.I(out["knowledge_omitted_count"]) == 0 || len(model.A(out["knowledge_unreadable"])) != 1 {
+		t.Fatalf("selected work hid a budget omission or unreadable optional document: %v", out)
+	}
+	if knowledgeRefs(out, "knowledge_omitted")["CTX-TECH-STACK#FACT-002"] == nil {
+		t.Fatalf("the omitted relevant record was not named: %v", out["knowledge_omitted"])
+	}
+	if out["assessment"] != "advisory" {
+		t.Fatalf("selected knowledge became a permission verdict: %v", out["assessment"])
+	}
+	assertNoPermissionFields(t, out)
+}
+
+func TestWorkContextRejectsOutOfRangeBudgetBeforeIntConversion(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	created, err := Run(root, "work-create", object{"protocol": Protocol, "operation_id": "budget-range-create-001", "title": "Budget range", "intent": "Protect conversion", "work_type": "fix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fs, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fs.Close()
+	e := &Engine{FS: fs}
+	_, err = e.workContext(object{"work_id": created.(map[string]any)["work_id"], "budget": int64(math.MaxInt64), "paths": []any{}})
+	if fault.Code(err) != "INVALID_BUDGET" {
+		t.Fatalf("out-of-range direct budget was accepted: %v", err)
+	}
+}
+
+func TestWorkEffectLostCreateResponseRemainsUnknown(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "effect-create-001", "title": "Publish local work", "intent": "Track one outcome", "work_type": "fix"})
+	id := created["work_id"].(string)
+	configured := call("work-provider-configure", object{"operation_id": "effect-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	staged := call("work-effect-stage", object{"operation_id": "effect-stage-001", "work_id": id,
+		"binding_generation": configured["binding_generation"],
+		"expected":           object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	claimed := call("work-effect-claim", object{"operation_id": "effect-claim-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	replayedClaim := call("work-effect-claim", object{"operation_id": "effect-claim-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	if replayedClaim["revision"] != claimed["revision"] {
+		t.Fatalf("journaled issue claim did not replay: %v", replayedClaim)
+	}
+	if model.S(model.M(claimed["provider_effect"])["status"]) != "outcome_unknown" {
+		t.Fatalf("pre-send claim did not preserve uncertainty: %v", claimed)
+	}
+	view := call("work-view", object{"work_id": id})
+	if !strings.Contains(model.S(view["html"]), "Outcome unknown") || strings.Contains(model.S(view["html"]), "<p class=\"state\">Unconfigured</p>") {
+		t.Fatal("human work view concealed the uncertain provider effect")
+	}
+	// A process died after the claim. A new local store has no old journal,
+	// but the canonical work record must still prevent a second create.
+	fresh := testutil.Root(t)
+	for _, rel := range []string{projectPath, workPath(id), ".codearbiter/work/provider.json"} {
+		b, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		p := filepath.Join(fresh, filepath.FromSlash(rel))
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, b, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := Run(fresh, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	current, err := Run(fresh, "work-get", object{"protocol": Protocol, "work_id": id})
+	if err != nil || model.S(model.M(model.M(current)["provider_effect"])["status"]) != "outcome_unknown" {
+		t.Fatalf("fresh store lost portable uncertain effect: %v, %v", current, err)
+	}
+	_, err = Run(fresh, "work-effect-claim", object{"protocol": Protocol, "operation_id": "effect-claim-002", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-002",
+		"expected": object{"revision": model.M(current)["revision"], "model_sha256": model.M(current)["model_sha256"]}})
+	if err == nil || !strings.Contains(err.Error(), "EFFECT_UNKNOWN") {
+		t.Fatalf("uncertain create was sent again: %v", err)
+	}
+}
+
+func TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	created := call("work-create", object{"operation_id": "status-create-001", "title": "Bound work", "intent": "Track one issue", "work_type": "fix"})
+	id := model.S(created["work_id"])
+	config := call("work-provider-configure", object{"operation_id": "status-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	generation := config["binding_generation"]
+	expected := func(value object) object {
+		return object{"revision": value["revision"], "model_sha256": value["model_sha256"]}
+	}
+	staged := call("work-effect-stage", object{"operation_id": "status-stage-create-001", "work_id": id, "binding_generation": generation, "expected": expected(created)})
+	claimed := call("work-effect-claim", object{"operation_id": "status-claim-create-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-create-001", "expected": expected(staged)})
+	bound := call("work-effect-record", object{"operation_id": "status-record-create-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-create-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open", "expected": expected(claimed)})
+	staged = call("work-effect-stage", object{"operation_id": "status-stage-close-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "closed", "expected": expected(bound)})
+	effect := model.M(staged["provider_effect"])
+	firstIntentID := model.S(effect["intent_id"])
+	if len(firstIntentID) != 64 {
+		t.Fatalf("status stage omitted its portable intent identity: %v", effect)
+	}
+	if model.I(effect["remote_issue_number"]) != 7 || model.S(effect["remote_state"]) != "open" || model.S(effect["desired_state"]) != "closed" {
+		t.Fatalf("status stage lost its issue binding or observed baseline: %v", effect)
+	}
+	conflict := call("work-effect-conflict", object{"operation_id": "status-conflict-001", "work_id": id, "binding_generation": generation, "remote_state": "closed", "expected": expected(staged)})
+	if model.S(model.M(conflict["provider_effect"])["status"]) != "conflict" {
+		t.Fatalf("remote change was not retained for explicit reconciliation: %v", conflict)
+	}
+	view := call("work-view", object{"work_id": id})
+	if html := model.S(view["html"]); !strings.Contains(html, "Remote issue is closed") || !strings.Contains(html, "Local intent was closed") {
+		t.Fatalf("selected work view omitted the remote conflict state: %s", html)
+	}
+	staged = call("work-effect-stage", object{"operation_id": "status-stage-open-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "open", "expected": expected(conflict)})
+	if nextIntentID := model.S(model.M(staged["provider_effect"])["intent_id"]); len(nextIntentID) != 64 || nextIntentID == firstIntentID {
+		t.Fatalf("distinct status stage reused the prior intent identity: %v", nextIntentID)
+	}
+	claimed = call("work-effect-claim", object{"operation_id": "status-claim-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "expected": expected(staged)})
+	record := object{"protocol": Protocol, "operation_id": "status-record-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "closed", "expected": expected(claimed)}
+	if _, err := Run(root, "work-effect-record", record); fault.Code(err) != "INVALID_REMOTE_BINDING" {
+		t.Fatalf("stale status readback was accepted: %v", err)
+	}
+	record["remote_state"] = "open"
+	record["operation_id"] = "status-record-open-002"
+	recorded := call("work-effect-record", record)
+	if model.S(model.M(recorded["provider_effect"])["remote_state"]) != "open" || model.S(model.M(recorded["provider_effect"])["status"]) != "synchronized" {
+		t.Fatalf("verified status result was not retained: %v", recorded)
+	}
+	staged = call("work-effect-stage", object{"operation_id": "status-stage-uncertain-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "closed", "expected": expected(recorded)})
+	claimed = call("work-effect-claim", object{"operation_id": "status-claim-uncertain-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-uncertain-001", "expected": expected(staged)})
+	resolution := object{"protocol": Protocol, "operation_id": "status-resolve-uncertain-001", "work_id": id, "binding_generation": generation, "attempt_id": "wrong-attempt-001", "remote_state": "open", "expected": expected(claimed)}
+	if _, err := Run(root, "work-effect-conflict", resolution); fault.Code(err) != "EFFECT_CLAIM_CHANGED" {
+		t.Fatalf("wrong uncertain attempt was accepted: %v", err)
+	}
+	resolution["attempt_id"] = "status-attempt-uncertain-001"
+	resolution["remote_state"] = "closed"
+	if _, err := Run(root, "work-effect-conflict", resolution); fault.Code(err) != "INVALID_REMOTE_BINDING" {
+		t.Fatalf("matching desired status was falsely recorded as conflict: %v", err)
+	}
+	resolution["operation_id"] = "status-resolve-uncertain-002"
+	resolution["remote_state"] = "open"
+	accepted := call("work-effect-conflict", resolution)
+	if model.S(model.M(accepted["provider_effect"])["status"]) != "conflict" {
+		t.Fatalf("explicit uncertain resolution lost conflict state: %v", accepted)
+	}
+}
+
+func TestWorkIssueAdoptionRequiresUnboundIdentityAndExactRepository(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	created := call("work-create", object{"operation_id": "adopt-create-001", "title": "Adopt issue", "intent": "Keep existing issue", "work_type": "fix"})
+	id := model.S(created["work_id"])
+	config := call("work-provider-configure", object{"operation_id": "adopt-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "after_merge"})
+	request := object{"protocol": Protocol, "operation_id": "adopt-issue-001", "work_id": id,
+		"binding_generation": config["binding_generation"], "remote_issue_number": int64(7),
+		"remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open",
+		"expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}}
+	request["remote_issue_url"] = "https://github.com/arbiterForge/other/issues/7"
+	if _, err := Run(root, "work-effect-adopt", request); fault.Code(err) != "INVALID_REMOTE_BINDING" {
+		t.Fatalf("cross-repository adoption was accepted: %v", err)
+	}
+	request["remote_issue_url"] = "https://github.com/arbiterForge/disposable/issues/7"
+	adopted := call("work-effect-adopt", request)
+	effect := model.M(adopted["provider_effect"])
+	if model.S(effect["status"]) != "synchronized" || model.I(effect["remote_issue_number"]) != 7 || model.S(effect["remote_state"]) != "open" {
+		t.Fatalf("verified remote binding was not retained: %v", effect)
+	}
+	request["operation_id"] = "adopt-issue-002"
+	request["expected"] = object{"revision": adopted["revision"], "model_sha256": adopted["model_sha256"]}
+	if _, err := Run(root, "work-effect-adopt", request); fault.Code(err) != "EFFECT_ALREADY_SENT" {
+		t.Fatalf("duplicate adoption was accepted: %v", err)
+	}
+}
+
+func TestWorkEffectBindingChangeDoesNotSend(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "binding-create-001", "title": "Bind", "intent": "Stay scoped", "work_type": "fix"})
+	id := created["work_id"].(string)
+	first := call("work-provider-configure", object{"operation_id": "binding-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	staged := call("work-effect-stage", object{"operation_id": "binding-stage-001", "work_id": id, "binding_generation": first["binding_generation"],
+		"expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	call("work-provider-configure", object{"operation_id": "binding-configure-002", "repository": "arbiterForge/other", "credential_ref": "GH_TOKEN", "effect_timing": "immediate", "expected_config_sha256": first["binding_generation"]})
+	_, err := Run(root, "work-effect-claim", object{"protocol": Protocol, "operation_id": "binding-claim-001", "work_id": id,
+		"binding_generation": first["binding_generation"], "attempt_id": "binding-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	if err == nil || !strings.Contains(err.Error(), "PROVIDER_BINDING_CHANGED") {
+		t.Fatalf("old binding was allowed to claim an external effect: %v", err)
+	}
+	current := call("work-get", object{"work_id": id})
+	if model.S(model.M(current["provider_effect"])["status"]) != "pending" {
+		t.Fatalf("a refused claim changed portable intent: %v", current)
+	}
+}
+
+func TestWorkEffectDeferredClaimRequiresMergeObservation(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "deferred-create-001", "title": "Defer", "intent": "Wait for merge", "work_type": "fix"})
+	configured := call("work-provider-configure", object{"operation_id": "deferred-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "after_merge"})
+	id := model.S(created["work_id"])
+	staged := call("work-effect-stage", object{"operation_id": "deferred-stage-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	claim := object{"protocol": Protocol, "operation_id": "deferred-claim-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "deferred-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}}
+	if _, err := Run(root, "work-effect-claim", claim); err == nil || !strings.Contains(err.Error(), "EFFECT_WAITING_FOR_MERGE") {
+		t.Fatalf("deferred claim crossed merge boundary without observation: %v", err)
+	}
+	if model.S(model.M(call("work-get", object{"work_id": id})["provider_effect"])["status"]) != "pending" {
+		t.Fatal("refused deferred claim changed portable intent")
+	}
+	claim["merge_pull_number"], claim["merge_commit_sha"] = int64(3), strings.Repeat("a", 40)
+	claimed := call("work-effect-claim", claim)
+	effect := model.M(claimed["provider_effect"])
+	if model.S(effect["status"]) != "outcome_unknown" || model.I(effect["merge_pull_number"]) != 3 || model.S(effect["merge_commit_sha"]) != strings.Repeat("a", 40) {
+		t.Fatalf("verified observation was not retained with the pre-send claim: %v", effect)
+	}
+	baseRecord := object{"protocol": Protocol, "operation_id": "deferred-record-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "wrong-attempt-001",
+		"remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7",
+		"expected": object{"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}}
+	if _, err := Run(root, "work-effect-record", baseRecord); err == nil || !strings.Contains(err.Error(), "EFFECT_CLAIM_CHANGED") {
+		t.Fatalf("mismatched attempt recorded an issue: %v", err)
+	}
+	baseRecord["operation_id"], baseRecord["attempt_id"] = "deferred-record-002", "deferred-attempt-001"
+	baseRecord["remote_issue_url"] = "https://github.com/arbiterForge/other/issues/7"
+	if _, err := Run(root, "work-effect-record", baseRecord); err == nil || !strings.Contains(err.Error(), "INVALID_REMOTE_BINDING") {
+		t.Fatalf("wrong repository recorded an issue: %v", err)
+	}
+	if model.S(model.M(call("work-get", object{"work_id": id})["provider_effect"])["status"]) != "outcome_unknown" {
+		t.Fatal("refused record changed the uncertain pre-send claim")
+	}
+}
+
+func TestWorkEffectConcurrentSyncHasOneClaim(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "concurrent-effect-create-001", "title": "One issue", "intent": "One claim", "work_type": "fix"})
+	id := created["work_id"].(string)
+	config := call("work-provider-configure", object{"operation_id": "concurrent-effect-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	staged := call("work-effect-stage", object{"operation_id": "concurrent-effect-stage-001", "work_id": id, "binding_generation": config["binding_generation"],
+		"expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	var wg sync.WaitGroup
+	wins := make(chan error, 2)
+	for i := 0; i < 2; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			_, err := Run(root, "work-effect-claim", object{"protocol": Protocol,
+				"operation_id": fmt.Sprintf("concurrent-effect-claim-%03d", i), "work_id": id,
+				"binding_generation": config["binding_generation"], "attempt_id": fmt.Sprintf("concurrent-attempt-%03d", i),
+				"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+			wins <- err
+		}(i)
+	}
+	wg.Wait()
+	close(wins)
+	succeeded := 0
+	for err := range wins {
+		if err == nil {
+			succeeded++
+		}
+	}
+	if succeeded != 1 {
+		t.Fatalf("%d concurrent claims succeeded; want exactly one", succeeded)
 	}
 }
 

@@ -46,10 +46,13 @@ answers and current user direction are considered.
 
 Save discovered gaps as decomposition `work_item` candidates. Do not call
 `knowledge.py promote` or create an external issue merely because a gap was
-recorded. When the user selects promotion, check the candidate's stable origin
-against the selected work owner, including archived work, and retain the actual
-returned `work_id`; a retry repairs the same link. Reinspect only affected
-records on later source changes through `context-check`. Continue with
+recorded. If multiple candidates cite the same external item, keep them as
+separate proposals until their scope and identity are resolved; a shared title
+or citation does not select one or authorize publishing both. When the user
+selects promotion, check the candidate's stable origin against the selected
+work owner, including archived work, and retain the actual returned `work_id`;
+a retry repairs the same link. Reinspect only affected records on later source
+changes through `context-check`. Continue with
 independent useful work when a separate choice remains open. Report the
 selected records and remaining unknowns, then return to the requested work;
 the greenfield interview and initialization steps below do not run on this path.
@@ -97,11 +100,12 @@ record an inapplicable area with its reason:
 | Integrations | External dependencies, contracts and authentication, ownership, reliability, cost and fallback. |
 | Risks | Material risks with mitigations, open questions, bounded spikes and architecture-change triggers. |
 
-Record each question as a decomposition `question` record when you ask it
-(`status: open`) and update it with the user's actual answer
-(`status: answered`, `basis: user-reported`) as soon as it is given, so a closed
-session loses nothing. A deferral is `status: deferred`, not an answer. Exclude
-secret values.
+Record answered interview questions as decomposition `question` records
+(`status: answered`, `basis: user-reported`) with the user's actual answer.
+The global `open-questions.md` owner holds unanswered or deferred questions
+and their current status; link its stable identity from the decomposition
+instead of keeping a second mutable question status. A closed session must
+retain the unanswered question there. Exclude secret values.
 
 Record a user-decided architectural choice through `decision-lifecycle` at
 `{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md`; it owns ADR numbering,
@@ -148,8 +152,13 @@ Leave unknowns as `unknown` records rather than inventing facts. Preserve
 
 Promote each approved `work_item` with `knowledge.py promote <WORK-ID>`. It adds the
 task through the task board's own writer and is safe to repeat. Never write task
-rows directly or mark planned work done. Record unresolved questions that need the
-user's later decision on `open-questions.md` as well, keeping its history. Preserve
+rows directly or mark planned work done. Record an unresolved consequential
+choice in `open-questions.md` through its existing owner; it alone tracks the
+question's live status. When answered, resolve that entry through the same
+owner and add an answered decomposition record only if the answer informs the
+intended architecture. Link by identity and keep the interview history. In
+initialized brownfield acquisition, retain that same global question owner.
+Preserve
 `overrides.log`, `last-checkpoint` and all ADR history.
 
 ## 5. Initialize and return to work

@@ -84,6 +84,9 @@ inline. Neither a capability failure nor a format change authorizes a raw rewrit
 The five project-context documents are Markdown; their safe writer and provenance
 format are separate from spec/plan HTML. Legacy task boards keep their owner;
 new local work can use portable native work records and a project identity.
+A configured GitHub issue effect keeps pending or uncertain remote state in
+the work record. Optional Project item and selected field effects are separate
+from the issue binding; explicit synchronization remains separate from local progress.
 Questions, audit logs, release targets, and ADR history retain their owners. Reading state
 does not establish that it is fresh, verified, accepted, or released.
 

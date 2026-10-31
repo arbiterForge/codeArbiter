@@ -4,12 +4,41 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Stage and reconcile explicit GitHub issue status updates for bound native work,
+  with readback and a recorded conflict when the observed remote status changes.
+- Adopt an existing correlated GitHub issue without creating a duplicate.
+- Keep newly discovered context gaps as candidates and route selected promotion
+  through the current work owner.
+- Show observed and intended GitHub issue status in the derived work view.
+- Summarize recorded code-map components and interfaces on the derived project page.
+- Record a bounded GitHub PR observation on selected work while keeping local progress, checks and issue sync distinct.
+
+### Fixed
+
+- Require the selected work file in a merged PR's changed-file list before
+  releasing a contingent GitHub effect.
+- Support selected legacy work rename, attachment, and reopen through the
+  identity-bound board writer; keep PR views clear about unverified delivery.
+- Exclude scaffold instructions and fenced examples from selected legacy work adoption.
+- Keep scaffold documentation out of legacy startup counts and work listings.
+
+## [0.26.1] - 2026-10-31
+
+### Fixed
+
+- Use the host-selected Git executable for GitHub issue synchronization in Pi.
+- Carry selected context and GitHub issue effect support into the Pi package.
+
 ## [0.26.0] - 2026-10-30
 
 ### Added
 
 - Render a bounded, read-only native project work page with links to canonical
   work records and separate progress, check, delivery, and tracker labels.
+- Group native work into optional cycles and render bounded cycle summaries
+  without copying work items or asserting remote delivery.
 
 ### Fixed
 
