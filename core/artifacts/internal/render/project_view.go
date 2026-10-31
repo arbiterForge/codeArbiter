@@ -10,11 +10,12 @@ import (
 // ProjectViewData is a bounded page of validated native work, not a second
 // project or work model. The caller owns membership and continuation checks.
 type ProjectViewData struct {
-	ID         string
-	Offset     int64
-	Total      int64
-	NextOffset *int64
-	Entries    []ProjectViewEntry
+	ID               string
+	Offset           int64
+	Total            int64
+	NextOffset       *int64
+	MembershipSHA256 string
+	Entries          []ProjectViewEntry
 }
 
 type ProjectViewEntry struct {
@@ -46,7 +47,7 @@ func ProjectView(data ProjectViewData) ([]byte, error) {
 		w.WriteString(`</div>`)
 	}
 	if data.NextOffset != nil {
-		w.WriteString(`<p>More work remains. Generate the next page to continue from item ` + strconv.FormatInt(*data.NextOffset+1, 10) + `.</p>`)
+		w.WriteString(`<p>More work remains. To continue from item ` + strconv.FormatInt(*data.NextOffset+1, 10) + `, run <code>work.py project-view --offset ` + strconv.FormatInt(*data.NextOffset, 10) + ` --membership-sha256 ` + esc(data.MembershipSHA256) + `</code>.</p>`)
 	}
 	w.WriteString(`</section><div class="work-grid"><section class="work-card" id="delivery"><h2>Delivery</h2><p>Unobserved. Local completion does not establish merge, release or deployment.</p></section><section class="work-card" id="sync"><h2>Tracker sync</h2><p>Unconfigured in the local work model. No remote result is implied.</p></section></div><details class="work-details"><summary>Source identity</summary><p>Project ` + esc(data.ID) + `</p><p>Page offset ` + strconv.FormatInt(data.Offset, 10) + `</p></details><footer class="footer"><p>Derived static view · no runtime network resources</p></footer></main></div></body></html>`)
 	out := []byte(w.String())

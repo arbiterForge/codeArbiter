@@ -75,6 +75,12 @@ func TestProjectViewPresentsBoundedCanonicalWork(t *testing.T) {
 		if offset == 0 && (view["next_offset"] != int64(1) || !strings.Contains(html, "More work remains")) {
 			t.Fatalf("first page hid continuation: %v", view)
 		}
+		if offset == 0 {
+			command := "work.py project-view --offset 1 --membership-sha256 " + listing["membership_sha256"].(string)
+			if !strings.Contains(html, command) {
+				t.Fatalf("HTML-only caller cannot request the next page without response metadata: %v", view)
+			}
+		}
 		if offset == 1 && view["next_offset"] != nil {
 			t.Fatalf("last page claimed another page: %v", view)
 		}

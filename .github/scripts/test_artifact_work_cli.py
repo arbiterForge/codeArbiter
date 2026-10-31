@@ -168,6 +168,8 @@ class WorkCLITest(unittest.TestCase):
         self.assertIn("Local progress", html)
         self.assertIn("Checks", html)
         self.assertIn("More work remains", html)
+        self.assertIn(f"work.py project-view --offset {page['next_offset']} "
+                      f"--membership-sha256 {page['membership_sha256']}", html)
         self.assertNotIn('id="ca-artifact-model"', html)
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", first["work_id"])["state"], "queued")

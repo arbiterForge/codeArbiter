@@ -378,7 +378,9 @@ Its `offset`, `limit` (at most 16), `membership_sha256`, `next_offset`,
 continuation semantics as `work-list`. It refuses an absent portable project
 identity. `hooks/work.py project-view` prints HTML; the response's
 `.codearbiter/views/project/<PROJECT-ID>-<offset>.html` path is derived and
-optional. The engine does not save it or include it in artifact discovery.
+optional. When another page exists, the HTML includes the next offset and
+membership digest in a complete `work.py project-view` command. The engine
+does not save the page or include it in artifact discovery.
 Legacy projects continue to use their board; this native-only derived view
 reports unsupported through the legacy facade. Architecture and cycle
 overviews remain future work.

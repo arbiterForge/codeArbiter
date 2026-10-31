@@ -25,7 +25,8 @@ func (e *Engine) projectView(r object) (any, error) {
 	}
 	data := render.ProjectViewData{
 		ID: id, Offset: model.I(page["offset"]), Total: model.I(page["total"]),
-		Entries: make([]render.ProjectViewEntry, 0, len(model.A(page["entries"]))),
+		MembershipSHA256: model.S(page["membership_sha256"]),
+		Entries:          make([]render.ProjectViewEntry, 0, len(model.A(page["entries"]))),
 	}
 	if page["next_offset"] != nil {
 		next := model.I(page["next_offset"])
