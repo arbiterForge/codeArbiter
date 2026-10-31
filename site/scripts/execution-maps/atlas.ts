@@ -173,6 +173,8 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   // Init now sends initialized Markdown acquisition through decompose and
   // refresh through context-check; the historical route layout is unchanged.
+  // Duplicate external candidate guidance preserves the same route and leaves
+  // publication to selected work promotion.
   'core/surface/commands/init.md':'ed0f32b734097fa549cd95738ceaa30c56b7b849',
   'core/pysrc/_artifactlib.py':'0cbc621fe6eeab05e7eb2bf96ebbee6c58d21c38',
   'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
@@ -188,7 +190,7 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
   'core/surface/skills/context-creation/SKILL.md':'5e6922b5ad4da78159a19b316480f3849827ab7f',
   'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
-  'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
+  'core/surface/skills/decompose/SKILL.md':'e4f3dbd54dbf141798e078a36c43bc5a1cc91835',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
