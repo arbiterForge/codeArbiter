@@ -504,6 +504,70 @@ class GithubWorkTest(unittest.TestCase):
                           "/repos/arbiterForge/disposable/pulls/3/files?per_page=100&page=1",
                           "/repos/arbiterForge/disposable/contents/.codearbiter/work/" + self.work_id + ".html?ref=" + sha])
 
+    def test_old_merge_cannot_release_a_new_same_looking_status_intent(self):
+        old = self.client.call("work-provider-get", {})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "github-configure-distinct-intents", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        bound = _workgithub.adopt_issue(self.root, self.client, self.work_id, 7, transport,
+                                        lambda _: "fixture-token", operation_id="github-adopt-distinct-intents")
+        def stage(operation_id, current):
+            return self.client.call("work-effect-stage", {
+                "operation_id": operation_id, "work_id": self.work_id,
+                "binding_generation": config["binding_generation"], "kind": "status_update",
+                "desired_state": "closed", "expected": {"revision": current["revision"],
+                                                     "model_sha256": current["model_sha256"]}})
+        first = stage("github-close-intent-a", bound)
+        first_sha = self._commit_pending_effect()
+        first_bytes = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        second = stage("github-close-intent-b", first)
+        self._commit_pending_effect()
+        transport.calls.clear()
+        transport.merge_sha = first_sha
+        transport.merged_work = first_bytes
+        transport.current_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "MERGE_UNVERIFIED")
+        self.assertEqual(transport.patches, [])
+        self.assertNotEqual(first["provider_effect"]["intent_id"], second["provider_effect"]["intent_id"])
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "pending")
+
+    def test_status_intent_survives_unrelated_local_title_edit(self):
+        old = self.client.call("work-provider-get", {})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "github-configure-status-title", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        bound = _workgithub.adopt_issue(self.root, self.client, self.work_id, 7, transport,
+                                        lambda _: "fixture-token", operation_id="github-adopt-status-title")
+        staged = self.client.call("work-effect-stage", {
+            "operation_id": "github-stage-status-title", "work_id": self.work_id,
+            "binding_generation": config["binding_generation"], "kind": "status_update",
+            "desired_state": "closed", "expected": {"revision": bound["revision"],
+                                                 "model_sha256": bound["model_sha256"]}})
+        sha = self._commit_pending_effect()
+        merged = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        renamed = self.client.call("work-update", {
+            "operation_id": "github-rename-after-status-stage", "work_id": self.work_id,
+            "action": "rename", "title": "Updated local title",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        self.assertEqual(staged["provider_effect"]["intent_id"], renamed["provider_effect"]["intent_id"])
+        transport.merge_sha = sha
+        transport.merged_work = merged
+        transport.current_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        result = _workgithub.sync(self.root, self.client, self.work_id, transport,
+                                  lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(result["provider_effect"]["status"], "synchronized")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+
     def test_contingent_effect_refuses_canceled_current_default_intent(self):
         old = self.client.call("work-provider-get", {})
         current = self.client.call("work-get", {"work_id": self.work_id})

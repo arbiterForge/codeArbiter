@@ -1,146 +1,71 @@
 ---
 name: ca-task
-description: Add, start, or complete selected local work through its owning store.
-argument-hint: "add \"<desc>\" | start <work-id|legacy-id|\"legacy title\"> | done <work-id|legacy-id|\"legacy title\">"
+description: Add, select, start, complete, or reopen local work through its owning store.
+argument-hint: "add <description> | list | start <WORK-ID> | done <WORK-ID> | reopen <WORK-ID>"
 ---
 
-# /ca-task — selected local work writer
+# /ca-task — selected local work
 
-# Owner selection
+Use the installed `hooks/work.py` facade for ordinary work in both native and
+legacy projects. It selects the current owner, gives new work a stable `WORK-ID`,
+and performs one semantic action through that owner. Existing boards stay
+legacy until an explicit adoption. Do not create a board beside native work or
+write both owners. A mixed or unsafe store is a refusal to report, not a reason
+to switch writers.
 
-Check whether `<project-root>/.codearbiter/open-tasks.md` exists. When it does,
-that board remains the work owner. Before a board write, resolve the installed
-`hooks/work.py` through the helper card below and run `work.py list --limit 1`
-from the project worktree. Continue with the legacy board procedure only when
-the result says `owner: legacy`; a refusal (including two owners) stops the
-write without changing either store.
-When it does not, use the installed `hooks/work.py` helper for native work.
-Do not create a board as a side effect of a native task command, and do not
-write both stores. If the selected helper reports two owners or an unsafe
-store, preserve the state and report its refusal.
-
-For native `add`, use `work.py create --title=<description>
---intent=<description> --type unknown --operation-id <stable-request-id>`.
-Pass title and intent as separate literal arguments so leading hyphens stay
-data. The request ID must be newly minted for a distinct action and reused unchanged after an
-uncertain result; retain it with the request until the result is known. If the task came from
-a durable source, also pass `--origin <source-key>` so later sessions can
-reconcile the same item. Record the returned `work_id` as the selection key.
-For native `start` and `done`, require that exact `work_id`. Read it once with
-`work.py get <work_id>`, then invoke `work.py start <work_id>` or `work.py
-complete <work_id>` with `--operation-id <stable-request-id>`,
-`--expected-revision <revision>` and `--expected-model-sha256 <model_sha256>`
-from that read. Retain all three values for an exact retry after an uncertain
-result. A title or dotted board ID is not a safe native selector. A conflict
-reports the affected identity and must not overwrite a later update.
-Read the installed helper card described below for `hooks/work.py` too, and
-invoke only the resolved installed copy with the selected Python interpreter.
-
-## Legacy board procedure
-
-The one blessed way to mutate `<project-root>/.codearbiter/open-tasks.md`
-(resolves D-1). Hand-editing the board is no longer the only path; this command keeps
-every entry schema-conformant and every transition dated. The board LOGIC lives in the
-pure `_taskboardlib` transforms; this command runs the thin writer
-`taskwrite.py` from the selected installed package.
-
-Before an authorized board mutation, read the installed helper card:
+Before invoking the helper, read the installed helper card:
 
 
 `../../includes/helper-invocation.md` relative to this loaded skill.
-Set its loaded-resource input
-to the absolute path of this **loaded** command or skill, and select the literal
-relative helper `hooks/taskwrite.py`. Resolve and check that helper exactly once
-using the card, then run its interpreter-selection block for the current shell.
-Run from the intended project worktree so the writer targets
-that project's board. Do not switch to the plugin directory, use a root token
-from a hook environment in an ordinary tool call, or search source/cache copies.
+Use this loaded command or skill as the card's resource input and resolve
+`hooks/work.py` exactly once. Run it with the card's selected Python interpreter
+from the intended project worktree. Keep caller text in literal arguments; do
+not interpolate it into shell syntax or search for a source/cache copy.
 
-## Verbs
+## Ordinary actions
 
-Always put `--` before user text (a desc or title) so a value beginning with `-` is not
-parsed as a flag. Use the validated Python 3 interpreter selected by the card;
-never retry a refused helper under another interpreter. Keep every option before `--` and
-pass user text as one literal argument.
+- **List or select:** `work.py list --limit 32`, then `work.py get <WORK-ID>`
+  for the selected item. Use the returned `work_id`, not a title or dotted
+  legacy alias. If the item is absent or selection is ambiguous, stop and
+  report it.
+- **Add:** `work.py create --title <description> --intent <description>
+  --type unknown --operation-id <stable-request-id>`. Pass `--origin <source-key>`
+  when work comes from a durable source. A distinct action gets a new request
+  ID; an uncertain retry keeps the original ID. Use the returned `work_id` for
+  later actions.
+- **Start:** `work.py start <WORK-ID> --operation-id <stable-request-id>`.
+- **Complete:** `work.py complete <WORK-ID> --operation-id <stable-request-id>`.
+  Queued work already performed can be recorded complete directly. Do not
+  invent a start event. This records local progress; checks remain unknown
+  until their actual evidence is assessed.
+- **Reopen:** `work.py reopen <WORK-ID> --operation-id <stable-request-id>`.
 
-- **add** — append a queued task. ID-less by default; pass `--id <group>.<type>` to mint
-  a dotted ID now, `--from <origin>` for a harvest back-ref, `--boundaries a,b` for the
-  security/trust boundaries it touches. The description must be nonblank and
-  single-line; origin and boundary values must also stay on one line.
-  - Invoke the resolved helper with `add [--id group.type] [--from origin] [--boundaries a,b] -- <desc>`.
-- **start** — flip a task to in-progress and **stamp the started date** (so it can never
-  be a dateless `[~]`). On an ID-less item, pass `--as <group>.<type>` to mint its dotted
-  ID at pick-up. `--date YYYY-MM-DD` overrides today.
-  - Invoke the resolved helper with `start [--as group.type] [--date YYYY-MM-DD] -- <id|title>`.
-- **done** — flip an in-progress task to done and stamp the done date (`--date`
-  overrides today). A queued task must be `start`ed first.
-  - Invoke the resolved helper with `done [--date YYYY-MM-DD] -- <id|title>`.
+The facade reads the selected revision for an ordinary update and applies the
+owner's exact change check. When a caller already holds the preimage, pass
+`--expected-revision` and `--expected-model-sha256` together for native work,
+or `--expected-model-sha256` with the returned board hash for legacy work.
+Keep the same request ID and preimage for an exact retry after an uncertain
+result. A changed item is a conflict to inspect; do not overwrite it by
+minting a fresh request ID.
 
-The following are literal minimal `add` invocations after the installed helper
-and interpreter have been resolved. Bind the named text variable to the exact
-caller-supplied description; do not paste that text into the command syntax.
+For a historical ID-less board row that cannot be selected through a stable
+`WORK-ID`, `hooks/taskwrite.py` remains an explicit compatibility or repair
+path. Inspect the exact row and use its documented selector and board lock;
+do not teach best-effort title matching as the normal /task route. Direct
+board edits remain invalid.
 
-### PowerShell add invocation
-```powershell
-& $caPython -B $caHelper add -- $caDescription
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-```
+## Related owners
 
-### POSIX add invocation
-```sh
-"$ca_python" -B "$ca_helper" add -- "$ca_description"
-```
-
-When `add` needs fields, bind each value separately and keep all options before
-`--`. Use the `--from=<value>` form if the origin begins with a hyphen. These
-examples preserve quotes, metacharacters, and non-ASCII description text as
-one argument; neither shell evaluates the variable's contents as a command.
-
-### PowerShell add with options
-```powershell
-$caAddArgs = @('add', '--id', $caId, "--from=$caOrigin", '--boundaries', $caBoundaries, '--', $caDescription)
-& $caPython -B $caHelper @caAddArgs
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-```
-
-### POSIX add with options
-```sh
-"$ca_python" -B "$ca_helper" add --id "$ca_id" "--from=$ca_origin" --boundaries "$ca_boundaries" -- "$ca_description"
-```
-
-For `start` and `done`, replace only the verb and its literal option array,
-keeping the same resolved helper and `--` before the one title or ID argument.
-
-A missing target, an already-matching state, an out-of-order transition, a malformed
-add field or `--date`, or an invalid `GROUP.TYPE` namespace is reported and writes
-nothing (exit 1).
-A queued `done` identifies the task as queued and tells the caller to `start` it first.
-**Targeting by title is best-effort:**
-prefer the dotted ID, and
-note that if two ID-less items share a title, `start`/`done` act on the first — give one
-an ID (`/ca-task start --as <group>.<type> -- "<title>"`) to disambiguate.
-
-## When NOT to use
-
-- Promoting workflow follow-ups in bulk → that is the harvest
-  (`<plugin-root>/includes/harvest.md`), which calls this writer for you.
-- Reading the board / counts → `/ca-status` (read-only).
-- Archiving long-settled done items → `/ca-standup` owns the sweep (D-2,
-  resolved 2026-07-31). It proposes dated complete work strictly more than 14
-  calendar days old through the selected owner, then archives only the user's
-  named subset in a fresh dedicated worktree. Native items use `work.py`;
-  legacy rows stay with `taskwrite.py`, using an exact dotted ID or a uniquely
-  verified title for an ID-less row. Undated done items are never proposed automatically; standup's
-  explicit-request and `--allow-undated` rules apply. Declined items stay put.
-- Filing a separate `chore(board)` PR just to flip a task state → task-board transitions
-  (`[x]` done-flip, `[~]` start-flip, new `[ ]` add) ride the **work commit** via
-  commit-gate, co-located atomically with the code that completes, starts, or spawns the
-  task (ADR-0008). A lagging board-only PR is the anti-pattern this design eliminates.
+- Harvest promotes selected follow-ups through the current work owner.
+- `/ca-standup` owns archival. It uses selected native work or the
+  legacy writer as appropriate and preserves undated historical rows.
+- Work lifecycle changes ride their associated work commit under ADR-0008;
+  do not open a separate board-only PR to make progress appear complete.
 
 ## Hard gate
 
-- MUST write the board only through `taskwrite.py` (the pure transforms), never a
-  free-hand Edit that can malform the schema.
-- `start` MUST stamp a started date — never leave a dateless `[~]`.
-- `done` MUST target an in-progress task — a queued task must go through `start` first.
-- MUST NOT delete a task to "complete" it — mark it `done` so the record survives.
+- Never hand-edit the legacy board or a native work model.
+- Never write two work owners for one action or silently adopt a board.
+- Preserve the selected identity, real host stop, exact change check, and
+  original request ID on an uncertain retry.
+- Do not equate local completion with passed checks, remote sync, or delivery.

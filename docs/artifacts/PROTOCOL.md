@@ -344,6 +344,19 @@ snapshots in `.codearbiter/legacy/`, and removes the two writable board paths.
 Old board writers then refuse the absent board. Repeating the same operation
 ID reconstructs the request from the snapshots and returns its recorded result;
 a different operation cannot silently re-adopt an already native project.
+Each adopted work item retains a source-bound pointer to its individual block
+in that snapshot. Selected `work-context` reads verify the block digest and
+return its original details, including completion conditions and boundaries,
+in UTF-8-safe pages via `--legacy-offset`. A changed or missing snapshot
+refuses the selected read. The snapshot is historical context, not a second
+writable board or a new security policy.
+
+New consumer scaffolds protect `.codearbiter/work/*.html`, all portable
+`.codearbiter/work/*.json` bindings, and `.codearbiter/legacy/*.md` from Git
+line-ending conversion. Existing installations can run
+`init-codearbiter.py --repair-work-attributes --root <project>` to append only
+missing rules to their `.codearbiter/.gitattributes`; the repair preserves
+custom rules and is safe to repeat.
 
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
@@ -404,7 +417,10 @@ Read those attachments by exact artifact ID when needed. The canonical native
 work page joins intent, progress, check status and links to the separate spec
 and plan. Native `work-view` reads the selected
 work and its exact attachments through `work-context`, then returns an HTML
-overview. Progress, checks, delivery and tracker sync remain separate; unknown
+overview. With an attached plan, context and the view derive the active,
+review, or next eligible task, source-binding freshness, and the latest
+reported check without treating that report as verified evidence. Progress,
+checks, delivery and tracker sync remain separate; unknown
 check or delivery state is never inferred from completion. The overview has no
 canonical model container, is not stored by the engine and is rejected by
 `render.Parse`. `hooks/work.py view <WORK-ID>` prints the HTML to stdout. The
@@ -466,7 +482,11 @@ origin against the binding. For the default `after_merge` timing, pass
 `--pull-number N`: the adapter reads the merged PR, checks its default-branch
 base and local HEAD ancestry, and reads the pending canonical work model at
 the merge commit and the current default branch before claiming the effect. It
-checks the current default branch again after the claim and before sending. A
+requires the same immutable intent ID staged in both snapshots, so an older
+merged PR with equivalent issue content cannot release a later status intent.
+An exact replay keeps the ID; a new staging operation receives a different ID.
+The adapter checks the current default branch again after the claim and before
+sending. A
 changed or unreadable current intent refuses the send; after a claim it remains
 uncertain for reconciliation. The persisted claim records that
 PR number and merge commit. A failed merge check leaves intent pending.

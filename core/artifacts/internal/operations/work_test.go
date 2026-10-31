@@ -774,6 +774,10 @@ func TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict(t *testing.T) 
 	bound := call("work-effect-record", object{"operation_id": "status-record-create-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-create-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open", "expected": expected(claimed)})
 	staged = call("work-effect-stage", object{"operation_id": "status-stage-close-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "closed", "expected": expected(bound)})
 	effect := model.M(staged["provider_effect"])
+	firstIntentID := model.S(effect["intent_id"])
+	if len(firstIntentID) != 64 {
+		t.Fatalf("status stage omitted its portable intent identity: %v", effect)
+	}
 	if model.I(effect["remote_issue_number"]) != 7 || model.S(effect["remote_state"]) != "open" || model.S(effect["desired_state"]) != "closed" {
 		t.Fatalf("status stage lost its issue binding or observed baseline: %v", effect)
 	}
@@ -786,6 +790,9 @@ func TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict(t *testing.T) 
 		t.Fatalf("selected work view omitted the remote conflict state: %s", html)
 	}
 	staged = call("work-effect-stage", object{"operation_id": "status-stage-open-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "open", "expected": expected(conflict)})
+	if nextIntentID := model.S(model.M(staged["provider_effect"])["intent_id"]); len(nextIntentID) != 64 || nextIntentID == firstIntentID {
+		t.Fatalf("distinct status stage reused the prior intent identity: %v", nextIntentID)
+	}
 	claimed = call("work-effect-claim", object{"operation_id": "status-claim-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "expected": expected(staged)})
 	record := object{"protocol": Protocol, "operation_id": "status-record-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "closed", "expected": expected(claimed)}
 	if _, err := Run(root, "work-effect-record", record); fault.Code(err) != "INVALID_REMOTE_BINDING" {

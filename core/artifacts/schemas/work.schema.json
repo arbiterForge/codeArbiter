@@ -26,6 +26,11 @@
         "spec_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/specs/[a-z][a-z0-9-]*\\.html$"}]},
         "plan_path": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^\\.codearbiter/plans/[a-z][a-z0-9-]*\\.html$"}]},
         "origin": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 256, "pattern": "^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$"}]},
+        "legacy_source": {"anyOf": [{"type": "null"}, {"type": "object", "properties": {
+          "location": {"enum": ["open", "archive"]},
+          "line": {"type": "integer", "minimum": 1},
+          "block_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }, "required": ["location", "line", "block_sha256"], "additionalProperties": false}]},
         "aliases": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 120}, "maxItems": 128, "uniqueItems": true}
       },
       "required": ["project_id", "title", "summary", "work_type", "spec_id", "plan_id", "spec_path", "plan_path", "origin", "aliases"],
@@ -73,6 +78,7 @@
             "kind": {"enum": ["create_issue", "status_update"]},
             "status": {"enum": ["pending", "outcome_unknown", "synchronized", "conflict"]},
             "binding_generation": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
             "attempt_id": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 8, "maxLength": 80}]},
             "remote_issue_number": {"anyOf": [{"type": "null"}, {"type": "integer", "minimum": 1}]},
             "remote_issue_url": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 512}]},

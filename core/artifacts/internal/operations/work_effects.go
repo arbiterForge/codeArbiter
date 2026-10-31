@@ -156,11 +156,16 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 		if kind == "" {
 			kind = "create_issue"
 		}
+		// Bind merge evidence to this staging operation, even if a later
+		// intent has identical content. A journal replay returns the same ID.
+		intentID := canonical.BytesHash([]byte(fmt.Sprintf("codearbiter-work-intent-v1\x00%s\x00%s\x00%d",
+			id, model.S(r["operation_id"]), d.Revision())))
 		if kind == "create_issue" {
 			if r["desired_state"] != nil || len(current) != 0 && (model.S(current["kind"]) != "create_issue" || model.S(current["status"]) != "pending") {
 				return nil, fault.At("EFFECT_ALREADY_SENT", id, p, "an existing issue binding cannot be replaced by another create")
 			}
 			ex["provider_effect"] = object{"kind": "create_issue", "status": "pending", "binding_generation": generation,
+				"intent_id":  intentID,
 				"attempt_id": nil, "remote_issue_number": nil, "remote_issue_url": nil}
 		} else {
 			if model.S(r["desired_state"]) == "" ||
@@ -173,6 +178,7 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 				return nil, fault.At("PROVIDER_BINDING_CHANGED", id, p, "issue binding belongs to an older provider configuration")
 			}
 			current["kind"], current["status"], current["attempt_id"] = "status_update", "pending", nil
+			current["intent_id"] = intentID
 			current["desired_state"] = r["desired_state"]
 			delete(current, "merge_pull_number")
 			delete(current, "merge_commit_sha")

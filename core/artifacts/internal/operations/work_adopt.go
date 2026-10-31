@@ -123,6 +123,57 @@ func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
 	return blocks, nil
 }
 
+// Read a selected historical block through its portable source pointer. The
+// saved board is immutable source evidence, never another writable work owner.
+func (e *Engine) legacyDetailPage(source object, offset, budget int64) (object, error) {
+	location := model.S(source["location"])
+	path := ".codearbiter/legacy/open-tasks.md"
+	if location == "archive" {
+		path = ".codearbiter/legacy/done-tasks.md"
+	} else if location != "open" {
+		return nil, fault.New("INVALID_LEGACY_SOURCE", "selected work has an invalid historical source")
+	}
+	raw, err := e.FS.Read(path, canonical.MaxBytes)
+	if os.IsNotExist(err) {
+		return nil, fault.At("STALE_LEGACY_SOURCE", "", path, "selected historical board is absent")
+	}
+	if err != nil {
+		return nil, err
+	}
+	blocks, err := adoptionBlocks(raw)
+	if err != nil {
+		return nil, fault.At("STALE_LEGACY_SOURCE", "", path, "selected historical board is invalid")
+	}
+	block, ok := blocks[model.I(source["line"])]
+	if !ok || block.digest != model.S(source["block_sha256"]) {
+		return nil, fault.At("STALE_LEGACY_SOURCE", "", path, "selected historical task block changed")
+	}
+	content := []byte(block.text)
+	if offset < 0 || offset > int64(len(content)) || offset < int64(len(content)) && !utf8.RuneStart(content[offset]) {
+		return nil, fault.New("INVALID_LEGACY_OFFSET", "selected historical detail offset is outside a UTF-8 boundary")
+	}
+	limit := int(budget / 4)
+	if limit > 4096 {
+		limit = 4096
+	}
+	end := int(offset) + limit
+	if end > len(content) {
+		end = len(content)
+	}
+	for end < len(content) && end > int(offset) && !utf8.RuneStart(content[end]) {
+		end--
+	}
+	if end == int(offset) && end < len(content) {
+		return nil, fault.New("INVALID_LEGACY_OFFSET", "selected historical detail cannot fit its page")
+	}
+	var next any
+	if end < len(content) {
+		next = int64(end)
+	}
+	return object{"source": source, "text": string(content[offset:end]), "offset": offset,
+		"next_offset": next, "total_bytes": int64(len(content))}, nil
+}
+
 // Derive every portable field from the exact hashed block. The Python
 // inventory is a preview, not authority for a destructive ownership cutover.
 func canonicalAdoptionRow(block legacyAdoptionBlock, location string, line int64) (object, error) {
@@ -366,7 +417,8 @@ func (e *Engine) workAdopt(r object) (any, error) {
 			resolved = binding{specPath, planPath}
 			bindings[bindingKey] = resolved
 		}
-		norm := object{"project_id": projectID, "title": row["title"], "summary": row["intent"], "work_type": row["work_type"], "spec_id": nil, "plan_id": nil, "spec_path": nil, "plan_path": nil, "origin": origin, "aliases": []any{}}
+		norm := object{"project_id": projectID, "title": row["title"], "summary": row["intent"], "work_type": row["work_type"], "spec_id": nil, "plan_id": nil, "spec_path": nil, "plan_path": nil, "origin": origin, "aliases": []any{},
+			"legacy_source": object{"location": location, "line": line, "block_sha256": block.digest}}
 		if alias != "" {
 			norm["aliases"] = []any{alias}
 		}

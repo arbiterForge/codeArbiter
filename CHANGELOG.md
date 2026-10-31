@@ -25,6 +25,14 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Protect consumer work models, provider bindings, and adopted board snapshots
+  from Git line-ending conversion; offer an idempotent repair for existing scaffolds.
+- Expose source-bound adopted task details through selected, bounded context
+  pages and the derived work view, and identify the actual attached plan task.
+- Match after-merge GitHub issue effects to their exact staged intent so an old
+  merge cannot release a later equivalent status update.
+- Route ordinary task actions through the shared work facade and keep one
+  logical owner for unresolved decomposition question status.
 - Verify legacy adoption fields against the saved board, refuse stale GitHub
   intent before sending, and safely retry uncertain Project effects after readback.
 - Require the selected work file in a merged PR's changed-file list before

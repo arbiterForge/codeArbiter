@@ -358,6 +358,7 @@ func RequestSchema(op string) (object, error) {
 		}
 	case "work-context":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+		add("legacy_offset", object{"type": "integer", "minimum": int64(0), "maximum": int64(8 << 20)}, false)
 		add("paths", array(object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, 1), false)
 		add("knowledge_refs", array(object{"type": "string", "maxLength": int64(160), "pattern": "^(CTX|DECOMP)-[A-Z0-9-]+#[A-Z][A-Z0-9-]+$"}, 1), false)
 		budget()

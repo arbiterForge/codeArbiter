@@ -250,6 +250,8 @@ EXPECTED_SUITES = {
         "test_verified_promotion_snapshot_cannot_be_swapped_before_install",
     },
     "test_artifact_work_cli.py": {
+        "test_adopted_task_details_remain_selected_and_readable",
+        "test_existing_scaffold_repairs_work_attributes_without_replacing_custom_rules",
         "test_direct_native_adoption_respects_legacy_writer_lock",
         "test_selected_adoption_keeps_exact_board_and_old_writer_refuses",
         "test_selected_adoption_preserves_trailing_origin_whitespace",
@@ -292,6 +294,8 @@ EXPECTED_SUITES = {
         "test_scaffold_instructions_and_fenced_example_are_not_adopted",
     },
     "test_work_github.py": {
+        "test_old_merge_cannot_release_a_new_same_looking_status_intent",
+        "test_status_intent_survives_unrelated_local_title_edit",
         "test_project_add_reconcile_rejects_uncertain_field_effect",
         "test_project_field_reconcile_refuses_removed_item_without_mutation",
         "test_project_uncertain_unapplied_add_retries_idempotently",

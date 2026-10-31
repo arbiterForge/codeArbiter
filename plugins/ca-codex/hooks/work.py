@@ -62,6 +62,7 @@ def _parser():
     context = sub.add_parser("context", help="Read bounded selected work and attached document context")
     context.add_argument("work_id")
     context.add_argument("--budget", type=int, default=16384)
+    context.add_argument("--legacy-offset", type=int, help="Read the next page of an adopted task's original details")
     context.add_argument("--path", action="append", help="Select knowledge relevant to this work path")
     context.add_argument("--knowledge-ref", action="append", help="Select an exact knowledge record even without a path")
     view = sub.add_parser("view", help="Print an inert HTML overview of selected native work")
@@ -185,6 +186,8 @@ def _dispatch(args, client):
         return client.call("work-get", {"work_id": args.work_id})
     if args.verb == "context":
         request = {"work_id": args.work_id, "budget": args.budget}
+        if args.legacy_offset is not None:
+            request["legacy_offset"] = args.legacy_offset
         if args.path:
             request["paths"] = args.path
         if args.knowledge_ref:

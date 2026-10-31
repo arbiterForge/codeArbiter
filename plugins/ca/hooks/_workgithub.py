@@ -252,6 +252,10 @@ def _verified_issue(transport, config, work_id, number, token):
 
 def _verified_work_intent(transport, config, work, path, token):
     """Read one bounded canonical work snapshot and match its pending issue effect."""
+    selected_effect = work.get("provider_effect") or {}
+    intent_id = selected_effect.get("intent_id")
+    if type(intent_id) is not str or re.fullmatch(r"[a-f0-9]{64}", intent_id) is None:
+        raise WorkSyncError("MERGE_UNVERIFIED", "Pending effect has no unique staged intent; restage it before sync")
     status, content = transport.request("GET", path, None, token)
     if status != 200 or type(content) is not dict or content.get("encoding") != "base64" or type(content.get("content")) is not str:
         raise WorkSyncError("MERGE_UNVERIFIED", "GitHub has no readable canonical work item")
@@ -271,9 +275,11 @@ def _verified_work_intent(transport, config, work, path, token):
             or not isinstance(model.get("normative"), dict)
             or model.get("artifact_id") != work["work_id"]
             or model["normative"].get("project_id") != work["project_id"]
-            or model["normative"].get("title") != work["title"]
-            or model["normative"].get("summary") != work["intent"]
+            or (selected_effect.get("kind") == "create_issue" and
+                (model["normative"].get("title") != work["title"] or
+                 model["normative"].get("summary") != work["intent"]))
             or effect.get("status") != "pending"
+            or effect.get("intent_id") != intent_id
             or effect.get("kind") != (work.get("provider_effect") or {}).get("kind")
             or effect.get("desired_state") != (work.get("provider_effect") or {}).get("desired_state")
             or effect.get("remote_issue_number") != (work.get("provider_effect") or {}).get("remote_issue_number")

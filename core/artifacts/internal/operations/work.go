@@ -317,6 +317,9 @@ func (e *Engine) readWorkWithProject(id, projectID string) (*model.Document, []b
 func workSummary(d *model.Document, p string) object {
 	n, ex := d.Norm(), model.M(d.Data["execution"])
 	out := object{"work_id": d.ID(), "project_id": n["project_id"], "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "title": n["title"], "intent": n["summary"], "work_type": n["work_type"], "cycle_id": n["cycle_id"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "spec_path": n["spec_path"], "plan_path": n["plan_path"], "origin": n["origin"], "aliases": n["aliases"], "state": ex["state"], "check_status": ex["check_status"], "started_at": ex["started_at"], "completed_at": ex["completed_at"]}
+	if source := n["legacy_source"]; source != nil {
+		out["legacy_source"] = source
+	}
 	if effect := ex["provider_effect"]; effect != nil {
 		out["provider_effect"] = effect
 	}
@@ -531,6 +534,9 @@ func (e *Engine) workContext(r object) (any, error) {
 		w["aliases_omitted"] = int64(len(aliases) - 16)
 	}
 	out := object{"work": w, "spec": nil, "plan": nil, "context_complete": false, "assessment": "advisory"}
+	var planDoc, specDoc *model.Document
+	var planBytes, specBytes []byte
+	var planPath, specPath string
 	for _, pair := range []struct{ name, kind string }{{"spec", "spec"}, {"plan", "plan"}} {
 		artifactID := model.S(n[pair.name+"_id"])
 		if artifactID == "" {
@@ -555,6 +561,72 @@ func (e *Engine) workContext(r object) (any, error) {
 			return nil, fault.At("STALE_BINDING", id, attachedPath, "attached plan now points to a different specification")
 		}
 		out[pair.name] = object{"artifact_id": attached.ID(), "path": attachedPath, "revision": attached.Revision(), "model_sha256": attached.Hash(), "normative_sha256": attached.NormHash(), "title": boundedText(model.S(attached.Norm()["title"]), 240), "summary": boundedText(model.S(attached.Norm()["summary"]), 512)}
+		if pair.kind == "plan" {
+			planDoc = attached
+			planBytes, planPath = b, attachedPath
+		} else {
+			specDoc = attached
+			specBytes, specPath = b, attachedPath
+		}
+	}
+	if planDoc != nil {
+		planner := *e
+		planner.Catalog = &repository.Catalog{Entries: map[string]repository.Entry{
+			specDoc.ID(): {Path: specPath, Bytes: specBytes, Doc: specDoc},
+			planDoc.ID(): {Path: planPath, Bytes: planBytes, Doc: planDoc},
+		}}
+		bound := model.S(model.M(planDoc.Norm()["spec_ref"])["normative_sha256"])
+		bindingCurrent := bound == model.S(model.M(out["spec"])["normative_sha256"])
+		out["plan_binding_current"] = bindingCurrent
+		var chosen object
+		for _, wanted := range []string{"IN_PROGRESS", "REVIEW"} {
+			for _, value := range model.A(planDoc.Norm()["tasks"]) {
+				task := model.M(value)
+				if model.S(state(planDoc, model.S(task["id"]))["state"]) == wanted {
+					chosen = task
+					break
+				}
+			}
+			if chosen != nil {
+				break
+			}
+		}
+		if chosen == nil {
+			if advice, err := planner.eligible(planDoc); err == nil {
+				candidate := model.S(model.M(advice)["next_task"])
+				for _, value := range model.A(planDoc.Norm()["tasks"]) {
+					if task := model.M(value); model.S(task["id"]) == candidate && candidate != "" {
+						chosen = task
+						break
+					}
+				}
+			}
+		}
+		if chosen != nil {
+			id := model.S(chosen["id"])
+			projection := object{"id": id, "title": chosen["title"],
+				"state": state(planDoc, id)["state"], "binding_current": bindingCurrent,
+				"next_action": "Read the selected plan task and its reported checks.", "last_reported_check": nil}
+			if packet, err := planner.taskContext(planDoc, id, 32768); err == nil {
+				selected := model.M(packet)
+				projection["next_action"] = selected["next_action"]
+				if reports := model.A(selected["reported_checks"]); len(reports) != 0 {
+					latest := model.M(reports[len(reports)-1])
+					projection["last_reported_check"] = object{"reported_outcome": latest["reported_outcome"],
+						"worktree_freshness": latest["worktree_freshness"], "evidence_assessed": false}
+				}
+			}
+			out["plan_task"] = projection
+		}
+	}
+	if source := model.M(n["legacy_source"]); len(source) != 0 {
+		page, err := e.legacyDetailPage(source, model.I(r["legacy_offset"]), budget)
+		if err != nil {
+			return nil, err
+		}
+		out["legacy_detail"] = page
+	} else if model.I(r["legacy_offset"]) != 0 {
+		return nil, fault.New("INVALID_LEGACY_OFFSET", "selected work has no historical task block")
 	}
 	if r["paths"] != nil || r["knowledge_refs"] != nil {
 		base, err := json.Marshal(out)

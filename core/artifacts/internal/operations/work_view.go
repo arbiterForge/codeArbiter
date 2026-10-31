@@ -51,6 +51,19 @@ func (e *Engine) workView(r object) (any, error) {
 		CompletedAt: model.S(work["completed_at"]), Revision: model.I(work["revision"]),
 		ModelSHA256: model.S(work["model_sha256"]), Spec: spec, Plan: plan,
 	}
+	if detail := model.M(context["legacy_detail"]); len(detail) != 0 {
+		data.LegacyDetail = model.S(detail["text"])
+		data.LegacyMore = detail["next_offset"] != nil
+	}
+	if selected := model.M(context["plan_task"]); len(selected) != 0 {
+		data.PlanTask = &render.WorkViewTask{ID: model.S(selected["id"]), Title: model.S(selected["title"]),
+			State: model.S(selected["state"]), NextAction: model.S(selected["next_action"]),
+			BindingCurrent: selected["binding_current"] == true}
+		if report := model.M(selected["last_reported_check"]); len(report) != 0 {
+			data.PlanTask.ReportedOutcome = model.S(report["reported_outcome"])
+			data.PlanTask.ReportedFreshness = model.S(report["worktree_freshness"])
+		}
+	}
 	if effect := model.M(work["provider_effect"]); len(effect) != 0 {
 		data.ProviderEffectKind = model.S(effect["kind"])
 		data.ProviderEffectStatus = model.S(effect["status"])

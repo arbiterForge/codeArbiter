@@ -64,16 +64,27 @@ class WorkCLITest(unittest.TestCase):
         return result
 
     def test_first_native_work_survives_fresh_clone(self) -> None:
+        scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
+                                   "--root", str(self.root)], capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        self.run_work("adopt", "--operation-id", "cli-portable-adopt-001")
         first = self.run_work("create", "--title", "Portable work", "--intent",
                               "Retain project identity", "--type", "fix",
                               "--operation-id", "cli-portable-work-001")
         project = self.root / ".codearbiter" / "work" / "project.json"
         self.assertTrue(project.is_file())
-        (self.root / ".gitattributes").write_bytes((REPO / ".gitattributes").read_bytes())
+        self.assertTrue((self.root / ".codearbiter" / ".gitattributes").is_file())
         subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
                        capture_output=True, text=True)
+        protected = [first["path"], ".codearbiter/work/project.json",
+                     ".codearbiter/work/provider.json", ".codearbiter/work/project-provider.json",
+                     ".codearbiter/legacy/open-tasks.md", ".codearbiter/legacy/done-tasks.md"]
+        attrs = subprocess.run(["git", "-C", str(self.root), "check-attr", "text", "--", *protected],
+                               check=True, capture_output=True, text=True).stdout
+        for path in protected:
+            self.assertIn(f"{path}: text: unset", attrs)
         subprocess.run(["git", "-C", str(self.root), "add", "--",
-                        ".gitattributes", ".codearbiter/work/project.json", first["path"]],
+                        ".codearbiter/.gitattributes", ".codearbiter/work/project.json", first["path"]],
                        check=True, capture_output=True, text=True)
         subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
                         "-c", "user.email=test@example.invalid", "commit", "--quiet",
@@ -83,13 +94,53 @@ class WorkCLITest(unittest.TestCase):
             # macOS temp paths may start at /var, a link to /private/var.
             # Pass the real parent to the engine's strict root guard.
             clone = Path(directory).resolve(strict=True) / "clone"
-            subprocess.run(["git", "clone", "--quiet", str(self.root), str(clone)],
+            subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet", str(self.root), str(clone)],
                            check=True, capture_output=True, text=True)
             self.assertFalse((clone / ".codearbiter" / ".artifacts").exists())
             restored = _artifactlib.ArtifactClient(clone, self.installation).call(
                 "work-get", {"work_id": first["work_id"]})
             self.assertEqual(restored["work_id"], first["work_id"])
             self.assertEqual(restored["title"], "Portable work")
+            subprocess.run(["git", "-C", str(self.root), "rm", "--quiet", "--cached",
+                            ".codearbiter/.gitattributes"], check=True, capture_output=True, text=True)
+            subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                            "-c", "user.email=test@example.invalid", "commit", "--quiet",
+                            "-m", "Remove work byte protection"], check=True,
+                           capture_output=True, text=True)
+            unprotected = Path(directory).resolve(strict=True) / "unprotected"
+            subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet",
+                            str(self.root), str(unprotected)], check=True,
+                           capture_output=True, text=True)
+            self.assertNotEqual((unprotected / first["path"]).read_bytes(),
+                                (self.root / first["path"]).read_bytes())
+            with self.assertRaises(_artifactlib.ArtifactError):
+                _artifactlib.ArtifactClient(unprotected, self.installation).call(
+                    "work-get", {"work_id": first["work_id"]})
+
+    def test_existing_scaffold_repairs_work_attributes_without_replacing_custom_rules(self) -> None:
+        script = str(REPO / "core/pysrc/init-codearbiter.py")
+        scaffold = subprocess.run([sys.executable, script, "--root", str(self.root)],
+                                  capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        attrs = self.root / ".codearbiter" / ".gitattributes"
+        original = attrs.read_bytes().replace(
+            b"work/*.html -text\nwork/*.json -text\nlegacy/*.md -text\n", b"")
+        original += b"custom/*.dat -text\n"
+        attrs.write_bytes(original)
+        for _ in range(2):
+            repair = subprocess.run([sys.executable, script, "--root", str(self.root),
+                                     "--repair-work-attributes"], capture_output=True, text=True)
+            self.assertEqual(repair.returncode, 0, repair.stderr)
+        repaired = attrs.read_bytes()
+        self.assertTrue(repaired.startswith(original))
+        self.assertEqual(repaired.count(b"work/*.html -text\n"), 1)
+        self.assertEqual(repaired.count(b"work/*.json -text\n"), 1)
+        self.assertEqual(repaired.count(b"legacy/*.md -text\n"), 1)
+        conflicting = subprocess.run([sys.executable, script, "--root", str(self.root),
+                                      "--passive", "--check", "--repair-work-attributes"],
+                                     capture_output=True, text=True)
+        self.assertNotEqual(conflicting.returncode, 0)
+        self.assertEqual(attrs.read_bytes(), repaired)
 
     def test_local_journey_has_stable_identity_and_unknown_check(self) -> None:
         self.client.call("create", {"operation_id": "cli-spec-create-001", "kind": "spec",
@@ -409,6 +460,74 @@ class WorkCLITest(unittest.TestCase):
         self.assertNotEqual(code, 0)
         self.assertIn("no board", errors.getvalue())
         self.assertFalse(board.exists())
+
+    def test_adopted_task_details_remain_selected_and_readable(self) -> None:
+        scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
+                                   "--root", str(self.root)], capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True, exist_ok=True)
+        board.write_text("- [~] demo.feat.0001 - Café parser (from DECOMP#CAFE)\n"
+                         "  - Desc: Parse safely\n"
+                         "  - Done when: Café input has stable output\n"
+                         "  - Boundaries: keep the old format\n"
+                         "  - Rationale: preserve users' saved files\n"
+                         "  - Long note: " + "é" * 3000 + "\n"
+                         "  - Tail: final clue\n", encoding="utf-8")
+        archive = board.with_name("done-tasks.md")
+        archive.write_text("- [x] demo.feat.0002 - Archived item (from DECOMP#OLD)\n"
+                           "  - Desc: Preserve history\n"
+                           "  - Done when: archive is readable\n", encoding="utf-8")
+        original, original_archive = board.read_bytes(), archive.read_bytes()
+        self.run_work("adopt", "--operation-id", "adopt-detail-001")
+        selected = self.run_work("context", _worklib._id("DECOMP#CAFE"))
+        self.assertIn("Done when: Café input has stable output", selected["legacy_detail"]["text"])
+        self.assertIn("Boundaries: keep the old format", selected["legacy_detail"]["text"])
+        self.assertIn("Rationale: preserve users' saved files", selected["legacy_detail"]["text"])
+        self.assertEqual(selected["legacy_detail"]["source"]["location"], "open")
+        pages = [selected["legacy_detail"]["text"]]
+        next_offset = selected["legacy_detail"]["next_offset"]
+        while next_offset is not None:
+            page = self.run_work("context", _worklib._id("DECOMP#CAFE"),
+                                 "--legacy-offset", str(next_offset))["legacy_detail"]
+            pages.append(page["text"])
+            next_offset = page["next_offset"]
+        self.assertIn("Tail: final clue", "".join(pages))
+        self.assertEqual(len(pages), 2)
+        old = self.run_work("context", _worklib._id("DECOMP#OLD"))
+        self.assertIn("Done when: archive is readable", old["legacy_detail"]["text"])
+        self.assertEqual(old["legacy_detail"]["source"]["location"], "archive")
+        html = self.client.call("work-view", {"work_id": _worklib._id("DECOMP#CAFE")})["html"]
+        self.assertIn("Café input has stable output", html)
+        self.assertIn("keep the old format", html)
+        self.assertEqual((self.root / ".codearbiter/legacy/open-tasks.md").read_bytes(), original)
+        self.assertEqual((self.root / ".codearbiter/legacy/done-tasks.md").read_bytes(), original_archive)
+        renamed = self.run_work("rename", _worklib._id("DECOMP#CAFE"), "--title", "Café parser v2",
+                                "--operation-id", "adopt-detail-rename-001")
+        self.assertEqual(renamed["title"], "Café parser v2")
+        self.assertIn("Done when: Café input", self.run_work("context", renamed["work_id"])["legacy_detail"]["text"])
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "--",
+                        ".codearbiter/.gitattributes", ".codearbiter/work/project.json",
+                        renamed["path"], ".codearbiter/legacy/open-tasks.md",
+                        ".codearbiter/legacy/done-tasks.md"], check=True, capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                        "-c", "user.email=test@example.invalid", "commit", "--quiet", "-m", "Adopt work"],
+                       check=True, capture_output=True, text=True)
+        with tempfile.TemporaryDirectory(prefix="ca-adopt-detail-clone-") as directory:
+            clone = Path(directory).resolve(strict=True) / "clone"
+            subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet", str(self.root), str(clone)],
+                           check=True, capture_output=True, text=True)
+            restored = _artifactlib.ArtifactClient(clone, self.installation).call(
+                "work-context", {"work_id": renamed["work_id"]})
+            self.assertIn("Boundaries: keep the old format", restored["legacy_detail"]["text"])
+            saved = clone / ".codearbiter/legacy/open-tasks.md"
+            saved.write_bytes(saved.read_bytes().replace(b"keep the old format", b"change the old format"))
+            with self.assertRaises(_artifactlib.ArtifactError) as changed:
+                _artifactlib.ArtifactClient(clone, self.installation).call(
+                    "work-context", {"work_id": renamed["work_id"]})
+            self.assertEqual(changed.exception.code, "STALE_LEGACY_SOURCE")
 
     def test_selected_adoption_preserves_trailing_origin_whitespace(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"

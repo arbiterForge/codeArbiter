@@ -100,11 +100,12 @@ record an inapplicable area with its reason:
 | Integrations | External dependencies, contracts and authentication, ownership, reliability, cost and fallback. |
 | Risks | Material risks with mitigations, open questions, bounded spikes and architecture-change triggers. |
 
-Record each question as a decomposition `question` record when you ask it
-(`status: open`) and update it with the user's actual answer
-(`status: answered`, `basis: user-reported`) as soon as it is given, so a closed
-session loses nothing. A deferral is `status: deferred`, not an answer. Exclude
-secret values.
+Record answered interview questions as decomposition `question` records
+(`status: answered`, `basis: user-reported`) with the user's actual answer.
+The global `open-questions.md` owner holds unanswered or deferred questions
+and their current status; link its stable identity from the decomposition
+instead of keeping a second mutable question status. A closed session must
+retain the unanswered question there. Exclude secret values.
 
 Record a user-decided architectural choice through `decision-lifecycle` at
 `${CLAUDE_PLUGIN_ROOT}/skills/decision-lifecycle/SKILL.md`; it owns ADR numbering,
@@ -151,8 +152,13 @@ Leave unknowns as `unknown` records rather than inventing facts. Preserve
 
 Promote each approved `work_item` with `knowledge.py promote <WORK-ID>`. It adds the
 task through the task board's own writer and is safe to repeat. Never write task
-rows directly or mark planned work done. Record unresolved questions that need the
-user's later decision on `open-questions.md` as well, keeping its history. Preserve
+rows directly or mark planned work done. Record an unresolved consequential
+choice in `open-questions.md` through its existing owner; it alone tracks the
+question's live status. When answered, resolve that entry through the same
+owner and add an answered decomposition record only if the answer informs the
+intended architecture. Link by identity and keep the interview history. In
+initialized brownfield acquisition, retain that same global question owner.
+Preserve
 `overrides.log`, `last-checkpoint` and all ADR history.
 
 ## 5. Initialize and return to work

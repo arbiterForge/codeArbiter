@@ -16,14 +16,22 @@ type WorkViewData struct {
 	Revision                                        int64
 	ModelSHA256                                     string
 	Spec, Plan                                      *WorkViewAttachment
+	PlanTask                                        *WorkViewTask
 	ProviderEffectKind, ProviderEffectStatus        string
 	RemoteIssueURL, RemoteState, DesiredState       string
 	ProjectEffectKind, ProjectEffectStatus          string
 	DeliveryState, DeliveryURL, DeliveryObservedAt  string
+	LegacyDetail                                    string
+	LegacyMore                                      bool
 }
 
 type WorkViewAttachment struct {
 	ID, Title, Summary, Href string
+}
+
+type WorkViewTask struct {
+	ID, Title, State, NextAction, ReportedOutcome, ReportedFreshness string
+	BindingCurrent                                                   bool
 }
 
 var githubWorkURL = regexp.MustCompile(`^https://github\.com/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/(?:issues|pull)/[1-9][0-9]*$`)
@@ -45,6 +53,7 @@ const workViewStyle = `
 .work-nav{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.2rem 0}
 .work-nav a{padding:.35rem .65rem;border:1px solid #d5dce3;border-radius:.5rem}
 .work-details{margin-top:1.5rem}
+.work-details pre{white-space:pre-wrap;overflow-wrap:anywhere}
 .work-snapshot{margin:1rem 0}
 .work-snapshot dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem 1.4rem;margin:0}
 .work-snapshot dt{font-weight:700}
@@ -79,7 +88,10 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	}
 	next := "Define a concrete next action for this work."
 	if data.Plan != nil {
-		next = "Review the attached implementation plan for the next task."
+		next = "No executable plan task was identified; inspect the attached plan."
+	}
+	if data.PlanTask != nil {
+		next = data.PlanTask.ID + " — " + data.PlanTask.Title + ": " + data.PlanTask.NextAction
 	}
 	obstacle := "Not recorded in this work item."
 	if checkStatus == "failed" {
@@ -183,7 +195,36 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	w.WriteString(`</section>`)
 	workViewAttachment(&w, "Specification", "spec", data.Spec)
 	workViewAttachment(&w, "Implementation plan", "plan", data.Plan)
-	w.WriteString(`</div><details class="work-details"><summary>Source identity</summary><p>Project ` + esc(data.ProjectID) + `</p><p>Revision ` + strconv.FormatInt(data.Revision, 10) + `</p><p>Model SHA-256 ` + esc(data.ModelSHA256) + `</p></details><footer class="footer"><p>Derived static view · no runtime network resources</p></footer></main></div></body></html>`)
+	if data.Plan != nil {
+		w.WriteString(`<section class="work-card" id="plan-task"><h2>Selected plan task</h2>`)
+		if data.PlanTask == nil {
+			w.WriteString(`<p>No executable task was identified from the current plan state.</p>`)
+		} else {
+			task := data.PlanTask
+			w.WriteString(`<p><strong>` + esc(task.ID) + ` — ` + esc(task.Title) + `</strong> · ` + esc(task.State) + `</p>`)
+			if task.BindingCurrent {
+				w.WriteString(`<p>Source binding current.</p>`)
+			} else {
+				w.WriteString(`<p>Source binding changed; reconcile the plan before relying on its task requirements.</p>`)
+			}
+			w.WriteString(`<p>` + esc(task.NextAction) + `</p>`)
+			if task.ReportedOutcome == "" {
+				w.WriteString(`<p>No check report recorded for this task.</p>`)
+			} else {
+				w.WriteString(`<p>Last check reported ` + esc(task.ReportedOutcome) + `; freshness ` + esc(task.ReportedFreshness) + `. Reported outcomes are not verified evidence.</p>`)
+			}
+		}
+		w.WriteString(`</section>`)
+	}
+	w.WriteString(`</div>`)
+	if data.LegacyDetail != "" {
+		w.WriteString(`<details class="work-details"><summary>Original task details</summary><pre>` + esc(data.LegacyDetail) + `</pre>`)
+		if data.LegacyMore {
+			w.WriteString(`<p>More historical text is available through the selected work context pages.</p>`)
+		}
+		w.WriteString(`</details>`)
+	}
+	w.WriteString(`<details class="work-details"><summary>Source identity</summary><p>Project ` + esc(data.ProjectID) + `</p><p>Revision ` + strconv.FormatInt(data.Revision, 10) + `</p><p>Model SHA-256 ` + esc(data.ModelSHA256) + `</p></details><footer class="footer"><p>Derived static view · no runtime network resources</p></footer></main></div></body></html>`)
 	out := []byte(w.String())
 	if len(out) > 32<<10 {
 		return nil, fault.New("RESPONSE_TOO_LARGE", "selected work view exceeds 32 KiB")
