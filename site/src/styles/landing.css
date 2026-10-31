@@ -194,7 +194,9 @@ ca-splash-docs {
   max-width: var(--ca-landing-width);
   min-height: min(49rem, calc(100vh - 4rem));
   margin-inline: auto;
-  padding: clamp(5rem, 10vw, 8.5rem) clamp(1.25rem, 4vw, 3rem);
+  /* The first section below brings its own top padding, so a matching bottom
+     padding here would leave an empty band under the hero. */
+  padding: clamp(5rem, 10vw, 8.5rem) clamp(1.25rem, 4vw, 3rem) clamp(2rem, 4vw, 3.5rem);
 }
 
 .ca-splash > * {
@@ -207,8 +209,8 @@ ca-splash-docs {
   color: var(--ca-ink);
   font-size: clamp(2.5rem, 6vw, 4.8rem);
   font-weight: 780;
-  letter-spacing: -0.065em;
-  line-height: 0.95;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
   overflow-wrap: normal;
   text-wrap: balance;
 }
@@ -322,14 +324,14 @@ ca-splash-docs {
   margin: var(--ca-space-3) 0 var(--ca-space-4);
   color: var(--ca-ink);
   font-size: var(--ca-text-2xl);
-  letter-spacing: -0.045em;
+  letter-spacing: -0.035em;
   line-height: 1.08;
   text-wrap: balance;
 }
 
 .ca-section-heading p:last-child,
-.ca-flow__intro > p,
-.ca-fit__copy > p,
+.ca-flow__intro > p:not(.ca-eyebrow),
+.ca-fit__copy > p:not(.ca-eyebrow),
 .ca-final-cta > div > p:last-child {
   max-width: 62ch;
   margin: 0;
@@ -386,7 +388,7 @@ ca-splash-docs {
 }
 
 .ca-proof-strip .ca-trust__link:hover {
-  background: var(--ca-bg-elevated);
+  background: var(--ca-bg-soft);
   transform: translateY(-2px);
 }
 
@@ -850,7 +852,9 @@ ca-splash-docs {
     transition: none;
   }
 
-  .ca-lane-card {
+  .ca-lane-card,
+  .ca-journey-preview__grid a,
+  .ca-proof-strip .ca-trust__link {
     transition: none;
   }
 }

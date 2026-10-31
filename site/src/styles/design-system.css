@@ -53,6 +53,9 @@
   --ca-shadow-sm: 0 10px 30px rgb(0 0 0 / 18%);
   --ca-shadow-lg: 0 30px 90px rgb(0 0 0 / 36%);
 
+  /* Motion */
+  --ca-motion-fast: 160ms ease;
+
   /* Surfaces */
   --ca-bg: #090d12;
   --ca-bg-raised: #0e141c;
@@ -95,6 +98,18 @@
   --sl-color-hairline-light: var(--ca-line);
   --sl-color-text: var(--ca-ink-soft);
   --sl-color-white: var(--ca-ink);
+
+  /* Starlight's neutral ramp drives every surface this file does not restyle:
+   * code frames, pagination, asides, tabs and form controls. Its default
+   * blue-grey sits visibly apart from the slate palette, so map it onto the
+   * same tokens instead. */
+  --sl-color-gray-1: var(--ca-ink);
+  --sl-color-gray-2: var(--ca-ink-soft);
+  --sl-color-gray-3: var(--ca-ink-muted);
+  --sl-color-gray-4: color-mix(in srgb, var(--ca-ink-muted) 55%, var(--ca-line-strong));
+  --sl-color-gray-5: var(--ca-line-strong);
+  --sl-color-gray-6: var(--ca-bg-panel);
+  --sl-color-black: var(--ca-bg);
 }
 
 html {
@@ -182,7 +197,9 @@ header.header {
   min-inline-size: 0;
 }
 
-.sl-markdown-content > p:first-of-type {
+/* The lede is the opening paragraph only: once a section heading has appeared,
+ * the first paragraph belongs to that section and keeps body size. */
+.sl-markdown-content > p:first-of-type:not(.sl-heading-wrapper ~ p) {
   color: var(--ca-ink-soft);
   font-size: var(--ca-text-lg);
   line-height: 1.72;
@@ -370,6 +387,41 @@ details.ca-source pre {
   background: var(--ca-brand-bright);
 }
 
+/* Starlight's LinkButton (the hero actions on the 404 page) shares the
+ * .ca-button shape and weight instead of its default pale pill. */
+.sl-link-button:is(.primary, .secondary) {
+  border-radius: var(--ca-radius-sm);
+  font-weight: 750;
+  transition:
+    transform var(--ca-motion-fast),
+    border-color var(--ca-motion-fast),
+    background var(--ca-motion-fast);
+}
+
+.sl-link-button.primary,
+.sl-link-button.primary:hover {
+  border-color: var(--ca-brand);
+  color: #171005;
+  background: linear-gradient(135deg, var(--ca-brand-bright), var(--ca-brand));
+  box-shadow: 0 10px 30px rgb(240 185 47 / 18%);
+}
+
+.sl-link-button.secondary {
+  border-color: var(--ca-line-strong);
+  color: var(--ca-ink);
+  background: rgb(14 20 28 / 72%);
+}
+
+.sl-link-button:is(.primary, .secondary):hover {
+  border-color: var(--ca-brand);
+  transform: translateY(-2px);
+}
+
+.sl-link-button.minimal {
+  color: var(--ca-brand-bright);
+  font-weight: 700;
+}
+
 .ca-panel {
   border: 1px solid var(--ca-line);
   border-radius: var(--ca-radius-md);
@@ -469,15 +521,17 @@ details.ca-source pre {
   font-size: var(--ca-text-sm);
 }
 
-/* Section rhythm for long-form training pages. */
-.sl-markdown-content > h2 {
+/* Section rhythm for long-form pages. Starlight wraps every Markdown heading in
+ * .sl-heading-wrapper (to place its anchor link) and makes the heading itself
+ * inline, so the wrapper, not the <h2>, owns the section rule and spacing. */
+.sl-markdown-content > .sl-heading-wrapper.level-h2 {
   position: relative;
-  margin-block-start: clamp(3rem, 7vw, 4.75rem);
+  margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
   padding-block-start: var(--ca-space-5);
   border-block-start: 1px solid var(--ca-line);
 }
 
-.sl-markdown-content > h2::before {
+.sl-markdown-content > .sl-heading-wrapper.level-h2::before {
   position: absolute;
   inset-block-start: -1px;
   inset-inline-start: 0;
@@ -485,11 +539,6 @@ details.ca-source pre {
   height: 2px;
   background: linear-gradient(90deg, var(--ca-brand), transparent);
   content: "";
-}
-
-.sl-markdown-content > h2 + p {
-  max-width: 68ch;
-  color: var(--ca-ink-soft);
 }
 
 .sl-markdown-content > ol > li::marker {
@@ -819,7 +868,9 @@ details.ca-source pre {
 }
 
 .sl-markdown-content > .ca-reference-lead + h2,
-.sl-markdown-content > .ca-reference-lead + ul + h2 {
+.sl-markdown-content > .ca-reference-lead + ul + h2,
+.sl-markdown-content > .ca-reference-lead + .sl-heading-wrapper.level-h2,
+.sl-markdown-content > .ca-reference-lead + ul + .sl-heading-wrapper.level-h2 {
   margin-block-start: var(--ca-space-6);
 }
 
@@ -874,7 +925,8 @@ details.ca-source pre {
     scroll-behavior: auto;
   }
 
-  .ca-button {
+  .ca-button,
+  .sl-link-button {
     transition: none;
   }
 }
