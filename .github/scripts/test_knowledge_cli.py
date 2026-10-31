@@ -236,6 +236,41 @@ class KnowledgeCli(unittest.TestCase):
         subprocess.run(["git", "-c", "core.hooksPath=" + os.devnull, "-c", "user.name=t", "-c", "user.email=t@example.invalid",
                         *arguments], cwd=self.root, check=False, capture_output=True)
 
+    def test_stale_includes_unstaged_and_staged_source_changes(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        source = self.root / "src" / "service.py"
+        source.parent.mkdir()
+        source.write_text("version = 1\n", encoding="utf-8")
+        citation = {"title": "Service source", "type": "repository", "url": None,
+                    "locator": "src/service.py", "note": "Observed source path"}
+        self.knowledge("add", "tech-stack", "--collection", "sources", "--record", json.dumps(citation))
+        observed = {"type": "fact", "title": "Service", "statement": "Service source exists.",
+                    "basis": "source-observed", "scope": {"paths": ["src/**"]},
+                    "related_refs": [], "source_refs": ["SRC-001"]}
+        self.knowledge("add", "tech-stack", "--record", json.dumps(observed))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "baseline")
+        self.knowledge("rebaseline", "tech-stack")
+
+        source.write_text("version = 2\n", encoding="utf-8")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertTrue(report["stale"], report)
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/service.py"])
+
+        self.git("add", "src/service.py")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/service.py"])
+
+        self.git("commit", "-qm", "first source change")
+        extra = self.root / "src" / "extra.py"
+        extra.write_text("version = 1\n", encoding="utf-8")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/extra.py", "src/service.py"])
+        self.git("add", "src/extra.py")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/extra.py", "src/service.py"])
+
     def test_git_conflict_merges_record_by_record(self):
         self.scaffold()
         self.knowledge("create-missing")

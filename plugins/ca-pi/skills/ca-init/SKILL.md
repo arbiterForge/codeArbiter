@@ -23,9 +23,11 @@ populating before normal operation.
 
 <!-- command-mode:--brownfield legacy-route:create-context -->
 `--brownfield` selects the exact `<plugin-root>/skills/ca-create-context/SKILL.md` workflow.
-An initialized refresh is routed through `/ca-status drift` and the existing
-`context-check` owner after an explicit scoped or full selection; `--brownfield`
-keeps its initial-population lock.
+That workflow populates an uninitialized stub. For an initialized brownfield
+project, keep the existing marker and route source-observed acquisition and
+target/delta work to `/ca-decompose` instead of replaying initial population.
+An initialized refresh of existing context facts uses `/ca-status drift`
+and the `context-check` owner after an explicit scoped or full selection.
 
 ### Brownfield preparation
 
@@ -47,7 +49,8 @@ The two flags are mutually exclusive and neither may combine with `--check`. `--
 accompany one only while `.codearbiter/CONTEXT.md` is absent: after checking the repository and host permissions,
 scaffold at that stage, then enter the
 selected workflow. When an uninitialized stub already exists, skip the refusing scaffolder and enter
-the selected workflow directly. An initialized marker or source-shape mismatch retains the selected
+the selected workflow directly. An initialized marker selects the initialized
+acquisition or refresh owner above; a source-shape mismatch retains the selected
 legacy workflow's BLOCK. Without an explicit strategy, continue with the unchanged auto-detection
 procedure below under the same repository and host permissions.
 <!-- catalog-command-modes:end -->

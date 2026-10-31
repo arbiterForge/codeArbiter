@@ -354,6 +354,10 @@ def _stale(client, root, docs):
     nothing, and nothing here blocks work or resets other records."""
     from _scopelib import _glob_to_re
     head = _git_out(root, "rev-parse", "HEAD").strip()
+    local_changed = set(_git_out(root, "diff", "--name-only").splitlines())
+    local_changed.update(_git_out(root, "diff", "--cached", "--name-only").splitlines())
+    local_changed.update(_git_out(root, "ls-files", "--others", "--exclude-standard").splitlines())
+    local_changed.discard("")
     report = []
     for doc in docs:
         doc_id = _doc_id(doc)
@@ -363,11 +367,10 @@ def _stale(client, root, docs):
             report.append({"artifact_id": doc_id, "baseline": None,
                            "note": "no baseline commit; run rebaseline after checking the records"})
             continue
-        if baseline == head:
-            report.append({"artifact_id": doc_id, "baseline": baseline, "stale": []})
-            continue
-        changed = [p for p in _git_out(root, "diff", "--name-only", f"{baseline}..HEAD").splitlines() if p]
-        changed += [p for p in _git_out(root, "diff", "--name-only").splitlines() if p and p not in changed]
+        changed = set(local_changed)
+        if baseline != head:
+            changed.update(_git_out(root, "diff", "--name-only", f"{baseline}..HEAD").splitlines())
+        changed.discard("")
         sources = {s["id"]: s.get("locator", "") for s in _records(client, doc_id, "sources")}
         stale = []
         for record in _records(client, doc_id):
