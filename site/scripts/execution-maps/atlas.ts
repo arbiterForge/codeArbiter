@@ -148,7 +148,7 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
   'core/artifacts/internal/operations/task_context.go':'9e5e5694241ab3a25bdc3af22e8efdc9afdde5c6',
   'core/artifacts/internal/render/render.go':'2be6970d8ac51fcf6c8a4908441d94421e0bf921',
   'core/pysrc/_artifactlib.py':'5b900d8ee592935d04a2d6f1a2f7ffcc832dd976',
-  'core/pysrc/init-codearbiter.py':'ab47257f03a0bdd2cbd249cc00478cdbeeea4f39',
+  'core/pysrc/init-codearbiter.py':'ceab9953d91dc9861068b2f9110caeda03cc0205',
   'core/surface/commands/feature.md':'ebb6047b0ec2f7040c60c6847535bb1f65f6cd10',
   'core/surface/commands/fix.md':'03fbef8fef446eb3c40f8f7ea5207352e587ba0f',
   'core/surface/commands/init.md':'d00ab436b525ad86d0e9f95fb106833c9a297006',
@@ -178,11 +178,11 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/commands/init.md':'ed0f32b734097fa549cd95738ceaa30c56b7b849',
   'core/pysrc/_artifactlib.py':'330fc66eb3edeeff116032691dfa7dcb7c62c7e6',
   'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
-  'core/artifacts/internal/operations/protocol.go':'ecb62144c6c51d87677ded1e70b449e7747de976',
+  'core/artifacts/internal/operations/protocol.go':'04edf442e32810e5111e6a15e524076d589d316f',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
   'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
-  'core/surface/commands/task.md':'5bf344c907f9af13689e3ce71c7f036f4b26d61f',
+  'core/surface/commands/task.md':'5cbc982f3c43dae555efd84f12c1b072c9427c56',
   'core/surface/includes/reference-map.md':'4a024e9c0afbf3a07472e28cd66d41298c73db35',
   'core/surface/includes/routing-table.md':'6064c94e7507d0fa3f10fd32d0a96f23eca0c7c7',
   'core/surface/skills/brainstorming/SKILL.md':'9d53f27511dc063341068498c45766ae042f5b4d',
@@ -190,7 +190,7 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
   'core/surface/skills/context-creation/SKILL.md':'5e6922b5ad4da78159a19b316480f3849827ab7f',
   'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
-  'core/surface/skills/decompose/SKILL.md':'e4f3dbd54dbf141798e078a36c43bc5a1cc91835',
+  'core/surface/skills/decompose/SKILL.md':'8623ead7a3199e2d7fc72806656df2ce380ae87f',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
@@ -307,14 +307,14 @@ export function originalAtlas():Atlas {
 function applySelectedWorkRoute(atlas:Atlas):void {
   const task=atlas.commands.find(command=>command.name==='task');
   if(!task)throw new Error('Task route missing from atlas');
-  task.owner='work.py → native engine or legacy taskwrite.py → _taskboardlib';
-  task.steps=['Select native work or legacy board owner',
-    'Validate add, start or done through the selected writer',
-    'Persist native work state or dated board transition'];
-  task.context=['Selected work ID or legacy open-tasks.md row and current state',
+  task.owner='work.py → selected native engine or legacy board writer';
+  task.steps=['Select work by stable ID through the current owner',
+    'Apply one create, start, complete or reopen request',
+    'Record local progress without inventing check results'];
+  task.context=['Selected work ID and current owner state',
     'Requested task or harvested work'];
-  task.output='Native work item or legacy task-board transition, separate from typed plan acceptance.';
-  task.gates='Native updates require stable work ID, replay identity and expected revision/hash; legacy start stamps date and done requires in-progress. Never delete a task to complete it. A debug disposition alone never authorizes a task write; a concrete follow-up needs separate task authority.';
+  task.output='Native work item or legacy board transition, with checks and delivery reported separately.';
+  task.gates='The facade preserves stable work identity, exact change checks and replay identity. Queued work already performed can complete directly without a fabricated start. Never delete a task to complete it or claim checks passed from local progress.';
   const setNode=(viewId:string,nodeId:string,title:string|undefined,body:string):void=>{
     const node=atlas.views.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
     if(!node || !node.layout.body)throw new Error(`Selected-work atlas node missing: ${nodeId}`);
@@ -322,11 +322,11 @@ function applySelectedWorkRoute(atlas:Atlas):void {
     node.body=body;node.layout.body.lengths=body.split('\n').map(line=>Array.from(line).length);
   };
   setNode('knowledge-operations','k-writer','work.py → selected owner',
-    'Native work.py; legacy taskwrite.py\nStart stamps date; done needs in-progress\nNever delete an entry to mark it done');
+    'One facade selects native or legacy work\nQueued work can complete directly\nChecks remain separately evidenced');
   setNode('knowledge-operations','k-board','Selected work transition',
     'Native HTML or open-tasks.md state\nNot a typed-plan acceptance receipt\nLater work still selects its own lane');
   setNode('debug-handoff','d-task',undefined,
-    'A needed task needs separate authorization, action, provenance and completion evidence.\nThe selected task owner uses work.py; legacy boards delegate to taskwrite.py.\nA design question may lead to an attributed ADR later, never by automatic conversion.');
+    'A concrete follow-up uses the selected work owner under existing authorization.\nThe work.py facade routes native and legacy writes without a second board.\nA design question may lead to an attributed ADR later, never by automatic conversion.');
 }
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
