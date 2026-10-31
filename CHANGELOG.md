@@ -20,6 +20,7 @@ predate the plugin rewrite and are grouped by date.
 - Keep newly discovered context gaps as candidates and route selected promotion
   through the current work owner.
 - Show observed and intended GitHub issue status in the derived work view.
+- Summarize recorded code-map components and interfaces on the derived project page.
 
 ## [3.7.1] - 2026-10-31
 

@@ -14,6 +14,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Keep newly discovered context gaps as candidates and route selected promotion
   through the current work owner.
 - Show observed and intended GitHub issue status in the derived work view.
+- Summarize recorded code-map components and interfaces on the derived project page.
 
 ## [0.25.1] - 2026-10-31
 
