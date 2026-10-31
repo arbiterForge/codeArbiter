@@ -3,8 +3,11 @@ package operations
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -359,6 +362,27 @@ func TestWorkContextSelectsScopedKnowledgeAndNamesOmissions(t *testing.T) {
 		t.Fatalf("selected knowledge became a permission verdict: %v", out["assessment"])
 	}
 	assertNoPermissionFields(t, out)
+}
+
+func TestWorkContextRejectsOutOfRangeBudgetBeforeIntConversion(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	created, err := Run(root, "work-create", object{"protocol": Protocol, "operation_id": "budget-range-create-001", "title": "Budget range", "intent": "Protect conversion", "work_type": "fix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fs, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fs.Close()
+	e := &Engine{FS: fs}
+	_, err = e.workContext(object{"work_id": created.(map[string]any)["work_id"], "budget": int64(math.MaxInt64), "paths": []any{}})
+	if fault.Code(err) != "INVALID_BUDGET" {
+		t.Fatalf("out-of-range direct budget was accepted: %v", err)
+	}
 }
 
 func TestWorkEffectLostCreateResponseRemainsUnknown(t *testing.T) {

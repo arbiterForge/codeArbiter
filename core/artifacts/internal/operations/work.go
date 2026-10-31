@@ -511,6 +511,9 @@ func (e *Engine) workContext(r object) (any, error) {
 	if b := model.I(r["budget"]); b != 0 {
 		budget = b
 	}
+	if budget < 4096 || budget > 65536 {
+		return nil, fault.New("INVALID_BUDGET", "selected work context budget must be 4096..65536 bytes")
+	}
 	n := d.Norm()
 	w := workSummary(d, p)
 	w["intent"] = boundedText(model.S(w["intent"]), 1024)
