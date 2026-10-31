@@ -40,12 +40,14 @@
         "provider_effect": {"anyOf": [{"type": "null"}, {
           "type": "object",
           "properties": {
-            "kind": {"const": "create_issue"},
+            "kind": {"enum": ["create_issue", "status_update"]},
             "status": {"enum": ["pending", "outcome_unknown", "synchronized", "conflict"]},
             "binding_generation": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
             "attempt_id": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 8, "maxLength": 80}]},
             "remote_issue_number": {"anyOf": [{"type": "null"}, {"type": "integer", "minimum": 1}]},
             "remote_issue_url": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 512}]},
+            "remote_state": {"anyOf": [{"type": "null"}, {"enum": ["open", "closed"]}]},
+            "desired_state": {"anyOf": [{"type": "null"}, {"enum": ["open", "closed"]}]},
             "merge_pull_number": {"type": "integer", "minimum": 1},
             "merge_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"}
           },

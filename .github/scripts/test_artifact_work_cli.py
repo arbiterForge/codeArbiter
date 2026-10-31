@@ -167,6 +167,33 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(staged["provider_effect"]["status"], "pending")
         self.assertEqual(self.run_work("get", item["work_id"])["provider_effect"]["status"], "pending")
 
+    def test_status_cli_stages_only_a_verified_issue_binding(self) -> None:
+        item = self.run_work("create", "--title", "Bound result", "--intent", "One issue",
+                             "--type", "fix", "--operation-id", "status-cli-create-001")
+        config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                               "--credential-ref", "GH_TOKEN", "--timing", "immediate",
+                               "--operation-id", "status-cli-configure-001")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["stage-status", item["work_id"], "--state", "closed",
+                                        "--operation-id", "status-cli-unbound-001"]), 1)
+        self.assertEqual(json.loads(output.getvalue())["code"], "EFFECT_NOT_BOUND")
+        staged = self.run_work("stage-sync", item["work_id"], "--operation-id", "status-cli-stage-create-001")
+        claim = self.client.call("work-effect-claim", {"operation_id": "status-cli-claim-create-001",
+            "work_id": item["work_id"], "binding_generation": config["binding_generation"],
+            "attempt_id": "status-cli-attempt-001",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        self.client.call("work-effect-record", {"operation_id": "status-cli-record-create-001",
+            "work_id": item["work_id"], "binding_generation": config["binding_generation"],
+            "attempt_id": "status-cli-attempt-001", "remote_issue_number": 7,
+            "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open",
+            "expected": {"revision": claim["revision"], "model_sha256": claim["model_sha256"]}})
+        status = self.run_work("stage-status", item["work_id"], "--state", "closed",
+                               "--operation-id", "status-cli-stage-close-001")
+        self.assertEqual(status["provider_effect"]["kind"], "status_update")
+        self.assertEqual(status["provider_effect"]["desired_state"], "closed")
+        self.assertEqual(status["provider_effect"]["remote_issue_number"], 7)
+
     def test_project_view_pages_native_work_without_writing_a_second_owner(self) -> None:
         first = self.run_work("create", "--title", "Fix <input>", "--intent", "First result",
                               "--type", "fix", "--operation-id", "project-cli-create-001")
@@ -588,7 +615,7 @@ class WorkCLITest(unittest.TestCase):
                                            "request": {}}))
         self.assertEqual(code, 1)
         self.assertIn("work operation", refused["error"])
-        for internal in ("work-effect-claim", "work-effect-record"):
+        for internal in ("work-effect-claim", "work-effect-record", "work-effect-conflict"):
             code, refused = invoke(json.dumps({"schema": create["schema"], "operation": internal,
                                                "request": {}}))
             self.assertEqual(code, 1)

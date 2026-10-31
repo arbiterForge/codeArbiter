@@ -140,11 +140,31 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 	current := model.M(ex["provider_effect"])
 	switch action {
 	case "stage":
-		if len(current) != 0 && model.S(current["status"]) != "pending" {
-			return nil, fault.At("EFFECT_ALREADY_SENT", id, p, "an existing effect must be reconciled before staging another")
+		kind := model.S(r["kind"])
+		if kind == "" {
+			kind = "create_issue"
 		}
-		ex["provider_effect"] = object{"kind": "create_issue", "status": "pending", "binding_generation": generation,
-			"attempt_id": nil, "remote_issue_number": nil, "remote_issue_url": nil}
+		if kind == "create_issue" {
+			if r["desired_state"] != nil || len(current) != 0 && (model.S(current["kind"]) != "create_issue" || model.S(current["status"]) != "pending") {
+				return nil, fault.At("EFFECT_ALREADY_SENT", id, p, "an existing issue binding cannot be replaced by another create")
+			}
+			ex["provider_effect"] = object{"kind": "create_issue", "status": "pending", "binding_generation": generation,
+				"attempt_id": nil, "remote_issue_number": nil, "remote_issue_url": nil}
+		} else {
+			if model.S(r["desired_state"]) == "" ||
+				(model.S(current["status"]) != "synchronized" && model.S(current["status"]) != "conflict" && model.S(current["status"]) != "pending") ||
+				model.I(current["remote_issue_number"]) < 1 || model.S(current["remote_issue_url"]) == "" ||
+				(model.S(current["remote_state"]) != "open" && model.S(current["remote_state"]) != "closed") {
+				return nil, fault.At("EFFECT_NOT_BOUND", id, p, "status update requires a verified issue and remote state")
+			}
+			if model.S(current["binding_generation"]) != generation {
+				return nil, fault.At("PROVIDER_BINDING_CHANGED", id, p, "issue binding belongs to an older provider configuration")
+			}
+			current["kind"], current["status"], current["attempt_id"] = "status_update", "pending", nil
+			current["desired_state"] = r["desired_state"]
+			delete(current, "merge_pull_number")
+			delete(current, "merge_commit_sha")
+		}
 	case "claim":
 		if model.S(config["effect_timing"]) == "after_merge" {
 			if model.I(r["merge_pull_number"]) < 1 || !mergeCommitPattern.MatchString(model.S(r["merge_commit_sha"])) {
@@ -179,7 +199,31 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 		if !strings.EqualFold(url, want) {
 			return nil, fault.At("INVALID_REMOTE_BINDING", id, p, "remote issue URL does not match the configured GitHub repository and number")
 		}
+		if model.S(current["kind"]) == "status_update" {
+			if number != model.I(current["remote_issue_number"]) || !strings.EqualFold(url, model.S(current["remote_issue_url"])) || model.S(r["remote_state"]) != model.S(current["desired_state"]) {
+				return nil, fault.At("INVALID_REMOTE_BINDING", id, p, "status readback does not match the bound issue and desired state")
+			}
+		}
 		current["status"], current["remote_issue_number"], current["remote_issue_url"] = "synchronized", number, url
+		if r["remote_state"] != nil {
+			current["remote_state"] = r["remote_state"]
+		}
+	case "conflict":
+		status := model.S(current["status"])
+		if model.S(current["kind"]) != "status_update" || (status != "pending" && status != "outcome_unknown") {
+			return nil, fault.At("EFFECT_NOT_PENDING", id, p, "no remote status conflict is available to record")
+		}
+		if status == "outcome_unknown" {
+			if model.S(r["attempt_id"]) != model.S(current["attempt_id"]) {
+				return nil, fault.At("EFFECT_CLAIM_CHANGED", id, p, "uncertain status resolution does not match the selected send attempt")
+			}
+			if model.S(r["remote_state"]) == model.S(current["desired_state"]) {
+				return nil, fault.At("INVALID_REMOTE_BINDING", id, p, "matching status must be recorded as a verified result, not a conflict")
+			}
+		} else if r["attempt_id"] != nil || model.S(current["remote_state"]) == model.S(r["remote_state"]) {
+			return nil, fault.At("EFFECT_NOT_PENDING", id, p, "pre-send remote status has not changed")
+		}
+		current["status"], current["remote_state"] = "conflict", r["remote_state"]
 	}
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)

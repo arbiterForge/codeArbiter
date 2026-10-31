@@ -89,12 +89,19 @@ def _parser():
     stage = sub.add_parser("stage-sync", help="Save a selected create-issue intent without sending it")
     stage.add_argument("work_id")
     stage.add_argument("--operation-id", required=True)
+    stage_status = sub.add_parser("stage-status", help="Save an explicit update for a bound GitHub issue status")
+    stage_status.add_argument("work_id")
+    stage_status.add_argument("--state", choices=("open", "closed"), required=True)
+    stage_status.add_argument("--operation-id", required=True)
     sync = sub.add_parser("sync", help="Send one pending GitHub issue effect after its configured timing condition")
     sync.add_argument("work_id")
     sync.add_argument("--pull-number", type=int, help="Merged default-branch PR containing this pending work intent")
     reconcile = sub.add_parser("reconcile-issue", help="Read back an exact issue after an uncertain create")
     reconcile.add_argument("work_id")
     reconcile.add_argument("--number", type=int, required=True)
+    reconcile_status = sub.add_parser("reconcile-status", help="Read back an uncertain issue status update without resending")
+    reconcile_status.add_argument("work_id")
+    reconcile_status.add_argument("--accept-remote", action="store_true", help="After inspection, retain the observed remote status as a conflict")
     for verb in ("rename", "attach", "start", "complete", "reopen", "archive"):
         command = sub.add_parser(verb)
         command.add_argument("work_id")
@@ -162,19 +169,25 @@ def _dispatch(args, client):
         if args.expected_config_sha256:
             request["expected_config_sha256"] = args.expected_config_sha256
         return client.call("work-provider-configure", request)
-    if args.verb == "stage-sync":
+    if args.verb in ("stage-sync", "stage-status"):
         config = client.call("work-provider-get", {})
         current = client.call("work-get", {"work_id": args.work_id})
-        return client.call("work-effect-stage", {"operation_id": args.operation_id,
+        request = {"operation_id": args.operation_id,
             "work_id": args.work_id, "binding_generation": config["binding_generation"],
-            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
-    if args.verb in ("sync", "reconcile-issue"):
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}}
+        if args.verb == "stage-status":
+            request.update(kind="status_update", desired_state=args.state)
+        return client.call("work-effect-stage", request)
+    if args.verb in ("sync", "reconcile-issue", "reconcile-status"):
         if getattr(client, "legacy", False):
             raise ValueError("GitHub effects require selected native work ownership")
         import _workgithub
         if args.verb == "sync":
             return _workgithub.sync(client.root, client, args.work_id, pull_number=args.pull_number)
-        return _workgithub.reconcile_issue(client.root, client, args.work_id, args.number)
+        if args.verb == "reconcile-issue":
+            return _workgithub.reconcile_issue(client.root, client, args.work_id, args.number)
+        return _workgithub.reconcile_status(client.root, client, args.work_id,
+                                            accept_remote=args.accept_remote)
 
     if not args.operation_id:
         raise ValueError(f"{args.verb} needs --operation-id so an uncertain result can be retried without overwriting later work")

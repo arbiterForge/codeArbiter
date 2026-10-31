@@ -20,9 +20,14 @@ import _workgithub  # noqa: E402
 
 
 class FakeGithub:
-    def __init__(self, fail_create=False):
+    def __init__(self, fail_create=False, fail_patch=False, fail_patch_without_apply=False):
         self.calls = []
         self.fail_create = fail_create
+        self.fail_patch = fail_patch
+        self.fail_patch_without_apply = fail_patch_without_apply
+        self.issue_state = "open"
+        self.assignee = "human"
+        self.patches = []
 
     def request(self, method, path, body, token):
         self.calls.append((method, path))
@@ -37,8 +42,17 @@ class FakeGithub:
             if self.fail_create:
                 raise TimeoutError("lost response")
             return 201, {"number": 7, "html_url": "https://github.com/arbiterForge/disposable/issues/7"}
+        if method == "PATCH":
+            self.patches.append(body)
+            if self.fail_patch_without_apply:
+                raise TimeoutError("status result unknown")
+            self.issue_state = body["state"]
+            if self.fail_patch:
+                raise TimeoutError("lost status response")
+            return 200, {"number": 7, "state": self.issue_state}
         return 200, {"number": 7, "html_url": "https://github.com/arbiterForge/disposable/issues/7",
-                     "body": "Track one outcome\n\n<!-- codearbiter-work: " + self.work_id + " -->"}
+                     "body": "Track one outcome\n\n<!-- codearbiter-work: " + self.work_id + " -->",
+                     "state": self.issue_state, "assignee": self.assignee}
 
 
 class GithubWorkTest(unittest.TestCase):
@@ -97,6 +111,101 @@ class GithubWorkTest(unittest.TestCase):
         with self.assertRaises(_workgithub.WorkSyncError):
             _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
         self.assertEqual(len(transport.calls), 2)
+
+    def test_status_update_preserves_remote_assignee_and_binds_readback(self):
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        created = _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        config = self.client.call("work-provider-get", {})
+        self.client.call("work-effect-stage", {"operation_id": "github-stage-status-001",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "kind": "status_update", "desired_state": "closed",
+            "expected": {"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+        updated = _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(transport.assignee, "human")
+        self.assertEqual(updated["provider_effect"]["remote_state"], "closed")
+        self.assertEqual(updated["provider_effect"]["status"], "synchronized")
+
+    def test_remote_status_change_refuses_stale_update_before_claim(self):
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        created = _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        config = self.client.call("work-provider-get", {})
+        self.client.call("work-effect-stage", {"operation_id": "github-stage-status-002",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "kind": "status_update", "desired_state": "closed",
+            "expected": {"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+        transport.issue_state = "closed"  # a human changed the issue after our last observation
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "REMOTE_CONFLICT")
+        self.assertEqual(transport.patches, [])
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "conflict")
+
+    def test_lost_status_response_reconciles_without_second_patch(self):
+        transport = FakeGithub(fail_patch=True)
+        transport.work_id = self.work_id
+        created = _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        config = self.client.call("work-provider-get", {})
+        self.client.call("work-effect-stage", {"operation_id": "github-stage-status-003",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "kind": "status_update", "desired_state": "closed",
+            "expected": {"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "outcome_unknown")
+        with self.assertRaises(_workgithub.WorkSyncError):
+            _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        result = _workgithub.reconcile_status(self.root, self.client, self.work_id, transport,
+                                              lambda _: "fixture-token")
+        self.assertEqual(result["provider_effect"]["status"], "synchronized")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+
+    def test_uncertain_status_mismatch_needs_explicit_remote_acceptance(self):
+        transport = FakeGithub(fail_patch_without_apply=True)
+        transport.work_id = self.work_id
+        created = _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        config = self.client.call("work-provider-get", {})
+        self.client.call("work-effect-stage", {"operation_id": "github-stage-status-004",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "kind": "status_update", "desired_state": "closed",
+            "expected": {"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+        with self.assertRaises(_workgithub.WorkSyncError):
+            _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.reconcile_status(self.root, self.client, self.work_id, transport,
+                                         lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "outcome_unknown")
+        accepted = _workgithub.reconcile_status(self.root, self.client, self.work_id, transport,
+                                                lambda _: "fixture-token", accept_remote=True)
+        self.assertEqual(accepted["provider_effect"]["status"], "conflict")
+        restaged = self.client.call("work-effect-stage", {"operation_id": "github-restage-status-004",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "kind": "status_update", "desired_state": "closed",
+            "expected": {"revision": accepted["revision"], "model_sha256": accepted["model_sha256"]}})
+        self.assertEqual(restaged["provider_effect"]["status"], "pending")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+
+    def test_status_update_rejects_pull_request_as_issue(self):
+        class PullIssue(FakeGithub):
+            def request(self, method, path, body, token):
+                status, result = super().request(method, path, body, token)
+                if method == "GET" and path.endswith("/issues/7"):
+                    result["pull_request"] = {"url": "https://api.github.com/ignored"}
+                return status, result
+
+        transport = PullIssue()
+        transport.work_id = self.work_id
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        self.assertEqual(transport.patches, [])
 
     def test_uncertain_create_reconciles_by_exact_readback_without_post(self):
         lost = FakeGithub(fail_create=True)
@@ -310,6 +419,15 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(transport.calls, [])
         self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
                          "outcome_unknown")
+
+    def test_transport_refuses_unlisted_token_destinations(self):
+        transport = _workgithub.GithubTransport()
+        for method, path in (("POST", "/repos/arbiterForge/disposable/hooks"),
+                             ("PATCH", "/repos/arbiterForge/disposable/issues/7/comments"),
+                             ("GET", "/repos/arbiterForge/disposable/issues/7?token=x")):
+            with self.subTest(method=method, path=path), self.assertRaises(_workgithub.WorkSyncError) as raised:
+                transport.request(method, path, None, "fixture-token")
+            self.assertEqual(raised.exception.code, "UNSUPPORTED_REQUEST")
 
     def test_real_transport_never_follows_token_bearing_redirect(self):
         received = []

@@ -271,6 +271,7 @@ EXPECTED_SUITES = {
         "test_origin_retry_repairs_archived_work_attachment",
         "test_project_view_pages_native_work_without_writing_a_second_owner",
         "test_selected_view_is_inert_html_and_leaves_no_second_owner",
+        "test_status_cli_stages_only_a_verified_issue_binding",
         "test_update_requires_replay_identity_to_preserve_later_edit",
         "test_versioned_stdin_request_uses_only_native_work_operations",
         "test_versioned_request_uses_legacy_owner_without_native_write",
@@ -298,6 +299,12 @@ EXPECTED_SUITES = {
         "test_changed_origin_refuses_before_claim",
         "test_changed_origin_after_claim_refuses_before_post",
         "test_real_transport_never_follows_token_bearing_redirect",
+        "test_lost_status_response_reconciles_without_second_patch",
+        "test_status_update_preserves_remote_assignee_and_binds_readback",
+        "test_status_update_rejects_pull_request_as_issue",
+        "test_remote_status_change_refuses_stale_update_before_claim",
+        "test_transport_refuses_unlisted_token_destinations",
+        "test_uncertain_status_mismatch_needs_explicit_remote_acceptance",
     },
 }
 

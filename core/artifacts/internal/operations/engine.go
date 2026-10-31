@@ -207,6 +207,8 @@ func Run(root, op string, input object) (any, error) {
 		return engine.workEffectMutation(r, "claim")
 	case "work-effect-record":
 		return engine.workEffectMutation(r, "record")
+	case "work-effect-conflict":
+		return engine.workEffectMutation(r, "conflict")
 	case "work-update":
 		return engine.workUpdate(r)
 	case "work-context":

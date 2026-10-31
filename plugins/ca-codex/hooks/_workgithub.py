@@ -23,6 +23,7 @@ from _gitexec import git_executable, root_bound_git_env
 _REPOSITORY = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\Z")
 _BASE = "https://api.github.com"
 _MARKER = "<!-- codearbiter-work: {} -->"
+_REPO_PATH = r"/repos/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}"
 
 
 class WorkSyncError(ValueError):
@@ -43,9 +44,14 @@ class GithubTransport:
         self._opener = request.build_opener(_NoRedirect)
 
     def request(self, method, path, body, token):
-        if (method not in ("GET", "POST") or not path.startswith("/repos/") or "#" in path
-                or ("?" in path and re.fullmatch(
-                    r"/repos/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/contents/\.codearbiter/work/WORK-[A-F0-9]{32}\.html\?ref=[a-f0-9]{40}", path) is None)):
+        allowed = {
+            "GET": (rf"{_REPO_PATH}", rf"{_REPO_PATH}/issues/[1-9][0-9]*",
+                    rf"{_REPO_PATH}/pulls/[1-9][0-9]*",
+                    rf"{_REPO_PATH}/contents/\.codearbiter/work/WORK-[A-F0-9]{{32}}\.html\?ref=[a-f0-9]{{40}}"),
+            "POST": (rf"{_REPO_PATH}/issues",),
+            "PATCH": (rf"{_REPO_PATH}/issues/[1-9][0-9]*",),
+        }
+        if not any(re.fullmatch(pattern, path) for pattern in allowed.get(method, ())):
             raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub operation is outside the fixed issue endpoint")
         payload = None if body is None else json.dumps(body, separators=(",", ":")).encode("utf-8")
         req = request.Request(_BASE + path, data=payload, method=method, headers={
@@ -123,9 +129,11 @@ def _verified_issue(transport, config, work_id, number, token):
     want_url = f"https://github.com/{config['repository']}/issues/{number}"
     if (status != 200 or issue.get("number") != number
             or str(issue.get("html_url", "")).casefold() != want_url.casefold()
-            or _MARKER.format(work_id) not in str(issue.get("body", ""))):
+            or _MARKER.format(work_id) not in str(issue.get("body", ""))
+            or issue.get("pull_request") is not None
+            or issue.get("state") not in ("open", "closed")):
         raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "GitHub issue readback did not match this work identity")
-    return want_url
+    return want_url, issue["state"]
 
 
 def _verified_merge(root, transport, config, work, pull_number, token):
@@ -173,19 +181,24 @@ def _verified_merge(root, transport, config, work, pull_number, token):
             or model["normative"].get("title") != work["title"]
             or model["normative"].get("summary") != work["intent"]
             or effect.get("status") != "pending"
+            or effect.get("kind") != (work.get("provider_effect") or {}).get("kind")
+            or effect.get("desired_state") != (work.get("provider_effect") or {}).get("desired_state")
+            or effect.get("remote_issue_number") != (work.get("provider_effect") or {}).get("remote_issue_number")
             or effect.get("binding_generation") != config["binding_generation"]):
         raise WorkSyncError("MERGE_UNVERIFIED", "Merged work intent does not match the selected pending effect")
     return sha
 
 
 def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=None):
-    """Send one explicit pending create; a lost result remains outcome_unknown."""
+    """Send one explicit pending issue effect; uncertain results are not retried."""
     transport = transport if transport is not None else GithubTransport()
     token_lookup = token_lookup if token_lookup is not None else os.environ.get
     config, work = _selected(Path(root), client, work_id)
     effect = work.get("provider_effect") or {}
     if effect.get("status") != "pending":
-        raise WorkSyncError("EFFECT_NOT_PENDING", "No pending create can be sent; reconcile uncertain outcomes first")
+        raise WorkSyncError("EFFECT_NOT_PENDING", "No pending issue effect can be sent; reconcile uncertain outcomes first")
+    if effect.get("kind") not in ("create_issue", "status_update"):
+        raise WorkSyncError("UNSUPPORTED_EFFECT", "The pending issue effect is unsupported")
     if effect.get("binding_generation") != config["binding_generation"]:
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Pending intent belongs to an older provider binding")
     if config["effect_timing"] == "after_merge" and pull_number is None:
@@ -196,6 +209,17 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
         merge_sha = _verified_merge(Path(root), transport, config, work, pull_number, token)
     elif pull_number is not None:
         raise WorkSyncError("INVALID_MERGE_PROOF", "Immediate effects do not use a merge PR number")
+    if effect["kind"] == "status_update":
+        number = effect.get("remote_issue_number")
+        url, observed = _verified_issue(transport, config, work_id, number, token)
+        if url != effect.get("remote_issue_url"):
+            raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "The bound issue URL changed")
+        if observed != effect.get("remote_state"):
+            client.call("work-effect-conflict", {
+                "operation_id": "github-conflict-" + secrets.token_hex(12), "work_id": work_id,
+                "binding_generation": config["binding_generation"], "remote_state": observed,
+                "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+            raise WorkSyncError("REMOTE_CONFLICT", "GitHub issue status changed since the last verified observation; review it before restaging")
     attempt = "github-attempt-" + secrets.token_hex(12)
     claim = {
         "operation_id": "github-claim-" + secrets.token_hex(12), "work_id": work_id,
@@ -210,20 +234,29 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Provider changed after the pre-send claim; reconcile before retrying")
     if _origin_repository(Path(root)).casefold() != config["repository"].casefold():
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Git origin changed after the pre-send claim; reconcile before retrying")
-    body = work["intent"] + "\n\n" + _MARKER.format(work_id)
     try:
-        status, created = transport.request("POST", _issue_path(config["repository"]),
-                                            {"title": work["title"], "body": body}, token)
-        if status != 201:
-            raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub create did not return a confirmed issue")
-        number = created.get("number")
-        url = _verified_issue(transport, config, work_id, number, token)
+        if effect["kind"] == "create_issue":
+            body = work["intent"] + "\n\n" + _MARKER.format(work_id)
+            status, created = transport.request("POST", _issue_path(config["repository"]),
+                                                {"title": work["title"], "body": body}, token)
+            if status != 201:
+                raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub create did not return a confirmed issue")
+            number = created.get("number")
+        else:
+            number = effect["remote_issue_number"]
+            status, _ = transport.request("PATCH", _issue_path(config["repository"], number),
+                                          {"state": effect["desired_state"]}, token)
+            if status != 200:
+                raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub status update did not return a confirmed issue")
+        url, remote_state = _verified_issue(transport, config, work_id, number, token)
+        if effect["kind"] == "status_update" and remote_state != effect["desired_state"]:
+            raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub status readback differs from the requested state")
     except Exception as exc:
-        raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub create or readback is uncertain; inspect the remote issue before any retry") from exc
+        raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub send or readback is uncertain; inspect the remote issue before any retry") from exc
     return client.call("work-effect-record", {
         "operation_id": "github-record-" + secrets.token_hex(12), "work_id": work_id,
         "binding_generation": config["binding_generation"], "attempt_id": attempt,
-        "remote_issue_number": number, "remote_issue_url": url,
+        "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
         "expected": {"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}})
 
 
@@ -233,12 +266,42 @@ def reconcile_issue(root, client, work_id, number, transport=None, token_lookup=
     token_lookup = token_lookup if token_lookup is not None else os.environ.get
     config, work = _selected(Path(root), client, work_id)
     effect = work.get("provider_effect") or {}
-    if effect.get("status") != "outcome_unknown" or effect.get("binding_generation") != config["binding_generation"]:
+    if (effect.get("kind") != "create_issue" or effect.get("status") != "outcome_unknown"
+            or effect.get("binding_generation") != config["binding_generation"]):
         raise WorkSyncError("EFFECT_NOT_UNKNOWN", "Selected work has no matching uncertain create to reconcile")
     token = _credential(config, token_lookup)
-    url = _verified_issue(transport, config, work_id, number, token)
+    url, remote_state = _verified_issue(transport, config, work_id, number, token)
     return client.call("work-effect-record", {
         "operation_id": "github-reconcile-" + secrets.token_hex(12), "work_id": work_id,
         "binding_generation": config["binding_generation"], "attempt_id": effect["attempt_id"],
-        "remote_issue_number": number, "remote_issue_url": url,
+        "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+
+
+def reconcile_status(root, client, work_id, transport=None, token_lookup=None, accept_remote=False):
+    """Read back an uncertain status update without issuing another PATCH."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    config, work = _selected(Path(root), client, work_id)
+    effect = work.get("provider_effect") or {}
+    if (effect.get("kind") != "status_update" or effect.get("status") != "outcome_unknown"
+            or effect.get("binding_generation") != config["binding_generation"]):
+        raise WorkSyncError("EFFECT_NOT_UNKNOWN", "Selected work has no uncertain status update to reconcile")
+    token = _credential(config, token_lookup)
+    number = effect["remote_issue_number"]
+    url, remote_state = _verified_issue(transport, config, work_id, number, token)
+    if url != effect["remote_issue_url"]:
+        raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "The bound issue URL changed")
+    if remote_state != effect["desired_state"]:
+        if not accept_remote:
+            raise WorkSyncError("OUTCOME_UNKNOWN", f"Remote issue is {remote_state}; inspect it, then use --accept-remote to record a conflict without resending")
+        return client.call("work-effect-conflict", {
+            "operation_id": "github-accept-remote-" + secrets.token_hex(12), "work_id": work_id,
+            "binding_generation": config["binding_generation"], "attempt_id": effect["attempt_id"],
+            "remote_state": remote_state,
+            "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+    return client.call("work-effect-record", {
+        "operation_id": "github-reconcile-status-" + secrets.token_hex(12), "work_id": work_id,
+        "binding_generation": config["binding_generation"], "attempt_id": effect["attempt_id"],
+        "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
         "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})

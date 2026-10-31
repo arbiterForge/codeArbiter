@@ -48,7 +48,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -304,11 +304,15 @@ func RequestSchema(op string) (object, error) {
 		add("credential_ref", enum("GH_TOKEN", "GITHUB_TOKEN", "CODEARBITER_GITHUB_TOKEN"), true)
 		add("effect_timing", enum("after_merge", "immediate"), true)
 		add("expected_config_sha256", digestType(), false)
-	case "work-effect-stage", "work-effect-claim", "work-effect-record":
+	case "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 		add("binding_generation", digestType(), true)
 		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		if op == "work-effect-stage" {
+			add("kind", enum("create_issue", "status_update"), false)
+			add("desired_state", enum("open", "closed"), false)
+		}
 		if op == "work-effect-claim" || op == "work-effect-record" {
 			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		}
@@ -319,6 +323,11 @@ func RequestSchema(op string) (object, error) {
 		if op == "work-effect-record" {
 			add("remote_issue_number", object{"type": "integer", "minimum": int64(1)}, true)
 			add("remote_issue_url", object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, true)
+			add("remote_state", enum("open", "closed"), false)
+		}
+		if op == "work-effect-conflict" {
+			add("remote_state", enum("open", "closed"), true)
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, false)
 		}
 	case "work-context":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)

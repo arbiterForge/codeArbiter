@@ -638,6 +638,67 @@ func TestWorkEffectLostCreateResponseRemainsUnknown(t *testing.T) {
 	}
 }
 
+func TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	created := call("work-create", object{"operation_id": "status-create-001", "title": "Bound work", "intent": "Track one issue", "work_type": "fix"})
+	id := model.S(created["work_id"])
+	config := call("work-provider-configure", object{"operation_id": "status-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	generation := config["binding_generation"]
+	expected := func(value object) object {
+		return object{"revision": value["revision"], "model_sha256": value["model_sha256"]}
+	}
+	staged := call("work-effect-stage", object{"operation_id": "status-stage-create-001", "work_id": id, "binding_generation": generation, "expected": expected(created)})
+	claimed := call("work-effect-claim", object{"operation_id": "status-claim-create-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-create-001", "expected": expected(staged)})
+	bound := call("work-effect-record", object{"operation_id": "status-record-create-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-create-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open", "expected": expected(claimed)})
+	staged = call("work-effect-stage", object{"operation_id": "status-stage-close-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "closed", "expected": expected(bound)})
+	effect := model.M(staged["provider_effect"])
+	if model.I(effect["remote_issue_number"]) != 7 || model.S(effect["remote_state"]) != "open" || model.S(effect["desired_state"]) != "closed" {
+		t.Fatalf("status stage lost its issue binding or observed baseline: %v", effect)
+	}
+	conflict := call("work-effect-conflict", object{"operation_id": "status-conflict-001", "work_id": id, "binding_generation": generation, "remote_state": "closed", "expected": expected(staged)})
+	if model.S(model.M(conflict["provider_effect"])["status"]) != "conflict" {
+		t.Fatalf("remote change was not retained for explicit reconciliation: %v", conflict)
+	}
+	staged = call("work-effect-stage", object{"operation_id": "status-stage-open-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "open", "expected": expected(conflict)})
+	claimed = call("work-effect-claim", object{"operation_id": "status-claim-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "expected": expected(staged)})
+	record := object{"protocol": Protocol, "operation_id": "status-record-open-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-open-001", "remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "closed", "expected": expected(claimed)}
+	if _, err := Run(root, "work-effect-record", record); fault.Code(err) != "INVALID_REMOTE_BINDING" {
+		t.Fatalf("stale status readback was accepted: %v", err)
+	}
+	record["remote_state"] = "open"
+	record["operation_id"] = "status-record-open-002"
+	recorded := call("work-effect-record", record)
+	if model.S(model.M(recorded["provider_effect"])["remote_state"]) != "open" || model.S(model.M(recorded["provider_effect"])["status"]) != "synchronized" {
+		t.Fatalf("verified status result was not retained: %v", recorded)
+	}
+	staged = call("work-effect-stage", object{"operation_id": "status-stage-uncertain-001", "work_id": id, "binding_generation": generation, "kind": "status_update", "desired_state": "closed", "expected": expected(recorded)})
+	claimed = call("work-effect-claim", object{"operation_id": "status-claim-uncertain-001", "work_id": id, "binding_generation": generation, "attempt_id": "status-attempt-uncertain-001", "expected": expected(staged)})
+	resolution := object{"protocol": Protocol, "operation_id": "status-resolve-uncertain-001", "work_id": id, "binding_generation": generation, "attempt_id": "wrong-attempt-001", "remote_state": "open", "expected": expected(claimed)}
+	if _, err := Run(root, "work-effect-conflict", resolution); fault.Code(err) != "EFFECT_CLAIM_CHANGED" {
+		t.Fatalf("wrong uncertain attempt was accepted: %v", err)
+	}
+	resolution["attempt_id"] = "status-attempt-uncertain-001"
+	resolution["remote_state"] = "closed"
+	if _, err := Run(root, "work-effect-conflict", resolution); fault.Code(err) != "INVALID_REMOTE_BINDING" {
+		t.Fatalf("matching desired status was falsely recorded as conflict: %v", err)
+	}
+	resolution["operation_id"] = "status-resolve-uncertain-002"
+	resolution["remote_state"] = "open"
+	accepted := call("work-effect-conflict", resolution)
+	if model.S(model.M(accepted["provider_effect"])["status"]) != "conflict" {
+		t.Fatalf("explicit uncertain resolution lost conflict state: %v", accepted)
+	}
+}
+
 func TestWorkEffectBindingChangeDoesNotSend(t *testing.T) {
 	root := testutil.Root(t)
 	call := func(op string, request object) object {

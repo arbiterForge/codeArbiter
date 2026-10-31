@@ -174,7 +174,7 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/commands/init.md':'ed0f32b734097fa549cd95738ceaa30c56b7b849',
   'core/pysrc/_artifactlib.py':'0cbc621fe6eeab05e7eb2bf96ebbee6c58d21c38',
   'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
-  'core/artifacts/internal/operations/protocol.go':'0426ed863308c042bb78e5c08f81c952a0214a8f',
+  'core/artifacts/internal/operations/protocol.go':'2f2683b23a2f19b0de34c15608ad6b3e593ac614',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
   'core/surface/commands/status.md':'3dbf7706a86ba959d3fb4721dc23afb7a0b23960',
