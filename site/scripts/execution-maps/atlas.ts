@@ -167,10 +167,11 @@ export const CONTEXT_KNOWLEDGE_SOURCE_BLOBS:Readonly<Record<string,string>>=Obje
 // The local work owner adds selected work operations to the artifact bridge
 // and a work document rendering. The bridge now also admits a derived project
 // page read; existing review routes retain their geometry. These are the
-// current reviewed source bytes for those shared owners.
+// current reviewed source bytes for those shared owners. #1068 changed only
+// render.go's output buffer and preallocation; its bytes and routes hold.
 export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/pysrc/_artifactlib.py':'3b0a1b6e5e6c64465428ab8baa504a0e868912dd',
-  'core/artifacts/internal/render/render.go':'1ea6066acf90a463920584608d73724eb291c7e7',
+  'core/artifacts/internal/render/render.go':'8b8c6c203d6897b7b23d105900f8dfcf1b3b0383',
   'core/artifacts/internal/operations/protocol.go':'5074b80706fcbbcd6236ac38eeaed6e134eb2ff5',
   'core/surface/agents/checkpoint-aggregator.md':'d77511be701e20a5a7c407d7da4c937f4bb89ca4',
   'core/surface/commands/standup.md':'c6ff812ec6525a4d995ec6ad66d982b140fcd5d0',
@@ -185,6 +186,12 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
   'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
+});
+// H-05 and H-11 now read a `sed` without in-place or a `w` command as a read,
+// as H-18 already did. The shared shell guard only refuses less; the recovery,
+// read and proof routes that cite it keep their geometry.
+export const SED_READ_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_bashguardlib.py':'4a5031649063644286042b84f61451d21db4bd03',
 });
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those
@@ -324,7 +331,7 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);
@@ -350,7 +357,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
   // Retain the historical assistive packet while checking later work-system
   // owner changes against their separately reviewed current blobs.
-  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
   for(const command of atlas.commands) {
     if(RETIRED_COMMANDS[command.name]) {
       const owner=commandMetadata(command.name,historical);
