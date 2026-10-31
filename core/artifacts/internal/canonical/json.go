@@ -295,6 +295,9 @@ func appendString(b *bytes.Buffer, s string) error {
 	return nil
 }
 func lessUTF16(a, b string) bool {
+	if ascii(a) && ascii(b) {
+		return a < b
+	}
 	aa := utf16.Encode([]rune(a))
 	bb := utf16.Encode([]rune(b))
 	for i := 0; i < len(aa) && i < len(bb); i++ {
@@ -304,10 +307,24 @@ func lessUTF16(a, b string) bool {
 	}
 	return len(aa) < len(bb)
 }
+func ascii(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] >= utf8.RuneSelf {
+			return false
+		}
+	}
+	return true
+}
 func Keys(m map[string]any) []string {
 	ks := make([]string, 0, len(m))
+	allASCII := true
 	for k := range m {
 		ks = append(ks, k)
+		allASCII = allASCII && ascii(k)
+	}
+	if allASCII {
+		sort.Strings(ks)
+		return ks
 	}
 	sort.Slice(ks, func(i, j int) bool { return lessUTF16(ks[i], ks[j]) })
 	return ks

@@ -79,7 +79,7 @@ func label(s string) string {
 }
 
 type writer struct {
-	b strings.Builder
+	b bytes.Buffer
 	d *model.Document
 }
 
@@ -337,7 +337,8 @@ func (w *writer) block(m map[string]any) {
 	}
 	w.raw(`</div>`)
 }
-func Render(d *model.Document) ([]byte, error) {
+func Render(d *model.Document) ([]byte, error) { return render(d, 0) }
+func render(d *model.Document, capacity int) ([]byte, error) {
 	if e := d.VerifyIntegrity(); e != nil {
 		return nil, e
 	}
@@ -357,6 +358,9 @@ func Render(d *model.Document) ([]byte, error) {
 	version := model.S(d.Data["schema_version"])
 	historical := version == "0.3.0" || version == "0.3.1"
 	w := writer{d: d}
+	if capacity > 0 {
+		w.b.Grow(capacity)
+	}
 	w.raw("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"light\"><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'\"><meta name=\"ca-artifact-format\" content=\"codearbiter.artifact/0.1.0\"><title>")
 	w.text(model.S(d.Norm()["title"]))
 	w.raw(` · `)
@@ -470,7 +474,7 @@ func Render(d *model.Document) ([]byte, error) {
 	}
 	w.raw(string(b))
 	w.raw(modelEnd + "\n</body></html>\n")
-	out := []byte(w.b.String())
+	out := w.b.Bytes()
 	if len(out) > canonical.MaxBytes {
 		return nil, fault.New("MAX_BYTES", "rendered HTML exceeds 8 MiB")
 	}
@@ -500,7 +504,7 @@ func Parse(b []byte) (*model.Document, error) {
 	if e != nil {
 		return nil, e
 	}
-	expected, e := Render(d)
+	expected, e := render(d, len(b))
 	if e != nil {
 		return nil, e
 	}
