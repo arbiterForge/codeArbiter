@@ -76,6 +76,7 @@ def _parser():
     project_view.add_argument("--membership-sha256")
     origins = sub.add_parser("origins", help="Find exact source keys across active and archived work")
     origins.add_argument("--origin", action="append", required=True)
+    sub.add_parser("adopt-preview", help="Inventory legacy board rows and preimages without changing ownership")
     sub.add_parser("provider-get", help="Read the selected native GitHub provider binding")
     configure = sub.add_parser("provider-configure", help="Save a finite native GitHub provider binding")
     configure.add_argument("--repository", required=True, help="GitHub owner/repository")
@@ -142,6 +143,11 @@ def _dispatch(args, client):
         return client.call("work-list" if args.verb == "list" else "project-view", request)
     if args.verb == "origins":
         return client.call("work-origins", {"origins": args.origin})
+    if args.verb == "adopt-preview":
+        if not getattr(client, "legacy", False):
+            raise ValueError("adoption preview requires selected legacy board ownership")
+        import _workadopt
+        return _workadopt.preview(client.root)
     if args.verb == "provider-get":
         return client.call("work-provider-get", {})
     if args.verb == "provider-configure":

@@ -320,6 +320,14 @@ and leaves its check unknown. Legacy rename, later attachment and reopen
 remain unsupported through this facade. Native creation still refuses while
 the legacy board owns the project.
 
+`hooks/work.py adopt-preview` inventories every active and archived top-level
+row while holding the legacy board writer's lock. It reports board byte hashes,
+candidate native IDs and origins, and refuses malformed markers, duplicate
+identities, linked boards and an existing native owner. Unkeyed rows receive a
+deterministic candidate origin from their board location and exact block, not
+their title. This is a read-only inventory; the legacy board remains the writer
+until a separate journaled cutover is implemented and selected.
+
 Work titles are labels, never lookup keys. `work-get` reads a selected ID
 directly, including archived work. `work-list` pages active and archived IDs,
 reading only the selected page's work models, including each origin for
