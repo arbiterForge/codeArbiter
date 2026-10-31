@@ -430,6 +430,20 @@ def main():
                     # make an unrelated restore look destructive.
                     "git restore notes.txt; cat .codearbiter/overrides.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
+        # A sed that cannot write is a read, as H-11 and H-18 treat it (#997).
+        for cmd in ("sed -n 1,20p .codearbiter/overrides.log",
+                    'cd "repo dir" && sed -n 1,80p .codearbiter/gate-events.log',
+                    "sed 's/a/b/' .codearbiter/sprint-log.md",
+                    "sed -n 1,20p .codearbiter/decisions/decision-log.md"):
+            expect_allow(fx, cmd, f"H-05 allow (read-only sed): {cmd}")
+        for cmd in ("sed -n -i p .codearbiter/overrides.log",
+                    "sed --in-place 's/a/b/' .codearbiter/gate-events.log",
+                    "sed -n '1w .codearbiter/overrides.log' other",
+                    # GNU sed accepts options after operands.
+                    "sed 's/a/b/' .codearbiter/sprint-log.md -i",
+                    # A read-only sed must not shield a later write verb.
+                    "sed -n p .codearbiter/overrides.log; rm .codearbiter/overrides.log"):
+            expect_block(fx, cmd, "H-05", f"H-05 block (writing sed): {cmd}")
 
         # ---- #574: H-05 had NO interpreter leg — an inline-code one-liner
         # walked past both LOG_TRUNC_RE and LOG_DESTROY_RE, since neither

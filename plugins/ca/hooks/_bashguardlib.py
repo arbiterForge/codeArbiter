@@ -306,7 +306,8 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # Truncation (`>` but not `>>`) or destructive verbs aimed at an audit log
 # (overrides.log, triage.log — both append-only). The verb list includes
 # every common rewrite-in-place spelling (truncate, tee, dd, sed, sponge,
-# cp/copy onto the log); PowerShell's Add-Content is deliberately absent —
+# cp/copy onto the log; `sed` only when it can write, via _shell_write);
+# PowerShell's Add-Content is deliberately absent —
 # appending is the one sanctioned write.
 # N-3: Known limitations — this regex catches the common `> file` and `>| file`
 # (force-clobber) truncation forms but NOT every shell spelling that produces a
@@ -647,7 +648,7 @@ _SED_WRITES_RE = re.compile(
 
 def _shell_write(cmd, write_re):
     """`write_re` (a write-verb regex whose group 1 is the verb), except a `sed`
-    invocation that cannot write. H-11 and H-18 share it."""
+    invocation that cannot write. H-05, H-11 and H-18 share it."""
     text = cmd
     while True:
         m = write_re.search(text)
@@ -1572,13 +1573,14 @@ def _check_h05_audit_log(cmd):
     # #574: LOG_INTERP_RE closes the interpreter-one-liner flank
     # (`python3 -c "open('.codearbiter/overrides.log','w')..."`) — the
     # verb-list and redirect legs above never look for an interpreter token
-    # at all, so this shape walked past both.
+    # at all, so this shape walked past both. A `sed` without in-place or a
+    # `w` command is a read, as H-11 and H-18 already treat it (#997).
     folded = cmd.casefold()
     legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
     enrolled_name = (any(n in cmd for n in legacy_names) or
                      ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
     if enrolled_name and (
-            LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
+            LOG_TRUNC_RE.search(cmd) or _shell_write(cmd, LOG_DESTROY_RE)
             or LOG_GIT_RESTORE_RE.search(cmd)
             or _interp_protected_write(cmd, LOG_INTERP_RE, LOG_NAME_RE)
             and not _is_direct_taskwrite(cmd)):
