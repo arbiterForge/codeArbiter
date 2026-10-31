@@ -446,13 +446,21 @@ func TestWorkListBudgetBoundaryMatchesEncodedPage(t *testing.T) {
 	if len(all) != 24 {
 		t.Fatalf("full page has %d entries", len(all))
 	}
-	for _, budget := range []int64{4096, 5000, 8000, 65536} {
+	terminalBytes, err := json.Marshal(full)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, budget := range []int64{4096, 5000, 8000, int64(len(terminalBytes)) + 511, 65536} {
 		want := 0
 		for n := 1; n <= len(all); n++ {
+			var nextOffset any = int64(n)
+			if n == len(all) {
+				nextOffset = nil
+			}
 			candidate := object{
 				"project_id": full["project_id"], "membership_sha256": full["membership_sha256"],
 				"entries": all[:n], "offset": int64(0), "total": int64(len(all)),
-				"next_offset": int64(n), "content_snapshot": false,
+				"next_offset": nextOffset, "content_snapshot": false,
 			}
 			encoded, err := json.Marshal(candidate)
 			if err != nil {

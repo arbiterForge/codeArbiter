@@ -402,7 +402,10 @@ func (e *Engine) workList(r object) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		cursorSize := len(strconv.Itoa(next + 1))
+		cursorSize := len("null")
+		if next+1 < len(ids) {
+			cursorSize = len(strconv.Itoa(next + 1))
+		}
 		candidateSize := encodedSize + len(row) + cursorSize - nextOffsetSize
 		if len(items) > 0 {
 			candidateSize++ // JSON array separator.
