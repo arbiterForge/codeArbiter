@@ -467,6 +467,20 @@ def main():
                     "ls .codearbiter/decisions/",
                     "grep -r seed .codearbiter/decisions/"):
             expect_allow(fx, cmd, f"H-11 allow: {cmd}")
+        # A sed that cannot write is a read, as H-18 already treats it (#997).
+        # The first case is the exact command H-11 refused while reading an ADR.
+        for cmd in ('cd "repo dir" && sed -n 1,80p .codearbiter/decisions/0001-seed.md',
+                    "sed -n 1,20p .codearbiter/decisions/0001-seed.md",
+                    "sed 's/a/b/' .codearbiter/decisions/0001-seed.md"):
+            expect_allow(fx, cmd, f"H-11 allow (read-only sed): {cmd}")
+        for cmd in ("sed -n -i p .codearbiter/decisions/0001-seed.md",
+                    "sed --in-place 's/a/b/' .codearbiter/decisions/0001-seed.md",
+                    "sed -n '1w .codearbiter/decisions/0009-x.md' other",
+                    # GNU sed accepts options after operands (review, #1008).
+                    "sed 's/a/b/' .codearbiter/decisions/0001-seed.md -i",
+                    # A read-only sed must not shield a later write verb.
+                    "sed -n p .codearbiter/decisions/0001-seed.md; rm .codearbiter/decisions/0001-seed.md"):
+            expect_block(fx, cmd, "H-11", f"H-11 block (writing sed): {cmd}")
 
         # A filename extension is not an interpreter executable. Exercise the
         # actual hook entry, including the exact read-only campaign repro.

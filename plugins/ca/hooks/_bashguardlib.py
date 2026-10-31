@@ -645,11 +645,12 @@ _SED_WRITES_RE = re.compile(
     r"(?<![\w-])-[a-zA-Z]*i|--in-place|(?:^|[\s'\";{}/\d$,])[wW]\s+\S")
 
 
-def _context_shell_write(cmd):
-    """CONTEXT_WRITE_RE, except a `sed` invocation that cannot write."""
+def _shell_write(cmd, write_re):
+    """`write_re` (a write-verb regex whose group 1 is the verb), except a `sed`
+    invocation that cannot write. H-11 and H-18 share it."""
     text = cmd
     while True:
-        m = CONTEXT_WRITE_RE.search(text)
+        m = write_re.search(text)
         if not m:
             return False
         if m.group(1).lower() != "sed":
@@ -1590,7 +1591,8 @@ def _check_h05_audit_log(cmd):
 def _check_h11_decisions(cmd):
     """H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,
-    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched.
+    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched, including a `sed`
+    without in-place or a `w` command, as H-18 already reads it (#997).
 
     #528: decisions/decision-log.md is the append-only arbitration log, not an
     ADR, and belongs to H-05 — which already covers it, since LOG_NAMES is
@@ -1606,7 +1608,7 @@ def _check_h11_decisions(cmd):
     # police (via H-05's own LOG_INTERP_RE), not a false H-11 block.
     cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
     cmd = ADR_LIFECYCLE_LOG_SHELL_RE.sub(" ", cmd)
-    if (DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd)
+    if (DECISIONS_REDIRECT_RE.search(cmd) or _shell_write(cmd, DECISIONS_WRITE_RE)
             or _interp_protected_write(cmd, DECISIONS_INTERP_RE, DECISIONS_NAME_RE)):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
@@ -1624,7 +1626,7 @@ def _check_h18_context_md(cmd):
     #997: reads pass on both flanks. `sed` without in-place or a `w` command
     is a read, and an interpreter needs write intent or a script argument
     (`_interp_protected_write`)."""
-    if (CONTEXT_REDIRECT_RE.search(cmd) or _context_shell_write(cmd)
+    if (CONTEXT_REDIRECT_RE.search(cmd) or _shell_write(cmd, CONTEXT_WRITE_RE)
             or _interp_protected_write(cmd, CONTEXT_INTERP_RE, CONTEXT_NAME_RE)):
         block("H-18", ".codearbiter/CONTEXT.md is the activation switch every enforcement "
                       "hook reads (#159) — shell rewrites, edits, or deletions that could flip "
