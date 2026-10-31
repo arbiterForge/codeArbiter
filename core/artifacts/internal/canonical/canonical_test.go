@@ -21,6 +21,14 @@ func TestStrictJSON(t *testing.T) {
 	}
 }
 func TestDigestDomains(t *testing.T) {
+	ascii, e := Decode([]byte(`{"z":1,"A":2,"a":3,"0":4}`))
+	if e != nil {
+		t.Fatal(e)
+	}
+	asciiJSON, e := Marshal(ascii)
+	if e != nil || string(asciiJSON) != `{"0":4,"A":2,"a":3,"z":1}` {
+		t.Fatalf("ASCII key order: %s, %v", asciiJSON, e)
+	}
 	v, e := Decode([]byte(`{"\ue000":1,"😀":2,"\r":3,"n":-0,"s":"</script>&"}`))
 	if e != nil {
 		t.Fatal(e)
