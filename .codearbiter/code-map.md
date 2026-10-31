@@ -39,7 +39,7 @@ catalogs; source inspection is not live-host or publication qualification.
 - `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.
 - `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.
 - `core/pysrc/_taskboardlib.py` — Legacy board schema and counters; taskwrite.py owns its mutations and archival.
-- `core/pysrc/_worklib.py`, `_workadopt.py`, `work.py`, and `_workgithub.py` — Selected legacy-board adapter, native work CLI, and fixed GitHub Issues transport; stable work IDs select lifecycle and context operations.
+- `core/pysrc/_worklib.py`, `_workadopt.py`, `work.py`, and `_workgithub.py` — Selected legacy-board adapter, native work CLI, and fixed GitHub Issues and optional Projects transport; stable work IDs select lifecycle and context operations.
 - `core/artifacts/internal/operations/work_adopt.go` — Journaled selected legacy-board cutover with native writer locking and exact board snapshots.
 - `core/pysrc/knowledge.py` — Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.
 - `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.

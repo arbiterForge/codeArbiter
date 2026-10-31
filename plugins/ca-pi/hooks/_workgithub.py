@@ -25,6 +25,55 @@ _REPOSITORY = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.
 _BASE = "https://api.github.com"
 _MARKER = "<!-- codearbiter-work: {} -->"
 _REPO_PATH = r"/repos/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}"
+_PROJECT_READ = """query($project: ID!, $issue: ID!, $after: String) {
+  project: node(id: $project) { __typename ... on ProjectV2 { id } }
+  issue: node(id: $issue) { ... on Issue {
+    id
+    projectItems(first: 100, after: $after) {
+      nodes { id project { id } content { ... on Issue { id } } }
+      pageInfo { hasNextPage endCursor }
+    }
+  } }
+}"""
+_PROJECT_ADD = """mutation($project: ID!, $issue: ID!) {
+  addProjectV2ItemById(input: { projectId: $project, contentId: $issue }) {
+    item { id }
+  }
+}"""
+_PROJECT_FIELD_READ = """query($project: ID!, $issue: ID!, $item: ID!, $field: ID!, $after: String) {
+  project: node(id: $project) { ... on ProjectV2 { id } }
+  issue: node(id: $issue) { ... on Issue { id } }
+  field: node(id: $field) { __typename ... on ProjectV2SingleSelectField {
+    id dataType project { id } options { id }
+  } }
+  item: node(id: $item) { ... on ProjectV2Item {
+    id project { id } content { ... on Issue { id } }
+    fieldValues(first: 100, after: $after) {
+      nodes { __typename ... on ProjectV2ItemFieldSingleSelectValue {
+        optionId field { ... on ProjectV2SingleSelectField { id } }
+      } }
+      pageInfo { hasNextPage endCursor }
+    }
+  } }
+}"""
+_PROJECT_FIELD_UPDATE = """mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+  updateProjectV2ItemFieldValue(input: {
+    projectId: $project, itemId: $item, fieldId: $field,
+    value: { singleSelectOptionId: $option }
+  }) { projectV2Item { id } }
+}"""
+_PROJECT_FIELDS = """query($project: ID!) {
+  project: node(id: $project) { __typename ... on ProjectV2 {
+    id fields(first: 100) {
+      nodes { __typename ... on ProjectV2SingleSelectField {
+        id name options { id name }
+      } }
+      pageInfo { hasNextPage }
+    }
+  } }
+}"""
+_GLOBAL_NODE_ID = re.compile(r"[A-Za-z0-9_+/=-]{8,256}\Z")
+_OPTION_ID = re.compile(r"[A-Za-z0-9_+/=-]{1,128}\Z")
 
 
 class WorkSyncError(ValueError):
@@ -70,6 +119,46 @@ class GithubTransport:
                 if type(value) is not dict and not ("/files?" in path and type(value) is list):
                     raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub returned an unexpected response")
                 return response.status, value
+        except error.HTTPError as exc:
+            exc.close()
+            raise WorkSyncError("GITHUB_HTTP", f"GitHub API returned HTTP {exc.code}") from exc
+
+    def graphql(self, query, variables, token):
+        variable_sets = {
+            _PROJECT_READ: {"project", "issue", "after"},
+            _PROJECT_ADD: {"project", "issue"},
+            _PROJECT_FIELD_READ: {"project", "issue", "item", "field", "after"},
+            _PROJECT_FIELD_UPDATE: {"project", "item", "field", "option"},
+            _PROJECT_FIELDS: {"project"},
+        }
+        if query not in variable_sets or type(variables) is not dict:
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL operation is outside the fixed Projects contract")
+        if set(variables) != variable_sets[query]:
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL variables are outside the fixed Projects contract")
+        for key in ("project", "issue", "item", "field"):
+            if key in variables and (type(variables[key]) is not str or _GLOBAL_NODE_ID.fullmatch(variables[key]) is None):
+                raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL node ID is invalid")
+        if ("after" in variables and variables["after"] is not None
+                and (type(variables["after"]) is not str or len(variables["after"]) > 512)):
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL cursor is invalid")
+        if "option" in variables and (type(variables["option"]) is not str
+                                      or _OPTION_ID.fullmatch(variables["option"]) is None):
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub GraphQL option ID is invalid")
+        payload = json.dumps({"query": query, "variables": variables}, separators=(",", ":")).encode("utf-8")
+        req = request.Request(_BASE + "/graphql", data=payload, method="POST", headers={
+            "Accept": "application/vnd.github+json", "Content-Type": "application/json",
+            "Authorization": "Bearer " + token, "User-Agent": "codeArbiter-work",
+            "X-GitHub-Api-Version": "2022-11-28",
+        })
+        try:
+            with self._opener.open(req, timeout=15) as response:
+                raw = response.read((1 << 20) + 1)
+                if len(raw) > 1 << 20:
+                    raise WorkSyncError("REMOTE_RESPONSE_TOO_LARGE", "GitHub Projects response exceeds the read bound")
+                value = json.loads(raw)
+                if response.status != 200 or type(value) is not dict or value.get("errors") or type(value.get("data")) is not dict:
+                    raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub Projects returned an error or incomplete response")
+                return value
         except error.HTTPError as exc:
             exc.close()
             raise WorkSyncError("GITHUB_HTTP", f"GitHub API returned HTTP {exc.code}") from exc
@@ -124,7 +213,7 @@ def _issue_path(repository, number=None):
     return path if number is None else path + "/" + str(number)
 
 
-def _verified_issue(transport, config, work_id, number, token):
+def _verified_issue_data(transport, config, work_id, number, token):
     if type(number) is not int or number < 1:
         raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub did not return a valid issue number")
     status, issue = transport.request("GET", _issue_path(config["repository"], number), None, token)
@@ -137,7 +226,12 @@ def _verified_issue(transport, config, work_id, number, token):
             or issue.get("pull_request") is not None
             or issue.get("state") not in ("open", "closed")):
         raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "GitHub issue readback did not match this work identity")
-    return want_url, issue["state"]
+    return want_url, issue
+
+
+def _verified_issue(transport, config, work_id, number, token):
+    url, issue = _verified_issue_data(transport, config, work_id, number, token)
+    return url, issue["state"]
 
 
 def _verified_merge(root, transport, config, work, pull_number, token):
@@ -342,6 +436,392 @@ def reconcile_status(root, client, work_id, transport=None, token_lookup=None, a
         "binding_generation": config["binding_generation"], "attempt_id": effect["attempt_id"],
         "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
         "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+
+
+def _project_selected(root, client, work_id):
+    issue_config, work = _selected(Path(root), client, work_id)
+    project_config = client.call("work-project-get", {})
+    if (project_config["repository"].casefold() != issue_config["repository"].casefold()
+            or project_config["credential_ref"] != issue_config["credential_ref"]):
+        raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project configuration differs from the selected issue provider")
+    issue_effect = work.get("provider_effect") or {}
+    project_effect = work.get("project_effect") or {}
+    if (type(issue_effect.get("remote_issue_number")) is not int
+            or issue_effect.get("remote_issue_number") != project_effect.get("remote_issue_number")):
+        raise WorkSyncError("EFFECT_NOT_BOUND", "Project effect requires the same verified issue binding")
+    if project_effect.get("binding_generation") != project_config["binding_generation"]:
+        raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project intent belongs to an older configuration")
+    return issue_config, project_config, work
+
+
+def _project_issue(transport, issue_config, work, token):
+    number = work["provider_effect"]["remote_issue_number"]
+    url, issue = _verified_issue_data(transport, issue_config, work["work_id"], number, token)
+    if url != work["provider_effect"]["remote_issue_url"]:
+        raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "Bound issue URL differs from GitHub readback")
+    node_id = issue.get("node_id")
+    if type(node_id) is not str or _GLOBAL_NODE_ID.fullmatch(node_id) is None:
+        raise WorkSyncError("REMOTE_BINDING_UNVERIFIED", "GitHub did not return a valid issue node")
+    return node_id
+
+
+def _graph_data(response):
+    if type(response) is not dict or response.get("errors") or type(response.get("data")) is not dict:
+        raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub Projects returned a partial or malformed GraphQL result")
+    return response["data"]
+
+
+def _find_project_item(transport, project_id, issue_id, token):
+    found = None
+    cursor = None
+    for _ in range(30):
+        response = transport.graphql(_PROJECT_READ, {
+            "project": project_id, "issue": issue_id, "after": cursor}, token)
+        data = _graph_data(response)
+        project = data.get("project")
+        issue = data.get("issue")
+        connection = issue.get("projectItems") if type(issue) is dict else None
+        if (type(project) is not dict or project.get("__typename") != "ProjectV2"
+                or project.get("id") != project_id or type(issue) is not dict
+                or issue.get("id") != issue_id or type(connection) is not dict):
+            raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project or issue node did not match the configured binding")
+        nodes, page = connection.get("nodes"), connection.get("pageInfo")
+        if type(nodes) is not list or len(nodes) > 100 or type(page) is not dict or type(page.get("hasNextPage")) is not bool:
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project item listing is malformed")
+        for item in nodes:
+            if (type(item) is not dict or type(item.get("project")) is not dict
+                    or type(item.get("content")) is not dict):
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project item listing contains an invalid node")
+            if item["content"].get("id") != issue_id:
+                raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project item contains a different issue")
+            if item["project"].get("id") == project_id:
+                item_id = item.get("id")
+                if type(item_id) is not str or _GLOBAL_NODE_ID.fullmatch(item_id) is None:
+                    raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project item ID is invalid")
+                if found is not None and found != item_id:
+                    raise WorkSyncError("PROJECT_CONFLICT", "Issue has more than one item in the selected Project")
+                found = item_id
+        if not page["hasNextPage"]:
+            return found
+        next_cursor = page.get("endCursor")
+        if type(next_cursor) is not str or not 1 <= len(next_cursor) <= 512 or next_cursor == cursor:
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project item cursor did not advance")
+        cursor = next_cursor
+    raise WorkSyncError("PROJECT_SCAN_LIMIT", "Issue has more than 3000 Project items; no mutation was attempted")
+
+
+def _record_project(client, work, project_config, attempt_id, item_id, observed_option_id=None):
+    request = {
+        "operation_id": "github-project-record-" + secrets.token_hex(12),
+        "work_id": work["work_id"], "binding_generation": project_config["binding_generation"],
+        "attempt_id": attempt_id, "remote_item_id": item_id,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}}
+    if observed_option_id is not None:
+        request["observed_option_id"] = observed_option_id
+    return client.call("work-project-record", request)
+
+
+def project_fields(root, client, work_id, transport=None, token_lookup=None):
+    """Read bounded single-select field and option IDs from the selected board."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    effect = work["project_effect"]
+    if type(effect.get("remote_item_id")) is not str or _GLOBAL_NODE_ID.fullmatch(effect["remote_item_id"]) is None:
+        raise WorkSyncError("PROJECT_ITEM_UNVERIFIED", "Project field discovery requires an attached item")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    project_id = project_config["project_node_id"]
+    if _find_project_item(transport, project_id, issue_id, token) != effect["remote_item_id"]:
+        raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Selected Project item no longer contains the bound issue")
+    data = _graph_data(transport.graphql(_PROJECT_FIELDS, {"project": project_id}, token))
+    project = data.get("project")
+    fields = project.get("fields") if type(project) is dict else None
+    if (type(project) is not dict or project.get("__typename") != "ProjectV2"
+            or project.get("id") != project_id or type(fields) is not dict
+            or type(fields.get("nodes")) is not list or len(fields["nodes"]) > 100
+            or type(fields.get("pageInfo")) is not dict
+            or type(fields["pageInfo"].get("hasNextPage")) is not bool):
+        raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field listing is malformed")
+    if fields["pageInfo"]["hasNextPage"]:
+        raise WorkSyncError("PROJECT_SCAN_LIMIT", "Project field listing exceeds the read bound")
+    selected = []
+    field_ids = set()
+    for field in fields["nodes"]:
+        if type(field) is not dict:
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field listing contains an invalid node")
+        if field.get("__typename") != "ProjectV2SingleSelectField":
+            continue
+        field_id, name, options = field.get("id"), field.get("name"), field.get("options")
+        if (type(field_id) is not str or _GLOBAL_NODE_ID.fullmatch(field_id) is None
+                or field_id in field_ids or type(name) is not str or len(name) > 256
+                or type(options) is not list or len(options) > 50):
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project single-select field is malformed")
+        field_ids.add(field_id)
+        choices = []
+        option_ids = set()
+        for option in options:
+            option_id = option.get("id") if type(option) is dict else None
+            option_name = option.get("name") if type(option) is dict else None
+            if (type(option_id) is not str or _OPTION_ID.fullmatch(option_id) is None
+                    or option_id in option_ids or type(option_name) is not str or len(option_name) > 256):
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project single-select option is malformed")
+            option_ids.add(option_id)
+            choices.append({"option_id": option_id, "name": option_name})
+        selected.append({"field_id": field_id, "name": name, "options": choices})
+    return {"work_id": work_id, "project_node_id": project_id,
+            "remote_item_id": effect["remote_item_id"], "fields": selected}
+
+
+def observe_project_field(root, client, work_id, field_id, transport=None, token_lookup=None):
+    """Read one attached item's current single-select option without a write."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    effect = work["project_effect"]
+    if type(effect.get("remote_item_id")) is not str or _GLOBAL_NODE_ID.fullmatch(effect["remote_item_id"]) is None:
+        raise WorkSyncError("PROJECT_ITEM_UNVERIFIED", "Project field read requires an attached item")
+    if type(field_id) is not str or _GLOBAL_NODE_ID.fullmatch(field_id) is None:
+        raise WorkSyncError("INVALID_PROJECT_FIELD", "Project field ID is invalid")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    project_id, item_id = project_config["project_node_id"], effect["remote_item_id"]
+    if _find_project_item(transport, project_id, issue_id, token) != item_id:
+        raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Selected Project item no longer contains the bound issue")
+    option_id = _read_project_option(transport, project_id, issue_id, item_id,
+                                     field_id, None, token)
+    return {"work_id": work_id, "project_node_id": project_id,
+            "remote_item_id": item_id, "field_id": field_id, "option_id": option_id}
+
+
+def stage_project_field(root, client, work_id, field_id, option_id, operation_id,
+                        transport=None, token_lookup=None):
+    """Observe the current remote value and stage one explicit desired option."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    effect = work["project_effect"]
+    if effect.get("status") not in ("synchronized", "conflict"):
+        raise WorkSyncError("EFFECT_NOT_BOUND", "Selected Project item is not ready for a field update")
+    if (type(field_id) is not str or _GLOBAL_NODE_ID.fullmatch(field_id) is None
+            or type(option_id) is not str or _OPTION_ID.fullmatch(option_id) is None):
+        raise WorkSyncError("INVALID_PROJECT_FIELD", "Project field or option ID is invalid")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    project_id, item_id = project_config["project_node_id"], effect["remote_item_id"]
+    if _find_project_item(transport, project_id, issue_id, token) != item_id:
+        raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Selected Project item no longer contains the bound issue")
+    observed = _read_project_option(transport, project_id, issue_id, item_id,
+                                    field_id, option_id, token)
+    return client.call("work-project-stage-field", {
+        "operation_id": operation_id, "work_id": work_id,
+        "binding_generation": project_config["binding_generation"],
+        "field_id": field_id, "desired_option_id": option_id,
+        "expected_remote_option_id": observed,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+
+
+def sync_project(root, client, work_id, transport=None, token_lookup=None):
+    """Attach one already bound issue to an explicitly configured GitHub Project."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    if work["project_effect"]["status"] != "pending":
+        raise WorkSyncError("EFFECT_NOT_PENDING", "Project effect is not pending; reconcile an uncertain result first")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    project_id = project_config["project_node_id"]
+    # Complete discovery before the pre-send claim. An incomplete listing
+    # cannot justify adding a second remote item.
+    existing = _find_project_item(transport, project_id, issue_id, token)
+    attempt = "github-project-attempt-" + secrets.token_hex(12)
+    claimed = client.call("work-project-claim", {
+        "operation_id": "github-project-claim-" + secrets.token_hex(12),
+        "work_id": work_id, "binding_generation": project_config["binding_generation"],
+        "attempt_id": attempt,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+    if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
+            or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
+        raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed after the pre-send claim")
+    try:
+        if existing is None:
+            response = transport.graphql(_PROJECT_ADD, {
+                "project": project_id, "issue": issue_id}, token)
+            data = _graph_data(response)
+            added = data.get("addProjectV2ItemById")
+            item = added.get("item") if type(added) is dict else None
+            item_id = item.get("id") if type(item) is dict else None
+            if type(item_id) is not str or _GLOBAL_NODE_ID.fullmatch(item_id) is None:
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project mutation did not return an item ID")
+            observed = _find_project_item(transport, project_id, issue_id, token)
+            if observed != item_id:
+                raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project readback did not match the added item")
+        else:
+            item_id = existing
+    except Exception as exc:
+        raise WorkSyncError("OUTCOME_UNKNOWN", "Project add or readback is uncertain; reconcile before retrying") from exc
+    return _record_project(client, claimed, project_config, attempt, item_id)
+
+
+def reconcile_project(root, client, work_id, transport=None, token_lookup=None):
+    """Resolve a lost Project response by readback only; never send a second add."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    effect = work["project_effect"]
+    if effect["status"] != "outcome_unknown":
+        raise WorkSyncError("EFFECT_NOT_UNKNOWN", "Selected work has no uncertain Project item to reconcile")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    item_id = _find_project_item(transport, project_config["project_node_id"], issue_id, token)
+    if item_id is None:
+        raise WorkSyncError("PROJECT_ITEM_UNVERIFIED", "No matching Project item was found; outcome remains unknown")
+    return _record_project(client, work, project_config, effect["attempt_id"], item_id)
+
+
+def _read_project_option(transport, project_id, issue_id, item_id, field_id, desired_option_id, token):
+    found = False
+    value = None
+    cursor = None
+    for _ in range(30):
+        response = transport.graphql(_PROJECT_FIELD_READ, {
+            "project": project_id, "issue": issue_id, "item": item_id,
+            "field": field_id, "after": cursor}, token)
+        data = _graph_data(response)
+        project = data.get("project")
+        issue = data.get("issue")
+        item = data.get("item")
+        field = data.get("field")
+        if (type(project) is not dict or project.get("id") != project_id
+                or type(issue) is not dict or issue.get("id") != issue_id
+                or type(field) is not dict or field.get("__typename") != "ProjectV2SingleSelectField"
+                or field.get("id") != field_id or field.get("dataType") != "SINGLE_SELECT"
+                or type(field.get("project")) is not dict
+                or field["project"].get("id") != project_id
+                or type(item) is not dict or item.get("id") != item_id
+                or type(item.get("project")) is not dict
+                or item["project"].get("id") != project_id
+                or type(item.get("content")) is not dict
+                or item["content"].get("id") != issue_id):
+            raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project option field does not belong to the selected issue item")
+        options = field.get("options")
+        if type(options) is not list or len(options) > 256:
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project option listing is malformed or exceeds the bound")
+        option_ids = set()
+        for option in options:
+            option_id = option.get("id") if type(option) is dict else None
+            if type(option_id) is not str or _OPTION_ID.fullmatch(option_id) is None or option_id in option_ids:
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project option identity is invalid or duplicated")
+            option_ids.add(option_id)
+        if desired_option_id is not None and desired_option_id not in option_ids:
+            raise WorkSyncError("PROJECT_OPTION_UNAVAILABLE", "Selected option does not belong to this Project field")
+        connection = item.get("fieldValues")
+        nodes = connection.get("nodes") if type(connection) is dict else None
+        page = connection.get("pageInfo") if type(connection) is dict else None
+        if type(nodes) is not list or len(nodes) > 100 or type(page) is not dict or type(page.get("hasNextPage")) is not bool:
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field listing is malformed")
+        for node in nodes:
+            if type(node) is not dict:
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field listing contains an invalid node")
+            if node.get("__typename") != "ProjectV2ItemFieldSingleSelectValue":
+                continue
+            node_field = node.get("field")
+            if type(node_field) is not dict:
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project option field has no identity")
+            if node_field.get("id") == field_id:
+                option_id = node.get("optionId")
+                if found or option_id is not None and (type(option_id) is not str or _OPTION_ID.fullmatch(option_id) is None):
+                    raise WorkSyncError("PROJECT_CONFLICT", "Selected Project option field has ambiguous values")
+                found, value = True, option_id
+        if not page["hasNextPage"]:
+            return value
+        next_cursor = page.get("endCursor")
+        if type(next_cursor) is not str or not 1 <= len(next_cursor) <= 512 or next_cursor == cursor:
+            raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field cursor did not advance")
+        cursor = next_cursor
+    raise WorkSyncError("PROJECT_SCAN_LIMIT", "Project item has more than 3000 field values")
+
+
+def _conflict_project_field(client, work, project_config, observed):
+    effect = work["project_effect"]
+    request = {"operation_id": "github-project-conflict-" + secrets.token_hex(12),
+               "work_id": work["work_id"], "binding_generation": project_config["binding_generation"],
+               "observed_option_id": observed,
+               "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}}
+    if effect["status"] == "outcome_unknown":
+        request["attempt_id"] = effect["attempt_id"]
+    return client.call("work-project-conflict", request)
+
+
+def sync_project_field(root, client, work_id, transport=None, token_lookup=None):
+    """Update one selected option after checking its saved remote baseline."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    effect = work["project_effect"]
+    if effect["kind"] != "set_single_select" or effect["status"] != "pending":
+        raise WorkSyncError("EFFECT_NOT_PENDING", "No pending Project option effect is selected")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    project_id, item_id, field_id = (project_config["project_node_id"],
+                                     effect["remote_item_id"], effect["field_id"])
+    if _find_project_item(transport, project_id, issue_id, token) != item_id:
+        raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Selected Project item no longer contains the bound issue")
+    observed = _read_project_option(transport, project_id, issue_id, item_id, field_id,
+                                    effect["desired_option_id"], token)
+    if observed != effect["expected_remote_option_id"] and observed != effect["desired_option_id"]:
+        _conflict_project_field(client, work, project_config, observed)
+        raise WorkSyncError("REMOTE_CONFLICT", "Project option changed before send; inspect it before restaging")
+    attempt = "github-project-attempt-" + secrets.token_hex(12)
+    claimed = client.call("work-project-claim", {
+        "operation_id": "github-project-claim-" + secrets.token_hex(12),
+        "work_id": work_id, "binding_generation": project_config["binding_generation"],
+        "attempt_id": attempt,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+    if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
+            or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
+        raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed after the pre-send claim")
+    try:
+        if observed != effect["desired_option_id"]:
+            response = transport.graphql(_PROJECT_FIELD_UPDATE, {
+                "project": project_id, "item": item_id, "field": field_id,
+                "option": effect["desired_option_id"]}, token)
+            data = _graph_data(response)
+            update = data.get("updateProjectV2ItemFieldValue")
+            updated = update.get("projectV2Item") if type(update) is dict else None
+            if type(updated) is not dict or updated.get("id") != item_id:
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field update returned a different item")
+        readback = _read_project_option(transport, project_id, issue_id, item_id, field_id,
+                                        effect["desired_option_id"], token)
+        if readback != effect["desired_option_id"]:
+            raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project option readback differs from requested value")
+    except Exception as exc:
+        raise WorkSyncError("OUTCOME_UNKNOWN", "Project field update or readback is uncertain; reconcile before retrying") from exc
+    return _record_project(client, claimed, project_config, attempt, item_id, readback)
+
+
+def reconcile_project_field(root, client, work_id, transport=None, token_lookup=None):
+    """Read an uncertain option result without another update mutation."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    issue_config, project_config, work = _project_selected(root, client, work_id)
+    effect = work["project_effect"]
+    if effect["kind"] != "set_single_select" or effect["status"] != "outcome_unknown":
+        raise WorkSyncError("EFFECT_NOT_UNKNOWN", "No uncertain Project field update is selected")
+    token = _credential(project_config, token_lookup)
+    issue_id = _project_issue(transport, issue_config, work, token)
+    if _find_project_item(transport, project_config["project_node_id"], issue_id, token) != effect["remote_item_id"]:
+        raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Selected Project item no longer contains the bound issue")
+    observed = _read_project_option(transport, project_config["project_node_id"], issue_id,
+                                    effect["remote_item_id"], effect["field_id"],
+                                    effect["desired_option_id"], token)
+    if observed != effect["desired_option_id"]:
+        if observed == effect["expected_remote_option_id"]:
+            raise WorkSyncError("PROJECT_FIELD_UNVERIFIED", "Field still has its prior value; the lost send remains uncertain")
+        _conflict_project_field(client, work, project_config, observed)
+        raise WorkSyncError("REMOTE_CONFLICT", "Project option differs from the uncertain send; inspect it before restaging")
+    return _record_project(client, work, project_config, effect["attempt_id"],
+                           effect["remote_item_id"], observed)
 
 
 def observe_pull(root, client, work_id, number, transport=None, token_lookup=None,

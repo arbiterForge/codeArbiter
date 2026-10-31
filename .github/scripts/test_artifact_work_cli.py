@@ -194,6 +194,65 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(status["provider_effect"]["desired_state"], "closed")
         self.assertEqual(status["provider_effect"]["remote_issue_number"], 7)
 
+    def test_project_cli_stages_item_and_selected_option_without_sending(self) -> None:
+        item = self.run_work("create", "--title", "Project result", "--intent", "One bound item",
+                             "--type", "fix", "--operation-id", "project-cli-create-001")
+        issue_config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                                     "--credential-ref", "GH_TOKEN", "--timing", "immediate",
+                                     "--operation-id", "project-cli-issue-config-001")
+        bound = self.client.call("work-effect-adopt", {
+            "operation_id": "project-cli-issue-adopt-001", "work_id": item["work_id"],
+            "binding_generation": issue_config["binding_generation"],
+            "remote_issue_number": 7,
+            "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7",
+            "remote_state": "open",
+            "expected": {"revision": item["revision"], "model_sha256": item["model_sha256"]}})
+        self.assertEqual(bound["provider_effect"]["status"], "synchronized")
+        config = self.run_work("project-configure", "--project-node-id", "PVT_fixture12345678",
+                               "--operation-id", "project-cli-config-001")
+        self.assertEqual(self.run_work("project-get")["binding_generation"], config["binding_generation"])
+        staged = self.run_work("project-stage", item["work_id"],
+                               "--operation-id", "project-cli-stage-001")
+        self.assertEqual(staged["project_effect"]["status"], "pending")
+        self.assertEqual(staged["provider_effect"]["remote_issue_number"], 7)
+        claimed = self.client.call("work-project-claim", {
+            "operation_id": "project-cli-claim-001", "work_id": item["work_id"],
+            "binding_generation": config["binding_generation"],
+            "attempt_id": "project-cli-attempt-001",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        attached = self.client.call("work-project-record", {
+            "operation_id": "project-cli-record-001", "work_id": item["work_id"],
+            "binding_generation": config["binding_generation"],
+            "attempt_id": "project-cli-attempt-001", "remote_item_id": "PVTI_fixture12345678",
+            "expected": {"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}})
+        from test_work_github import FakeProjectGithub
+        import _workgithub
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "remote", "add", "origin",
+                        "https://github.com/arbiterForge/disposable.git"], check=True,
+                       capture_output=True, text=True)
+        transport = FakeProjectGithub()
+        transport.work_id = item["work_id"]
+        transport.item_id = attached["project_effect"]["remote_item_id"]
+        with mock.patch.object(_workgithub, "GithubTransport", return_value=transport), \
+             mock.patch.dict(os.environ, {"GH_TOKEN": "fixture-token"}):
+            fields = self.run_work("project-fields", item["work_id"])
+            self.assertEqual(fields["fields"][0]["name"], "Status")
+            observed = self.run_work("project-field-observe", item["work_id"],
+                                     "--field-id", transport.field_id)
+            self.assertIsNone(observed["option_id"])
+            field = self.run_work("project-field-stage", item["work_id"],
+                                  "--field-id", transport.field_id, "--option-id", "f75ad846",
+                                  "--operation-id", "project-cli-field-stage-001")
+            self.assertIsNone(self.run_work("project-field-observe", item["work_id"],
+                                             "--field-id", transport.field_id)["option_id"])
+        self.assertEqual(field["project_effect"]["kind"], "set_single_select")
+        self.assertIsNone(field["project_effect"]["expected_remote_option_id"])
+        self.assertEqual(field["project_effect"]["remote_item_id"],
+                         attached["project_effect"]["remote_item_id"])
+        self.assertEqual(transport.field_updates, 0)
+
     def test_project_view_pages_native_work_without_writing_a_second_owner(self) -> None:
         first = self.run_work("create", "--title", "Fix <input>", "--intent", "First result",
                               "--type", "fix", "--operation-id", "project-cli-create-001")

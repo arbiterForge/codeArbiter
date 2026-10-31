@@ -92,6 +92,32 @@ def _parser():
     configure.add_argument("--timing", choices=("after_merge", "immediate"), default="after_merge")
     configure.add_argument("--operation-id", required=True)
     configure.add_argument("--expected-config-sha256")
+    sub.add_parser("project-get", help="Read the selected optional GitHub Project binding")
+    project_configure = sub.add_parser("project-configure", help="Bind one GitHub Projects v2 board to this issue provider")
+    project_configure.add_argument("--project-node-id", required=True)
+    project_configure.add_argument("--operation-id", required=True)
+    project_configure.add_argument("--expected-config-sha256")
+    project_stage = sub.add_parser("project-stage", help="Save a Project item intent for an already bound issue")
+    project_stage.add_argument("work_id")
+    project_stage.add_argument("--operation-id", required=True)
+    project_sync = sub.add_parser("project-sync", help="Add one pending bound issue to its configured Project")
+    project_sync.add_argument("work_id")
+    project_reconcile = sub.add_parser("project-reconcile", help="Read back an uncertain Project add without resending")
+    project_reconcile.add_argument("work_id")
+    project_fields = sub.add_parser("project-fields", help="Read bounded single-select fields and option IDs from the attached Project")
+    project_fields.add_argument("work_id")
+    field_observe = sub.add_parser("project-field-observe", help="Read one attached Project field's current option")
+    field_observe.add_argument("work_id")
+    field_observe.add_argument("--field-id", required=True)
+    field_stage = sub.add_parser("project-field-stage", help="Read the current option and stage one selected Project option")
+    field_stage.add_argument("work_id")
+    field_stage.add_argument("--field-id", required=True)
+    field_stage.add_argument("--option-id", required=True)
+    field_stage.add_argument("--operation-id", required=True)
+    field_sync = sub.add_parser("project-field-sync", help="Send one pending Project option update")
+    field_sync.add_argument("work_id")
+    field_reconcile = sub.add_parser("project-field-reconcile", help="Read back an uncertain field update without resending")
+    field_reconcile.add_argument("work_id")
     stage = sub.add_parser("stage-sync", help="Save a selected create-issue intent without sending it")
     stage.add_argument("work_id")
     stage.add_argument("--operation-id", required=True)
@@ -190,6 +216,20 @@ def _dispatch(args, client):
         if args.expected_config_sha256:
             request["expected_config_sha256"] = args.expected_config_sha256
         return client.call("work-provider-configure", request)
+    if args.verb == "project-get":
+        return client.call("work-project-get", {})
+    if args.verb == "project-configure":
+        request = {"operation_id": args.operation_id, "project_node_id": args.project_node_id}
+        if args.expected_config_sha256:
+            request["expected_config_sha256"] = args.expected_config_sha256
+        return client.call("work-project-configure", request)
+    if args.verb == "project-stage":
+        config = client.call("work-project-get", {})
+        current = client.call("work-get", {"work_id": args.work_id})
+        return client.call("work-project-stage", {
+            "operation_id": args.operation_id, "work_id": args.work_id,
+            "binding_generation": config["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
     if args.verb in ("stage-sync", "stage-status"):
         config = client.call("work-provider-get", {})
         current = client.call("work-get", {"work_id": args.work_id})
@@ -199,7 +239,9 @@ def _dispatch(args, client):
         if args.verb == "stage-status":
             request.update(kind="status_update", desired_state=args.state)
         return client.call("work-effect-stage", request)
-    if args.verb in ("sync", "reconcile-issue", "reconcile-status", "adopt-issue", "observe-pr"):
+    if args.verb in ("sync", "reconcile-issue", "reconcile-status", "adopt-issue", "observe-pr",
+                     "project-sync", "project-reconcile", "project-fields", "project-field-observe",
+                     "project-field-stage", "project-field-sync", "project-field-reconcile"):
         if getattr(client, "legacy", False):
             raise ValueError("GitHub effects require selected native work ownership")
         import _workgithub
@@ -209,6 +251,21 @@ def _dispatch(args, client):
                                             operation_id=args.operation_id)
         if args.verb == "sync":
             return _workgithub.sync(client.root, client, args.work_id, pull_number=args.pull_number)
+        if args.verb == "project-sync":
+            return _workgithub.sync_project(client.root, client, args.work_id)
+        if args.verb == "project-reconcile":
+            return _workgithub.reconcile_project(client.root, client, args.work_id)
+        if args.verb == "project-fields":
+            return _workgithub.project_fields(client.root, client, args.work_id)
+        if args.verb == "project-field-observe":
+            return _workgithub.observe_project_field(client.root, client, args.work_id, args.field_id)
+        if args.verb == "project-field-stage":
+            return _workgithub.stage_project_field(client.root, client, args.work_id,
+                                                   args.field_id, args.option_id, args.operation_id)
+        if args.verb == "project-field-sync":
+            return _workgithub.sync_project_field(client.root, client, args.work_id)
+        if args.verb == "project-field-reconcile":
+            return _workgithub.reconcile_project_field(client.root, client, args.work_id)
         if args.verb == "reconcile-issue":
             return _workgithub.reconcile_issue(client.root, client, args.work_id, args.number)
         if args.verb == "adopt-issue":
@@ -269,7 +326,8 @@ def _dispatch_request(payload, client):
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
         "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view", "cycle-view",
-        "work-provider-get", "work-provider-configure", "work-effect-stage"
+        "work-provider-get", "work-provider-configure", "work-effect-stage",
+        "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field"
     }:
         raise ValueError("unsupported work operation")
     if type(payload["request"]) is not dict:

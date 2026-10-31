@@ -377,6 +377,15 @@ IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
 slice has no operation to assert a passing check, merge, release or deployment.
 
+An older binary can read a work item that still uses its known fields. Once a
+newer binary adds a cycle or other newer work field, that older binary rejects
+the selected item as `INVALID_WORK`; it must not be used to update that item or
+to restore an older copy over later edits. Continue with a compatible binary.
+The disposable two-binary probe in `tools/test-artifact-work-old-client.py`
+checks the old read, refusal of the upgraded read and write, and preservation
+of a later new-client edit. This is a source/candidate compatibility test, not
+a promise that an older installed host has been upgraded.
+
 Native `work-context` returns bounded selected work plus current attached
 document identities and concise summaries. Its `assessment: advisory` and
 `context_complete: false` fields prevent a summary from impersonating a full
@@ -479,14 +488,45 @@ selected intent. Assignee, title and body are outside this status effect.
 GitHub's REST API does not support conditional PATCH for issues, so a human
 edit in the interval between the last read and PATCH cannot be ruled out by
 this adapter. [GitHub's REST guidance](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api#use-conditional-requests)
-limits conditional requests on unsafe methods. GitHub Projects and issue
-title/body updates remain unsupported.
+limits conditional requests on unsafe methods. Issue title/body updates remain
+unsupported.
+
+Optional GitHub Projects v2 effects use a second portable binding at
+`.codearbiter/work/project-provider.json`. It names a selected Project node ID
+and binds to the existing issue provider's repository and generation; it
+stores no credential. `work.py project-configure` does not change the issue
+binding. After an issue is verified and synchronized, `project-stage` saves a
+separate pending add-item intent. `project-sync` checks the exact issue and
+Project item list, records `outcome_unknown` before a send, adds the item only
+when no matching item was found, and reads the result back. A lost response
+leaves the Project effect unknown while the issue stays bound;
+`project-reconcile` performs readback without another add. Pagination and
+responses are bounded, and a changed binding stops the affected effect.
+
+`project-fields` reads bounded single-select field and option IDs and names
+from the attached Project item; `project-field-observe` reads the current option
+for one selected field. These are explicit remote reads and never stage a write.
+`project-field-stage` takes the selected field and desired option IDs, reads the
+current remote option automatically and saves it as the expected baseline. The
+portable intent stores opaque IDs rather than field labels or free-form Project
+text. `project-field-sync` compares the live selected field with that baseline
+before the mutation and reads it back afterward. A changed option becomes a
+conflict; uncertain sends require `project-field-reconcile`, which never
+resends. GitHub's
+[field mutation input](https://docs.github.com/en/graphql/reference/projects#updateprojectv2itemfieldvalueinput)
+has no conditional version, so a concurrent edit between the comparison and
+mutation cannot be excluded. Do not present this as remote atomic CAS. Project
+operations need the owning GitHub credential's Projects scopes; fixture tests
+alone do not establish live account readiness. Other Project field types and
+Jira/Linear remain unsupported.
 
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
 `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update`, `work-provider-get`,
-`work-provider-configure` and `work-effect-stage`. The selected owner validates the
+`work-provider-configure`, `work-effect-stage`, `work-project-get`,
+`work-project-configure`, `work-project-stage` and `work-project-stage-field`.
+The selected owner validates the
 operation-specific request and returns one JSON result; the ordinary CLI
 `view`, `project-view` and `cycle-view` verbs print raw HTML for an explicit human-view action. Native
 `work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.

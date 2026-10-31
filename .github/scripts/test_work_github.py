@@ -53,8 +53,96 @@ class FakeGithub:
                 raise TimeoutError("lost status response")
             return 200, {"number": 7, "state": self.issue_state}
         return 200, {"number": 7, "html_url": "https://github.com/arbiterForge/disposable/issues/7",
-                     "body": "Track one outcome\n\n<!-- codearbiter-work: " + self.work_id + " -->",
-                     "state": self.issue_state, "assignee": self.assignee}
+                    "body": "Track one outcome\n\n<!-- codearbiter-work: " + self.work_id + " -->",
+                    "state": self.issue_state, "assignee": self.assignee,
+                    "node_id": "I_fixture12345678"}
+
+
+class FakeProjectGithub(FakeGithub):
+    def __init__(self, *, fail_add_after_apply=False, fail_field_after_apply=False,
+                 partial_errors=False, oversized_cursor=False, wrong_issue=False,
+                 wrong_content=False, legacy_ids=False):
+        super().__init__()
+        self.project_id = "UHJvamVjdFYyOjEyMzQ=" if legacy_ids else "PVT_fixture12345678"
+        self.issue_id = "SXNzdWU6MTIzNA==" if legacy_ids else "I_fixture12345678"
+        self.field_id = "RmllbGQ6MTIzNA==" if legacy_ids else "PVTSSF_fixture12345678"
+        self.added_item_id = "SXRlbToxMjM0" if legacy_ids else "PVTI_fixture12345678"
+        self.item_id = None
+        self.adds = 0
+        self.fail_add_after_apply = fail_add_after_apply
+        self.field_option_id = None
+        self.field_updates = 0
+        self.fail_field_after_apply = fail_field_after_apply
+        self.partial_errors = partial_errors
+        self.oversized_cursor = oversized_cursor
+        self.wrong_issue = wrong_issue
+        self.wrong_content = wrong_content
+
+    def request(self, method, path, body, token):
+        status, result = super().request(method, path, body, token)
+        if path.endswith("/issues/7") and type(result) is dict:
+            result["node_id"] = self.issue_id
+        return status, result
+
+    def graphql(self, query, variables, token):
+        action = ("add" if "addProjectV2ItemById" in query else
+                  "field-update" if "updateProjectV2ItemFieldValue" in query else
+                  "field-read" if "fieldValues(" in query else
+                  "fields" if "fields(first:" in query else "read")
+        self.calls.append(("GRAPHQL", action))
+        assert token == "fixture-token"
+        assert variables["project"] == self.project_id
+        if "issue" in variables:
+            assert variables["issue"] == self.issue_id
+        if action == "field-update":
+            self.field_updates += 1
+            self.field_option_id = variables["option"]
+            if self.fail_field_after_apply:
+                raise TimeoutError("Project field updated but response lost")
+            return {"data": {"updateProjectV2ItemFieldValue": {"projectV2Item": {"id": self.item_id}}}}
+        if action == "field-read":
+            assert variables["item"] == self.item_id
+            assert variables["field"] == self.field_id
+            nodes = [] if self.field_option_id is None else [
+                {"__typename": "ProjectV2ItemFieldSingleSelectValue", "optionId": self.field_option_id,
+                 "field": {"id": self.field_id}}]
+            return {"data": {
+                "project": {"id": self.project_id},
+                "issue": {"id": self.issue_id},
+                "field": {"__typename": "ProjectV2SingleSelectField", "id": self.field_id,
+                          "dataType": "SINGLE_SELECT", "project": {"id": self.project_id},
+                          "options": [{"id": "f75ad846"}, {"id": "b1234567"}, {"id": "x"}]},
+                "item": {"id": self.item_id, "project": {"id": self.project_id},
+                         "content": {"id": self.issue_id},
+                         "fieldValues": {"nodes": nodes,
+                                         "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}
+        if action == "fields":
+            return {"data": {"project": {"__typename": "ProjectV2", "id": self.project_id,
+                    "fields": {"nodes": [
+                        {"__typename": "ProjectV2SingleSelectField", "id": self.field_id,
+                         "name": "Status", "options": [
+                             {"id": "f75ad846", "name": "In Progress"},
+                             {"id": "b1234567", "name": "Done"}]},
+                        {"__typename": "ProjectV2Field", "id": "PVTF_fixture12345678"}],
+                        "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}
+        if "addProjectV2ItemById" in query:
+            self.adds += 1
+            self.item_id = self.added_item_id
+            if self.fail_add_after_apply:
+                raise TimeoutError("Project item created but response lost")
+            return {"data": {"addProjectV2ItemById": {"item": {"id": self.item_id}}}}
+        result = {"data": {
+            "project": {"id": self.project_id, "__typename": "ProjectV2"},
+            "issue": {"id": "I_wrongfixture1234" if self.wrong_issue else self.issue_id,
+                      "projectItems": {
+                "nodes": [] if self.item_id is None else [
+                    {"id": self.item_id, "project": {"id": self.project_id},
+                     "content": {"id": "I_wrongfixture1234" if self.wrong_content else self.issue_id}}],
+                "pageInfo": {"hasNextPage": self.oversized_cursor,
+                             "endCursor": "x" * 513 if self.oversized_cursor else None}}}}}
+        if self.partial_errors:
+            result["errors"] = [{"message": "Field access denied"}]
+        return result
 
 
 class GithubWorkTest(unittest.TestCase):
@@ -551,6 +639,184 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
                          "outcome_unknown")
 
+    def _project_ready(self, transport):
+        transport.work_id = self.work_id
+        issue = _workgithub.sync(self.root, self.client, self.work_id, transport,
+                                 lambda _: "fixture-token")
+        config = self.client.call("work-project-configure", {
+            "operation_id": "github-project-config-001",
+            "project_node_id": transport.project_id})
+        staged = self.client.call("work-project-stage", {
+            "operation_id": "github-project-stage-001", "work_id": self.work_id,
+            "binding_generation": config["binding_generation"],
+            "expected": {"revision": issue["revision"], "model_sha256": issue["model_sha256"]}})
+        return config, staged
+
+    def test_project_add_readback_keeps_bound_issue(self):
+        transport = FakeProjectGithub()
+        self._project_ready(transport)
+        result = _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                          lambda _: "fixture-token")
+        self.assertEqual(result["project_effect"]["status"], "synchronized")
+        self.assertEqual(result["project_effect"]["remote_item_id"], "PVTI_fixture12345678")
+        self.assertEqual(result["provider_effect"]["remote_issue_number"], 7)
+        self.assertEqual(transport.adds, 1)
+
+    def test_project_lost_add_response_reconciles_without_duplicate_issue_or_item(self):
+        transport = FakeProjectGithub(fail_add_after_apply=True)
+        self._project_ready(transport)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                     lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        unknown = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(unknown["project_effect"]["status"], "outcome_unknown")
+        self.assertEqual(unknown["provider_effect"]["status"], "synchronized")
+        with self.assertRaises(_workgithub.WorkSyncError):
+            _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                     lambda _: "fixture-token")
+        recovered = _workgithub.reconcile_project(self.root, self.client, self.work_id,
+                                                  transport, lambda _: "fixture-token")
+        self.assertEqual(recovered["project_effect"]["status"], "synchronized")
+        self.assertEqual(recovered["provider_effect"]["remote_issue_number"], 7)
+        self.assertEqual(transport.adds, 1)
+        self.assertEqual(sum(method == "POST" for method, _ in transport.calls), 1)
+
+    def _project_attached(self, transport):
+        self._project_ready(transport)
+        return _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                        lambda _: "fixture-token")
+
+    def _stage_project_option(self, attached, expected_option_id, *, field_id="PVTSSF_fixture12345678",
+                              desired_option_id="f75ad846"):
+        config = self.client.call("work-project-get", {})
+        return self.client.call("work-project-stage-field", {
+            "operation_id": "github-project-field-stage-001", "work_id": self.work_id,
+            "binding_generation": config["binding_generation"], "field_id": field_id,
+            "desired_option_id": desired_option_id, "expected_remote_option_id": expected_option_id,
+            "expected": {"revision": attached["revision"], "model_sha256": attached["model_sha256"]}})
+
+    def test_project_single_select_update_reads_back_without_touching_issue(self):
+        transport = FakeProjectGithub()
+        attached = self._project_attached(transport)
+        self._stage_project_option(attached, None)
+        result = _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                                transport, lambda _: "fixture-token")
+        self.assertEqual(result["project_effect"]["status"], "synchronized")
+        self.assertEqual(result["project_effect"]["observed_option_id"], "f75ad846")
+        self.assertEqual(result["provider_effect"]["remote_issue_number"], 7)
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_project_discovers_fields_and_stages_from_automatic_read(self):
+        transport = FakeProjectGithub()
+        self._project_attached(transport)
+        fields = _workgithub.project_fields(self.root, self.client, self.work_id,
+                                            transport, lambda _: "fixture-token")
+        self.assertEqual(fields["fields"], [{"field_id": transport.field_id,
+            "name": "Status", "options": [{"option_id": "f75ad846", "name": "In Progress"},
+                                           {"option_id": "b1234567", "name": "Done"}]}])
+        transport.field_option_id = "b1234567"
+        staged = _workgithub.stage_project_field(self.root, self.client, self.work_id,
+            transport.field_id, "f75ad846", "auto-field-stage-001", transport,
+            lambda _: "fixture-token")
+        self.assertEqual(staged["project_effect"]["expected_remote_option_id"], "b1234567")
+        result = _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                                transport, lambda _: "fixture-token")
+        self.assertEqual(result["project_effect"]["observed_option_id"], "f75ad846")
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_project_legacy_global_node_ids_and_short_option_id(self):
+        transport = FakeProjectGithub(legacy_ids=True)
+        attached = self._project_attached(transport)
+        self.assertEqual(attached["project_effect"]["remote_item_id"], transport.added_item_id)
+        self._stage_project_option(attached, None, field_id=transport.field_id, desired_option_id="x")
+        result = _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                                transport, lambda _: "fixture-token")
+        self.assertEqual(result["project_effect"]["observed_option_id"], "x")
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_project_single_select_drift_conflicts_before_send(self):
+        transport = FakeProjectGithub()
+        attached = self._project_attached(transport)
+        self._stage_project_option(attached, None)
+        transport.field_option_id = "b1234567"
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                           transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "REMOTE_CONFLICT")
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(current["project_effect"]["status"], "conflict")
+        self.assertEqual(current["project_effect"]["observed_option_id"], "b1234567")
+        self.assertEqual(transport.field_updates, 0)
+
+    def test_project_single_select_lost_response_reconciles_without_resend(self):
+        transport = FakeProjectGithub(fail_field_after_apply=True)
+        attached = self._project_attached(transport)
+        self._stage_project_option(attached, None)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                           transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["status"],
+                         "outcome_unknown")
+        recovered = _workgithub.reconcile_project_field(self.root, self.client, self.work_id,
+                                                         transport, lambda _: "fixture-token")
+        self.assertEqual(recovered["project_effect"]["status"], "synchronized")
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_project_partial_graphql_error_refuses_before_claim(self):
+        transport = FakeProjectGithub(partial_errors=True)
+        self._project_ready(transport)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id,
+                                     transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "INVALID_REMOTE_RESPONSE")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["status"],
+                         "pending")
+
+    def test_project_long_cursor_refuses_before_claim(self):
+        transport = FakeProjectGithub(oversized_cursor=True)
+        self._project_ready(transport)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id,
+                                     transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "INVALID_REMOTE_RESPONSE")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["status"],
+                         "pending")
+
+    def test_project_wrong_issue_readback_refuses_before_claim(self):
+        transport = FakeProjectGithub(wrong_issue=True)
+        self._project_ready(transport)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id,
+                                     transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "PROJECT_BINDING_UNVERIFIED")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["status"],
+                         "pending")
+
+    def test_project_wrong_item_content_refuses_before_claim(self):
+        transport = FakeProjectGithub(wrong_content=True)
+        self._project_ready(transport)
+        transport.item_id = transport.added_item_id
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id,
+                                     transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "PROJECT_BINDING_UNVERIFIED")
+        self.assertEqual(transport.adds, 0)
+
+    def test_project_generation_change_refuses_before_remote_add(self):
+        transport = FakeProjectGithub()
+        config, _ = self._project_ready(transport)
+        self.client.call("work-project-configure", {
+            "operation_id": "github-project-config-changed",
+            "project_node_id": "PVT_otherfixture1234",
+            "expected_config_sha256": config["binding_generation"]})
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id,
+                                     transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "PROJECT_BINDING_CHANGED")
+        self.assertEqual(transport.adds, 0)
+
     def test_transport_refuses_unlisted_token_destinations(self):
         transport = _workgithub.GithubTransport()
         for method, path in (("POST", "/repos/arbiterForge/disposable/hooks"),
@@ -558,6 +824,20 @@ class GithubWorkTest(unittest.TestCase):
                              ("GET", "/repos/arbiterForge/disposable/issues/7?token=x")):
             with self.subTest(method=method, path=path), self.assertRaises(_workgithub.WorkSyncError) as raised:
                 transport.request(method, path, None, "fixture-token")
+            self.assertEqual(raised.exception.code, "UNSUPPORTED_REQUEST")
+
+    def test_transport_refuses_unbounded_project_graphql_variables(self):
+        transport = _workgithub.GithubTransport()
+        base = {"project": "PVT_fixture12345678", "issue": "I_fixture12345678",
+                "after": None}
+        for query, variables in (
+            ("query { viewer { login } }", base),
+            (_workgithub._PROJECT_READ, {**base, "after": "x" * 513}),
+            (_workgithub._PROJECT_READ, {**base, "project": "https://example.invalid"}),
+            (_workgithub._PROJECT_READ, {**base, "issue": ["I_fixture12345678"]}),
+        ):
+            with self.subTest(query=query[:20], variables=variables), self.assertRaises(_workgithub.WorkSyncError) as raised:
+                transport.graphql(query, variables, "fixture-token")
             self.assertEqual(raised.exception.code, "UNSUPPORTED_REQUEST")
 
     def test_real_transport_never_follows_token_bearing_redirect(self):

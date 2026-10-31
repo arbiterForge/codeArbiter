@@ -58,6 +58,10 @@ func (e *Engine) workView(r object) (any, error) {
 		data.RemoteState = model.S(effect["remote_state"])
 		data.DesiredState = model.S(effect["desired_state"])
 	}
+	if effect := model.M(work["project_effect"]); len(effect) != 0 {
+		data.ProjectEffectKind = model.S(effect["kind"])
+		data.ProjectEffectStatus = model.S(effect["status"])
+	}
 	if delivery := model.M(work["delivery_observation"]); len(delivery) != 0 {
 		data.DeliveryState = model.S(delivery["state"])
 		data.DeliveryURL = model.S(delivery["pull_url"])

@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -299,6 +299,32 @@ func RequestSchema(op string) (object, error) {
 	case "work-get":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 	case "work-provider-get":
+	case "work-project-get":
+	case "work-project-configure":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("project_node_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)
+		add("expected_config_sha256", digestType(), false)
+	case "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+		add("binding_generation", digestType(), true)
+		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		if op == "work-project-claim" || op == "work-project-record" {
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		}
+		if op == "work-project-record" {
+			add("remote_item_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)
+			add("observed_option_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}, false)
+		}
+		if op == "work-project-stage-field" {
+			add("field_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)
+			add("desired_option_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}, true)
+			add("expected_remote_option_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}}}, true)
+		}
+		if op == "work-project-conflict" {
+			add("observed_option_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}}}, true)
+			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, false)
+		}
 	case "work-provider-configure":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("repository", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"}, true)

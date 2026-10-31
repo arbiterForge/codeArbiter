@@ -41,7 +41,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-project-get":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -201,6 +201,20 @@ func Run(root, op string, input object) (any, error) {
 		return engine.workProviderGet(r)
 	case "work-provider-configure":
 		return engine.workProviderConfigure(r)
+	case "work-project-get":
+		return engine.workProjectGet(r)
+	case "work-project-configure":
+		return engine.workProjectConfigure(r)
+	case "work-project-stage":
+		return engine.workProjectMutation(r, "stage")
+	case "work-project-stage-field":
+		return engine.workProjectMutation(r, "stage-field")
+	case "work-project-claim":
+		return engine.workProjectMutation(r, "claim")
+	case "work-project-record":
+		return engine.workProjectMutation(r, "record")
+	case "work-project-conflict":
+		return engine.workProjectMutation(r, "conflict")
 	case "work-effect-stage":
 		return engine.workEffectMutation(r, "stage")
 	case "work-effect-claim":

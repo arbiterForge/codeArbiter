@@ -320,6 +320,9 @@ func workSummary(d *model.Document, p string) object {
 	if effect := ex["provider_effect"]; effect != nil {
 		out["provider_effect"] = effect
 	}
+	if effect := ex["project_effect"]; effect != nil {
+		out["project_effect"] = effect
+	}
 	if observation := ex["delivery_observation"]; observation != nil {
 		out["delivery_observation"] = observation
 	}

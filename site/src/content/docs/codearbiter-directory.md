@@ -65,6 +65,7 @@ review, progress and recovery boundaries.
 | `done-tasks.md` (legacy owner) | `/ca:standup`'s selected archival sweep | legacy history, read on demand | No: guarded (hook `H-22`, append-only) |
 | `work/project.json`, `work/*.html` (native owner) | `work.py` through the native engine | selected work calls and derived views | No: use stable Work IDs and native operations |
 | `work/provider.json` | `work.py provider-configure` | explicit GitHub sync | No: finite provider binding; no credential value is stored |
+| `work/project-provider.json` | `work.py project-configure` | optional GitHub Projects item and single-select effects | No: binds to the issue provider; no credential value is stored |
 | `legacy/open-tasks.md`, `legacy/done-tasks.md` | selected journaled work adoption | historical byte-exact snapshots | No: retained originals, not writable boards |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
@@ -149,6 +150,16 @@ changing it. `work.py adopt --operation-id <stable-id>` performs an explicitly
 selected cutover, retaining the original board bytes under `legacy/`. A mixed
 writable board and native work store is an owner conflict to inspect, not a
 normal operating mode.
+
+Native GitHub issue synchronization is explicit. An optional Projects v2
+binding can attach a verified issue and update a selected single-select field; its
+pending or uncertain result is stored separately from the issue binding.
+`work.py project-reconcile` reads back an uncertain add without sending a
+second item. `project-fields` discovers field and option IDs, and
+`project-field-observe` reads the current option. Staging an update reads its
+baseline automatically. Project field updates compare that option before sending,
+but GitHub provides no conditional version for the mutation, so a concurrent
+edit during the send remains possible. Local work does not need a provider.
 
 The [board](/glossary/#board): one top-level `- ` bullet per task, in one of three states:
 queued (`- [ ]`), in-progress (`- [~]`, always carrying a started date), or done (`- [x]`). The

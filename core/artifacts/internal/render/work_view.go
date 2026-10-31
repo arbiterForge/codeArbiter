@@ -18,6 +18,7 @@ type WorkViewData struct {
 	Spec, Plan                                      *WorkViewAttachment
 	ProviderEffectKind, ProviderEffectStatus        string
 	RemoteIssueURL, RemoteState, DesiredState       string
+	ProjectEffectKind, ProjectEffectStatus          string
 	DeliveryState, DeliveryURL, DeliveryObservedAt  string
 }
 
@@ -90,6 +91,12 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	} else if data.ProviderEffectStatus == "conflict" {
 		obstacle = "The remote issue status differs from the last local observation."
 		next = "Inspect the remote issue and select a new status intent if needed."
+	} else if data.ProjectEffectStatus == "outcome_unknown" {
+		obstacle = "The GitHub Project effect outcome is unknown."
+		next = "Read back the selected Project item or field before another send."
+	} else if data.ProjectEffectStatus == "conflict" {
+		obstacle = "The GitHub Project field differs from the saved remote baseline."
+		next = "Inspect the Project field before selecting a new update."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."
@@ -155,6 +162,23 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	}
 	if data.ProviderEffectStatus != "synchronized" && data.RemoteIssueURL != "" {
 		workExternalLink(&w, data.RemoteIssueURL)
+	}
+	if data.ProjectEffectStatus != "" {
+		w.WriteString(`<h3>GitHub Project</h3>`)
+		switch data.ProjectEffectStatus {
+		case "pending":
+			w.WriteString(`<p>Project effect pending; no new remote result is confirmed.</p>`)
+		case "outcome_unknown":
+			w.WriteString(`<p>Project outcome unknown. Read back before another send.</p>`)
+		case "conflict":
+			w.WriteString(`<p>Project field conflict. Inspect the remote value before restaging.</p>`)
+		case "synchronized":
+			if data.ProjectEffectKind == "set_single_select" {
+				w.WriteString(`<p>Selected Project option was read back.</p>`)
+			} else {
+				w.WriteString(`<p>Project item was read back.</p>`)
+			}
+		}
 	}
 	w.WriteString(`</section>`)
 	workViewAttachment(&w, "Specification", "spec", data.Spec)

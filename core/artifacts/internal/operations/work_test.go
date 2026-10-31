@@ -614,6 +614,12 @@ func TestWorkEffectLostCreateResponseRemainsUnknown(t *testing.T) {
 	claimed := call("work-effect-claim", object{"operation_id": "effect-claim-001", "work_id": id,
 		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-001",
 		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	replayedClaim := call("work-effect-claim", object{"operation_id": "effect-claim-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	if replayedClaim["revision"] != claimed["revision"] {
+		t.Fatalf("journaled issue claim did not replay: %v", replayedClaim)
+	}
 	if model.S(model.M(claimed["provider_effect"])["status"]) != "outcome_unknown" {
 		t.Fatalf("pre-send claim did not preserve uncertainty: %v", claimed)
 	}
