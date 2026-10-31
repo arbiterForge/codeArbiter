@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
@@ -184,5 +185,19 @@ func TestCycleViewGroupsCanonicalWorkWithoutCopyingIt(t *testing.T) {
 	if _, err := Run(f.root, "work-update", object{"protocol": Protocol, "operation_id": f.next(), "work_id": first["work_id"], "action": "set-cycle", "cycle_id": "later-sprint",
 		"expected": object{"revision": first["revision"], "model_sha256": first["model_sha256"]}}); err == nil || !strings.Contains(err.Error(), "REVISION_CONFLICT") {
 		t.Fatalf("stale cycle assignment overwrote a later edit: %v", err)
+	}
+}
+
+func TestCycleViewRejectsOutOfRangeDirectLimit(t *testing.T) {
+	f := newAssistiveFixture(t)
+	f.call("work-create", object{"operation_id": f.next(), "title": "Bounded cycle", "intent": "One member", "work_type": "chore", "cycle_id": "bounded-cycle"})
+	fs, err := store.Open(f.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fs.Close()
+	e := &Engine{FS: fs}
+	if _, err := e.cycleView(object{"cycle_id": "bounded-cycle", "limit": int64(17)}); err == nil || !strings.Contains(err.Error(), "INVALID_LIMIT") {
+		t.Fatalf("direct cycle view accepted an out-of-range limit: %v", err)
 	}
 }

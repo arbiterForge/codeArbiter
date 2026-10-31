@@ -74,6 +74,9 @@ func (e *Engine) cycleView(r object) (any, error) {
 	}
 	limit := 16
 	if n := model.I(r["limit"]); n != 0 {
+		if n < 1 || n > 16 {
+			return nil, fault.New("INVALID_LIMIT", "cycle page limit must be 1..16")
+		}
 		limit = int(n)
 	}
 	end := offset + limit
