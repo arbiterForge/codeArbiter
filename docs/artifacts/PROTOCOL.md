@@ -350,16 +350,23 @@ state refuses a changed request instead of overwriting that state.
 rename, attachment, start, completion, reopen and archive. Exact spec and plan
 IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
-slice has no operation to assert a passing check or remote delivery.
+slice has no operation to assert a passing check, merge, release or deployment.
 
 Native `work-context` returns bounded selected work plus current attached
 document identities and concise summaries. Its `assessment: advisory` and
 `context_complete: false` fields prevent a summary from impersonating a full
-source read. Legacy `work-context` returns selected `work`,
+source read. Optional `paths` and `knowledge_refs` select relevant stored
+knowledge in the same bounded response. The response names requested inputs,
+unreadable optional documents, unresolved refs and records omitted by the
+budget; the caller supplies these refs because this first work model does not
+persist code-path scope. `hooks/work.py context` accepts `--path` and
+`--knowledge-ref`. Legacy `work-context` returns selected `work`,
 `context_complete: false`, and `omitted`; it does not include `assessment` or
-attached-document summaries. Read those attachments by exact artifact ID when
-needed. The canonical native work page joins intent, progress, check status
-and links to the separate spec and plan. Native `work-view` reads the selected
+attached-document summaries. When optional knowledge selectors are supplied,
+it reports them and explicitly says the legacy adapter cannot join knowledge.
+Read those attachments by exact artifact ID when needed. The canonical native
+work page joins intent, progress, check status and links to the separate spec
+and plan. Native `work-view` reads the selected
 work and its exact attachments through `work-context`, then returns an HTML
 overview. Progress, checks, delivery and tracker sync remain separate; unknown
 check or delivery state is never inferred from completion. The overview has no
@@ -371,7 +378,7 @@ derived location stays outside canonical artifact discovery. The command does
 not write a second work owner or scan unrelated artifacts. Native
 `project-view` renders one bounded `work-list` page as an inert project work
 overview. It shows local progress and checks separately, labels delivery as
-unobserved and tracker sync as unconfigured, and links to the existing
+unobserved and directs tracker state to each work item, and links to the existing
 canonical work pages.
 Its `offset`, `limit` (at most 16), `membership_sha256`, `next_offset`,
 `total`, and `content_snapshot: false` have the same membership-only
@@ -385,17 +392,41 @@ Legacy projects continue to use their board; this native-only derived view
 reports unsupported through the legacy facade. Architecture and cycle
 overviews remain future work.
 
+Native GitHub issue effects use a separate portable
+`.codearbiter/work/provider.json` binding and an optional `provider_effect`
+inside the canonical work model. `work-provider-configure` accepts a finite
+GitHub repository, credential reference and `after_merge` or `immediate`
+timing. It stores the reference, never the credential. `work-effect-stage`
+records pending intent; `work-effect-claim` journals `outcome_unknown` before
+any network send; `work-effect-record` stores the exact issue number and URL
+after readback. The fixed `hooks/work.py sync <WORK-ID>` adapter checks Git
+origin against the binding. For the default `after_merge` timing, pass
+`--pull-number N`: the adapter reads the merged PR, checks its default-branch
+base and local HEAD ancestry, and reads the pending canonical work model at
+the merge commit before claiming the effect. The persisted claim records that
+PR number and merge commit. A failed merge check leaves intent pending.
+`immediate` needs no PR number. A lost create response stays
+`outcome_unknown`; `hooks/work.py reconcile-issue <WORK-ID> --number N`
+verifies an exact remote work-ID marker before recording the binding and never
+posts another issue. A user-supplied raw native claim is structurally checked
+but does not itself perform remote verification; use the adapter for the
+verified send. The facade's raw JSON request route excludes claim and record;
+the native protocol still trusts its cooperating caller for those fields.
+GitHub Projects and remote issue updates are not yet supported.
+
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
-`work-context`, `work-view`, `project-view` and `work-update`. The selected owner validates the
+`work-context`, `work-view`, `project-view`, `work-update`, `work-provider-get`,
+`work-provider-configure` and `work-effect-stage`. The selected owner validates the
 operation-specific request and returns one JSON result; the ordinary CLI
 `view` and `project-view` verbs print raw HTML for an explicit human-view action. Native
 `work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.
 Legacy `work-update` accepts `operation_id`, `work_id`, `action` (start,
 complete or archive), and `expected_board_sha256` instead of `expected`.
 The legacy `work-context` request accepts `work_id` and optional `budget`,
-with the omissions described above. The stable operation ID and owner-specific
+`paths` and `knowledge_refs`, with the omissions described above. The stable
+operation ID and owner-specific
 CAS rules still apply to mutations, including an uncertain retry.
 
 ## Advisory scheduling and ordinary progress
