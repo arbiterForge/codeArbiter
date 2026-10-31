@@ -16,6 +16,7 @@ import (
 )
 
 const meta = ".codearbiter/.artifacts"
+const maxTransactionEdits = 512
 
 var opPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$`)
 var journalDigestPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
@@ -143,7 +144,7 @@ func validJournal(id string, j map[string]any) error {
 		return bad()
 	}
 	entries := model.A(j["entries"])
-	if len(entries) < 1 || len(entries) > 128 {
+	if len(entries) < 1 || len(entries) > maxTransactionEdits {
 		return bad()
 	}
 	seen := []string{}
@@ -282,8 +283,8 @@ func (f *FS) Commit(id, requestHash string, edits []Edit, result ...map[string]a
 	} else if len(pending) > 0 {
 		return Outcome{}, fault.New("RECOVERY_REQUIRED", "reconcile pending transaction before another write")
 	}
-	if len(edits) < 1 || len(edits) > 128 {
-		return Outcome{}, fault.New("INVALID_TRANSACTION", "transaction requires 1..128 edits")
+	if len(edits) < 1 || len(edits) > maxTransactionEdits {
+		return Outcome{}, fault.New("INVALID_TRANSACTION", "transaction requires 1..512 edits")
 	}
 	seen := []string{}
 	for _, ed := range edits {

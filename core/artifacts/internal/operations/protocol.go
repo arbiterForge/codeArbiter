@@ -295,7 +295,7 @@ func RequestSchema(op string) (object, error) {
 			"spec_id":      nullableText(object{"type": "string", "pattern": "^SPEC-[A-Z0-9-]{1,74}$"}),
 			"plan_id":      nullableText(object{"type": "string", "pattern": "^PLAN-[A-Z0-9-]{1,74}$"}),
 		}, "location", "line", "block_sha256", "work_id", "origin", "alias", "title", "intent", "work_type", "state", "started_at", "completed_at", "spec_id", "plan_id")
-		add("rows", object{"type": "array", "items": row, "minItems": int64(0), "maxItems": int64(123)}, true)
+		add("rows", object{"type": "array", "items": row, "minItems": int64(0), "maxItems": int64(maxAdoptionRows)}, true)
 	case "work-get":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 	case "work-provider-get":

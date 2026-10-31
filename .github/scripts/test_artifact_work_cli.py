@@ -461,6 +461,21 @@ class WorkCLITest(unittest.TestCase):
         self.assertIn("no board", errors.getvalue())
         self.assertFalse(board.exists())
 
+    def test_selected_adoption_accepts_more_than_123_rows(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Work\n" + "".join(
+            f"- [ ] demo.feat.{number:04d} - Task {number}\n"
+            for number in range(1, 131)), encoding="utf-8")
+        original = board.read_bytes()
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 130)
+        adopted = self.run_work("adopt", "--operation-id", "adopt-large-board-001")
+        self.assertEqual(adopted["adopted_count"], 130)
+        self.assertEqual(self.run_work("list", "--limit", "1")["total"], 130)
+        self.assertEqual((self.root / ".codearbiter/legacy/open-tasks.md").read_bytes(), original)
+        self.assertFalse(board.exists())
+
     def test_adopted_task_details_remain_selected_and_readable(self) -> None:
         scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
                                    "--root", str(self.root)], capture_output=True, text=True)

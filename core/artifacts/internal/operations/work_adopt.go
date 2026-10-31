@@ -43,6 +43,9 @@ var legacyScaffoldNotes = map[string]bool{
 
 func digestBytes(b []byte) string { return fmt.Sprintf("%x", sha256.Sum256(b)) }
 
+// One cutover reserves five edits for the project, board snapshots and board removal.
+const maxAdoptionRows = 507
+
 // Each accepted row must name one exact top-level board block. The original
 // board bytes are saved separately; this parser is only a coverage check.
 type legacyAdoptionBlock struct {

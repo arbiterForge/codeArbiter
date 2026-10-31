@@ -109,7 +109,7 @@ def _inventory(root, *, snapshot=False):
     rows = _rows(active[1], "open")
     if archive:
         rows.extend(_rows(archive[1], "archive"))
-    if len(rows) > 123:
+    if len(rows) > 507:
         raise ValueError("legacy board has too many rows for one native transaction")
     for key in ("work_id", "origin", "alias"):
         values = [row[key] for row in rows if row[key] is not None]
