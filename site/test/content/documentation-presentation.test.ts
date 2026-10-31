@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error -- untyped .mjs config module
 import { BASE } from "../../astro.config.mjs";
+import { repositoryVersionFacts, resolveFactTokens } from "../../scripts/version-facts";
 
 const siteRoot = process.cwd();
 const docsRoot = join(siteRoot, "src", "content", "docs");
@@ -152,10 +153,12 @@ describe("documentation presentation regressions", () => {
   });
 
   it("OBL-CONTENT-02 gives Pi exact supported hosts and a mechanical tag lookup", () => {
-    const pi = readFileSync(join(docsRoot, "getting-started", "pi.md"), "utf8");
+    const facts = repositoryVersionFacts();
+    const pi = resolveFactTokens(readFileSync(join(docsRoot, "getting-started", "pi.md"), "utf8"), facts, "pi.md");
+    const supported = `Pi ${facts["pi.supported"].value}`;
 
-    expect(pi).toContain("Pi 1.1.0");
-    expect(pi).not.toContain("Pi 1.1.0 or newer");
+    expect(pi).toContain(supported);
+    expect(pi).not.toContain(`${supported} or newer`);
     expect(pi).toContain("git ls-remote --tags --refs");
     expect(pi).toContain('"ca-pi-v*"');
   });

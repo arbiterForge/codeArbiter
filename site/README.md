@@ -53,6 +53,7 @@ Choose the owner before editing:
 | Release history | Repository changelog | `../CHANGELOG.md` |
 | Navigation | Hand-authored IA + generated reference groups | `astro.config.mjs` and `src/generated/sidebar.json` |
 | Visual tokens and component rules | Design system | `DESIGN-SYSTEM.md` and `src/styles/design-system.css` |
+| Current version requirements and latest releases | The code that enforces them, or the release tags | Write `%%fact=<name>%%`; names and owning sources are in `scripts/version-facts.ts`. `test/content/version-literal-drift.test.ts` rejects a hand-typed version unless it is allowlisted as historical, illustrative, external, or a sentinel. |
 
 Do not edit generated pages under `src/content/docs/reference/{commands,skills,agents}/` or the
 generated `reference/hooks-gates.md`, `reference/configuration.md`, and `changelog.md`. Run

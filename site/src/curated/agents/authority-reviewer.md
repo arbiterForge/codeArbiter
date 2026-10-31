@@ -19,7 +19,7 @@ rather than a property of whichever lane dispatched it.
 
 ## What it emits
 
-Exactly one `codearbiter.review-decision/0.1.0` JSON object: the request ID, the frozen target and
+Exactly one `%%fact=reviewDecision.format%%` JSON object: the request ID, the frozen target and
 contract digests, a `pass` or `changes_requested` decision, the covered criteria, any findings,
 and an assessment. The host hooks bind that answer to the exact launch call, the
 reviewer's own child ID and its first stop, so a pasted or coordinator-written decision confers no

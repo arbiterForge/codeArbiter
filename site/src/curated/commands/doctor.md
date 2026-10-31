@@ -32,7 +32,7 @@ Takes no arguments.
 > /ca:doctor
 
 OK      python3 resolves and runs (/usr/bin/python3)
-OK      plugin payload at /home/x/.claude/plugins/ca (version 2.8.11)
+OK      plugin payload at /home/x/.claude/plugins/ca (version %%fact=release.ca%%)
 OK      hooks.json parses: 6 events, 11 entries
 OK      all 6 hook scripts present
 OK      single cached plugin version (no stale siblings)

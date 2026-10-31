@@ -49,7 +49,7 @@ Those files remain the canonical technical record; this page is the public summa
 
 CI and local verification cover the seams that a one-time live run cannot:
 
-- the pinned Codex 0.144.1 package schema and marketplace shape;
+- the pinned Codex %%fact=codex.schemaBaseline%% package schema and marketplace shape;
 - native Codex payload adaptation for shell and `apply_patch` tool calls;
 - the complete hook guard matrix;
 - Windows, macOS, and Linux interpreter-launch shapes through the cold-install matrix;

@@ -1,5 +1,6 @@
 /** forge-status.test.ts — codeArbiter's site-side Feature Forge allowlist tests. */
 import { describe, it, expect } from "vitest";
+import { repositoryVersionFacts } from "../../scripts/version-facts";
 import {
   getCommandForgeStatus,
   PREVIEW_COMMANDS,
@@ -86,7 +87,7 @@ describe("FORGE_FEATURES (the catalog source)", () => {
     expect(pi?.kind).toBe("preview-plugin");
     expect(pi?.command).toBeUndefined();
     expect(pi?.optIn).toContain("ca-pi-v<version>");
-    expect(pi?.requires).toContain("Pi 1.1.0");
+    expect(pi?.requires).toContain(`Pi ${repositoryVersionFacts()["pi.supported"].value}`);
     expect(pi?.requires).not.toMatch(/0\.80\.(5|10)|0\.84\./);
     expect(pi?.helpGraduate).toMatch(/real repositories/i);
   });

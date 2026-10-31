@@ -45,7 +45,7 @@ the exact parity boundary and intentional host differences.
 
 You use Pi and accept a preview adapter with a green automated promotion matrix but less real-world
 evidence than the two stable hosts. npm is the convenience channel, while pinned Git tags provide
-reproducible installs. Pi requires Node.js 22.19+ and will not activate repository-aware behavior
+reproducible installs. Pi requires Node.js %%fact=node.minimum%%+ and will not activate repository-aware behavior
 until project trust is affirmative.
 
 Follow the dedicated [Pi install and trust guide](/getting-started/pi/).

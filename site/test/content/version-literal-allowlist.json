@@ -1,0 +1,205 @@
+[
+  {
+    "file": "scripts/gen.ts",
+    "literal": "0.0.0-dev",
+    "context": "\"0.0.0-dev\"",
+    "category": "sentinel",
+    "reason": "Fallback version when the plugin manifest is unreadable during local generation."
+  },
+  {
+    "file": "scripts/generator/generate.ts",
+    "literal": "0.0.0-dev",
+    "context": "\"0.0.0-dev\"",
+    "category": "sentinel",
+    "reason": "Fallback version when the plugin manifest is unreadable during local generation."
+  },
+  {
+    "file": "src/content/docs/concepts/hardening-history.md",
+    "literal": "2.5.2",
+    "context": "**v2.5.2 (2026-06-25)**",
+    "category": "historical",
+    "reason": "Attributes historical hardening themes to the dated v2.5.2 release."
+  },
+  {
+    "file": "src/content/docs/getting-started/claude-code-and-codex.md",
+    "literal": "0.144.1",
+    "context": "**Codex CLI 0.144.1**",
+    "category": "historical",
+    "reason": "Host version used by the dated 2026-07-11 live promotion test."
+  },
+  {
+    "file": "src/content/docs/getting-started/claude-code-and-codex.md",
+    "literal": "0.2.4",
+    "context": "**ca-codex 0.2.4**",
+    "category": "historical",
+    "reason": "Plugin version used by the dated 2026-07-11 live promotion test."
+  },
+  {
+    "file": "src/content/docs/getting-started/claude-code-and-codex.md",
+    "literal": "0.2.4",
+    "context": "discovered `ca-codex 0.2.4` from release `v2.8.13`",
+    "category": "historical",
+    "reason": "Dated 2026-07-12 public-install record."
+  },
+  {
+    "file": "src/content/docs/getting-started/claude-code-and-codex.md",
+    "literal": "2.8.13",
+    "context": "discovered `ca-codex 0.2.4` from release `v2.8.13`",
+    "category": "historical",
+    "reason": "Dated 2026-07-12 public-install record."
+  },
+  {
+    "file": "src/content/docs/getting-started/claude-code-and-codex.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/content/docs/getting-started/claude-code-and-codex.md",
+    "literal": "0.9.4",
+    "context": "bounded 0.9.4",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/content/docs/getting-started/compatibility.mdx",
+    "literal": "2.55.0",
+    "context": "A live Git 2.55.0 probe",
+    "category": "historical",
+    "reason": "Git version used by one dated live UNC-share worktree probe."
+  },
+  {
+    "file": "src/content/docs/getting-started/compatibility.mdx",
+    "literal": "2.45.0",
+    "context": "RelNotes/2.45.0.txt",
+    "category": "external",
+    "reason": "Link to Git's own 2.45.0 release notes, which introduced --no-lazy-fetch."
+  },
+  {
+    "file": "src/content/docs/getting-started/compatibility.mdx",
+    "literal": "0.9.4",
+    "context": "bounded 0.9.4",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/content/docs/getting-started/install.md",
+    "literal": "2.8.13",
+    "context": "verified release `v2.8.13` with `ca-codex 0.2.4`",
+    "category": "historical",
+    "reason": "Dated 2026-07-11 first end-to-end public-install record."
+  },
+  {
+    "file": "src/content/docs/getting-started/install.md",
+    "literal": "0.2.4",
+    "context": "verified release `v2.8.13` with `ca-codex 0.2.4`",
+    "category": "historical",
+    "reason": "Dated 2026-07-11 first end-to-end public-install record."
+  },
+  {
+    "file": "src/content/docs/glossary.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/content/docs/glossary.md",
+    "literal": "0.9.4",
+    "context": "bounded 0.9.4",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/content/docs/overview.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/content/docs/overview.md",
+    "literal": "0.9.4",
+    "context": "bounded 0.9.4",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/curated/commands/audit.md",
+    "literal": "2.4.0",
+    "context": "v2.4.0",
+    "category": "illustrative",
+    "reason": "Example tag range showing /ca:audit argument syntax."
+  },
+  {
+    "file": "src/curated/commands/audit.md",
+    "literal": "2.5.0",
+    "context": "/ca:audit v2.4.0 v2.5.0",
+    "category": "illustrative",
+    "reason": "Example tag range showing /ca:audit argument syntax."
+  },
+  {
+    "file": "src/curated/commands/checkpoint.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/curated/commands/checkpoint.md",
+    "literal": "0.9.4",
+    "context": "0.9.4 receipt proves",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/curated/commands/chore.md",
+    "literal": "4.17.21",
+    "context": "lodash to 4.17.21",
+    "category": "illustrative",
+    "reason": "Example third-party dependency bump in a /ca:chore invocation."
+  },
+  {
+    "file": "src/curated/commands/pr.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/curated/commands/pr.md",
+    "literal": "0.9.4",
+    "context": "0.9.4 receipt proves",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/curated/commands/review.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/curated/commands/review.md",
+    "literal": "0.9.4",
+    "context": "0.9.4 receipt proves",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "src/curated/commands/tribunal.md",
+    "literal": "0.7.5",
+    "context": "Published releases from 0.7.5",
+    "category": "historical",
+    "reason": "Lower bound of the ca-codex release that first shipped packaged reviewer charters; permanently true."
+  },
+  {
+    "file": "src/curated/commands/tribunal.md",
+    "literal": "0.9.4",
+    "context": "bounded 0.9.4",
+    "category": "historical",
+    "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  }
+]

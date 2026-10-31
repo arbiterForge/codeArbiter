@@ -25,13 +25,13 @@
 <text x="72" y="188" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start" data-max-width="1016">Whole payload</text>
 <text x="600" y="188" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start" data-max-width="488">Per-feature maturity</text>
 <rect x="72" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="134" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="100">v2.5.1</text>
+<text x="134" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="100">vX.Y.1</text>
 <text x="134" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="100">released</text>
 <rect x="230" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="292" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="100">v2.5.2</text>
+<text x="292" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="100">vX.Y.2</text>
 <text x="292" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="100">current</text>
 <rect x="388" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="450" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="100">v2.6.0</text>
+<text x="450" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="100">vX.Y+1.0</text>
 <text x="450" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="100">next</text>
 <path d="M202 262 L220 262" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <path d="M360 262 L378 262" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>

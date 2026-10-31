@@ -72,8 +72,8 @@ not fabricate a receipt. The
 an unavailable adapter from missing evidence. That limitation does not impose an approval-receipt
 gate on ordinary authorized implementation.
 
-After an upgrade, receipt format `0.1.0` remains inspection-only in the current source contract.
-An explicit attestation claim requires a current `0.2.0` receipt from its applicable policy-owned
+After an upgrade, receipt format `%%fact=receipt.legacy%%` remains inspection-only in the current source contract.
+An explicit attestation claim requires a current `%%fact=receipt.current%%` receipt from its applicable policy-owned
 boundary. These are receipt formats, not plugin versions. Preserve old evidence; do not relabel a
 receipt or replay a pasted decision as a newly captured event. Actual user instructions still
 govern ordinary authorized work.
