@@ -39,6 +39,23 @@ not interpolate it into shell syntax or search for a source/cache copy.
   until their actual evidence is assessed.
 - **Reopen:** `work.py reopen <WORK-ID> --operation-id <stable-request-id>`.
 
+For a create, bind the caller's description and stable request ID as separate
+variables after resolving the installed helper and interpreter from the card.
+Pass each value as a literal argument from the intended worktree. A distinct
+intent may be bound separately when its wording differs from the title.
+
+### PowerShell create invocation
+```powershell
+$caCreateArgs = @('create', '--title', $caDescription, '--intent', $caDescription, '--type', 'unknown', '--operation-id', $caRequestId)
+& $caPython -B $caHelper @caCreateArgs
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+```
+
+### POSIX create invocation
+```sh
+"$ca_python" -B "$ca_helper" create --title "$ca_description" --intent "$ca_description" --type unknown --operation-id "$ca_request_id"
+```
+
 The facade reads the selected revision for an ordinary update and applies the
 owner's exact change check. When a caller already holds the preimage, pass
 `--expected-revision` and `--expected-model-sha256` together for native work,
