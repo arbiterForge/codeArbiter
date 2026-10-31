@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.26.1] - 2026-10-31
+
+### Fixed
+
+- Use the host-selected Git executable for GitHub issue synchronization in Pi.
+- Carry selected context and GitHub issue effect support into the Pi package.
+
 ## [0.26.0] - 2026-10-30
 
 ### Added
