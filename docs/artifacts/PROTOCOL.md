@@ -73,7 +73,8 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update` |
+| Local work | `work-create`, `work-adopt`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update` |
+| Work provider effects | `work-provider-get`, `work-provider-configure`, `work-effect-stage`, `work-effect-claim`, `work-effect-record`, `work-effect-conflict`, `work-effect-adopt`, `work-project-get`, `work-project-configure`, `work-project-stage`, `work-project-stage-field`, `work-project-claim`, `work-project-record`, `work-project-conflict` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -336,7 +337,8 @@ receive a deterministic native origin; their legacy Work ID stays the same,
 while origin lookup after cutover uses the previewed native origin. The preview
 changes no work ownership. `hooks/work.py adopt
 --operation-id <stable-id>` re-inventories under the same lock, then calls the
-native `work-adopt` transaction. That transaction compares exact board bytes,
+native `work-adopt` transaction. That transaction compares exact board bytes and
+derives each accepted work field again from its hashed source block before cutover,
 creates the project identity and all native work HTML, saves byte-for-byte
 snapshots in `.codearbiter/legacy/`, and removes the two writable board paths.
 Old board writers then refuse the absent board. Repeating the same operation
@@ -463,7 +465,10 @@ observed state after readback. The fixed `hooks/work.py sync <WORK-ID>` adapter 
 origin against the binding. For the default `after_merge` timing, pass
 `--pull-number N`: the adapter reads the merged PR, checks its default-branch
 base and local HEAD ancestry, and reads the pending canonical work model at
-the merge commit before claiming the effect. The persisted claim records that
+the merge commit and the current default branch before claiming the effect. It
+checks the current default branch again after the claim and before sending. A
+changed or unreadable current intent refuses the send; after a claim it remains
+uncertain for reconciliation. The persisted claim records that
 PR number and merge commit. A failed merge check leaves intent pending.
 `immediate` needs no PR number. A lost create response stays
 `outcome_unknown`; `hooks/work.py reconcile-issue <WORK-ID> --number N`
@@ -505,7 +510,9 @@ to the remote Project. After an issue is verified and synchronized,
 Project item list, records `outcome_unknown` before a send, adds the item only
 when no matching item was found, and reads the result back. A lost response
 leaves the Project effect unknown while the issue stays bound;
-`project-reconcile` performs readback without another add. Pagination and
+`project-reconcile` reads the item and, if absent, retries GitHub's idempotent
+add before readback. GitHub returns the existing item ID when the issue is
+already in that Project. Pagination and
 responses are bounded, and a changed binding stops the affected effect.
 
 `project-fields` reads bounded single-select field and option IDs and names
@@ -516,8 +523,9 @@ current remote option automatically and saves it as the expected baseline. The
 portable intent stores opaque IDs rather than field labels or free-form Project
 text. `project-field-sync` compares the live selected field with that baseline
 before the mutation and reads it back afterward. A changed option becomes a
-conflict; uncertain sends require `project-field-reconcile`, which never
-resends. GitHub's
+conflict; uncertain sends require `project-field-reconcile`. If the field still
+has its saved baseline value, reconciliation retries the selected option and
+reads it back; a different value remains a conflict. GitHub's
 [field mutation input](https://docs.github.com/en/graphql/reference/projects#updateprojectv2itemfieldvalueinput)
 has no conditional version, so a concurrent edit between the comparison and
 mutation cannot be excluded. Do not present this as remote atomic CAS. Project
@@ -536,7 +544,9 @@ operation-specific request and returns one JSON result; the ordinary CLI
 `view`, `project-view` and `cycle-view` verbs print raw HTML for an explicit human-view action. Native
 `work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.
 Legacy `work-update` accepts `operation_id`, `work_id`, `action` (start,
-complete or archive), and `expected_board_sha256` instead of `expected`.
+complete, reopen, archive, rename or attach), optional `title` for rename,
+optional `spec_id`/`plan_id` for attach, and `expected_board_sha256` instead
+of `expected`. `set-cycle` and `observe-delivery` are native-only.
 The legacy `work-context` request accepts `work_id` and optional `budget`,
 `paths` and `knowledge_refs`, with the omissions described above. The stable
 operation ID and owner-specific

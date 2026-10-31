@@ -25,6 +25,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Verify legacy adoption fields against the saved board, refuse stale GitHub
+  intent before sending, and safely retry uncertain Project effects after readback.
 - Require the selected work file in a merged PR's changed-file list before
   releasing a contingent GitHub effect.
 - Support selected legacy work rename, attachment, and reopen through the
@@ -38,6 +40,8 @@ predate the plugin rewrite and are grouped by date.
 
 - Inventory legacy task boards for selected native work adoption and expose
   bounded, selected work context with GitHub issue synchronization.
+- Group native work into optional cycles and render bounded cycle summaries
+  without copying work items or asserting remote delivery.
 
 ### Fixed
 
@@ -50,8 +54,6 @@ predate the plugin rewrite and are grouped by date.
 
 - Render a bounded, read-only native project work page with links to canonical
   work records and separate progress, check, delivery, and tracker labels.
-- Group native work into optional cycles and render bounded cycle summaries
-  without copying work items or asserting remote delivery.
 
 ### Fixed
 
