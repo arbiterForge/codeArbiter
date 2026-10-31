@@ -1,6 +1,7 @@
 package operations
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -41,6 +42,54 @@ func BenchmarkWorkListPage(b *testing.B) {
 					b.Fatal(err)
 				}
 			}
+		})
+	}
+}
+
+// BenchmarkWorkSelectedReadWithRetainedHistory includes Run's journal recovery
+// and locking path. The first create leaves one journal; each rename adds one.
+// The labels count extra retained journals, never removed fixture history.
+func BenchmarkWorkSelectedReadWithRetainedHistory(b *testing.B) {
+	for _, updates := range []int{0, 20, 200} {
+		b.Run(fmt.Sprintf("updates-%d", updates), func(b *testing.B) {
+			root := testutil.Root(b)
+			created, err := Run(root, "work-create", object{
+				"protocol": Protocol, "operation_id": "history-bench-create-001",
+				"title": "Selected work", "intent": "Measure retained history cost", "work_type": "chore",
+			})
+			if err != nil {
+				b.Fatal(err)
+			}
+			current := created.(map[string]any)
+			id := current["work_id"].(string)
+			for i := 0; i < updates; i++ {
+				next, err := Run(root, "work-update", object{
+					"protocol": Protocol, "operation_id": fmt.Sprintf("history-bench-update-%04d", i),
+					"work_id": id, "action": "rename", "title": fmt.Sprintf("Selected work %d", i),
+					"expected": object{"revision": current["revision"], "model_sha256": current["model_sha256"]},
+				})
+				if err != nil {
+					b.Fatal(err)
+				}
+				current = next.(map[string]any)
+			}
+			request := object{"protocol": Protocol, "work_id": id}
+			value, err := Run(root, "work-get", request)
+			if err != nil {
+				b.Fatal(err)
+			}
+			encoded, err := json.Marshal(value)
+			if err != nil {
+				b.Fatal(err)
+			}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				if _, err := Run(root, "work-get", request); err != nil {
+					b.Fatal(err)
+				}
+			}
+			b.ReportMetric(float64(len(encoded)), "result-bytes/op")
 		})
 	}
 }
