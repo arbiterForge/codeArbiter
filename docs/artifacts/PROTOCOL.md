@@ -73,7 +73,7 @@ worktree does not establish their referenced verification or approval history.
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
-| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `work-update` |
+| Local work (initial slice) | `work-create`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -316,8 +316,9 @@ a fresh board hash for each invocation, so repeating the command after another
 edit could act on the changed row. A repeat after a successful update with the
 original hash refuses as stale; it does not return the original result.
 Completion can record already-performed work without inventing a start date
-and leaves its check unknown. Legacy rename, later attachment and reopen
-remain unsupported through this facade. Native creation still refuses while
+and leaves its check unknown. Selected legacy rename, later attachment and
+reopen use the same board writer and revision binding. Cycle grouping requires
+native work ownership. Native creation still refuses while
 the legacy board owns the project.
 
 `hooks/work.py adopt-preview` inventories every active and archived top-level
@@ -369,7 +370,9 @@ The facade also requires `--operation-id` for updates. An exact retry supplies
 the same expected revision and model SHA-256; reusing the ID against later
 state refuses a changed request instead of overwriting that state.
 `work-update` uses revision plus model SHA-256 CAS and the ordinary journal for
-rename, attachment, start, completion, reopen and archive. Exact spec and plan
+rename, attachment, start, completion, reopen, archive and cycle assignment.
+`cycle_id` is an optional key on canonical work; `set-cycle` changes it or clears
+it with null without copying requirements or tasks. Exact spec and plan
 IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
 slice has no operation to assert a passing check, merge, release or deployment.
@@ -399,8 +402,8 @@ saving the HTML there makes its relative spec and plan links valid. This
 derived location stays outside canonical artifact discovery. The command does
 not write a second work owner or scan unrelated artifacts. Native
 `project-view` renders one bounded `work-list` page as an inert project work
-overview. It shows local progress and checks separately, labels delivery as
-unobserved and directs tracker state to each work item, and links to the existing
+overview. It shows local progress and checks separately, directs delivery and
+tracker state to each work item, and links to the existing
 canonical work pages.
 Its `offset`, `limit` (at most 16), `membership_sha256`, `next_offset`,
 `total`, and `content_snapshot: false` have the same membership-only
@@ -414,8 +417,14 @@ also reads the one canonical native code map and shows at most four recorded
 components or interfaces with their evidence basis. It names omitted records
 and links to the complete code map; an absent or invalid map is labeled without
 hiding work. Its delivery and tracker cards direct readers to individual work
-items; the project page does not aggregate remote observations. No cycle model
-or cycle overview is shipped yet. Legacy projects
+items; the project page does not aggregate remote observations. `cycle-view`
+derives membership and aggregate local progress/check counts from canonical
+work records with the selected `cycle_id`; it has no writable cycle backlog.
+It pages at most 16 members, reports a membership digest for continuation, and
+labels counts as read-time local observations rather than delivery or tracker
+proof. Its HTML is inert and optional at
+`.codearbiter/views/cycle/<cycle-id>-<offset>.html`. The scan is bounded to the
+work directory; a missing cycle is not presented as recorded. Legacy projects
 continue to use their board; this native-only derived view reports unsupported
 through the legacy facade.
 
@@ -476,10 +485,10 @@ title/body updates remain unsupported.
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
-`work-context`, `work-view`, `project-view`, `work-update`, `work-provider-get`,
+`work-context`, `work-view`, `project-view`, `cycle-view`, `work-update`, `work-provider-get`,
 `work-provider-configure` and `work-effect-stage`. The selected owner validates the
 operation-specific request and returns one JSON result; the ordinary CLI
-`view` and `project-view` verbs print raw HTML for an explicit human-view action. Native
+`view`, `project-view` and `cycle-view` verbs print raw HTML for an explicit human-view action. Native
 `work-update` requires `expected: {"revision": N, "model_sha256": "..."}`.
 Legacy `work-update` accepts `operation_id`, `work_id`, `action` (start,
 complete or archive), and `expected_board_sha256` instead of `expected`.

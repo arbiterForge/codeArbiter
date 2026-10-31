@@ -37,6 +37,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 - Render a bounded, read-only native project work page with links to canonical
   work records and separate progress, check, delivery, and tracker labels.
+- Group native work into optional cycles and render bounded cycle summaries
+  without copying work items or asserting remote delivery.
 
 ### Fixed
 
