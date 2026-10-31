@@ -54,11 +54,10 @@ import re
 from _modelib import current_mode as _modelib_current_mode
 from _activationlib import frontmatter_enabled_text as _activation_enabled_text
 
-# mtime-keyed memo: statusline.py is a short-lived subprocess, but a single render
+# Input-version memo: statusline.py is a short-lived subprocess, but a single render
 # can resolve arbiter_state more than once (safe() probes), and the StopHook fires
-# the whole script on every tool-call completion. Caching on max(input mtime) makes
-# the 5 .codearbiter/ reads happen at most once per (root, change), re-reading only
-# when one of the inputs actually changes between renders.
+# the whole script on every tool-call completion. Each input has its own version:
+# a future-dated CONTEXT.md must not mask a later board or work-owner change.
 _ARBITER_CACHE = {}        # root -> (mtime_key, result)
 _ARBITER_FILES = ("CONTEXT.md", "overrides.log", "last-checkpoint",
                   "open-tasks.md", "open-questions.md", "sprint-active", "work")
@@ -124,15 +123,16 @@ def count_matches(path, pattern):
 
 
 def _arbiter_mtime_key(cad):
-    """Max mtime across the arbiter input files (missing files stat as -1.0). Two
-    renders with the same key saw identical inputs, so the cached state is valid."""
-    latest = -1.0
+    """Per-input stat versions; missing and newly present paths differ."""
+    versions = []
     for nm in _ARBITER_FILES:
         try:
-            latest = max(latest, os.stat(os.path.join(cad, nm)).st_mtime)
+            info = os.stat(os.path.join(cad, nm))
         except OSError:
-            pass
-    return latest
+            versions.append(None)
+        else:
+            versions.append((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns))
+    return tuple(versions)
 
 
 def _arbiter_enabled(ctx_path, frontmatter_enabled=None, ctx_text=None):

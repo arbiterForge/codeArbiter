@@ -352,6 +352,26 @@ class ReaderIntegrationTest(unittest.TestCase):
             state = mod.arbiter_state(tmp)
             self.assertEqual(state["tasks"], "?")
 
+    def test_cached_status_switches_to_native_owner_with_future_dated_context(self):
+        import tempfile
+        mod = _load("statusline", "statusline.py")
+        with tempfile.TemporaryDirectory() as tmp:
+            cad = os.path.join(tmp, ".codearbiter")
+            os.makedirs(cad)
+            ctx = os.path.join(cad, "CONTEXT.md")
+            with open(ctx, "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\n")
+            with open(os.path.join(cad, "open-tasks.md"), "w", encoding="utf-8") as f:
+                f.write(SAMPLE)
+            # A restored/future-dated input must not mask a later owner change.
+            os.utime(ctx, (4102444800, 4102444800))
+            self.assertEqual(mod.arbiter_state(tmp)["tasks"], 3)
+            work = os.path.join(cad, "work")
+            os.makedirs(work)
+            with open(os.path.join(work, "project.json"), "w", encoding="utf-8") as f:
+                f.write("{}")
+            self.assertEqual(mod.arbiter_state(tmp)["tasks"], "?")
+
     def test_startup_native_work_summary_is_explicitly_unknown(self):
         import contextlib
         import io

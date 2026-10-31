@@ -31,6 +31,7 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _taskboardlib as tb  # noqa: E402
+from _arbiterstatelib import native_work_selected  # noqa: E402 — one work owner
 from _hooklib import (  # noqa: E402
     acquire_lock, project_root, release_lock, set_host, utf8_stdio,
 )
@@ -353,6 +354,13 @@ def main(argv=None, *, root=None, expected_work_id=None,
               f"{args.verb}", file=sys.stderr)
         return 1
     try:
+        # Work adoption and the legacy writer share this board lock. Check the
+        # selected owner inside it so a stale direct taskwrite invocation cannot
+        # continue writing a board after native work appears.
+        if native_work_selected(os.path.dirname(board_path)):
+            print("native work is present beside the legacy board; resolve the owner conflict before writing",
+                  file=sys.stderr)
+            return 1
         text = tb.read_board(board_path)
         if text is None:
             print(f"no board at {board_path} — is this an initialized repo?", file=sys.stderr)
