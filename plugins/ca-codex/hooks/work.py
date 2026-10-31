@@ -68,6 +68,10 @@ def _parser():
     listing.add_argument("--limit", type=int, default=32)
     listing.add_argument("--membership-sha256")
     listing.add_argument("--budget", type=int, default=16384)
+    project_view = sub.add_parser("project-view", help="Print one bounded, derived native project work page")
+    project_view.add_argument("--offset", type=int, default=0)
+    project_view.add_argument("--limit", type=int, default=16)
+    project_view.add_argument("--membership-sha256")
     origins = sub.add_parser("origins", help="Find exact source keys across active and archived work")
     origins.add_argument("--origin", action="append", required=True)
     for verb in ("rename", "attach", "start", "complete", "reopen", "archive"):
@@ -106,11 +110,13 @@ def _dispatch(args, client):
         return client.call("work-context", {"work_id": args.work_id, "budget": args.budget})
     if args.verb == "view":
         return client.call("work-view", {"work_id": args.work_id})
-    if args.verb == "list":
-        request = {"offset": args.offset, "limit": args.limit, "budget": args.budget}
+    if args.verb in ("list", "project-view"):
+        request = {"offset": args.offset, "limit": args.limit}
+        if args.verb == "list":
+            request["budget"] = args.budget
         if args.membership_sha256:
             request["membership_sha256"] = args.membership_sha256
-        return client.call("work-list", request)
+        return client.call("work-list" if args.verb == "list" else "project-view", request)
     if args.verb == "origins":
         return client.call("work-origins", {"origins": args.origin})
 
@@ -156,7 +162,7 @@ def _dispatch_request(payload, client):
         raise ValueError("unsupported work request schema")
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
-        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update"
+        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view"
     }:
         raise ValueError("unsupported work operation")
     if type(payload["request"]) is not dict:
@@ -176,7 +182,7 @@ def main(argv=None):
         else:
             args = _parser().parse_args(argv)
             result = _dispatch(args, _selected_client(project_root()))
-            raw_view = args.verb == "view"
+            raw_view = args.verb in ("view", "project-view")
     except _artifactlib.ArtifactError as exc:
         print(json.dumps({"ok": False, "code": exc.code, "error": str(exc)}))
         return 1

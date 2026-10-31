@@ -29,6 +29,7 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _hooklib  # noqa: E402 — set_host DI seam (#257)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 import _taskboardlib as tb  # noqa: E402
+from _arbiterstatelib import native_work_selected  # noqa: E402 — selected work owner
 
 
 def reconcile_report(board_text, log_text, today):
@@ -100,6 +101,15 @@ def main(argv=None):
         # traceback. (Security review 2026-06-26, LOW.)
         today = datetime.date.today()
         try:
+            if native_work_selected(os.path.dirname(os.path.abspath(args.board))):
+                if os.path.isfile(args.board):
+                    detail = ("both legacy and native work owners are present; "
+                              "resolve the owner conflict before reconciling work.")
+                else:
+                    detail = ("native work is selected; legacy board drift was not checked. "
+                              "Use work.py list for current work state.")
+                print(f"Board drift sweep — {today.isoformat()}\n  {detail}")
+                return
             board_text = tb.read_board(args.board)
             log_text = sys.stdin.read()
             report = reconcile_report(board_text or "", log_text, today)
