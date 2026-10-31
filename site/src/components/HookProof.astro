@@ -38,17 +38,10 @@ const proofApplicability = presentProofApplicability(applicability.proof);
     Your browser cannot play the replay. The exact invocation result follows below.
   </video>
   <figcaption>
-    <span><strong>Verified direct hook invocation</strong> · {capturedDate}</span>
-    <span class:list={["ca-hook-proof__applicability", { "is-mismatch": proofApplicability.isMismatch }]}>
-      {proofApplicability.message}:{" "}
-      <a href={`${repositoryUrl}/releases/tag/${publishedCa.tag}`}><code>{publishedCa.tag}</code></a>{" "}
-      at{" "}
-      <a
-        href={`${repositoryUrl}/commit/${publishedCa.publicationCommit}`}
-        aria-label={`View full ca publication commit ${publishedCa.publicationCommit}`}
-      ><code>{shortPublicationCommit}</code></a>
-    </span>
-    <span><code>{shortDigest}</code> source digest</span>
+    <span><strong>Shipped hook</strong> · captured {capturedDate}</span>
+    {proofApplicability.isMismatch && (
+      <span class="ca-hook-proof__applicability is-mismatch">{proofApplicability.message}</span>
+    )}
   </figcaption>
   <details>
     <summary>Read the exact invocation result</summary>
@@ -57,9 +50,16 @@ const proofApplicability = presentProofApplicability(applicability.proof);
       <pre>{proof.invocation.stderr}</pre>
       <p><strong>Exit</strong> {proof.invocation.exitCode} · command not executed · no staged files</p>
       <p><strong>Audit side effect</strong> The block appended an H-03 event to <code>.codearbiter/gate-events.log</code>.</p>
-      <p><strong>Capture source</strong> <code>{proof.source}</code> at SHA-256 <code>{proof.sourceSha256}</code>.</p>
-      <p>
-        <strong>Published-artifact applicability</strong> {applicability.proof.statement}{" "}
+      <p><strong>Capture source</strong> <code>{proof.source}</code> at SHA-256 <code>{proof.sourceSha256}</code> (<code>{shortDigest}</code>).</p>
+      <p class:list={["ca-hook-proof__applicability", { "is-mismatch": proofApplicability.isMismatch }]}>
+        <strong>Published-artifact applicability</strong> {proofApplicability.message}:{" "}
+        <a href={`${repositoryUrl}/releases/tag/${publishedCa.tag}`}><code>{publishedCa.tag}</code></a>{" "}
+        at{" "}
+        <a
+          href={`${repositoryUrl}/commit/${publishedCa.publicationCommit}`}
+          aria-label={`View full ca publication commit ${publishedCa.publicationCommit}`}
+        ><code>{shortPublicationCommit}</code></a>.
+        {applicability.proof.statement}{" "}
         <a href="/release-applicability.json">Read the complete release applicability record.</a>
       </p>
       <p><strong>Evidence boundary</strong> This directly invoked the shipped hook with the host payload shape. It does not prove a host discovered or registered that hook.</p>

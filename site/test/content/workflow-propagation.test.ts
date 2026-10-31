@@ -88,7 +88,7 @@ describe('C04 cross-surface consistency', () => {
     const refresh = read('src/curated/commands/context-check.md');
     expect(refresh).toContain('already selects');
     expect(refresh).not.toContain('full brownfield re-scan from scratch is `/ca:create-context`');
-    const compatibility = read(`${docs}getting-started/compatibility.mdx`);
+    const compatibility = read(`${docs}getting-started/compatibility.mdx`) + read(`${docs}getting-started/compatibility/runtime.md`);
     expect(compatibility).not.toContain('context creation blocks without isolated scouts');
   });
   it('describes current typed progress without restoring approval or context-ticket prerequisites', () => {

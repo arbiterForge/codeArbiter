@@ -25,29 +25,27 @@ const iconByLevel: Record<Props["level"], ArbiterIconName> = {
 };
 ---
 
+<!-- One line by default (DOCS-OVERHAUL M4): level, time and outcome. Prerequisites
+     and the completion check sit one click down so the page's own content leads. -->
 <aside class="ca-page-context" aria-label="Page orientation">
-  <div class="ca-page-context__icon">
-    <ArbiterIcon name={iconByLevel[level]} size="1.45rem" />
-  </div>
-  <div class="ca-page-context__body">
-    <div class="ca-page-context__meta">
-      <span>{level}</span>
-      <span>{timeLabel}</span>
-    </div>
-    <p><strong>Outcome:</strong> {outcome}</p>
-    {
-      prerequisites.length > 0 && (
-        <p class="ca-page-context__support">
-          <strong>Before you start:</strong> {prerequisites.join(" · ")}
-        </p>
-      )
-    }
-    {
-      proof && (
-        <p class="ca-page-context__support">
-          <strong>Proof of completion:</strong> {proof}
-        </p>
-      )
-    }
-  </div>
+  <p class="ca-page-context__line">
+    <span class="ca-page-context__meta">
+      <span class="ca-page-context__icon"><ArbiterIcon name={iconByLevel[level]} size="1rem" /></span>
+      {level === "Reference" && time === "Lookup" ? timeLabel : `${level} · ${timeLabel}`}
+    </span>
+    <span class="ca-page-context__outcome"><strong>Outcome:</strong> {outcome}</span>
+  </p>
+  {
+    (prerequisites.length > 0 || proof) && (
+      <details class="ca-page-context__more">
+        <summary>{prerequisites.length > 0 && proof ? "Before you start, and how you'll know it worked" : prerequisites.length > 0 ? "Before you start" : "How you'll know it worked"}</summary>
+        {prerequisites.length > 0 && (
+          <p><strong>Before you start:</strong> {prerequisites.join(" · ")}</p>
+        )}
+        {proof && (
+          <p><strong>Proof of completion:</strong> {proof}</p>
+        )}
+      </details>
+    )
+  }
 </aside>

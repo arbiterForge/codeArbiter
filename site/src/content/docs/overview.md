@@ -9,95 +9,89 @@ journey:
   proof: "You can identify who routes, who implements, who reviews, and who resolves a gate."
 ---
 
-codeArbiter is an open-source governance layer for Claude Code, Codex, and Pi. It enforces
-development gates and keeps project decisions, reviews, and audit records in your repository.
+codeArbiter is an open-source governance layer for Claude Code, Codex, and Pi. It stops an AI coding
+agent at the gates you care about (tests, reviews, security checks, decisions) and keeps the record
+of that work in your repository, in `.codearbiter/`.
 
 ## What you receive
 
-Start with the result, not the catalog. A greenfield project produces an architecture breakdown,
-phased build plan and task backlog for your review. Existing source produces inspected project
-context instead. A full feature produces a specification and an execution plan; a small change
-uses a lighter confirmed mini-spec. Decisions and audit records retain the reasons and exceptions.
+Ask for an outcome and you get the documents a careful team would produce for it:
 
-The [product tour](/product-tour/) lets you inspect actual native-rendered draft documents and
-runnable example tests. The [artifact model](/concepts/artifacts/) explains which record owns what.
-These examples are labelled fixtures, not evidence that your installed package has been verified.
+- **A new project** gets an architecture breakdown, a phased build plan and a task backlog to review.
+- **An existing codebase** gets inspected project context instead.
+- **A feature** gets a specification and an execution plan; a small change gets a short confirmed mini-spec.
+- **Every decision and exception** is recorded with its reason.
+
+The [product tour](/product-tour/) shows real draft documents and runnable tests from one example,
+and the [artifact model](/concepts/artifacts/) explains which record owns what.
 
 ## codeArbiter Holds the Gates; You Hold the Decisions
 
-Enforcement and judgment are distinct. Some protections refuse a supported tool operation;
-other reviews depend on routing through the owning lane. The product does not make an external
-editor or an unrestricted machine owner unable to bypass it. Read [Enforcement](/enforcement/)
-for the actual boundaries instead of treating every instruction as a mechanical block.
-
-Under an autonomous sprint, approved non-hard choices can use SMARTS and be recorded. Missing
-user authority, security boundaries, irreversible operations and other hard gates remain stops.
-Approval of an architectural decision is not proof that it was implemented or verified.
+codeArbiter enforces; you decide. A gate stops a supported tool call before it runs, such as a
+commit without passing tests or a broad `git add`. Choices that need your judgment, such as approving
+a plan or accepting a trade-off, come back to you. In an autonomous sprint, routine choices are
+scored with SMARTS and logged so you can review them later, while anything that needs your authority
+still stops and asks. [Enforcement](/enforcement/) lists exactly what is blocked and where the limits are.
 
 ## How a Request Flows
 
-1. **Describe the outcome.** State the intended behavior, scope, constraints and spending limits.
-   Explicit commands are available, but a clear request does not require command ceremony.
-2. **Review the definition.** The owning lane clarifies the problem and exposes genuine unknowns.
-   You review the relevant artifacts and make decisions that require your authority.
-3. **Implement and verify.** The workflow selects the roles needed for the change, connects tests
-   to the requirements and obtains review. A passing test alone is not complete delivery.
-4. **Resolve stops.** A gate can require repair, a current decision or fresh evidence. Autonomous
-   work can recover within its approved scope, but cannot manufacture missing user authority.
-5. **Commit and propose delivery.** Work follows the governed commit and PR path. Publication and
-   merging retain their own authorization boundaries.
+1. **Describe the outcome.** State the behavior you want, the scope and any limits. You can use a
+   command such as `/ca:feature`, but a clear request works too.
+2. **Review the definition.** The owning lane clarifies the problem and asks only what it cannot
+   decide for you.
+3. **Implement and verify.** Tests are written against the requirements, the code is reviewed, and
+   failures are fixed before work moves on.
+4. **Resolve stops.** A gate may ask for a fix, a decision or fresh evidence. Work continues once it
+   is satisfied.
+5. **Commit and open a pull request.** Changes go through the governed commit and PR path. Merging
+   and publishing stay your call.
 
 <figure class="ca-diagram">
   <img src="/diagrams/lane-flow.svg" alt="A request reaches its owning lane, clears the relevant gate and proceeds to the governed shipping boundary." loading="lazy" />
-  <figcaption>The internal route serves a human outcome: defined work, inspected evidence, and an authorized delivery boundary.</figcaption>
+  <figcaption>Every request reaches its owning lane, clears the gates that apply, and ends at a pull request you approve.</figcaption>
 </figure>
 
-Follow [Complete one feature](/guides/first-feature/) for a continuous example rather than trying
-to learn every internal skill before starting.
+[Complete one feature](/guides/first-feature/) walks through this end to end.
 
 ## One Core, Three Host Adapters
 
-codeArbiter is one governance product with three host adapters: `ca` for Claude Code,
-`ca-codex` for Codex, and `ca-pi` for Pi.
-They share the policy core and repository-owned `.codearbiter/` records, while entry spelling,
-trust, role execution and supported environments differ. Pi remains a Feature Forge `preview`.
-The Claude Code marketplace also carries `ca-sandbox`, an infrastructure plugin, not a fourth
-governance host. The Codex marketplace carries `ca-codex`; Pi uses npm as its convenience channel
-and pinned Git tags as its reproducible channel.
+codeArbiter is one governance product with three host adapters: `ca` for Claude Code, `ca-codex` for Codex,
+and `ca-pi` for Pi. They share the same policy core and the same `.codearbiter/` records, so a project
+can move between hosts. Command spelling differs (`/ca:feature` in Claude Code, `$ca-feature` in
+Codex, `/ca-feature` in Pi). Claude Code and Codex are stable; Pi is a Feature Forge `preview`.
+
+The [compatibility matrix](/getting-started/compatibility/) lists exact requirements, and
+[Choose your host](/getting-started/choose-your-host/) helps you pick one.
+
+<details class="ca-evidence">
+<summary>Limits and evidence: how each host runs reviewers</summary>
 
 Claude Code dispatches plugin agents. Published releases from 0.7.5 include the complete packaged
 resource charter set for that release for Codex host-provided agent threads, with static-package
 and route-closure checks at release. A bounded 0.9.4 receipt records one exact installed-charter
 review. A bounded inline fallback is allowed only where the canonical workflow explicitly permits
 it and isolation is not mandatory. Pi launches hardened child processes through its trusted parent.
-These mechanisms are not interchangeable guarantees; the host-specific evidence below states
-their qualified limits.
+These mechanisms are not interchangeable guarantees; the
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) page records what has been
+verified on each host, and the
+[typed-artifact authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability)
+shows which hosts can verify and review structured HTML documents.
 
-For typed HTML, native engine support and host authority are separate capabilities. The current
-verification and review authority adapters cover Codex and Claude Code; Pi stops at unsupported
-boundaries. Check the [typed-artifact authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability)
-for the exact scope rather than treating shared files or commands as end-to-end parity.
+The Claude Code marketplace also carries `ca-sandbox`, an infrastructure plugin rather than a fourth
+host. The Codex marketplace carries `ca-codex`. Pi installs from npm or from pinned Git tags; the
+[Pi guide](/getting-started/pi/) covers its trust boundary. Product tour examples are labelled fixtures, not a check of your installed package.
 
-The [compatibility matrix](/getting-started/compatibility/) and the dated
-[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) own exact support details.
-Do not infer a release guarantee from current development documentation or identical-looking
-commands. The [Pi guide](/getting-started/pi/) owns its installation and parent-process boundary.
+</details>
 
-## Context Minimization
+## What Stays on Your Machine
 
-Internal skills, role instructions and detailed references load when the owning workflow needs
-them. You do not need to choose an author agent or remember the internal call graph for ordinary
-work. Public command references remain available for explicit invocation and exact lookup.
-Repository context can enter your configured host or model provider; local storage is not a
-claim that no data ever leaves the machine. See [Trust & Lifecycle](/trust/).
+Skills, role instructions and reference material load only when a workflow needs them, so you do not
+need to learn the internals first. Your repository context still goes to whichever host and model
+provider you use; codeArbiter adds no telemetry service. See [Trust & Lifecycle](/trust/).
 
-## The Lanes
+## Where to Go Next
 
-Choose a user job: initialize a project, build a feature, repair a defect, review a change,
-record a decision, or release your own project. [Guides](/guides/) groups those tasks in working
-order. The [Reference](/reference/) preserves exact operations and compatibility routes without
-requiring you to treat every alias or internal protocol as a new thing to learn.
-
-To begin, [choose your host](/getting-started/choose-your-host/), install and trust its adapter,
-initialize a disposable repository, then [prove enforcement](/getting-started/quickstart/).
-For deeper practice, use [Arbiter Academy](/academy/) with its published lesson prerequisites.
+[Choose your host](/getting-started/choose-your-host/), [install it](/getting-started/install/), and
+[protect your first repository](/getting-started/quickstart/). Then [complete one feature](/guides/first-feature/).
+[Guides](/guides/) are grouped by task, and the [Reference](/reference/) holds every exact command.
+For hands-on practice, [Arbiter Academy](/academy/) adds verified exercises.

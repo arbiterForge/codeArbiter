@@ -224,6 +224,6 @@ Open the file in a text editor, restore valid JSON, then re-run `/ca:statusline`
 
 ---
 
-For the `statusline.py` renderer and `wire-statusline.py` script reference, see [Hooks reference: non-event scripts](/hooks/#non-event-scripts).
+For the `statusline.py` renderer and `wire-statusline.py` script reference, see [Hook script reference: non-event scripts](/hooks/scripts/#non-event-scripts).
 For Pi's automatic rich-footer behavior and its fail-soft native fallback, see
 [Pi host support](/getting-started/pi/).

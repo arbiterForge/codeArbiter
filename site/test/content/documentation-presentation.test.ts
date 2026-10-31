@@ -171,7 +171,10 @@ describe("documentation presentation regressions", () => {
     expect(hooks).toContain("Claude Code registrations");
     expect(hooks).toContain("Codex adapter registrations");
     expect(hooks).toContain("Pi wrapper events");
-    expect(hooks).toContain("cooperative attestation");
+    // Per-script entries moved to the hook script reference in the M6 split.
+    const scripts = readFileSync(join(docsRoot, "hooks", "scripts.md"), "utf8");
+    expect(hooks + scripts).not.toContain("unforgeable by hand");
+    expect(scripts).toContain("cooperative attestation");
   });
 
   it("OBL-CONTENT-04 defines every terminology-locked term and the H-18 exception", () => {
@@ -191,10 +194,12 @@ describe("documentation presentation regressions", () => {
 
     expect(uninstall).toContain("Claude Code, Codex, and Pi");
     expect(uninstall).toContain("git ls-remote --tags --refs");
-    expect(uninstall).toContain("Claude Code removes");
-    expect(uninstall).toContain("Codex removes");
-    expect(uninstall).toContain("Pi removes");
-    expect(uninstall).not.toContain("This removes the plugin payload");
+    // Per-host effects moved to the uninstall details page in the M6 split.
+    const uninstallDetails = readFileSync(join(docsRoot, "guides", "uninstalling", "details.md"), "utf8");
+    expect(uninstallDetails).toContain("Claude Code removes");
+    expect(uninstallDetails).toContain("Codex removes");
+    expect(uninstallDetails).toContain("Pi removes");
+    expect(uninstall + uninstallDetails).not.toContain("This removes the plugin payload");
     expect(uninstall).toContain("runs **every live registered enforcer**");
     expect(uninstall).toContain("removes only that host's registry");
     expect(uninstall).toContain("deliberately leaves the shared shims");

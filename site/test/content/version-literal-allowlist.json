@@ -63,14 +63,14 @@
     "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
   },
   {
-    "file": "src/content/docs/getting-started/compatibility.mdx",
+    "file": "src/content/docs/getting-started/compatibility/runtime.md",
     "literal": "2.55.0",
     "context": "A live Git 2.55.0 probe",
     "category": "historical",
     "reason": "Git version used by one dated live UNC-share worktree probe."
   },
   {
-    "file": "src/content/docs/getting-started/compatibility.mdx",
+    "file": "src/content/docs/getting-started/compatibility/runtime.md",
     "literal": "2.45.0",
     "context": "RelNotes/2.45.0.txt",
     "category": "external",

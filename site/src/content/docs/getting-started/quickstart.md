@@ -90,8 +90,8 @@ Close the current host session and open a new one in the same repository. Sessio
 the codeArbiter briefing: project stage, blocking questions, in-flight tasks, and the command-catalog
 pointer.
 
-If you see no briefing, stop here and use [Troubleshooting](/guides/troubleshooting/). Do not treat
-installed files as proof that hooks are active.
+If you see no briefing, stop here and use [Troubleshooting](/guides/troubleshooting/). Installed
+files alone don't mean the hooks are active; the briefing is the check.
 
 ## 4. Run the live-fire verification
 

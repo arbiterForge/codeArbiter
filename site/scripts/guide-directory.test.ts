@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readdirSync } from 'node:fs';
-import { buildGuideDirectory, guideGroups, type GuidePage } from './guide-directory';
+import { buildGuideDirectory, guideCompanions, guideGroups, type GuidePage } from './guide-directory';
 import { guideMatches, normalizeGuideQuery } from '../src/scripts/guide-filter';
 
 const pages = (): GuidePage[] => guideGroups.flatMap(group => group.slugs.map(slug => ({
@@ -27,6 +27,19 @@ describe('the guide directory', () => {
     const classified = guideGroups.flatMap(group => [...group.slugs]);
     expect(new Set(classified).size).toBe(classified.length);
     expect(classified.sort()).toEqual(actual);
+  });
+
+  it('keeps declared reference companions out of the task list, and only those', () => {
+    const nested = readdirSync(new URL('../src/content/docs/guides', import.meta.url), { recursive: true, withFileTypes: true })
+      .filter(entry => entry.isFile() && /\.mdx?$/.test(entry.name) && !entry.parentPath.replace(/\\/g, '/').endsWith('/guides'))
+      .map(entry => `${entry.parentPath.replace(/\\/g, '/').split('/guides/')[1]}/${entry.name.replace(/\.mdx?$/, '')}`).sort();
+    expect([...guideCompanions].sort()).toEqual(nested);
+    for (const slug of guideCompanions) {
+      expect(guideGroups.flatMap(group => [...group.slugs])).toContain(slug.split('/')[0]);
+    }
+    const companion = { id: `guides/${guideCompanions[0]}`, data: { title: 'C', description: 'C' } };
+    expect(buildGuideDirectory([...pages(), companion]).flatMap(group => group.guides)).toHaveLength(pages().length);
+    expect(() => buildGuideDirectory([...pages(), { ...companion, id: 'guides/uninstalling/other' }])).toThrow(/Unclassified guide/);
   });
 
   it('ignores the landing page and other collections', () => {

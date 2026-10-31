@@ -11,9 +11,7 @@ prev: false
 next: false
 ---
 
-import ArtifactWorkbench from '../../components/ArtifactWorkbench.astro';
 import HookProof from '../../components/HookProof.astro';
-import TrustRow from '../../components/TrustRow.astro';
 import ArbiterIcon from '../../components/ArbiterIcon.astro';
 import SplashDocsRail from '../../components/SplashDocsRail.astro';
 import heroArt from '../../assets/hero-gates.webp';
@@ -31,7 +29,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <div class="ca-actions">
       <a class="ca-button ca-button--primary" href="./getting-started/install/">Protect a repository</a>
       <a class="ca-button" href="./overview/">What is codeArbiter?</a>
-      <a class="ca-text-link" href="#proof">Watch a verified hook replay</a>
+      <a class="ca-text-link" href="#proof">Watch a hook block a command</a>
     </div>
     <div class="ca-splash__hosts" aria-label="Supported governance hosts">
       <span class="ca-pill">Claude Code</span>
@@ -43,114 +41,47 @@ import heroArt from '../../assets/hero-gates.webp';
   <div class="ca-splash__proof ca-panel" id="proof">
     <div class="ca-splash__proof-head">
       <div>
-        <p class="ca-kicker">Direct hook evidence</p>
-        <p class="ca-splash__proof-title">A broad stage meets the shipped guard</p>
+        <p class="ca-kicker">What a block looks like</p>
+        <p class="ca-splash__proof-title">The agent tries <code>git add -A</code>. The hook refuses.</p>
       </div>
       <span class="ca-splash__proof-host">Shipped H-03 hook</span>
     </div>
     <HookProof />
-    <p class="ca-splash__proof-note">The exact stderr and audit effect from a direct invocation of <code>plugins/ca/hooks/pre-bash.py</code>, rendered as a faithful replay. The denied staging command never ran. This evidence verifies the shipped guard itself, not host discovery or registration; the quickstart's doctor probe verifies that end-to-end path.</p>
+    <p class="ca-splash__proof-note">The real output of the shipped <code>pre-bash.py</code> hook, rendered as a faithful replay. The command never ran. The replay checks the hook itself, not host discovery or registration; the quickstart's doctor probe checks your installed host end to end.</p>
   </div>
-</section>
-
-<section class="ca-section" aria-labelledby="ca-artifact-window-title">
-  <div class="ca-section-heading">
-    <p class="ca-eyebrow">Work you can inspect</p>
-    <h2 id="ca-artifact-window-title">From a requirement to a testable plan.</h2>
-    <p>Follow one criterion through a real draft specification and its linked plan. See what needs your review before the work can run.</p>
-  </div>
-  <ArtifactWorkbench />
-  <a class="ca-text-link" href="./product-tour/">Open the complete product tour</a>
-</section>
-
-<section class="ca-proof-strip" aria-labelledby="ca-proof-strip-title">
-  <div class="ca-section-heading ca-section-heading--compact">
-    <p class="ca-eyebrow">Measured, not hand-typed</p>
-    <h2 id="ca-proof-strip-title">The shipped payload is the source of truth.</h2>
-  </div>
-  <TrustRow />
-</section>
-
-<section class="ca-section ca-journey-preview" aria-labelledby="ca-journey-title">
-  <div class="ca-section-heading">
-    <p class="ca-eyebrow">From first install to confident operation</p>
-    <h2 id="ca-journey-title">A curriculum, not a pile of pages.</h2>
-    <p>Follow one progressive route, perform a small exercise at each stage, and finish with a power-user capstone you can prove from repository state.</p>
-  </div>
-  <div class="ca-journey-preview__grid">
-    <a href="./learn/#stage-1-foundation"><span><ArbiterIcon name="start" size="1.25rem" /></span><small>01</small><h3>Foundation</h3><p>Choose a host, install it, opt in, and verify a real block.</p></a>
-    <a href="./learn/#stage-2-daily-operation"><span><ArbiterIcon name="workflow" size="1.25rem" /></span><small>02</small><h3>Daily operation</h3><p>Pick the right lane for features, fixes, dependencies, and decisions.</p></a>
-    <a href="./learn/#stage-3-governed-autonomy"><span><ArbiterIcon name="sprint" size="1.25rem" /></span><small>03</small><h3>Governed autonomy</h3><p>Approve the target, inspect SMARTS calls, and keep the audit trail.</p></a>
-    <a href="./learn/#stage-4-power-user"><span><ArbiterIcon name="understand" size="1.25rem" /></span><small>04</small><h3>Power user</h3><p>Trace hooks, tune scope, diagnose drift, and cut releases.</p></a>
-  </div>
-  <a class="ca-text-link ca-journey-preview__cta" href="./learn/">Start the complete learning path <span aria-hidden="true">→</span></a>
 </section>
 
 <section class="ca-section ca-guarantees" aria-labelledby="ca-guarantees-title">
   <div class="ca-section-heading">
-    <p class="ca-eyebrow">What changes when codeArbiter is active</p>
-    <h2 id="ca-guarantees-title">Autonomy with evidence attached.</h2>
-    <p>Every guarantee is backed by a mechanism you can inspect.</p>
+    <h2 id="ca-guarantees-title">What changes when codeArbiter is active.</h2>
+    <p>Ask for the outcome. codeArbiter routes it to the lane that owns it, applies the gates the change needs, and ships through a pull request you approve. <a href="./concepts/gated-lanes/">How gated lanes work</a>.</p>
   </div>
 
-  <div class="ca-feature-grid" data-ca-layout="peers">
-    <article class="ca-feature ca-panel">
-      <span class="ca-feature__icon"><ArbiterIcon name="gate" size="1.55rem" /></span>
-      <h3>Stops at the tool boundary</h3>
-      <p>Host enforcement adapters run before shell and write calls. A blocking verdict prevents the call; it does not depend on the model remembering a prompt.</p>
-      <a href="./enforcement/">Inspect enforcement</a>
-    </article>
-    <article class="ca-feature ca-panel">
-      <span class="ca-feature__icon"><ArbiterIcon name="repository" size="1.55rem" /></span>
-      <h3>State belongs to the repository</h3>
-      <p>Specs, plans, decisions, tasks, questions, and audit records live in <code>.codearbiter/</code>. Change hosts without creating parallel memory.</p>
+  <ul class="ca-feature-grid" data-ca-layout="peers" role="list">
+    <li class="ca-feature">
+      <span class="ca-feature__icon"><ArbiterIcon name="gate" size="1.4rem" /></span>
+      <h3>It stops at the tool boundary</h3>
+      <p>Hooks run before shell and write calls. A blocked call never runs, whatever the model remembers.</p>
+      <a href="./enforcement/">See what is enforced</a>
+    </li>
+    <li class="ca-feature">
+      <span class="ca-feature__icon"><ArbiterIcon name="repository" size="1.4rem" /></span>
+      <h3>The record lives in your repository</h3>
+      <p>Specs, plans, decisions, tasks and audit logs live in <code>.codearbiter/</code>, so they move with the code and between hosts.</p>
       <a href="./codearbiter-directory/">Explore the state store</a>
-    </article>
-    <article class="ca-feature ca-panel">
-      <span class="ca-feature__icon"><ArbiterIcon name="audit" size="1.55rem" /></span>
-      <h3>Bypasses leave a trail</h3>
-      <p>Overrides, autonomous decisions, and checkpoint findings are durable artifacts. Audit a range from source records instead of reconstructing it later.</p>
+    </li>
+    <li class="ca-feature">
+      <span class="ca-feature__icon"><ArbiterIcon name="audit" size="1.4rem" /></span>
+      <h3>Every bypass leaves a trail</h3>
+      <p>Overrides, autonomous decisions and review findings are written down, so you can audit a range later instead of reconstructing it.</p>
       <a href="./concepts/auditability/">See the audit model</a>
-    </article>
-  </div>
-</section>
-
-<section class="ca-section ca-flow" aria-labelledby="ca-flow-title">
-  <div class="ca-flow__intro">
-    <p class="ca-eyebrow">How work moves</p>
-    <h2 id="ca-flow-title">Ask for the outcome. Keep the proof.</h2>
-    <p>codeArbiter routes intent into the lane that owns it, scales the gates to the risk, and leaves a resumable record on disk.</p>
-    <a class="ca-text-link" href="./concepts/gated-lanes/">Understand gated lanes <span aria-hidden="true">→</span></a>
-  </div>
-  <ol class="ca-flow__steps" data-ca-layout="peers" role="list">
-    <li class="ca-flow__step">
-      <span>1</span>
-      <div>
-        <h3>State the work</h3>
-        <p>Feature, fix, sprint, dependency, decision, review, or release.</p>
-      </div>
     </li>
-    <li class="ca-flow__step">
-      <span>2</span>
-      <div>
-        <h3>Clear the lane</h3>
-        <p>Specs, tests, reviewers, and security checks appear only when the change needs them.</p>
-      </div>
-    </li>
-    <li class="ca-flow__step">
-      <span>3</span>
-      <div>
-        <h3>Ship through a PR</h3>
-        <p>Commit evidence and review state travel with the branch. The default branch is never a direct write.</p>
-      </div>
-    </li>
-  </ol>
+  </ul>
 </section>
 
 <section class="ca-section ca-lanes" aria-labelledby="ca-lanes-title">
   <div class="ca-section-heading">
-    <p class="ca-eyebrow">Start from the job, not the machinery</p>
-    <h2 id="ca-lanes-title">A clear entry point for the work in front of you.</h2>
+    <h2 id="ca-lanes-title">Start from the job in front of you.</h2>
   </div>
   <div class="ca-lane-grid" data-ca-layout="peers">
     <a class="ca-lane-card ca-panel" href="./guides/feature-lane/">
@@ -194,9 +125,8 @@ import heroArt from '../../assets/hero-gates.webp';
 
 <section class="ca-section ca-hosts" aria-labelledby="ca-hosts-title">
   <div class="ca-section-heading">
-    <p class="ca-eyebrow">Choose your host</p>
-    <h2 id="ca-hosts-title">One policy core. Native entry points.</h2>
-    <p>The project state is shared; command spelling and host capabilities are documented honestly.</p>
+    <h2 id="ca-hosts-title">Choose your host.</h2>
+    <p>One policy core and one shared record. Each host keeps its own command spelling.</p>
   </div>
   <div class="ca-host-grid" data-ca-layout="peers">
     <article class="ca-host ca-panel">
@@ -227,16 +157,19 @@ import heroArt from '../../assets/hero-gates.webp';
       <a href="./getting-started/pi/">Install the Pi preview</a>
     </article>
   </div>
-  <p class="ca-hosts__footnote">Need the exact differences? Read the <a href="./getting-started/compatibility/">compatibility matrix</a> and the dated <a href="./getting-started/claude-code-and-codex/">Claude Code + Codex verification record</a>.</p>
+  <p class="ca-hosts__footnote">Exact differences: the <a href="./getting-started/compatibility/">compatibility matrix</a> and the dated <a href="./getting-started/claude-code-and-codex/">Claude Code + Codex verification record</a>.</p>
 </section>
 
-<section class="ca-section ca-fit" aria-labelledby="ca-fit-title">
-  <div class="ca-fit__copy">
-    <p class="ca-eyebrow">Fit before friction</p>
-    <h2 id="ca-fit-title">Built for work that has to remain explainable.</h2>
-    <p>codeArbiter adds deliberate process. That pays off when the repository outlives the current session, more than one person or host touches it, or a security and delivery claim needs evidence.</p>
+<section class="ca-final-cta ca-panel" aria-labelledby="ca-final-cta-title">
+  <div>
+    <h2 id="ca-final-cta-title">Put one repository under governed change.</h2>
+    <p>Install for one host, opt the repository in, then run the live doctor probe. Open source under AGPL-3.0-only; enforcement runs locally.</p>
   </div>
-  <div class="ca-fit__columns" data-ca-layout="peers">
+  <div class="ca-actions">
+    <a class="ca-button ca-button--primary" href="./getting-started/install/">Install codeArbiter</a>
+    <a class="ca-button" href="./getting-started/quickstart/">Run the quickstart</a>
+  </div>
+  <div class="ca-fit" data-ca-layout="peers">
     <div>
       <h3>Use it when</h3>
       <ul>
@@ -255,19 +188,7 @@ import heroArt from '../../assets/hero-gates.webp';
       </ul>
     </div>
   </div>
-</section>
-
-<section class="ca-final-cta ca-panel" aria-labelledby="ca-final-cta-title">
-  <div>
-    <p class="ca-eyebrow">Open source · AGPL-3.0-only · local enforcement</p>
-    <h2 id="ca-final-cta-title">Put one repository under governed change.</h2>
-    <p>Install for one host, opt the repository in, then run the live doctor probe.</p>
-  </div>
-  <div class="ca-actions">
-    <a class="ca-button ca-button--primary" href="./getting-started/install/">Install codeArbiter</a>
-    <a class="ca-button" href="./getting-started/quickstart/">Run the quickstart</a>
-  </div>
-  <p class="ca-final-cta__fine">No telemetry service is required for enforcement. Disable one repository or <a href="./guides/uninstalling/">uninstall completely</a> with the state implications documented.</p>
+  <p class="ca-final-cta__fine">See it working first: the <a href="./product-tour/">product tour</a> follows one change from requirement to plan, and <a href="./academy/">Arbiter Academy</a> adds hands-on practice. No telemetry service is required for enforcement; disable one repository or <a href="./guides/uninstalling/">uninstall completely</a> with the state implications documented.</p>
 </section>
 
 </div>

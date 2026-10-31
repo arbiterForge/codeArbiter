@@ -31,3 +31,49 @@
   font-size: 0.85rem;
   color: var(--ca-text-muted, #8b95a2);
 }
+
+/* Evidence layer (DOCS-OVERHAUL M1): qualifications and verification records
+   sit one click below the plain reading layer. Quiet by default: a rule and a
+   muted summary, not another bordered panel. */
+.sl-markdown-content .ca-evidence {
+  margin-block: 1.5rem;
+  border-inline-start: 2px solid var(--ca-line);
+  padding-inline-start: 1rem;
+}
+.ca-evidence > summary {
+  cursor: pointer;
+  color: var(--ca-ink-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.ca-evidence > summary:focus-visible {
+  outline: 2px solid var(--ca-brand);
+  outline-offset: 2px;
+}
+.ca-evidence[open] > summary {
+  margin-block-end: 0.5rem;
+}
+.ca-evidence__body,
+.ca-evidence > :not(summary) {
+  font-size: 0.92rem;
+}
+.sl-markdown-content .ca-evidence > :not(summary) + :not(summary) {
+  margin-block-start: 0.75rem;
+}
+@media print {
+  .ca-evidence::details-content {
+    display: block;
+    content-visibility: visible;
+  }
+  .ca-evidence > summary {
+    list-style: none;
+  }
+}
+@media (forced-colors: active) {
+  .ca-evidence {
+    border-inline-start-color: CanvasText;
+  }
+  .ca-evidence > summary {
+    color: LinkText;
+  }
+}

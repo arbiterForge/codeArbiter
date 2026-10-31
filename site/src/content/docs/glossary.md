@@ -28,19 +28,25 @@ See [Enforcement & Security](/enforcement/#advisory-non-blocking-reminders).
 
 A focused author or reviewer role dispatched by a [skill](#skill). An agent is not a public
 command and not a second orchestrator; it receives only the tools and context its role needs.
+Claude Code, Codex and Pi each run agents their own way. See the [Agents reference](/reference/#agents).
+
+<details class="ca-evidence">
+<summary>Limits and evidence: agents on each host</summary>
+
 Claude Code dispatches packaged plugin agents. Published releases from 0.7.5 include the complete
 packaged resource charter set for that release for Codex host-provided agent threads, with exact
 static-package and route-closure checks at release. A bounded 0.9.4 receipt proves one exact
 installed-charter review. Workflows use the bounded inline fallback only where the canonical
-workflow explicitly permits it and isolation is not mandatory. Pi uses hardened child dispatch. See the
-[Agents reference](/reference/#agents).
+workflow explicitly permits it and isolation is not mandatory. Pi uses hardened child dispatch.
+
+</details>
 
 ## Arbiter (enabled flag)
 
 The `arbiter: enabled` line in `.codearbiter/CONTEXT.md`'s frontmatter: the single activation
 flag that turns on the orchestrator persona and every enforcement hook for a repository. A repo
 without it loads nothing and blocks nothing. See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd).
+[The `.codearbiter/` State File Reference](/codearbiter-directory/files/#contextmd).
 
 ## Blocking gate
 
@@ -53,7 +59,7 @@ See [Enforcement & Security](/enforcement/#blocking-commit-time-gates).
 
 `.codearbiter/open-tasks.md`, the project's task list. Every task holds one of three states
 (queued, in-progress, done); the only sanctioned writer is `/ca:task`. See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-tasksmd).
+[The `.codearbiter/` State File Reference](/codearbiter-directory/files/#open-tasksmd).
 
 ## Checkpoint
 
@@ -71,7 +77,7 @@ command to its owning skill. See the [Commands reference](/reference/#commands).
 
 The placeholder for an unresolved question only the user can answer, numbered and recorded in
 `.codearbiter/open-questions.md`. It blocks stage promotion until resolved and is never guessed
-at. See [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-questionsmd).
+at. See [The `.codearbiter/` State File Reference](/codearbiter-directory/files/#open-questionsmd).
 
 ## Decision log
 
@@ -114,13 +120,13 @@ discovery; it is not a project maturity stage, skill phase, or enforcement gate.
 A small file under `.codearbiter/.markers/` that records a gate's pass state, for example
 `security-gate-passed`, which a commit-time gate checks for freshness and content coverage
 before allowing a commit through. See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#markers).
+[The `.codearbiter/` State File Reference](/codearbiter-directory/files/#markers).
 
 ## NEEDS-TRIAGE
 
 The placeholder for an out-of-scope finding set aside inline during review: recorded, never
 acted on in place. It typically lands as a queued item on the [board](#board). See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-tasksmd).
+[The `.codearbiter/` State File Reference](/codearbiter-directory/files/#open-tasksmd).
 
 ## Orchestrator
 
@@ -189,7 +195,7 @@ Actual user stops, host permissions and delivery boundaries remain in force. See
 A single project-maturity number in `.codearbiter/CONTEXT.md`'s frontmatter. It records where the
 project is in its maturity progression and is surfaced by `/ca:status` and the statusline; it is not
 a skill phase, decomposition layer, gate action, or finding severity. See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd).
+[The `.codearbiter/` State File Reference](/codearbiter-directory/files/#contextmd).
 
 ## Statusline
 

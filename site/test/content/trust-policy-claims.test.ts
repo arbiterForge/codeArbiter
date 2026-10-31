@@ -15,8 +15,10 @@ function normalizeWhitespace(value: string): string {
 
 describe("public trust-policy claims", () => {
   it("separates the Python hook core from the pinned native artifact runtime", () => {
+    // Third-Party Dependencies moved to the runtime reference page in the M6 split.
     const compatibility = normalizeWhitespace(
-      readRepo("site/src/content/docs/getting-started/compatibility.mdx"),
+      readRepo("site/src/content/docs/getting-started/compatibility.mdx")
+        + readRepo("site/src/content/docs/getting-started/compatibility/runtime.md"),
     );
     const security = normalizeWhitespace(readRepo("SECURITY.md"));
 

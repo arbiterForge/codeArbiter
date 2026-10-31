@@ -35,6 +35,20 @@ Z.") are a persona-register cadence. They are budgeted to **landing page and sec
 intros only, once per page, maximum**. Everywhere else, say the positive rule plainly:
 what the gate does, not a list of what it refuses to do.
 
+## Where caveats belong
+
+Body text states what the product does, plainly. Qualifications, receipts, version-scoped
+verification records and "this does not prove" boundaries go one click down, in the evidence
+layer: `<LimitsAndEvidence>` in MDX, or `<details class="ca-evidence"><summary>Limits and
+evidence</summary> ... </details>` in Markdown. Nothing is deleted to make a page read cleanly;
+the claim and its limits stay on the same page.
+
+On the Get started path (overview, choose your host, install, quickstart, first feature) and the
+landing page, body text carries no evidence-register phrasing ("does not prove", "bounded",
+"receipt", "charter"); `test/content/docs-overhaul.test.ts` enforces this. Where receipts or
+provenance are the subject of a page, such as artifact review or resume and recover, they are
+ordinary vocabulary, not caveats.
+
 ## Punctuation
 
 Em-dashes are not used as sentence separators in site prose. Restructure with a period, a

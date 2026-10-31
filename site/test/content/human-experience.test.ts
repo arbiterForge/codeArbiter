@@ -14,11 +14,15 @@ describe("human-operable product window", () => {
     const academy = [{ label: "Foundation", collapsed: true as const, items: [{ label: "F01", slug: "academy/f01" }] }];
     const sidebar = buildJourneySidebar([], academy);
     expect(sidebar.map((group) => group.label)).toEqual(primaryNavigation.map((item) => item.label));
+    // One linear start path (DOCS-OVERHAUL M2): choose, install, protect, complete one feature.
     expect(sidebar[0].items.map((item) => "slug" in item ? item.slug : undefined)).toEqual([
-      "overview", "product-tour", "getting-started/choose-your-host", "getting-started/install",
-      "guides/opt-in-a-repo", "getting-started/quickstart", "guides/first-feature", "learn", "faq",
+      "overview", "getting-started/choose-your-host", "getting-started/install",
+      "getting-started/quickstart", "guides/first-feature", "faq",
     ]);
     expect(sidebar[3].items).toContainEqual(academy[0]);
+    // The self-guided Learning Path and the product tour live with the Academy, not as rival starts.
+    const academySlugs = sidebar[3].items.map((item) => "slug" in item ? item.slug : undefined);
+    expect(academySlugs.slice(0, 3)).toEqual(["academy", "learn", "product-tour"]);
   });
 
   it("keeps the exact greenfield contract separate from typed feature plans", () => {
@@ -35,7 +39,7 @@ describe("human-operable product window", () => {
 
   it("does not tell new HTML sprints to use the legacy farm", () => {
     expect(read("src/content/docs/guides/autonomous-sprints.mdx")).toContain("HTML plans cannot use `--farm`");
-    expect(read("src/content/docs/codearbiter-directory.md")).not.toContain("a plan that referenced the missing spec\nstill runs");
+    expect(read("src/content/docs/codearbiter-directory.md") + read("src/content/docs/codearbiter-directory/files.md")).not.toContain("a plan that referenced the missing spec\nstill runs");
   });
 
   it("documents the current generic release selection and dry-run boundary", () => {

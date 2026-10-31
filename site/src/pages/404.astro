@@ -8,17 +8,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   frontmatter={{
     title: "This path has no gate",
     description:
-      "The requested documentation route does not exist. Return to the learning path or search the source-backed reference.",
+      "The requested documentation route does not exist. Start from the beginning or search the source-backed reference.",
     template: "splash",
     editUrl: false,
     pagefind: false,
     hero: {
       tagline:
-        "The route ended, not your work. Pick up from the curriculum or search the source-backed catalog.",
+        "The route ended, not your work. Start from the beginning or search the source-backed catalog.",
       actions: [
         {
-          text: "Open the learning path",
-          link: `${base}/learn/`,
+          text: "Start here",
+          link: `${base}/overview/`,
           icon: "open-book",
           variant: "primary",
         },
