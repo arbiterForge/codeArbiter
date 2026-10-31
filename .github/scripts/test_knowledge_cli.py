@@ -323,6 +323,7 @@ class KnowledgeCli(unittest.TestCase):
         self.assertTrue(resumed["reused"])
         self.assertEqual((self.root / CONTEXT).read_bytes(), context)
         self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
+
         self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
                          "candidate or interrupted synthesis published work")
         self.assertFalse(board.exists(), "acquisition recreated an empty legacy backlog")
@@ -332,6 +333,33 @@ class KnowledgeCli(unittest.TestCase):
         self.assertEqual(self.knowledge("promote", candidate["record"])["work_id"], promoted["work_id"])
         self.assertEqual((self.root / CONTEXT).read_bytes(), context)
         self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
+
+    def test_initialized_brownfield_duplicate_external_candidates_need_selected_promotion(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("initialize")
+        board = self.root / ".codearbiter/open-tasks.md"
+        board.unlink(missing_ok=True)
+        source = self.knowledge("add", "decomposition", "--collection", "sources", "--record",
+                                json.dumps({"title": "Existing issue", "type": "repository",
+                                            "url": "https://github.com/example/project/issues/7",
+                                            "locator": "example/project#7",
+                                            "note": "Observed external candidate; identity needs review"}))
+        candidates = []
+        for title in ("Investigate issue symptom", "Review issue reproduction"):
+            result = self.knowledge("add", "decomposition", "--record", json.dumps({
+                "type": "work_item", "title": title, "statement": "Candidate from an existing issue.",
+                "basis": "proposed", "scope": {"paths": []}, "related_refs": [],
+                "source_refs": [source["record"]]}))
+            candidates.append(result["record"])
+        self.assertNotEqual(*candidates)
+        self.assertFalse(board.exists())
+        self.assertFalse((self.root / ".codearbiter/work/project.json").exists())
+        self.assertTrue(all("promotion" not in self.knowledge("read", "decomposition", record)["records"][0]
+                            for record in candidates))
+        selected = self.knowledge("promote", candidates[0])
+        self.assertEqual(self.knowledge("promote", candidates[0])["work_id"], selected["work_id"])
+        self.assertNotIn("promotion", self.knowledge("read", "decomposition", candidates[1])["records"][0])
 
 
     def git(self, *arguments):
