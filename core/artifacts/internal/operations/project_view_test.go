@@ -27,6 +27,7 @@ func TestProjectViewPresentsBoundedCanonicalWork(t *testing.T) {
 	second := call("work-create", object{"operation_id": "project-view-create-002", "title": "Plan delivery", "intent": "Local plan", "work_type": "feature"})
 	call("work-update", object{"operation_id": "project-view-complete-001", "work_id": first["work_id"], "action": "complete", "expected": object{"revision": first["revision"], "model_sha256": first["model_sha256"]}})
 	listing := call("work-list", object{"limit": int64(2)})
+	call("work-provider-configure", object{"operation_id": "project-view-provider-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "after_merge"})
 	ids := []string{first["work_id"].(string), second["work_id"].(string)}
 	seenEscaped, seenComplete, seenUnknown := false, false, false
 	for offset := int64(0); offset < 2; offset++ {
@@ -47,6 +48,9 @@ func TestProjectViewPresentsBoundedCanonicalWork(t *testing.T) {
 		seenUnknown = seenUnknown || strings.Contains(html, "<strong>Checks:</strong> unknown")
 		if !strings.Contains(html, "Local progress") || !strings.Contains(html, "Checks") || !strings.Contains(html, "Delivery") || !strings.Contains(html, "Tracker sync") {
 			t.Fatal("project view collapsed distinct status owners")
+		}
+		if strings.Contains(html, "Unconfigured in the local work model") || !strings.Contains(html, "Open a work item for its tracker state") {
+			t.Fatal("project view invented an unconfigured tracker state after provider binding")
 		}
 		if strings.Contains(html, "Fix <input>") || strings.Contains(html, `id="ca-artifact-model"`) {
 			t.Fatal("project view emitted unsafe or canonical content")
