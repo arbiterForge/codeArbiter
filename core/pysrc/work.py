@@ -106,6 +106,11 @@ def _parser():
     reconcile_status = sub.add_parser("reconcile-status", help="Read back an uncertain issue status update without resending")
     reconcile_status.add_argument("work_id")
     reconcile_status.add_argument("--accept-remote", action="store_true", help="After inspection, retain the observed remote status as a conflict")
+    observe_pr = sub.add_parser("observe-pr", help="Read a GitHub PR that changes this canonical work item and record its delivery state")
+    observe_pr.add_argument("work_id")
+    observe_pr.add_argument("--number", type=int, required=True)
+    observe_pr.add_argument("--credential-ref", choices=("GH_TOKEN", "GITHUB_TOKEN", "CODEARBITER_GITHUB_TOKEN"), default="CODEARBITER_GITHUB_TOKEN")
+    observe_pr.add_argument("--operation-id", required=True, help="Stable ID for an uncertain local record retry")
     for verb in ("rename", "attach", "start", "complete", "reopen", "archive"):
         command = sub.add_parser(verb)
         command.add_argument("work_id")
@@ -182,10 +187,14 @@ def _dispatch(args, client):
         if args.verb == "stage-status":
             request.update(kind="status_update", desired_state=args.state)
         return client.call("work-effect-stage", request)
-    if args.verb in ("sync", "reconcile-issue", "reconcile-status", "adopt-issue"):
+    if args.verb in ("sync", "reconcile-issue", "reconcile-status", "adopt-issue", "observe-pr"):
         if getattr(client, "legacy", False):
             raise ValueError("GitHub effects require selected native work ownership")
         import _workgithub
+        if args.verb == "observe-pr":
+            return _workgithub.observe_pull(client.root, client, args.work_id, args.number,
+                                            credential_ref=args.credential_ref,
+                                            operation_id=args.operation_id)
         if args.verb == "sync":
             return _workgithub.sync(client.root, client, args.work_id, pull_number=args.pull_number)
         if args.verb == "reconcile-issue":

@@ -112,6 +112,72 @@ class GithubWorkTest(unittest.TestCase):
             _workgithub.sync(self.root, self.client, self.work_id, transport, lambda _: "fixture-token")
         self.assertEqual(len(transport.calls), 2)
 
+    def test_observed_open_pull_is_bound_to_canonical_work_without_changing_checks(self):
+        class PullTransport(FakeGithub):
+            def request(self, method, path, body, token):
+                self.calls.append((method, path))
+                if path == "/repos/arbiterForge/disposable/pulls/12":
+                    return 200, {"number": 12, "state": "open", "merged_at": None,
+                        "html_url": "https://github.com/arbiterForge/disposable/pull/12",
+                        "head": {"sha": "a" * 40},
+                        "base": {"repo": {"full_name": "arbiterForge/disposable"}}}
+                if path.endswith("/pulls/12/files?per_page=100&page=1"):
+                    return 200, [{"filename": ".codearbiter/work/" + self.work_id + ".html", "status": "added"}]
+                if path.endswith("?ref=" + "a" * 40):
+                    raw = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+                    return 200, {"encoding": "base64", "content": base64.b64encode(raw).decode("ascii")}
+                raise AssertionError(path)
+
+        transport = PullTransport()
+        transport.root, transport.work_id = self.root, self.work_id
+        observed = _workgithub.observe_pull(self.root, self.client, self.work_id, 12,
+            transport, lambda _: "fixture-token", credential_ref="GH_TOKEN",
+            operation_id="github-observe-pull-001")
+        self.assertEqual(observed["delivery_observation"]["state"], "open")
+        self.assertEqual(observed["check_status"], "unknown")
+        self.assertEqual([call[0] for call in transport.calls], ["GET", "GET", "GET"])
+
+    def test_observed_pull_rejects_unrelated_work_identity(self):
+        class UnrelatedPull(FakeGithub):
+            def request(self, method, path, body, token):
+                self.calls.append((method, path))
+                if path.endswith("/pulls/12"):
+                    return 200, {"number": 12, "state": "open", "merged_at": None,
+                        "html_url": "https://github.com/arbiterForge/disposable/pull/12",
+                        "head": {"sha": "a" * 40},
+                        "base": {"repo": {"full_name": "arbiterForge/disposable"}}}
+                if path.endswith("/pulls/12/files?per_page=100&page=1"):
+                    return 200, [{"filename": ".codearbiter/work/" + self.work_id + ".html", "status": "added"}]
+                return 200, {"encoding": "base64", "content": base64.b64encode(b"not this work").decode("ascii")}
+
+        transport = UnrelatedPull()
+        transport.work_id = self.work_id
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.observe_pull(self.root, self.client, self.work_id, 12,
+                transport, lambda _: "fixture-token", credential_ref="GH_TOKEN",
+                operation_id="github-observe-pull-002")
+        self.assertEqual(raised.exception.code, "PULL_BINDING_UNVERIFIED")
+        self.assertNotIn("delivery_observation", self.client.call("work-get", {"work_id": self.work_id}))
+
+    def test_observed_pull_rejects_a_pr_that_did_not_change_selected_work(self):
+        class UnrelatedFiles(FakeGithub):
+            def request(self, method, path, body, token):
+                self.calls.append((method, path))
+                if path.endswith("/pulls/12"):
+                    return 200, {"number": 12, "state": "open", "merged_at": None,
+                        "html_url": "https://github.com/arbiterForge/disposable/pull/12",
+                        "head": {"sha": "a" * 40},
+                        "base": {"repo": {"full_name": "arbiterForge/disposable"}}}
+                return 200, [{"filename": "README.md", "status": "modified"}]
+
+        transport = UnrelatedFiles()
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.observe_pull(self.root, self.client, self.work_id, 12,
+                transport, lambda _: "fixture-token", credential_ref="GH_TOKEN",
+                operation_id="github-observe-pull-003")
+        self.assertEqual(raised.exception.code, "PULL_BINDING_UNVERIFIED")
+        self.assertEqual(len(transport.calls), 2)
+
     def test_existing_correlated_issue_can_be_adopted_without_post(self):
         transport = FakeGithub()
         transport.work_id = self.work_id

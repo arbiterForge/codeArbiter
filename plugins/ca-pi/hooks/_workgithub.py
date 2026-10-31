@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import base64
 import binascii
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 import re
@@ -47,6 +48,7 @@ class GithubTransport:
         allowed = {
             "GET": (rf"{_REPO_PATH}", rf"{_REPO_PATH}/issues/[1-9][0-9]*",
                     rf"{_REPO_PATH}/pulls/[1-9][0-9]*",
+                    rf"{_REPO_PATH}/pulls/[1-9][0-9]*/files\?per_page=100&page=([1-9]|[12][0-9]|30)",
                     rf"{_REPO_PATH}/contents/\.codearbiter/work/WORK-[A-F0-9]{{32}}\.html\?ref=[a-f0-9]{{40}}"),
             "POST": (rf"{_REPO_PATH}/issues",),
             "PATCH": (rf"{_REPO_PATH}/issues/[1-9][0-9]*",),
@@ -65,8 +67,8 @@ class GithubTransport:
                 if len(data) > 1 << 20:
                     raise WorkSyncError("REMOTE_RESPONSE_TOO_LARGE", "GitHub response exceeds the issue read bound")
                 value = json.loads(data)
-                if type(value) is not dict:
-                    raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub returned no issue object")
+                if type(value) is not dict and not ("/files?" in path and type(value) is list):
+                    raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub returned an unexpected response")
                 return response.status, value
         except error.HTTPError as exc:
             exc.close()
@@ -324,4 +326,76 @@ def reconcile_status(root, client, work_id, transport=None, token_lookup=None, a
         "operation_id": "github-reconcile-status-" + secrets.token_hex(12), "work_id": work_id,
         "binding_generation": config["binding_generation"], "attempt_id": effect["attempt_id"],
         "remote_issue_number": number, "remote_issue_url": url, "remote_state": remote_state,
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+
+
+def observe_pull(root, client, work_id, number, transport=None, token_lookup=None,
+                 credential_ref="CODEARBITER_GITHUB_TOKEN", operation_id=None):
+    """Read a PR containing this canonical work item; persist only the observation."""
+    if type(number) is not int or number < 1:
+        raise WorkSyncError("INVALID_PULL", "Supply a positive GitHub PR number")
+    if credential_ref not in ("GH_TOKEN", "GITHUB_TOKEN", "CODEARBITER_GITHUB_TOKEN"):
+        raise WorkSyncError("INVALID_CREDENTIAL_REFERENCE", "Unsupported owning-process credential reference")
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    repo = _origin_repository(Path(root))
+    work = client.call("work-get", {"work_id": work_id})
+    token = _credential({"credential_ref": credential_ref}, token_lookup)
+    try:
+        status, pull = transport.request("GET", f"/repos/{repo}/pulls/{number}", None, token)
+        head = pull.get("head") if isinstance(pull, dict) else None
+        base = pull.get("base") if isinstance(pull, dict) else None
+        base_repo = base.get("repo") if isinstance(base, dict) else None
+        sha = head.get("sha") if isinstance(head, dict) else None
+        url = f"https://github.com/{repo}/pull/{number}"
+        if (status != 200 or pull.get("number") != number or pull.get("state") not in ("open", "closed")
+                or not isinstance(base_repo, dict)
+                or str(base_repo.get("full_name", "")).casefold() != repo.casefold()
+                or str(pull.get("html_url", "")).casefold() != url.casefold()
+                or type(sha) is not str or re.fullmatch(r"[a-f0-9]{40}", sha) is None
+                or pull.get("state") == "open" and pull.get("merged_at")):
+            raise WorkSyncError("PULL_BINDING_UNVERIFIED", "GitHub PR identity or state does not match the selected repository")
+        work_path = f".codearbiter/work/{work_id}.html"
+        found = False
+        for page in range(1, 31):
+            files_status, files = transport.request("GET", f"/repos/{repo}/pulls/{number}/files?per_page=100&page={page}", None, token)
+            if files_status != 200 or type(files) is not list or len(files) > 100:
+                raise WorkSyncError("PULL_BINDING_UNVERIFIED", "GitHub PR files cannot be verified")
+            if any(type(item) is dict and item.get("filename") == work_path
+                   and item.get("status") in ("added", "modified", "renamed") for item in files):
+                found = True
+                break
+            if len(files) < 100:
+                break
+        if not found:
+            raise WorkSyncError("PULL_BINDING_UNVERIFIED", "GitHub PR does not change this canonical work item within the bounded file listing")
+        path = f"/repos/{repo}/contents/.codearbiter/work/{work_id}.html?ref={sha}"
+        content_status, content = transport.request("GET", path, None, token)
+        if (content_status != 200 or content.get("encoding") != "base64"
+                or type(content.get("content")) is not str):
+            raise WorkSyncError("PULL_BINDING_UNVERIFIED", "PR head has no readable canonical work item")
+        raw = base64.b64decode("".join(content["content"].split()), validate=True)
+        if len(raw) > 1 << 20:
+            raise ValueError("PR work item is too large")
+        start = b'<script id="ca-artifact-model" type="application/json">\n'
+        end = b"\n</script>"
+        if raw.count(start) != 1 or raw.count(end) != 1:
+            raise ValueError("PR work item has no unique model")
+        remote = json.loads(raw.split(start, 1)[1].split(end, 1)[0])
+        if (not isinstance(remote, dict) or remote.get("kind") != "work"
+                or remote.get("artifact_id") != work_id
+                or not isinstance(remote.get("normative"), dict)
+                or remote["normative"].get("project_id") != work["project_id"]):
+            raise ValueError("PR work item identity differs")
+    except WorkSyncError:
+        raise
+    except (ValueError, TypeError, KeyError, AttributeError, IndexError, binascii.Error) as exc:
+        raise WorkSyncError("PULL_BINDING_UNVERIFIED", "PR head cannot be bound to this canonical work item") from exc
+    except Exception as exc:
+        raise WorkSyncError("PULL_OBSERVATION_UNAVAILABLE", "GitHub PR read failed; no delivery observation was recorded") from exc
+    state = "merged" if pull.get("merged_at") else pull["state"]
+    observed_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return client.call("work-update", {"operation_id": operation_id or "github-observe-" + secrets.token_hex(12),
+        "work_id": work_id, "action": "observe-delivery", "repository": repo,
+        "pull_number": number, "pull_state": state, "observed_at": observed_at,
         "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})

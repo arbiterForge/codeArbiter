@@ -10,13 +10,14 @@ import (
 // WorkViewData is a selected, already validated projection. A work view is
 // generated for human orientation and contains no canonical artifact model.
 type WorkViewData struct {
-	ID, ProjectID, Title, Intent, WorkType     string
-	State, CheckStatus, StartedAt, CompletedAt string
-	Revision                                   int64
-	ModelSHA256                                string
-	Spec, Plan                                 *WorkViewAttachment
-	ProviderEffectKind, ProviderEffectStatus   string
-	RemoteIssueURL, RemoteState, DesiredState  string
+	ID, ProjectID, Title, Intent, WorkType         string
+	State, CheckStatus, StartedAt, CompletedAt     string
+	Revision                                       int64
+	ModelSHA256                                    string
+	Spec, Plan                                     *WorkViewAttachment
+	ProviderEffectKind, ProviderEffectStatus       string
+	RemoteIssueURL, RemoteState, DesiredState      string
+	DeliveryState, DeliveryURL, DeliveryObservedAt string
 }
 
 type WorkViewAttachment struct {
@@ -103,7 +104,13 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		w.WriteString(`<p>Completed locally ` + esc(data.CompletedAt) + `</p>`)
 	}
 	w.WriteString(`</section><section class="work-card" id="checks"><h2>Checks</h2><p class="state">` + esc(strings.ToUpper(checkStatus[:1])+checkStatus[1:]) + `</p><p>Check status is separate from local completion. Read the attached plan for exact verification evidence.</p></section>`)
-	w.WriteString(`<section class="work-card" id="delivery"><h2>Delivery</h2><p class="state">Unobserved</p><p>This local record does not establish a merge, release or deployment.</p></section>`)
+	w.WriteString(`<section class="work-card" id="delivery"><h2>Delivery</h2>`)
+	if data.DeliveryState == "" {
+		w.WriteString(`<p class="state">Unobserved</p><p>This local record does not establish a merge, release or deployment.</p>`)
+	} else {
+		w.WriteString(`<p class="state">Recorded PR ` + esc(data.DeliveryState) + `</p><p>Observed ` + esc(data.DeliveryObservedAt) + `. The PR changed a file with this Work ID; review its diff and checks. Refresh this observation for later changes. It does not establish a release or deployment.</p><p>` + esc(data.DeliveryURL) + `</p>`)
+	}
+	w.WriteString(`</section>`)
 	w.WriteString(`<section class="work-card" id="sync"><h2>Tracker sync</h2>`)
 	switch data.ProviderEffectStatus {
 	case "pending":

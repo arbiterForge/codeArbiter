@@ -287,6 +287,9 @@ EXPECTED_SUITES = {
     "test_work_github.py": {
         "test_lost_create_response_never_reposts",
         "test_success_requires_readback_and_records_one_binding",
+        "test_observed_open_pull_is_bound_to_canonical_work_without_changing_checks",
+        "test_observed_pull_rejects_unrelated_work_identity",
+        "test_observed_pull_rejects_a_pr_that_did_not_change_selected_work",
         "test_existing_correlated_issue_can_be_adopted_without_post",
         "test_adoption_refuses_ambiguous_work_markers",
         "test_uncertain_create_reconciles_by_exact_readback_without_post",

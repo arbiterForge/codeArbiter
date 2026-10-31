@@ -317,6 +317,9 @@ func workSummary(d *model.Document, p string) object {
 	if effect := ex["provider_effect"]; effect != nil {
 		out["provider_effect"] = effect
 	}
+	if observation := ex["delivery_observation"]; observation != nil {
+		out["delivery_observation"] = observation
+	}
 	return out
 }
 
@@ -647,6 +650,20 @@ func (e *Engine) workUpdate(r object) (any, error) {
 			return nil, fault.New("INVALID_WORK_TRANSITION", "work is already archived")
 		}
 		ex["state"] = "archived"
+	case "observe-delivery":
+		repository := model.S(r["repository"])
+		pullNumber := model.I(r["pull_number"])
+		state := model.S(r["pull_state"])
+		observedAt := model.S(r["observed_at"])
+		parsed, parseErr := time.Parse("2006-01-02T15:04:05Z", observedAt)
+		if !workRepositoryPattern.MatchString(repository) || pullNumber < 1 ||
+			(state != "open" && state != "closed" && state != "merged") ||
+			parseErr != nil || parsed.UTC().Format("2006-01-02T15:04:05Z") != observedAt {
+			return nil, fault.New("INVALID_DELIVERY_OBSERVATION", "supply a valid GitHub PR identity, state and UTC observation time")
+		}
+		url := "https://github.com/" + repository + "/pull/" + strconv.FormatInt(pullNumber, 10)
+		ex["delivery_observation"] = object{"repository": repository, "pull_number": pullNumber,
+			"pull_url": url, "state": state, "observed_at": observedAt}
 	default:
 		return nil, fault.New("INVALID_WORK_UPDATE", "unknown work action")
 	}
