@@ -17,6 +17,8 @@ predate the plugin rewrite and are grouped by date.
 - Stage and reconcile explicit GitHub issue status updates for bound native work,
   with readback and a recorded conflict when the observed remote status changes.
 - Adopt an existing correlated GitHub issue without creating a duplicate.
+- Keep newly discovered context gaps as candidates and route selected promotion
+  through the current work owner.
 
 ## [3.7.1] - 2026-10-31
 
