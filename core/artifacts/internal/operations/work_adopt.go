@@ -152,23 +152,23 @@ func (e *Engine) legacyDetailPage(source object, offset, budget int64) (object, 
 	if offset < 0 || offset > int64(len(content)) || offset < int64(len(content)) && !utf8.RuneStart(content[offset]) {
 		return nil, fault.New("INVALID_LEGACY_OFFSET", "selected historical detail offset is outside a UTF-8 boundary")
 	}
-	limit := int(budget / 4)
+	limit := budget / 4
 	if limit > 4096 {
 		limit = 4096
 	}
-	end := int(offset) + limit
-	if end > len(content) {
-		end = len(content)
+	end := offset + limit
+	if end > int64(len(content)) {
+		end = int64(len(content))
 	}
-	for end < len(content) && end > int(offset) && !utf8.RuneStart(content[end]) {
+	for end < int64(len(content)) && end > offset && !utf8.RuneStart(content[end]) {
 		end--
 	}
-	if end == int(offset) && end < len(content) {
+	if end == offset && end < int64(len(content)) {
 		return nil, fault.New("INVALID_LEGACY_OFFSET", "selected historical detail cannot fit its page")
 	}
 	var next any
-	if end < len(content) {
-		next = int64(end)
+	if end < int64(len(content)) {
+		next = end
 	}
 	return object{"source": source, "text": string(content[offset:end]), "offset": offset,
 		"next_offset": next, "total_bytes": int64(len(content))}, nil

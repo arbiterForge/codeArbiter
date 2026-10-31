@@ -1235,7 +1235,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "interview": {
           "path": "core/surface/skills/decompose/SKILL.md",
           "quote": "Gate: all six layers complete",
-          "currentQuote": "Record each question as a decomposition `question` record when you ask it"
+          "currentQuote": "The global `open-questions.md` owner holds unanswered or deferred questions"
         },
         "populate": {
           "path": "core/surface/skills/decompose/SKILL.md",
