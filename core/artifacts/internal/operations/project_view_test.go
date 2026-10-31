@@ -49,6 +49,9 @@ func TestProjectViewPresentsBoundedCanonicalWork(t *testing.T) {
 		if !strings.Contains(html, "Local progress") || !strings.Contains(html, "Checks") || !strings.Contains(html, "Delivery") || !strings.Contains(html, "Tracker sync") {
 			t.Fatal("project view collapsed distinct status owners")
 		}
+		if strings.Contains(html, `<h2>Delivery</h2><p>Unobserved`) || !strings.Contains(html, "Open a work item for its delivery observation") {
+			t.Fatal("project page misreported individual PR observations as a project-wide delivery state")
+		}
 		if strings.Contains(html, "Unconfigured in the local work model") || !strings.Contains(html, "Open a work item for its tracker state") {
 			t.Fatal("project view invented an unconfigured tracker state after provider binding")
 		}

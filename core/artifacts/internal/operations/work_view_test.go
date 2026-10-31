@@ -106,7 +106,7 @@ func TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue(t *testing.T) {
 	}
 	view := call("work-view", object{"work_id": work["work_id"]})
 	html := view["html"].(string)
-	for _, required := range []string{"PR open", "Observed 2026-10-31T12:00:00Z", "https://github.com/owner/repo/pull/12", "Check evidence is unknown", "Tracker sync", "Unconfigured"} {
+	for _, required := range []string{"PR open", "Observed 2026-10-31T12:00:00Z", `<a href="https://github.com/owner/repo/pull/12">`, "Check evidence is unknown", "Tracker sync", "Unconfigured"} {
 		if !strings.Contains(html, required) {
 			t.Fatalf("selected work view omitted %q", required)
 		}

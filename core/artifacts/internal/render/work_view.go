@@ -1,6 +1,7 @@
 package render
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -22,6 +23,16 @@ type WorkViewData struct {
 
 type WorkViewAttachment struct {
 	ID, Title, Summary, Href string
+}
+
+var githubWorkURL = regexp.MustCompile(`^https://github\.com/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/(?:issues|pull)/[1-9][0-9]*$`)
+
+func workExternalLink(w *strings.Builder, raw string) {
+	if githubWorkURL.MatchString(raw) {
+		w.WriteString(`<p><a href="` + esc(raw) + `">` + esc(raw) + `</a></p>`)
+	} else {
+		w.WriteString(`<p>` + esc(raw) + `</p>`)
+	}
 }
 
 const workViewStyle = `
@@ -108,7 +119,8 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	if data.DeliveryState == "" {
 		w.WriteString(`<p class="state">Unobserved</p><p>This local record does not establish a merge, release or deployment.</p>`)
 	} else {
-		w.WriteString(`<p class="state">Recorded PR ` + esc(data.DeliveryState) + `</p><p>Observed ` + esc(data.DeliveryObservedAt) + `. The PR changed a file with this Work ID; review its diff and checks. Refresh this observation for later changes. It does not establish a release or deployment.</p><p>` + esc(data.DeliveryURL) + `</p>`)
+		w.WriteString(`<p class="state">Recorded PR ` + esc(data.DeliveryState) + `</p><p>Observed ` + esc(data.DeliveryObservedAt) + `. The PR changed a file with this Work ID; review its diff and checks. Refresh this observation for later changes. It does not establish a release or deployment.</p>`)
+		workExternalLink(&w, data.DeliveryURL)
 	}
 	w.WriteString(`</section>`)
 	w.WriteString(`<section class="work-card" id="sync"><h2>Tracker sync</h2>`)
@@ -124,7 +136,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	case "synchronized":
 		w.WriteString(`<p class="state">Synchronized</p><p>A remote issue identity is recorded.</p>`)
 		if data.RemoteIssueURL != "" {
-			w.WriteString(`<p>` + esc(data.RemoteIssueURL) + `</p>`)
+			workExternalLink(&w, data.RemoteIssueURL)
 		}
 	case "conflict":
 		w.WriteString(`<p class="state">Conflict</p><p>Inspect the remote issue before selecting another status intent.</p>`)
@@ -138,7 +150,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		w.WriteString(`<p>Local intent was ` + esc(data.DesiredState) + `.</p>`)
 	}
 	if data.ProviderEffectStatus != "synchronized" && data.RemoteIssueURL != "" {
-		w.WriteString(`<p>` + esc(data.RemoteIssueURL) + `</p>`)
+		workExternalLink(&w, data.RemoteIssueURL)
 	}
 	w.WriteString(`</section>`)
 	workViewAttachment(&w, "Specification", "spec", data.Spec)
