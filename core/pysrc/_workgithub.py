@@ -383,8 +383,8 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
     if merge_sha is not None:
         try:
             _verified_current_intent(transport, config, work, token)
-        except WorkSyncError as exc:
-            raise WorkSyncError("OUTCOME_UNKNOWN", "Default-branch work changed after the pre-send claim; reconcile before retrying") from exc
+        except Exception as exc:
+            raise WorkSyncError("OUTCOME_UNKNOWN", "Default-branch work could not be verified after the pre-send claim; reconcile before retrying") from exc
     try:
         if effect["kind"] == "create_issue":
             body = work["intent"] + "\n\n" + _MARKER.format(work_id)

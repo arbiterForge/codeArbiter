@@ -629,6 +629,40 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
                          "outcome_unknown")
 
+    def test_contingent_effect_read_failure_after_claim_is_outcome_unknown(self):
+        old = self.client.call("work-provider-get", {})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "github-fixture-configure-late-read", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        self.client.call("work-effect-stage", {"operation_id": "github-fixture-stage-late-read",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+        sha = self._commit_pending_effect()
+
+        class LateReadFailure(FakeGithub):
+            current_reads = 0
+
+            def request(self, method, path, body, token):
+                if "/contents/.codearbiter/work/" in path and "?ref=" not in path:
+                    self.current_reads += 1
+                    if self.current_reads == 2:
+                        raise TimeoutError("lost current-intent read")
+                return super().request(method, path, body, token)
+
+        transport = LateReadFailure()
+        transport.work_id, transport.merge_sha = self.work_id, sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        self.assertEqual(transport.current_reads, 2)
+        self.assertFalse(any(method == "POST" for method, _ in transport.calls))
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "outcome_unknown")
+
     def test_contingent_effect_rejects_unrelated_merge_with_preexisting_work(self):
         old = self.client.call("work-provider-get", {})
         current = self.client.call("work-get", {"work_id": self.work_id})
