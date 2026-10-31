@@ -184,7 +184,7 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/brainstorming/SKILL.md':'9d53f27511dc063341068498c45766ae042f5b4d',
   'core/surface/skills/commit-gate/SKILL.md':'b009fa35e839f2ae929451a7114ac2a05e26c9db',
   'core/surface/skills/context-check/SKILL.md':'c590950615c6c3a93ee5a57413394b8389d02e4e',
-  'core/surface/skills/context-creation/SKILL.md':'dff4947f37e686afb5d43dbe1ce83580aa9ccc5c',
+  'core/surface/skills/context-creation/SKILL.md':'5e6922b5ad4da78159a19b316480f3849827ab7f',
   'core/surface/skills/debug/SKILL.md':'6450b02b225522df7a1e06abf9d5e0db018dd801',
   'core/surface/skills/decompose/SKILL.md':'7abb26dbd435a959e049d41e1e126fefeed5c64d',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
