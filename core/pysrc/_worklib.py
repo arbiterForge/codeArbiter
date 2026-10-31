@@ -18,6 +18,7 @@ import _taskboardlib as board
 import taskwrite
 
 _WORK_ID = re.compile(r"WORK-[A-F0-9]{32}\Z")
+_KNOWLEDGE_REF = re.compile(r"(?:CTX|DECOMP)-[A-Z0-9-]+#[A-Z][A-Z0-9-]+\Z")
 _BOARD_MAX = 1 << 20
 _ARCHIVE_MAX = 16 << 20
 
@@ -154,7 +155,7 @@ def dispatch(root, operation, request):
         "work-create": {"operation_id", "title", "intent", "work_type",
                         "origin", "spec_id", "plan_id"},
         "work-get": {"work_id"},
-        "work-context": {"work_id", "budget"},
+        "work-context": {"work_id", "budget", "paths", "knowledge_refs"},
         "work-list": {"offset", "limit", "budget", "membership_sha256"},
         "work-origins": {"origins"},
         "work-update": {"operation_id", "work_id", "expected_board_sha256", "action"},
@@ -218,9 +219,21 @@ def dispatch(root, operation, request):
         budget = request.get("budget", 16384)
         if type(budget) is not int or not 1024 <= budget <= 65536:
             raise ValueError("invalid legacy work context budget")
+        for field, pattern, maximum in (("paths", None, 512),
+                                        ("knowledge_refs", _KNOWLEDGE_REF, 160)):
+            values = request.get(field)
+            if values is not None and (type(values) is not list or not 1 <= len(values) <= 128
+                                       or any(type(value) is not str or not 1 <= len(value) <= maximum
+                                              or (pattern is not None and pattern.fullmatch(value) is None)
+                                              for value in values)):
+                raise ValueError(f"invalid legacy work context {field}")
         record = dispatch(root, "work-get", {"work_id": request.get("work_id")})
         result = {"work": record, "context_complete": False,
                   "omitted": ["legacy board stores only selected work; attached documents require exact artifact reads"]}
+        if request.get("paths") or request.get("knowledge_refs"):
+            result["requested_paths"] = request.get("paths", [])
+            result["requested_knowledge_refs"] = request.get("knowledge_refs", [])
+            result["omitted"].append("legacy board adapter does not join selected knowledge; use knowledge.py relevant or exact record reads")
         if len(json.dumps(result, ensure_ascii=False).encode("utf-8")) + 512 > budget:
             raise LegacyWorkError("RESPONSE_TOO_LARGE", "selected legacy work context exceeds budget")
         return result

@@ -36,7 +36,22 @@
         "state": {"enum": ["queued", "active", "complete", "archived"]},
         "check_status": {"enum": ["unknown", "passed", "failed"]},
         "started_at": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}]},
-        "completed_at": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}]}
+        "completed_at": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}]},
+        "provider_effect": {"anyOf": [{"type": "null"}, {
+          "type": "object",
+          "properties": {
+            "kind": {"const": "create_issue"},
+            "status": {"enum": ["pending", "outcome_unknown", "synchronized", "conflict"]},
+            "binding_generation": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "attempt_id": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 8, "maxLength": 80}]},
+            "remote_issue_number": {"anyOf": [{"type": "null"}, {"type": "integer", "minimum": 1}]},
+            "remote_issue_url": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 512}]},
+            "merge_pull_number": {"type": "integer", "minimum": 1},
+            "merge_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"}
+          },
+          "required": ["kind", "status", "binding_generation", "attempt_id", "remote_issue_number", "remote_issue_url"],
+          "additionalProperties": false
+        }]}
       },
       "required": ["state", "check_status", "started_at", "completed_at"],
       "additionalProperties": false

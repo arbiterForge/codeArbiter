@@ -116,8 +116,12 @@ class WorkCLITest(unittest.TestCase):
         self.run_work("start", work_id, "--operation-id", "cli-work-start-001")
         completed = self.run_work("complete", work_id, "--operation-id", "cli-work-complete-001")
         self.assertEqual((completed["state"], completed["check_status"]), ("complete", "unknown"))
-        context = self.run_work("context", work_id, "--budget", "4096")
+        context = self.run_work("context", work_id, "--budget", "4096", "--path", "src/stage1.go",
+                                "--knowledge-ref", "CTX-TECH-STACK#FACT-001")
         self.assertFalse(context["context_complete"])
+        self.assertEqual(context["requested_paths"], ["src/stage1.go"])
+        self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
+        self.assertEqual(context["knowledge_unresolved_references"], ["CTX-TECH-STACK#FACT-001"])
         self.assertEqual(context["spec"]["artifact_id"], "SPEC-CLI")
         self.assertEqual(context["plan"]["artifact_id"], "PLAN-CLI")
         self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
@@ -149,6 +153,17 @@ class WorkCLITest(unittest.TestCase):
         self.assertNotIn('id="ca-artifact-model"', page)
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
+
+    def test_native_provider_cli_stages_portable_intent_without_sending(self) -> None:
+        item = self.run_work("create", "--title", "Track one result", "--intent", "Stay local first",
+                             "--type", "fix", "--operation-id", "provider-cli-create-001")
+        config = self.run_work("provider-configure", "--repository", "arbiterForge/disposable",
+                               "--credential-ref", "GH_TOKEN", "--operation-id", "provider-cli-configure-001")
+        self.assertEqual(config["effect_timing"], "after_merge")
+        self.assertEqual(self.run_work("provider-get")["binding_generation"], config["binding_generation"])
+        staged = self.run_work("stage-sync", item["work_id"], "--operation-id", "provider-cli-stage-001")
+        self.assertEqual(staged["provider_effect"]["status"], "pending")
+        self.assertEqual(self.run_work("get", item["work_id"])["provider_effect"]["status"], "pending")
 
     def test_project_view_pages_native_work_without_writing_a_second_owner(self) -> None:
         first = self.run_work("create", "--title", "Fix <input>", "--intent", "First result",
@@ -218,9 +233,13 @@ class WorkCLITest(unittest.TestCase):
         board.write_text("# Existing owner\n\n## In-flight\n", encoding="utf-8")
         created = self.run_work("create", "--title", "Selected work", "--intent", "Keep context honest",
                                 "--type", "fix", "--origin", "DECOMP#CONTEXT")
-        context = self.run_work("context", created["work_id"], "--budget", "4096")
+        context = self.run_work("context", created["work_id"], "--budget", "4096",
+                                "--path", "src/stage1.go", "--knowledge-ref", "CTX-TECH-STACK#FACT-001")
         self.assertEqual(context["work"]["work_id"], created["work_id"])
         self.assertFalse(context["context_complete"])
+        self.assertEqual(context["requested_paths"], ["src/stage1.go"])
+        self.assertEqual(context["requested_knowledge_refs"], ["CTX-TECH-STACK#FACT-001"])
+        self.assertTrue(any("does not join selected knowledge" in note for note in context["omitted"]))
         large = self.run_work("create", "--title", "Large work", "--intent", "x" * 3000,
                               "--type", "fix", "--origin", "DECOMP#LARGE")
         output = io.StringIO()
@@ -512,6 +531,11 @@ class WorkCLITest(unittest.TestCase):
                                            "request": {}}))
         self.assertEqual(code, 1)
         self.assertIn("work operation", refused["error"])
+        for internal in ("work-effect-claim", "work-effect-record"):
+            code, refused = invoke(json.dumps({"schema": create["schema"], "operation": internal,
+                                               "request": {}}))
+            self.assertEqual(code, 1)
+            self.assertIn("work operation", refused["error"])
         code, refused = invoke(json.dumps({"schema": create["schema"], "operation": [],
                                            "request": {}}))
         self.assertEqual(code, 1)

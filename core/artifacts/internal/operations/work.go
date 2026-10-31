@@ -313,7 +313,11 @@ func (e *Engine) readWorkWithProject(id, projectID string) (*model.Document, []b
 
 func workSummary(d *model.Document, p string) object {
 	n, ex := d.Norm(), model.M(d.Data["execution"])
-	return object{"work_id": d.ID(), "project_id": n["project_id"], "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "title": n["title"], "intent": n["summary"], "work_type": n["work_type"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "spec_path": n["spec_path"], "plan_path": n["plan_path"], "origin": n["origin"], "aliases": n["aliases"], "state": ex["state"], "check_status": ex["check_status"], "started_at": ex["started_at"], "completed_at": ex["completed_at"]}
+	out := object{"work_id": d.ID(), "project_id": n["project_id"], "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "title": n["title"], "intent": n["summary"], "work_type": n["work_type"], "spec_id": n["spec_id"], "plan_id": n["plan_id"], "spec_path": n["spec_path"], "plan_path": n["plan_path"], "origin": n["origin"], "aliases": n["aliases"], "state": ex["state"], "check_status": ex["check_status"], "started_at": ex["started_at"], "completed_at": ex["completed_at"]}
+	if effect := ex["provider_effect"]; effect != nil {
+		out["provider_effect"] = effect
+	}
+	return out
 }
 
 func (e *Engine) workGet(r object) (any, error) {
@@ -539,6 +543,25 @@ func (e *Engine) workContext(r object) (any, error) {
 			return nil, fault.At("STALE_BINDING", id, attachedPath, "attached plan now points to a different specification")
 		}
 		out[pair.name] = object{"artifact_id": attached.ID(), "path": attachedPath, "revision": attached.Revision(), "model_sha256": attached.Hash(), "normative_sha256": attached.NormHash(), "title": boundedText(model.S(attached.Norm()["title"]), 240), "summary": boundedText(model.S(attached.Norm()["summary"]), 512)}
+	}
+	if r["paths"] != nil || r["knowledge_refs"] != nil {
+		base, err := json.Marshal(out)
+		if err != nil {
+			return nil, err
+		}
+		knowledgeBudget := int(budget) - len(base) - 512
+		if knowledgeBudget < 512 {
+			return nil, fault.New("RESPONSE_TOO_LARGE", "selected work leaves no room for knowledge diagnostics; request a larger budget")
+		}
+		paths := []any{}
+		for _, p := range model.Strings(r["paths"]) {
+			paths = append(paths, object{"path": p})
+		}
+		for k, v := range e.taskKnowledge(object{"paths": paths, "knowledge_refs": r["knowledge_refs"]}, knowledgeBudget) {
+			out[k] = v
+		}
+		out["requested_paths"] = r["paths"]
+		out["requested_knowledge_refs"] = r["knowledge_refs"]
 	}
 	b, err := json.Marshal(out)
 	if err != nil {

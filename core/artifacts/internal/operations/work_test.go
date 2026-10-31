@@ -327,6 +327,221 @@ func TestWorkSelectedReadIsolatedFromKnowledgeButNotSharedJournal(t *testing.T) 
 	}
 }
 
+func TestWorkContextSelectsScopedKnowledgeAndNamesOmissions(t *testing.T) {
+	f := newAssistiveFixture(t)
+	seedTaskKnowledge(f)
+	f.createKnowledge("knowledge", "CTX-CODING-STANDARDS", "coding-standards")
+	f.addKnowledge("CTX-TECH-STACK", knowledgeRecord("fact", "Large relevant note", strings.Repeat("Relevant details. ", 190), "user-reported", []string{"src/stage1.go"}))
+	f.addKnowledge("CTX-CODE-MAP", knowledgeRecord("component", "Unrelated inventory", strings.Repeat("Unrelated details. ", 190), "user-reported", []string{"elsewhere/**"}))
+	created := f.call("work-create", object{"operation_id": f.next(), "title": "Improve stage one", "intent": "Keep selected context useful", "work_type": "fix"})
+	broken := filepath.Join(f.root, ".codearbiter", "context", "coding-standards.html")
+	if err := os.WriteFile(broken, []byte("<p>broken</p>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	out := f.call("work-context", object{
+		"work_id": created["work_id"], "paths": model.List("src/stage1.go"),
+		"knowledge_refs": model.List("CTX-TECH-STACK#FACT-001"), "budget": int64(4096),
+	})
+	refs := knowledgeRefs(out, "knowledge")
+	if refs["CTX-SECURITY-CONTROLS#CON-001"] == nil || refs["CTX-TECH-STACK#FACT-001"] == nil {
+		t.Fatalf("selected work omitted a path constraint or explicit capability reference: %v", refs)
+	}
+	if refs["CTX-CODE-MAP#COMP-002"] != nil {
+		t.Fatal("oversized unrelated inventory displaced selected knowledge")
+	}
+	if model.I(out["knowledge_omitted_count"]) == 0 || len(model.A(out["knowledge_unreadable"])) != 1 {
+		t.Fatalf("selected work hid a budget omission or unreadable optional document: %v", out)
+	}
+	if knowledgeRefs(out, "knowledge_omitted")["CTX-TECH-STACK#FACT-002"] == nil {
+		t.Fatalf("the omitted relevant record was not named: %v", out["knowledge_omitted"])
+	}
+	if out["assessment"] != "advisory" {
+		t.Fatalf("selected knowledge became a permission verdict: %v", out["assessment"])
+	}
+	assertNoPermissionFields(t, out)
+}
+
+func TestWorkEffectLostCreateResponseRemainsUnknown(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "effect-create-001", "title": "Publish local work", "intent": "Track one outcome", "work_type": "fix"})
+	id := created["work_id"].(string)
+	configured := call("work-provider-configure", object{"operation_id": "effect-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	staged := call("work-effect-stage", object{"operation_id": "effect-stage-001", "work_id": id,
+		"binding_generation": configured["binding_generation"],
+		"expected":           object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	claimed := call("work-effect-claim", object{"operation_id": "effect-claim-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	if model.S(model.M(claimed["provider_effect"])["status"]) != "outcome_unknown" {
+		t.Fatalf("pre-send claim did not preserve uncertainty: %v", claimed)
+	}
+	view := call("work-view", object{"work_id": id})
+	if !strings.Contains(model.S(view["html"]), "Outcome unknown") || strings.Contains(model.S(view["html"]), "<p class=\"state\">Unconfigured</p>") {
+		t.Fatal("human work view concealed the uncertain provider effect")
+	}
+	// A process died after the claim. A new local store has no old journal,
+	// but the canonical work record must still prevent a second create.
+	fresh := testutil.Root(t)
+	for _, rel := range []string{projectPath, workPath(id), ".codearbiter/work/provider.json"} {
+		b, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		p := filepath.Join(fresh, filepath.FromSlash(rel))
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, b, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := Run(fresh, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	current, err := Run(fresh, "work-get", object{"protocol": Protocol, "work_id": id})
+	if err != nil || model.S(model.M(model.M(current)["provider_effect"])["status"]) != "outcome_unknown" {
+		t.Fatalf("fresh store lost portable uncertain effect: %v, %v", current, err)
+	}
+	_, err = Run(fresh, "work-effect-claim", object{"protocol": Protocol, "operation_id": "effect-claim-002", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "effect-attempt-002",
+		"expected": object{"revision": model.M(current)["revision"], "model_sha256": model.M(current)["model_sha256"]}})
+	if err == nil || !strings.Contains(err.Error(), "EFFECT_UNKNOWN") {
+		t.Fatalf("uncertain create was sent again: %v", err)
+	}
+}
+
+func TestWorkEffectBindingChangeDoesNotSend(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "binding-create-001", "title": "Bind", "intent": "Stay scoped", "work_type": "fix"})
+	id := created["work_id"].(string)
+	first := call("work-provider-configure", object{"operation_id": "binding-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	staged := call("work-effect-stage", object{"operation_id": "binding-stage-001", "work_id": id, "binding_generation": first["binding_generation"],
+		"expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	call("work-provider-configure", object{"operation_id": "binding-configure-002", "repository": "arbiterForge/other", "credential_ref": "GH_TOKEN", "effect_timing": "immediate", "expected_config_sha256": first["binding_generation"]})
+	_, err := Run(root, "work-effect-claim", object{"protocol": Protocol, "operation_id": "binding-claim-001", "work_id": id,
+		"binding_generation": first["binding_generation"], "attempt_id": "binding-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+	if err == nil || !strings.Contains(err.Error(), "PROVIDER_BINDING_CHANGED") {
+		t.Fatalf("old binding was allowed to claim an external effect: %v", err)
+	}
+	current := call("work-get", object{"work_id": id})
+	if model.S(model.M(current["provider_effect"])["status"]) != "pending" {
+		t.Fatalf("a refused claim changed portable intent: %v", current)
+	}
+}
+
+func TestWorkEffectDeferredClaimRequiresMergeObservation(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "deferred-create-001", "title": "Defer", "intent": "Wait for merge", "work_type": "fix"})
+	configured := call("work-provider-configure", object{"operation_id": "deferred-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "after_merge"})
+	id := model.S(created["work_id"])
+	staged := call("work-effect-stage", object{"operation_id": "deferred-stage-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	claim := object{"protocol": Protocol, "operation_id": "deferred-claim-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "deferred-attempt-001",
+		"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}}
+	if _, err := Run(root, "work-effect-claim", claim); err == nil || !strings.Contains(err.Error(), "EFFECT_WAITING_FOR_MERGE") {
+		t.Fatalf("deferred claim crossed merge boundary without observation: %v", err)
+	}
+	if model.S(model.M(call("work-get", object{"work_id": id})["provider_effect"])["status"]) != "pending" {
+		t.Fatal("refused deferred claim changed portable intent")
+	}
+	claim["merge_pull_number"], claim["merge_commit_sha"] = int64(3), strings.Repeat("a", 40)
+	claimed := call("work-effect-claim", claim)
+	effect := model.M(claimed["provider_effect"])
+	if model.S(effect["status"]) != "outcome_unknown" || model.I(effect["merge_pull_number"]) != 3 || model.S(effect["merge_commit_sha"]) != strings.Repeat("a", 40) {
+		t.Fatalf("verified observation was not retained with the pre-send claim: %v", effect)
+	}
+	baseRecord := object{"protocol": Protocol, "operation_id": "deferred-record-001", "work_id": id,
+		"binding_generation": configured["binding_generation"], "attempt_id": "wrong-attempt-001",
+		"remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7",
+		"expected": object{"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}}
+	if _, err := Run(root, "work-effect-record", baseRecord); err == nil || !strings.Contains(err.Error(), "EFFECT_CLAIM_CHANGED") {
+		t.Fatalf("mismatched attempt recorded an issue: %v", err)
+	}
+	baseRecord["operation_id"], baseRecord["attempt_id"] = "deferred-record-002", "deferred-attempt-001"
+	baseRecord["remote_issue_url"] = "https://github.com/arbiterForge/other/issues/7"
+	if _, err := Run(root, "work-effect-record", baseRecord); err == nil || !strings.Contains(err.Error(), "INVALID_REMOTE_BINDING") {
+		t.Fatalf("wrong repository recorded an issue: %v", err)
+	}
+	if model.S(model.M(call("work-get", object{"work_id": id})["provider_effect"])["status"]) != "outcome_unknown" {
+		t.Fatal("refused record changed the uncertain pre-send claim")
+	}
+}
+
+func TestWorkEffectConcurrentSyncHasOneClaim(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, request object) object {
+		t.Helper()
+		request["protocol"] = Protocol
+		value, err := Run(root, op, request)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return model.M(value)
+	}
+	call("init-store", object{})
+	created := call("work-create", object{"operation_id": "concurrent-effect-create-001", "title": "One issue", "intent": "One claim", "work_type": "fix"})
+	id := created["work_id"].(string)
+	config := call("work-provider-configure", object{"operation_id": "concurrent-effect-configure-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
+	staged := call("work-effect-stage", object{"operation_id": "concurrent-effect-stage-001", "work_id": id, "binding_generation": config["binding_generation"],
+		"expected": object{"revision": created["revision"], "model_sha256": created["model_sha256"]}})
+	var wg sync.WaitGroup
+	wins := make(chan error, 2)
+	for i := 0; i < 2; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			_, err := Run(root, "work-effect-claim", object{"protocol": Protocol,
+				"operation_id": fmt.Sprintf("concurrent-effect-claim-%03d", i), "work_id": id,
+				"binding_generation": config["binding_generation"], "attempt_id": fmt.Sprintf("concurrent-attempt-%03d", i),
+				"expected": object{"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+			wins <- err
+		}(i)
+	}
+	wg.Wait()
+	close(wins)
+	succeeded := 0
+	for err := range wins {
+		if err == nil {
+			succeeded++
+		}
+	}
+	if succeeded != 1 {
+		t.Fatalf("%d concurrent claims succeeded; want exactly one", succeeded)
+	}
+}
+
 func TestWorkPortableIdentitySurvivesFreshLocalStore(t *testing.T) {
 	source := testutil.Root(t)
 	if _, err := Run(source, "init-store", object{"protocol": Protocol}); err != nil {

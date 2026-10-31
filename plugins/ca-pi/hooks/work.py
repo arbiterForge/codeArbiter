@@ -61,6 +61,8 @@ def _parser():
     context = sub.add_parser("context", help="Read bounded selected work and attached document context")
     context.add_argument("work_id")
     context.add_argument("--budget", type=int, default=16384)
+    context.add_argument("--path", action="append", help="Select knowledge relevant to this work path")
+    context.add_argument("--knowledge-ref", action="append", help="Select an exact knowledge record even without a path")
     view = sub.add_parser("view", help="Print an inert HTML overview of selected native work")
     view.add_argument("work_id")
     listing = sub.add_parser("list", help="Page through active and archived local work")
@@ -74,6 +76,22 @@ def _parser():
     project_view.add_argument("--membership-sha256")
     origins = sub.add_parser("origins", help="Find exact source keys across active and archived work")
     origins.add_argument("--origin", action="append", required=True)
+    sub.add_parser("provider-get", help="Read the selected native GitHub provider binding")
+    configure = sub.add_parser("provider-configure", help="Save a finite native GitHub provider binding")
+    configure.add_argument("--repository", required=True, help="GitHub owner/repository")
+    configure.add_argument("--credential-ref", choices=("GH_TOKEN", "GITHUB_TOKEN", "CODEARBITER_GITHUB_TOKEN"), required=True)
+    configure.add_argument("--timing", choices=("after_merge", "immediate"), default="after_merge")
+    configure.add_argument("--operation-id", required=True)
+    configure.add_argument("--expected-config-sha256")
+    stage = sub.add_parser("stage-sync", help="Save a selected create-issue intent without sending it")
+    stage.add_argument("work_id")
+    stage.add_argument("--operation-id", required=True)
+    sync = sub.add_parser("sync", help="Send one pending GitHub issue effect after its configured timing condition")
+    sync.add_argument("work_id")
+    sync.add_argument("--pull-number", type=int, help="Merged default-branch PR containing this pending work intent")
+    reconcile = sub.add_parser("reconcile-issue", help="Read back an exact issue after an uncertain create")
+    reconcile.add_argument("work_id")
+    reconcile.add_argument("--number", type=int, required=True)
     for verb in ("rename", "attach", "start", "complete", "reopen", "archive"):
         command = sub.add_parser(verb)
         command.add_argument("work_id")
@@ -107,7 +125,12 @@ def _dispatch(args, client):
     if args.verb == "get":
         return client.call("work-get", {"work_id": args.work_id})
     if args.verb == "context":
-        return client.call("work-context", {"work_id": args.work_id, "budget": args.budget})
+        request = {"work_id": args.work_id, "budget": args.budget}
+        if args.path:
+            request["paths"] = args.path
+        if args.knowledge_ref:
+            request["knowledge_refs"] = args.knowledge_ref
+        return client.call("work-context", request)
     if args.verb == "view":
         return client.call("work-view", {"work_id": args.work_id})
     if args.verb in ("list", "project-view"):
@@ -119,6 +142,27 @@ def _dispatch(args, client):
         return client.call("work-list" if args.verb == "list" else "project-view", request)
     if args.verb == "origins":
         return client.call("work-origins", {"origins": args.origin})
+    if args.verb == "provider-get":
+        return client.call("work-provider-get", {})
+    if args.verb == "provider-configure":
+        request = {"operation_id": args.operation_id, "repository": args.repository,
+                   "credential_ref": args.credential_ref, "effect_timing": args.timing}
+        if args.expected_config_sha256:
+            request["expected_config_sha256"] = args.expected_config_sha256
+        return client.call("work-provider-configure", request)
+    if args.verb == "stage-sync":
+        config = client.call("work-provider-get", {})
+        current = client.call("work-get", {"work_id": args.work_id})
+        return client.call("work-effect-stage", {"operation_id": args.operation_id,
+            "work_id": args.work_id, "binding_generation": config["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+    if args.verb in ("sync", "reconcile-issue"):
+        if getattr(client, "legacy", False):
+            raise ValueError("GitHub effects require selected native work ownership")
+        import _workgithub
+        if args.verb == "sync":
+            return _workgithub.sync(client.root, client, args.work_id, pull_number=args.pull_number)
+        return _workgithub.reconcile_issue(client.root, client, args.work_id, args.number)
 
     if not args.operation_id:
         raise ValueError(f"{args.verb} needs --operation-id so an uncertain result can be retried without overwriting later work")
@@ -162,7 +206,8 @@ def _dispatch_request(payload, client):
         raise ValueError("unsupported work request schema")
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
-        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view"
+        "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view",
+        "work-provider-get", "work-provider-configure", "work-effect-stage"
     }:
         raise ValueError("unsupported work operation")
     if type(payload["request"]) is not dict:
