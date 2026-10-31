@@ -80,11 +80,12 @@ func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
 	}
 	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
 	ensureLegacyBoardFixtureDir(t, root)
-	board := []byte("# Work\n- [ ] demo.feat.0001 - Build parser\n  - Desc: Parse safely\n")
+	blockText := "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)\n  - Desc: Parse safely\n  - Work origin: DECOMP#PARSER\n  - Work type: feature\n  - Work ID: WORK-0123456789ABCDEF0123456789ABCDEF"
+	board := []byte("# Work\n" + blockText + "\n")
 	if err := os.WriteFile(boardPath, board, 0644); err != nil {
 		t.Fatal(err)
 	}
-	block := []byte("- [ ] demo.feat.0001 - Build parser\n  - Desc: Parse safely")
+	block := []byte(blockText)
 	id := "WORK-0123456789ABCDEF0123456789ABCDEF"
 	request := object{"protocol": Protocol, "operation_id": "adopt-one-board-001",
 		"expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
@@ -113,6 +114,97 @@ func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
 	}
 }
 
+func TestWorkAdoptRefusesTamperedSourceMeaning(t *testing.T) {
+	blockText := "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)\n  - Desc: Parse safely\n  - Work origin: DECOMP#PARSER\n  - Work ID: WORK-0123456789ABCDEF0123456789ABCDEF"
+	board := []byte(blockText + "\n")
+	mutations := []struct {
+		field string
+		value any
+	}{
+		{"work_id", "WORK-11111111111111111111111111111111"},
+		{"origin", "OTHER#PARSER"},
+		{"alias", "demo.feat.0002"},
+		{"title", "Wrong title"},
+		{"intent", "Wrong intent"},
+		{"work_type", "feature"},
+		{"state", "complete"},
+		{"started_at", "2026-01-01"},
+		{"completed_at", "2026-01-02"},
+		{"spec_id", "SPEC-OTHER"},
+		{"plan_id", "PLAN-OTHER"},
+	}
+	for _, mutation := range mutations {
+		t.Run(mutation.field, func(t *testing.T) {
+			root := testutil.Root(t)
+			if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+				t.Fatal(err)
+			}
+			ensureLegacyBoardFixtureDir(t, root)
+			boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+			if err := os.WriteFile(boardPath, board, 0644); err != nil {
+				t.Fatal(err)
+			}
+			row := object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(blockText)),
+				"work_id": "WORK-0123456789ABCDEF0123456789ABCDEF", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001",
+				"title": "Build parser", "intent": "Parse safely", "work_type": "unknown", "state": "queued",
+				"started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}
+			row[mutation.field] = mutation.value
+			r := object{"protocol": Protocol, "operation_id": "adopt-tampered-field-001", "expected_board_sha256": digestBytes(board),
+				"expected_archive_sha256": nil, "rows": []any{row}}
+			if _, err := Run(root, "work-adopt", r); fault.Code(err) != "INVALID_ADOPTION" {
+				t.Fatalf("tampered %s was accepted: %v", mutation.field, err)
+			}
+			if got, err := os.ReadFile(boardPath); err != nil || string(got) != string(board) {
+				t.Fatalf("refused cutover changed the legacy board: %v", err)
+			}
+			for _, path := range []string{filepath.Join(root, ".codearbiter", "work", "project.json"),
+				filepath.Join(root, ".codearbiter", "legacy", "open-tasks.md")} {
+				if _, err := os.Stat(path); !os.IsNotExist(err) {
+					t.Fatalf("refused cutover published %s: %v", path, err)
+				}
+			}
+		})
+	}
+}
+
+func TestWorkAdoptPreservesLegacyParserEdgeCases(t *testing.T) {
+	cases := []struct {
+		name  string
+		board string
+		row   object
+	}{
+		{"single digit date", "- [ ] demo.feat.0001 - Build parser (started 2026-1-2) (from DECOMP#PARSER)\n  - Work origin: DECOMP#PARSER\n",
+			object{"work_id": "WORK-729DA0937C368ABE6E3F1DC00CAE1323", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser", "intent": "Build parser", "started_at": "2026-01-02"}},
+		{"empty backref text", "- [ ] Build parser (from )\n",
+			object{"work_id": "WORK-7C6DD7AD5EBED8E35E14B787D46D15F9", "origin": "legacy:open#8739c345150d793740d390d3612f4f09", "alias": nil, "title": "Build parser", "intent": "Build parser", "started_at": nil}},
+		{"trailing whitespace after origin", "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)  \n  - Work origin: DECOMP#PARSER\n",
+			object{"work_id": "WORK-729DA0937C368ABE6E3F1DC00CAE1323", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser (from DECOMP#PARSER)", "intent": "Build parser (from DECOMP#PARSER)", "started_at": nil}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := testutil.Root(t)
+			if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+				t.Fatal(err)
+			}
+			ensureLegacyBoardFixtureDir(t, root)
+			if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), []byte(tc.board), 0644); err != nil {
+				t.Fatal(err)
+			}
+			block := strings.TrimSuffix(tc.board, "\n")
+			row := object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(block)),
+				"work_type": "unknown", "state": "queued", "completed_at": nil, "spec_id": nil, "plan_id": nil}
+			for key, value := range tc.row {
+				row[key] = value
+			}
+			r := object{"protocol": Protocol, "operation_id": "adopt-parser-edge-001", "expected_board_sha256": digestBytes([]byte(tc.board)),
+				"expected_archive_sha256": nil, "rows": []any{row}}
+			if _, err := Run(root, "work-adopt", r); err != nil {
+				t.Fatalf("Python-inventoried legacy row was refused: %v", err)
+			}
+		})
+	}
+}
+
 func TestAdoptionBlocksIgnoreScaffoldDocumentation(t *testing.T) {
 	board := []byte("# Open tasks\n" +
 		"Schema (one task = a lifecycle line + indented content sub-bullets):\n" +
@@ -122,7 +214,7 @@ func TestAdoptionBlocksIgnoreScaffoldDocumentation(t *testing.T) {
 		"- `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).\n" +
 		"## In-flight\n- [ ] demo.feat.0001 - Actual work\n")
 	blocks, err := adoptionBlocks(board)
-	if err != nil || len(blocks) != 1 || blocks[10] != digestBytes([]byte("- [ ] demo.feat.0001 - Actual work")) {
+	if err != nil || len(blocks) != 1 || blocks[10].digest != digestBytes([]byte("- [ ] demo.feat.0001 - Actual work")) {
 		t.Fatalf("scaffold was inventoried as work: blocks=%v err=%v", blocks, err)
 	}
 }
@@ -215,13 +307,14 @@ func TestWorkAdoptRecoveryPreservesLaterBoardEdit(t *testing.T) {
 	}
 	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
 	ensureLegacyBoardFixtureDir(t, root)
-	board := []byte("- [ ] Recover row\n")
+	blockText := "- [ ] Recover row (from RECOVER#ONE)\n  - Work origin: RECOVER#ONE\n  - Work ID: WORK-11111111111111111111111111111111"
+	board := []byte(blockText + "\n")
 	if err := os.WriteFile(boardPath, board, 0644); err != nil {
 		t.Fatal(err)
 	}
 	r := object{"protocol": Protocol, "operation_id": "adopt-recover-001", "expected_board_sha256": fmt.Sprintf("%x", sha256.Sum256(board)), "expected_archive_sha256": nil,
-		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": fmt.Sprintf("%x", sha256.Sum256([]byte("- [ ] Recover row"))),
-			"work_id": "WORK-11111111111111111111111111111111", "origin": "legacy:open#RECOVER", "alias": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(blockText)),
+			"work_id": "WORK-11111111111111111111111111111111", "origin": "RECOVER#ONE", "alias": nil,
 			"title": "Recover row", "intent": "Recover row", "work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
 	f, err := store.Open(root)
 	if err != nil {

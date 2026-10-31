@@ -1156,7 +1156,9 @@ def edit_work_entry(text, origin, action, *, title=None, spec_id=None,
         if task.state != "done" or today is None:
             raise ValueError("only completed legacy work can reopen")
         suffix = [part for part in suffix if not part.lstrip().startswith("(done ")]
-        lines[idx] = "- [~] " + body + "".join(suffix) + f"  (started {today.isoformat()})"
+        if not any(part.lstrip().startswith("(started ") for part in suffix):
+            suffix.append(f"  (started {today.isoformat()})")
+        lines[idx] = "- [~] " + body + "".join(suffix)
     else:
         raise ValueError(f"unsupported legacy work edit {action}")
     return _join(lines, text)

@@ -39,7 +39,8 @@ class FakeGithub:
         if path.endswith("/pulls/3/files?per_page=100&page=1"):
             return 200, [{"filename": ".codearbiter/work/" + self.work_id + ".html", "status": "modified"}]
         if "/contents/.codearbiter/work/" in path:
-            return 200, {"encoding": "base64", "content": base64.b64encode(self.merged_work).decode("ascii")}
+            raw = self.merged_work if "?ref=" in path else getattr(self, "current_work", self.merged_work)
+            return 200, {"encoding": "base64", "content": base64.b64encode(raw).decode("ascii")}
         if method == "POST":
             if self.fail_create:
                 raise TimeoutError("lost response")
@@ -60,6 +61,7 @@ class FakeGithub:
 
 class FakeProjectGithub(FakeGithub):
     def __init__(self, *, fail_add_after_apply=False, fail_field_after_apply=False,
+                 fail_add_without_apply=False, fail_field_without_apply=False,
                  partial_errors=False, oversized_cursor=False, wrong_issue=False,
                  wrong_content=False, legacy_ids=False):
         super().__init__()
@@ -70,9 +72,11 @@ class FakeProjectGithub(FakeGithub):
         self.item_id = None
         self.adds = 0
         self.fail_add_after_apply = fail_add_after_apply
+        self.fail_add_without_apply = fail_add_without_apply
         self.field_option_id = None
         self.field_updates = 0
         self.fail_field_after_apply = fail_field_after_apply
+        self.fail_field_without_apply = fail_field_without_apply
         self.partial_errors = partial_errors
         self.oversized_cursor = oversized_cursor
         self.wrong_issue = wrong_issue
@@ -103,6 +107,9 @@ class FakeProjectGithub(FakeGithub):
             assert variables["issue"] == self.issue_id
         if action == "field-update":
             self.field_updates += 1
+            if self.fail_field_without_apply:
+                self.fail_field_without_apply = False
+                raise TimeoutError("Project field update not applied")
             self.field_option_id = variables["option"]
             if self.fail_field_after_apply:
                 raise TimeoutError("Project field updated but response lost")
@@ -134,6 +141,9 @@ class FakeProjectGithub(FakeGithub):
                         "pageInfo": {"hasNextPage": False, "endCursor": None}}}}}
         if "addProjectV2ItemById" in query:
             self.adds += 1
+            if self.fail_add_without_apply:
+                self.fail_add_without_apply = False
+                raise TimeoutError("Project item not added")
             self.item_id = self.added_item_id
             if self.fail_add_after_apply:
                 raise TimeoutError("Project item created but response lost")
@@ -439,6 +449,18 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
                          "pending")
 
+    def test_malformed_credential_is_refused_without_echo_or_send(self):
+        transport = FakeGithub()
+        marker = "PRIVATE-MARKER"
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture\n" + marker)
+        self.assertEqual(raised.exception.code, "CREDENTIAL_UNAVAILABLE")
+        self.assertNotIn(marker, str(raised.exception))
+        self.assertEqual(transport.calls, [])
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "pending")
+
     def test_contingent_effect_waits_without_claim_or_send(self):
         old = self.client.call("work-provider-get", {})
         current = self.client.call("work-get", {"work_id": self.work_id})
@@ -481,6 +503,67 @@ class GithubWorkTest(unittest.TestCase):
                          ["/repos/arbiterForge/disposable/pulls/3", "/repos/arbiterForge/disposable",
                           "/repos/arbiterForge/disposable/pulls/3/files?per_page=100&page=1",
                           "/repos/arbiterForge/disposable/contents/.codearbiter/work/" + self.work_id + ".html?ref=" + sha])
+
+    def test_contingent_effect_refuses_canceled_current_default_intent(self):
+        old = self.client.call("work-provider-get", {})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "github-fixture-configure-canceled", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        self.client.call("work-effect-stage", {"operation_id": "github-fixture-stage-canceled",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+        sha = self._commit_pending_effect()
+        transport = FakeGithub()
+        transport.work_id = self.work_id
+        transport.merge_sha = sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        transport.current_work = transport.merged_work.replace(
+            b'"status": "pending"', b'"status": "synchronized"')
+        self.assertNotEqual(transport.current_work, transport.merged_work)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "MERGE_UNVERIFIED")
+        self.assertFalse(any(method == "POST" for method, _ in transport.calls))
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "pending")
+
+    def test_contingent_effect_rechecks_current_intent_after_claim(self):
+        old = self.client.call("work-provider-get", {})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "github-fixture-configure-late-cancel", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        self.client.call("work-effect-stage", {"operation_id": "github-fixture-stage-late-cancel",
+            "work_id": self.work_id, "binding_generation": config["binding_generation"],
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+        sha = self._commit_pending_effect()
+
+        class LateCancel(FakeGithub):
+            current_reads = 0
+
+            def request(self, method, path, body, token):
+                if "/contents/.codearbiter/work/" in path and "?ref=" not in path:
+                    self.current_reads += 1
+                    if self.current_reads == 2:
+                        self.current_work = self.merged_work.replace(
+                            b'"status": "pending"', b'"status": "synchronized"')
+                return super().request(method, path, body, token)
+
+        transport = LateCancel()
+        transport.work_id, transport.merge_sha = self.work_id, sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync(self.root, self.client, self.work_id, transport,
+                             lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        self.assertFalse(any(method == "POST" for method, _ in transport.calls))
+        self.assertEqual(transport.current_reads, 2)
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "outcome_unknown")
 
     def test_contingent_effect_rejects_unrelated_merge_with_preexisting_work(self):
         old = self.client.call("work-provider-get", {})
@@ -732,6 +815,20 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(transport.adds, 1)
         self.assertEqual(sum(method == "POST" for method, _ in transport.calls), 1)
 
+    def test_project_uncertain_unapplied_add_retries_idempotently(self):
+        transport = FakeProjectGithub(fail_add_without_apply=True)
+        self._project_ready(transport)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                     lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        recovered = _workgithub.reconcile_project(self.root, self.client, self.work_id,
+                                                  transport, lambda _: "fixture-token")
+        self.assertEqual(recovered["project_effect"]["status"], "synchronized")
+        self.assertEqual(recovered["project_effect"]["remote_item_id"], transport.added_item_id)
+        self.assertEqual(transport.adds, 2)
+        self.assertEqual(sum(method == "POST" for method, _ in transport.calls), 1)
+
     def _project_attached(self, transport):
         self._project_ready(transport)
         return _workgithub.sync_project(self.root, self.client, self.work_id, transport,
@@ -813,6 +910,51 @@ class GithubWorkTest(unittest.TestCase):
                                                          transport, lambda _: "fixture-token")
         self.assertEqual(recovered["project_effect"]["status"], "synchronized")
         self.assertEqual(transport.field_updates, 1)
+
+    def test_project_uncertain_unapplied_field_retries_selected_value(self):
+        transport = FakeProjectGithub(fail_field_without_apply=True)
+        attached = self._project_attached(transport)
+        self._stage_project_option(attached, None)
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                           transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "OUTCOME_UNKNOWN")
+        recovered = _workgithub.reconcile_project_field(self.root, self.client, self.work_id,
+                                                         transport, lambda _: "fixture-token")
+        self.assertEqual(recovered["project_effect"]["status"], "synchronized")
+        self.assertEqual(recovered["project_effect"]["observed_option_id"], "f75ad846")
+        self.assertEqual(transport.field_updates, 2)
+
+    def test_project_add_reconcile_rejects_uncertain_field_effect(self):
+        transport = FakeProjectGithub(fail_field_without_apply=True)
+        attached = self._project_attached(transport)
+        self._stage_project_option(attached, None)
+        with self.assertRaises(_workgithub.WorkSyncError):
+            _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                           transport, lambda _: "fixture-token")
+        transport.item_id = None
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.reconcile_project(self.root, self.client, self.work_id,
+                                          transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "EFFECT_NOT_UNKNOWN")
+        self.assertEqual(transport.adds, 1)
+
+    def test_project_field_reconcile_refuses_removed_item_without_mutation(self):
+        transport = FakeProjectGithub(fail_field_without_apply=True)
+        attached = self._project_attached(transport)
+        self._stage_project_option(attached, None)
+        with self.assertRaises(_workgithub.WorkSyncError):
+            _workgithub.sync_project_field(self.root, self.client, self.work_id,
+                                           transport, lambda _: "fixture-token")
+        transport.item_id = None
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.reconcile_project_field(self.root, self.client, self.work_id,
+                                                transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "PROJECT_BINDING_UNVERIFIED")
+        self.assertEqual(transport.adds, 1)
+        self.assertEqual(transport.field_updates, 1)
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["status"],
+                         "outcome_unknown")
 
     def test_project_partial_graphql_error_refuses_before_claim(self):
         transport = FakeProjectGithub(partial_errors=True)
@@ -929,6 +1071,18 @@ class GithubWorkTest(unittest.TestCase):
                 server.server_close()
             for thread in threads:
                 thread.join(timeout=2)
+
+    def test_real_transport_allows_bounded_default_branch_work_read(self):
+        transport = _workgithub.GithubTransport()
+        response = mock.MagicMock()
+        response.status = 200
+        response.read.return_value = b'{"encoding":"base64","content":"AA=="}'
+        transport._opener = mock.MagicMock()
+        transport._opener.open.return_value.__enter__.return_value = response
+        path = "/repos/arbiterForge/disposable/contents/.codearbiter/work/" + self.work_id + ".html"
+        status, body = transport.request("GET", path, None, "fixture-token")
+        self.assertEqual((status, body["encoding"]), (200, "base64"))
+        self.assertEqual(transport._opener.open.call_count, 1)
 
 
 if __name__ == "__main__":

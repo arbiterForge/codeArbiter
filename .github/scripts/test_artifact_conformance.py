@@ -252,6 +252,7 @@ EXPECTED_SUITES = {
     "test_artifact_work_cli.py": {
         "test_direct_native_adoption_respects_legacy_writer_lock",
         "test_selected_adoption_keeps_exact_board_and_old_writer_refuses",
+        "test_selected_adoption_preserves_trailing_origin_whitespace",
         "test_create_requires_a_replay_identity_and_origin_reuses_one_item",
         "test_first_native_work_survives_fresh_clone",
         "test_legacy_board_remains_owner_and_create_returns_stable_identity",
@@ -291,6 +292,14 @@ EXPECTED_SUITES = {
         "test_scaffold_instructions_and_fenced_example_are_not_adopted",
     },
     "test_work_github.py": {
+        "test_project_add_reconcile_rejects_uncertain_field_effect",
+        "test_project_field_reconcile_refuses_removed_item_without_mutation",
+        "test_project_uncertain_unapplied_add_retries_idempotently",
+        "test_project_uncertain_unapplied_field_retries_selected_value",
+        "test_contingent_effect_refuses_canceled_current_default_intent",
+        "test_contingent_effect_rechecks_current_intent_after_claim",
+        "test_real_transport_allows_bounded_default_branch_work_read",
+        "test_malformed_credential_is_refused_without_echo_or_send",
         "test_project_url_discovery_resolves_user_and_org_boards_without_writing",
         "test_project_url_discovery_rejects_redirects_and_mismatched_readback",
         "test_transport_refuses_unbounded_project_graphql_variables",

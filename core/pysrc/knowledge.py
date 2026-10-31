@@ -346,6 +346,13 @@ def _git_out(root, *arguments):
     return result.stdout
 
 
+def _git_paths(root, *arguments):
+    result = subprocess.run([git_executable(), *arguments, "-z"], cwd=root, capture_output=True)
+    if result.returncode != 0:
+        raise ValueError(f"git {arguments[0]} failed: {result.stderr.decode('utf-8', errors='replace').strip()}")
+    return {path for path in result.stdout.decode("utf-8").split("\0") if path}
+
+
 def _stale(client, root, docs):
     """Advisory freshness: which records may need a look, never a verdict.
 
@@ -354,10 +361,9 @@ def _stale(client, root, docs):
     nothing, and nothing here blocks work or resets other records."""
     from _scopelib import _glob_to_re
     head = _git_out(root, "rev-parse", "HEAD").strip()
-    local_changed = set(_git_out(root, "diff", "--name-only").splitlines())
-    local_changed.update(_git_out(root, "diff", "--cached", "--name-only").splitlines())
-    local_changed.update(_git_out(root, "ls-files", "--others", "--exclude-standard").splitlines())
-    local_changed.discard("")
+    local_changed = _git_paths(root, "diff", "--no-renames", "--name-only")
+    local_changed.update(_git_paths(root, "diff", "--cached", "--no-renames", "--name-only"))
+    local_changed.update(_git_paths(root, "ls-files", "--others", "--exclude-standard"))
     report = []
     for doc in docs:
         doc_id = _doc_id(doc)
@@ -369,8 +375,7 @@ def _stale(client, root, docs):
             continue
         changed = set(local_changed)
         if baseline != head:
-            changed.update(_git_out(root, "diff", "--name-only", f"{baseline}..HEAD").splitlines())
-        changed.discard("")
+            changed.update(_git_paths(root, "diff", "--no-renames", "--name-only", f"{baseline}..HEAD"))
         sources = {s["id"]: s.get("locator", "") for s in _records(client, doc_id, "sources")}
         stale = []
         for record in _records(client, doc_id):

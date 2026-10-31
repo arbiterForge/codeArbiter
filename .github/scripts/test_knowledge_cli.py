@@ -401,6 +401,45 @@ class KnowledgeCli(unittest.TestCase):
         report = self.knowledge("stale", "tech-stack")["documents"][0]
         self.assertEqual(report["stale"][0]["changed_paths"], ["src/extra.py", "src/service.py"])
 
+    def test_stale_includes_renamed_source_old_path(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        source = self.root / "src" / "old.py"
+        source.parent.mkdir()
+        source.write_text("version = 1\n", encoding="utf-8")
+        self.knowledge("add", "tech-stack", "--collection", "sources", "--record", json.dumps({
+            "title": "Old source", "type": "repository", "url": None,
+            "locator": "src/old.py", "note": "Observed old path"}))
+        self.knowledge("add", "tech-stack", "--record", json.dumps({
+            "type": "fact", "title": "Old path", "statement": "Old path exists.",
+            "basis": "source-observed", "scope": {"paths": ["src/old.py"]},
+            "related_refs": [], "source_refs": ["SRC-001"]}))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "baseline")
+        self.knowledge("rebaseline", "tech-stack")
+        self.git("mv", "src/old.py", "src/new.py")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/old.py"])
+
+    def test_stale_preserves_untracked_unicode_path(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        self.knowledge("add", "tech-stack", "--collection", "sources", "--record", json.dumps({
+            "title": "Unicode source", "type": "repository", "url": None,
+            "locator": "src/café.py", "note": "Observed Unicode path"}))
+        self.knowledge("add", "tech-stack", "--record", json.dumps({
+            "type": "fact", "title": "Unicode source", "statement": "Unicode path exists.",
+            "basis": "source-observed", "scope": {"paths": ["src/café.py"]},
+            "related_refs": [], "source_refs": ["SRC-001"]}))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "baseline")
+        self.knowledge("rebaseline", "tech-stack")
+        source = self.root / "src" / "café.py"
+        source.parent.mkdir()
+        source.write_text("version = 1\n", encoding="utf-8")
+        report = self.knowledge("stale", "tech-stack")["documents"][0]
+        self.assertEqual(report["stale"][0]["changed_paths"], ["src/café.py"])
+
     def test_git_conflict_merges_record_by_record(self):
         self.scaffold()
         self.knowledge("create-missing")

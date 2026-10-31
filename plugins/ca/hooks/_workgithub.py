@@ -105,12 +105,12 @@ class GithubTransport:
             "GET": (rf"{_REPO_PATH}", rf"{_REPO_PATH}/issues/[1-9][0-9]*",
                     rf"{_REPO_PATH}/pulls/[1-9][0-9]*",
                     rf"{_REPO_PATH}/pulls/[1-9][0-9]*/files\?per_page=100&page=([1-9]|[12][0-9]|30)",
-                    rf"{_REPO_PATH}/contents/\.codearbiter/work/WORK-[A-F0-9]{{32}}\.html\?ref=[a-f0-9]{{40}}"),
+                    rf"{_REPO_PATH}/contents/\.codearbiter/work/WORK-[A-F0-9]{{32}}\.html(?:\?ref=[a-f0-9]{{40}})?"),
             "POST": (rf"{_REPO_PATH}/issues",),
             "PATCH": (rf"{_REPO_PATH}/issues/[1-9][0-9]*",),
         }
         if not any(re.fullmatch(pattern, path) for pattern in allowed.get(method, ())):
-            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub operation is outside the fixed issue endpoint")
+            raise WorkSyncError("UNSUPPORTED_REQUEST", "GitHub operation is outside the fixed endpoint set")
         payload = None if body is None else json.dumps(body, separators=(",", ":")).encode("utf-8")
         req = request.Request(_BASE + path, data=payload, method=method, headers={
             "Accept": "application/vnd.github+json", "Content-Type": "application/json",
@@ -218,7 +218,8 @@ def _selected(root, client, work_id):
 
 def _credential(config, token_lookup):
     token = token_lookup(config["credential_ref"])
-    if not isinstance(token, str) or not token:
+    if (type(token) is not str or not 1 <= len(token) <= 4096
+            or any(not 0x21 <= ord(char) <= 0x7e for char in token)):
         raise WorkSyncError("CREDENTIAL_UNAVAILABLE", "The approved owning-process GitHub credential is unavailable")
     return token
 
@@ -249,8 +250,44 @@ def _verified_issue(transport, config, work_id, number, token):
     return url, issue["state"]
 
 
+def _verified_work_intent(transport, config, work, path, token):
+    """Read one bounded canonical work snapshot and match its pending issue effect."""
+    status, content = transport.request("GET", path, None, token)
+    if status != 200 or type(content) is not dict or content.get("encoding") != "base64" or type(content.get("content")) is not str:
+        raise WorkSyncError("MERGE_UNVERIFIED", "GitHub has no readable canonical work item")
+    try:
+        raw = base64.b64decode("".join(content["content"].split()), validate=True)
+        if len(raw) > 1 << 20:
+            raise ValueError("work is too large")
+        start = b'<script id="ca-artifact-model" type="application/json">\n'
+        end = b"\n</script>"
+        if raw.count(start) != 1 or raw.count(end) != 1:
+            raise ValueError("work has no unique model")
+        model = json.loads(raw.split(start, 1)[1].split(end, 1)[0])
+        effect = model["execution"]["provider_effect"]
+    except (ValueError, KeyError, TypeError, IndexError, AttributeError, binascii.Error) as exc:
+        raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work model cannot be verified") from exc
+    if (not isinstance(model, dict) or not isinstance(effect, dict)
+            or not isinstance(model.get("normative"), dict)
+            or model.get("artifact_id") != work["work_id"]
+            or model["normative"].get("project_id") != work["project_id"]
+            or model["normative"].get("title") != work["title"]
+            or model["normative"].get("summary") != work["intent"]
+            or effect.get("status") != "pending"
+            or effect.get("kind") != (work.get("provider_effect") or {}).get("kind")
+            or effect.get("desired_state") != (work.get("provider_effect") or {}).get("desired_state")
+            or effect.get("remote_issue_number") != (work.get("provider_effect") or {}).get("remote_issue_number")
+            or effect.get("binding_generation") != config["binding_generation"]):
+        raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work intent does not match the selected pending effect")
+
+
+def _verified_current_intent(transport, config, work, token):
+    path = f"/repos/{config['repository']}/contents/.codearbiter/work/{work['work_id']}.html"
+    _verified_work_intent(transport, config, work, path, token)
+
+
 def _verified_merge(root, transport, config, work, pull_number, token):
-    """Observe a merged default-branch PR containing this pending work intent."""
+    """Observe a merged default-branch PR and still-current pending work intent."""
     if type(pull_number) is not int or pull_number < 1:
         raise WorkSyncError("EFFECT_WAITING_FOR_MERGE", "Supply the merged PR number before a contingent effect")
     repo = config["repository"]
@@ -287,33 +324,8 @@ def _verified_merge(root, transport, config, work, pull_number, token):
     if result.returncode != 0:
         raise WorkSyncError("MERGE_UNVERIFIED", "The observed merge commit is absent from this checkout's HEAD ancestry")
     path = f"/repos/{repo}/contents/.codearbiter/work/{work['work_id']}.html?ref={sha}"
-    status, content = transport.request("GET", path, None, token)
-    if status != 200 or content.get("encoding") != "base64" or type(content.get("content")) is not str:
-        raise WorkSyncError("MERGE_UNVERIFIED", "Merged PR has no readable canonical work item")
-    try:
-        raw = base64.b64decode("".join(content["content"].split()), validate=True)
-        if len(raw) > 1 << 20:
-            raise ValueError("merged work is too large")
-        start = b'<script id="ca-artifact-model" type="application/json">\n'
-        end = b"\n</script>"
-        if raw.count(start) != 1 or raw.count(end) != 1:
-            raise ValueError("merged work has no unique model")
-        model = json.loads(raw.split(start, 1)[1].split(end, 1)[0])
-        effect = model["execution"]["provider_effect"]
-    except (ValueError, KeyError, TypeError, IndexError, AttributeError, binascii.Error) as exc:
-        raise WorkSyncError("MERGE_UNVERIFIED", "Merged work model cannot be verified") from exc
-    if (not isinstance(model, dict) or not isinstance(effect, dict)
-            or not isinstance(model.get("normative"), dict)
-            or model.get("artifact_id") != work["work_id"]
-            or model["normative"].get("project_id") != work["project_id"]
-            or model["normative"].get("title") != work["title"]
-            or model["normative"].get("summary") != work["intent"]
-            or effect.get("status") != "pending"
-            or effect.get("kind") != (work.get("provider_effect") or {}).get("kind")
-            or effect.get("desired_state") != (work.get("provider_effect") or {}).get("desired_state")
-            or effect.get("remote_issue_number") != (work.get("provider_effect") or {}).get("remote_issue_number")
-            or effect.get("binding_generation") != config["binding_generation"]):
-        raise WorkSyncError("MERGE_UNVERIFIED", "Merged work intent does not match the selected pending effect")
+    _verified_work_intent(transport, config, work, path, token)
+    _verified_current_intent(transport, config, work, token)
     return sha
 
 
@@ -362,6 +374,11 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Provider changed after the pre-send claim; reconcile before retrying")
     if _origin_repository(Path(root)).casefold() != config["repository"].casefold():
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Git origin changed after the pre-send claim; reconcile before retrying")
+    if merge_sha is not None:
+        try:
+            _verified_current_intent(transport, config, work, token)
+        except WorkSyncError as exc:
+            raise WorkSyncError("OUTCOME_UNKNOWN", "Default-branch work changed after the pre-send claim; reconcile before retrying") from exc
     try:
         if effect["kind"] == "create_issue":
             body = work["intent"] + "\n\n" + _MARKER.format(work_id)
@@ -708,18 +725,34 @@ def sync_project(root, client, work_id, transport=None, token_lookup=None):
 
 
 def reconcile_project(root, client, work_id, transport=None, token_lookup=None):
-    """Resolve a lost Project response by readback only; never send a second add."""
+    """Resolve a lost Project add, retrying GitHub's idempotent add if absent."""
     transport = transport if transport is not None else GithubTransport()
     token_lookup = token_lookup if token_lookup is not None else os.environ.get
     issue_config, project_config, work = _project_selected(root, client, work_id)
     effect = work["project_effect"]
-    if effect["status"] != "outcome_unknown":
+    if effect["kind"] != "add_item" or effect["status"] != "outcome_unknown":
         raise WorkSyncError("EFFECT_NOT_UNKNOWN", "Selected work has no uncertain Project item to reconcile")
     token = _credential(project_config, token_lookup)
     issue_id = _project_issue(transport, issue_config, work, token)
     item_id = _find_project_item(transport, project_config["project_node_id"], issue_id, token)
     if item_id is None:
-        raise WorkSyncError("PROJECT_ITEM_UNVERIFIED", "No matching Project item was found; outcome remains unknown")
+        if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
+                or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
+            raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed before the retry")
+        try:
+            response = transport.graphql(_PROJECT_ADD, {
+                "project": project_config["project_node_id"], "issue": issue_id}, token)
+            data = _graph_data(response)
+            added = data.get("addProjectV2ItemById")
+            item = added.get("item") if type(added) is dict else None
+            item_id = item.get("id") if type(item) is dict else None
+            if type(item_id) is not str or _GLOBAL_NODE_ID.fullmatch(item_id) is None:
+                raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project retry did not return an item ID")
+            observed = _find_project_item(transport, project_config["project_node_id"], issue_id, token)
+            if observed != item_id:
+                raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project retry readback differs from the added item")
+        except Exception as exc:
+            raise WorkSyncError("OUTCOME_UNKNOWN", "Project retry or readback is uncertain; reconcile again") from exc
     return _record_project(client, work, project_config, effect["attempt_id"], item_id)
 
 
@@ -845,7 +878,7 @@ def sync_project_field(root, client, work_id, transport=None, token_lookup=None)
 
 
 def reconcile_project_field(root, client, work_id, transport=None, token_lookup=None):
-    """Read an uncertain option result without another update mutation."""
+    """Resolve an uncertain option, retrying the selected value if unchanged."""
     transport = transport if transport is not None else GithubTransport()
     token_lookup = token_lookup if token_lookup is not None else os.environ.get
     issue_config, project_config, work = _project_selected(root, client, work_id)
@@ -861,9 +894,28 @@ def reconcile_project_field(root, client, work_id, transport=None, token_lookup=
                                     effect["desired_option_id"], token)
     if observed != effect["desired_option_id"]:
         if observed == effect["expected_remote_option_id"]:
-            raise WorkSyncError("PROJECT_FIELD_UNVERIFIED", "Field still has its prior value; the lost send remains uncertain")
-        _conflict_project_field(client, work, project_config, observed)
-        raise WorkSyncError("REMOTE_CONFLICT", "Project option differs from the uncertain send; inspect it before restaging")
+            if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
+                    or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
+                raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed before the retry")
+            try:
+                response = transport.graphql(_PROJECT_FIELD_UPDATE, {
+                    "project": project_config["project_node_id"], "item": effect["remote_item_id"],
+                    "field": effect["field_id"], "option": effect["desired_option_id"]}, token)
+                data = _graph_data(response)
+                update = data.get("updateProjectV2ItemFieldValue")
+                updated = update.get("projectV2Item") if type(update) is dict else None
+                if type(updated) is not dict or updated.get("id") != effect["remote_item_id"]:
+                    raise WorkSyncError("INVALID_REMOTE_RESPONSE", "Project field retry returned a different item")
+                observed = _read_project_option(transport, project_config["project_node_id"], issue_id,
+                                                effect["remote_item_id"], effect["field_id"],
+                                                effect["desired_option_id"], token)
+                if observed != effect["desired_option_id"]:
+                    raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Project field retry readback differs from requested value")
+            except Exception as exc:
+                raise WorkSyncError("OUTCOME_UNKNOWN", "Project field retry or readback is uncertain; reconcile again") from exc
+        else:
+            _conflict_project_field(client, work, project_config, observed)
+            raise WorkSyncError("REMOTE_CONFLICT", "Project option differs from the uncertain send; inspect it before restaging")
     return _record_project(client, work, project_config, effect["attempt_id"],
                            effect["remote_item_id"], observed)
 

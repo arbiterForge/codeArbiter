@@ -24,6 +24,14 @@ var legacyAliasPattern = regexp.MustCompile(`^[a-z][a-z0-9]*\.[a-z][a-z0-9]*\.[0
 var legacyStrayMarkerPattern = regexp.MustCompile(`^\s*[-*+]?\s*\[[ xX~]\]`)
 var legacyCanonicalTaskPattern = regexp.MustCompile(`^- \[[ xX~]\] `)
 var legacyFencePattern = regexp.MustCompile("^ {0,3}(`{3,}|~{3,})(.*)$")
+var legacyOriginRefPattern = regexp.MustCompile(`\(from ([^()\r\n]+)\)`)
+var legacyTitleBackrefPattern = regexp.MustCompile(`\(from\s+[^)]*\)`)
+var legacySourceOriginPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9:._-]{0,127}#[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$`)
+var legacyIDishPattern = regexp.MustCompile(`^[^\s.]+(?:\.[^\s.]+){2,}$`)
+var legacyDatePattern = regexp.MustCompile(`\((started|done)\s+([^)]*)\)`)
+var legacyTrailingDatePattern = regexp.MustCompile(`\s*\((?:started|done)\s+[^)]*\)\s*$`)
+var legacySubfieldPattern = regexp.MustCompile(`^\s+-\s*([^:]+):\s*(.*)$`)
+var legacyMetadataPattern = regexp.MustCompile(`^  - (Work origin|Work type|Work ID|Work operation ID|Spec ID|Plan ID): (.*)$`)
 
 const legacyScaffoldSchema = "Schema (one task = a lifecycle line + indented content sub-bullets):"
 
@@ -37,7 +45,12 @@ func digestBytes(b []byte) string { return fmt.Sprintf("%x", sha256.Sum256(b)) }
 
 // Each accepted row must name one exact top-level board block. The original
 // board bytes are saved separately; this parser is only a coverage check.
-func adoptionBlocks(raw []byte) (map[int64]string, error) {
+type legacyAdoptionBlock struct {
+	digest string
+	text   string
+}
+
+func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
 	if !utf8.Valid(raw) || strings.Contains(strings.ReplaceAll(string(raw), "\r\n", ""), "\r") {
 		return nil, fault.New("INVALID_LEGACY_BOARD", "legacy board is not canonical UTF-8 line text")
 	}
@@ -79,7 +92,7 @@ func adoptionBlocks(raw []byte) (map[int64]string, error) {
 	if fenceChar != 0 {
 		return nil, fault.New("INVALID_LEGACY_BOARD", "unterminated Markdown fence in legacy board")
 	}
-	blocks := map[int64]string{}
+	blocks := map[int64]legacyAdoptionBlock{}
 	for i, line := range lines {
 		if skipped[i] {
 			continue
@@ -104,9 +117,142 @@ func adoptionBlocks(raw []byte) (map[int64]string, error) {
 		for end > i+1 && strings.TrimSpace(lines[end-1]) == "" {
 			end--
 		}
-		blocks[int64(i+1)] = digestBytes([]byte(strings.Join(lines[i:end], "\n")))
+		text := strings.Join(lines[i:end], "\n")
+		blocks[int64(i+1)] = legacyAdoptionBlock{digest: digestBytes([]byte(text)), text: text}
 	}
 	return blocks, nil
+}
+
+// Derive every portable field from the exact hashed block. The Python
+// inventory is a preview, not authority for a destructive ownership cutover.
+func canonicalAdoptionRow(block legacyAdoptionBlock, location string, line int64) (object, error) {
+	lines := strings.Split(block.text, "\n")
+	if len(lines) == 0 || !strings.HasPrefix(lines[0], "- ") {
+		return nil, fault.New("INVALID_ADOPTION", "legacy task block is malformed")
+	}
+	raw := lines[0]
+	body := strings.TrimSpace(raw[2:])
+	state := "queued"
+	if len(body) >= 4 && body[0] == '[' && body[2] == ']' && body[3] == ' ' {
+		switch body[1] {
+		case ' ':
+			state = "queued"
+		case '~':
+			state = "active"
+		case 'x', 'X':
+			state = "complete"
+		default:
+			return nil, fault.New("INVALID_ADOPTION", "legacy task marker is invalid")
+		}
+		body = strings.TrimSpace(body[4:])
+	}
+	if body == "" {
+		return nil, fault.New("INVALID_ADOPTION", "legacy task title is empty")
+	}
+	alias, titleBody := "", body
+	parts := strings.Fields(body)
+	if len(parts) > 0 && legacyIDishPattern.MatchString(parts[0]) {
+		alias = parts[0]
+		titleBody = strings.TrimSpace(strings.TrimPrefix(body, alias))
+		titleBody = strings.TrimSpace(strings.TrimLeft(titleBody, "—–-"))
+	}
+	metadata := map[string]string{}
+	desc := ""
+	for _, subline := range lines[1:] {
+		if strings.HasPrefix(subline, "  - Work ") || strings.HasPrefix(subline, "  - Spec ID:") || strings.HasPrefix(subline, "  - Plan ID:") {
+			match := legacyMetadataPattern.FindStringSubmatch(subline)
+			if match == nil {
+				return nil, fault.New("INVALID_ADOPTION", "legacy work metadata is ambiguous")
+			}
+			if _, exists := metadata[match[1]]; exists {
+				return nil, fault.New("INVALID_ADOPTION", "legacy work metadata is ambiguous")
+			}
+			metadata[match[1]] = match[2]
+		}
+		if match := legacySubfieldPattern.FindStringSubmatch(subline); match != nil && strings.EqualFold(strings.TrimSpace(match[1]), "desc") {
+			desc = strings.TrimSpace(match[2])
+		}
+	}
+	refs := legacyOriginRefPattern.FindAllStringSubmatch(raw, -1)
+	legacyOrigin := ""
+	if source, present := metadata["Work origin"]; present {
+		if len(refs) == 0 || refs[len(refs)-1][1] != source {
+			return nil, fault.New("INVALID_ADOPTION", "legacy origin metadata disagrees with its task row")
+		}
+		legacyOrigin = source
+	} else if len(refs) > 1 {
+		return nil, fault.New("INVALID_ADOPTION", "legacy task has ambiguous origin markers")
+	} else if len(refs) == 1 {
+		legacyOrigin = refs[0][1]
+	}
+	origin := legacyOrigin
+	if origin != "" && !legacySourceOriginPattern.MatchString(origin) {
+		origin = "legacy:origin#" + digestBytes([]byte(origin))[:32]
+	}
+	if origin == "" {
+		seed := fmt.Sprintf("%s\x00%d\x00%s", location, line, block.text)
+		origin = "legacy:" + location + "#" + digestBytes([]byte(seed))[:32]
+	}
+	id := metadata["Work ID"]
+	if id == "" {
+		source := origin
+		if legacyOrigin != "" {
+			source = legacyOrigin
+		}
+		id = "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00" + source))[:32])
+	}
+	title := titleBody
+	if legacyOrigin != "" {
+		// The legacy work reader removes its final origin marker before trimming
+		// trailing whitespace. Preserve that order for imported titles.
+		title = raw[2:]
+		if len(title) >= 3 && title[0] == '[' && title[2] == ']' {
+			title = strings.TrimLeft(title[3:], " \t")
+		}
+		if alias != "" {
+			title = strings.TrimLeft(strings.TrimPrefix(title, alias), " \t")
+			title = strings.TrimLeft(title, "—–-")
+			title = strings.TrimLeft(title, " \t")
+		}
+		title = legacyTrailingDatePattern.ReplaceAllString(title, "")
+		title = strings.TrimSpace(strings.TrimSuffix(title, "(from "+legacyOrigin+")"))
+		title = strings.TrimSpace(legacyTrailingDatePattern.ReplaceAllString(title, ""))
+	} else {
+		title = strings.TrimSpace(legacyDatePattern.ReplaceAllString(title, ""))
+		title = strings.TrimSpace(legacyTitleBackrefPattern.ReplaceAllString(title, ""))
+	}
+	if title == "" {
+		return nil, fault.New("INVALID_ADOPTION", "legacy task title is empty")
+	}
+	intent := desc
+	if intent == "" {
+		intent = title
+	}
+	workType := metadata["Work type"]
+	if workType == "" {
+		workType = "unknown"
+	}
+	if location == "archive" {
+		state = "archived"
+	}
+	var started, completed any
+	for _, match := range legacyDatePattern.FindAllStringSubmatch(body, -1) {
+		date := strings.TrimSpace(match[2])
+		parsed, err := time.Parse("2006-1-2", date)
+		if err != nil {
+			continue
+		}
+		date = parsed.Format("2006-01-02")
+		if match[1] == "started" && started == nil {
+			started = date
+		} else if match[1] == "done" && completed == nil {
+			completed = date
+		}
+	}
+	return object{"work_id": id, "origin": origin, "alias": alias, "title": title,
+		"intent": intent, "work_type": workType, "state": state,
+		"started_at": started, "completed_at": completed,
+		"spec_id": metadata["Spec ID"], "plan_id": metadata["Plan ID"]}, nil
 }
 
 func (e *Engine) workAdopt(r object) (any, error) {
@@ -149,7 +295,7 @@ func (e *Engine) workAdopt(r object) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	archiveBlocks := map[int64]string{}
+	archiveBlocks := map[int64]legacyAdoptionBlock{}
 	if archive != nil {
 		archiveBlocks, err = adoptionBlocks(archive)
 		if err != nil {
@@ -181,8 +327,18 @@ func (e *Engine) workAdopt(r object) (any, error) {
 		if location == "archive" {
 			blocks = archiveBlocks
 		}
-		if !workIDPattern.MatchString(id) || seenIDs[id] || seenOrigins[origin] || (alias != "" && (seenAliases[alias] || !legacyAliasPattern.MatchString(alias))) || seenLines[key] || blocks[line] == "" || blocks[line] != model.S(row["block_sha256"]) {
+		block, found := blocks[line]
+		if !workIDPattern.MatchString(id) || seenIDs[id] || seenOrigins[origin] || (alias != "" && (seenAliases[alias] || !legacyAliasPattern.MatchString(alias))) || seenLines[key] || !found || block.digest != model.S(row["block_sha256"]) {
 			return nil, fault.New("INVALID_ADOPTION", "legacy row identity, alias or block digest is invalid")
+		}
+		canonical, err := canonicalAdoptionRow(block, location, line)
+		if err != nil {
+			return nil, err
+		}
+		for _, field := range []string{"work_id", "origin", "alias", "title", "intent", "work_type", "state", "started_at", "completed_at", "spec_id", "plan_id"} {
+			if model.S(canonical[field]) != model.S(row[field]) {
+				return nil, fault.New("INVALID_ADOPTION", "legacy row fields disagree with the selected source block")
+			}
 		}
 		seenIDs[id], seenOrigins[origin], seenLines[key] = true, true, true
 		if alias != "" {

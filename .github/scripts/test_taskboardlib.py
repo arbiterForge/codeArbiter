@@ -965,6 +965,14 @@ class FindBoardDriftTest(unittest.TestCase):
 
 
 class OriginSelectedTransitionTest(unittest.TestCase):
+    def test_reopen_preserves_existing_started_stamp(self):
+        old = ("- [x] Original title (from DECOMP#REOPEN)"
+               "  (started 2026-10-29)  (done 2026-10-30)\n")
+        changed = tb.edit_work_entry(old, "DECOMP#REOPEN", "reopen",
+                                     today=datetime.date(2026, 10, 31))
+        self.assertEqual(changed, "- [~] Original title (from DECOMP#REOPEN)"
+                         "  (started 2026-10-29)\n")
+
     def test_injected_second_origin_is_ambiguous(self):
         text = ("## In-flight\n"
                 "- [ ] Victim  (from A) (from B)\n")

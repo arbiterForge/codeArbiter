@@ -410,6 +410,18 @@ class WorkCLITest(unittest.TestCase):
         self.assertIn("no board", errors.getvalue())
         self.assertFalse(board.exists())
 
+    def test_selected_adoption_preserves_trailing_origin_whitespace(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)  \n"
+                         "  - Work origin: DECOMP#PARSER\n", encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        selected = preview["rows"][0]
+        self.assertEqual(selected["title"], "Build parser (from DECOMP#PARSER)")
+        adopted = self.run_work("adopt", "--operation-id", "adopt-whitespace-001")
+        self.assertEqual(adopted["adopted_count"], 1)
+        self.assertEqual(self.run_work("get", selected["work_id"])["title"], selected["title"])
+
     def test_direct_native_adoption_respects_legacy_writer_lock(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)
@@ -647,12 +659,16 @@ class WorkCLITest(unittest.TestCase):
                     self.assertEqual((changed["spec_id"], changed["plan_id"]),
                                      ("SPEC-LEGACY", "PLAN-LEGACY"))
                 else:
+                    self.run_work("start", work_id, "--operation-id", "legacy-start-reopen-001")
                     self.run_work("complete", work_id, "--operation-id", "legacy-complete-reopen-001")
                     changed = self.run_work("reopen", work_id,
                                             "--operation-id", "legacy-reopen-001")
                     self.assertEqual((changed["state"], changed["check_status"]),
                                      ("active", "unknown"))
                     self.assertIsNone(changed["completed_at"])
+                    self.assertEqual(changed["title"], "Original title")
+                    self.assertEqual(self.run_work("get", work_id)["title"], "Original title")
+                    self.assertEqual(board.read_text(encoding="utf-8").count("(started "), 1)
                 self.assertEqual(changed["work_id"], work_id)
                 self.assertEqual(self.run_work("get", work_id)["work_id"], work_id)
 
