@@ -51,8 +51,9 @@ See [Enforcement & Security](/enforcement/#blocking-commit-time-gates).
 
 ## Board
 
-`.codearbiter/open-tasks.md`, the project's task list. Every task holds one of three states
-(queued, in-progress, done); the only sanctioned writer is `/ca:task`. See
+`.codearbiter/open-tasks.md`, the task list in a legacy project. Native projects
+keep stable work records under `.codearbiter/work/`. The selected task command
+routes writes to the current owner. See
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-tasksmd).
 
 ## Checkpoint
@@ -119,7 +120,7 @@ before allowing a commit through. See
 ## NEEDS-TRIAGE
 
 The placeholder for an out-of-scope finding set aside inline during review: recorded, never
-acted on in place. It typically lands as a queued item on the [board](#board). See
+acted on in place. It typically lands as a queued item with the selected work owner. See
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-tasksmd).
 
 ## Orchestrator

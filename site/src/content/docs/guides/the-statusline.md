@@ -191,7 +191,7 @@ These render only when the open repo carries `arbiter: enabled` in `.codearbiter
 | Key | Segment | Shows |
 |-----|---------|-------|
 | 5 | **stage** | Current project stage from the `stage` key in `CONTEXT.md` frontmatter |
-| 5 | **tasks** | In-flight task count from `open-tasks.md`; done tasks are excluded |
+| 5 | **tasks** | Legacy board in-flight count; `?` for native work, whose current count needs a selected `work.py list` read |
 | 5 | **questions** | Count of open `CONFIRM-NN` questions in `open-questions.md` |
 | 5 | **overrides** | Override entries logged since the last `/ca:checkpoint` |
 

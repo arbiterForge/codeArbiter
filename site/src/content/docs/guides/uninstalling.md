@@ -285,7 +285,8 @@ what to check first.
 
 - The feature branch and every commit on it.
 - The spec and plan files under `.codearbiter/specs/` and `.codearbiter/plans/`.
-- The task board (`.codearbiter/open-tasks.md`) and its in-progress/done state.
+- The selected work owner: a legacy task board or portable native records under
+  `.codearbiter/work/`, including their local progress and pending provider intent.
 - The decision log and any ADRs the feature recorded.
 - The overrides and gate-events audit logs.
 

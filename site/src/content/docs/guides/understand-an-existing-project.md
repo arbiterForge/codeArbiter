@@ -36,6 +36,13 @@ Describe the initialization goal or use an explicit entry:
 initialized, inspect it with status and the appropriate drift procedure rather than removing the
 initialization marker to force a fresh extraction.
 
+An initialized project can also request brownfield project-model acquisition through
+`decompose`. Inspect existing knowledge and decomposition records first. Add source-backed
+observations about current capabilities and architecture, then record the intended target,
+delta, phases and possible work separately. Candidate work stays in decomposition until
+selected for promotion; an inferred gap does not create an issue. Existing answers, ADRs,
+work IDs and the initialization marker remain in place.
+
 ## Inspect the source in bounded scope
 
 Initial population or explicit full refresh accounts for six logical categories: stack,
@@ -98,6 +105,11 @@ Use [the first-repository walkthrough](/getting-started/quickstart/) to prove th
 ## Operate without rebuilding context every session
 
 Use [Return to a project](/guides/return-to-a-project/) for ordinary work.
+For local work, select the current owner before writing: a retained
+`open-tasks.md` board remains legacy-owned, while a project with native
+`.codearbiter/work/` records uses `work.py`. A migration starts with
+`work.py adopt-preview` and requires a separate explicit `work.py adopt`
+operation; browsing an existing project never starts a cutover.
 When a source path or configuration changes, inspect provenance with status drift and choose the
 appropriate re-scout or re-baseline procedure; in an HTML-format repository `knowledge.py stale`
 lists the records whose cited sources changed. Do not erase the context to silence a warning.
