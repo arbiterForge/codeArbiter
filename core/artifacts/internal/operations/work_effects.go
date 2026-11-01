@@ -180,6 +180,12 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 			current["kind"], current["status"], current["attempt_id"] = "status_update", "pending", nil
 			current["intent_id"] = intentID
 			current["desired_state"] = r["desired_state"]
+			if current["source_transition_id"] != nil {
+				delete(current, "source_transition_id")
+				if coordination := model.M(ex["coordination"]); len(coordination) != 0 {
+					coordination["issue_status"], coordination["issue_intent_id"] = "waiting_manual", nil
+				}
+			}
 			delete(current, "merge_pull_number")
 			delete(current, "merge_commit_sha")
 		}
@@ -197,10 +203,17 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 		if model.S(current["status"]) != "pending" {
 			return nil, fault.At("EFFECT_NOT_PENDING", id, p, "no pending provider effect can be claimed")
 		}
+		if err := e.checkMappedClaim(ex, current, "issue_state"); err != nil {
+			return nil, err
+		}
 		if model.S(current["binding_generation"]) != generation {
 			return nil, fault.At("PROVIDER_BINDING_CHANGED", id, p, "pending effect belongs to an older provider binding")
 		}
 		current["status"], current["attempt_id"] = "outcome_unknown", r["attempt_id"]
+		if coordination := model.M(ex["coordination"]); model.S(coordination["transition_id"]) == model.S(current["source_transition_id"]) &&
+			model.S(current["source_transition_id"]) != "" {
+			coordination["issue_status"] = "waiting_reconciliation"
+		}
 		if model.S(config["effect_timing"]) == "after_merge" {
 			current["merge_pull_number"], current["merge_commit_sha"] = r["merge_pull_number"], r["merge_commit_sha"]
 		}
@@ -226,6 +239,10 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 		if r["remote_state"] != nil {
 			current["remote_state"] = r["remote_state"]
 		}
+		if coordination := model.M(ex["coordination"]); model.S(coordination["transition_id"]) == model.S(current["source_transition_id"]) &&
+			model.S(current["source_transition_id"]) != "" {
+			coordination["issue_status"] = "synchronized"
+		}
 	case "conflict":
 		status := model.S(current["status"])
 		if model.S(current["kind"]) != "status_update" || (status != "pending" && status != "outcome_unknown") {
@@ -242,6 +259,10 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 			return nil, fault.At("EFFECT_NOT_PENDING", id, p, "pre-send remote status has not changed")
 		}
 		current["status"], current["remote_state"] = "conflict", r["remote_state"]
+		if coordination := model.M(ex["coordination"]); model.S(coordination["transition_id"]) == model.S(current["source_transition_id"]) &&
+			model.S(current["source_transition_id"]) != "" {
+			coordination["issue_status"] = "waiting_manual"
+		}
 	}
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)

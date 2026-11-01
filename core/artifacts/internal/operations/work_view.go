@@ -75,6 +75,13 @@ func (e *Engine) workView(r object) (any, error) {
 		data.ProjectEffectKind = model.S(effect["kind"])
 		data.ProjectEffectStatus = model.S(effect["status"])
 	}
+	if coordination := model.M(work["coordination"]); len(coordination) != 0 {
+		data.CoordinationAction = model.S(coordination["action"])
+		data.CoordinationIssueStatus = model.S(coordination["issue_status"])
+		data.CoordinationProjectStatus = model.S(coordination["project_status"])
+		data.CoordinationReason = model.S(coordination["reason"])
+		data.CoordinationSendStatus = model.S(coordination["send_status"])
+	}
 	if delivery := model.M(work["delivery_observation"]); len(delivery) != 0 {
 		data.DeliveryState = model.S(delivery["state"])
 		data.DeliveryURL = model.S(delivery["pull_url"])

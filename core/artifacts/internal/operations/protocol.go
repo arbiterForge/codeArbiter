@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-transition-map-get", "work-transition-map-configure", "work-coordinate-resume", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "work-provider-configure", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "work-provider-configure", "work-transition-map-configure", "work-coordinate-resume", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -299,6 +299,23 @@ func RequestSchema(op string) (object, error) {
 	case "work-get":
 		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
 	case "work-provider-get":
+	case "work-transition-map-get":
+	case "work-transition-map-configure":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("enabled", object{"type": "boolean"}, true)
+		add("issue_generation", digestType(), true)
+		add("project_generation", object{"anyOf": []any{digestType(), object{"type": "null"}}}, false)
+		add("project_field_id", object{"anyOf": []any{object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, object{"type": "null"}}}, false)
+		add("expected_config_sha256", digestType(), false)
+		target := closed(object{"issue_state": object{"anyOf": []any{enum("open", "closed"), object{"type": "null"}}},
+			"project_option_id": object{"anyOf": []any{object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}, object{"type": "null"}}}}, "issue_state", "project_option_id")
+		add("actions", closed(object{"start": target, "complete": target, "reopen": target}, "start", "complete", "reopen"), true)
+	case "work-coordinate-resume":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("work_id", object{"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"}, true)
+		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		add("observed_item_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, false)
+		add("observed_option_id", object{"anyOf": []any{object{"type": "null"}, object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}}}, false)
 	case "work-project-get":
 	case "work-project-configure":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
@@ -311,6 +328,10 @@ func RequestSchema(op string) (object, error) {
 		add("expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
 		if op == "work-project-claim" || op == "work-project-record" {
 			add("attempt_id", object{"type": "string", "minLength": int64(8), "maxLength": int64(80), "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		}
+		if op == "work-project-claim" {
+			add("merge_pull_number", object{"type": "integer", "minimum": int64(1)}, false)
+			add("merge_commit_sha", object{"type": "string", "pattern": "^[a-f0-9]{40}$"}, false)
 		}
 		if op == "work-project-record" {
 			add("remote_item_id", object{"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}, true)

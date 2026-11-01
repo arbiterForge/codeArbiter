@@ -103,6 +103,19 @@ def _parser():
     configure.add_argument("--timing", choices=("after_merge", "immediate"), default="after_merge")
     configure.add_argument("--operation-id", required=True)
     configure.add_argument("--expected-config-sha256")
+    sub.add_parser("transition-map-get", help="Read the optional native lifecycle tracker mapping")
+    transition_map = sub.add_parser("transition-map-configure", help="Configure an opt-in lifecycle mapping to bound GitHub targets")
+    transition_map.add_argument("--operation-id", required=True)
+    transition_map.add_argument("--expected-config-sha256")
+    transition_map.add_argument("--issue-start", choices=("open", "closed"))
+    transition_map.add_argument("--issue-complete", choices=("open", "closed"))
+    transition_map.add_argument("--issue-reopen", choices=("open", "closed"))
+    transition_map.add_argument("--project-field-id", help="Discovered single-select field node ID")
+    transition_map.add_argument("--project-start", help="Discovered option ID")
+    transition_map.add_argument("--project-complete", help="Discovered option ID")
+    transition_map.add_argument("--project-reopen", help="Discovered option ID")
+    transition_disable = sub.add_parser("transition-map-disable", help="Pause new mapped intent and mapped sends")
+    transition_disable.add_argument("--operation-id", required=True)
     sub.add_parser("project-get", help="Read the selected optional GitHub Project binding")
     project_discover = sub.add_parser("project-discover", help="Resolve a GitHub Projects v2 board URL to its node ID")
     project_discover.add_argument("--project-url", required=True)
@@ -131,6 +144,7 @@ def _parser():
     field_stage.add_argument("--operation-id", required=True)
     field_sync = sub.add_parser("project-field-sync", help="Send one pending Project option update")
     field_sync.add_argument("work_id")
+    field_sync.add_argument("--pull-number", type=int, help="Merged PR containing a mapped Project transition")
     field_reconcile = sub.add_parser("project-field-reconcile", help="Reconcile an uncertain field update; retry if its saved baseline remains")
     field_reconcile.add_argument("work_id")
     stage = sub.add_parser("stage-sync", help="Save a selected create-issue intent without sending it")
@@ -143,6 +157,9 @@ def _parser():
     sync = sub.add_parser("sync", help="Send one pending GitHub issue effect after its configured timing condition")
     sync.add_argument("work_id")
     sync.add_argument("--pull-number", type=int, help="Merged default-branch PR containing this pending work intent")
+    mapped_sync = sub.add_parser("sync-mapped", help="Explicitly send this work item's mapped issue and Project targets")
+    mapped_sync.add_argument("work_id")
+    mapped_sync.add_argument("--pull-number", type=int, help="Merged default-branch PR containing the exact mapped transition")
     reconcile = sub.add_parser("reconcile-issue", help="Read back an exact issue after an uncertain create")
     reconcile.add_argument("work_id")
     reconcile.add_argument("--number", type=int, required=True)
@@ -227,6 +244,44 @@ def _dispatch(args, client):
                                 replay=not getattr(client, "legacy", False))
     if args.verb == "provider-get":
         return client.call("work-provider-get", {})
+    if args.verb == "transition-map-get":
+        if getattr(client, "legacy", False):
+            raise ValueError("Transition mapping requires selected native work ownership")
+        return client.call("work-transition-map-get", {})
+    if args.verb == "transition-map-configure":
+        if getattr(client, "legacy", False):
+            raise ValueError("Transition mapping requires selected native work ownership")
+        issue = client.call("work-provider-get", {})
+        options = {action: getattr(args, "project_" + action) for action in ("start", "complete", "reopen")}
+        project = None
+        if args.project_field_id or any(options.values()):
+            if not args.project_field_id:
+                raise ValueError("Project options require --project-field-id")
+            project = client.call("work-project-get", {})
+        request = {"operation_id": args.operation_id, "enabled": True,
+                   "issue_generation": issue["binding_generation"],
+                   "project_generation": project["binding_generation"] if project else None,
+                   "project_field_id": args.project_field_id,
+                   "actions": {action: {"issue_state": getattr(args, "issue_" + action),
+                                        "project_option_id": options[action]}
+                               for action in ("start", "complete", "reopen")}}
+        if args.expected_config_sha256:
+            request["expected_config_sha256"] = args.expected_config_sha256
+        return client.call("work-transition-map-configure", request)
+    if args.verb == "transition-map-disable":
+        if getattr(client, "legacy", False):
+            raise ValueError("Transition mapping requires selected native work ownership")
+        current = client.call("work-transition-map-get", {})
+        if not current.get("configured"):
+            raise ValueError("No transition map is configured")
+        return client.call("work-transition-map-configure", {
+            "operation_id": args.operation_id, "enabled": False,
+            "issue_generation": current["issue_generation"],
+            "project_generation": current["project_generation"],
+            "project_field_id": current["project_field_id"],
+            "actions": current["actions"],
+            "expected_config_sha256": current["binding_generation"],
+        })
     if args.verb == "provider-configure":
         request = {"operation_id": args.operation_id, "repository": args.repository,
                    "credential_ref": args.credential_ref, "effect_timing": args.timing}
@@ -267,7 +322,7 @@ def _dispatch(args, client):
         if args.verb == "stage-status":
             request.update(kind="status_update", desired_state=args.state)
         return client.call("work-effect-stage", request)
-    if args.verb in ("sync", "reconcile-issue", "reconcile-status", "adopt-issue", "observe-pr",
+    if args.verb in ("sync", "sync-mapped", "reconcile-issue", "reconcile-status", "adopt-issue", "observe-pr",
                      "project-sync", "project-reconcile", "project-fields", "project-field-observe",
                      "project-field-stage", "project-field-sync", "project-field-reconcile"):
         if getattr(client, "legacy", False):
@@ -279,6 +334,8 @@ def _dispatch(args, client):
                                             operation_id=args.operation_id)
         if args.verb == "sync":
             return _workgithub.sync(client.root, client, args.work_id, pull_number=args.pull_number)
+        if args.verb == "sync-mapped":
+            return _workgithub.sync_mapped(client.root, client, args.work_id, pull_number=args.pull_number)
         if args.verb == "project-sync":
             return _workgithub.sync_project(client.root, client, args.work_id)
         if args.verb == "project-reconcile":
@@ -291,7 +348,7 @@ def _dispatch(args, client):
             return _workgithub.stage_project_field(client.root, client, args.work_id,
                                                    args.field_id, args.option_id, args.operation_id)
         if args.verb == "project-field-sync":
-            return _workgithub.sync_project_field(client.root, client, args.work_id)
+            return _workgithub.sync_project_field(client.root, client, args.work_id, pull_number=args.pull_number)
         if args.verb == "project-field-reconcile":
             return _workgithub.reconcile_project_field(client.root, client, args.work_id)
         if args.verb == "reconcile-issue":
@@ -354,7 +411,7 @@ def _dispatch_request(payload, client):
     operation = payload["operation"]
     if type(operation) is not str or operation not in {
         "work-create", "work-get", "work-context", "work-view", "work-list", "work-origins", "work-update", "project-view", "cycle-view",
-        "work-provider-get", "work-provider-configure", "work-effect-stage",
+        "work-provider-get", "work-provider-configure", "work-transition-map-get", "work-transition-map-configure", "work-effect-stage",
         "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field"
     }:
         raise ValueError("unsupported work operation")
@@ -440,7 +497,7 @@ def main(argv=None):
         print(result["html"])
     else:
         print(json.dumps(result, ensure_ascii=False))
-    return 0
+    return 1 if isinstance(result, dict) and result.get("ok") is False else 0
 
 
 def run(host, argv=None):

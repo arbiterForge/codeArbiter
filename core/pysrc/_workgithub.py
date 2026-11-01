@@ -8,6 +8,7 @@ provider template. An uncertain create is never posted a second time.
 from __future__ import annotations
 
 import json
+import hashlib
 import base64
 import binascii
 from datetime import datetime, timezone
@@ -18,6 +19,7 @@ import secrets
 import subprocess
 from urllib import error, parse, request
 
+from _artifactlib import ArtifactError
 from _gitexec import git_executable, root_bound_git_env
 
 
@@ -216,6 +218,29 @@ def _selected(root, client, work_id):
     return config, work
 
 
+def _mapped_send_ready(client, work, effect, target):
+    """Check that a low-level sender still names the saved mapped target."""
+    source = effect.get("source_transition_id")
+    if source is None:
+        return False
+    mapping = client.call("work-transition-map-get", {})
+    coordination = work.get("coordination") or {}
+    if (not mapping.get("enabled")
+            or mapping.get("binding_generation") != coordination.get("mapping_generation")
+            or source != coordination.get("transition_id")):
+        raise WorkSyncError("EFFECT_PAUSED", "Mapped intent is paused or changed; reconcile before sending")
+    if target == "issue_state":
+        valid = (effect.get("intent_id") == coordination.get("issue_intent_id")
+                 and effect.get("desired_state") == coordination.get("desired_issue_state"))
+    else:
+        valid = (effect.get("intent_id") == coordination.get("project_intent_id")
+                 and effect.get("desired_option_id") == coordination.get("desired_project_option_id")
+                 and effect.get("field_id") == coordination.get("project_field_id"))
+    if not valid:
+        raise WorkSyncError("EFFECT_PAUSED", "Mapped target differs from its saved transition")
+    return True
+
+
 def _credential(config, token_lookup):
     token = token_lookup(config["credential_ref"])
     if (type(token) is not str or not 1 <= len(token) <= 4096
@@ -250,11 +275,21 @@ def _verified_issue(transport, config, work_id, number, token):
     return url, issue["state"]
 
 
-def _verified_work_intent(transport, config, work, path, token):
-    """Read one bounded canonical work snapshot and match its pending issue effect."""
-    selected_effect = work.get("provider_effect") or {}
+def _verified_work_intent(transport, config, work, path, token, target="issue_state"):
+    """Read one bounded canonical work snapshot and match its exact saved intent."""
+    selected_effect = work.get("project_effect" if target == "project_field" else "provider_effect") or {}
+    selected_coordination = work.get("coordination") or {}
     intent_id = selected_effect.get("intent_id")
-    if type(intent_id) is not str or re.fullmatch(r"[a-f0-9]{64}", intent_id) is None:
+    source_transition = selected_effect.get("source_transition_id")
+    materialized = source_transition is not None
+    if (target == "project_field" and selected_coordination.get("desired_project_option_id") is not None
+            and source_transition is None):
+        source_transition = selected_coordination.get("transition_id")
+        if type(source_transition) is str:
+            intent_id = hashlib.sha256(("codearbiter-mapped-intent-v1\x00" + source_transition + "\x00project_field").encode()).hexdigest()
+    if (type(intent_id) is not str or re.fullmatch(r"[a-f0-9]{64}", intent_id) is None
+            or source_transition is not None and
+            (type(source_transition) is not str or re.fullmatch(r"[a-f0-9]{64}", source_transition) is None)):
         raise WorkSyncError("MERGE_UNVERIFIED", "Pending effect has no unique staged intent; restage it before sync")
     status, content = transport.request("GET", path, None, token)
     if status != 200 or type(content) is not dict or content.get("encoding") != "base64" or type(content.get("content")) is not str:
@@ -268,17 +303,33 @@ def _verified_work_intent(transport, config, work, path, token):
         if raw.count(start) != 1 or raw.count(end) != 1:
             raise ValueError("work has no unique model")
         model = json.loads(raw.split(start, 1)[1].split(end, 1)[0])
-        effect = model["execution"]["provider_effect"]
+        effect = model["execution"].get("project_effect" if target == "project_field" else "provider_effect")
+        coordination = model["execution"].get("coordination")
     except (ValueError, KeyError, TypeError, IndexError, AttributeError, binascii.Error) as exc:
         raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work model cannot be verified") from exc
-    if (not isinstance(model, dict) or not isinstance(effect, dict)
+    if (not isinstance(model, dict)
             or not isinstance(model.get("normative"), dict)
             or model.get("artifact_id") != work["work_id"]
             or model["normative"].get("project_id") != work["project_id"]
-            or (selected_effect.get("kind") == "create_issue" and
+            or (target == "issue_state" and selected_effect.get("kind") == "create_issue" and
                 (model["normative"].get("title") != work["title"] or
-                 model["normative"].get("summary") != work["intent"]))
-            or effect.get("status") != "pending"
+                 model["normative"].get("summary") != work["intent"]))):
+        raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work identity differs from the selected item")
+    if source_transition is not None:
+        target_fields = (("desired_project_option_id", "project_generation", "project_field_id")
+                         if target == "project_field" else ("desired_issue_state", "issue_generation"))
+        if (not isinstance(coordination, dict)
+                or coordination.get("transition_id") != source_transition
+                or selected_coordination.get("transition_id") != source_transition
+                or coordination.get("mapping_generation") != selected_coordination.get("mapping_generation")
+                or any(coordination.get(field) != selected_coordination.get(field) for field in target_fields)
+                or (target == "issue_state" and coordination.get("desired_issue_state") != selected_effect.get("desired_state"))
+                or (target == "project_field" and materialized and
+                    (coordination.get("desired_project_option_id") != selected_effect.get("desired_option_id")
+                     or coordination.get("project_field_id") != selected_effect.get("field_id")))):
+            raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work does not contain this exact mapped transition intent")
+        return
+    if (not isinstance(effect, dict) or effect.get("status") != "pending"
             or effect.get("intent_id") != intent_id
             or effect.get("kind") != (work.get("provider_effect") or {}).get("kind")
             or effect.get("desired_state") != (work.get("provider_effect") or {}).get("desired_state")
@@ -287,12 +338,12 @@ def _verified_work_intent(transport, config, work, path, token):
         raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work intent does not match the selected pending effect")
 
 
-def _verified_current_intent(transport, config, work, token):
+def _verified_current_intent(transport, config, work, token, target="issue_state"):
     path = f"/repos/{config['repository']}/contents/.codearbiter/work/{work['work_id']}.html"
-    _verified_work_intent(transport, config, work, path, token)
+    _verified_work_intent(transport, config, work, path, token, target)
 
 
-def _verified_merge(root, transport, config, work, pull_number, token):
+def _verified_merge(root, transport, config, work, pull_number, token, target="issue_state"):
     """Observe a merged default-branch PR and still-current pending work intent."""
     if type(pull_number) is not int or pull_number < 1:
         raise WorkSyncError("EFFECT_WAITING_FOR_MERGE", "Supply the merged PR number before a contingent effect")
@@ -330,8 +381,8 @@ def _verified_merge(root, transport, config, work, pull_number, token):
     if result.returncode != 0:
         raise WorkSyncError("MERGE_UNVERIFIED", "The observed merge commit is absent from this checkout's HEAD ancestry")
     path = f"/repos/{repo}/contents/.codearbiter/work/{work['work_id']}.html?ref={sha}"
-    _verified_work_intent(transport, config, work, path, token)
-    _verified_current_intent(transport, config, work, token)
+    _verified_work_intent(transport, config, work, path, token, target)
+    _verified_current_intent(transport, config, work, token, target)
     return sha
 
 
@@ -347,6 +398,7 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
         raise WorkSyncError("UNSUPPORTED_EFFECT", "The pending issue effect is unsupported")
     if effect.get("binding_generation") != config["binding_generation"]:
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Pending intent belongs to an older provider binding")
+    _mapped_send_ready(client, work, effect, "issue_state")
     if config["effect_timing"] == "after_merge" and pull_number is None:
         raise WorkSyncError("EFFECT_WAITING_FOR_MERGE", "Contingent issue creation waits for observed merge")
     token = _credential(config, token_lookup)
@@ -380,6 +432,9 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Provider changed after the pre-send claim; reconcile before retrying")
     if _origin_repository(Path(root)).casefold() != config["repository"].casefold():
         raise WorkSyncError("PROVIDER_BINDING_CHANGED", "Git origin changed after the pre-send claim; reconcile before retrying")
+    if effect.get("source_transition_id") is not None:
+        _mapped_send_ready(client, client.call("work-get", {"work_id": work_id}),
+                           claimed["provider_effect"], "issue_state")
     if merge_sha is not None:
         try:
             _verified_current_intent(transport, config, work, token)
@@ -836,7 +891,7 @@ def _conflict_project_field(client, work, project_config, observed):
     return client.call("work-project-conflict", request)
 
 
-def sync_project_field(root, client, work_id, transport=None, token_lookup=None):
+def sync_project_field(root, client, work_id, transport=None, token_lookup=None, pull_number=None):
     """Update one selected option after checking its saved remote baseline."""
     transport = transport if transport is not None else GithubTransport()
     token_lookup = token_lookup if token_lookup is not None else os.environ.get
@@ -844,7 +899,16 @@ def sync_project_field(root, client, work_id, transport=None, token_lookup=None)
     effect = work["project_effect"]
     if effect["kind"] != "set_single_select" or effect["status"] != "pending":
         raise WorkSyncError("EFFECT_NOT_PENDING", "No pending Project option effect is selected")
+    mapped = _mapped_send_ready(client, work, effect, "project_field")
+    if not mapped and pull_number is not None:
+        raise WorkSyncError("INVALID_MERGE_PROOF", "Manual Project sync does not use a merge PR number")
     token = _credential(project_config, token_lookup)
+    merge_sha = None
+    if mapped and issue_config["effect_timing"] == "after_merge":
+        merge_sha = _verified_merge(Path(root), transport, issue_config, work,
+                                    pull_number, token, target="project_field")
+    elif mapped and pull_number is not None:
+        raise WorkSyncError("INVALID_MERGE_PROOF", "Immediate mapped Project sync does not use a merge PR number")
     issue_id = _project_issue(transport, issue_config, work, token)
     project_id, item_id, field_id = (project_config["project_node_id"],
                                      effect["remote_item_id"], effect["field_id"])
@@ -856,14 +920,25 @@ def sync_project_field(root, client, work_id, transport=None, token_lookup=None)
         _conflict_project_field(client, work, project_config, observed)
         raise WorkSyncError("REMOTE_CONFLICT", "Project option changed before send; inspect it before restaging")
     attempt = "github-project-attempt-" + secrets.token_hex(12)
-    claimed = client.call("work-project-claim", {
+    claim_request = {
         "operation_id": "github-project-claim-" + secrets.token_hex(12),
         "work_id": work_id, "binding_generation": project_config["binding_generation"],
         "attempt_id": attempt,
-        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]}}
+    if merge_sha is not None:
+        claim_request.update(merge_pull_number=pull_number, merge_commit_sha=merge_sha)
+    claimed = client.call("work-project-claim", claim_request)
     if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
             or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
         raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed after the pre-send claim")
+    if mapped:
+        _mapped_send_ready(client, client.call("work-get", {"work_id": work_id}),
+                           claimed["project_effect"], "project_field")
+    if merge_sha is not None:
+        try:
+            _verified_current_intent(transport, issue_config, work, token, target="project_field")
+        except Exception as exc:
+            raise WorkSyncError("OUTCOME_UNKNOWN", "Default-branch mapped Project intent changed after claim") from exc
     try:
         if observed != effect["desired_option_id"]:
             response = transport.graphql(_PROJECT_FIELD_UPDATE, {
@@ -883,6 +958,85 @@ def sync_project_field(root, client, work_id, transport=None, token_lookup=None)
     return _record_project(client, claimed, project_config, attempt, item_id, readback)
 
 
+def _resume_mapped(root, client, work, transport, token_lookup, pull_number, observe_project=False):
+    coordination = work["coordination"]
+    observed = {}
+    if observe_project:
+        issue_config, project_config, work = _project_selected(root, client, work["work_id"])
+        token = _credential(project_config, token_lookup)
+        if issue_config["effect_timing"] == "after_merge":
+            _verified_merge(Path(root), transport, issue_config, work, pull_number, token,
+                            target="project_field")
+        elif pull_number is not None:
+            raise WorkSyncError("INVALID_MERGE_PROOF", "Immediate mapped Project sync does not use a merge PR number")
+        issue_id = _project_issue(transport, issue_config, work, token)
+        project_id = project_config["project_node_id"]
+        item_id = (work.get("project_effect") or {}).get("remote_item_id")
+        if _find_project_item(transport, project_id, issue_id, token) != item_id:
+            raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Saved Project item no longer contains the bound issue")
+        observed = {"observed_item_id": item_id,
+                    "observed_option_id": _read_project_option(
+                        transport, project_id, issue_id, item_id,
+                        coordination["project_field_id"], coordination["desired_project_option_id"], token)}
+    raw = json.dumps([work["work_id"], coordination["transition_id"], work["revision"], observed],
+                     sort_keys=True, separators=(",", ":")).encode()
+    return client.call("work-coordinate-resume", {
+        "operation_id": "mapped-resume-" + hashlib.sha256(raw).hexdigest()[:40],
+        "work_id": work["work_id"],
+        "expected": {"revision": work["revision"], "model_sha256": work["model_sha256"]},
+        **observed})
+
+
+def sync_mapped(root, client, work_id, transport=None, token_lookup=None, pull_number=None):
+    """Explicitly attempt only the saved, mapping-owned targets for one work item."""
+    transport = transport if transport is not None else GithubTransport()
+    token_lookup = token_lookup if token_lookup is not None else os.environ.get
+    mapping = client.call("work-transition-map-get", {})
+    work = client.call("work-get", {"work_id": work_id})
+    coordination = work.get("coordination") or {}
+    if (not mapping.get("enabled") or not coordination
+            or mapping.get("binding_generation") != coordination.get("mapping_generation")):
+        raise WorkSyncError("EFFECT_PAUSED", "No current enabled mapping owns this work transition")
+    outcomes = {}
+    for target, effect_key, status_key, desired_key, sender in (
+            ("issue", "provider_effect", "issue_status", "desired_issue_state", sync),
+            ("project", "project_effect", "project_status", "desired_project_option_id", sync_project_field)):
+        if coordination.get(desired_key) is None:
+            outcomes[target] = {"status": "not_requested"}
+            continue
+        try:
+            work = client.call("work-get", {"work_id": work_id})
+            status = (work.get("coordination") or {}).get(status_key)
+            if status in ("waiting_binding", "waiting_reconciliation"):
+                try:
+                    _resume_mapped(root, client, work, transport, token_lookup, pull_number)
+                except ArtifactError as exc:
+                    if exc.code != "COORDINATION_WAITING":
+                        raise
+                work = client.call("work-get", {"work_id": work_id})
+                status = (work.get("coordination") or {}).get(status_key)
+            if target == "project" and status == "awaiting_observation":
+                _resume_mapped(root, client, work, transport, token_lookup, pull_number,
+                               observe_project=True)
+                work = client.call("work-get", {"work_id": work_id})
+            effect = work.get(effect_key) or {}
+            if (effect.get("source_transition_id") == coordination.get("transition_id")
+                    and effect.get("status") == "synchronized"):
+                outcomes[target] = {"status": "synchronized"}
+                continue
+            if (effect.get("source_transition_id") != coordination.get("transition_id")
+                    or effect.get("status") != "pending"):
+                outcomes[target] = {"status": (work.get("coordination") or {}).get(status_key, "unavailable")}
+                continue
+            sender(root, client, work_id, transport=transport, token_lookup=token_lookup,
+                   pull_number=pull_number)
+            outcomes[target] = {"status": "synchronized"}
+        except (WorkSyncError, ArtifactError) as exc:
+            outcomes[target] = {"status": "failed", "code": exc.code, "error": str(exc)}
+    return {"ok": all(value["status"] in ("not_requested", "synchronized") for value in outcomes.values()),
+            "work_id": work_id, "transition_id": coordination["transition_id"], "targets": outcomes}
+
+
 def reconcile_project_field(root, client, work_id, transport=None, token_lookup=None):
     """Resolve an uncertain option, retrying the selected value if unchanged."""
     transport = transport if transport is not None else GithubTransport()
@@ -900,6 +1054,13 @@ def reconcile_project_field(root, client, work_id, transport=None, token_lookup=
                                     effect["desired_option_id"], token)
     if observed != effect["desired_option_id"]:
         if observed == effect["expected_remote_option_id"]:
+            mapped = _mapped_send_ready(client, work, effect, "project_field")
+            if mapped and issue_config["effect_timing"] == "after_merge":
+                merge_number = effect.get("merge_pull_number")
+                merge_sha = effect.get("merge_commit_sha")
+                if (_verified_merge(Path(root), transport, issue_config, work,
+                                    merge_number, token, target="project_field") != merge_sha):
+                    raise WorkSyncError("MERGE_UNVERIFIED", "Saved Project retry merge identity changed")
             if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
                     or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
                 raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed before the retry")
