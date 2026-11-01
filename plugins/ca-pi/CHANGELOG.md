@@ -4,6 +4,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-10-31
+
 ### Added
 
 - Start new HTML projects with a portable native work identity at knowledge

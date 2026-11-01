@@ -6,6 +6,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-10-31
+
 ### Added
 
 - Start new HTML projects with a portable native work identity at knowledge

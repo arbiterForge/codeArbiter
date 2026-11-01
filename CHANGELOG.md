@@ -12,6 +12,8 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.0] - 2026-10-31
+
 ### Added
 
 - Make new HTML projects native-first: initialize one portable project ID with
