@@ -914,11 +914,26 @@ class TestArbiterStateCache(unittest.TestCase):
         sl._ARBITER_CACHE.clear()
         self.assertEqual(sl.arbiter_state(self.tmp)["tasks"], 1)
 
+    def test_enrolled_native_project_without_work_reports_unknown_count(self):
+        os.unlink(os.path.join(self.cad, "open-tasks.md"))
+        work = os.path.join(self.cad, "work")
+        os.mkdir(work)
+        with open(os.path.join(work, "project.json"), "w", encoding="utf-8") as f:
+            f.write('{"owner":"native"}')
+        sl._ARBITER_CACHE.clear()
+        self.assertEqual(sl.arbiter_state(self.tmp)["tasks"], "?")
+
     def test_nonempty_native_directory_hides_ambiguous_count(self):
         work = os.path.join(self.cad, "work")
         os.mkdir(work)
         with open(os.path.join(work, "project.json"), "w", encoding="utf-8") as f:
             f.write("{}")
+        sl._ARBITER_CACHE.clear()
+        self.assertEqual(sl.arbiter_state(self.tmp)["tasks"], "?")
+
+    def test_invalid_board_path_does_not_report_legacy_count(self):
+        os.unlink(os.path.join(self.cad, "open-tasks.md"))
+        os.mkdir(os.path.join(self.cad, "open-tasks.md"))
         sl._ARBITER_CACHE.clear()
         self.assertEqual(sl.arbiter_state(self.tmp)["tasks"], "?")
 

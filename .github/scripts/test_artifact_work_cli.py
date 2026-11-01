@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import json
 import os
@@ -67,12 +68,22 @@ class WorkCLITest(unittest.TestCase):
         scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
                                    "--root", str(self.root)], capture_output=True, text=True)
         self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
-        self.run_work("adopt", "--operation-id", "cli-portable-adopt-001")
+        self.assertFalse((self.root / ".codearbiter" / "open-tasks.md").exists())
+        for slug in ("project", "tech-stack", "coding-standards", "security-controls", "code-map"):
+            self.client.call("create", {"operation_id": "cli-knowledge-" + slug,
+                "artifact_id": "CTX-" + slug.upper(), "kind": "knowledge",
+                "slug": slug, "title": slug, "summary": "Initial knowledge document"})
+        context = (self.root / ".codearbiter" / "CONTEXT.md").read_bytes()
+        initialized = self.client.call("knowledge-initialize", {
+            "operation_id": "cli-knowledge-initialize-001",
+            "expected": {".codearbiter/CONTEXT.md": hashlib.sha256(context).hexdigest()}})
+        project_id = initialized["project_id"]
         first = self.run_work("create", "--title", "Portable work", "--intent",
                               "Retain project identity", "--type", "fix",
                               "--operation-id", "cli-portable-work-001")
         project = self.root / ".codearbiter" / "work" / "project.json"
         self.assertTrue(project.is_file())
+        self.assertEqual(first["project_id"], project_id)
         self.assertTrue((self.root / ".codearbiter" / ".gitattributes").is_file())
         subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
                        capture_output=True, text=True)
@@ -116,6 +127,46 @@ class WorkCLITest(unittest.TestCase):
             with self.assertRaises(_artifactlib.ArtifactError):
                 _artifactlib.ArtifactClient(unprotected, self.installation).call(
                     "work-get", {"work_id": first["work_id"]})
+
+    def test_two_clones_share_project_identity_before_either_creates_work(self) -> None:
+        scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
+                                   "--root", str(self.root)], capture_output=True, text=True)
+        self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+        for slug in ("project", "tech-stack", "coding-standards", "security-controls", "code-map"):
+            self.client.call("create", {"operation_id": "clone-knowledge-" + slug,
+                "artifact_id": "CTX-" + slug.upper(), "kind": "knowledge",
+                "slug": slug, "title": slug, "summary": "Initial knowledge document"})
+        context = (self.root / ".codearbiter" / "CONTEXT.md").read_bytes()
+        initialized = self.client.call("knowledge-initialize", {
+            "operation_id": "clone-knowledge-initialize-001",
+            "expected": {".codearbiter/CONTEXT.md": hashlib.sha256(context).hexdigest()}})
+        self.assertFalse(list((self.root / ".codearbiter" / "work").glob("WORK-*.html")))
+        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "--",
+                        ".codearbiter/CONTEXT.md", ".codearbiter/.gitattributes",
+                        ".codearbiter/context", ".codearbiter/work/project.json"],
+                       check=True, capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
+                        "-c", "user.email=test@example.invalid", "commit", "--quiet",
+                        "-m", "Enroll native project without work"], check=True,
+                       capture_output=True, text=True)
+        with tempfile.TemporaryDirectory(prefix="ca-first-work-clones-") as directory:
+            parent = Path(directory).resolve(strict=True)
+            identities = []
+            for index in (1, 2):
+                clone = parent / f"clone-{index}"
+                subprocess.run(["git", "-c", "core.autocrlf=true", "clone", "--quiet",
+                                str(self.root), str(clone)], check=True,
+                               capture_output=True, text=True)
+                child = _artifactlib.ArtifactClient(clone, self.installation)
+                item = child.call("work-create", {"operation_id": f"clone-first-work-{index}",
+                    "title": f"Independent work {index}", "intent": "Preserve one project",
+                    "work_type": "feature"})
+                identities.append((item["project_id"], item["work_id"]))
+            self.assertEqual(identities[0][0], initialized["project_id"])
+            self.assertEqual(identities[1][0], initialized["project_id"])
+            self.assertNotEqual(identities[0][1], identities[1][1])
 
     def test_existing_scaffold_repairs_work_attributes_without_replacing_custom_rules(self) -> None:
         script = str(REPO / "core/pysrc/init-codearbiter.py")
@@ -206,6 +257,20 @@ class WorkCLITest(unittest.TestCase):
         self.assertNotIn('id="ca-artifact-model"', page)
         self.assertFalse((self.root / ".codearbiter" / "views").exists())
         self.assertEqual(self.run_work("get", work_item["work_id"])["state"], "queued")
+        saved = self.run_work("view", work_item["work_id"], "--save")
+        self.assertFalse(saved["canonical"])
+        target = self.root / saved["view_path"]
+        self.assertTrue(target.is_file())
+        self.assertIn("../../specs/view-cli.html", target.read_text(encoding="utf-8"))
+        self.run_work("complete", work_item["work_id"], "--operation-id", "view-cli-complete-001")
+        self.run_work("view", work_item["work_id"], "--save")
+        self.assertIn("COMPLETE locally", target.read_text(encoding="utf-8"))
+        target.write_text("human content", encoding="utf-8")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(work.main(["view", work_item["work_id"], "--save"]), 1)
+        self.assertIn("unrecognized content", json.loads(output.getvalue())["error"])
+        self.assertEqual(target.read_text(encoding="utf-8"), "human content")
 
     def test_native_provider_cli_stages_portable_intent_without_sending(self) -> None:
         item = self.run_work("create", "--title", "Track one result", "--intent", "Stay local first",

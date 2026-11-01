@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 # #462: an unclosed file handle is not cosmetic on Windows -- it blocks the
@@ -27,7 +28,6 @@ _spec.loader.exec_module(ic)
 # Expected files that a fresh scaffold should produce.
 EXPECTED_FILES = [
     "CONTEXT.md",
-    "open-tasks.md",
     "open-questions.md",
     "overrides.log",
     "last-checkpoint",
@@ -55,6 +55,40 @@ class TestFreshScaffold(unittest.TestCase):
             path = os.path.join(self.cad, fname)
             self.assertTrue(os.path.isfile(path),
                             f"expected {fname} to be created")
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "open-tasks.md")))
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "done-tasks.md")))
+
+    def test_explicit_markdown_retains_legacy_owner(self):
+        ic.main(["--root", self.root, "--format", "markdown"])
+        self.assertTrue(os.path.isfile(os.path.join(self.cad, "open-tasks.md")))
+        self.assertTrue(os.path.isfile(os.path.join(self.cad, "done-tasks.md")))
+
+    def test_partial_legacy_board_recovers_as_markdown_under_new_default(self):
+        os.mkdir(self.cad)
+        board = os.path.join(self.cad, "open-tasks.md")
+        with open(board, "w", encoding="utf-8") as handle:
+            handle.write(ic.OPEN_TASKS)
+        before = _read_text(board)
+        ic.main(["--root", self.root])
+        self.assertEqual(_read_text(board), before)
+        self.assertNotIn("context-format: html", _read_text(os.path.join(self.cad, "CONTEXT.md")))
+        self.assertTrue(os.path.isfile(os.path.join(self.cad, "done-tasks.md")))
+
+    def test_interrupted_native_scaffold_retries_without_legacy_board(self):
+        original = ic._create_scaffold_file
+        failed = False
+        def interrupt(path, content, *, newline=None):
+            nonlocal failed
+            if not failed and os.path.basename(path) == "open-questions.md":
+                failed = True
+                raise OSError("simulated interruption")
+            return original(path, content, newline=newline)
+        with mock.patch.object(ic, "_create_scaffold_file", side_effect=interrupt):
+            with self.assertRaises(OSError):
+                ic.main(["--root", self.root])
+        ic.main(["--root", self.root])
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "open-tasks.md")))
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "done-tasks.md")))
 
     def test_context_md_has_arbiter_enabled(self):
         ic.main(["--root", self.root])
