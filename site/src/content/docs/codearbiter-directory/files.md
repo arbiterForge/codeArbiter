@@ -316,8 +316,9 @@ written before the field existed authorize no session and resolve to `arbiter`.
 
 A `MODE:` row is therefore **not** a user-attributed override, and counting the two together
 overstates how often a human bypassed a gate. Readers accept legacy `DEV:` rows too, since existing
-history is append-only and never rewritten. The statusline counts entries newer than the
-`last-checkpoint` marker as "overrides since last checkpoint."
+history is append-only and never rewritten. The statusline's `over:N` is the override-row count
+minus the integer baseline stored in `last-checkpoint`. The count skips blank lines, comments, and
+`MODE:` and legacy `DEV:` transition rows; a baseline outside that count is treated as 0.
 
 **Writers:** `/ca:override`, the mode-plane flip (`prompt-submit.py`, `MODE:` entry/exit lines).
 **Readers:** statusline, `/ca:status`,

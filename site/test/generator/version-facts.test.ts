@@ -22,7 +22,11 @@ describe("version facts", () => {
   it("reads each fact from its owning source", () => {
     const facts = repositoryVersionFacts();
     expect(facts["pi.supported"].source).toBe("plugins/ca-pi/tools/src/compatibility.ts");
-    expect(real("plugins/ca-pi/tools/src/compatibility.ts")).toContain(`"${facts["pi.supported"].value}"`);
+    // One fact may list several versions ("1.1.0 or 1.2.0"); each is its own source entry.
+    const piSource = real("plugins/ca-pi/tools/src/compatibility.ts");
+    for (const version of facts["pi.supported"].value.split(" or ")) {
+      expect(piSource).toContain(`"${version}"`);
+    }
     expect(real(".github/workflows/ci.yml")).toContain(`"${facts["codex.minimum"].value}"`);
     expect(real("plugins/ca/hooks/_adrlifecyclegit.py")).toContain(`Git ${facts["git.adrMinimum"].value}+`);
     expect(JSON.parse(real("plugins/ca/.claude-plugin/plugin.json")).version).toBe(facts["ca.version"].value);
