@@ -76,6 +76,7 @@ review, progress and recovery boundaries.
 | `views/work/*.html` (derived) | `work.py view <WORK-ID> --save` | browser, local review | Regenerate after work changes; never edit as canonical state |
 | `work/provider.json` | `work.py provider-configure` | explicit GitHub sync | No: finite provider binding; no credential value is stored |
 | `work/project-provider.json` | `work.py project-configure` | optional GitHub Projects item and single-select effects | No: binds to the issue provider; no credential value is stored |
+| `work/transition-map.json` | `work.py transition-map-configure` | optional native start/complete/reopen tracker intent | No: finite mapping; absent until explicitly configured, with no credential value |
 | `legacy/open-tasks.md`, `legacy/done-tasks.md` | selected journaled work adoption | historical byte-exact snapshots | No: retained originals, not writable boards |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |

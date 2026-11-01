@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:codearbiter:artifact:work:0.3.2",
-  "title": "codeArbiter work reference schema 0.3.2",
+  "$id": "urn:codearbiter:artifact:work:0.3.3",
+  "title": "codeArbiter work reference schema 0.3.3",
   "type": "object",
   "properties": {
     "format": {"const": "codearbiter.artifact"},
     "format_version": {"const": "0.1.0"},
     "kind": {"const": "work"},
-    "schema_version": {"const": "0.3.2"},
+    "schema_version": {"enum": ["0.3.2", "0.3.3"]},
     "artifact_id": {"type": "string", "pattern": "^WORK-[A-F0-9]{32}$"},
     "slug": {"type": "string", "pattern": "^work-[a-f0-9]{32}$"},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
@@ -67,7 +67,11 @@
             "field_id": {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"},
             "desired_option_id": {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"},
             "expected_remote_option_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}]},
-            "observed_option_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}]}
+            "observed_option_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}]},
+            "intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "source_transition_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "merge_pull_number": {"type": "integer", "minimum": 1},
+            "merge_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"}
           },
           "required": ["kind", "status", "binding_generation", "attempt_id", "remote_issue_number", "remote_item_id"],
           "additionalProperties": false
@@ -85,9 +89,34 @@
             "remote_state": {"anyOf": [{"type": "null"}, {"enum": ["open", "closed"]}]},
             "desired_state": {"anyOf": [{"type": "null"}, {"enum": ["open", "closed"]}]},
             "merge_pull_number": {"type": "integer", "minimum": 1},
-            "merge_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"}
+            "merge_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+            "source_transition_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
           },
           "required": ["kind", "status", "binding_generation", "attempt_id", "remote_issue_number", "remote_issue_url"],
+          "additionalProperties": false
+        }]},
+        "coordination": {"anyOf": [{"type": "null"}, {
+          "type": "object",
+          "properties": {
+            "transition_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "action": {"enum": ["start", "complete", "reopen"]},
+            "mapping_generation": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "issue_generation": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "project_generation": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "project_field_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{8,256}$"}]},
+            "desired_issue_state": {"anyOf": [{"type": "null"}, {"enum": ["open", "closed"]}]},
+            "desired_project_option_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Za-z0-9_+/=-]{1,128}$"}]},
+            "issue_status": {"enum": ["none", "pending", "synchronized", "waiting_binding", "waiting_manual", "waiting_reconciliation", "binding_changed", "unavailable", "paused"]},
+            "project_status": {"enum": ["none", "pending", "synchronized", "waiting_binding", "awaiting_observation", "waiting_manual", "waiting_reconciliation", "binding_changed", "unavailable", "paused"]},
+            "issue_intent_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "project_intent_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "reason": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 240}]},
+            "superseded_transition_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "superseded_issue_intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "predecessor_issue_intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "superseded_project_intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          },
+          "required": ["transition_id", "action", "mapping_generation", "issue_generation", "project_generation", "project_field_id", "desired_issue_state", "desired_project_option_id", "issue_status", "project_status", "issue_intent_id", "project_intent_id", "reason", "superseded_transition_id"],
           "additionalProperties": false
         }]}
       },

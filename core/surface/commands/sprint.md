@@ -19,6 +19,13 @@ their selected member work item and report local progress, checks, PR delivery
 and provider effects independently. See `{{PLUGIN_ROOT}}/includes/helper-invocation.md` for
 literal helper invocation and retry boundaries.
 
+Where the native project has explicitly configured transition mapping, use
+the ordinary one-item lifecycle call for each member. It saves the mapped
+tracker intent or a waiting reason with local progress. Do not translate
+status labels or stage each target in a separate model-facing call. A later
+explicit `work.py sync-mapped <WORK-ID>` handles only that item's mapped
+targets and reports partial results; no sprint transition sends over the network.
+
 ## Flow
 
 Load and follow `{{PLUGIN_ROOT}}/SPRINT.md`:

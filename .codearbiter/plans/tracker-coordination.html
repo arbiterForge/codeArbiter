@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Automatic tracker coordination for ordinary work transitions implementation · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-TRACKER-COORDINATION</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/tracker-coordination.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Automatic tracker coordination for ordinary work transitions implementation</h1><p class="deck">Native map, atomic lifecycle coordination, explicit bounded send, compatibility and independent evidence.</p><div class="meta"><span>PLAN-TRACKER-COORDINATION</span><span>Revision 24 · schema 0.3.2</span><span>9 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-TRACKER-COORDINATION</div><div class="field"><span class="label">Binding mode</span>draft_preview</div><div class="field"><span class="label">Normative sha256</span>a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T01 -->
+<article class="record" id="T01" data-ca-symbol="T01" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T01">T01</a><h3>Contract and local mapping</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC01">SPEC-TRACKER-COORDINATION#AC01</a></li><li><a href="../specs/tracker-coordination.html#AC02">SPEC-TRACKER-COORDINATION#AC02</a></li><li><a href="../specs/tracker-coordination.html#AC09">SPEC-TRACKER-COORDINATION#AC09</a></li><li><a href="../specs/tracker-coordination.html#AC12">SPEC-TRACKER-COORDINATION#AC12</a></li><li><a href="../specs/tracker-coordination.html#AC13">SPEC-TRACKER-COORDINATION#AC13</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Configuration fixtures prove missing/disabled unchanged, bad IDs/unknown keys rejected, no provider/legacy fallback and no tokens stored.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/work.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/protocol.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_effects.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_project.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Re-pin the actual implementation head and inspect for overlapping work. Preserve #1069/#1073; do not reopen their completed enrollment/adoption tasks.</li><li>Define the closed transition map and typed native configure/read/disable operations. Keep project.json and provider generations independent. No auto-enable or retroactive task updates.</li><li>Resolve IDs with existing tools; freeze destination/field identity and document the explicit mapped-sync boundary relative to ADR-0045. Do not accept decisions on the user’s behalf.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;,&#34;-run&#34;,&#34;^TestTrackerCoordinationT01&#34;,&#34;-count=1&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The named coordination regressions pass with no remote fixture mutation outside the fake transport.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestTrackerCoordinationT01FiniteOptInMap</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Finite map, atomic lifecycle and outstanding effect sequencing are implemented; focused current-source Go regressions pass. This records implementation progress, not independent acceptance. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;,&#34;-run&#34;,&#34;^TestTrackerCoordination&#34;,&#34;-count=1&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T12:09:32Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>16577017d31e4705c56503c77b010922b4bed5d6213b48a4c2e33188e551a97f</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local tool result, focused Go operation tests on 2026-11-01</div><div class="field"><span class="label">Summary</span>Named tracker coordination Go regressions passed on the current source.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T01 -->
+
+<!-- CA:BEGIN:T02 -->
+<article class="record" id="T02" data-ca-symbol="T02" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T02">T02</a><h3>Transactional lifecycle coordination</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC03">SPEC-TRACKER-COORDINATION#AC03</a></li><li><a href="../specs/tracker-coordination.html#AC04">SPEC-TRACKER-COORDINATION#AC04</a></li><li><a href="../specs/tracker-coordination.html#AC05">SPEC-TRACKER-COORDINATION#AC05</a></li><li><a href="../specs/tracker-coordination.html#AC12">SPEC-TRACKER-COORDINATION#AC12</a></li><li><a href="../specs/tracker-coordination.html#AC13">SPEC-TRACKER-COORDINATION#AC13</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T01">T01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Fault injection before and after commit plus exact retry/newer-write tests show no partial transaction or duplicated intent; no network was called.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/operations/work.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_effects.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_project.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/schemas/work.schema.json</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/schema/work.schema.json</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Extend workUpdate so actual progress, latest coordination and stageable effects use one existing transaction. Factor pure staging builders; do not call effect mutators after separately committing progress.</li><li>Add minimal bounded execution metadata, real request/intent identity and target dispositions. Distinguish optional-map problems from actual work/store failure.</li><li>Preserve unknown checks and exact old APIs. Use capability/schema/version policy for new fields; update embedded/public schemas and generated types together.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;,&#34;-run&#34;,&#34;^TestTrackerCoordinationT02&#34;,&#34;-count=1&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The named coordination regressions pass with no remote fixture mutation outside the fake transport.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestTrackerCoordinationT02OneTransitionStagesBoundIssue</li><li>TestTrackerCoordinationT02MalformedOptionalMapKeepsLocalProgress</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Finite map, atomic lifecycle and outstanding effect sequencing are implemented; focused current-source Go regressions pass. This records implementation progress, not independent acceptance. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;,&#34;-run&#34;,&#34;^TestTrackerCoordination&#34;,&#34;-count=1&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T12:09:33Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>89befac9c07c73a42fa38f0b0b5ea016f1b78920bafa21cffe242bed2d939f81</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local tool result, focused Go operation tests on 2026-11-01</div><div class="field"><span class="label">Summary</span>Named tracker coordination Go regressions passed on the current source.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T02 -->
+
+<!-- CA:BEGIN:T03 -->
+<article class="record" id="T03" data-ca-symbol="T03" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T03">T03</a><h3>Safe outstanding-effect sequencing</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC05">SPEC-TRACKER-COORDINATION#AC05</a></li><li><a href="../specs/tracker-coordination.html#AC06">SPEC-TRACKER-COORDINATION#AC06</a></li><li><a href="../specs/tracker-coordination.html#AC07">SPEC-TRACKER-COORDINATION#AC07</a></li><li><a href="../specs/tracker-coordination.html#AC09">SPEC-TRACKER-COORDINATION#AC09</a></li><li><a href="../specs/tracker-coordination.html#AC11">SPEC-TRACKER-COORDINATION#AC11</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T02">T02</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>No existing claim is lost; the latest desired state is eventually stageable after explicit reconciliation; old merged work cannot release a different intent.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_effects.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_project.go</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_workgithub.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Preserve manual/uncertain effects. Coalesce only unclaimed map-owned intent and carry latest desired state without creating an unbounded queue.</li><li>Add selected coordinate/resume logic for a saved desire once a binding or prior uncertainty is resolved; do not repeat complete/start to repair coordination.</li><li>Carry mapping/binding identity and paused state to all send paths. Test config changes, title edits, complete/reopen and older clone intent without claiming distributed exactly-once.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;,&#34;-run&#34;,&#34;^TestTrackerCoordinationT03&#34;,&#34;-count=1&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The named coordination regressions pass with no remote fixture mutation outside the fake transport.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestTrackerCoordinationT03CoalescesUnclaimedMappedIssue</li><li>TestTrackerCoordinationT03NullTargetRetiresOnlyUnsentIssue</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Finite map, atomic lifecycle and outstanding effect sequencing are implemented; focused current-source Go regressions pass. This records implementation progress, not independent acceptance. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;,&#34;-run&#34;,&#34;^TestTrackerCoordination&#34;,&#34;-count=1&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T12:09:35Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>492f669032bc3ec5149bd683d1686efa3d06346e2f9d671d01e1fb7a636f89f3</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local tool result, focused Go operation tests on 2026-11-01</div><div class="field"><span class="label">Summary</span>Named tracker coordination Go regressions passed on the current source.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T03 -->
+
+<!-- CA:BEGIN:T04 -->
+<article class="record" id="T04" data-ca-symbol="T04" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T04">T04</a><h3>Explicit mapped synchronization</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC08">SPEC-TRACKER-COORDINATION#AC08</a></li><li><a href="../specs/tracker-coordination.html#AC09">SPEC-TRACKER-COORDINATION#AC09</a></li><li><a href="../specs/tracker-coordination.html#AC10">SPEC-TRACKER-COORDINATION#AC10</a></li><li><a href="../specs/tracker-coordination.html#AC11">SPEC-TRACKER-COORDINATION#AC11</a></li><li><a href="../specs/tracker-coordination.html#AC12">SPEC-TRACKER-COORDINATION#AC12</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T03">T03</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Existing FakeGithub/FakeProjectGithub faults plus exact merged-intent controls prove timing, readback and per-target recovery; no new transport.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/work.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_workgithub.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_effects.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_project.go</code></td></tr><tr><td>modify</td><td><code>.codearbiter/decisions/0045-merge-observed-github-work-effects.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add proposed sync-mapped as an explicit selected-item convenience over existing senders. Existing manual sync verbs keep their documented semantics.</li><li>Mapped issue and Project targets inherit the configured issue timing. Enforce exact merged/current intent for after_merge even when a low-level sender is called directly.</li><li>Capture necessary bounded field observations only in the explicit remote operation; preserve conflicts/uncertain results and partial success. Do not introduce auto-create/auto-attach.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_work_github.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The named coordination regressions pass with no remote fixture mutation outside the fake transport.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_mapped_issue_sync_uses_transition_anchor_and_pauses_on_disable</li><li>test_mapped_project_first_null_observation_sends_once_and_detects_human_edit</li><li>test_mapped_project_after_merge_uses_saved_transition_before_first_observation</li><li>test_mapped_project_uncertain_retry_pauses_when_mapping_disabled</li><li>test_mapped_partial_issue_success_does_not_repeat_when_project_fails</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_work_github.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T12:09:36Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>9935f8da08fa744df6f1370586e14096c1c7201da2cb59fc65ab22cd6e661cda</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local tool result, 57 tests in 88.963s on 2026-11-01</div><div class="field"><span class="label">Summary</span>57 GitHub transport fixture tests passed against candidate-final installation.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T04 -->
+
+<!-- CA:BEGIN:T05 -->
+<article class="record" id="T05" data-ca-symbol="T05" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T05">T05</a><h3>Ordinary workflows and human views</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC01">SPEC-TRACKER-COORDINATION#AC01</a></li><li><a href="../specs/tracker-coordination.html#AC08">SPEC-TRACKER-COORDINATION#AC08</a></li><li><a href="../specs/tracker-coordination.html#AC12">SPEC-TRACKER-COORDINATION#AC12</a></li><li><a href="../specs/tracker-coordination.html#AC14">SPEC-TRACKER-COORDINATION#AC14</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T02">T02</a></li><li><a href="#T04">T04</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>An agent can complete work in one model-facing call, read honest saved HTML and later request explicit sync without manually constructing every low-level stage request.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/commands/task.md</code></td></tr><tr><td>modify</td><td><code>core/surface/commands/feature.md</code></td></tr><tr><td>modify</td><td><code>core/surface/commands/fix.md</code></td></tr><tr><td>modify</td><td><code>core/surface/commands/sprint.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/finishing-a-development-branch/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/work_view.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/render/work_view.go</code></td></tr><tr><td>modify</td><td><code>tools/sync-core.py</code></td></tr><tr><td>modify</td><td><code>tools/build-surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Update canonical feature/fix/sprint/task/finish instructions to use one ordinary lifecycle call and explain pending effects without adding permissions. Preserve no-op diagnosis and small-fix behavior.</li><li>Project mapping configured once, not inferred by every model call. Do not require remote availability to save or show work.</li><li>Update existing work/context/render projections with concise coordination state and next action. Regenerate host copies and affected site reference pins, not a new UI app.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The installed-candidate CLI keeps local progress and reports an unbound mapped target accurately.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_transition_map_cli_keeps_progress_when_issue_is_unbound</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T12:09:38Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>bf59d00b4772f7726092bc5152ad84599f6c7ec0aa9a2ecb6f2a0bd05d394baf</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local tool result, 36 tests in 26.800s on 2026-11-01</div><div class="field"><span class="label">Summary</span>36 installed-candidate work CLI tests passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T05 -->
+
+<!-- CA:BEGIN:T06 -->
+<article class="record" id="T06" data-ca-symbol="T06" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T06">T06</a><h3>Candidate and compatibility tests</h3><span class="badge">IN_PROGRESS</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC05">SPEC-TRACKER-COORDINATION#AC05</a></li><li><a href="../specs/tracker-coordination.html#AC09">SPEC-TRACKER-COORDINATION#AC09</a></li><li><a href="../specs/tracker-coordination.html#AC13">SPEC-TRACKER-COORDINATION#AC13</a></li><li><a href="../specs/tracker-coordination.html#AC14">SPEC-TRACKER-COORDINATION#AC14</a></li><li><a href="../specs/tracker-coordination.html#AC16">SPEC-TRACKER-COORDINATION#AC16</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T03">T03</a></li><li><a href="#T04">T04</a></li><li><a href="#T05">T05</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Unit, adapter and installed-candidate evidence names exact commit/tree, payload digest, environment, skips and changed-source scope.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_work_github.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_work_cli.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_conformance.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_installed_host.py</code></td></tr><tr><td>modify</td><td><code>tools/build-host-packages.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Extend existing tests rather than adding a second test framework. Verify ordinary disabled behavior, manual effects, old/new reader capability, clone/worktree identity and consumer attributes.</li><li>Build exact candidate payloads with the repository’s existing tooling. Test each supported host using installed copied resources rather than monkeypatched source alone.</li><li>Inspect real desktop/mobile saved views, bounded summaries, no-network reads and unknown checks; document the existing GitHub field race rather than obscure it.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_work_github.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>All existing and new GitHub adapter fixture tests pass against the installed candidate.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_mapped_issue_sync_uses_transition_anchor_and_pauses_on_disable</li><li>test_mapped_project_first_null_observation_sends_once_and_detects_human_edit</li><li>test_mapped_project_after_merge_uses_saved_transition_before_first_observation</li><li>test_mapped_project_uncertain_retry_pauses_when_mapping_disabled</li><li>test_mapped_partial_issue_success_does_not_repeat_when_project_fails</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>IN_PROGRESS</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-artifacts.py&#34;,&#34;--output&#34;,&#34;C:/Users/brenn/.codex/worktrees/tracker-coordination/candidate-verified&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T12:12:10Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>759c47553c30dff37d86a8180a3f73e18486f9f2cab3f22338576dc4bb857a1c</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local build-artifacts result; Windows amd64 binary SHA256 adbfa2fd28b9f620b16e0cb818e53feba858c3c004ebbddcc0e4f5596326a066</div><div class="field"><span class="label">Summary</span>Windows candidate built with 419 Go tests passed, 3 skipped; Linux and macOS host qualification remains CI work.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T06 -->
+
+<!-- CA:BEGIN:T07 -->
+<article class="record" id="T07" data-ca-symbol="T07" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T07">T07</a><h3>Fresh tester agent and evidence closure</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/tracker-coordination.html#AC01">SPEC-TRACKER-COORDINATION#AC01</a></li><li><a href="../specs/tracker-coordination.html#AC08">SPEC-TRACKER-COORDINATION#AC08</a></li><li><a href="../specs/tracker-coordination.html#AC10">SPEC-TRACKER-COORDINATION#AC10</a></li><li><a href="../specs/tracker-coordination.html#AC11">SPEC-TRACKER-COORDINATION#AC11</a></li><li><a href="../specs/tracker-coordination.html#AC12">SPEC-TRACKER-COORDINATION#AC12</a></li><li><a href="../specs/tracker-coordination.html#AC15">SPEC-TRACKER-COORDINATION#AC15</a></li><li><a href="../specs/tracker-coordination.html#AC16">SPEC-TRACKER-COORDINATION#AC16</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T06">T06</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Tester report differentiates model-driven usability, installed executable evidence, mock transport tests and actual provider round trips. No product-readiness claim without the stated evidence.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_work_github.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the selected implementation before remote synchronization; preserve newer work and remote observations.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Hand 04-TEST-AGENT.md to one fresh tester context with a fixed candidate, this packet and permitted fixture manifest. Tester reads the product contract, not only implementer claims.</li><li>Run baseline and candidate local dogfood, controlled failures, resume/retry, and allowed real GitHub Issue/Projects readback. No credentials/approved fixture means live cases NOT_RUN, not fake success.</li><li>Report exact outcomes; implementer fixes demonstrated failures and reruns affected cases once needed. Do not add recurring reviewer ceremony, silently lower checks, merge or publish.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>A fresh tester must separately report the matrix; this CLI check alone is not that report.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_transition_map_cli_keeps_progress_when_issue_is_unbound</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T07 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>Local native contract</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>Finite map, atomic transition and bounded sequencing pass their regressions.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T01">T01</a></li><li><a href="#T02">T02</a></li><li><a href="#T03">T03</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Remote sync and qualification</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li></ul></div><div class="field"><span class="label">Exit</span>Explicit send, views, installed candidate and independent evidence are checked.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T04">T04</a></li><li><a href="#T05">T05</a></li><li><a href="#T06">T06</a></li><li><a href="#T07">T07</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2><span class="missing">None recorded</span></section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>11940bf0e5aa2a8b7944a62052aaa832c8b2e0fe</div><div class="field"><span class="label">Observed date</span>2026-11-01</div><div class="field"><span class="label">Repository</span>arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 91089683133bf3b9a9a8c7b38328efbd8f6361651b6e7539ef4fe84897c7a7f5<br>Model SHA-256: 03f8606402ea8adca576e5124c683c2de0ef61245545cb4a5720bb6d3625ac97</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-TRACKER-COORDINATION",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "task_check_observations": {
+      "T01": [
+        {
+          "argv": [
+            "go",
+            "test",
+            "./internal/operations",
+            "-run",
+            "^TestTrackerCoordination",
+            "-count=1"
+          ],
+          "criterion_subject_sha256": "a58987ada4c51625cd97fe789c583350c648bec2d644d4d01731856f8bd46385",
+          "cwd": "core/artifacts",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T12:09:32Z",
+          "recording_operation_id": "tracker-plan-t01-check-20261101",
+          "scoped_inputs_sha256": "16577017d31e4705c56503c77b010922b4bed5d6213b48a4c2e33188e551a97f",
+          "source": "Observed local tool result, focused Go operation tests on 2026-11-01",
+          "source_normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d",
+          "summary": "Named tracker coordination Go regressions passed on the current source.",
+          "task_subject_sha256": "0198470cc1d965b10cb14a456b8c029bc88b54b4902e4d34c19052c962268394"
+        }
+      ],
+      "T02": [
+        {
+          "argv": [
+            "go",
+            "test",
+            "./internal/operations",
+            "-run",
+            "^TestTrackerCoordination",
+            "-count=1"
+          ],
+          "criterion_subject_sha256": "fb08099b493bc4d6a5025b0eec2d923823240c9c05da4646cf5b2af8edccd269",
+          "cwd": "core/artifacts",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T12:09:33Z",
+          "recording_operation_id": "tracker-plan-t02-check-20261101",
+          "scoped_inputs_sha256": "89befac9c07c73a42fa38f0b0b5ea016f1b78920bafa21cffe242bed2d939f81",
+          "source": "Observed local tool result, focused Go operation tests on 2026-11-01",
+          "source_normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d",
+          "summary": "Named tracker coordination Go regressions passed on the current source.",
+          "task_subject_sha256": "44f5755e2be3ca6e2662c1309567fae5bbca01e7adc925e091f42b6562e6c622"
+        }
+      ],
+      "T03": [
+        {
+          "argv": [
+            "go",
+            "test",
+            "./internal/operations",
+            "-run",
+            "^TestTrackerCoordination",
+            "-count=1"
+          ],
+          "criterion_subject_sha256": "1794235f2fd0833fbe275fa5becc874d32841e1b5341e74ef1993e07b57e97e4",
+          "cwd": "core/artifacts",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T12:09:35Z",
+          "recording_operation_id": "tracker-plan-t03-check-20261101",
+          "scoped_inputs_sha256": "492f669032bc3ec5149bd683d1686efa3d06346e2f9d671d01e1fb7a636f89f3",
+          "source": "Observed local tool result, focused Go operation tests on 2026-11-01",
+          "source_normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d",
+          "summary": "Named tracker coordination Go regressions passed on the current source.",
+          "task_subject_sha256": "88296bd3fdb4b4b539f099e6961dcc77ce7f4e78975f47448c755fac02d5b901"
+        }
+      ],
+      "T04": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_work_github.py"
+          ],
+          "criterion_subject_sha256": "7c4b6eef732da5d4fe9bd587c9621dc6107dbe8c68ce1e2d998ed13a7b5617f4",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T12:09:36Z",
+          "recording_operation_id": "tracker-plan-t04-check-20261101",
+          "scoped_inputs_sha256": "9935f8da08fa744df6f1370586e14096c1c7201da2cb59fc65ab22cd6e661cda",
+          "source": "Observed local tool result, 57 tests in 88.963s on 2026-11-01",
+          "source_normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d",
+          "summary": "57 GitHub transport fixture tests passed against candidate-final installation.",
+          "task_subject_sha256": "5313738f8f7f40feae5f994912ddac855cdd46905eb1839bc5c35337faa952f4"
+        }
+      ],
+      "T05": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_artifact_work_cli.py"
+          ],
+          "criterion_subject_sha256": "8e6f1b439def23e248d967943f8f74e076f81cb714ccaa49781848aac4dbc0c5",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T12:09:38Z",
+          "recording_operation_id": "tracker-plan-t05-check-20261101",
+          "scoped_inputs_sha256": "bf59d00b4772f7726092bc5152ad84599f6c7ec0aa9a2ecb6f2a0bd05d394baf",
+          "source": "Observed local tool result, 36 tests in 26.800s on 2026-11-01",
+          "source_normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d",
+          "summary": "36 installed-candidate work CLI tests passed.",
+          "task_subject_sha256": "92f757fe974a39564a7f96dc0e68d3d7d39e4b15efac08859a36f620b8d1bfb2"
+        }
+      ],
+      "T06": [
+        {
+          "argv": [
+            "python",
+            "tools/build-artifacts.py",
+            "--output",
+            "C:/Users/brenn/.codex/worktrees/tracker-coordination/candidate-verified"
+          ],
+          "criterion_subject_sha256": "aa263bd5effe7129db4f3f7d7fae6eb1a2a4b13e11b89d699700ae7e28c7a259",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T12:12:10Z",
+          "recording_operation_id": "tracker-plan-t06-local-build-20261101",
+          "scoped_inputs_sha256": "759c47553c30dff37d86a8180a3f73e18486f9f2cab3f22338576dc4bb857a1c",
+          "source": "Observed local build-artifacts result; Windows amd64 binary SHA256 adbfa2fd28b9f620b16e0cb818e53feba858c3c004ebbddcc0e4f5596326a066",
+          "source_normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d",
+          "summary": "Windows candidate built with 419 Go tests passed, 3 skipped; Linux and macOS host qualification remains CI work.",
+          "task_subject_sha256": "eab382e75c5f51f977a839417d92932d22c398793029cadd1f3111d0b6698792"
+        }
+      ]
+    },
+    "tasks": {
+      "T01": {
+        "evidence_refs": [],
+        "reason": "Finite map, atomic lifecycle and outstanding effect sequencing are implemented; focused current-source Go regressions pass. This records implementation progress, not independent acceptance. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T02": {
+        "evidence_refs": [],
+        "reason": "Finite map, atomic lifecycle and outstanding effect sequencing are implemented; focused current-source Go regressions pass. This records implementation progress, not independent acceptance. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T03": {
+        "evidence_refs": [],
+        "reason": "Finite map, atomic lifecycle and outstanding effect sequencing are implemented; focused current-source Go regressions pass. This records implementation progress, not independent acceptance. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T04": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T05": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T06": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "IN_PROGRESS"
+      },
+      "T07": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "03f8606402ea8adca576e5124c683c2de0ef61245545cb4a5720bb6d3625ac97",
+    "normative_sha256": "91089683133bf3b9a9a8c7b38328efbd8f6361651b6e7539ef4fe84897c7a7f5",
+    "symbol_count": 9
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "11940bf0e5aa2a8b7944a62052aaa832c8b2e0fe",
+      "observed_date": "2026-11-01",
+      "repository": "arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "Finite map, atomic transition and bounded sequencing pass their regressions.",
+        "id": "CP-01",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03"
+        ],
+        "title": "Local native contract"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "Explicit send, views, installed candidate and independent evidence are checked.",
+        "id": "CP-02",
+        "tasks": [
+          "T04",
+          "T05",
+          "T06",
+          "T07"
+        ],
+        "title": "Remote sync and qualification"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [],
+    "spec_ref": {
+      "artifact_id": "SPEC-TRACKER-COORDINATION",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "a6c2b9fe8119660bae940a85bddf22941bf6e0706e706b411237e036946b1c5d"
+    },
+    "summary": "Native map, atomic lifecycle coordination, explicit bounded send, compatibility and independent evidence.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC01",
+          "SPEC-TRACKER-COORDINATION#AC02",
+          "SPEC-TRACKER-COORDINATION#AC09",
+          "SPEC-TRACKER-COORDINATION#AC12",
+          "SPEC-TRACKER-COORDINATION#AC13"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Configuration fixtures prove missing/disabled unchanged, bad IDs/unknown keys rejected, no provider/legacy fallback and no tokens stored."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T01",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/work.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/protocol.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_effects.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_project.go"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Re-pin the actual implementation head and inspect for overlapping work. Preserve #1069/#1073; do not reopen their completed enrollment/adoption tasks.",
+          "Define the closed transition map and typed native configure/read/disable operations. Keep project.json and provider generations independent. No auto-enable or retroactive task updates.",
+          "Resolve IDs with existing tools; freeze destination/field identity and document the explicit mapped-sync boundary relative to ADR-0045. Do not accept decisions on the user’s behalf."
+        ],
+        "title": "Contract and local mapping",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/operations",
+              "-run",
+              "^TestTrackerCoordinationT01",
+              "-count=1"
+            ],
+            "assertion": "The named coordination regressions pass with no remote fixture mutation outside the fake transport.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestTrackerCoordinationT01FiniteOptInMap"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC03",
+          "SPEC-TRACKER-COORDINATION#AC04",
+          "SPEC-TRACKER-COORDINATION#AC05",
+          "SPEC-TRACKER-COORDINATION#AC12",
+          "SPEC-TRACKER-COORDINATION#AC13"
+        ],
+        "depends_on": [
+          "T01"
+        ],
+        "done_when": [
+          "Fault injection before and after commit plus exact retry/newer-write tests show no partial transaction or duplicated intent; no network was called."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T02",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_effects.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_project.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/schemas/work.schema.json"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/schema/work.schema.json"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Extend workUpdate so actual progress, latest coordination and stageable effects use one existing transaction. Factor pure staging builders; do not call effect mutators after separately committing progress.",
+          "Add minimal bounded execution metadata, real request/intent identity and target dispositions. Distinguish optional-map problems from actual work/store failure.",
+          "Preserve unknown checks and exact old APIs. Use capability/schema/version policy for new fields; update embedded/public schemas and generated types together."
+        ],
+        "title": "Transactional lifecycle coordination",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/operations",
+              "-run",
+              "^TestTrackerCoordinationT02",
+              "-count=1"
+            ],
+            "assertion": "The named coordination regressions pass with no remote fixture mutation outside the fake transport.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestTrackerCoordinationT02OneTransitionStagesBoundIssue",
+              "TestTrackerCoordinationT02MalformedOptionalMapKeepsLocalProgress"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC05",
+          "SPEC-TRACKER-COORDINATION#AC06",
+          "SPEC-TRACKER-COORDINATION#AC07",
+          "SPEC-TRACKER-COORDINATION#AC09",
+          "SPEC-TRACKER-COORDINATION#AC11"
+        ],
+        "depends_on": [
+          "T02"
+        ],
+        "done_when": [
+          "No existing claim is lost; the latest desired state is eventually stageable after explicit reconciliation; old merged work cannot release a different intent."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T03",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_effects.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_project.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_workgithub.py"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Preserve manual/uncertain effects. Coalesce only unclaimed map-owned intent and carry latest desired state without creating an unbounded queue.",
+          "Add selected coordinate/resume logic for a saved desire once a binding or prior uncertainty is resolved; do not repeat complete/start to repair coordination.",
+          "Carry mapping/binding identity and paused state to all send paths. Test config changes, title edits, complete/reopen and older clone intent without claiming distributed exactly-once."
+        ],
+        "title": "Safe outstanding-effect sequencing",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/operations",
+              "-run",
+              "^TestTrackerCoordinationT03",
+              "-count=1"
+            ],
+            "assertion": "The named coordination regressions pass with no remote fixture mutation outside the fake transport.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestTrackerCoordinationT03CoalescesUnclaimedMappedIssue",
+              "TestTrackerCoordinationT03NullTargetRetiresOnlyUnsentIssue"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC08",
+          "SPEC-TRACKER-COORDINATION#AC09",
+          "SPEC-TRACKER-COORDINATION#AC10",
+          "SPEC-TRACKER-COORDINATION#AC11",
+          "SPEC-TRACKER-COORDINATION#AC12"
+        ],
+        "depends_on": [
+          "T03"
+        ],
+        "done_when": [
+          "Existing FakeGithub/FakeProjectGithub faults plus exact merged-intent controls prove timing, readback and per-target recovery; no new transport."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T04",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/work.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_workgithub.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_effects.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_project.go"
+          },
+          {
+            "action": "modify",
+            "path": ".codearbiter/decisions/0045-merge-observed-github-work-effects.md"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Add proposed sync-mapped as an explicit selected-item convenience over existing senders. Existing manual sync verbs keep their documented semantics.",
+          "Mapped issue and Project targets inherit the configured issue timing. Enforce exact merged/current intent for after_merge even when a low-level sender is called directly.",
+          "Capture necessary bounded field observations only in the explicit remote operation; preserve conflicts/uncertain results and partial success. Do not introduce auto-create/auto-attach."
+        ],
+        "title": "Explicit mapped synchronization",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_work_github.py"
+            ],
+            "assertion": "The named coordination regressions pass with no remote fixture mutation outside the fake transport.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_mapped_issue_sync_uses_transition_anchor_and_pauses_on_disable",
+              "test_mapped_project_first_null_observation_sends_once_and_detects_human_edit",
+              "test_mapped_project_after_merge_uses_saved_transition_before_first_observation",
+              "test_mapped_project_uncertain_retry_pauses_when_mapping_disabled",
+              "test_mapped_partial_issue_success_does_not_repeat_when_project_fails"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC01",
+          "SPEC-TRACKER-COORDINATION#AC08",
+          "SPEC-TRACKER-COORDINATION#AC12",
+          "SPEC-TRACKER-COORDINATION#AC14"
+        ],
+        "depends_on": [
+          "T02",
+          "T04"
+        ],
+        "done_when": [
+          "An agent can complete work in one model-facing call, read honest saved HTML and later request explicit sync without manually constructing every low-level stage request."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T05",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/commands/task.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/commands/feature.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/commands/fix.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/commands/sprint.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/finishing-a-development-branch/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work_view.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/render/work_view.go"
+          },
+          {
+            "action": "modify",
+            "path": "tools/sync-core.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/build-surface.py"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Update canonical feature/fix/sprint/task/finish instructions to use one ordinary lifecycle call and explain pending effects without adding permissions. Preserve no-op diagnosis and small-fix behavior.",
+          "Project mapping configured once, not inferred by every model call. Do not require remote availability to save or show work.",
+          "Update existing work/context/render projections with concise coordination state and next action. Regenerate host copies and affected site reference pins, not a new UI app."
+        ],
+        "title": "Ordinary workflows and human views",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_work_cli.py"
+            ],
+            "assertion": "The installed-candidate CLI keeps local progress and reports an unbound mapped target accurately.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_transition_map_cli_keeps_progress_when_issue_is_unbound"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC05",
+          "SPEC-TRACKER-COORDINATION#AC09",
+          "SPEC-TRACKER-COORDINATION#AC13",
+          "SPEC-TRACKER-COORDINATION#AC14",
+          "SPEC-TRACKER-COORDINATION#AC16"
+        ],
+        "depends_on": [
+          "T03",
+          "T04",
+          "T05"
+        ],
+        "done_when": [
+          "Unit, adapter and installed-candidate evidence names exact commit/tree, payload digest, environment, skips and changed-source scope."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T06",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_work_github.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_work_cli.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_conformance.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_installed_host.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/build-host-packages.py"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Extend existing tests rather than adding a second test framework. Verify ordinary disabled behavior, manual effects, old/new reader capability, clone/worktree identity and consumer attributes.",
+          "Build exact candidate payloads with the repository’s existing tooling. Test each supported host using installed copied resources rather than monkeypatched source alone.",
+          "Inspect real desktop/mobile saved views, bounded summaries, no-network reads and unknown checks; document the existing GitHub field race rather than obscure it."
+        ],
+        "title": "Candidate and compatibility tests",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_work_github.py"
+            ],
+            "assertion": "All existing and new GitHub adapter fixture tests pass against the installed candidate.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_mapped_issue_sync_uses_transition_anchor_and_pauses_on_disable",
+              "test_mapped_project_first_null_observation_sends_once_and_detects_human_edit",
+              "test_mapped_project_after_merge_uses_saved_transition_before_first_observation",
+              "test_mapped_project_uncertain_retry_pauses_when_mapping_disabled",
+              "test_mapped_partial_issue_success_does_not_repeat_when_project_fails"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-TRACKER-COORDINATION#AC01",
+          "SPEC-TRACKER-COORDINATION#AC08",
+          "SPEC-TRACKER-COORDINATION#AC10",
+          "SPEC-TRACKER-COORDINATION#AC11",
+          "SPEC-TRACKER-COORDINATION#AC12",
+          "SPEC-TRACKER-COORDINATION#AC15",
+          "SPEC-TRACKER-COORDINATION#AC16"
+        ],
+        "depends_on": [
+          "T06"
+        ],
+        "done_when": [
+          "Tester report differentiates model-driven usability, installed executable evidence, mock transport tests and actual provider round trips. No product-readiness claim without the stated evidence."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T07",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_work_github.py"
+          }
+        ],
+        "rollback": "Revert the selected implementation before remote synchronization; preserve newer work and remote observations.",
+        "source_refs": [],
+        "steps": [
+          "Hand 04-TEST-AGENT.md to one fresh tester context with a fixed candidate, this packet and permitted fixture manifest. Tester reads the product contract, not only implementer claims.",
+          "Run baseline and candidate local dogfood, controlled failures, resume/retry, and allowed real GitHub Issue/Projects readback. No credentials/approved fixture means live cases NOT_RUN, not fake success.",
+          "Report exact outcomes; implementer fixes demonstrated failures and reruns affected cases once needed. Do not add recurring reviewer ceremony, silently lower checks, merge or publish."
+        ],
+        "title": "Fresh tester agent and evidence closure",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_work_cli.py"
+            ],
+            "assertion": "A fresh tester must separately report the matrix; this CLI check alone is not that report.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_transition_map_cli_keeps_progress_when_issue_is_unbound"
+            ]
+          }
+        ]
+      }
+    ],
+    "title": "Automatic tracker coordination for ordinary work transitions implementation"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/tracker-coordination.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 24,
+  "schema_version": "0.3.2",
+  "slug": "tracker-coordination"
+}
+</script>
+</body></html>

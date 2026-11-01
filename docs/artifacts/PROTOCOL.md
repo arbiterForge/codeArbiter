@@ -74,7 +74,7 @@ worktree does not establish their referenced verification or approval history.
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
 | Local work | `work-create`, `work-adopt`, `work-get`, `work-list`, `work-origins`, `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update` |
-| Work provider effects | `work-provider-get`, `work-provider-configure`, `work-effect-stage`, `work-effect-claim`, `work-effect-record`, `work-effect-conflict`, `work-effect-adopt`, `work-project-get`, `work-project-configure`, `work-project-stage`, `work-project-stage-field`, `work-project-claim`, `work-project-record`, `work-project-conflict` |
+| Work provider effects | `work-provider-get`, `work-provider-configure`, `work-transition-map-get`, `work-transition-map-configure`, `work-coordinate-resume`, `work-effect-stage`, `work-effect-claim`, `work-effect-record`, `work-effect-conflict`, `work-effect-adopt`, `work-project-get`, `work-project-configure`, `work-project-stage`, `work-project-stage-field`, `work-project-claim`, `work-project-record`, `work-project-conflict` |
 
 `knowledge-cutover` has a read-only, cursor-paged `sections` mode that returns
 exact Markdown byte spans and source hashes. `preview` and `apply` require one checklist row
@@ -562,11 +562,44 @@ operations need the owning GitHub credential's Projects scopes; fixture tests
 alone do not establish live account readiness. Other Project field types and
 Jira/Linear remain unsupported.
 
+An optional native `.codearbiter/work/transition-map.json` records a finite
+mapping from `start`, `complete` and `reopen` to a bound issue's open/closed
+state and at most one Project single-select field. It is absent by default.
+`work-transition-map-configure` uses a configuration digest for CAS and pins
+the project, issue provider generation, optional Project generation, field ID
+and discovered option IDs. The file is limited to 16 KiB and contains no
+credential. Disabling the map pauses mapped sends without removing manual or
+uncertain effects. A valid lifecycle transition still succeeds when optional
+mapping data is unusable; its canonical work model records a bounded reason.
+Progress, mapped target state, checks and delivery remain separate facts.
+
+Mapped work uses work schema `0.3.3`; ordinary unconfigured work remains on
+`0.3.2`. Old readers refuse the newer work envelope. One native `work-update`
+commits progress, a deterministic source transition ID and eligible effect
+intents together. A later `work-coordinate-resume` can materialize the same
+saved target after a verified binding or first exact Project field observation,
+without inventing another completion. The Project field's unset value is an
+explicit null observation, distinct from no observation. Only unclaimed
+mapping-owned effects may be coalesced; uncertain and manual effects retain
+their own state. Exact retries replay the journaled result.
+
+`work.py sync-mapped <WORK-ID> [--pull-number N]` is the explicit send boundary
+for the mapped issue and configured Project field. It returns target-specific
+outcomes. Both mapped targets inherit the issue provider's `after_merge` timing
+unless that provider was explicitly configured `immediate`. For `after_merge`,
+the adapter checks the exact saved transition and target in the selected
+merged PR and current default-branch work, even if later observation added
+send bookkeeping. A lower-level mapped claim also refuses a disabled or
+changed mapping and a mapped Project claim without merge evidence. Existing
+manual Project sync-now remains separate. GitHub Projects has no transactional
+field CAS, so a human edit may still race after the field read.
+
 The facade also accepts `--request -` with one UTF-8 JSON object of at most
 64 KiB: `{"schema":"codearbiter.work-request/0.1.0","operation":"work-create","request":{...}}`.
 The closed operation set is `work-create`, `work-get`, `work-list`, `work-origins`,
 `work-context`, `work-view`, `project-view`, `cycle-view`, `work-update`, `work-provider-get`,
-`work-provider-configure`, `work-effect-stage`, `work-project-get`,
+`work-provider-configure`, `work-transition-map-get`, `work-transition-map-configure`,
+`work-effect-stage`, `work-project-get`,
 `work-project-configure`, `work-project-stage` and `work-project-stage-field`.
 The selected owner validates the
 operation-specific request and returns one JSON result; the ordinary CLI

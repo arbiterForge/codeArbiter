@@ -22,9 +22,9 @@ Python/npm runtime. The root npm manifest is generated from the Pi package;
 edit `plugins/ca-pi/package.json` and regenerate it. The Pi package is public;
 the build/test tool packages and site are private.
 
-Native schema writes use 0.3.2 and reads support the declared 0.3.0/0.3.1/0.3.2
-formats. Format identity and API protocol identity are separate from schema
-version. ADR-0043 makes scheduling/progress assistive: ordinary authorized work
+Native artifact writes use 0.3.2; mapped native work writes use 0.3.3.
+Reads support declared 0.3.0/0.3.1/0.3.2 formats, plus work 0.3.3.
+Format identity and API protocol identity are separate from schema version. ADR-0043 makes scheduling/progress assistive: ordinary authorized work
 does not need approval codes, completion receipts, or delivery tickets. Reported
 checks are distinct from assessed evidence. Stable IDs, bounded reads, real
 stops, relevant freshness, revision checks, safe writes and recovery remain.

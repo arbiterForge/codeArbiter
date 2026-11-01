@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.1] - 2026-11-01
+
+### Added
+
+- Coordinate mapped native work transitions with explicit tracker synchronization and retained remote readback.
+
 ## [0.27.0] - 2026-10-31
 
 ### Added

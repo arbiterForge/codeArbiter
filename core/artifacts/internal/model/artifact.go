@@ -15,6 +15,7 @@ import (
 const Format = "codearbiter.artifact"
 const FormatVersion = "0.1.0"
 const SchemaVersion = "0.3.2"
+const WorkCoordinationVersion = "0.3.3"
 
 type Document struct {
 	Data    map[string]any
@@ -54,11 +55,23 @@ func List(ss ...string) []any {
 	return out
 }
 func Check(v map[string]any) (*Document, error) {
-	if S(v["format"]) != Format || S(v["format_version"]) != FormatVersion || (S(v["schema_version"]) != SchemaVersion && S(v["schema_version"]) != "0.3.0" && S(v["schema_version"]) != "0.3.1") {
-		return nil, fault.New("UNSUPPORTED_VERSION", "expected codearbiter.artifact 0.1.0 / schema 0.3.0, 0.3.1 or 0.3.2")
+	version, kind := S(v["schema_version"]), S(v["kind"])
+	if S(v["format"]) != Format || S(v["format_version"]) != FormatVersion ||
+		(version != SchemaVersion && version != "0.3.0" && version != "0.3.1" && !(kind == "work" && version == WorkCoordinationVersion)) {
+		return nil, fault.New("UNSUPPORTED_VERSION", "expected codearbiter.artifact 0.1.0 / schema 0.3.0, 0.3.1 or 0.3.2 (or work 0.3.3)")
 	}
-	if S(v["schema_version"]) != SchemaVersion && HasAssistiveFields(v) {
+	if (version == "0.3.0" || version == "0.3.1") && HasAssistiveFields(v) {
 		return nil, fault.New("UNSUPPORTED_VERSION", "assistive prerequisite observations and DONE progress require schema 0.3.2")
+	}
+	if kind == "work" && version == SchemaVersion {
+		ex := M(v["execution"])
+		if ex["coordination"] != nil || M(ex["provider_effect"])["source_transition_id"] != nil ||
+			M(ex["project_effect"])["source_transition_id"] != nil ||
+			M(ex["project_effect"])["intent_id"] != nil ||
+			M(ex["project_effect"])["merge_pull_number"] != nil ||
+			M(ex["project_effect"])["merge_commit_sha"] != nil {
+			return nil, fault.New("UNSUPPORTED_VERSION", "mapped work coordination requires work schema 0.3.3")
+		}
 	}
 	es := schema.Validate(S(v["kind"]), v)
 	if len(es) > 0 {

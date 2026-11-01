@@ -334,6 +334,9 @@ func workSummary(d *model.Document, p string) object {
 	if effect := ex["project_effect"]; effect != nil {
 		out["project_effect"] = effect
 	}
+	if coordination := ex["coordination"]; coordination != nil {
+		out["coordination"] = coordination
+	}
 	if observation := ex["delivery_observation"]; observation != nil {
 		out["delivery_observation"] = observation
 	}
@@ -346,7 +349,52 @@ func (e *Engine) workGet(r object) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return workSummary(d, p), nil
+	w := workSummary(d, p)
+	if err := e.decorateWorkCoordination(w); err != nil {
+		return nil, err
+	}
+	return w, nil
+}
+
+func (e *Engine) decorateWorkCoordination(w object) error {
+	coordination := model.M(w["coordination"])
+	if len(coordination) == 0 {
+		return nil
+	}
+	mapping, _, generation, err := e.workTransitionMapConfig()
+	if err != nil && !os.IsNotExist(err) && fault.Code(err) != "INVALID_TRANSITION_MAP" &&
+		fault.Code(err) != "TRANSITION_MAP_BINDING_CHANGED" {
+		return err
+	}
+	copy := object{}
+	for key, value := range coordination {
+		copy[key] = value
+	}
+	copy["send_status"] = "ready"
+	if err != nil || mapping["enabled"] != true || generation != model.S(coordination["mapping_generation"]) {
+		copy["send_status"] = "paused"
+	} else {
+		if coordination["desired_issue_state"] != nil {
+			_, _, current, providerErr := e.workProviderConfig()
+			if providerErr != nil && !optionalProviderFailure(providerErr) {
+				return providerErr
+			}
+			if providerErr != nil || current != model.S(coordination["issue_generation"]) {
+				copy["send_status"] = "paused"
+			}
+		}
+		if coordination["desired_project_option_id"] != nil {
+			_, _, current, projectErr := e.workProjectConfig()
+			if projectErr != nil && !optionalProviderFailure(projectErr) {
+				return projectErr
+			}
+			if projectErr != nil || current != model.S(coordination["project_generation"]) {
+				copy["send_status"] = "paused"
+			}
+		}
+	}
+	w["coordination"] = copy
+	return nil
 }
 
 // workList pages by stable opaque IDs. It reads only the selected page's
@@ -536,6 +584,9 @@ func (e *Engine) workContext(r object) (any, error) {
 	}
 	n := d.Norm()
 	w := workSummary(d, p)
+	if err := e.decorateWorkCoordination(w); err != nil {
+		return nil, err
+	}
 	w["intent"] = boundedText(model.S(w["intent"]), 1024)
 	if aliases := model.A(w["aliases"]); len(aliases) > 16 {
 		w["aliases"] = aliases[:16]
@@ -761,6 +812,11 @@ func (e *Engine) workUpdate(r object) (any, error) {
 			"pull_url": url, "state": state, "observed_at": observedAt}
 	default:
 		return nil, fault.New("INVALID_WORK_UPDATE", "unknown work action")
+	}
+	if action := model.S(r["action"]); action == "start" || action == "complete" || action == "reopen" {
+		if err := e.coordinateWorkTransition(next, model.S(r["operation_id"]), action, d.Revision()); err != nil {
+			return nil, err
+		}
 	}
 	// Work completion is a progress report. No operation here can manufacture
 	// a passing check without recorded check evidence.

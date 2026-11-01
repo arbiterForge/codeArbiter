@@ -43,6 +43,11 @@ Legacy board work has no native derived view; use its selected board owner.
 Local `complete` records implementation progress, not passing checks, PR merge,
 release or provider synchronization. Preserve the existing test, host, commit
 and PR boundaries.
+In a native project with an explicit transition map, the ordinary lifecycle
+call also saves the configured issue and Project intent, or a waiting reason,
+in that same local transaction. Keep remote synchronization explicit through
+`work.py sync-mapped <WORK-ID>` after the selected timing condition. Do not
+make each model call stage both targets separately.
 
 ## Structured-artifact boundary
 

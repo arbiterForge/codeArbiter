@@ -64,6 +64,26 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual(code, 0, result)
         return result
 
+    def test_transition_map_cli_keeps_progress_when_issue_is_unbound(self) -> None:
+        item = self.run_work("create", "--title", "Mapped local work", "--intent",
+                             "Keep local completion independent", "--type", "fix",
+                             "--operation-id", "cli-map-create-001")
+        provider = self.run_work("provider-configure", "--repository", "example/repo",
+                                 "--credential-ref", "GH_TOKEN", "--timing", "after_merge",
+                                 "--operation-id", "cli-map-provider-001")
+        mapping = self.run_work("transition-map-configure", "--issue-complete", "closed",
+                                "--issue-reopen", "open", "--operation-id", "cli-map-configure-001")
+        self.assertEqual(mapping["issue_generation"], provider["binding_generation"])
+        self.assertTrue(self.run_work("transition-map-get")["enabled"])
+        completed = self.run_work("complete", item["work_id"], "--operation-id", "cli-map-complete-001")
+        self.assertEqual(completed["state"], "complete")
+        self.assertEqual(completed["coordination"]["issue_status"], "waiting_binding")
+        self.assertEqual(completed["check_status"], "unknown")
+        self.run_work("transition-map-disable", "--operation-id", "cli-map-disable-001")
+        self.assertFalse(self.run_work("transition-map-get")["enabled"])
+        selected = self.run_work("get", item["work_id"])
+        self.assertEqual(selected["coordination"]["send_status"], "paused")
+
     def test_first_native_work_survives_fresh_clone(self) -> None:
         scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
                                    "--root", str(self.root)], capture_output=True, text=True)

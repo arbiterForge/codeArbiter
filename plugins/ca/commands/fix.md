@@ -27,7 +27,11 @@ their current owners. For native-owned work, refresh and report the local derive
 page with `work.py view <WORK-ID> --save`; it is a snapshot of canonical work.
 Legacy board work has no native derived view; use its selected board owner.
 `work.py complete` means local implementation progress only. Unknown checks,
-PR delivery and provider effects remain separately reported.
+PR delivery and provider effects remain separately reported. In a native
+project with an explicit transition map, that one completion also saves its
+bounded tracker intent or waiting reason locally. Sending remains an explicit
+`work.py sync-mapped <WORK-ID>` step under the configured merge timing; a
+provider outage does not call for rerunning the regression or reviewers.
 
 **Orientation:** if the code map is present (`.codearbiter/code-map.md`, or its HTML knowledge document), read it before diagnosing — a coarse concern→path→role map that helps locate the defect. Absent is fine; it is read-on-demand.
 

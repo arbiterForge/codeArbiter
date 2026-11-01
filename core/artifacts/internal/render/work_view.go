@@ -20,6 +20,9 @@ type WorkViewData struct {
 	ProviderEffectKind, ProviderEffectStatus        string
 	RemoteIssueURL, RemoteState, DesiredState       string
 	ProjectEffectKind, ProjectEffectStatus          string
+	CoordinationAction, CoordinationIssueStatus     string
+	CoordinationProjectStatus, CoordinationReason   string
+	CoordinationSendStatus                          string
 	DeliveryState, DeliveryURL, DeliveryObservedAt  string
 	LegacyDetail                                    string
 	LegacyMore                                      bool
@@ -109,6 +112,25 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	} else if data.ProjectEffectStatus == "conflict" {
 		obstacle = "The GitHub Project field differs from the saved remote baseline."
 		next = "Inspect the Project field before selecting a new update."
+	} else if data.CoordinationIssueStatus == "waiting_binding" || data.CoordinationProjectStatus == "waiting_binding" {
+		obstacle = "A mapped tracker target is waiting for its existing issue or Project binding."
+		next = "Bind the selected target, then explicitly run work.py sync-mapped."
+	} else if data.CoordinationProjectStatus == "awaiting_observation" {
+		obstacle = "The mapped Project field has no verified remote baseline yet."
+		next = "Explicitly run work.py sync-mapped to read the bound field before sending."
+	} else if data.CoordinationIssueStatus == "waiting_reconciliation" || data.CoordinationProjectStatus == "waiting_reconciliation" {
+		obstacle = "A mapped tracker send has an uncertain prior outcome."
+		next = "Reconcile the uncertain target before syncing the latest desired state."
+	} else if data.CoordinationIssueStatus == "waiting_manual" || data.CoordinationProjectStatus == "waiting_manual" {
+		obstacle = "A selected manual effect or conflict owns the tracker target."
+		next = "Resolve or synchronize that manual effect before resuming mapped coordination."
+	} else if data.CoordinationIssueStatus == "binding_changed" || data.CoordinationProjectStatus == "binding_changed" ||
+		data.CoordinationIssueStatus == "unavailable" || data.CoordinationProjectStatus == "unavailable" {
+		obstacle = "The saved transition mapping needs repair or explicit rebinding."
+		next = "Inspect the map and bound provider identities before another send."
+	} else if data.CoordinationSendStatus == "paused" || data.CoordinationIssueStatus == "paused" || data.CoordinationProjectStatus == "paused" {
+		obstacle = "Mapped tracker sends are paused until the transition map and provider bindings are checked."
+		next = "Run work.py transition-map-get and inspect the pending effects before explicitly resuming or cancelling them."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."
@@ -148,6 +170,15 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	}
 	w.WriteString(`</section>`)
 	w.WriteString(`<section class="work-card" id="sync"><h2>Tracker sync</h2>`)
+	if data.CoordinationAction != "" {
+		w.WriteString(`<p>Mapped ` + esc(data.CoordinationAction) + ` transition: issue ` + esc(data.CoordinationIssueStatus) + `; Project ` + esc(data.CoordinationProjectStatus) + `. Remote updates require explicit synchronization.</p>`)
+		if data.CoordinationSendStatus == "paused" {
+			w.WriteString(`<p>Mapped sends are paused until this intent is explicitly reconciled with the current mapping.</p>`)
+		}
+		if data.CoordinationReason != "" {
+			w.WriteString(`<p>` + esc(data.CoordinationReason) + `</p>`)
+		}
+	}
 	switch data.ProviderEffectStatus {
 	case "pending":
 		if data.ProviderEffectKind == "status_update" {

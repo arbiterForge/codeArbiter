@@ -41,7 +41,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-project-get":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status", "knowledge-context", "work-get", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-project-get", "work-transition-map-get":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -85,7 +85,7 @@ func Run(root, op string, input object) (any, error) {
 		_, contextContract := kind.Lookup("context")
 		contextCodec, contextCodecFound := kind.Codecs()["context"]
 		contextRegistered := contextContract && contextCodecFound && contextCodec.Optional && contextCodec.Representation == kind.Markdown
-		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": true, "qualification": "native-tested-package", "permission_model": "host-owned", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
+		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "work_coordination_schema_version": model.WorkCoordinationVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": true, "qualification": "native-tested-package", "permission_model": "host-owned", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
 	}
 	if op == "schema" {
 		switch model.S(r["name"]) {
@@ -201,6 +201,12 @@ func Run(root, op string, input object) (any, error) {
 		return engine.workProviderGet(r)
 	case "work-provider-configure":
 		return engine.workProviderConfigure(r)
+	case "work-transition-map-get":
+		return engine.workTransitionMapGet(r)
+	case "work-transition-map-configure":
+		return engine.workTransitionMapConfigure(r)
+	case "work-coordinate-resume":
+		return engine.workCoordinateResume(r)
 	case "work-project-get":
 		return engine.workProjectGet(r)
 	case "work-project-configure":
