@@ -60,6 +60,9 @@ func (e *Engine) workCoordinateResume(r object) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := e.refuseLegacyWorkOwner(); err != nil {
+		return nil, err
+	}
 	if err := workEffectExpected(r, d, path); err != nil {
 		return nil, err
 	}
@@ -271,6 +274,9 @@ func (e *Engine) stageMappedIssue(next *model.Document, coordination object) err
 	}
 	if model.S(current["binding_generation"]) != generation ||
 		model.I(current["remote_issue_number"]) < 1 || model.S(current["remote_issue_url"]) == "" {
+		if model.S(current["kind"]) == "create_issue" && model.S(current["status"]) == "pending" {
+			coordination["predecessor_issue_intent_id"] = current["intent_id"]
+		}
 		coordination["issue_status"] = "waiting_binding"
 		return nil
 	}
@@ -289,19 +295,9 @@ func (e *Engine) stageMappedIssue(next *model.Document, coordination object) err
 			coordination["issue_status"] = "binding_changed"
 			return nil
 		}
-		if model.S(current["remote_state"]) == model.S(coordination["desired_issue_state"]) {
-			current["status"] = "synchronized"
-			delete(current, "desired_state")
-			delete(current, "intent_id")
-			delete(current, "source_transition_id")
-			coordination["issue_status"] = "synchronized"
-			return nil
-		}
 	case "synchronized":
-		if model.S(current["remote_state"]) == model.S(coordination["desired_issue_state"]) {
-			coordination["issue_status"] = "synchronized"
-			return nil
-		}
+		// The saved value may be stale. Stage a readback intent even when
+		// the desired state matches the last recorded observation.
 	case "conflict":
 		coordination["issue_status"] = "waiting_manual"
 		return nil
@@ -363,10 +359,7 @@ func (e *Engine) stageMappedProject(next *model.Document, coordination object) e
 			coordination["project_status"] = "awaiting_observation"
 			return nil
 		}
-		if model.S(current["observed_option_id"]) == model.S(coordination["desired_project_option_id"]) {
-			coordination["project_status"] = "synchronized"
-			return nil
-		}
+		// A matching saved option still needs a fresh explicit readback.
 	case "conflict":
 		coordination["project_status"] = "waiting_manual"
 		return nil
@@ -380,15 +373,6 @@ func (e *Engine) stageMappedProject(next *model.Document, coordination object) e
 	}
 	if !known {
 		coordination["project_status"] = "awaiting_observation"
-		return nil
-	}
-	if model.S(current["status"]) == "pending" && model.S(baseline) == model.S(coordination["desired_project_option_id"]) {
-		current["status"], current["observed_option_id"] = "synchronized", baseline
-		delete(current, "desired_option_id")
-		delete(current, "expected_remote_option_id")
-		delete(current, "intent_id")
-		delete(current, "source_transition_id")
-		coordination["project_status"] = "synchronized"
 		return nil
 	}
 	intentID := mappedIntentID(model.S(coordination["transition_id"]), "project_field")

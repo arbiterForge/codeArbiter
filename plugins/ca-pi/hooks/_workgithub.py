@@ -107,6 +107,7 @@ class GithubTransport:
             "GET": (rf"{_REPO_PATH}", rf"{_REPO_PATH}/issues/[1-9][0-9]*",
                     rf"{_REPO_PATH}/pulls/[1-9][0-9]*",
                     rf"{_REPO_PATH}/pulls/[1-9][0-9]*/files\?per_page=100&page=([1-9]|[12][0-9]|30)",
+                    rf"{_REPO_PATH}/contents/\.codearbiter/work/(?:transition-map|provider|project-provider)\.json",
                     rf"{_REPO_PATH}/contents/\.codearbiter/work/WORK-[A-F0-9]{{32}}\.html(?:\?ref=[a-f0-9]{{40}})?"),
             "POST": (rf"{_REPO_PATH}/issues",),
             "PATCH": (rf"{_REPO_PATH}/issues/[1-9][0-9]*",),
@@ -275,18 +276,19 @@ def _verified_issue(transport, config, work_id, number, token):
     return url, issue["state"]
 
 
-def _verified_work_intent(transport, config, work, path, token, target="issue_state"):
+def _verified_work_intent(transport, config, work, path, token, target="issue_state",
+                          allow_synchronized=False):
     """Read one bounded canonical work snapshot and match its exact saved intent."""
     selected_effect = work.get("project_effect" if target == "project_field" else "provider_effect") or {}
     selected_coordination = work.get("coordination") or {}
     intent_id = selected_effect.get("intent_id")
     source_transition = selected_effect.get("source_transition_id")
     materialized = source_transition is not None
-    if (target == "project_field" and selected_coordination.get("desired_project_option_id") is not None
-            and source_transition is None):
+    desired_key = "desired_project_option_id" if target == "project_field" else "desired_issue_state"
+    if selected_coordination.get(desired_key) is not None and source_transition is None:
         source_transition = selected_coordination.get("transition_id")
         if type(source_transition) is str:
-            intent_id = hashlib.sha256(("codearbiter-mapped-intent-v1\x00" + source_transition + "\x00project_field").encode()).hexdigest()
+            intent_id = hashlib.sha256(("codearbiter-mapped-intent-v1\x00" + source_transition + "\x00" + target).encode()).hexdigest()
     if (type(intent_id) is not str or re.fullmatch(r"[a-f0-9]{64}", intent_id) is None
             or source_transition is not None and
             (type(source_transition) is not str or re.fullmatch(r"[a-f0-9]{64}", source_transition) is None)):
@@ -317,13 +319,64 @@ def _verified_work_intent(transport, config, work, path, token, target="issue_st
         raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work identity differs from the selected item")
     if source_transition is not None:
         target_fields = (("desired_project_option_id", "project_generation", "project_field_id")
-                         if target == "project_field" else ("desired_issue_state", "issue_generation"))
+                         if target == "project_field" else
+                         ("desired_issue_state", "issue_generation", "predecessor_issue_intent_id"))
+        status_key = "project_status" if target == "project_field" else "issue_status"
+        intent_key = "project_intent_id" if target == "project_field" else "issue_intent_id"
+        remote_status = coordination.get(status_key) if isinstance(coordination, dict) else None
+        remote_effect = effect if isinstance(effect, dict) else {}
+        remote_pending = remote_effect.get("status") == "pending"
+        effect_fields = (("kind", "binding_generation", "remote_issue_number", "remote_item_id",
+                          "field_id", "desired_option_id") if target == "project_field" else
+                         ("kind", "binding_generation", "remote_issue_number", "remote_issue_url",
+                          "desired_state"))
+        bound_fields = (("remote_issue_number", "remote_item_id") if target == "project_field" else
+                        ("remote_issue_number", "remote_issue_url"))
+        predecessor_pending = (remote_status in ("waiting_binding", "awaiting_observation")
+                               and remote_pending
+                               and remote_effect.get("kind") ==
+                               ("add_item" if target == "project_field" else "create_issue")
+                               and remote_effect.get("source_transition_id") is None
+                               and remote_effect.get("binding_generation") ==
+                               selected_effect.get("binding_generation"))
+        if predecessor_pending and target == "issue_state":
+            predecessor_id = selected_coordination.get("predecessor_issue_intent_id")
+            predecessor_pending = (type(predecessor_id) is str
+                                   and remote_effect.get("intent_id") == predecessor_id
+                                   and (selected_effect.get("kind") != "create_issue" or
+                                        selected_effect.get("intent_id") is None or
+                                        selected_effect.get("intent_id") == predecessor_id))
+        remote_synchronized = (allow_synchronized and remote_status == "synchronized"
+                               and remote_effect.get("status") == "synchronized"
+                               and remote_effect.get("source_transition_id") == source_transition
+                               and remote_effect.get("intent_id") == intent_id
+                               and remote_effect.get("binding_generation") == selected_effect.get("binding_generation")
+                               and (remote_effect.get("desired_state") == selected_effect.get("desired_state")
+                                    if target == "issue_state" else
+                                    remote_effect.get("desired_option_id") == selected_effect.get("desired_option_id")
+                                    and remote_effect.get("field_id") == selected_effect.get("field_id")))
         if (not isinstance(coordination, dict)
                 or coordination.get("transition_id") != source_transition
                 or selected_coordination.get("transition_id") != source_transition
                 or coordination.get("mapping_generation") != selected_coordination.get("mapping_generation")
                 or any(coordination.get(field) != selected_coordination.get(field) for field in target_fields)
-                or (target == "issue_state" and coordination.get("desired_issue_state") != selected_effect.get("desired_state"))
+                or remote_status not in ("pending", "waiting_binding", "awaiting_observation")
+                and not remote_synchronized
+                or (remote_status == "pending" and
+                    (coordination.get(intent_key) != intent_id or
+                     remote_effect.get("source_transition_id") != source_transition or
+                     remote_effect.get("intent_id") != intent_id or not remote_pending))
+                or (remote_status == "pending" or remote_synchronized) and any(
+                    remote_effect.get(field) != selected_effect.get(field) for field in effect_fields)
+                or (remote_status in ("waiting_binding", "awaiting_observation") and any(
+                    remote_effect.get(field) is not None and
+                    remote_effect.get(field) != selected_effect.get(field) for field in bound_fields))
+                or (remote_status != "pending" and not remote_synchronized and
+                    (coordination.get(intent_key) is not None or
+                     remote_pending and not predecessor_pending))
+                or (remote_synchronized and coordination.get(intent_key) != intent_id)
+                or (target == "issue_state" and materialized and
+                    coordination.get("desired_issue_state") != selected_effect.get("desired_state"))
                 or (target == "project_field" and materialized and
                     (coordination.get("desired_project_option_id") != selected_effect.get("desired_option_id")
                      or coordination.get("project_field_id") != selected_effect.get("field_id")))):
@@ -338,9 +391,37 @@ def _verified_work_intent(transport, config, work, path, token, target="issue_st
         raise WorkSyncError("MERGE_UNVERIFIED", "GitHub work intent does not match the selected pending effect")
 
 
-def _verified_current_intent(transport, config, work, token, target="issue_state"):
+def _verified_current_intent(transport, config, work, token, target="issue_state",
+                             allow_synchronized=False):
     path = f"/repos/{config['repository']}/contents/.codearbiter/work/{work['work_id']}.html"
-    _verified_work_intent(transport, config, work, path, token, target)
+    _verified_work_intent(transport, config, work, path, token, target, allow_synchronized)
+    effect = work.get("project_effect" if target == "project_field" else "provider_effect") or {}
+    coordination = work.get("coordination") or {}
+    if (effect.get("source_transition_id") is not None or
+            target == "project_field" and coordination.get("desired_project_option_id") is not None):
+        _verified_current_bindings(transport, config, coordination, target, token)
+
+
+def _verified_current_bindings(transport, config, coordination, target, token):
+    """Bind a contingent send to current default-branch map and provider bytes."""
+    bindings = [("transition-map.json", coordination.get("mapping_generation"), 16 << 10),
+                ("provider.json", coordination.get("issue_generation"), 4096)]
+    if target == "project_field":
+        bindings.append(("project-provider.json", coordination.get("project_generation"), 4096))
+    for name, expected, limit in bindings:
+        if type(expected) is not str or re.fullmatch(r"[a-f0-9]{64}", expected) is None:
+            raise WorkSyncError("MERGE_UNVERIFIED", "Mapped destination has no frozen binding generation")
+        path = f"/repos/{config['repository']}/contents/.codearbiter/work/{name}"
+        status, content = transport.request("GET", path, None, token)
+        if (status != 200 or type(content) is not dict or content.get("encoding") != "base64"
+                or type(content.get("content")) is not str):
+            raise WorkSyncError("MERGE_UNVERIFIED", "Current mapped destination is unreadable")
+        try:
+            raw = base64.b64decode("".join(content["content"].split()), validate=True)
+        except (ValueError, binascii.Error) as exc:
+            raise WorkSyncError("MERGE_UNVERIFIED", "Current mapped destination is invalid") from exc
+        if len(raw) > limit or hashlib.sha256(raw).hexdigest() != expected:
+            raise WorkSyncError("MERGE_UNVERIFIED", "Current mapped destination changed after the transition")
 
 
 def _verified_merge(root, transport, config, work, pull_number, token, target="issue_state"):
@@ -450,10 +531,11 @@ def sync(root, client, work_id, transport=None, token_lookup=None, pull_number=N
             number = created.get("number")
         else:
             number = effect["remote_issue_number"]
-            status, _ = transport.request("PATCH", _issue_path(config["repository"], number),
-                                          {"state": effect["desired_state"]}, token)
-            if status != 200:
-                raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub status update did not return a confirmed issue")
+            if observed != effect["desired_state"]:
+                status, _ = transport.request("PATCH", _issue_path(config["repository"], number),
+                                              {"state": effect["desired_state"]}, token)
+                if status != 200:
+                    raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub status update did not return a confirmed issue")
         url, remote_state = _verified_issue(transport, config, work_id, number, token)
         if effect["kind"] == "status_update" and remote_state != effect["desired_state"]:
             raise WorkSyncError("OUTCOME_UNKNOWN", "GitHub status readback differs from the requested state")
@@ -723,7 +805,10 @@ def stage_project_field(root, client, work_id, field_id, option_id, operation_id
     token_lookup = token_lookup if token_lookup is not None else os.environ.get
     issue_config, project_config, work = _project_selected(root, client, work_id)
     effect = work["project_effect"]
-    if effect.get("status") not in ("synchronized", "conflict"):
+    unsent_mapped = (effect.get("status") == "pending"
+                     and effect.get("source_transition_id") is not None
+                     and effect.get("attempt_id") is None)
+    if effect.get("status") not in ("synchronized", "conflict") and not unsent_mapped:
         raise WorkSyncError("EFFECT_NOT_BOUND", "Selected Project item is not ready for a field update")
     if (type(field_id) is not str or _GLOBAL_NODE_ID.fullmatch(field_id) is None
             or type(option_id) is not str or _OPTION_ID.fullmatch(option_id) is None):
@@ -1022,6 +1107,8 @@ def sync_mapped(root, client, work_id, transport=None, token_lookup=None, pull_n
             effect = work.get(effect_key) or {}
             if (effect.get("source_transition_id") == coordination.get("transition_id")
                     and effect.get("status") == "synchronized"):
+                _verify_synchronized_mapped(root, client, work_id, target, effect,
+                                            transport, token_lookup)
                 outcomes[target] = {"status": "synchronized"}
                 continue
             if (effect.get("source_transition_id") != coordination.get("transition_id")
@@ -1035,6 +1122,36 @@ def sync_mapped(root, client, work_id, transport=None, token_lookup=None, pull_n
             outcomes[target] = {"status": "failed", "code": exc.code, "error": str(exc)}
     return {"ok": all(value["status"] in ("not_requested", "synchronized") for value in outcomes.values()),
             "work_id": work_id, "transition_id": coordination["transition_id"], "targets": outcomes}
+
+
+def _verify_synchronized_mapped(root, client, work_id, target, effect, transport, token_lookup):
+    """A repeated explicit sync checks its bound target for later human edits."""
+    if target == "issue":
+        config, work = _selected(Path(root), client, work_id)
+        _mapped_send_ready(client, work, effect, "issue_state")
+        token = _credential(config, token_lookup)
+        if config["effect_timing"] == "after_merge":
+            _verified_current_intent(transport, config, work, token, "issue_state",
+                                     allow_synchronized=True)
+        url, state = _verified_issue(transport, config, work_id,
+                                     effect["remote_issue_number"], token)
+        if url != effect["remote_issue_url"] or state != effect["desired_state"]:
+            raise WorkSyncError("REMOTE_CONFLICT", "Bound issue state changed after the last mapped readback")
+    else:
+        issue_config, project_config, work = _project_selected(root, client, work_id)
+        _mapped_send_ready(client, work, effect, "project_field")
+        token = _credential(project_config, token_lookup)
+        if issue_config["effect_timing"] == "after_merge":
+            _verified_current_intent(transport, issue_config, work, token, "project_field",
+                                     allow_synchronized=True)
+        issue_id = _project_issue(transport, issue_config, work, token)
+        project_id, item_id = project_config["project_node_id"], effect["remote_item_id"]
+        if _find_project_item(transport, project_id, issue_id, token) != item_id:
+            raise WorkSyncError("PROJECT_BINDING_UNVERIFIED", "Bound Project item changed after mapped readback")
+        option = _read_project_option(transport, project_id, issue_id, item_id,
+                                      effect["field_id"], effect["desired_option_id"], token)
+        if option != effect["desired_option_id"]:
+            raise WorkSyncError("REMOTE_CONFLICT", "Bound Project field changed after the last mapped readback")
 
 
 def reconcile_project_field(root, client, work_id, transport=None, token_lookup=None):
@@ -1064,6 +1181,9 @@ def reconcile_project_field(root, client, work_id, transport=None, token_lookup=
             if (client.call("work-project-get", {})["binding_generation"] != project_config["binding_generation"]
                     or _origin_repository(Path(root)).casefold() != project_config["repository"].casefold()):
                 raise WorkSyncError("PROJECT_BINDING_CHANGED", "Project binding changed before the retry")
+            if mapped:
+                _mapped_send_ready(client, client.call("work-get", {"work_id": work_id}),
+                                   effect, "project_field")
             try:
                 response = transport.graphql(_PROJECT_FIELD_UPDATE, {
                     "project": project_config["project_node_id"], "item": effect["remote_item_id"],

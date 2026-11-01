@@ -164,6 +164,17 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 			if r["desired_state"] != nil || len(current) != 0 && (model.S(current["kind"]) != "create_issue" || model.S(current["status"]) != "pending") {
 				return nil, fault.At("EFFECT_ALREADY_SENT", id, p, "an existing issue binding cannot be replaced by another create")
 			}
+			if coordination := model.M(ex["coordination"]); len(current) == 0 && len(coordination) != 0 &&
+				model.S(coordination["issue_status"]) == "waiting_binding" &&
+				coordination["desired_issue_state"] != nil && coordination["predecessor_issue_intent_id"] == nil {
+				coordination["predecessor_issue_intent_id"] = intentID
+			}
+			if coordination := model.M(ex["coordination"]); len(coordination) != 0 &&
+				model.S(coordination["predecessor_issue_intent_id"]) == model.S(current["intent_id"]) &&
+				model.S(current["intent_id"]) != "" {
+				coordination["issue_status"] = "waiting_manual"
+				coordination["superseded_issue_intent_id"] = current["intent_id"]
+			}
 			ex["provider_effect"] = object{"kind": "create_issue", "status": "pending", "binding_generation": generation,
 				"intent_id":  intentID,
 				"attempt_id": nil, "remote_issue_number": nil, "remote_issue_url": nil}
@@ -177,6 +188,7 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 			if model.S(current["binding_generation"]) != generation {
 				return nil, fault.At("PROVIDER_BINDING_CHANGED", id, p, "issue binding belongs to an older provider configuration")
 			}
+			oldMappedIntent := model.S(current["intent_id"])
 			current["kind"], current["status"], current["attempt_id"] = "status_update", "pending", nil
 			current["intent_id"] = intentID
 			current["desired_state"] = r["desired_state"]
@@ -184,6 +196,7 @@ func (e *Engine) workEffectMutation(r object, action string) (any, error) {
 				delete(current, "source_transition_id")
 				if coordination := model.M(ex["coordination"]); len(coordination) != 0 {
 					coordination["issue_status"], coordination["issue_intent_id"] = "waiting_manual", nil
+					coordination["superseded_issue_intent_id"] = oldMappedIntent
 				}
 			}
 			delete(current, "merge_pull_number")

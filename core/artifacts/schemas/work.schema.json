@@ -111,7 +111,10 @@
             "issue_intent_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
             "project_intent_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
             "reason": {"anyOf": [{"type": "null"}, {"type": "string", "maxLength": 240}]},
-            "superseded_transition_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]}
+            "superseded_transition_id": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{64}$"}]},
+            "superseded_issue_intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "predecessor_issue_intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "superseded_project_intent_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
           },
           "required": ["transition_id", "action", "mapping_generation", "issue_generation", "project_generation", "project_field_id", "desired_issue_state", "desired_project_option_id", "issue_status", "project_status", "issue_intent_id", "project_intent_id", "reason", "superseded_transition_id"],
           "additionalProperties": false

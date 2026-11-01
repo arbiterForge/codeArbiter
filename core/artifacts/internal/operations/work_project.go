@@ -160,6 +160,7 @@ func (e *Engine) workProjectMutation(r object, action string) (any, error) {
 			!projectOptionPattern.MatchString(model.S(r["desired_option_id"])) {
 			return nil, fault.At("EFFECT_NOT_BOUND", id, path, "field update requires a synchronized item in this Project")
 		}
+		oldMappedIntent := model.S(current["intent_id"])
 		current["kind"], current["status"], current["attempt_id"] = "set_single_select", "pending", nil
 		current["field_id"], current["desired_option_id"] = r["field_id"], r["desired_option_id"]
 		current["expected_remote_option_id"] = r["expected_remote_option_id"]
@@ -168,6 +169,7 @@ func (e *Engine) workProjectMutation(r object, action string) (any, error) {
 			delete(current, "intent_id")
 			if coordination := model.M(ex["coordination"]); len(coordination) != 0 {
 				coordination["project_status"], coordination["project_intent_id"] = "waiting_manual", nil
+				coordination["superseded_project_intent_id"] = oldMappedIntent
 			}
 		}
 		delete(current, "observed_option_id")

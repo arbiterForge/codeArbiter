@@ -165,9 +165,18 @@ func TestTrackerCoordinationT03CoalescesUnclaimedMappedIssue(t *testing.T) {
 	}
 	completed := call("work-update", object{"operation_id": "tracker-coalesce-complete-001", "work_id": work["work_id"], "action": "complete",
 		"expected": object{"revision": started["revision"], "model_sha256": started["model_sha256"]}})
-	if model.S(model.M(completed["provider_effect"])["status"]) != "synchronized" ||
-		model.S(model.M(completed["coordination"])["issue_status"]) != "synchronized" {
-		t.Fatalf("obsolete unsent open was not coalesced: %+v", completed)
+	if model.S(model.M(completed["provider_effect"])["status"]) != "pending" ||
+		model.S(model.M(completed["provider_effect"])["desired_state"]) != "closed" ||
+		model.S(model.M(completed["coordination"])["issue_status"]) != "pending" {
+		t.Fatalf("obsolete unsent open was not coalesced into a readback intent: %+v", completed)
+	}
+	mappedIntent := model.S(model.M(completed["provider_effect"])["intent_id"])
+	manual := call("work-effect-stage", object{"operation_id": "tracker-coalesce-manual-001", "work_id": work["work_id"],
+		"binding_generation": provider["binding_generation"], "kind": "status_update", "desired_state": "open",
+		"expected": object{"revision": completed["revision"], "model_sha256": completed["model_sha256"]}})
+	if model.S(model.M(manual["coordination"])["superseded_issue_intent_id"]) != mappedIntent ||
+		model.M(manual["provider_effect"])["source_transition_id"] != nil {
+		t.Fatalf("manual issue override lost replaced mapped intent lineage: %+v", manual)
 	}
 }
 
@@ -251,6 +260,18 @@ func TestTrackerCoordinationT04ProjectObservationAndMergeFence(t *testing.T) {
 		model.S(model.M(started["project_effect"])["kind"]) != "add_item" {
 		t.Fatalf("first field observation was invented: %+v", started)
 	}
+	boardPath := filepath.Join(root, ".codearbiter", "open-tasks.md")
+	if err := os.WriteFile(boardPath, []byte("- [ ] Legacy owner\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	resumeRequest := object{"protocol": Protocol, "operation_id": "tracker-project-resume-legacy-refuse-001", "work_id": id,
+		"expected": expected(started), "observed_item_id": "PVTI_fixture12345678", "observed_option_id": nil}
+	if _, err := Run(root, "work-coordinate-resume", resumeRequest); fault.Code(err) != "LEGACY_CONFLICT" {
+		t.Fatalf("mapped resume bypassed restored legacy owner: %v", err)
+	}
+	if err := os.Remove(boardPath); err != nil {
+		t.Fatal(err)
+	}
 	ready := call("work-coordinate-resume", object{"operation_id": "tracker-project-resume-001", "work_id": id,
 		"expected": expected(started), "observed_item_id": "PVTI_fixture12345678", "observed_option_id": nil})
 	effect := model.M(ready["project_effect"])
@@ -263,10 +284,12 @@ func TestTrackerCoordinationT04ProjectObservationAndMergeFence(t *testing.T) {
 	if _, err := Run(root, "work-project-claim", claim); fault.Code(err) != "EFFECT_WAITING_FOR_MERGE" {
 		t.Fatalf("mapped Project send bypassed merge timing: %v", err)
 	}
+	mappedIntent := model.S(effect["intent_id"])
 	manual := call("work-project-stage-field", object{"operation_id": "tracker-project-manual-override-001", "work_id": id,
 		"binding_generation": project["binding_generation"], "field_id": "PVTSSF_fixture12345678",
 		"desired_option_id": "optionB", "expected_remote_option_id": nil, "expected": expected(ready)})
 	if model.M(manual["project_effect"])["source_transition_id"] != nil ||
+		model.S(model.M(manual["coordination"])["superseded_project_intent_id"]) != mappedIntent ||
 		model.S(model.M(manual["coordination"])["project_status"]) != "waiting_manual" {
 		t.Fatalf("explicit manual field intent did not supersede unclaimed mapped intent: %+v", manual)
 	}
