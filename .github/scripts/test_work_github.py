@@ -504,6 +504,51 @@ class GithubWorkTest(unittest.TestCase):
                           "/repos/arbiterForge/disposable/pulls/3/files?per_page=100&page=1",
                           "/repos/arbiterForge/disposable/contents/.codearbiter/work/" + self.work_id + ".html?ref=" + sha])
 
+    def test_mapped_issue_sync_uses_transition_anchor_and_pauses_on_disable(self):
+        old = self.client.call("work-provider-get", {})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "mapped-issue-provider-001", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        bound = self.client.call("work-effect-adopt", {
+            "operation_id": "mapped-issue-adopt-001", "work_id": self.work_id,
+            "binding_generation": config["binding_generation"],
+            "remote_issue_number": 7, "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7",
+            "remote_state": "open", "expected": {"revision": current["revision"],
+                                                   "model_sha256": current["model_sha256"]}})
+        mapping = self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-issue-map-001", "enabled": True,
+            "issue_generation": config["binding_generation"],
+            "actions": {"start": {"issue_state": None, "project_option_id": None},
+                        "complete": {"issue_state": "closed", "project_option_id": None},
+                        "reopen": {"issue_state": "open", "project_option_id": None}}})
+        completed = self.client.call("work-update", {
+            "operation_id": "mapped-issue-complete-001", "work_id": self.work_id, "action": "complete",
+            "expected": {"revision": bound["revision"], "model_sha256": bound["model_sha256"]}})
+        sha = self._commit_pending_effect()
+        transport = FakeGithub()
+        transport.work_id, transport.merge_sha = self.work_id, sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        result = _workgithub.sync_mapped(self.root, self.client, self.work_id, transport,
+                                         lambda _: "fixture-token", pull_number=3)
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["targets"]["issue"]["status"], "synchronized")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["coordination"]["transition_id"],
+                         completed["coordination"]["transition_id"])
+        self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-issue-disable-001", "enabled": False,
+            "issue_generation": config["binding_generation"], "project_generation": None,
+            "project_field_id": None, "actions": mapping["actions"],
+            "expected_config_sha256": mapping["binding_generation"]})
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["coordination"]["send_status"],
+                         "paused")
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.sync_mapped(self.root, self.client, self.work_id, transport,
+                                    lambda _: "fixture-token", pull_number=3)
+        self.assertEqual(raised.exception.code, "EFFECT_PAUSED")
+
     def test_old_merge_cannot_release_a_new_same_looking_status_intent(self):
         old = self.client.call("work-provider-get", {})
         config = self.client.call("work-provider-configure", {
@@ -892,6 +937,161 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(result["project_effect"]["remote_item_id"], "PVTI_fixture12345678")
         self.assertEqual(result["provider_effect"]["remote_issue_number"], 7)
         self.assertEqual(transport.adds, 1)
+
+    def test_mapped_project_first_null_observation_sends_once_and_detects_human_edit(self):
+        transport = FakeProjectGithub()
+        self._project_ready(transport)
+        attached = _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                             lambda _: "fixture-token")
+        issue = self.client.call("work-provider-get", {})
+        project = self.client.call("work-project-get", {})
+        self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-project-map-001", "enabled": True,
+            "issue_generation": issue["binding_generation"],
+            "project_generation": project["binding_generation"],
+            "project_field_id": transport.field_id,
+            "actions": {"start": {"issue_state": None, "project_option_id": "f75ad846"},
+                        "complete": {"issue_state": None, "project_option_id": "b1234567"},
+                        "reopen": {"issue_state": None, "project_option_id": "f75ad846"}}})
+        started = self.client.call("work-update", {
+            "operation_id": "mapped-project-start-001", "work_id": self.work_id, "action": "start",
+            "expected": {"revision": attached["revision"], "model_sha256": attached["model_sha256"]}})
+        self.assertEqual(started["coordination"]["project_status"], "awaiting_observation")
+        result = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                         transport, lambda _: "fixture-token")
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["targets"]["project"]["status"], "synchronized")
+        self.assertEqual(transport.field_updates, 1)
+        self.assertEqual(transport.field_option_id, "f75ad846")
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        completed = self.client.call("work-update", {
+            "operation_id": "mapped-project-complete-001", "work_id": self.work_id, "action": "complete",
+            "expected": {"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+        self.assertEqual(completed["project_effect"]["status"], "pending")
+        transport.field_option_id = "humanEdit"
+        result = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                         transport, lambda _: "fixture-token")
+        self.assertFalse(result["ok"], result)
+        self.assertEqual(result["targets"]["project"]["code"], "REMOTE_CONFLICT")
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_mapped_project_after_merge_uses_saved_transition_before_first_observation(self):
+        old = self.client.call("work-provider-get", {})
+        config = self.client.call("work-provider-configure", {
+            "operation_id": "mapped-project-merge-provider-001", "repository": "arbiterForge/disposable",
+            "credential_ref": "GH_TOKEN", "effect_timing": "after_merge",
+            "expected_config_sha256": old["binding_generation"]})
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        bound = self.client.call("work-effect-adopt", {
+            "operation_id": "mapped-project-merge-adopt-001", "work_id": self.work_id,
+            "binding_generation": config["binding_generation"], "expected": {"revision": current["revision"],
+                                                           "model_sha256": current["model_sha256"]},
+            "remote_issue_number": 7, "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7",
+            "remote_state": "open"})
+        transport = FakeProjectGithub()
+        transport.work_id = self.work_id
+        transport.item_id = transport.added_item_id
+        project = self.client.call("work-project-configure", {
+            "operation_id": "mapped-project-merge-config-001", "project_node_id": transport.project_id})
+        staged = self.client.call("work-project-stage", {
+            "operation_id": "mapped-project-merge-stage-001", "work_id": self.work_id,
+            "binding_generation": project["binding_generation"],
+            "expected": {"revision": bound["revision"], "model_sha256": bound["model_sha256"]}})
+        claimed = self.client.call("work-project-claim", {
+            "operation_id": "mapped-project-merge-claim-001", "work_id": self.work_id,
+            "binding_generation": project["binding_generation"], "attempt_id": "mapped-project-attempt-001",
+            "expected": {"revision": staged["revision"], "model_sha256": staged["model_sha256"]}})
+        attached = self.client.call("work-project-record", {
+            "operation_id": "mapped-project-merge-record-001", "work_id": self.work_id,
+            "binding_generation": project["binding_generation"], "attempt_id": "mapped-project-attempt-001",
+            "remote_item_id": transport.item_id,
+            "expected": {"revision": claimed["revision"], "model_sha256": claimed["model_sha256"]}})
+        self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-project-merge-map-001", "enabled": True,
+            "issue_generation": config["binding_generation"],
+            "project_generation": project["binding_generation"], "project_field_id": transport.field_id,
+            "actions": {"start": {"issue_state": None, "project_option_id": "f75ad846"},
+                        "complete": {"issue_state": None, "project_option_id": "b1234567"},
+                        "reopen": {"issue_state": None, "project_option_id": "f75ad846"}}})
+        started = self.client.call("work-update", {
+            "operation_id": "mapped-project-merge-start-001", "work_id": self.work_id, "action": "start",
+            "expected": {"revision": attached["revision"], "model_sha256": attached["model_sha256"]}})
+        self.assertEqual(started["coordination"]["project_status"], "awaiting_observation")
+        sha = self._commit_pending_effect()
+        transport.merge_sha = sha
+        transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
+        result = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                         transport, lambda _: "fixture-token", pull_number=3)
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(transport.field_updates, 1)
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["merge_commit_sha"], sha)
+
+    def test_mapped_project_uncertain_retry_pauses_when_mapping_disabled(self):
+        transport = FakeProjectGithub(fail_field_without_apply=True)
+        self._project_ready(transport)
+        attached = _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                             lambda _: "fixture-token")
+        issue = self.client.call("work-provider-get", {})
+        project = self.client.call("work-project-get", {})
+        actions = {action: {"issue_state": None, "project_option_id": "f75ad846"}
+                   for action in ("start", "complete", "reopen")}
+        mapping = self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-retry-map-001", "enabled": True,
+            "issue_generation": issue["binding_generation"],
+            "project_generation": project["binding_generation"],
+            "project_field_id": transport.field_id, "actions": actions})
+        self.client.call("work-update", {
+            "operation_id": "mapped-retry-start-001", "work_id": self.work_id, "action": "start",
+            "expected": {"revision": attached["revision"], "model_sha256": attached["model_sha256"]}})
+        result = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                         transport, lambda _: "fixture-token")
+        self.assertFalse(result["ok"])
+        self.assertEqual(transport.field_updates, 1)
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["project_effect"]["status"],
+                         "outcome_unknown")
+        self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-retry-disable-001", "enabled": False,
+            "issue_generation": issue["binding_generation"],
+            "project_generation": project["binding_generation"],
+            "project_field_id": transport.field_id, "actions": actions,
+            "expected_config_sha256": mapping["binding_generation"]})
+        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+            _workgithub.reconcile_project_field(self.root, self.client, self.work_id,
+                                                transport, lambda _: "fixture-token")
+        self.assertEqual(raised.exception.code, "EFFECT_PAUSED")
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_mapped_partial_issue_success_does_not_repeat_when_project_fails(self):
+        transport = FakeProjectGithub(fail_field_without_apply=True)
+        self._project_ready(transport)
+        attached = _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                             lambda _: "fixture-token")
+        issue = self.client.call("work-provider-get", {})
+        project = self.client.call("work-project-get", {})
+        self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-partial-map-001", "enabled": True,
+            "issue_generation": issue["binding_generation"],
+            "project_generation": project["binding_generation"],
+            "project_field_id": transport.field_id,
+            "actions": {action: {"issue_state": "closed", "project_option_id": "b1234567"}
+                        for action in ("start", "complete", "reopen")}})
+        completed = self.client.call("work-update", {
+            "operation_id": "mapped-partial-complete-001", "work_id": self.work_id,
+            "action": "complete", "expected": {"revision": attached["revision"],
+                                               "model_sha256": attached["model_sha256"]}})
+        first = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertFalse(first["ok"])
+        self.assertEqual(first["targets"]["issue"]["status"], "synchronized")
+        self.assertEqual(first["targets"]["project"]["code"], "OUTCOME_UNKNOWN")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        again = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertEqual(again["targets"]["issue"]["status"], "synchronized")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(current["coordination"]["transition_id"],
+                         completed["coordination"]["transition_id"])
 
     def test_project_lost_add_response_reconciles_without_duplicate_issue_or_item(self):
         transport = FakeProjectGithub(fail_add_after_apply=True)
