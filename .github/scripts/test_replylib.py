@@ -233,6 +233,7 @@ class OrdinaryPromptTest(unittest.TestCase):
         "approval": ("Approve", "approve.", "`approve`", "Approve plan", "approve the plan", "Approve the sprint", "approve and execute the sprint",
                      "approve-sprint", "approve-sprint delegate", "do not approve", "Stop",
                      "Approve DATA", "Approve DATA migration", "Approve READ access",
+                     "Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 support",
                      "APPROVE DATA MIGRATION", "Approve the TASK", "Approve the TEST",
                      "approve-sprint delegate DATA", "approve-sprint delegate DATA migration"),
         "prerequisite": ("satisfy-prerequisite", "satisfy-prerequisite by checking the tool", "Stop",
@@ -296,7 +297,8 @@ class OrdinaryPromptTest(unittest.TestCase):
                 with self.subTest(route=route, prompt=prompt), mock.patch.object(
                     replies, "expand", side_effect=lambda value: {"text": value, "notice": ""}
                 ), mock.patch.object(replies, "_entries", return_value=[
-                    (None, {"route": route, "short_reply": "reply ZZZZ",
+                    (None, {"route": route, "short_reply":
+                            "reply K7MQ" if "K7MQ" in prompt else "reply ZZZZ",
                             "full_reply": replies.canonicalize(prompt).split(",")[0]}, True)
                 ]):
                     self.assertTrue(replies.prepare(prompt, route)["attempted"])
@@ -322,13 +324,40 @@ class OrdinaryPromptTest(unittest.TestCase):
         replies.retire_code(root, "approval", "SPEC-X")
         self.assertFalse(replies.prepare("Approve DATA migration", "approval")["attempted"])
 
-    def test_unrecognized_mixed_codes_remain_diagnostic_not_authority(self):
+    def test_unrecognized_mixed_codes_are_ordinary_without_a_matching_request(self):
         replies = importlib.import_module("_replylib")
-        for prompt in ("Approve K7MQ", "approve k7mq extra"):
+        for prompt in ("Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 optimizations",
+                       "Approve K7MQ", "approve k7mq extra"):
             with self.subTest(prompt=prompt):
                 result = replies.prepare(prompt, "approval")
-                self.assertTrue(result["attempted"])
-                self.assertNotEqual(result["text"], FULL)
+                self.assertEqual(result, {"text": prompt, "notice": "", "attempted": False})
+
+    def test_matching_alphanumeric_code_remains_an_exact_reply(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "armed-mixed"
+        (root / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("PHP8")):
+            issued = replies.issue_code(root, "approval", "SPEC-PHP", FULL,
+                                        names=["SPEC-PHP"], short_prefix=["approve"])
+        self.assertEqual(issued["code"], "PHP8")
+        self.assertEqual(replies.prepare("Approve php8", "approval"),
+                         {"text": FULL, "notice": "", "attempted": True})
+        appended = replies.prepare("Approve PHP8 migration", "approval")
+        self.assertTrue(appended["attempted"])
+        self.assertNotEqual(appended["text"], FULL)
+        self.assertFalse(replies.prepare("Approve SHA3 support", "approval")["attempted"])
+
+    def test_unrelated_armed_code_does_not_capture_product_names(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "armed-other"
+        (root / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("K7MQ")):
+            replies.issue_code(root, "approval", "SPEC-OTHER", FULL,
+                               names=["SPEC-OTHER"], short_prefix=["approve"])
+        for prompt in ("Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 support"):
+            with self.subTest(prompt=prompt):
+                self.assertEqual(replies.prepare(prompt, "approval"),
+                                 {"text": prompt, "notice": "", "attempted": False})
 
     def test_long_words_without_a_retained_request_are_ordinary_prose(self):
         replies = importlib.import_module("_replylib")

@@ -430,11 +430,9 @@ def _capture_attempt(raw, route: str) -> bool:
             continue
         token = fields[-1][0].rstrip(",.!?")
         if CODE_RE.fullmatch(token.upper()):
-            if not token.isalpha():
-                return True
-            # Ordinary words overlap the code alphabet in EVERY casing:
-            # "Approve DATA migration" is not a protocol request. Only a
-            # retained matching code makes an all-letter token diagnostic.
+            # The code alphabet also overlaps ordinary alphanumeric names
+            # (PHP8, SHA3, AVX2). Either kind is a reply candidate only when
+            # its code is retained for this route.
             # Exact armed replies remain case-insensitive; prose is not repaired.
             if any(value.get("route") == route
                    and value.get("short_reply", "").rsplit(" ", 1)[-1] == token.upper()

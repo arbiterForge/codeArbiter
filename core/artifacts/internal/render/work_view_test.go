@@ -40,6 +40,28 @@ func TestWorkViewNamesFailedChecksAfterLocalCompletion(t *testing.T) {
 	}
 }
 
+func TestWorkViewKeepsBlockedTaskStopAheadOfReportedFailure(t *testing.T) {
+	html, err := WorkView(WorkViewData{
+		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+		Title: "Stopped work", Intent: "Keep the owner stop visible", WorkType: "fix", State: "active",
+		Plan: &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+		PlanTask: &WorkViewTask{ID: "T-001", Title: "Implement stage 1", State: "BLOCKED",
+			NextAction: "Inspect the recorded stop; do not clear it until the owner resumes.", UnresolvedCount: 1},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	view := string(html)
+	start := strings.Index(view, "<dt>Next action</dt><dd>")
+	if start < 0 {
+		t.Fatal("work view omitted snapshot next action")
+	}
+	next := strings.SplitN(view[start:], "</dd>", 2)[0]
+	if !strings.Contains(next, "do not clear") || !strings.Contains(view, "Unresolved reported failure") {
+		t.Fatalf("reported check displaced the owner stop or vanished: next=%q", next)
+	}
+}
+
 func TestWorkViewExplainsBoundStatusConflictWithoutClaimingDelivery(t *testing.T) {
 	html, err := WorkView(WorkViewData{
 		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",

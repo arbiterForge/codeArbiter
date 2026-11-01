@@ -23,6 +23,11 @@ never source, logs, artifacts, prompts, configuration commits, or diagnostic
 echoes. `FARM_API_KEY` is allowed only as farm runtime input. Sandbox
 `CLAUDE_CODE_OAUTH_TOKEN` injection is explicit `--with-claude` behavior; do not
 mount credential material with untrusted source or silently widen egress.
+The approved environment may be the owning process's secret source or the bounded
+runtime transport from its release store. Environment access by itself grants no
+new origin, sink, child, or lifetime permission. Keep each value within the
+owning process or the specifically approved child flow for its actual workflow
+lifetime, then release it; do not cache or serialize it for later work.
 
 Pi's ADR-0019 parent inference broker supersedes stored-provider credential
 projection. A child receives a short-lived per-child loopback token, not reusable

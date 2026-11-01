@@ -35,6 +35,8 @@ type WorkViewAttachment struct {
 type WorkViewTask struct {
 	ID, Title, State, NextAction, ReportedOutcome, ReportedFreshness string
 	BindingCurrent                                                   bool
+	UnresolvedCount, IgnoredReports                                  int64
+	HistoryUnassessed                                                bool
 }
 
 var githubWorkURL = regexp.MustCompile(`^https://github\.com/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/(?:issues|pull)/[1-9][0-9]*$`)
@@ -97,7 +99,9 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		next = data.PlanTask.ID + " — " + data.PlanTask.Title + ": " + data.PlanTask.NextAction
 	}
 	obstacle := "Not recorded in this work item."
-	if checkStatus == "failed" {
+	if data.PlanTask != nil && data.PlanTask.UnresolvedCount > 0 {
+		obstacle = "A declared plan check was reported failing and remains unresolved within its partial source scope."
+	} else if checkStatus == "failed" {
 		obstacle = "Checks failed; local completion does not resolve them."
 		next = "Investigate the failed check and repeat the affected verification."
 	} else if data.ProviderEffectStatus == "outcome_unknown" {
@@ -240,6 +244,15 @@ func WorkView(data WorkViewData) ([]byte, error) {
 				w.WriteString(`<p>Source binding changed; reconcile the plan before relying on its task requirements.</p>`)
 			}
 			w.WriteString(`<p>` + esc(task.NextAction) + `</p>`)
+			if task.UnresolvedCount > 0 {
+				w.WriteString(`<p>Unresolved reported failure: ` + strconv.FormatInt(task.UnresolvedCount, 10) + ` declared command(s), assessed against partial source scope. Review exact task history and attested evidence before claiming verification.</p>`)
+			}
+			if task.HistoryUnassessed {
+				w.WriteString(`<p>Earlier check history was trimmed and remains unassessed.</p>`)
+			}
+			if task.IgnoredReports > 0 {
+				w.WriteString(`<p>` + strconv.FormatInt(task.IgnoredReports, 10) + ` report(s) were stale or unrelated to current declared checks.</p>`)
+			}
 			if task.ReportedOutcome == "" {
 				w.WriteString(`<p>No check report recorded for this task.</p>`)
 			} else {

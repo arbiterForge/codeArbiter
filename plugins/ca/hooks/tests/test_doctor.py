@@ -45,6 +45,139 @@ def _has(keyword):
     return any(keyword in line for _, line in doctor.results)
 
 
+class TestExecutingPayloadIdentity(unittest.TestCase):
+    def test_observer_uses_executing_root_not_newer_cache_sibling(self):
+        class OldHost(doctor.hostapi.Host):
+            adapter_version = "3.7.0"
+
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = os.path.join(temporary, "plugins", "cache", "ca")
+            root = os.path.join(parent, "3.7.0")
+            os.makedirs(os.path.join(root, ".claude-plugin"))
+            os.makedirs(os.path.join(parent, "3.8.1"))
+            os.makedirs(os.path.join(root, "helpers", "artifacts"))
+            with open(os.path.join(root, ".claude-plugin", "plugin.json"), "w", encoding="utf-8") as stream:
+                json.dump({"name": "ca", "version": "3.7.0"}, stream)
+            with open(os.path.join(root, "helpers", "artifacts", "release.json"), "w", encoding="utf-8") as stream:
+                json.dump({"format": "codearbiter.artifact-release/0.1.0", "version": "0.3.2",
+                           "protocol": "codearbiter.artifact-api/0.1.0", "schema_version": "0.3.2"}, stream)
+            with mock.patch.object(doctor.hostapi.os, "listdir", side_effect=AssertionError("cache scan")):
+                observed = doctor.hostapi.observe_payload_identity(OldHost(), root)
+        self.assertEqual(observed["adapter_version"], "3.7.0")
+        self.assertEqual(observed["native_version"], "0.3.2")
+        self.assertEqual(observed["native_integrity"], "not_checked")
+
+    def test_observer_bounds_missing_or_malformed_version_without_crashing(self):
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".claude-plugin"))
+            manifest = os.path.join(root, ".claude-plugin", "plugin.json")
+            for content in (None, '{"name":"ca","version":42}', "{" * 20000):
+                if content is None:
+                    if os.path.exists(manifest):
+                        os.unlink(manifest)
+                else:
+                    with open(manifest, "w", encoding="utf-8") as stream:
+                        stream.write(content)
+                observed = doctor.hostapi.observe_payload_identity(doctor.hostapi.Host(), root)
+                self.assertEqual(observed["adapter_version"], "unknown")
+                self.assertIn(observed["adapter_manifest_status"], {"missing", "invalid", "oversize"})
+
+    def test_doctor_reports_manifest_claim_without_claiming_digest_proof(self):
+        _reset()
+        identity = {"host": "codex", "adapter": "ca-codex", "executing_root": "C:/installed/0.25.0",
+                    "adapter_version": "0.25.0", "adapter_descriptor_version": "0.25.0",
+                    "adapter_manifest_status": "read", "descriptor_matches_manifest": True,
+                    "native_version": "0.3.2", "native_protocol": "codearbiter.artifact-api/0.1.0",
+                    "native_schema_version": "0.3.2", "native_manifest_status": "declared",
+                    "native_integrity": "not_checked"}
+        doctor.report_payload_identity(identity)
+        self.assertTrue(_has("executing ca-codex 0.25.0"))
+        self.assertTrue(_has("declared; executable integrity not checked"))
+        self.assertFalse(_has("digest verified"))
+        _reset()
+
+    def test_doctor_native_manifest_fields_cannot_inject_report_lines(self):
+        _reset()
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".claude-plugin"))
+            os.makedirs(os.path.join(root, "helpers", "artifacts"))
+            with open(os.path.join(root, ".claude-plugin", "plugin.json"), "w", encoding="utf-8") as stream:
+                json.dump({"name": "ca", "version": "3.8.1"}, stream)
+            with open(os.path.join(root, "helpers", "artifacts", "release.json"), "w", encoding="utf-8") as stream:
+                json.dump({"format": "codearbiter.artifact-release/0.1.0", "version": "0.3.2\nFAKE OK",
+                           "protocol": "codearbiter.artifact-api/0.1.0\rFAKE WARN",
+                           "schema_version": "0.3.2\nFAKE FAIL"}, stream)
+            observed = doctor.hostapi.observe_payload_identity(doctor.hostapi.Host(), root)
+            doctor.report_payload_identity(observed)
+        native = [line for line in _lines() if "native helper manifest version" in line]
+        self.assertEqual(native, [])
+        self.assertTrue(_has("native helper manifest identity unknown (invalid)"))
+        self.assertTrue(all("\n" not in line and "\r" not in line for line in _lines()))
+        _reset()
+
+    def test_native_manifest_rejects_controls_and_malformed_identity_fields(self):
+        cases = (
+            ("0.3.2\x1b[2JFAKE", "codearbiter.artifact-api/0.1.0", "0.3.2"),
+            ("0.3.2", "codearbiter.artifact-api/not-a-version", "0.3.2"),
+            ("0.3.2", "codearbiter.artifact-api/0.1.0", "schema three"),
+        )
+        for version, protocol, schema in cases:
+            with self.subTest(version=version, protocol=protocol, schema=schema), tempfile.TemporaryDirectory() as root:
+                os.makedirs(os.path.join(root, ".claude-plugin"))
+                os.makedirs(os.path.join(root, "helpers", "artifacts"))
+                with open(os.path.join(root, ".claude-plugin", "plugin.json"), "w", encoding="utf-8") as stream:
+                    json.dump({"name": "ca", "version": doctor.hostapi.Host.adapter_version}, stream)
+                with open(os.path.join(root, "helpers", "artifacts", "release.json"), "w", encoding="utf-8") as stream:
+                    json.dump({"format": "codearbiter.artifact-release/0.1.0", "version": version,
+                               "protocol": protocol, "schema_version": schema}, stream)
+                observed = doctor.hostapi.observe_payload_identity(doctor.hostapi.Host(), root)
+                self.assertEqual(observed["native_manifest_status"], "invalid")
+                self.assertEqual(observed["native_version"], "unknown")
+
+    def test_doctor_escapes_terminal_controls_in_observed_paths(self):
+        _reset()
+        doctor.report_payload_identity({
+            "adapter": "ca", "adapter_version": "unknown",
+            "executing_root": "C:/installed/\x1b[2J\troot\b",
+            "adapter_manifest_status": "missing", "descriptor_matches_manifest": False,
+            "native_manifest_status": "missing",
+        })
+        text = "\n".join(_lines())
+        self.assertNotIn("\x1b", text)
+        self.assertNotIn("\t", text)
+        self.assertNotIn("\b", text)
+        self.assertIn("\\x1b", text)
+        _reset()
+
+    def test_descriptor_mismatch_and_external_manifest_symlink_are_visible(self):
+        class OldHost(doctor.hostapi.Host):
+            adapter_version = "3.7.0"
+
+        _reset()
+        with tempfile.TemporaryDirectory() as root, tempfile.TemporaryDirectory() as outside:
+            os.makedirs(os.path.join(root, ".claude-plugin"))
+            with open(os.path.join(root, ".claude-plugin", "plugin.json"), "w", encoding="utf-8") as stream:
+                json.dump({"name": "ca", "version": "3.8.0"}, stream)
+            external = os.path.join(outside, "release.json")
+            with open(external, "w", encoding="utf-8") as stream:
+                json.dump({"format": "codearbiter.artifact-release/0.1.0", "version": "9.9.9",
+                           "protocol": "codearbiter.artifact-api/9.9.9", "schema_version": "9.9.9"}, stream)
+            native = os.path.join(root, "helpers", "artifacts")
+            os.makedirs(os.path.dirname(native))
+            try:
+                os.symlink(outside, native, target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"directory symlink unavailable: {exc}")
+            observed = doctor.hostapi.observe_payload_identity(OldHost(), root)
+            self.assertFalse(observed["descriptor_matches_manifest"])
+            self.assertEqual(observed["native_manifest_status"], "outside_root")
+            self.assertEqual(observed["native_version"], "unknown")
+            doctor.report_payload_identity(observed)
+        self.assertTrue(_has("manifest disagrees with the loaded host descriptor"))
+        self.assertFalse(_has("9.9.9"))
+        _reset()
+
+
 class TestCheckHost(unittest.TestCase):
     """observability-004 (#268): check_host() surfaces the resolved host name
     (or a WARN when hostapi.load_host() failed closed to "unknown", #255)."""
@@ -298,6 +431,7 @@ class TestArtifactCapabilityDiagnostics(unittest.TestCase):
         client.index.assert_not_called()
         self.assertEqual(_levels(), ["OK"])
         self.assertIn("windows/amd64", _lines()[0])
+        self.assertIn("digest verified", _lines()[0])
 
     def test_missing_payload_is_an_actionable_failure_but_preserves_legacy(self):
         error = doctor.ArtifactDiagnosticError("CAPABILITY_MISSING")
