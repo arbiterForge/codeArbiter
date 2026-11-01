@@ -49,11 +49,11 @@ failures = []
 checks = 0
 
 
-def sh(args, cwd, **kw):
+def sh(args, cwd, *, env_overrides=None, **kw):
     # Pin CLAUDE_PROJECT_DIR to the fixture repo: project_root() trusts the
     # harness signal first, and a value leaking in from a live Claude session
     # would silently point every guard at the developer's real repo.
-    env = {**os.environ, "CLAUDE_PROJECT_DIR": cwd}
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": cwd, **(env_overrides or {})}
     return subprocess.run(args, cwd=cwd, capture_output=True, text=True,
                           encoding="utf-8", errors="replace", timeout=60,
                           env=env, **kw)
@@ -199,7 +199,22 @@ def check_corrective_guard_cases(fixture):
         destination = os.path.join(fixture, "docs", "security-controls-draft.md")
         with open(source, "rb") as stream:
             source_bytes = stream.read()
-        executed = sh([shell, "-NoProfile", "-NonInteractive", "-Command", copy_command], fixture)
+        # PowerShell writes command-discovery data beneath its user/cache paths
+        # even with -NoProfile. Keep that test-only state inside the disposable
+        # fixture so the hermeticity suite's redirected user home stays pristine.
+        powershell_home = os.path.join(fixture, ".powershell-home")
+        powershell_cache = os.path.join(fixture, ".powershell-cache")
+        executed = sh(
+            [shell, "-NoProfile", "-NonInteractive", "-Command", copy_command],
+            fixture,
+            env_overrides={
+                "HOME": powershell_home,
+                "USERPROFILE": powershell_home,
+                "XDG_CACHE_HOME": powershell_cache,
+                "POWERSHELL_TELEMETRY_OPTOUT": "1",
+                "POWERSHELL_UPDATECHECK": "Off",
+            },
+        )
         check(executed.returncode == 0, "execute allowed Copy-Item", executed.stderr)
         with open(source, "rb") as stream:
             check(stream.read() == source_bytes, "Copy-Item source hash",
