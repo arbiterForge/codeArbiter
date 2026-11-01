@@ -50,6 +50,11 @@ class KnowledgeCli(unittest.TestCase):
     def scaffold(self, *extra):
         self.script("init-codearbiter.py", "--root", str(self.root), *extra)
 
+    def select_legacy_board(self):
+        state = self.root / ".codearbiter"
+        (state / "open-tasks.md").write_text("# Open tasks\n\n## In-flight\n\n## Queued\n", encoding="utf-8")
+        (state / "done-tasks.md").write_text("# Done tasks\n\n", encoding="utf-8")
+
     def test_greenfield_saves_unknowns_and_initializes_structurally(self):
         self.scaffold()
         context = (self.root / CONTEXT).read_text(encoding="utf-8")
@@ -179,6 +184,7 @@ class KnowledgeCli(unittest.TestCase):
 
     def test_promotion_is_idempotent_across_archive(self):
         self.scaffold()
+        self.select_legacy_board()
         self.knowledge("create-missing")
         work = {"type": "work_item", "title": "Build the login form", "statement": "MVP login.", "basis": "user-reported",
                 "scope": {"paths": []}, "related_refs": [], "source_refs": []}
@@ -217,8 +223,8 @@ class KnowledgeCli(unittest.TestCase):
     def test_promotion_uses_native_work_when_no_legacy_board_owns_project(self):
         self.scaffold()
         board = self.root / ".codearbiter/open-tasks.md"
-        board.unlink(missing_ok=True)  # disposable fixture selects native ownership
         self.knowledge("create-missing")
+        self.knowledge("initialize")
         work = {"type": "work_item", "title": "Native candidate", "statement": "Track one result.",
                 "basis": "user-reported", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
         self.knowledge("add", "decomposition", "--record", json.dumps(work))
@@ -236,7 +242,8 @@ class KnowledgeCli(unittest.TestCase):
         board = self.root / ".codearbiter/open-tasks.md"
         self.knowledge("create-missing")
         self.knowledge("initialize")
-        board.unlink(missing_ok=True)  # disposable empty-board fixture selects native ownership
+        project = self.root / ".codearbiter/work/project.json"
+        identity = project.read_bytes()
         before = (self.root / CONTEXT).read_bytes()
         source = self.root / "src/service.py"
         source.parent.mkdir()
@@ -255,7 +262,9 @@ class KnowledgeCli(unittest.TestCase):
             "related_refs": [observed["record"]], "source_refs": [cited["record"]]}))
         self.assertEqual((self.root / CONTEXT).read_bytes(), before)
         self.assertFalse(board.exists())
-        self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
+        self.assertEqual(project.read_bytes(), identity,
+                         "observation changed the native project identity")
+        self.assertEqual(list(project.parent.glob("WORK-*.html")), [],
                          "observation silently published a candidate")
         promoted = self.knowledge("promote", candidate["record"])
         self.assertEqual(promoted["owner"], "native")
@@ -266,6 +275,7 @@ class KnowledgeCli(unittest.TestCase):
 
     def test_initialized_brownfield_preserves_legacy_backlog_through_selected_adoption(self):
         self.scaffold()
+        self.select_legacy_board()
         self.knowledge("create-missing")
         self.knowledge("initialize")
         context = (self.root / CONTEXT).read_bytes()
@@ -296,7 +306,8 @@ class KnowledgeCli(unittest.TestCase):
         self.knowledge("create-missing")
         self.knowledge("initialize")
         board = self.root / ".codearbiter/open-tasks.md"
-        board.unlink(missing_ok=True)  # disposable no-backlog native fixture
+        project = self.root / ".codearbiter/work/project.json"
+        identity = project.read_bytes()
         context = (self.root / CONTEXT).read_bytes()
         decision = self.root / ".codearbiter/decisions/ADR-0001.md"
         decision.parent.mkdir(exist_ok=True)
@@ -324,7 +335,9 @@ class KnowledgeCli(unittest.TestCase):
         self.assertEqual((self.root / CONTEXT).read_bytes(), context)
         self.assertEqual(decision.read_bytes(), b"# Existing decision\nHuman rationale stays here.\n")
 
-        self.assertFalse((self.root / ".codearbiter/work/project.json").exists(),
+        self.assertEqual(project.read_bytes(), identity,
+                         "candidate or interrupted synthesis changed project identity")
+        self.assertEqual(list(project.parent.glob("WORK-*.html")), [],
                          "candidate or interrupted synthesis published work")
         self.assertFalse(board.exists(), "acquisition recreated an empty legacy backlog")
         self.assertEqual(self.knowledge("read", "decomposition", denied["record"])["records"][0]["basis"],
@@ -339,7 +352,8 @@ class KnowledgeCli(unittest.TestCase):
         self.knowledge("create-missing")
         self.knowledge("initialize")
         board = self.root / ".codearbiter/open-tasks.md"
-        board.unlink(missing_ok=True)
+        project = self.root / ".codearbiter/work/project.json"
+        identity = project.read_bytes()
         source = self.knowledge("add", "decomposition", "--collection", "sources", "--record",
                                 json.dumps({"title": "Existing issue", "type": "repository",
                                             "url": "https://github.com/example/project/issues/7",
@@ -354,7 +368,8 @@ class KnowledgeCli(unittest.TestCase):
             candidates.append(result["record"])
         self.assertNotEqual(*candidates)
         self.assertFalse(board.exists())
-        self.assertFalse((self.root / ".codearbiter/work/project.json").exists())
+        self.assertEqual(project.read_bytes(), identity)
+        self.assertEqual(list(project.parent.glob("WORK-*.html")), [])
         self.assertTrue(all("promotion" not in self.knowledge("read", "decomposition", record)["records"][0]
                             for record in candidates))
         selected = self.knowledge("promote", candidates[0])
