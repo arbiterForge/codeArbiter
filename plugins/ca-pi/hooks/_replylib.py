@@ -179,6 +179,11 @@ def _entries(now: int | None = None):
                 continue
             if _identity(Path(value["repository"].get("path", ""))) != value["repository"]:
                 continue
+            if value.get("retired") is True:
+                if int(value.get("retired_until", 0)) <= now:
+                    continue
+                yield path, value, False
+                continue
             yield path, value, int(value.get("expires_at", 0)) > now
         except (OSError, UnicodeError, ValueError, TypeError, ReplyCodeError):
             continue
@@ -251,11 +256,41 @@ def retire_code(root, route: str, artifact_id: str) -> None:
         key = _key(route, artifact_id, repository)
     except (ReplyCodeError, OSError):
         return
-    for name in (f"{key}.json", f"ask-{key}.ask"):
-        try:
-            (_registry() / name).unlink()
-        except (FileNotFoundError, ReplyCodeError, OSError):
-            pass
+    if route != "prerequisite":
+        for name in (f"{key}.json", f"ask-{key}.ask"):
+            try:
+                (_registry() / name).unlink()
+            except (FileNotFoundError, ReplyCodeError, OSError):
+                pass
+        return
+    # A repeated prerequisite reply must remain visibly rejected across hook
+    # processes. Replace its secret-bearing expansion with a short-lived,
+    # non-authoritative tombstone; approval/reconciliation keep their existing
+    # deletion behavior because code-shaped words there can be ordinary prose.
+    try:
+        registry = _registry()
+        path = registry / f"{key}.json"
+        current = next((value for other, value, _alive in _entries() if other == path), None)
+        if current is not None:
+            retired_at = int(time.time())
+            value = {
+                "format": FORMAT,
+                "route": current.get("route"),
+                "artifact_id": current.get("artifact_id"),
+                "repository": current.get("repository"),
+                "short_reply": current.get("short_reply"),
+                "names": list(current.get("names") or []),
+                "expires_at": 0,
+                "retired": True,
+                "retired_until": retired_at + CODE_TTL_SECONDS,
+            }
+            value["integrity_sha256"] = _digest(_canonical(value))
+            _write(path, value)
+        else:
+            path.unlink(missing_ok=True)
+        (registry / f"ask-{key}.ask").unlink(missing_ok=True)
+    except (FileNotFoundError, ReplyCodeError, OSError, TypeError, ValueError):
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -434,9 +469,17 @@ def _capture_attempt(raw, route: str) -> bool:
             # (PHP8, SHA3, AVX2). Either kind is a reply candidate only when
             # its code is retained for this route.
             # Exact armed replies remain case-insensitive; prose is not repaired.
+            entries = list(_entries())
             if any(value.get("route") == route
                    and value.get("short_reply", "").rsplit(" ", 1)[-1] == token.upper()
-                   for _path, value, _alive in _entries()):
+                   and (value.get("retired") is not True
+                        or (route == "prerequisite" and len(words) == count
+                            and any(ch.isdigit() for ch in token)))
+                   for _path, value, _alive in entries):
+                return True
+            if route == "prerequisite" and len(words) == count and any(
+                    value.get("route") == route and alive
+                    for _path, value, alive in entries):
                 return True
             continue
         if "I" in shape and re.fullmatch(r"[A-Za-z0-9_-]{12,128}", token):
@@ -515,6 +558,9 @@ def expand(canonical: str) -> dict[str, str]:
         return {"text": canonical,
                 "notice": f"codeArbiter: reply code {code} was armed as `{expected}`; resend exactly that."}
     value, alive = exact[0]
+    if not alive and value.get("retired") is True:
+        return {"text": canonical,
+                "notice": f"codeArbiter: reply code {code} matches no armed request."}
     if not alive:
         return {"text": canonical, "notice": f"codeArbiter: reply code {code} has expired; ask for a new one."}
     if names and names != value.get("names", [])[:len(names)] and names != value.get("names", []):

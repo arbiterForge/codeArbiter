@@ -322,7 +322,29 @@ class OrdinaryPromptTest(unittest.TestCase):
                 self.assertNotEqual(prepared["text"], FULL)
         self.assertFalse(replies.prepare("reconcile DATA", "reconciliation")["attempted"])
         replies.retire_code(root, "approval", "SPEC-X")
+        self.assertFalse(replies.prepare("approve DATA", "approval")["attempted"])
         self.assertFalse(replies.prepare("Approve DATA migration", "approval")["attempted"])
+
+    def test_retired_prerequisite_code_keeps_only_a_bounded_non_secret_tombstone(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "retired-prerequisite"
+        (root / ".codearbiter").mkdir(parents=True)
+        full = f"satisfy-prerequisite PLAN-X PRE-X {TOKEN}"
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("K7MQ")):
+            replies.issue_code(root, "prerequisite", "PLAN-X", full,
+                               names=["PLAN-X", "PRE-X"],
+                               short_prefix=["satisfy-prerequisite"])
+        replies.retire_code(root, "prerequisite", "PLAN-X")
+        retired = json.loads(next(replies._registry().glob("*.json")).read_text(encoding="utf-8"))
+        self.assertTrue(retired["retired"])
+        self.assertEqual(retired["short_reply"], "satisfy-prerequisite K7MQ")
+        self.assertNotIn("full_reply", retired)
+        self.assertIn("matches no armed request",
+                      replies.prepare("satisfy-prerequisite K7MQ", "prerequisite")["notice"])
+        with mock.patch.object(replies.time, "time", return_value=retired["retired_until"]):
+            self.assertFalse(
+                replies.prepare("satisfy-prerequisite K7MQ", "prerequisite")["attempted"]
+            )
 
     def test_unrecognized_mixed_codes_are_ordinary_without_a_matching_request(self):
         replies = importlib.import_module("_replylib")
