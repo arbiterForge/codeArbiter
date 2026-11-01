@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import ts from "typescript";
 
 const GOVERNANCE_TARGETS = ["ca", "ca-codex", "ca-pi"] as const;
 const DECLARED_TARGETS = new Set([...GOVERNANCE_TARGETS, "ca-sandbox"]);
@@ -16,7 +17,6 @@ const NONZERO_LOWER_COMMIT_SHA = /^(?!0{40}$)[0-9a-f]{40}$/;
 const DIRECT_HOOK_SOURCE = "plugins/ca/hooks/pre-bash.py";
 /** Where ca-pi declares the exact Pi versions it accepts (#1071). */
 export const PI_COMPATIBILITY_SOURCE = "plugins/ca-pi/tools/src/compatibility.ts";
-const PI_SUPPORT_DECLARATION = /const SUPPORTED_PI_VERSIONS = new Set\(\[([^\]]*)\]\)/g;
 const EXACT_VERSION = /^\d+\.\d+\.\d+$/;
 const DIRECT_HOOK_EVIDENCE_KIND = "direct-hook-invocation-rendered-replay";
 const ORIGINAL_LEDGER_PATH = ".github/published-tags.json";
@@ -514,22 +514,45 @@ export function deriveVerifiedGovernanceReleases(
  * published install instructions pin that tag, so a promotion merged but not yet
  * released must not change what they require.
  */
+/**
+ * Parsed as TypeScript so a commented-out declaration is never mistaken for the
+ * one ca-pi enforces, and an array hole is an error rather than a skipped entry.
+ */
 function parsePublishedPiSupport(text: string, tag: string): string[] {
-  const declarations = [...text.matchAll(PI_SUPPORT_DECLARATION)];
   const where = `Published Pi compatibility for ${tag}`;
+  const source = ts.createSourceFile(PI_COMPATIBILITY_SOURCE, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const declarations: ts.VariableDeclaration[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === "SUPPORTED_PI_VERSIONS") {
+      declarations.push(node);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
   if (declarations.length !== 1) {
     throw new Error(
       `${where}: expected exactly one SUPPORTED_PI_VERSIONS declaration, found ${declarations.length}`,
     );
   }
-  const entries = declarations[0][1].split(",").map((entry) => entry.trim()).filter((entry) => entry !== "");
-  if (entries.length === 0) throw new Error(`${where}: SUPPORTED_PI_VERSIONS is empty`);
-  const versions = entries.map((entry) => {
-    const quoted = /^"([^"]*)"$/.exec(entry) ?? /^'([^']*)'$/.exec(entry);
-    if (!quoted || !EXACT_VERSION.test(quoted[1])) {
-      throw new Error(`${where}: SUPPORTED_PI_VERSIONS entry ${entry} is not an exact X.Y.Z version`);
+  const initializer = declarations[0].initializer;
+  const list = initializer && ts.isNewExpression(initializer) && ts.isIdentifier(initializer.expression)
+    && initializer.expression.text === "Set" && initializer.arguments?.length === 1
+    ? initializer.arguments[0]
+    : undefined;
+  if (!list || !ts.isArrayLiteralExpression(list)) {
+    throw new Error(`${where}: SUPPORTED_PI_VERSIONS must be a new Set built from an array literal`);
+  }
+  if (list.elements.length === 0) throw new Error(`${where}: SUPPORTED_PI_VERSIONS is empty`);
+  const versions = list.elements.map((element) => {
+    if (ts.isOmittedExpression(element)) {
+      throw new Error(`${where}: SUPPORTED_PI_VERSIONS has an empty entry`);
     }
-    return quoted[1];
+    if (!ts.isStringLiteral(element) || !EXACT_VERSION.test(element.text)) {
+      throw new Error(
+        `${where}: SUPPORTED_PI_VERSIONS entry ${element.getText(source)} is not an exact X.Y.Z version`,
+      );
+    }
+    return element.text;
   });
   return [...new Set(versions)].sort((left, right) => compareVersions(parseVersion(left)!, parseVersion(right)!));
 }

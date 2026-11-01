@@ -768,8 +768,27 @@ describe("published Pi support (#1071)", () => {
     ["a duplicated declaration", () => 'const SUPPORTED_PI_VERSIONS = new Set(["1.1.0"]);\n'.repeat(2), /SUPPORTED_PI_VERSIONS.*found 2/],
     ["an empty set", () => "const SUPPORTED_PI_VERSIONS = new Set([]);\n", /SUPPORTED_PI_VERSIONS.*empty/],
     ["a non-SemVer entry", () => 'const SUPPORTED_PI_VERSIONS = new Set(["latest"]);\n', /SUPPORTED_PI_VERSIONS.*latest/],
+    // An array hole is a malformed list, not a separator to skip (review, #1072).
+    ["an empty entry between versions", () => 'const SUPPORTED_PI_VERSIONS = new Set(["1.1.0", , "1.2.0"]);\n', /SUPPORTED_PI_VERSIONS.*empty entry/],
+    ["a Set built from something other than an array literal", () => "const SUPPORTED_PI_VERSIONS = new Set(VERSIONS);\n", /SUPPORTED_PI_VERSIONS.*array/],
   ])("fails closed on %s", (_case, piCompatibility, message) => {
     expect(() => record(piCompatibility)).toThrow(message);
+  });
+
+  it("allows a trailing comma after the last version", () => {
+    expect(record(() => 'const SUPPORTED_PI_VERSIONS = new Set([\n  "1.1.0",\n  "1.2.0",\n]);\n').publishedPiSupport?.versions)
+      .toEqual(["1.1.0", "1.2.0"]);
+  });
+
+  // A comment is not the declaration ca-pi enforces (review, #1072).
+  it("reads the active declaration, not a commented-out one", () => {
+    const source = [
+      '// const SUPPORTED_PI_VERSIONS = new Set(["9.9.9"]);',
+      '/* const SUPPORTED_PI_VERSIONS = new Set(["9.9.8"]); */',
+      'const SUPPORTED_PI_VERSIONS: ReadonlySet<string> = new Set(["1.1.0"]);',
+      "",
+    ].join("\n");
+    expect(record(() => source).publishedPiSupport?.versions).toEqual(["1.1.0"]);
   });
 });
 
