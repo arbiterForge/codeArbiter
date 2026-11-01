@@ -430,6 +430,20 @@ def main():
                     # make an unrelated restore look destructive.
                     "git restore notes.txt; cat .codearbiter/overrides.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
+        # A sed that cannot write is a read, as H-11 and H-18 treat it (#997).
+        for cmd in ("sed -n 1,20p .codearbiter/overrides.log",
+                    'cd "repo dir" && sed -n 1,80p .codearbiter/gate-events.log',
+                    "sed 's/a/b/' .codearbiter/sprint-log.md",
+                    "sed -n 1,20p .codearbiter/decisions/decision-log.md"):
+            expect_allow(fx, cmd, f"H-05 allow (read-only sed): {cmd}")
+        for cmd in ("sed -n -i p .codearbiter/overrides.log",
+                    "sed --in-place 's/a/b/' .codearbiter/gate-events.log",
+                    "sed -n '1w .codearbiter/overrides.log' other",
+                    # GNU sed accepts options after operands.
+                    "sed 's/a/b/' .codearbiter/sprint-log.md -i",
+                    # A read-only sed must not shield a later write verb.
+                    "sed -n p .codearbiter/overrides.log; rm .codearbiter/overrides.log"):
+            expect_block(fx, cmd, "H-05", f"H-05 block (writing sed): {cmd}")
 
         # ---- #574: H-05 had NO interpreter leg — an inline-code one-liner
         # walked past both LOG_TRUNC_RE and LOG_DESTROY_RE, since neither
@@ -467,6 +481,20 @@ def main():
                     "ls .codearbiter/decisions/",
                     "grep -r seed .codearbiter/decisions/"):
             expect_allow(fx, cmd, f"H-11 allow: {cmd}")
+        # A sed that cannot write is a read, as H-18 already treats it (#997).
+        # The first case is the exact command H-11 refused while reading an ADR.
+        for cmd in ('cd "repo dir" && sed -n 1,80p .codearbiter/decisions/0001-seed.md',
+                    "sed -n 1,20p .codearbiter/decisions/0001-seed.md",
+                    "sed 's/a/b/' .codearbiter/decisions/0001-seed.md"):
+            expect_allow(fx, cmd, f"H-11 allow (read-only sed): {cmd}")
+        for cmd in ("sed -n -i p .codearbiter/decisions/0001-seed.md",
+                    "sed --in-place 's/a/b/' .codearbiter/decisions/0001-seed.md",
+                    "sed -n '1w .codearbiter/decisions/0009-x.md' other",
+                    # GNU sed accepts options after operands (review, #1008).
+                    "sed 's/a/b/' .codearbiter/decisions/0001-seed.md -i",
+                    # A read-only sed must not shield a later write verb.
+                    "sed -n p .codearbiter/decisions/0001-seed.md; rm .codearbiter/decisions/0001-seed.md"):
+            expect_block(fx, cmd, "H-11", f"H-11 block (writing sed): {cmd}")
 
         # A filename extension is not an interpreter executable. Exercise the
         # actual hook entry, including the exact read-only campaign repro.
@@ -596,6 +624,38 @@ def main():
                     # GNU sed accepts options after operands (review, #1008).
                     f"sed 's/a/b/' {context} -i", f"sed 's/a/b/' {context} --in-place"):
             expect_block(fx, cmd, "H-18", f"H-18 block (writing sed, #997): {cmd}")
+        # Review (#1070): sed also writes through GNU long-option prefixes, a `w`
+        # filename with no space, `w` after other s flags, -e scripts and the `e`
+        # command, and -f hides its script. A sed is a read only when every
+        # option and the whole script are visibly read-only, for all three hooks.
+        sed_targets = (("H-05", ".codearbiter/overrides.log"),
+                       ("H-11", ".codearbiter/decisions/0001-seed.md"),
+                       ("H-18", context))
+        for hook, target in sed_targets:
+            for cmd in (f"sed --in-pla 's/a/b/' {target}",
+                        f"sed --i 's/a/b/' {target}",
+                        f"sed -n 's/a/b/w{target}' notes.txt",
+                        f"sed -n 's/a/b/gw {target}' notes.txt",
+                        f"sed -n -e '1w {target}' notes.txt",
+                        f"sed -ne '$w {target}' notes.txt",
+                        f"sed --expression='1W {target}' notes.txt",
+                        f"sed -f rules.sed {target}",
+                        f"sed --file=rules.sed {target}",
+                        f"sed -n '1e true' {target}",
+                        # Script file, `w` filename and `e` that parse as commands,
+                        # so only the option or flag rule can refuse them.
+                        f"sed -f p {target}",
+                        f"sed -n 's/a/b/wp' {target}",
+                        f"sed -n '1e' {target}",
+                        # Unparsed syntax fails closed rather than guessing.
+                        f"sed -n '1{{p}}' {target}"):
+                expect_block(fx, cmd, hook, f"{hook} block (sed write form): {cmd}")
+            for cmd in (f"sed -n '/warn/p' {target}",
+                        f"sed -E -n 's/x/y/gp' {target}",
+                        f"sed -n -e 1,5p {target}",
+                        f"sed -ne '$p' {target}",
+                        f"sed --quiet --expression=2q {target}"):
+                expect_allow(fx, cmd, f"{hook} allow (read-only sed): {cmd}")
 
         # ---- #574: H-11 had NO interpreter leg — the identical gap as H-05,
         # for the decisions/ directory rather than a single audit-log name.

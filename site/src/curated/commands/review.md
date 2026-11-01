@@ -28,12 +28,17 @@ Select context for the actual review scope. Missing optional provenance or a cod
 focused source inspection. Resolve a genuinely missing task-critical requirement or conflicting
 instruction before the affected review; an unrelated stale aggregate does not block every unit.
 
+<details class="ca-evidence">
+<summary>Limits and evidence: reviewers on Codex</summary>
+
 Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
 host-provided agent threads. Exact static-package and route-closure checks gate release. A bounded
 0.9.4 receipt proves one exact installed-charter review. The inline fallback applies only where the
 canonical workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
+
+</details>
 
 ## Usage
 

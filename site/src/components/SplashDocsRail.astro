@@ -52,6 +52,51 @@ const overviewHref = `${basePath}/overview/`;
 </div>
 </ca-splash-docs>
 
+<style is:global>
+  /* Narrow screens (DOCS-OVERHAUL M4): the full-height rail becomes a compact tab
+     at the tray's bottom edge, and the page gets its full width back. The tray
+     still slides as one unit, so the tab rides the drawer's moving edge. The
+     extra element in each selector outranks landing.css's desktop rules
+     whatever order the two stylesheets load in. */
+  @media (max-width: 50rem) {
+    html .ca-landing {
+      padding-inline-start: 0;
+    }
+
+    ca-splash-docs .ca-docs-tray {
+      --ca-docs-handle-width: 2.5rem;
+      --ca-docs-drawer-width: min(300px, calc(100vw - 2.5rem));
+      pointer-events: none;
+    }
+
+    ca-splash-docs .ca-docs-drawer,
+    ca-splash-docs .ca-docs-rail__opener,
+    ca-splash-docs .ca-docs-rail__fallback {
+      pointer-events: auto;
+    }
+
+    ca-splash-docs .ca-docs-rail__opener {
+      align-self: end;
+      height: 7.25rem;
+      margin-block-end: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+      gap: 0.6rem;
+      padding: 0.75rem 0;
+      border: 1px solid rgb(58 76 96 / 72%);
+      border-inline-start: 0;
+      border-radius: 0 0.6rem 0.6rem 0;
+    }
+
+    ca-splash-docs .ca-docs-rail__label {
+      font-size: 0.56rem;
+    }
+
+    ca-splash-docs .ca-docs-rail__fallback {
+      inset-block: auto calc(1.25rem + env(safe-area-inset-bottom, 0px));
+      height: 7.25rem;
+    }
+  }
+</style>
+
 <script>
   class SplashDocsElement extends HTMLElement {
     private cleanup?: () => void;

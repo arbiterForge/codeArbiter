@@ -101,7 +101,7 @@ uninstall: your specs, plans, decisions, and audit trail stay on disk. What you 
 enforcement: no orchestrator persona, no gates, no statusline. Reinstalling and re-enabling
 (`arbiter: enabled` still needs to be in `CONTEXT.md`'s frontmatter) picks back up against
 whatever state is still there. See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd) for exactly what that
+[The `.codearbiter/` State File Reference](/codearbiter-directory/files/#contextmd) for exactly what that
 file controls.
 
 ### What if the gates are wrong for my project?

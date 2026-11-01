@@ -212,7 +212,8 @@ describe('composed assistive workflow references', () => {
     expect(text).toContain('continue independent authorized work');
   });
   it('documents paired native context writes and retained initialization sources', () => {
-    const text = read('src/content/docs/codearbiter-directory.md');
+    // The per-path entries live on the state file reference since the M6 split.
+    const text = read('src/content/docs/codearbiter-directory.md') + read('src/content/docs/codearbiter-directory/files.md');
     expect(text).toContain('native preview/apply with paired provenance');
     expect(text).toContain('plans/decomposition/');
     expect(text).toContain('Keep them after initialization');

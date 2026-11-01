@@ -6,8 +6,8 @@ journey:
   time: "12 minutes"
   outcome: "Install a pinned ca-pi preview, trust the project, opt in a repository, and verify a real gate."
   prerequisites:
-    - "Pi 1.1.0"
-    - "Node.js 22.19 or newer"
+    - "Pi %%fact=pi.supported%%"
+    - "Node.js %%fact=node.minimum%% or newer"
   proof: "Pi reports the pinned extension and a disposable broad-stage probe is blocked by H-03."
 ---
 
@@ -22,12 +22,12 @@ Git tag: the Git tag is the reproducible pin, and npm is the convenience channel
 
 Confirm all before installing:
 
-- **Node.js 22.19 or later.**
+- **Node.js %%fact=node.minimum%% or later.**
 - **Python 3 on `PATH`**: `ca-pi` installs its final TypeScript wrappers before bridge readiness, so
   a missing interpreter blocks mutating calls and points to `/ca-doctor` rather than silently
   disabling governance.
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity.
-- **A supported Pi host**: exact Pi 1.1.0 for this release line. See
+- **A supported Pi host**: exact Pi %%fact=pi.supported%% for this release line. See
   [Compatibility](/getting-started/compatibility/) for the full matrix.
 
 ## 1. Install
@@ -57,7 +57,7 @@ pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
 Replace `<version>` with only the numeric suffix from the chosen tag. For example, the tag
-`ca-pi-v0.1.32` maps to `@ca-pi-v0.1.32`; keep the full tag in the source. `pi list` and
+`ca-pi-v%%fact=release.ca-pi%%` maps to `@ca-pi-v%%fact=release.ca-pi%%`; keep the full tag in the source. `pi list` and
 `pi config` let you verify the installed source before trusting it. See
 [Trust and Security](#trust-and-security) below.
 

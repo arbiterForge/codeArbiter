@@ -6,6 +6,7 @@ import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
 import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
+import { remarkVersionFacts } from "./scripts/version-facts.ts";
 import { buildJourneySidebar } from "./scripts/journey-navigation.ts";
 import { buildReferenceSidebar } from "./scripts/reference-sidebar.ts";
 
@@ -125,7 +126,12 @@ export default defineConfig({
   // scheduled removal. `@astrojs/markdown-remark` is a direct dependency
   // because of this import — see site/package.json.
   markdown: {
-    processor: unified({ rehypePlugins: [rehypeBaseLinks(BASE), rehypeTableShell()] }),
+    // remarkVersionFacts resolves `%%fact=<name>%%` tokens from the source that
+    // enforces each version (scripts/version-facts.ts); an unknown token fails the build.
+    processor: unified({
+      remarkPlugins: [remarkVersionFacts()],
+      rehypePlugins: [rehypeBaseLinks(BASE), rehypeTableShell()],
+    }),
   },
   integrations: [
     starlight({

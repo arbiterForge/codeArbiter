@@ -217,9 +217,16 @@ class LifecycleContractTest(unittest.TestCase):
                  "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
                  "plugins/ca-codex/routines/finishing-a-development-branch/SKILL.md",
                  "plugins/ca-pi/routines/finishing-a-development-branch/SKILL.md"]
+        # The site renders the minimum from the hook's own prerequisite message
+        # (site/scripts/version-facts.ts), so resolve that token from the same source.
+        with open(os.path.join(repo, "plugins", "ca", "hooks", "_adrlifecyclegit.py"), encoding="utf-8") as handle:
+            hook_minimum = re.search(r"requires Git (\d+\.\d+\.\d+)\+ with --no-lazy-fetch", handle.read())
+        self.assertIsNotNone(hook_minimum)
         for path in paths:
             with self.subTest(path=path), open(os.path.join(repo, path), encoding="utf-8") as handle:
                 text = handle.read()
+                if path.startswith("site/"):
+                    text = text.replace("%%fact=git.adrMinimum%%", hook_minimum.group(1))
                 self.assertIn("Git 2.45.0+", text)
                 self.assertIn("--no-lazy-fetch", text)
 

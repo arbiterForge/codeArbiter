@@ -69,6 +69,32 @@ Shared tokens and primitives live in `src/styles/design-system.css`.
 Page-specific selectors belong in `src/styles/landing.css` or a named component. Do not add
 one-off colors, font stacks, or spacing values to content files.
 
+## Reading layer, evidence layer and quiet surfaces
+
+The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
+`test/content/docs-overhaul.test.ts`.
+
+- **Cards only where the reader chooses.** A card (`.ca-panel`, `.ca-lane-card`, `.ca-host`)
+  marks a choice: an entry point, a host, or a guide or concept directory. Outcomes, guarantees
+  and sequences are plain lists or prose. A panel is not emphasis.
+- **Evidence one click down.** Body text says what the product does. Qualifications, receipts,
+  version-scoped verification records and scope boundaries go in `LimitsAndEvidence` (MDX) or
+  `<details class="ca-evidence">` (Markdown): a native disclosure that prints expanded and draws
+  with system colors under forced colors. `VOICE.md` ("Where caveats belong") owns the wording rule.
+- **Landing structure.** Five sections in this order: the splash (promise, primary action and the
+  hook replay); outcomes as a plain three-column list; entry-point cards; host cards with the
+  compatibility footnote; the final call to action with the fit lists. Only the splash has an
+  eyebrow. Digests, tags and publication commits stay inside the replay's disclosure. The artifact
+  workbench, trust row and curriculum live on the product tour, the first-feature guide and the
+  Academy.
+- **Orientation strip.** `PageContext` renders one line (level, time, outcome). Prerequisites and
+  the completion check open from `.ca-page-context__more`.
+- **Narrow screens.** At 50rem and below the splash docs rail becomes a compact tab on the tray's
+  moving edge and the landing takes the full width. The drawer's keyboard and focus contract is
+  unchanged.
+- **One theme.** The site is dark-only (`ThemeProvider.astro`, `ThemeSelect.astro`). Section
+  headings take a plain hairline; gold stays on gates, decisions and primary actions.
+
 ## Page completeness contract
 
 ### Getting Started

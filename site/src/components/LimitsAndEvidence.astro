@@ -1,0 +1,19 @@
+---
+/* The evidence layer under a plain reading layer (DOCS-OVERHAUL M1).
+   Body text states what the product does; qualifications, receipts and
+   version-scoped verification records live here, one click away. A native
+   disclosure: readable without JavaScript, expanded in print, and drawn
+   with system colors under forced colors (callouts.css). Markdown pages
+   that cannot import components use the same markup directly:
+   <details class="ca-evidence"><summary>Limits and evidence</summary> ... </details> */
+interface Props {
+  summary?: string;
+}
+
+const { summary = "Limits and evidence" } = Astro.props;
+---
+
+<details class="ca-evidence">
+  <summary>{summary}</summary>
+  <div class="ca-evidence__body"><slot /></div>
+</details>

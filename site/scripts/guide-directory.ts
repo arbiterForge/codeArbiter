@@ -17,6 +17,10 @@ export const guideGroups = [
     slugs: ['ca-sandbox'] },
 ] as const;
 
+/** Reference companions split from a classified guide (DOCS-OVERHAUL M6). They are reached from that
+ *  guide and the sidebar, not listed as tasks of their own. */
+export const guideCompanions = ['uninstalling/details'] as const;
+
 export type GuidePage = {
   id: string;
   data: { title: string; description?: string; journey?: { level: string; time: string; outcome: string } };
@@ -30,8 +34,9 @@ export type GuideEntry = {
 export function buildGuideDirectory(pages: readonly GuidePage[]) {
   const byId = new Map<string, GuidePage>();
   const expected = new Set<string>(guideGroups.flatMap(group => group.slugs.map(slug => `guides/${slug}`)));
+  const companions = new Set<string>(guideCompanions.map(slug => `guides/${slug}`));
   for (const page of pages) {
-    if (!page.id.startsWith('guides/') || page.id === 'guides/index') continue;
+    if (!page.id.startsWith('guides/') || page.id === 'guides/index' || companions.has(page.id)) continue;
     if (!expected.has(page.id)) throw new Error(`Unclassified guide: ${page.id}`);
     if (byId.has(page.id)) throw new Error(`Duplicate guide: ${page.id}`);
     byId.set(page.id, page);

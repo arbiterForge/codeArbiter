@@ -8,6 +8,7 @@ import {
   symlinkSync,
   writeFileSync,
 } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -139,6 +140,21 @@ describe("release applicability generation", () => {
         record.proof.publishedSource.matchesReplay,
     );
     expect(record.evidenceBoundary.claim).toBe("release-and-build-identity");
+  });
+
+  it("reports each host's highest stable release tag, not the lagging receipt ledger (R-01)", () => {
+    const directory = mkdtempSync(join(tmpdir(), "release-applicability-"));
+    temporaryDirectories.push(directory);
+    const record = generateReleaseApplicability(repoRoot, join(directory, "record.json"), {});
+    const newestStable = (prefix: string) => execFileSync(
+      "git", ["tag", "--list", `${prefix}*`, "--sort=-v:refname"], { cwd: repoRoot, encoding: "utf8" },
+    ).split("\n").find((tag) => new RegExp(`^${prefix}\\d+\\.\\d+\\.\\d+$`).test(tag.trim()))?.trim();
+
+    expect(record.hosts.map(({ tag }) => tag)).toEqual([
+      newestStable("v"),
+      newestStable("ca-codex-v"),
+      newestStable("ca-pi-v"),
+    ]);
   });
 
   it("fails closed without writing output when build identity evidence is inconsistent (O-10)", () => {

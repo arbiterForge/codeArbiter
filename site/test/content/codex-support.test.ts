@@ -115,7 +115,7 @@ describe("canonical Claude Code and Codex support evidence", () => {
   });
 
   it("documents host attribution in the durable gate-event format", () => {
-    const directory = read("src/content/docs/codearbiter-directory.md");
+    const directory = read("src/content/docs/codearbiter-directory/files.md");
     expect(directory).toContain(
       "[ISO-8601Z] KIND [tag] host=<host> hook=<script> | msg",
     );

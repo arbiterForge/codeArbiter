@@ -1,9 +1,9 @@
 ---
 title: "Uninstall & Disable"
-description: "How to turn codeArbiter off in one repository, or remove it entirely: the activation flag, the plugin uninstall command, the statusline, and the git-hooks backstop."
+description: "Turn codeArbiter off in one repository, or remove it entirely: the activation flag, the host uninstall commands, the statusline, and the git-hooks backstop."
 journey:
   level: "Practitioner"
-  time: "12 minutes"
+  time: "8 minutes"
   outcome: "Disable one repository or remove a host plugin without losing project records or another tool's git hooks."
   prerequisites:
     - "Know whether you want repository dormancy, one-host removal, or complete removal"
@@ -35,22 +35,9 @@ without running any gate logic, when it is absent or set to anything other than 
 off makes the plugin genuinely dormant in that repository: the orchestrator persona never loads, and
 every `PreToolUse`-guarded hook returns before doing anything.
 
-The flag is deliberately hard to flip from inside a session, by design. **H-18** blocks a shell
-redirect, `Write`, or `Edit` that would change `arbiter: enabled` to `arbiter: disabled` (or otherwise
-corrupt the frontmatter) through `.codearbiter/CONTEXT.md`. The gates cannot silence themselves from
-inside the repo they govern. Reads (`cat`, `grep`) still pass through untouched.
-
-Unlike the crypto/secret and migration gates (H-09b/H-10b, H-14), H-18 has no marker-based bypass
-that `/ca:override` can unlock. The shared guard's activation block is unconditional, whether the
-host reaches it through Claude's Python hooks, Codex's adapter, or Pi's wrappers. Running an
-override first does not make the next governed mutation to `CONTEXT.md` pass. That is deliberate:
-the block exists precisely so a session cannot talk itself past it.
-
-The honest, sanctioned path is to make the edit through a channel H-18 does not intercept. Across
-Claude Code, Codex, and Pi, the protected boundary is the same: Claude Code guards Bash, Write, and
-Edit; Codex guards shell and patch/write adapters; Pi guards its final
-mutator wrappers. All three protect the same activation boundary, but none can police an external
-editor or process outside the active host's tool path:
+A session cannot make this edit: hook **H-18** blocks it, and `/ca:override` does not unlock it
+([why](/guides/uninstalling/details/#why-a-session-cannot-disable-itself)). Make the edit outside
+the agent host instead:
 
 1. Close or step outside the active Claude Code, Codex, or Pi session for that repo. Use a different
    terminal or editor entirely: a plain text editor, `vim`, VS Code, or a shell not mediated by the
@@ -70,10 +57,6 @@ editor or process outside the active host's tool path:
    change even though the hook itself never granted permission.
 4. Verify: open a fresh session in the host you use. No orchestrator persona loads, host-specific
    project-state UI stays dormant, and a read-only status check does not report active governance.
-
-There is no hidden bypass inside a session, and this page will not pretend there is one. H-18 guards
-the mutating tool flanks each host mediates; an edit outside those host-managed tools was never
-something it could stop.
 
 Re-enabling is the same edit in reverse (`arbiter: disabled` → `arbiter: enabled`), no override
 required. H-18 only blocks disabling the switch, not re-enabling it.
@@ -223,20 +206,10 @@ pi remove npm:@arbiterforge/ca-pi
 pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
-The effect is host-specific:
-
-- **Claude Code removes** the plugin payload (hooks, commands, agents, and skills) from its plugin
-  cache. Hooks, commands, and statusline wiring stop loading from the next session onward.
-  `claude plugin update` is **not** sufficient for a full removal: it can leave a stale cached payload
-  behind when the marketplace version string has not changed, so `uninstall` is the clean path.
-- **Codex removes** the `ca-codex@codearbiter` plugin registration and stops discovering its packaged
-  skills and hooks in subsequent sessions.
-- **Pi removes** the selected npm or pinned-Git package source from Pi's installed packages. New
-  sessions stop loading the codeArbiter extension, skills, prompts, and theme from that source.
-
-The marketplace entry (`codearbiter`) itself was added at install time with
-`/plugin marketplace add arbiterForge/codeArbiter`. If you want that gone too, you can manage it
-through the `/plugin` command's interactive marketplace management screen in any Claude Code session.
+On Claude Code, use `uninstall`, not `claude plugin update`: an update can leave a stale cached
+payload behind.
+[What each host's uninstall removes](/guides/uninstalling/details/#what-each-hosts-uninstall-removes)
+covers the per-host effect and the Claude Code marketplace entry.
 
 ### 4. Remove the Shared Git Shims After the Last Host
 
@@ -278,23 +251,10 @@ not recoverable unless Git or your archive contains the files.
 
 ## Mid-Feature Uninstall
 
-If you uninstall while a `/ca:feature` or `/ca:sprint` run is in progress, here's what survives and
-what to check first.
+If you uninstall while a `/ca:feature` or `/ca:sprint` run is in progress, check its state first.
 
-**Survives uninstall, because it lives in the repo, not the plugin:**
-
-- The feature branch and every commit on it.
-- The spec and plan files under `.codearbiter/specs/` and `.codearbiter/plans/`.
-- The selected work owner: a legacy task board or portable native records under
-  `.codearbiter/work/`, including their local progress and pending provider intent.
-- The decision log and any ADRs the feature recorded.
-- The overrides and gate-events audit logs.
-
-**Does not survive, because it's session/tool state, not repo state:**
-
-- Any in-flight gate context held only in the current host session (a half-finished TDD phase or an
-  open commit-gate walk). Nothing was committed to `.codearbiter/` for that step, so there is
-  nothing to lose except needing to redo that step by hand or with a different tool.
+The branch and everything under `.codearbiter/` survive; gate context held only in the session
+does not ([what survives](/guides/uninstalling/details/#what-survives-a-mid-feature-uninstall)).
 
 **Before you uninstall mid-feature, check:**
 

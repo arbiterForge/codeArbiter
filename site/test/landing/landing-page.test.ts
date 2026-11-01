@@ -109,12 +109,19 @@ describe("first-class product splash", () => {
     expect(landingCss).toMatch(
       /\.ca-landing::before\s*\{[^}]*inset:\s*var\(--sl-nav-height\) 0 0;/s,
     );
-    expect(landingCss).toMatch(
-      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-tray\s*\{[^}]*--ca-docs-handle-width:\s*31px;[^}]*--ca-docs-drawer-width:\s*min\(300px, calc\(100vw - 31px\)\);/,
+  });
+
+  it("shrinks the rail to a compact edge tab on narrow screens and returns the page width", () => {
+    const narrow = docsRail.match(/@media\s*\(max-width:\s*50rem\)\s*\{[\s\S]*?\n {2}\}\n/)?.[0] ?? "";
+    expect(narrow).toMatch(/html \.ca-landing\s*\{[^}]*padding-inline-start:\s*0;/);
+    expect(narrow).toMatch(
+      /ca-splash-docs \.ca-docs-tray\s*\{[^}]*--ca-docs-handle-width:\s*2\.5rem;[^}]*--ca-docs-drawer-width:\s*min\(300px, calc\(100vw - 2\.5rem\)\);[^}]*pointer-events:\s*none;/,
     );
-    expect(landingCss).toMatch(
-      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-landing\s*\{[^}]*padding-inline-start:\s*31px;/,
-    );
+    expect(narrow).toMatch(/ca-splash-docs \.ca-docs-rail__opener\s*\{[^}]*align-self:\s*end;[^}]*height:\s*7\.25rem;/);
+    expect(narrow).toMatch(/ca-splash-docs \.ca-docs-rail__fallback\s*\{[^}]*height:\s*7\.25rem;/);
+    // The tab and drawer stay clickable while the transparent rest of the tray lets taps through.
+    expect(narrow).toMatch(/\.ca-docs-drawer,\s*ca-splash-docs \.ca-docs-rail__opener,\s*ca-splash-docs \.ca-docs-rail__fallback\s*\{[^}]*pointer-events:\s*auto;/);
+    expect(landingCss).not.toMatch(/padding-inline-start:\s*31px/);
     expect(landingCss).toMatch(
       /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.ca-docs-tray\s*\{[^}]*transition:\s*none;/,
     );
@@ -171,11 +178,11 @@ describe("first-class product splash", () => {
     expect(indexMdx).not.toContain("ca-source-map");
   });
 
-  it("follows the adopter story through proof, guarantees, flow, hosts, fit, and final CTA", () => {
+  it("follows the adopter story through proof, outcomes, lanes, hosts, and a final CTA with fit", () => {
     for (const className of [
-      "ca-proof-strip",
+      "ca-splash",
       "ca-guarantees",
-      "ca-flow",
+      "ca-lanes",
       "ca-hosts",
       "ca-fit",
       "ca-final-cta",

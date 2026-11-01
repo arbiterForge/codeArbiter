@@ -35,19 +35,18 @@ const conceptLabels: Record<string, string> = {
 /** Order reader journeys while retaining the generated Academy and reference inventories. */
 export function buildJourneySidebar(reference: Group[], academy: Group[]): Group[] {
   return [
+    // One linear start path; every other entry point lives with its owner (DOCS-OVERHAUL M2).
     group('Get started', [
-      link('What Is codeArbiter', 'overview'), link('See the Product in Action', 'product-tour'),
-      link('Choose Your Host', 'getting-started/choose-your-host'), link('Install', 'getting-started/install'),
-      link('Initialize a Repository', 'guides/opt-in-a-repo'),
-      link('Protect Your First Repository', 'getting-started/quickstart'),
-      link('Complete One Feature', 'guides/first-feature'), link('Learning Path', 'learn'), link('FAQ', 'faq'),
+      link('What Is codeArbiter', 'overview'), link('Choose Your Host', 'getting-started/choose-your-host'),
+      link('Install', 'getting-started/install'), link('Protect Your First Repository', 'getting-started/quickstart'),
+      link('Complete One Feature', 'guides/first-feature'), link('FAQ', 'faq'),
     ], false),
     group('Guides', [
       link('Choose a Task', 'guides'),
-      group('Initialize projects', [link('Plan a New Project', 'guides/plan-a-new-project'), link('Understand Existing Code', 'guides/understand-an-existing-project')]),
+      group('Initialize projects', [link('Initialize a Repository', 'guides/opt-in-a-repo'), link('Plan a New Project', 'guides/plan-a-new-project'), link('Understand Existing Code', 'guides/understand-an-existing-project')]),
       group('Make a change', [link('Review Specs and Plans', 'guides/review-artifacts'), link('Build a Feature End to End', 'guides/feature-lane'), link('Investigate and Fix a Defect', 'guides/investigate-and-fix'), link('Run an Autonomous Sprint', 'guides/autonomous-sprints')]),
-      group('Review and ship', [link('Review and Ship a Change', 'guides/review-and-ship'), link('Add a Dependency Safely', 'guides/adding-a-dependency'), link('Record an Architecture Decision', 'guides/recording-adrs'), link('Review a Change', 'reference/commands/review'), link('Commit', 'reference/commands/commit'), link('Open a Pull Request', 'reference/commands/pr'), link('Release Your Project', 'guides/releasing-a-version')]),
-      group('Operate and recover', [link('Return to a Project', 'guides/return-to-a-project'), link('Resume and Recover', 'guides/resume-and-recover'), link('Troubleshooting', 'guides/troubleshooting'), link('Set Up the Statusline', 'guides/the-statusline'), link('Override a Gate Safely', 'guides/overriding-a-gate'), link('Uninstall & Disable', 'guides/uninstalling')]),
+      group('Review and ship', [link('Review and Ship a Change', 'guides/review-and-ship'), link('Add a Dependency Safely', 'guides/adding-a-dependency'), link('Record an Architecture Decision', 'guides/recording-adrs'), link('Release Your Project', 'guides/releasing-a-version')]),
+      group('Operate and recover', [link('Return to a Project', 'guides/return-to-a-project'), link('Resume and Recover', 'guides/resume-and-recover'), link('Troubleshooting', 'guides/troubleshooting'), link('Set Up the Statusline', 'guides/the-statusline'), link('Override a Gate Safely', 'guides/overriding-a-gate'), link('Uninstall & Disable', 'guides/uninstalling'), link('What Uninstall Leaves Behind', 'guides/uninstalling/details')]),
       group('Feature Forge', [link('What Is the Feature Forge', 'feature-forge/overview'), link("What's in the Forge", 'feature-forge/whats-in-the-forge'), link('Use a Preview Feature', 'feature-forge/using-preview-features'), link('Explore Untrusted Code', 'guides/ca-sandbox')]),
     ]),
     group('Concepts', [
@@ -56,8 +55,8 @@ export function buildJourneySidebar(reference: Group[], academy: Group[]): Group
         section.items.map(item => link(conceptLabels[item.slug], item.slug)))),
       group('Research and history', conceptBackground.map(item => link(item.title, item.slug))),
     ]),
-    group('Academy', [link('Academy Overview', 'academy'), ...academy]),
-    group('Reference', [link('All Reference', 'reference'), link('The .codearbiter/ Directory', 'codearbiter-directory'), link('Configuration', 'reference/configuration'), link('Glossary', 'glossary'), link('Hooks Reference', 'hooks'), link('Hook Gates', 'reference/hooks-gates'), ...reference]),
-    group('Trust', [link('Trust & Lifecycle', 'trust'), link('Enforcement & Security', 'enforcement'), link('Supported Environments', 'getting-started/compatibility'), link('Claude Code + Codex Evidence', 'getting-started/claude-code-and-codex'), link('Pi Support and Boundaries', 'getting-started/pi'), link('Changelog', 'changelog'), link('Uninstall & Disable', 'guides/uninstalling')]),
+    group('Academy', [link('Academy Overview', 'academy'), link('Self-Guided Learning Path', 'learn'), link('See the Product in Action', 'product-tour'), ...academy]),
+    group('Reference', [link('All Reference', 'reference'), link('The .codearbiter/ Directory', 'codearbiter-directory'), link('State File Reference', 'codearbiter-directory/files'), link('Configuration', 'reference/configuration'), link('Glossary', 'glossary'), link('Hooks Reference', 'hooks'), link('Hook Script Reference', 'hooks/scripts'), link('Hook Gates', 'reference/hooks-gates'), ...reference]),
+    group('Trust', [link('Trust & Lifecycle', 'trust'), link('Supported Environments', 'getting-started/compatibility'), link('Git Runtime & Dependencies', 'getting-started/compatibility/runtime'), link('Claude Code + Codex Evidence', 'getting-started/claude-code-and-codex'), link('Pi Support and Boundaries', 'getting-started/pi'), link('Changelog', 'changelog')]),
   ];
 }

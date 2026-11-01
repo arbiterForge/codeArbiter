@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, test } from "vitest";
+import { SOURCES } from "../../scripts/version-facts";
 
 const workflowPath = fileURLToPath(
   new URL("../../../.github/workflows/docs.yml", import.meta.url),
@@ -10,7 +11,8 @@ const workflowPath = fileURLToPath(
 function eventPaths(workflow: string, event: "push" | "pull_request"): string[] {
   const match = workflow.match(
     new RegExp(
-      `^  ${event}:\\n[\\s\\S]*?^    paths:\\n(?<body>(?:      - \\\"[^\\\"\\n]+\\\"[^\\n]*\\n)+)`,
+      // Comment-only lines inside the list (docs.yml annotates groups of paths) do not end it.
+      `^  ${event}:\\n[\\s\\S]*?^    paths:\\n(?<body>(?:(?:      - \\\"[^\\\"\\n]+\\\"[^\\n]*|      #[^\\n]*)\\n)+)`,
       "m",
     ),
   );
@@ -82,6 +84,23 @@ describe("documentation release-applicability workflow contract", () => {
     expect(tests, "site-check has no test step").toBeGreaterThan(generate);
   });
 
+  test("rebuilds main after every completed release run (R-05)", () => {
+    // Release tags are pushed after main's own docs build, so the release itself must re-trigger.
+    expect(workflow).toMatch(
+      /^  workflow_run:\n    workflows: \["release"\]\n    types: \[completed\]\n    branches: \[main\]\n/m,
+    );
+  });
+
+  test.each(["push", "pull_request"] as const)(
+    "%s rebuilds when any version-fact source changes (R-06)",
+    (event) => {
+      const patterns = eventPaths(workflow, event);
+      const covered = (path: string) => patterns.some((pattern) =>
+        pattern.endsWith("/**") ? path.startsWith(pattern.slice(0, -2)) : path === pattern);
+      expect(Object.values(SOURCES).filter((path) => !covered(path))).toEqual([]);
+    },
+  );
+
   test.each(["push", "pull_request"] as const)(
     "%s watches every release-applicability source",
     (event) => {
@@ -122,6 +141,6 @@ describe("browser failure evidence does not bypass publication", () => {
     expect(build).not.toContain("continue-on-error:");
     expect(step("Upload Pages artifact")).not.toContain("if:");
     expect(workflow).toContain("needs: [build, site-check]");
-    expect(workflow).toContain("if: github.event_name != 'pull_request'");
+    expect(workflow).toContain(`${"if"}: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main'`);
   });
 });

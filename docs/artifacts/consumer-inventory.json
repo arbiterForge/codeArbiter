@@ -593,6 +593,8 @@
         "site/src/content/docs/guides/resume-and-recover.mdx",
         "site/src/content/docs/product-tour.mdx",
         "site/src/content/docs/guides/uninstalling.md",
+        "site/src/content/docs/guides/uninstalling/details.md",
+        "site/src/content/docs/getting-started/compatibility/runtime.md",
         "site/src/curated/commands/sprint.md",
         "tools/create-artifact-examples.py",
         "core/surface/skills/INDEX.md",

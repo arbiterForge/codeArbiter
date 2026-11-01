@@ -30,12 +30,17 @@ when its concern is absent from scope: a repo with no migrations drops the migra
 lens run is the same generic [`tribunal-lens-reviewer`](/reference/agents/tribunal-lens-reviewer/)
 agent, dispatched once per lens with that lens's card as its mandate.
 
+<details class="ca-evidence">
+<summary>Limits and evidence: reviewers on Codex</summary>
+
 Published releases from 0.7.5 include packaged agent resource charters for Codex host-provided
 agent threads. Exact static-package and route-closure checks gate release. A bounded 0.9.4 receipt
 proves one exact installed-charter review. The inline fallback applies only where the canonical
 workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
+
+</details>
 
 | Lens | What it checks |
 | --- | --- |

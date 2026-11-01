@@ -2,16 +2,18 @@
  * rendered.ts — behavior checks against Astro's built release-applicability surfaces.
  */
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { presentProofApplicability } from "../../src/release-applicability-presentation";
+import { repositoryVersionFacts } from "../../scripts/version-facts";
 
 interface HostRelease {
   target: string;
   version: string;
   tag: string;
   publicationCommit: string;
+  originalPublicationReceipt: "recorded" | "not-recorded";
 }
 
 interface ApplicabilityRecord {
@@ -132,6 +134,46 @@ for (const [value, description] of [
 ] as const) {
   if (!homeHtml.includes(value)) {
     throw new Error(`Built homepage is missing ${description}: ${value}`);
+  }
+}
+
+// Receipt status is its own column, never folded into the selected tag.
+requireBuiltValue("Original-publication receipt", "the receipt-status column");
+const receiptCells = [...compatibilityHtml.matchAll(/<td\b[^>]*>(Recorded|Not yet reconciled)<\/td>/g)]
+  .map((match) => match[1]);
+const expectedReceiptCells = generated.hosts.map((host) =>
+  host.originalPublicationReceipt === "recorded" ? "Recorded" : "Not yet reconciled");
+if (JSON.stringify(receiptCells) !== JSON.stringify(expectedReceiptCells)) {
+  throw new Error(
+    `Built receipt-status cells ${JSON.stringify(receiptCells)} differ from the record ${JSON.stringify(expectedReceiptCells)}`,
+  );
+}
+
+// Version fact tokens must never reach readers, including through frontmatter or curated text.
+function builtHtml(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return builtHtml(path);
+    return entry.name.endsWith(".html") ? [path] : [];
+  });
+}
+const pages = builtHtml(join(siteRoot, "dist"));
+if (pages.length < 50) throw new Error(`Expected the built site, found ${pages.length} HTML pages`);
+const leaked = pages.filter((path) => readFileSync(path, "utf8").includes("%%fact="));
+if (leaked.length > 0) {
+  throw new Error(`Unresolved version fact tokens in built pages: ${leaked.join(", ")}`);
+}
+const facts = repositoryVersionFacts();
+for (const [name, page] of [
+  ["pi.supported", "getting-started/pi"],
+  ["codex.minimum", "getting-started/compatibility"],
+  ["git.adrMinimum", "getting-started/compatibility"],
+  ["release.ca-pi", "getting-started/pi"],
+  ["release.ca", "reference/commands/doctor"],
+] as const) {
+  const html = readFileSync(join(siteRoot, "dist", page, "index.html"), "utf8");
+  if (!html.includes(facts[name].value)) {
+    throw new Error(`Built ${page} is missing version fact ${name}: ${facts[name].value}`);
   }
 }
 

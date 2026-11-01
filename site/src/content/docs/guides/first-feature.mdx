@@ -14,6 +14,7 @@ journey:
 
 import ArtifactWorkbench from '../../../components/ArtifactWorkbench.astro';
 import DeliveryStory from '../../../components/DeliveryStory.astro';
+import LimitsAndEvidence from '../../../components/LimitsAndEvidence.astro';
 
 This example has one continuous subject: exporting saved-search names and queries as CSV.
 The requirement, documents, files and tests all refer to that subject. The bundled implementation
@@ -23,11 +24,16 @@ is a deliberately small serialization boundary, not a complete web application.
 native-rendered drafts created for this guide. The workflow must classify your actual request,
 resolve consequential choices and collect evidence for your implementation.
 
-Ordinary authorized work uses your installed host's native writer, tools and permissions.
+Your work runs with your installed host's own writer, tools and permissions.
+
+<LimitsAndEvidence>
+
 An explicit receipt-backed attestation has additional adapter requirements; an unavailable
 attestation capability limits that claim, not ordinary implementation. Check the
 [typed-artifact host boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
 when that evidence is required. Never substitute a chat claim for a missing observation.
+
+</LimitsAndEvidence>
 
 ## 1. Establish the repository and scope
 
@@ -84,7 +90,7 @@ The example plan maps `T-001`, `T-002` and `T-003` to the three criteria and to 
 not dispatch all tasks concurrently. Task entries are not separate proof that the whole scope is
 accepted; typed scope acceptance belongs to the existing review/evidence workflow.
 
-## 4. Reproduce the bounded fixture without a model
+## 4. Reproduce the example without a model
 
 For a plain Python exercise, save the linked [baseline](/examples/saved-searches/baseline.py) as
 `export_csv.py` and the [tests](/examples/saved-searches/test_export_csv.py) as `test_export_csv.py`
@@ -131,9 +137,15 @@ actual actions. A command transcript or sample green result is not authorization
 
 Before calling the work complete, inspect the approved definition, criterion coverage, current
 verification, reviewer findings, commit and PR. Confirm hosted checks on the exact PR head before
-merging; you retain the merge decision. **This documentation fixture creates no application PR and
-provides no commit-gate receipt.** Its local tests do not establish that a user approved the work,
-a host dispatched it, or a complete application was delivered.
+merging; you retain the merge decision.
+
+<LimitsAndEvidence>
+
+This documentation fixture creates no application PR and provides no commit-gate receipt. Its local
+tests do not establish that a user approved the work, a host dispatched it, or a complete application
+was delivered.
+
+</LimitsAndEvidence>
 
 Keep your resulting branch and records. Use [Return to a project](/guides/return-to-a-project/)
 for the next session, or [Arbiter Academy P01](/academy/p01-feature-through-plan/) after completing

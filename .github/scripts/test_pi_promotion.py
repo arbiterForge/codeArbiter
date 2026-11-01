@@ -1798,10 +1798,17 @@ class OfficialWriteScopeTests(unittest.TestCase):
                  if "0.80.6" in line],
                 "promotion must preserve historical Pi preflight evidence",
             )
+            # The site renders the supported Pi version from the promoted compatibility source
+            # (site/scripts/version-facts.ts), so promotion has no site literal left to rewrite.
+            self.assertNotIn(site_test, changed)
+            self.assertFalse(
+                [target.id for target in targets.targets if target.path.parts[0] == "site"],
+                "a site page or test declares a Pi version literal the site should derive",
+            )
             self.assertIn(
-                f'toContain("Pi {candidate.version}")',
+                'repositoryVersionFacts()["pi.supported"]',
                 (root / site_test).read_text(encoding="utf-8"),
-                "promotion must advance the site generator's version assertion",
+                "the site generator's version assertion must follow the compatibility source",
             )
 
     def test_official_write_scope_rejects_a_reintroduced_workflow_target(self):

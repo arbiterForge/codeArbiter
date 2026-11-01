@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error -- untyped .mjs config module
 import { BASE } from "../../astro.config.mjs";
+import { repositoryVersionFacts, resolveFactTokens } from "../../scripts/version-facts";
 
 const siteRoot = process.cwd();
 const docsRoot = join(siteRoot, "src", "content", "docs");
@@ -152,10 +153,12 @@ describe("documentation presentation regressions", () => {
   });
 
   it("OBL-CONTENT-02 gives Pi exact supported hosts and a mechanical tag lookup", () => {
-    const pi = readFileSync(join(docsRoot, "getting-started", "pi.md"), "utf8");
+    const facts = repositoryVersionFacts();
+    const pi = resolveFactTokens(readFileSync(join(docsRoot, "getting-started", "pi.md"), "utf8"), facts, "pi.md");
+    const supported = `Pi ${facts["pi.supported"].value}`;
 
-    expect(pi).toContain("Pi 1.1.0");
-    expect(pi).not.toContain("Pi 1.1.0 or newer");
+    expect(pi).toContain(supported);
+    expect(pi).not.toContain(`${supported} or newer`);
     expect(pi).toContain("git ls-remote --tags --refs");
     expect(pi).toContain('"ca-pi-v*"');
   });
@@ -168,7 +171,10 @@ describe("documentation presentation regressions", () => {
     expect(hooks).toContain("Claude Code registrations");
     expect(hooks).toContain("Codex adapter registrations");
     expect(hooks).toContain("Pi wrapper events");
-    expect(hooks).toContain("cooperative attestation");
+    // Per-script entries moved to the hook script reference in the M6 split.
+    const scripts = readFileSync(join(docsRoot, "hooks", "scripts.md"), "utf8");
+    expect(hooks + scripts).not.toContain("unforgeable by hand");
+    expect(scripts).toContain("cooperative attestation");
   });
 
   it("OBL-CONTENT-04 defines every terminology-locked term and the H-18 exception", () => {
@@ -188,10 +194,12 @@ describe("documentation presentation regressions", () => {
 
     expect(uninstall).toContain("Claude Code, Codex, and Pi");
     expect(uninstall).toContain("git ls-remote --tags --refs");
-    expect(uninstall).toContain("Claude Code removes");
-    expect(uninstall).toContain("Codex removes");
-    expect(uninstall).toContain("Pi removes");
-    expect(uninstall).not.toContain("This removes the plugin payload");
+    // Per-host effects moved to the uninstall details page in the M6 split.
+    const uninstallDetails = readFileSync(join(docsRoot, "guides", "uninstalling", "details.md"), "utf8");
+    expect(uninstallDetails).toContain("Claude Code removes");
+    expect(uninstallDetails).toContain("Codex removes");
+    expect(uninstallDetails).toContain("Pi removes");
+    expect(uninstall + uninstallDetails).not.toContain("This removes the plugin payload");
     expect(uninstall).toContain("runs **every live registered enforcer**");
     expect(uninstall).toContain("removes only that host's registry");
     expect(uninstall).toContain("deliberately leaves the shared shims");

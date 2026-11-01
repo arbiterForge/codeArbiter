@@ -8,8 +8,10 @@ const shortCommit = (commit: string) => commit.slice(0, 12);
 <section class="ca-release-applicability" aria-labelledby="release-applicability-heading">
   <h2 id="release-applicability-heading">Published release applicability</h2>
   <p>
-    This documentation build identifies each independently published governance host from the
-    repository's original-publication receipts.
+    This documentation build identifies each independently published governance host by its
+    highest stable release tag, checked against the manifest version at that tag. The receipt
+    column says whether the tag's original-publication receipt has been reconciled into
+    <code>.github/published-tags.json</code>; it is not a live tag audit.
   </p>
 
   <div class="ca-release-applicability__table-shell" tabindex="0" aria-label="Published governance host releases">
@@ -21,6 +23,7 @@ const shortCommit = (commit: string) => commit.slice(0, 12);
           <th scope="col">Published version</th>
           <th scope="col">Tag</th>
           <th scope="col">Publication commit</th>
+          <th scope="col">Original-publication receipt</th>
         </tr>
       </thead>
       <tbody>
@@ -41,6 +44,7 @@ const shortCommit = (commit: string) => commit.slice(0, 12);
                 <code>{shortCommit(host.publicationCommit)}</code>
               </a>
             </td>
+            <td>{host.originalPublicationReceipt === "recorded" ? "Recorded" : "Not yet reconciled"}</td>
           </tr>
         ))}
       </tbody>

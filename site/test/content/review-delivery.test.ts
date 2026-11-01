@@ -8,14 +8,15 @@ const read = (path: string) => readFileSync(new URL(path, site), 'utf8');
 const guide = read('src/content/docs/guides/review-and-ship.mdx');
 
 describe('review-to-delivery guidance', () => {
-  it('leads the review-and-ship sidebar with a procedure while retaining exact references', () => {
+  it('leads the review-and-ship sidebar with procedures; the guide links the exact references', () => {
     const guides = buildJourneySidebar([], [])[1];
     const group = guides.items.find(item => item.label === 'Review and ship');
+    // Guides list guides; command reference is one click away from the guide itself (DOCS-OVERHAUL M2).
     expect(group && 'items' in group ? group.items.map(item => 'slug' in item && item.slug) : []).toEqual([
       'guides/review-and-ship', 'guides/adding-a-dependency', 'guides/recording-adrs',
-      'reference/commands/review', 'reference/commands/commit',
-      'reference/commands/pr', 'guides/releasing-a-version',
+      'guides/releasing-a-version',
     ]);
+    for (const command of ['review', 'commit', 'pr']) expect(guide).toContain(`/reference/commands/${command}/`);
   });
   it('keeps Review and ship guide membership consistent with the task directory', () => {
     const sidebar = buildJourneySidebar([], [])[1];

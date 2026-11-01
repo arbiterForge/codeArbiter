@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { buildJourneySidebar, primaryNavigation } from "../../scripts/journey-navigation";
 import { loadProductExample } from "../../scripts/product-example";
+import { repositoryVersionFacts, resolveFactTokens } from "../../scripts/version-facts";
 
 const site = fileURLToPath(new URL("../..", import.meta.url));
 const read = (path: string) => readFileSync(`${site}/${path}`, "utf8");
@@ -13,11 +14,15 @@ describe("human-operable product window", () => {
     const academy = [{ label: "Foundation", collapsed: true as const, items: [{ label: "F01", slug: "academy/f01" }] }];
     const sidebar = buildJourneySidebar([], academy);
     expect(sidebar.map((group) => group.label)).toEqual(primaryNavigation.map((item) => item.label));
+    // One linear start path (DOCS-OVERHAUL M2): choose, install, protect, complete one feature.
     expect(sidebar[0].items.map((item) => "slug" in item ? item.slug : undefined)).toEqual([
-      "overview", "product-tour", "getting-started/choose-your-host", "getting-started/install",
-      "guides/opt-in-a-repo", "getting-started/quickstart", "guides/first-feature", "learn", "faq",
+      "overview", "getting-started/choose-your-host", "getting-started/install",
+      "getting-started/quickstart", "guides/first-feature", "faq",
     ]);
     expect(sidebar[3].items).toContainEqual(academy[0]);
+    // The self-guided Learning Path and the product tour live with the Academy, not as rival starts.
+    const academySlugs = sidebar[3].items.map((item) => "slug" in item ? item.slug : undefined);
+    expect(academySlugs.slice(0, 3)).toEqual(["academy", "learn", "product-tour"]);
   });
 
   it("keeps the exact greenfield contract separate from typed feature plans", () => {
@@ -34,7 +39,7 @@ describe("human-operable product window", () => {
 
   it("does not tell new HTML sprints to use the legacy farm", () => {
     expect(read("src/content/docs/guides/autonomous-sprints.mdx")).toContain("HTML plans cannot use `--farm`");
-    expect(read("src/content/docs/codearbiter-directory.md")).not.toContain("a plan that referenced the missing spec\nstill runs");
+    expect(read("src/content/docs/codearbiter-directory.md") + read("src/content/docs/codearbiter-directory/files.md")).not.toContain("a plan that referenced the missing spec\nstill runs");
   });
 
   it("documents the current generic release selection and dry-run boundary", () => {
@@ -112,10 +117,12 @@ describe("human-operable product window", () => {
     expect(normal).not.toContain("Verification and review authority below is supported on Codex and Claude Code");
     const source = read("../core/surface/includes/artifacts-attestation.md").replace(/\s+/g, " ");
     expect(source).toContain("Receipt format 0.1.0 remains readable for inspection after upgrade but is not authority-bearing");
-    const guide = read("src/content/docs/guides/resume-and-recover.mdx");
-    expect(guide).toContain("0.1.0");
+    const facts = repositoryVersionFacts();
+    const guide = resolveFactTokens(read("src/content/docs/guides/resume-and-recover.mdx"), facts, "resume-and-recover.mdx");
+    expect(facts["receipt.legacy"].value).toBe("codearbiter.receipt/0.1.0");
+    expect(guide).toContain(facts["receipt.legacy"].value);
     expect(guide).toContain("inspection-only");
-    expect(guide).toContain("0.2.0");
+    expect(guide).toContain(facts["receipt.current"].value);
     expect(guide).toContain("exact stored operation");
     expect(read("src/components/RecoveryExplorer.astro")).toContain("AUTHORITY_UNVERIFIED");
   });

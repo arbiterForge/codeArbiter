@@ -54,9 +54,15 @@ function ledger(...tags: string[]) {
   });
 }
 
+function tagRefs(...tags: string[]) {
+  return tags.map((tag) => ({ tag, commit: sha }));
+}
+
+const defaultTags = ["v2.17.11", "ca-codex-v0.9.11", "ca-pi-v0.10.13"];
+
 function historicalGit(
   manifests: Record<string, unknown>,
-  options: { head?: string; dirty?: boolean; missing?: string } = {},
+  options: { head?: string; dirty?: boolean; missing?: string; tags?: string[] } = {},
 ): ReleaseApplicabilityGit & { reads: Array<[string, string]> } {
   const reads: Array<[string, string]> = [];
   return {
@@ -68,6 +74,7 @@ function historicalGit(
     },
     head: () => options.head ?? sha,
     isDirty: () => options.dirty ?? false,
+    listReleaseTags: () => tagRefs(...(options.tags ?? defaultTags)),
   };
 }
 
@@ -86,21 +93,40 @@ describe("selectCurrentGovernanceReleases", () => {
         "ca-pi-v0.11.0",
         "ca-sandbox-v99.0.0",
       ),
+      tagRefs(
+        "v2.9.0",
+        "v2.10.0-beta.1",
+        "v2.10.0",
+        "ca-codex-v0.9.9",
+        "ca-codex-v0.10.0-rc.1",
+        "ca-codex-v0.9.10",
+        "ca-pi-v0.10.9",
+        "ca-pi-v0.11.0",
+        "ca-sandbox-v99.0.0",
+      ),
     );
 
     expect(selected).toEqual([
-      { target: "ca", version: "2.10.0", tag: "v2.10.0", publicationCommit: sha },
+      {
+        target: "ca",
+        version: "2.10.0",
+        tag: "v2.10.0",
+        publicationCommit: sha,
+        originalPublicationReceipt: "recorded",
+      },
       {
         target: "ca-codex",
         version: "0.9.10",
         tag: "ca-codex-v0.9.10",
         publicationCommit: sha,
+        originalPublicationReceipt: "recorded",
       },
       {
         target: "ca-pi",
         version: "0.11.0",
         tag: "ca-pi-v0.11.0",
         publicationCommit: sha,
+        originalPublicationReceipt: "recorded",
       },
     ]);
   });
@@ -115,12 +141,13 @@ describe("selectCurrentGovernanceReleases", () => {
       selectCurrentGovernanceReleases(
         releaseTargets,
         ledger("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
+        tagRefs("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
       ),
     ).toThrow();
   });
 
   it("rejects malformed ledger JSON (O-02)", () => {
-    expect(() => selectCurrentGovernanceReleases(targets(), "{not-json"))
+    expect(() => selectCurrentGovernanceReleases(targets(), "{not-json", tagRefs("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0")))
       .toThrow(/ledger/i);
   });
 
@@ -134,34 +161,38 @@ describe("selectCurrentGovernanceReleases", () => {
   ])("rejects %s release declarations (O-02)", (_case, declarations) => {
     expect(() => selectCurrentGovernanceReleases(
       declarations, ledger("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
+      tagRefs("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
     )).toThrow();
   });
 
-  it("rejects malformed matching tags instead of silently skipping them (O-02)", () => {
+  it("rejects malformed matching release tags instead of silently skipping them (O-02)", () => {
     expect(() =>
       selectCurrentGovernanceReleases(
         targets(),
-        ledger("v1.0.0", "ca-codex-vwat", "ca-pi-v1.0.0"),
+        ledger("v1.0.0", "ca-pi-v1.0.0"),
+        tagRefs("v1.0.0", "ca-codex-vwat", "ca-pi-v1.0.0"),
       ),
     ).toThrow(/ca-codex-vwat/);
   });
 
-  it("rejects a target with only prerelease receipts (O-02)", () => {
+  it("rejects a target with only prerelease release tags (O-02)", () => {
     expect(() =>
       selectCurrentGovernanceReleases(
         targets(),
         ledger("v1.0.0", "ca-codex-v1.0.0-beta.1", "ca-pi-v1.0.0"),
+        tagRefs("v1.0.0", "ca-codex-v1.0.0-beta.1", "ca-pi-v1.0.0"),
       ),
     ).toThrow(/stable.*ca-codex/i);
   });
 
-  it("rejects a governed target with no publication receipts (O-02)", () => {
+  it("rejects a governed target with no release tags (O-02)", () => {
     expect(() =>
       selectCurrentGovernanceReleases(
         targets(),
         ledger("v1.0.0", "ca-codex-v1.0.0"),
+        tagRefs("v1.0.0", "ca-codex-v1.0.0"),
       ),
-    ).toThrow(/No receipts exist.*ca-pi/i);
+    ).toThrow(/No release tags exist.*ca-pi/i);
   });
 });
 
@@ -186,6 +217,7 @@ describe("historical release applicability", () => {
         version: "2.17.11",
         tag: "v2.17.11",
         publicationCommit: sha,
+        originalPublicationReceipt: "recorded",
         manifestPath: "plugins/ca/.claude-plugin/plugin.json",
         manifestPaths: ["plugins/ca/.claude-plugin/plugin.json"],
       },
@@ -194,6 +226,7 @@ describe("historical release applicability", () => {
         version: "0.9.11",
         tag: "ca-codex-v0.9.11",
         publicationCommit: sha,
+        originalPublicationReceipt: "recorded",
         manifestPath: "plugins/ca-codex/.codex-plugin/plugin.json",
         manifestPaths: ["plugins/ca-codex/.codex-plugin/plugin.json"],
       },
@@ -202,6 +235,7 @@ describe("historical release applicability", () => {
         version: "0.10.13",
         tag: "ca-pi-v0.10.13",
         publicationCommit: sha,
+        originalPublicationReceipt: "recorded",
         manifestPath: "plugins/ca-pi/package.json",
         manifestPaths: ["plugins/ca-pi/package.json", "package.json"],
       },
@@ -314,6 +348,7 @@ describe("release declaration provenance contract", () => {
   ])("rejects %s governed provenance-manifest declaration (O-03)", (_case, declarations) => {
     expect(() => selectCurrentGovernanceReleases(
       declarations, ledger("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
+      tagRefs("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
     )).toThrow(/provenance/i);
   });
 });
@@ -350,18 +385,19 @@ describe("original-publication ledger validation", () => {
       ((document.tags as Record<string, Record<string, unknown>>)["v1.0.0"]).object_sha = "1".repeat(40);
     })],
   ])("rejects %s (O-02)", (_case, publishedTags) => {
-    expect(() => selectCurrentGovernanceReleases(targets(), publishedTags)).toThrow(/ledger|receipt|tag/i);
+    expect(() => selectCurrentGovernanceReleases(targets(), publishedTags, tagRefs("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"))).toThrow(/ledger|receipt|tag/i);
   });
 
   it("rejects duplicate JSON keys instead of accepting the last value (O-02)", () => {
     const publishedTags = ledger("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0")
       .replace('"verified_at":"2026-09-14"', '"verified_at":"2026-09-14","verified_at":"2026-09-15"');
-    expect(() => selectCurrentGovernanceReleases(targets(), publishedTags)).toThrow(/duplicate/i);
+    expect(() => selectCurrentGovernanceReleases(targets(), publishedTags, tagRefs("v1.0.0", "ca-codex-v1.0.0", "ca-pi-v1.0.0"))).toThrow(/duplicate/i);
   });
 
   it("rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)", () => {
     expect(() => selectCurrentGovernanceReleases(
       targets(), ledger("v1.0.0", "v2.0.0-01", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
+      tagRefs("v1.0.0", "v2.0.0-01", "ca-codex-v1.0.0", "ca-pi-v1.0.0"),
     )).toThrow(/v2\.0\.0-01/);
   });
 });
@@ -434,6 +470,7 @@ describe("deterministic release applicability record", () => {
       version: "2.17.11",
       tag: "v2.17.11",
       publicationCommit: sha,
+      originalPublicationReceipt: "recorded",
       manifestPath: "plugins/ca/.claude-plugin/plugin.json",
       manifestPaths: ["plugins/ca/.claude-plugin/plugin.json"],
     },
@@ -442,6 +479,7 @@ describe("deterministic release applicability record", () => {
       version: "0.9.11",
       tag: "ca-codex-v0.9.11",
       publicationCommit: "1111111111111111111111111111111111111111",
+      originalPublicationReceipt: "not-recorded",
       manifestPath: "plugins/ca-codex/.codex-plugin/plugin.json",
       manifestPaths: ["plugins/ca-codex/.codex-plugin/plugin.json"],
     },
@@ -450,6 +488,7 @@ describe("deterministic release applicability record", () => {
       version: "0.10.13",
       tag: "ca-pi-v0.10.13",
       publicationCommit: "2222222222222222222222222222222222222222",
+      originalPublicationReceipt: "not-recorded",
       manifestPath: "plugins/ca-pi/package.json",
       manifestPaths: ["plugins/ca-pi/package.json", "package.json"],
     },
@@ -463,6 +502,7 @@ describe("deterministic release applicability record", () => {
       },
       head: () => sha,
       isDirty: () => false,
+      listReleaseTags: () => [],
     };
   }
 
@@ -535,6 +575,7 @@ describe("deterministic release applicability record", () => {
       readAtCommit() { throw new Error("missing object"); },
       head: () => sha,
       isDirty: () => false,
+      listReleaseTags: () => [],
     };
     expect(() => createReleaseApplicabilityRecord({
       build: { mode: "local", commit: sha, dirty: false },
@@ -586,7 +627,7 @@ describe("deterministic release applicability record", () => {
     });
 
     expect(record).toMatchObject({
-      schemaVersion: 1,
+      schemaVersion: 2,
       evidenceBoundary: {
         claim: "release-and-build-identity",
         doesNotCertify: [
@@ -598,19 +639,22 @@ describe("deterministic release applicability record", () => {
       },
       build: { mode: "local", commit: sha, dirty: true },
     });
-    expect(record.hosts.map(({ target, version, tag, publicationCommit }) => ({
+    expect(record.hosts.map(({ target, version, tag, publicationCommit, originalPublicationReceipt }) => ({
       target,
       version,
       tag,
       publicationCommit,
-    }))).toEqual(releases.map(({ target, version, tag, publicationCommit }) => ({
+      originalPublicationReceipt,
+    }))).toEqual(releases.map(({ target, version, tag, publicationCommit, originalPublicationReceipt }) => ({
       target,
       version,
       tag,
       publicationCommit,
+      originalPublicationReceipt,
     })));
     expect(record.evidenceSources).toEqual([
       { kind: "release-declarations", path: ".codearbiter/release-targets.md" },
+      { kind: "release-tags", path: "refs/tags" },
       { kind: "original-publication-receipts", path: ".github/published-tags.json" },
       {
         kind: "historical-manifest",
@@ -643,5 +687,102 @@ describe("deterministic release applicability record", () => {
     expect(serializeReleaseApplicabilityRecord(record)).toBe(
       `${JSON.stringify(record, null, 2)}\n`,
     );
+  });
+});
+
+describe("stale receipt ledger regression", () => {
+  const receiptCommit = "1".repeat(40);
+  const releaseCommit = "2".repeat(40);
+  const versionsAt: Record<string, Record<"ca" | "ca-codex" | "ca-pi", string>> = {
+    [receiptCommit]: { ca: "2.21.15", "ca-codex": "0.13.16", "ca-pi": "0.14.12" },
+    [releaseCommit]: { ca: "3.6.0", "ca-codex": "0.22.4", "ca-pi": "0.23.4" },
+  };
+
+  function receiptLedger(entries: Record<string, string>): string {
+    return JSON.stringify({
+      $comment: ["test fixture"],
+      namespaces: ["v*", "ca-sandbox-v*", "ca-codex-v*", "ca-pi-v*"],
+      verified_at: "2026-09-14",
+      tags: Object.fromEntries(Object.entries(entries).map(([tag, commit]) => [
+        tag, { commit_sha: commit, object_sha: commit, object_type: "commit" },
+      ])),
+    });
+  }
+
+  function taggedGit(tags: Array<{ tag: string; commit: string }>) {
+    return {
+      readAtCommit(commit: string, path: string) {
+        const versions = versionsAt[commit];
+        const target = path.includes("ca-codex") ? "ca-codex" : path.includes("ca-pi") || path === "package.json" ? "ca-pi" : "ca";
+        return JSON.stringify({ version: versions[target] });
+      },
+      head: () => sha,
+      isDirty: () => false,
+      listReleaseTags: () => tags,
+    };
+  }
+
+  const publishedTags = [
+    { tag: "v2.21.15", commit: receiptCommit },
+    { tag: "v3.6.0", commit: releaseCommit },
+    { tag: "v3.7.0-beta.1", commit: releaseCommit },
+    { tag: "ca-dist-v9.9.9", commit: releaseCommit },
+    { tag: "ca-codex-v0.13.16", commit: receiptCommit },
+    { tag: "ca-codex-v0.22.4", commit: releaseCommit },
+    { tag: "ca-codex-dist-v9.9.9", commit: releaseCommit },
+    { tag: "ca-pi-v0.14.12", commit: receiptCommit },
+    { tag: "ca-pi-v0.23.4", commit: releaseCommit },
+  ];
+
+  it("selects the newest stable release tag even when the receipt ledger lags (R-01)", () => {
+    const verified = deriveVerifiedGovernanceReleases(
+      targets(),
+      receiptLedger({
+        "v2.21.15": receiptCommit,
+        "ca-codex-v0.13.16": receiptCommit,
+        "ca-pi-v0.14.12": receiptCommit,
+      }),
+      taggedGit(publishedTags),
+    );
+
+    expect(verified.map(({ target, version, tag, publicationCommit }) => [
+      target, version, tag, publicationCommit,
+    ])).toEqual([
+      ["ca", "3.6.0", "v3.6.0", releaseCommit],
+      ["ca-codex", "0.22.4", "ca-codex-v0.22.4", releaseCommit],
+      ["ca-pi", "0.23.4", "ca-pi-v0.23.4", releaseCommit],
+    ]);
+  });
+
+  it("reports original-publication receipt status separately from the selected tag (R-02)", () => {
+    const verified = deriveVerifiedGovernanceReleases(
+      targets(),
+      receiptLedger({
+        "v2.21.15": receiptCommit,
+        "v3.6.0": releaseCommit,
+        "ca-codex-v0.13.16": receiptCommit,
+        "ca-pi-v0.14.12": receiptCommit,
+      }),
+      taggedGit(publishedTags),
+    );
+
+    expect(verified.map(({ target, originalPublicationReceipt }) => [target, originalPublicationReceipt]))
+      .toEqual([["ca", "recorded"], ["ca-codex", "not-recorded"], ["ca-pi", "not-recorded"]]);
+  });
+
+  it("rejects a recorded receipt that names a different commit than the release tag (R-03)", () => {
+    expect(() => deriveVerifiedGovernanceReleases(
+      targets(),
+      receiptLedger({ "v3.6.0": receiptCommit }),
+      taggedGit(publishedTags),
+    )).toThrow(/v3\.6\.0.*receipt/i);
+  });
+
+  it("fails closed when a governance host has no stable release tag in the checkout (R-04)", () => {
+    expect(() => deriveVerifiedGovernanceReleases(
+      targets(),
+      receiptLedger({}),
+      taggedGit(publishedTags.filter(({ tag }) => !tag.startsWith("ca-pi-v"))),
+    )).toThrow(/release tag.*ca-pi/i);
   });
 });

@@ -20,11 +20,21 @@ const LEDGER_NAMESPACES = ["v*", "ca-sandbox-v*", "ca-codex-v*", "ca-pi-v*"] as 
 
 type GovernanceTarget = (typeof GOVERNANCE_TARGETS)[number];
 
+/** Whether the selected tag's original-publication receipt has been reconciled into the ledger. */
+export type OriginalPublicationReceiptStatus = "recorded" | "not-recorded";
+
 export interface CurrentGovernanceRelease {
   target: GovernanceTarget;
   version: string;
   tag: string;
   publicationCommit: string;
+  originalPublicationReceipt: OriginalPublicationReceiptStatus;
+}
+
+/** A release tag in the checkout and the commit it peels to. */
+export interface ReleaseTagRef {
+  tag: string;
+  commit: string;
 }
 
 export interface VerifiedGovernanceRelease extends CurrentGovernanceRelease {
@@ -34,6 +44,7 @@ export interface VerifiedGovernanceRelease extends CurrentGovernanceRelease {
 
 export interface ReleaseApplicabilityGit {
   readAtCommit(commit: string, path: string): string;
+  listReleaseTags(): ReleaseTagRef[];
   head(): string;
   isDirty(): boolean;
 }
@@ -52,7 +63,7 @@ export interface DirectHookReplayEvidence {
 }
 
 export interface ReleaseApplicabilityRecord {
-  schemaVersion: 1;
+  schemaVersion: 2;
   evidenceBoundary: {
     claim: "release-and-build-identity";
     doesNotCertify: [
@@ -369,41 +380,62 @@ function compareVersions(left: ParsedVersion, right: ParsedVersion): number {
   return 0;
 }
 
+/**
+ * Select each governance host's latest published release: the highest stable
+ * SemVer release tag in the checkout. The receipt ledger no longer gates new
+ * tags (ADR-0040), so it lags publication; it supplies only the separate
+ * original-publication receipt status, and a recorded receipt must name the
+ * same commit as the tag. Docs builds fetch full history and tags; a checkout
+ * with no stable tag for a host fails closed rather than presenting a stale row.
+ */
 export function selectCurrentGovernanceReleases(
   releaseTargetsMarkdown: string,
   publishedTagsJson: string,
+  releaseTags: readonly ReleaseTagRef[],
 ): CurrentGovernanceRelease[] {
   const targets = parseReleaseTargets(releaseTargetsMarkdown);
   const receipts = parseLedger(publishedTagsJson);
+  const targetPrefixes = [...targets.values()].map((target) => target.prefix);
 
   return GOVERNANCE_TARGETS.map((targetName) => {
     const prefix = targets.get(targetName)!.prefix;
-    let selected:
-      | { tag: string; version: string; parsed: ParsedVersion; receipt: Receipt }
-      | undefined;
-    let matchingReceiptCount = 0;
+    let selected: { tag: string; version: string; parsed: ParsedVersion; commit: string } | undefined;
+    let matchingTagCount = 0;
 
-    for (const [tag, receipt] of Object.entries(receipts)) {
+    for (const { tag, commit } of releaseTags) {
       if (!tag.startsWith(prefix)) continue;
-      matchingReceiptCount += 1;
+      // "v" also prefixes no other target, but a longer declared prefix owns its own tags.
+      if (targetPrefixes.some((other) => other.length > prefix.length && tag.startsWith(other))) continue;
+      matchingTagCount += 1;
       const version = tag.slice(prefix.length);
       const parsed = parseVersion(version);
       if (!parsed) throw new Error(`Malformed release tag for ${targetName}: ${tag}`);
+      if (!NONZERO_LOWER_COMMIT_SHA.test(commit)) {
+        throw new Error(`Release tag ${tag} must peel to a nonzero lowercase 40-hex commit`);
+      }
       if (parsed.prerelease !== undefined) continue;
       if (!selected || compareVersions(parsed, selected.parsed) > 0) {
-        selected = { tag, version, parsed, receipt };
+        selected = { tag, version, parsed, commit };
       }
     }
 
     if (!selected) {
-      const reason = matchingReceiptCount === 0 ? "No receipts exist" : "No stable receipt exists";
-      throw new Error(`${reason} for release target ${targetName}`);
+      const reason = matchingTagCount === 0 ? "No release tags exist" : "No stable release tag exists";
+      throw new Error(`${reason} for release target ${targetName}; docs builds need full history and tags`);
+    }
+    const receipt = receipts[selected.tag];
+    if (receipt && receipt.commit_sha !== selected.commit) {
+      throw new Error(
+        `Release tag ${selected.tag} peels to ${selected.commit} but its original-publication receipt `
+        + `names ${receipt.commit_sha}`,
+      );
     }
     return {
       target: targetName,
       version: selected.version,
       tag: selected.tag,
-      publicationCommit: selected.receipt.commit_sha,
+      publicationCommit: selected.commit,
+      originalPublicationReceipt: receipt ? "recorded" : "not-recorded",
     };
   });
 }
@@ -414,7 +446,11 @@ export function deriveVerifiedGovernanceReleases(
   git: ReleaseApplicabilityGit,
 ): VerifiedGovernanceRelease[] {
   const targets = parseReleaseTargets(releaseTargetsMarkdown);
-  const selected = selectCurrentGovernanceReleases(releaseTargetsMarkdown, publishedTagsJson);
+  const selected = selectCurrentGovernanceReleases(
+    releaseTargetsMarkdown,
+    publishedTagsJson,
+    git.listReleaseTags(),
+  );
 
   return selected.map((release) => {
     if (!COMMIT_SHA.test(release.publicationCommit)) {
@@ -518,6 +554,7 @@ export function createReleaseApplicabilityRecord({
       version: release.version,
       tag: release.tag,
       publicationCommit: release.publicationCommit,
+      originalPublicationReceipt: release.originalPublicationReceipt,
       manifestPath: release.manifestPath,
       manifestPaths: [...release.manifestPaths],
     };
@@ -548,7 +585,7 @@ export function createReleaseApplicabilityRecord({
       + `latest published ca artifact source ${publishedMatches ? "matches" : "does not match"}.`;
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     evidenceBoundary: {
       claim: "release-and-build-identity",
       doesNotCertify: [
@@ -585,6 +622,7 @@ export function createReleaseApplicabilityRecord({
     },
     evidenceSources: [
       { kind: "release-declarations", path: ".codearbiter/release-targets.md" },
+      { kind: "release-tags", path: "refs/tags" },
       { kind: "original-publication-receipts", path: ".github/published-tags.json" },
       ...hosts.flatMap((release) => release.manifestPaths.map((manifestPath) => ({
         kind: "historical-manifest",
@@ -630,6 +668,17 @@ export function repositoryGit(
         throw new Error("Historical lookup requires an exact 40-hex Git commit SHA");
       }
       return runner(repoRoot, ["--no-lazy-fetch", "show", `${commit.toLowerCase()}:${path}`]);
+    },
+    listReleaseTags() {
+      const output = runner(repoRoot, [
+        "for-each-ref",
+        "--format=%(refname:strip=2)%00%(objectname)%00%(*objectname)",
+        "refs/tags",
+      ]);
+      return output.split("\n").filter((line) => line !== "").map((line) => {
+        const [tag, object, peeled] = line.split("\0");
+        return { tag, commit: (peeled || object).toLowerCase() };
+      });
     },
     head() {
       return runner(repoRoot, ["rev-parse", "--verify", "HEAD"]).trim();

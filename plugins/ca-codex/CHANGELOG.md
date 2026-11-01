@@ -26,6 +26,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Exclude scaffold instructions and fenced examples from selected legacy work adoption.
 - Keep scaffold documentation out of legacy startup counts and work listings.
 
+## [0.25.2] - 2026-10-31
+
+### Fixed
+
+- A read-only `sed` on an ADR or audit log is no longer blocked as a
+  write; `sed -i`, `--in-place` and `w` commands still are.
+
 ## [0.25.1] - 2026-10-31
 
 ### Added

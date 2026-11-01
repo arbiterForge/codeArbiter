@@ -453,92 +453,82 @@ details.ca-source pre {
   box-shadow: 0 0 0 4px rgb(88 214 141 / 9%);
 }
 
-/* Every inner page starts with a task-oriented orientation band. */
+/* Every inner page starts with a one-line orientation strip: level, time and
+ * outcome. Prerequisites and the completion check open from a disclosure. */
 .ca-page-context {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--ca-space-4);
-  margin: var(--ca-space-5) 0 var(--ca-space-7);
-  padding: var(--ca-space-5);
-  border: 1px solid var(--ca-line);
-  border-radius: var(--ca-radius-md);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(240 185 47 / 8%), transparent 18rem),
-    linear-gradient(135deg, rgb(255 255 255 / 2.5%), transparent 42%),
-    var(--ca-bg-panel);
-  box-shadow: var(--ca-shadow-sm);
+  margin: var(--ca-space-4) 0 var(--ca-space-6);
+  padding-block: var(--ca-space-3);
+  border-block: 1px solid var(--ca-line);
+  color: var(--ca-ink-muted);
+  font-size: var(--ca-text-sm);
+}
+
+.ca-page-context p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.ca-page-context p strong {
+  color: var(--ca-ink-soft);
+}
+
+.ca-page-context__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem var(--ca-space-3);
+  align-items: baseline;
 }
 
 .ca-page-context__icon {
-  display: grid;
-  width: 3rem;
-  height: 3rem;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--ca-brand) 35%, var(--ca-line));
-  border-radius: 0.78rem;
+  display: inline-flex;
+  vertical-align: -0.2em;
+  margin-inline-end: 0.35rem;
   color: var(--ca-brand-bright);
-  background: var(--ca-brand-wash);
-}
-
-.ca-page-context__body {
-  min-width: 0;
 }
 
 .ca-page-context__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ca-space-2);
-  margin-block-end: var(--ca-space-2);
-}
-
-.ca-page-context__meta span {
-  padding: 0.25rem 0.52rem;
-  border: 1px solid var(--ca-line);
-  border-radius: var(--ca-radius-pill);
   color: var(--ca-brand);
-  background: rgb(9 13 18 / 48%);
   font-family: var(--ca-font-mono);
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.ca-page-context p {
-  margin: 0;
+.ca-page-context__outcome {
+  flex: 1 1 20rem;
+  min-width: 0;
   color: var(--ca-ink-soft);
-  font-size: var(--ca-text-md);
-  line-height: 1.6;
 }
 
-.ca-page-context p strong {
-  color: var(--ca-ink);
-}
-
-.ca-page-context .ca-page-context__support {
+.ca-page-context .ca-page-context__more {
   margin-block-start: var(--ca-space-2);
-  color: var(--ca-ink-muted);
-  font-size: var(--ca-text-sm);
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.ca-page-context__more summary {
+  width: fit-content;
+  color: var(--ca-brand-bright);
+  font-size: var(--ca-text-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ca-page-context__more p {
+  margin-block-start: var(--ca-space-2);
 }
 
 /* Section rhythm for long-form pages. Starlight wraps every Markdown heading in
  * .sl-heading-wrapper (to place its anchor link) and makes the heading itself
  * inline, so the wrapper, not the <h2>, owns the section rule and spacing. */
+/* A plain hairline: gold is reserved for gates, decisions and primary actions. */
 .sl-markdown-content > .sl-heading-wrapper.level-h2 {
   position: relative;
   margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
   padding-block-start: var(--ca-space-5);
   border-block-start: 1px solid var(--ca-line);
-}
-
-.sl-markdown-content > .sl-heading-wrapper.level-h2::before {
-  position: absolute;
-  inset-block-start: -1px;
-  inset-inline-start: 0;
-  width: 3.25rem;
-  height: 2px;
-  background: linear-gradient(90deg, var(--ca-brand), transparent);
-  content: "";
 }
 
 .sl-markdown-content > ol > li::marker {
@@ -875,10 +865,6 @@ details.ca-source pre {
 }
 
 @media (max-width: 42rem) {
-  .ca-page-context {
-    grid-template-columns: 1fr;
-  }
-
   .ca-learning-map {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

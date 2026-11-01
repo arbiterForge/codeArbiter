@@ -48,7 +48,7 @@ const qualityRouteCases = [
     path: "/checkpoint-058-missing-route/",
     status: 404,
     title: "This path has no gate | codeArbiter",
-    description: "The requested documentation route does not exist. Return to the learning path or search the source-backed reference.",
+    description: "The requested documentation route does not exist. Start from the beginning or search the source-backed reference.",
     canonicalPath: "/404/",
     h1: "This path has no gate",
   },
@@ -110,14 +110,12 @@ async function observeMobileQuality(page: Page) {
 async function observeHomepageStructureAndSearch(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/", { waitUntil: "load" });
-  const orderedList = page.locator("main ol");
-  const listItems = orderedList.getByRole("listitem");
-  const numeralsByListItem = [];
+  // The outcomes render as a plain list (DOCS-OVERHAUL M5); each item keeps its heading.
+  const outcomes = page.getByRole("region", { name: "What changes when codeArbiter is active.", exact: true }).getByRole("list");
+  const listItems = outcomes.getByRole("listitem");
+  const headingsByListItem = [];
   for (const listItem of await listItems.all()) {
-    const snapshot = await listItem.ariaSnapshot();
-    numeralsByListItem.push(
-      Array.from(snapshot.matchAll(/^\s*- text: "([0-9]+)"$/gm), (match) => match[1]),
-    );
+    headingsByListItem.push(await listItem.getByRole("heading", { level: 3 }).innerText());
   }
   const search = page.getByRole("combobox", { name: "Search the docs", exact: true });
   const results = page.getByRole("listbox", { name: "Search results", exact: true });
@@ -135,7 +133,7 @@ async function observeHomepageStructureAndSearch(page: Page) {
 
   return {
     listItemCount: await listItems.count(),
-    numeralsByListItem,
+    headingsByListItem,
     rankings,
   };
 }
@@ -160,7 +158,7 @@ async function observeRouteAndPerformanceQuality(browser: Browser) {
     });
     if (path === "/checkpoint-058-missing-route/") {
       custom404Actions = await Promise.all([
-        "Open the learning path",
+        "Start here",
         "Search the reference",
         "Return home",
       ].map(async (name) => await page.getByRole("link", { name, exact: true }).getAttribute("href") ?? ""));
@@ -432,7 +430,11 @@ test("WEB-016 + WEB-027: homepage structure and representative search rankings s
   const evidence = await observeHomepageStructureAndSearch(page);
 
   expect(evidence.listItemCount).toBe(3);
-  expect(evidence.numeralsByListItem).toEqual([["1"], ["2"], ["3"]]);
+  expect(evidence.headingsByListItem).toEqual([
+    "It stops at the tool boundary",
+    "The record lives in your repository",
+    "Every bypass leaves a trail",
+  ]);
   expect(evidence.rankings).toEqual(qualitySearchCases.map(({ query, expectedPath }) => ({
     query,
     firstPath: expectedPath,
@@ -443,7 +445,7 @@ test("WEB-033: route contracts and fresh-cache post-load observations remain rec
   const evidence = await observeRouteAndPerformanceQuality(browser);
 
   expect(evidence.routes).toEqual(qualityRouteCases.map((route) => ({ ...route, visibleH1Count: 1 })));
-  expect(evidence.custom404Actions).toEqual(["/learn/", "/reference/", "/"]);
+  expect(evidence.custom404Actions).toEqual(["/overview/", "/reference/", "/"]);
   expect(evidence.observations.map(({ path }) => path)).toEqual(["/", "/overview/", "/academy/"]);
   for (const observation of evidence.observations) {
     expect(observation.loadEventEnd).toBeGreaterThan(0);

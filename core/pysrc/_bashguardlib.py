@@ -78,6 +78,7 @@
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 
@@ -306,7 +307,8 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # Truncation (`>` but not `>>`) or destructive verbs aimed at an audit log
 # (overrides.log, triage.log — both append-only). The verb list includes
 # every common rewrite-in-place spelling (truncate, tee, dd, sed, sponge,
-# cp/copy onto the log); PowerShell's Add-Content is deliberately absent —
+# cp/copy onto the log; `sed` unless _sed_reads_only proves it a read);
+# PowerShell's Add-Content is deliberately absent —
 # appending is the one sanctioned write.
 # N-3: Known limitations — this regex catches the common `> file` and `>| file`
 # (force-clobber) truncation forms but NOT every shell spelling that produces a
@@ -639,17 +641,81 @@ LOG_NAME_RE = re.compile(LOG_NAMES, re.I)
 DECISIONS_NAME_RE = re.compile(DECISIONS, re.I)
 CONTEXT_NAME_RE = re.compile(CONTEXT_MD, re.I)
 
-# #997: `sed` writes a file only in place (`-i`, `--in-place`) or through a
-# `w`/`W` script command; `sed -n 1,20p .codearbiter/CONTEXT.md` is a read.
-_SED_WRITES_RE = re.compile(
-    r"(?<![\w-])-[a-zA-Z]*i|--in-place|(?:^|[\s'\";{}/\d$,])[wW]\s+\S")
+# #997: `sed -n 1,20p .codearbiter/CONTEXT.md` is a read. GNU sed also writes
+# through `-i` and every `--in-place` prefix (`--i`, `--in-pla`), a `w`/`W`
+# command or s flag whose filename needs no space, the `e` command, and a
+# script hidden in a file (`-f`). A blocklist missed those spellings (#1070),
+# so a sed is a read only when every option and the whole visible script are
+# known read-only; anything unparsed fails closed.
+_SED_READ_OPTIONS = frozenset((
+    "--quiet", "--silent", "--regexp-extended", "--separate", "--unbuffered",
+    "--null-data", "--posix", "--debug", "--sandbox"))
+_SED_READ_SHORT_RE = re.compile(r"-[nErsuz]+")
+_SED_SHORT_E_RE = re.compile(r"-[nErsuz]*e(.*)", re.S)
+_SED_ADDR = r"(?:\d+(?:~\d+)?|\$|/(?:[^/\\\n]|\\.)*/[IM]*)"
+_SED_SUBST = r"s([^\\\n\s])(?:(?!\1)[^\\\n]|\\.)*\1(?:(?!\1)[^\\\n]|\\.)*\1[gpiImM\d]*"
+# One command per match: the s delimiter backreference must stay group 1.
+_SED_READ_CMD_RE = re.compile(
+    rf"(?:{_SED_ADDR}(?:\s*,\s*(?:{_SED_ADDR}|[+~]\d+))?\s*!?\s*)?"
+    rf"(?:[pP=ldDnNhHgGxz]|[qQ]\d*|{_SED_SUBST})[ \t]*")
 
 
-def _context_shell_write(cmd):
-    """CONTEXT_WRITE_RE, except a `sed` invocation that cannot write."""
+def _sed_script_reads_only(script):
+    """True when every command in `script` only prints or edits the stream."""
+    position, end = 0, len(script)
+    while True:
+        while position < end and script[position] in " \t\n;":
+            position += 1
+        if position == end:
+            return True
+        m = _SED_READ_CMD_RE.match(script, position)
+        if not m:
+            return False
+        position = m.end()
+
+
+def _sed_reads_only(segment):
+    """True only when the sed arguments in `segment` provably cannot write."""
+    try:
+        args = shlex.split(segment)
+    except ValueError:
+        return False
+    scripts, operands, index, after_options = [], [], 0, False
+    while index < len(args):
+        arg = args[index]
+        short_e = _SED_SHORT_E_RE.fullmatch(arg)
+        if after_options or arg == "-" or not arg.startswith("-"):
+            operands.append(arg)
+        elif arg == "--":
+            after_options = True
+        elif arg in _SED_READ_OPTIONS or _SED_READ_SHORT_RE.fullmatch(arg):
+            pass
+        elif arg.startswith("--expression="):
+            scripts.append(arg.split("=", 1)[1])
+        elif arg == "--expression" or short_e:
+            if short_e and short_e.group(1):
+                scripts.append(short_e.group(1))
+            elif index + 1 < len(args):
+                index += 1
+                scripts.append(args[index])
+            else:
+                return False
+        else:
+            return False
+        index += 1
+    if not scripts:
+        if not operands:
+            return False
+        scripts.append(operands[0])
+    return all(_sed_script_reads_only(script) for script in scripts)
+
+
+def _shell_write(cmd, write_re):
+    """`write_re` (a write-verb regex whose group 1 is the verb), except a `sed`
+    invocation that cannot write. H-05, H-11 and H-18 share it."""
     text = cmd
     while True:
-        m = CONTEXT_WRITE_RE.search(text)
+        m = write_re.search(text)
         if not m:
             return False
         if m.group(1).lower() != "sed":
@@ -657,7 +723,7 @@ def _context_shell_write(cmd):
         # GNU sed accepts options after operands (`sed s/a/b/ FILE -i`), so
         # scan the whole command segment, not only the text before the path.
         segment = re.match(r"[^|;&]*", text[m.end(1):]).group(0)
-        if _SED_WRITES_RE.search(segment):
+        if not _sed_reads_only(segment):
             return True
         # Blank this read-only `sed` and rescan, so another verb later in the
         # same segment is still seen.
@@ -1571,13 +1637,14 @@ def _check_h05_audit_log(cmd):
     # #574: LOG_INTERP_RE closes the interpreter-one-liner flank
     # (`python3 -c "open('.codearbiter/overrides.log','w')..."`) — the
     # verb-list and redirect legs above never look for an interpreter token
-    # at all, so this shape walked past both.
+    # at all, so this shape walked past both. A `sed` whose options and
+    # script are visibly read-only is a read, as for H-11 and H-18 (#997).
     folded = cmd.casefold()
     legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
     enrolled_name = (any(n in cmd for n in legacy_names) or
                      ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
     if enrolled_name and (
-            LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
+            LOG_TRUNC_RE.search(cmd) or _shell_write(cmd, LOG_DESTROY_RE)
             or LOG_GIT_RESTORE_RE.search(cmd)
             or _interp_protected_write(cmd, LOG_INTERP_RE, LOG_NAME_RE)
             and not _is_direct_taskwrite(cmd)):
@@ -1590,7 +1657,8 @@ def _check_h05_audit_log(cmd):
 def _check_h11_decisions(cmd):
     """H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,
-    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched.
+    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched, including a `sed`
+    whose options and script are visibly read-only, as for H-18 (#997).
 
     #528: decisions/decision-log.md is the append-only arbitration log, not an
     ADR, and belongs to H-05 — which already covers it, since LOG_NAMES is
@@ -1606,7 +1674,7 @@ def _check_h11_decisions(cmd):
     # police (via H-05's own LOG_INTERP_RE), not a false H-11 block.
     cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
     cmd = ADR_LIFECYCLE_LOG_SHELL_RE.sub(" ", cmd)
-    if (DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd)
+    if (DECISIONS_REDIRECT_RE.search(cmd) or _shell_write(cmd, DECISIONS_WRITE_RE)
             or _interp_protected_write(cmd, DECISIONS_INTERP_RE, DECISIONS_NAME_RE)):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
@@ -1621,10 +1689,10 @@ def _check_h18_context_md(cmd):
     #574: CONTEXT_INTERP_RE closes the interpreter-one-liner flank the same
     way LOG_INTERP_RE/DECISIONS_INTERP_RE do for H-05/H-11.
 
-    #997: reads pass on both flanks. `sed` without in-place or a `w` command
-    is a read, and an interpreter needs write intent or a script argument
+    #997: reads pass on both flanks. A `sed` whose options and script are
+    visibly read-only is a read, and an interpreter needs write intent or a script argument
     (`_interp_protected_write`)."""
-    if (CONTEXT_REDIRECT_RE.search(cmd) or _context_shell_write(cmd)
+    if (CONTEXT_REDIRECT_RE.search(cmd) or _shell_write(cmd, CONTEXT_WRITE_RE)
             or _interp_protected_write(cmd, CONTEXT_INTERP_RE, CONTEXT_NAME_RE)):
         block("H-18", ".codearbiter/CONTEXT.md is the activation switch every enforcement "
                       "hook reads (#159) — shell rewrites, edits, or deletions that could flip "

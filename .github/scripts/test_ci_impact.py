@@ -41,6 +41,9 @@ CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 CODEX_DESKTOP_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "codex-desktop-candidate.yml"
 ACTIONLINT_CONFIG = REPO_ROOT / ".github" / "actionlint.yaml"
 DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
+# Deploy is an allowlist of trusted events on main, never a pull_request denylist.
+ALLOWLISTED_DEPLOY_IF = ("if: contains(fromJSON('[\"push\",\"workflow_run\",\"workflow_dispatch\"]'), "
+                         "github.event_name) && github.ref == 'refs/heads/main'")
 GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
 # The one audit threshold every dependency graph in this repo is gated at.
 NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
@@ -3544,7 +3547,13 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                 self.assertNotIn("secrets.", job)
         deploy = re.sub(r"(?m)\s+#.*$", "", jobs["deploy"])
         self.assertRegex(deploy, r"(?m)^    needs: \[build, site-check\]$")
-        self.assertRegex(deploy, r"(?m)^    if: github.event_name != 'pull_request'$")
+        self.assertIn("    " + ALLOWLISTED_DEPLOY_IF + "\n", deploy)
+        # A release-triggered run waits instead of cancelling, so an outside
+        # contributor completing release runs cannot keep cancelling the deploy.
+        concurrency = workflow.split("\nconcurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
+        self.assertIn("group: pages-${{ github.ref }}", concurrency)
+        self.assertIn("cancel-in-progress: ${{ github.event_name != 'workflow_run' }}", concurrency)
+        self.assertNotIn("cancel-in-progress: true", concurrency)
         self.assertRegex(deploy, r"(?m)^    permissions:\n      contents: read\n"
                                 r"      pages: write\n      id-token: write\n")
         self.assertNotIn("continue-on-error:", deploy)

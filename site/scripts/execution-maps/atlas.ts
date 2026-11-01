@@ -193,6 +193,12 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/decompose/SKILL.md':'8623ead7a3199e2d7fc72806656df2ce380ae87f',
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
+// H-05, H-11 and H-18 read a `sed` as a read only when its options and visible
+// script cannot write. The shared shell guard changes what it refuses, not
+// where; the recovery, read and proof routes that cite it keep their geometry.
+export const SED_READ_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_bashguardlib.py':'3a97db7fff0752d31f22593c8b56300274b586e6',
+});
 // The 2026-10-23 removal of /btw, /commands, /metrics and /preview deletes their
 // owners and drops their catalog rows. These files only lose pointers to those
 // routes (or record the new catalog counts); every remaining route, gate and
@@ -331,7 +337,7 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);
@@ -357,7 +363,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
   // Retain the historical assistive packet while checking later work-system
   // owner changes against their separately reviewed current blobs.
-  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
   for(const command of atlas.commands) {
     if(RETIRED_COMMANDS[command.name]) {
       const owner=commandMetadata(command.name,historical);
