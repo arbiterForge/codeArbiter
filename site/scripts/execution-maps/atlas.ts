@@ -220,6 +220,28 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
   'core/surface/commands/task.md':'417e2944dbda8d3df35acb57a41cfbe63a0500f6',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'93ee13d53363db93970b6ea0c26245a333a908f7',
 });
+// The corrective handoff changes guard classification, state diagnostics,
+// authority handoffs and payload identity reporting without adding routes or
+// approval owners. Bind the complete reviewed owner set while preserving the
+// historical packet maps above as immutable evidence of their original source.
+export const CORRECTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/artifacts/internal/operations/task_check.go':'2a7f3e5acaede42713122e44e18125135802fcd5',
+  'core/artifacts/internal/operations/task_context.go':'f21963bf0274d8685995a6ea0640dd4a9b6101ca',
+  'core/pysrc/_bashguardlib.py':'a69a3bb341a78d1988448aa1b924d209d813014f',
+  'core/pysrc/_replylib.py':'5bc0cccc196e1be629822f9b777c413c683e98a5',
+  'core/surface/SPRINT.md':'fcbcfa95c8d05d80bd72d03d4fccb8cc68654048',
+  'core/surface/agents/INDEX.md':'4e03630fe467a40aa55063496a341f8900a958c7',
+  'core/surface/commands/doctor.md':'af1eb7cbb7dda70519b1294c2538af26494fe61a',
+  'core/surface/commands/review.md':'2fadd4b755df269e8bd790b6106183da5ce8abc9',
+  'core/surface/commands/status.md':'da2611e402d681adb960f6e1d6798657d2521536',
+  'core/surface/includes/artifacts.md':'e38db59be8bdd1cbbb798c63528d6e781ed1dc48',
+  'core/surface/includes/routing-table.md':'ff2b38c3a4d4f77564fcbe7269faf1e95a9b1d8c',
+  'core/surface/skills/INDEX.md':'0bc0a30080231252bcf0b00b4fe565aba31d61b8',
+  'core/surface/skills/commit-gate/SKILL.md':'9bea4a81b421674396d7ad2d9c57d725b38f0e57',
+  'core/surface/skills/executing-plans/SKILL.md':'6e456bf6612cb1acb531e1b767cb4a73d72854d4',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'203bf57f6ffb9cb155be29a362103101754219bd',
+  'core/surface/skills/subagent-driven-development/SKILL.md':'3836c58d0658433064b161381334ec8dc38da6fd',
+});
 // H-05, H-11 and H-18 read a `sed` as a read only when its options and visible
 // script cannot write. The shared shell guard changes what it refuses, not
 // where; the recovery, read and proof routes that cite it keep their geometry.
@@ -364,12 +386,12 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);
   for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
-    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
+    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
   ])if(!requests.has(path))requests.set(path,pinFor(path));
   const checked=checkedSources(root,requests);
   const read=(path:string,pin?:string):string=>{

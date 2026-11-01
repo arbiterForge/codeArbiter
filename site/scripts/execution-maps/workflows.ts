@@ -47,7 +47,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "sprintExit": {
           "path": "core/surface/SPRINT.md",
           "quote": "AUTO-SELECTS open-PR and surfaces the merge decision to the user.",
-          "currentQuote": "`/sprint` may open a PR under the existing authorized workflow"
+          "currentQuote": "A sprint with no explicit terminal choice defaults to an open PR."
         },
         "sprintRecovery": {
           "path": "core/surface/SPRINT.md",
