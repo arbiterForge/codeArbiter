@@ -261,10 +261,12 @@ The project record lives beside the code:
 ```text
 .codearbiter/
 ├── CONTEXT.md             activation, vocabulary, maturity, current objective
-├── tech-stack.md          approved technologies and versions
-├── coding-standards.md    implementation and verification rules
-├── security-controls.md   security contract reviewers evaluate
-├── open-tasks.md          durable task board
+├── context/               native HTML knowledge (new default)
+├── work/                  portable project ID and native work items (new default)
+├── tech-stack.md          legacy Markdown knowledge
+├── coding-standards.md    legacy Markdown knowledge
+├── security-controls.md   security policy; scope blocks persist after conversion
+├── open-tasks.md          legacy work board (existing or explicit Markdown)
 ├── open-questions.md      unresolved [CONFIRM-NN] decisions
 ├── decisions/             numbered ADRs
 ├── specs/ and plans/      approved intent and execution

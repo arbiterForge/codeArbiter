@@ -106,8 +106,9 @@ Use [the first-repository walkthrough](/getting-started/quickstart/) to prove th
 
 Use [Return to a project](/guides/return-to-a-project/) for ordinary work.
 For local work, select the current owner before writing: a retained
-`open-tasks.md` board remains legacy-owned, while a project with native
-`.codearbiter/work/` records uses `work.py`. A migration starts with
+`open-tasks.md` board remains legacy-owned. A newly initialized HTML project
+has a portable `.codearbiter/work/project.json` identity before its first work
+item; use `work.py` to create and update those items. A migration starts with
 `work.py adopt-preview` and requires a separate explicit `work.py adopt`
 operation; browsing an existing project never starts a cutover.
 When a source path or configuration changes, inspect provenance with status drift and choose the

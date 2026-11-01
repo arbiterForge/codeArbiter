@@ -14,6 +14,11 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
+- Make new HTML projects native-first: initialize one portable project ID with
+  knowledge before the first work item, keep explicit Markdown and existing
+  legacy boards selected, and let feature/fix/sprint flows retain stable work IDs.
+- Save a selected work overview as a replaceable local HTML page with
+  `work.py view <WORK-ID> --save`.
 - Stage and reconcile explicit GitHub issue status updates for bound native work,
   with readback and a recorded conflict when the observed remote status changes.
 - Adopt an existing correlated GitHub issue without creating a duplicate.

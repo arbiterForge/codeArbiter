@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Native-first enrollment and work-bound workflow delivery · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-NATIVE-FIRST-WORKFLOW</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/native-first-workflow.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Native-first enrollment and work-bound workflow delivery</h1><p class="deck">One cohesive implementation with owner and identity foundations, workflow binding, views, and installed-host qualification.</p><div class="meta"><span>PLAN-NATIVE-FIRST-WORKFLOW</span><span>Revision 4 · schema 0.3.2</span><span>10 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-NATIVE-FIRST-WORKFLOW</div><div class="field"><span class="label">Binding mode</span>draft_preview</div><div class="field"><span class="label">Normative sha256</span>629814c79627b82d10874c93029ee69c84a055eb15afed8625666127f66b2ed3</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-001 -->
+<article class="record" id="T-001" data-ca-symbol="T-001" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-001">T-001</a><h3>Bootstrap native project identity and owner-aware knowledge initialization</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-003">SPEC-NATIVE-FIRST-WORKFLOW#AC-003</a></li><li><a href="../specs/native-first-workflow.html#AC-004">SPEC-NATIVE-FIRST-WORKFLOW#AC-004</a></li><li><a href="../specs/native-first-workflow.html#AC-005">SPEC-NATIVE-FIRST-WORKFLOW#AC-005</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Bootstrap native project identity and owner-aware knowledge initialization passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/operations/work.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/knowledge_ops.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Bootstrap native project identity and owner-aware knowledge initialization. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_parallel_first_work_clones_share_project_id</li><li>test_owner_conflict_preserves_both_stores</li><li>test_knowledge_initialize_accepts_native_empty_owner</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-001 -->
+
+<!-- CA:BEGIN:T-002 -->
+<article class="record" id="T-002" data-ca-symbol="T-002" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-002">T-002</a><h3>Scaffold native by default and preserve legacy recovery</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-001">SPEC-NATIVE-FIRST-WORKFLOW#AC-001</a></li><li><a href="../specs/native-first-workflow.html#AC-002">SPEC-NATIVE-FIRST-WORKFLOW#AC-002</a></li><li><a href="../specs/native-first-workflow.html#AC-006">SPEC-NATIVE-FIRST-WORKFLOW#AC-006</a></li><li><a href="../specs/native-first-workflow.html#AC-017">SPEC-NATIVE-FIRST-WORKFLOW#AC-017</a></li><li><a href="../specs/native-first-workflow.html#AC-018">SPEC-NATIVE-FIRST-WORKFLOW#AC-018</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-001">T-001</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Scaffold native by default and preserve legacy recovery passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/init-codearbiter.py</code></td></tr><tr><td>modify</td><td><code>core/surface/commands/init.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Scaffold native by default and preserve legacy recovery. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_context_workflow.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_init_default_native_owner</li><li>test_legacy_context_and_existing_html_legacy_unchanged</li><li>test_scaffold_retry_single_native_project_id</li><li>test_scaffold_autocrlf_clone_preserves_work_bytes</li><li>test_existing_legacy_owner_no_implicit_adoption</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-002 -->
+
+<!-- CA:BEGIN:T-003 -->
+<article class="record" id="T-003" data-ca-symbol="T-003" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-003">T-003</a><h3>Keep startup and statusline owner-aware and bounded</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-016">SPEC-NATIVE-FIRST-WORKFLOW#AC-016</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-002">T-002</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Keep startup and statusline owner-aware and bounded passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_arbiterstatelib.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/session-start.py</code></td></tr><tr><td>modify</td><td><code>core/pysrc/statusline.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Keep startup and statusline owner-aware and bounded. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_startup_emitters.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_native_empty_status_without_hot_subprocess</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-003 -->
+
+<!-- CA:BEGIN:T-004 -->
+<article class="record" id="T-004" data-ca-symbol="T-004" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-004">T-004</a><h3>Bind full and small feature flows to one work item</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-007">SPEC-NATIVE-FIRST-WORKFLOW#AC-007</a></li><li><a href="../specs/native-first-workflow.html#AC-008">SPEC-NATIVE-FIRST-WORKFLOW#AC-008</a></li><li><a href="../specs/native-first-workflow.html#AC-009">SPEC-NATIVE-FIRST-WORKFLOW#AC-009</a></li><li><a href="../specs/native-first-workflow.html#AC-012">SPEC-NATIVE-FIRST-WORKFLOW#AC-012</a></li><li><a href="../specs/native-first-workflow.html#AC-013">SPEC-NATIVE-FIRST-WORKFLOW#AC-013</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-003">T-003</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Bind full and small feature flows to one work item passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/commands/feature.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/writing-plans/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/executing-plans/SKILL.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Bind full and small feature flows to one work item. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Verify native identity and lifecycle behavior; review the host workflow instructions against the acceptance cases separately.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_local_journey_has_stable_identity_and_unknown_check</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-004 -->
+
+<!-- CA:BEGIN:T-005 -->
+<article class="record" id="T-005" data-ca-symbol="T-005" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-005">T-005</a><h3>Bind confirmed fix repairs to one work item</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-010">SPEC-NATIVE-FIRST-WORKFLOW#AC-010</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-004">T-004</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Bind confirmed fix repairs to one work item passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/commands/fix.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Bind confirmed fix repairs to one work item. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Verify native identity and lifecycle behavior; review the host workflow instructions against the acceptance cases separately.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_create_requires_a_replay_identity_and_origin_reuses_one_item</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-005 -->
+
+<!-- CA:BEGIN:T-006 -->
+<article class="record" id="T-006" data-ca-symbol="T-006" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-006">T-006</a><h3>Group sprint member work via cycles</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-011">SPEC-NATIVE-FIRST-WORKFLOW#AC-011</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-004">T-004</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Group sprint member work via cycles passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/commands/sprint.md</code></td></tr><tr><td>modify</td><td><code>core/surface/SPRINT.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Group sprint member work via cycles. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Verify native identity and lifecycle behavior; review the host workflow instructions against the acceptance cases separately.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_cycle_view_uses_canonical_membership_and_keeps_checks_unknown</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-006 -->
+
+<!-- CA:BEGIN:T-007 -->
+<article class="record" id="T-007" data-ca-symbol="T-007" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-007">T-007</a><h3>Make derived work overview discoverable and truthful</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-014">SPEC-NATIVE-FIRST-WORKFLOW#AC-014</a></li><li><a href="../specs/native-first-workflow.html#AC-015">SPEC-NATIVE-FIRST-WORKFLOW#AC-015</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-004">T-004</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Make derived work overview discoverable and truthful passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/work.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/render/work_view.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Make derived work overview discoverable and truthful. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;./internal/operations&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_work_overview_derives_next_task_and_observations</li><li>test_work_view_readonly_spec_plan_and_cycle_reference</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-007 -->
+
+<!-- CA:BEGIN:T-008 -->
+<article class="record" id="T-008" data-ca-symbol="T-008" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-008">T-008</a><h3>Regenerate and qualify installed host candidates</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-DELIVERY</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/native-first-workflow.html#AC-019">SPEC-NATIVE-FIRST-WORKFLOW#AC-019</a></li><li><a href="../specs/native-first-workflow.html#AC-020">SPEC-NATIVE-FIRST-WORKFLOW#AC-020</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-007">T-007</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Regenerate and qualify installed host candidates passes focused positive and refusal cases linked to the criteria.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-DELIVERY</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>tools/sync-core.py</code></td></tr><tr><td>inspect</td><td><code>tools/build-surface.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_work_cli.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Preserve existing user state and use forward recovery for any persisted native records.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Regenerate and qualify installed host candidates. Preserve existing owner, CAS, recovery and independent authority boundaries.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_work_cli.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_installed_native_first_host_matrix</li><li>test_local_work_update_never_auto_syncs_provider</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-008 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-DELIVERY -->
+<article class="record" id="CP-DELIVERY" data-ca-symbol="CP-DELIVERY" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-DELIVERY">CP-DELIVERY</a><h3>Implementation delivery</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>Applicable tests and installed candidate checks are observed; incomplete evidence is reported honestly.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-001">T-001</a></li><li><a href="#T-002">T-002</a></li><li><a href="#T-003">T-003</a></li><li><a href="#T-004">T-004</a></li><li><a href="#T-005">T-005</a></li><li><a href="#T-006">T-006</a></li><li><a href="#T-007">T-007</a></li><li><a href="#T-008">T-008</a></li></ul></div></article>
+<!-- CA:END:CP-DELIVERY -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-001 -->
+<article class="record" id="SRC-001" data-ca-symbol="SRC-001" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-001">SRC-001</a><h3>User supplied native-first handoff packet</h3></div><div class="field"><span class="label">Locator</span>codearbiter-native-first-workflow-handoff-2026-10-31.zip</div><div class="field"><span class="label">Note</span>Planning input verified against its manifest; ZIP SHA-256 afc128a58a2572c81fdf08ac5c39eb44a2145faeb28040f7e3390766b379d4d9</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-001 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>566e42fc251100fdf3745d465f3bf2b144b14ed9</div><div class="field"><span class="label">Observed date</span>2026-10-31</div><div class="field"><span class="label">Repository</span>arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 8fffe65a5b39b8dfd387cf0d58eca6f737f8e5accd02e74127cf0f34698a88af<br>Model SHA-256: 0d44f1fdaeee41c0ac05c1c8e7fc24eb20dd9dec87d4ba9ec364d0ecd412adc4</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-NATIVE-FIRST-WORKFLOW",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "tasks": {
+      "T-001": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-002": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-003": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-004": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-005": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-006": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-007": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-008": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "0d44f1fdaeee41c0ac05c1c8e7fc24eb20dd9dec87d4ba9ec364d0ecd412adc4",
+    "normative_sha256": "8fffe65a5b39b8dfd387cf0d58eca6f737f8e5accd02e74127cf0f34698a88af",
+    "symbol_count": 10
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "566e42fc251100fdf3745d465f3bf2b144b14ed9",
+      "observed_date": "2026-10-31",
+      "repository": "arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "Applicable tests and installed candidate checks are observed; incomplete evidence is reported honestly.",
+        "id": "CP-DELIVERY",
+        "tasks": [
+          "T-001",
+          "T-002",
+          "T-003",
+          "T-004",
+          "T-005",
+          "T-006",
+          "T-007",
+          "T-008"
+        ],
+        "title": "Implementation delivery"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [
+      {
+        "id": "SRC-001",
+        "locator": "codearbiter-native-first-workflow-handoff-2026-10-31.zip",
+        "note": "Planning input verified against its manifest; ZIP SHA-256 afc128a58a2572c81fdf08ac5c39eb44a2145faeb28040f7e3390766b379d4d9",
+        "title": "User supplied native-first handoff packet",
+        "type": "user_request",
+        "url": null
+      }
+    ],
+    "spec_ref": {
+      "artifact_id": "SPEC-NATIVE-FIRST-WORKFLOW",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "629814c79627b82d10874c93029ee69c84a055eb15afed8625666127f66b2ed3"
+    },
+    "summary": "One cohesive implementation with owner and identity foundations, workflow binding, views, and installed-host qualification.",
+    "tasks": [
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-003",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-004",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-005"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Bootstrap native project identity and owner-aware knowledge initialization passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-001",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/work.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/knowledge_ops.go"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Bootstrap native project identity and owner-aware knowledge initialization. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Bootstrap native project identity and owner-aware knowledge initialization",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/operations"
+            ],
+            "assertion": "Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_parallel_first_work_clones_share_project_id",
+              "test_owner_conflict_preserves_both_stores",
+              "test_knowledge_initialize_accepts_native_empty_owner"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-001",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-002",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-006",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-017",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-018"
+        ],
+        "depends_on": [
+          "T-001"
+        ],
+        "done_when": [
+          "Scaffold native by default and preserve legacy recovery passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-002",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/init-codearbiter.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/commands/init.md"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Scaffold native by default and preserve legacy recovery. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Scaffold native by default and preserve legacy recovery",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_context_workflow.py"
+            ],
+            "assertion": "Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_init_default_native_owner",
+              "test_legacy_context_and_existing_html_legacy_unchanged",
+              "test_scaffold_retry_single_native_project_id",
+              "test_scaffold_autocrlf_clone_preserves_work_bytes",
+              "test_existing_legacy_owner_no_implicit_adoption"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-016"
+        ],
+        "depends_on": [
+          "T-002"
+        ],
+        "done_when": [
+          "Keep startup and statusline owner-aware and bounded passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-003",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/session-start.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/statusline.py"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Keep startup and statusline owner-aware and bounded. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Keep startup and statusline owner-aware and bounded",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_startup_emitters.py"
+            ],
+            "assertion": "Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_native_empty_status_without_hot_subprocess"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-007",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-008",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-009",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-012",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-013"
+        ],
+        "depends_on": [
+          "T-003"
+        ],
+        "done_when": [
+          "Bind full and small feature flows to one work item passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-004",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/commands/feature.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/writing-plans/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/executing-plans/SKILL.md"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Bind full and small feature flows to one work item. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Bind full and small feature flows to one work item",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_work_cli.py"
+            ],
+            "assertion": "Verify native identity and lifecycle behavior; review the host workflow instructions against the acceptance cases separately.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_local_journey_has_stable_identity_and_unknown_check"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-010"
+        ],
+        "depends_on": [
+          "T-004"
+        ],
+        "done_when": [
+          "Bind confirmed fix repairs to one work item passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-005",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/commands/fix.md"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Bind confirmed fix repairs to one work item. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Bind confirmed fix repairs to one work item",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_work_cli.py"
+            ],
+            "assertion": "Verify native identity and lifecycle behavior; review the host workflow instructions against the acceptance cases separately.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_create_requires_a_replay_identity_and_origin_reuses_one_item"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-011"
+        ],
+        "depends_on": [
+          "T-004"
+        ],
+        "done_when": [
+          "Group sprint member work via cycles passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-006",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/commands/sprint.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/SPRINT.md"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Group sprint member work via cycles. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Group sprint member work via cycles",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_work_cli.py"
+            ],
+            "assertion": "Verify native identity and lifecycle behavior; review the host workflow instructions against the acceptance cases separately.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_cycle_view_uses_canonical_membership_and_keeps_checks_unknown"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-014",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-015"
+        ],
+        "depends_on": [
+          "T-004"
+        ],
+        "done_when": [
+          "Make derived work overview discoverable and truthful passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-007",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/work.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/render/work_view.go"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Make derived work overview discoverable and truthful. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Make derived work overview discoverable and truthful",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "./internal/operations"
+            ],
+            "assertion": "Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_work_overview_derives_next_task_and_observations",
+              "test_work_view_readonly_spec_plan_and_cycle_reference"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-DELIVERY",
+        "criterion_refs": [
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-019",
+          "SPEC-NATIVE-FIRST-WORKFLOW#AC-020"
+        ],
+        "depends_on": [
+          "T-007"
+        ],
+        "done_when": [
+          "Regenerate and qualify installed host candidates passes focused positive and refusal cases linked to the criteria."
+        ],
+        "execution_scope": "CP-DELIVERY",
+        "id": "T-008",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "tools/sync-core.py"
+          },
+          {
+            "action": "inspect",
+            "path": "tools/build-surface.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_work_cli.py"
+          }
+        ],
+        "rollback": "Preserve existing user state and use forward recovery for any persisted native records.",
+        "source_refs": [
+          "SRC-001"
+        ],
+        "steps": [
+          "Regenerate and qualify installed host candidates. Preserve existing owner, CAS, recovery and independent authority boundaries."
+        ],
+        "title": "Regenerate and qualify installed host candidates",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_work_cli.py"
+            ],
+            "assertion": "Extend the owning suite with the proposed cases; passing pre-existing tests alone does not prove this increment.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_installed_native_first_host_matrix",
+              "test_local_work_update_never_auto_syncs_provider"
+            ]
+          }
+        ]
+      }
+    ],
+    "title": "Native-first enrollment and work-bound workflow delivery"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/native-first-workflow.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 4,
+  "schema_version": "0.3.2",
+  "slug": "native-first-workflow"
+}
+</script>
+</body></html>
