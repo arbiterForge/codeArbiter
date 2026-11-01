@@ -42,6 +42,26 @@ not interpolate it into shell syntax or search for a source/cache copy.
   until their actual evidence is assessed.
 - **Reopen:** `work.py reopen <WORK-ID> --operation-id <stable-request-id>`.
 
+For native projects that explicitly configure `work.py transition-map-configure`,
+these same start, complete and reopen calls save their configured issue and
+single-select Project intent, or a specific waiting reason, in the same local
+work transaction. The transition makes no GitHub request. An absent or disabled
+map leaves ordinary lifecycle behavior available. Read `work.py get <WORK-ID>`
+or `work.py view <WORK-ID>` for separate local progress, check, delivery and
+tracker states. `work.py transition-map-get` shows whether the selected native
+project opted in; configure once with IDs discovered from the existing provider
+and Project tools. Never infer an option ID from its display label.
+
+When explicitly asked to transmit mapped targets, use `work.py sync-mapped
+<WORK-ID> [--pull-number N]`. This may send the bound issue state and the one
+configured Project field; it reports each target separately. The configured
+provider's after-merge timing applies to both mapped targets, even through a
+lower-level sync command. Existing manually staged Project effects retain their
+explicit sync-now behavior. Disabling the map pauses mapped sends and does not
+undo remote changes. Reconcile an uncertain send before trying the latest
+desired state. A human may change a Project field between its read and update;
+report that race instead of claiming remote compare-and-set.
+
 For a create, bind the caller's description and stable request ID as separate
 variables after resolving the installed helper and interpreter from the card.
 Pass each value as a literal argument from the intended worktree. A distinct

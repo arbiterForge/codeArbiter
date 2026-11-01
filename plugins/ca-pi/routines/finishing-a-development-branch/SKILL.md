@@ -137,6 +137,13 @@ Carry out the chosen option, and only that one:
 
 Gate: the chosen option completed — for open-PR a PR exists against the default branch; for merge the work landed through that PR; for discard the user confirmed against a stated loss summary.
 
+For a native work item with mapped tracker intent, finishing a branch does not
+send that intent by itself. After an authorized exact merge, an explicitly
+requested `work.py sync-mapped <WORK-ID> --pull-number <merged-PR>` may send the
+bound issue state and Project field under the same saved transition anchor.
+Report each target's result separately. A pending or uncertain target is not a
+reason to repeat implementation checks or to invent a second approval step.
+
 ### Knowledge page conflicts
 
 A Git conflict in an HTML knowledge page (`.codearbiter/context/*.html` or
