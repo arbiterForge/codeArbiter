@@ -18,9 +18,6 @@
 
 import { repositoryVersionFacts } from "../version-facts";
 
-/** Current versions read from the source that enforces them (see version-facts.ts). */
-const versionFacts = repositoryVersionFacts();
-
 /** An environment variable a preview feature reads. */
 export interface ForgeEnvVar {
   /** The variable name, e.g. "FARM_API_KEY". */
@@ -68,7 +65,12 @@ export const FORGE_FEATURES: ForgeFeature[] = [
       "Brings the shared codeArbiter governance core to Pi with a rich footer, permission and plan modes, bounded background work, native compaction, and hardened child dispatch. Its promotion matrix is green; the preview label remains while broader real-world host and workflow coverage accumulates.",
     optIn:
       "pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>",
-    requires: `Pi ${versionFacts["pi.supported"].value}, Node.js ${versionFacts["node.minimum"].value}+, and Python 3`,
+    // Read when rendered, not at import: gen.ts imports this module for the badges
+    // before it writes the release record that pi.supported comes from.
+    get requires() {
+      const facts = repositoryVersionFacts();
+      return `Pi ${facts["pi.supported"].value}, Node.js ${facts["node.minimum"].value}+, and Python 3`;
+    },
     helpGraduate:
       "use it in real repositories and report any host or workflow mismatch.",
     href:
