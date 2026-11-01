@@ -127,7 +127,7 @@ EXPECTED_DEFAULT_BODY_SHA256.update({
 # WS-03 changes status's work count to read the selected owner with bounded
 # native paging while preserving the legacy board count.
 EXPECTED_DEFAULT_BODY_SHA256.update({
-    'status': '972981829db1cc13bf766cdaeb5d17b004cc2953ef34919bb19ea250a21c1939',
+    'status': '71ffb21d7f2e8458047d7be5313d2c67b4606ce678a984d3ce642d20e2e3ac6b',
 })
 
 # The work-system handoff routes selected brownfield work through the chosen
@@ -291,7 +291,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 if slug == "pr":
                     procedure = body.split("### Open-PR procedure\n", 1)[1]
                     procedure = procedure[procedure.index("1. **Confirm"):].split("\n## Phase 4", 1)[0].strip()
-                    self.assertEqual(digest(procedure), "bad0d9f173db7ef0c7fe5ff9ddb2aed6fc5176a8fd82d59110fe27e75cd51af0")
+                    self.assertEqual(digest(procedure), "f41e8036b13658fcb37701b5ea5236c3d7bda9c0bda36bab22f0a2249b016aaf")
                     self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
                 else:
                     self.assertEqual(digest(MODES_RE.sub("", body)), expected)
