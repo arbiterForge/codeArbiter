@@ -9,7 +9,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "id": "sprint",
     "title": "An authorized sprint reaches a PR",
     "summary": "Agree the outcome → implement within scope → report and hand off",
-    "endpoint": "An honest implementation report and authorized PR; merge remains separate.",
+    "endpoint": "Open PR by default; a prior same-scope grant can authorize a ready merge.",
     "guide": "/guides/autonomous-sprints/",
     "asset": "lane-sprint.svg",
     "map": {
@@ -17,7 +17,7 @@ export const workflows: readonly WorkflowDefinition[] = [
       "title": "An authorized sprint reaches a PR",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "Current assistive source flow with retained historical citations. The user's request authorizes the agreed work; ordinary drafts, task progress and in-scope methods require no second artifact approval, context ticket or receipt-driven reviewer chain. Actual user stops, host/security controls and commit/publication permissions remain. This source explanation is not a captured live host run.",
-      "outcome": "An implementation report and authorized open PR with actual checks, meaningful decisions and remaining work. Reported DONE does not certify verification or release; the sprint never merges or discards work without separate authority.",
+      "outcome": "A checked report and open PR. Sprint never infers merge; an earlier same-scope grant can authorize a ready PR. Discard needs named-branch confirmation.",
       "sources": {
         "autonomy": {
           "path": "core/surface/SPRINT.md",
@@ -309,7 +309,7 @@ export const workflows: readonly WorkflowDefinition[] = [
           "id": "handoff",
           "title": "Commit and hand off the PR",
           "question": "Where does autonomous authority end?",
-          "output": "Inspect the actual PR head, observed checks, meaningful decisions and unresolved findings. Commit and PR actions use existing authorization; merge and publication remain separate.",
+          "output": "Use existing commit and PR authority. Merge needs an earlier same-scope grant plus green exact-head review; publication remains separate.",
           "nodes": [
             {
               "id": "sprint-commit",
@@ -332,8 +332,8 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "finishing-a-development-branch",
               "href": "/reference/skills/finishing-a-development-branch/",
               "source": "sprintExit",
-              "detail": "Sprint mode selects Open a PR instead of asking for attended terminal choices. Merge and discard are excluded.",
-              "output": "A PR handoff, not authority to land on main."
+              "detail": "Sprint defaults to Open a PR. An earlier same-scope merge grant selects Merge via PR after exact-head checks and review. Discard still needs named-branch confirmation.",
+              "output": "An open PR by default; an authorized exact-head merge only when previously granted."
             },
             {
               "id": "sprint-pr",

@@ -127,7 +127,7 @@ EXPECTED_DEFAULT_BODY_SHA256.update({
 # WS-03 changes status's work count to read the selected owner with bounded
 # native paging while preserving the legacy board count.
 EXPECTED_DEFAULT_BODY_SHA256.update({
-    'status': '71ffb21d7f2e8458047d7be5313d2c67b4606ce678a984d3ce642d20e2e3ac6b',
+    'status': '349af0fbf0741d280543327e7d8d6360eb68e6915d403710c594dbd845870fb1',
 })
 
 # The work-system handoff routes selected brownfield work through the chosen

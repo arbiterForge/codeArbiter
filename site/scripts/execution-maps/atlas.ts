@@ -231,6 +231,9 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
 export const CORRECTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/artifacts/internal/operations/task_check.go':'2a7f3e5acaede42713122e44e18125135802fcd5',
   'core/artifacts/internal/operations/task_context.go':'f21963bf0274d8685995a6ea0640dd4a9b6101ca',
+  'core/artifacts/internal/operations/work.go':'3614974657c4da9a1d2cc306a0f4432d549702a0',
+  'core/artifacts/internal/operations/work_view.go':'91a8d3fb51ed2c7dc0411a81b71bde92b1713ab6',
+  'core/artifacts/internal/render/work_view.go':'fe3b2e406606bd281e3813fd0156d49d352071af',
   'core/pysrc/_bashguardlib.py':'0305675382ab4e786bda07c5df3d58e599c0d984',
   'core/pysrc/_replylib.py':'7fac66715cce49faf1fbfe60a3da90f1e4367a6b',
   'core/surface/SPRINT.md':'fcbcfa95c8d05d80bd72d03d4fccb8cc68654048',
