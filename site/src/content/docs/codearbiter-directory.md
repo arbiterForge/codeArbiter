@@ -24,7 +24,9 @@ only matters once that file carries `arbiter: enabled`.
 The table below maps every stock path the scaffold or a governed lane produces or reads. Some appear
 when the owning workflow first needs them (`plans/decomposition/`,
 `.markers/`, `.provenance/`, `spikes/`, `reports/`). The [state file reference](/codearbiter-directory/files/)
-covers each path in detail: its format, its lifecycle, and what happens if it is deleted.
+covers most of these paths in detail: format, lifecycle, and what happens if one is deleted. The
+HTML knowledge and decomposition files, the native work records and `.gitattributes` have no entry
+there; this table is their reference.
 
 ## Two context formats
 
@@ -90,5 +92,7 @@ review, progress and recovery boundaries.
 
 ## Per-path reference
 
-The [state file reference](/codearbiter-directory/files/) documents each path in the table: its
-format, who may change it, and what happens if it is deleted or goes stale.
+The [state file reference](/codearbiter-directory/files/) documents most paths in the table: format,
+who may change them, and what happens if one is deleted or goes stale. The HTML knowledge and
+decomposition files, the native work records and provider bindings, the retained `legacy/` boards
+and `.gitattributes` are covered only by the table above.

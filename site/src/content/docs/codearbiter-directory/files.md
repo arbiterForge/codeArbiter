@@ -11,9 +11,10 @@ journey:
 ---
 
 Lookup entries for the Markdown-format files, logs and shared state in `.codearbiter/`. The native
-HTML knowledge files (`context/*.html`, `decomposition/project.html`) and `.gitattributes` have no
-entry here. The [writer and reader table](/codearbiter-directory/#at-a-glance) covers them: change
-knowledge records through `knowledge.py`, never by hand, and keep `.gitattributes`. For what the
+HTML knowledge files (`context/*.html`, `decomposition/project.html`), the native work records
+under `work/`, the retained `legacy/` boards and `.gitattributes` have no entry here. The
+[writer and reader table](/codearbiter-directory/#at-a-glance) covers them: change knowledge records
+through `knowledge.py` and work records through `work.py`, never by hand, and keep `.gitattributes`. For what the
 directory is and its two context formats, start with
 [The .codearbiter/ Directory](/codearbiter-directory/).
 
