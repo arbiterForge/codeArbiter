@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -81,6 +82,39 @@ class TestExecutingPayloadIdentity(unittest.TestCase):
                 observed = doctor.hostapi.observe_payload_identity(doctor.hostapi.Host(), root)
                 self.assertEqual(observed["adapter_version"], "unknown")
                 self.assertIn(observed["adapter_manifest_status"], {"missing", "invalid", "oversize"})
+
+    def test_observer_treats_excessive_json_nesting_as_invalid(self):
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".claude-plugin"))
+            manifest = os.path.join(root, ".claude-plugin", "plugin.json")
+            with open(manifest, "w", encoding="utf-8") as stream:
+                stream.write("{}")
+            with mock.patch.object(doctor.hostapi.json, "loads", side_effect=RecursionError):
+                observed = doctor.hostapi.observe_payload_identity(doctor.hostapi.Host(), root)
+        self.assertEqual(observed["adapter_manifest_status"], "invalid")
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "POSIX special-file contract")
+    def test_observer_rejects_fifo_without_blocking_startup(self):
+        with tempfile.TemporaryDirectory() as root:
+            directory = os.path.join(root, ".claude-plugin")
+            os.makedirs(directory)
+            manifest = os.path.join(directory, "plugin.json")
+            os.mkfifo(manifest)
+            result = {}
+
+            def observe():
+                result["value"] = doctor.hostapi.observe_payload_identity(doctor.hostapi.Host(), root)
+
+            thread = threading.Thread(target=observe, daemon=True)
+            thread.start()
+            thread.join(0.5)
+            blocked = thread.is_alive()
+            if blocked:
+                with open(manifest, "wb", buffering=0) as stream:
+                    stream.write(b"{}")
+                thread.join(1)
+            self.assertFalse(blocked, "identity observation blocked while opening a FIFO")
+            self.assertEqual(result["value"]["adapter_manifest_status"], "invalid")
 
     def test_doctor_reports_manifest_claim_without_claiming_digest_proof(self):
         _reset()

@@ -1090,6 +1090,20 @@ def _effective_exec_root(payload, root):
     return exec_root
 
 
+def _effective_command_cwd(payload, root):
+    """Return the directory from which this command's relative paths run."""
+    data = payload if isinstance(payload, dict) else {}
+    tool_input = data.get("tool_input")
+    workdir = tool_input.get("workdir") if isinstance(tool_input, dict) else None
+    candidate = data.get("cwd")
+    if (data.get("tool_name") in _CODEX_EXPLICIT_WORKDIR_TOOLS
+            and isinstance(workdir, str) and os.path.isdir(workdir)):
+        candidate = workdir
+    if not isinstance(candidate, str) or not os.path.isdir(candidate):
+        return root
+    return os.path.abspath(candidate)
+
+
 # D-3 (spec pre-release-hardening, #223): the raw-`cmd` fallback below (used
 # when a heredoc is present) must fire ONLY when the heredoc body can
 # genuinely reach a shell — via EITHER of two independent routes, checked by
@@ -1633,7 +1647,7 @@ def _index_only_restore(cmd):
         r"(?:[ \t]+[\w./\\-]+)*[ \t]*", cmd, re.I))
 
 
-def _literal_copy_item_target(cmd, root):
+def _literal_copy_item_target(cmd, base):
     """Resolve the effective target of one literal Copy-Item command."""
     operand = r"(?:'[^'\r\n]+'|\"[^\"\r\n]+\"|[\w./\\:-]+)"
     match = re.fullmatch(
@@ -1646,7 +1660,7 @@ def _literal_copy_item_target(cmd, root):
     dest = match["dst"].strip("'\"")
     if any(ch in source + dest for ch in "`$*?[]{};|&"):
         return None
-    target = dest if os.path.isabs(dest) else os.path.join(root, dest)
+    target = dest if os.path.isabs(dest) else os.path.join(base, dest)
     if os.path.isdir(target):
         target = os.path.join(target, os.path.basename(source.replace("\\", "/")))
     return target
@@ -1754,7 +1768,7 @@ def _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback):
                       "prohibited.")
 
 
-def _check_h22_state(cmd, root):
+def _check_h22_state(cmd, root, cwd=None):
     """H-22: the protected-state registry's shell flank (B-04/B1, #564).
     Walks the precompiled per-entry pairs (`_STATE_WRITE_RES`); a command
     that redirects into, or runs a write/delete verb against, a registered
@@ -1786,7 +1800,8 @@ def _check_h22_state(cmd, root):
     scans the unmodified command text; only the write-verb leg needs the
     strip, since `install` is the one verb in `_STATE_WRITE_VERBS` that is
     also a common package-manager subcommand."""
-    copy_target = _literal_copy_item_target(cmd, root)
+    copy_base = cwd if isinstance(cwd, str) and os.path.isdir(cwd) else root
+    copy_target = _literal_copy_item_target(cmd, copy_base)
     if copy_target is not None:
         # A copy reads its source. Resolve the destination through the same
         # raw/realpath classifier used by the Write/Edit flanks.
@@ -2122,7 +2137,7 @@ def _debug_validation_command_view(cmd):
 def _literal_ps_here_string_view(cmd):
     """Hide only the body of one complete, literal Set-Content here-string."""
     text = cmd.replace("\r\n", "\n")
-    if "\r" in text or "`" in text:
+    if re.search(r"\r|`|[\u2018-\u201b]", text):
         return cmd
     prefix = re.match(
         r'''\A[ \t]*Set-Content[ \t]+-LiteralPath[ \t]+"\$env:TEMP\\[\w.-]+"'''
@@ -2140,7 +2155,7 @@ def _literal_ps_here_string_view(cmd):
 
 def _read_only_rg_pattern_view(cmd):
     """Mask a quoted rg search pattern in the observed read-only pipeline."""
-    path = r"[\w./\\:-]+"
+    path = r"(?!-)[\w./\\:-]+"
     match = re.fullmatch(
         r"[ \t]*Get-Content[ \t]+" + path +
         r";[ \t]*rg[ \t]+-n[ \t]+'(?P<pattern>[^'\r\n]*)'"
@@ -2239,7 +2254,7 @@ def run_guards(payload, root, ti):
     _check_h11_decisions(cmd)
     _check_h18_context_md(cmd)
     _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback)
-    _check_h22_state(cmd, root)
+    _check_h22_state(cmd, root, _effective_command_cwd(payload, root))
     _check_h09b_h10b_crypto_secret(commit, add, cwd, root)
     _check_h14_migration(commit, add, cwd, root)
 

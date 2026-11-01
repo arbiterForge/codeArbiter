@@ -30,6 +30,7 @@
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 
@@ -74,8 +75,21 @@ def _identity_manifest(root, relative, limit):
         path = os.path.realpath(os.path.join(root, _safe_relative_path(relative, "manifest path")))
         if not _inside(root, path):
             return None, "outside_root"
-        with open(path, "rb") as handle:
-            raw = handle.read(limit + 1)
+        if not stat.S_ISREG(os.lstat(path).st_mode):
+            return None, "invalid"
+        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NONBLOCK", 0)
+        flags |= getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(path, flags)
+        try:
+            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                return None, "invalid"
+            handle = os.fdopen(descriptor, "rb")
+            descriptor = -1
+            with handle:
+                raw = handle.read(limit + 1)
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
         if len(raw) > limit:
             return None, "oversize"
         value = json.loads(raw.decode("utf-8", "strict"))
@@ -84,7 +98,7 @@ def _identity_manifest(root, relative, limit):
         return value, "read"
     except FileNotFoundError:
         return None, "missing"
-    except (OSError, ValueError, UnicodeError, TypeError, PluginRootError):
+    except (OSError, ValueError, UnicodeError, TypeError, RecursionError, PluginRootError):
         return None, "invalid"
 
 

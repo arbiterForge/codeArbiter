@@ -99,9 +99,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		next = data.PlanTask.ID + " — " + data.PlanTask.Title + ": " + data.PlanTask.NextAction
 	}
 	obstacle := "Not recorded in this work item."
-	if data.PlanTask != nil && data.PlanTask.UnresolvedCount > 0 {
-		obstacle = "A declared plan check was reported failing and remains unresolved within its partial source scope."
-	} else if checkStatus == "failed" {
+	if checkStatus == "failed" {
 		obstacle = "Checks failed; local completion does not resolve them."
 		next = "Investigate the failed check and repeat the affected verification."
 	} else if data.ProviderEffectStatus == "outcome_unknown" {
@@ -135,6 +133,8 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	} else if data.CoordinationSendStatus == "paused" || data.CoordinationIssueStatus == "paused" || data.CoordinationProjectStatus == "paused" {
 		obstacle = "Mapped tracker sends are paused until the transition map and provider bindings are checked."
 		next = "Run work.py transition-map-get and inspect the pending effects before explicitly resuming or cancelling them."
+	} else if data.PlanTask != nil && data.PlanTask.UnresolvedCount > 0 {
+		obstacle = "A declared plan check was reported failing and remains unresolved within its partial source scope."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."

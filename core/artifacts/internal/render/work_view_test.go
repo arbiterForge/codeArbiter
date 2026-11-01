@@ -40,6 +40,52 @@ func TestWorkViewNamesFailedChecksAfterLocalCompletion(t *testing.T) {
 	}
 }
 
+func TestWorkViewKeepsConfirmedBlockersAheadOfAdvisoryTaskReports(t *testing.T) {
+	tests := []struct {
+		name           string
+		data           WorkViewData
+		wantNext       string
+		wantTaskDetail string
+	}{
+		{
+			name: "failed check",
+			data: WorkViewData{
+				ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+				Title: "Deliver local work", Intent: "Keep the blocking check visible", WorkType: "fix",
+				State: "active", CheckStatus: "failed",
+				Plan: &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+				PlanTask: &WorkViewTask{ID: "T-001", Title: "Implement", State: "REVIEW", NextAction: "Review the task", UnresolvedCount: 1},
+			},
+			wantNext:       "Investigate the failed check",
+			wantTaskDetail: "Unresolved reported failure",
+		},
+		{
+			name: "unknown remote outcome",
+			data: WorkViewData{
+				ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+				Title: "Deliver local work", Intent: "Keep remote uncertainty visible", WorkType: "fix",
+				State: "active", CheckStatus: "unknown", ProviderEffectStatus: "outcome_unknown",
+				Plan: &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+				PlanTask: &WorkViewTask{ID: "T-001", Title: "Implement", State: "REVIEW", NextAction: "Review the task", UnresolvedCount: 1},
+			},
+			wantNext:       "Reconcile the remote issue",
+			wantTaskDetail: "Unresolved reported failure",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			html, err := WorkView(tt.data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			view := string(html)
+			if !strings.Contains(view, tt.wantNext) || !strings.Contains(view, tt.wantTaskDetail) {
+				t.Fatalf("advisory task report displaced a confirmed blocker: %s", view)
+			}
+		})
+	}
+}
+
 func TestWorkViewKeepsBlockedTaskStopAheadOfReportedFailure(t *testing.T) {
 	html, err := WorkView(WorkViewData{
 		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",

@@ -19,7 +19,8 @@ Read these, or STOP and surface the gap — never guess a command:
 
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess. In an HTML-knowledge repository the same declarations come from `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/knowledge.py" commands` (see `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`); stop if the command you need is not declared. A declared command's `run_state` is what was reported, not proof it passes.
 - `${CLAUDE_PLUGIN_ROOT}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
-- A git repository must be present and `git status` available.
+- A git repository must be present and `git status` available. Before any mutation, capture and
+  retain the exact `git status --porcelain --untracked-files=all` inventory for Phase 9's comparison.
 - Read the scoped obligations and observed evidence under `${CLAUDE_PLUGIN_ROOT}/skills/tdd/SKILL.md`. Confirmed fixes require regression RED/GREEN; features require current criterion-focused checks; refactors require passing characterization/parity evidence. Apply the relevant coverage and lint requirements. Resolve missing evidence for the staged change using its selected verification approach.
 - The discovered authoritative spec/plan pair, when relevant to this commit. For HTML,
   load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` and read the exact spec/plan
@@ -48,7 +49,7 @@ Gate: explicit user authorization is on record. Inferred or assumed permission d
 
 ## Phase 2 — Branch · gate: BLOCK
 
-Run `git branch --show-current`. Never commit on `main`, `master`, or a protected branch. Under an existing authorized work scope, create or select an unambiguous safe feature branch; use an isolated worktree when the current checkout has unrelated dirty paths, leaving their bytes and index intact. Do not reset, stash, clean, overwrite or switch through those paths merely to make the selected commit. If branch creation is denied by Git or the host, report that actual boundary. Record the selected branch for the report.
+Run `git branch --show-current`. Never commit on `main`, `master`, or a protected branch. Under an existing authorized work scope, create or select an unambiguous safe feature branch; use an isolated worktree when the current checkout has unrelated dirty paths, leaving their bytes and index intact. Before continuing in an isolated worktree, reproduce only the exact selected tracked, staged and untracked payload there without removing it from the original checkout, then verify its paths, bytes and intended index state against the retained inventory. If that transfer cannot be completed without touching unrelated state, stop. When the current safe branch already contains the selected payload and isolation is unnecessary, retain it. Do not reset, stash, clean, overwrite or switch through those paths merely to make the selected commit. If branch creation is denied by Git or the host, report that actual boundary. Record the selected branch for the report.
 
 Gate: the working branch is not protected.
 

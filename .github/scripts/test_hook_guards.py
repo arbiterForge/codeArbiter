@@ -154,6 +154,13 @@ def check_corrective_guard_cases(fixture):
     expect_allow(fixture, body, "literal PR body is data")
     expect_block(fixture, body + "; Set-Content .codearbiter/decisions/0001-seed.md x",
                  "H-11", "literal body cannot hide following ADR write")
+    expect_block(
+        fixture,
+        "Set-Content -LiteralPath \"$env:TEMP\\ca-pr-body.md\" -Value @'\n"
+        "ordinary text\n\u2019@; Remove-Item .codearbiter/decisions/0001-seed.md; @'\n"
+        "more\n'@",
+        "H-11", "curly quote cannot close a masked literal body early",
+    )
     expect_block(fixture,
                  "Set-Content -LiteralPath '.codearbiter/decisions/0001-seed.md' -Value @'\n"
                  "ordinary text\n'@", "H-11", "protected Set-Content destination remains guarded")
@@ -164,6 +171,13 @@ def check_corrective_guard_cases(fixture):
                  ".codearbiter/security-controls.md .codearbiter/decisions "
                  "2>$null | Select-Object -First 100")
         expect_allow(fixture, query, f"read-only rg pattern containing {word}")
+    expect_block(
+        fixture,
+        "Get-Content core/surface/agents/dependency-reviewer.md; "
+        "rg -n 'Node' --pre ./tool.ps1 .codearbiter/decisions "
+        "2>$null | Select-Object -First 1",
+        "H-11", "rg executable options cannot enter the read-only grammar",
+    )
     expect_block(fixture,
                  "Get-Content core/surface/agents/dependency-reviewer.md; "
                  "rg -n 'Node' .codearbiter/decisions | "
@@ -211,6 +225,7 @@ def check_corrective_guard_cases(fixture):
                 "HOME": powershell_home,
                 "USERPROFILE": powershell_home,
                 "XDG_CACHE_HOME": powershell_cache,
+                "PSModuleAnalysisCachePath": os.path.join(powershell_cache, "ModuleAnalysisCache"),
                 "POWERSHELL_TELEMETRY_OPTOUT": "1",
                 "POWERSHELL_UPDATECHECK": "Off",
             },
@@ -237,10 +252,10 @@ def check_corrective_guard_cases(fixture):
             return state.ProtectedPolicy.HELPER_ONLY
         return policy_lookup(rel_path, registry, root=root)
 
-    def h22_result(command):
+    def h22_result(command, cwd=None):
         with redirect_stderr(StringIO()), patch.object(guard, "block", side_effect=SystemExit(2)):
             try:
-                guard._check_h22_state(command, fixture)
+                guard._check_h22_state(command, fixture, cwd)
                 return 0
             except SystemExit as exc:
                 return exc.code
@@ -262,6 +277,18 @@ def check_corrective_guard_cases(fixture):
             "Copy-Item -LiteralPath '.codearbiter/security-controls.md' -Destination $draft",
         ):
             check(h22_result(command) == 2, "copy target stays protected", command)
+        relative_from_docs = (
+            "Copy-Item -LiteralPath 'security-controls-draft.md' "
+            "-Destination '../.codearbiter/security-controls.md'"
+        )
+        check(h22_result(relative_from_docs, docs) == 2,
+              "relative copy target resolves from execution cwd", relative_from_docs)
+        check(guard._effective_command_cwd({"cwd": docs}, fixture) == docs,
+              "payload cwd selects copy base", docs)
+        check(guard._effective_command_cwd(
+            {"tool_name": "functions.exec", "cwd": fixture,
+             "tool_input": {"workdir": docs}}, fixture) == docs,
+            "explicit Codex workdir selects copy base", docs)
         alias = os.path.join(docs, "context-alias.md")
         try:
             os.symlink(context, alias)

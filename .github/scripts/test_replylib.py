@@ -203,6 +203,24 @@ class ShortCodeTest(unittest.TestCase):
         self.assertEqual(self.lib.expand("approve AAAA")["text"], f"approve SPEC-1 {TOKEN}")
         self.assertEqual(self.lib.expand("approve BBBB")["text"], f"approve SPEC-2 {TOKEN}")
 
+    def test_live_request_wins_when_a_retained_tombstone_reuses_its_code(self):
+        other = self.base / "other"
+        (other / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            retired = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        self.lib.retire_code(self.repo, "prerequisite", "SPEC-X")
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            live = self.lib.issue_code(
+                other, "prerequisite", "SPEC-Y", f"satisfy-prerequisite SPEC-Y {'z' * 32}",
+                names=["SPEC-Y"], short_prefix=["satisfy-prerequisite"])
+        self.assertEqual(retired["short_reply"], live["short_reply"])
+        self.assertEqual(
+            self.lib.expand(live["short_reply"]),
+            {"text": f"satisfy-prerequisite SPEC-Y {'z' * 32}", "notice": ""},
+        )
+
     def test_sprint_short_form_restates_the_armed_mode(self):
         full = f"approve-sprint SPEC-X PLAN-X delegate-methods {TOKEN}"
         issued = self.lib.issue_code(self.repo, "approval", "PLAN-X", full, names=["SPEC-X", "PLAN-X"],

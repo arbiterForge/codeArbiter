@@ -557,6 +557,7 @@ def expand(canonical: str) -> dict[str, str]:
         expected = candidates[0][0].get("short_reply")
         return {"text": canonical,
                 "notice": f"codeArbiter: reply code {code} was armed as `{expected}`; resend exactly that."}
+    exact.sort(key=lambda pair: not pair[1])
     value, alive = exact[0]
     if not alive and value.get("retired") is True:
         return {"text": canonical,

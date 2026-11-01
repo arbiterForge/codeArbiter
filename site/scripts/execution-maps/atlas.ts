@@ -222,22 +222,26 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
 });
 // The corrective handoff changes guard classification, state diagnostics,
 // authority handoffs and payload identity reporting without adding routes or
-// approval owners. Bind the complete reviewed owner set while preserving the
-// historical packet maps above as immutable evidence of their original source.
+// approval owners. The review follow-up keeps the same route geometry while
+// containing relative copies, rejecting executable rg options and ambiguous
+// here-strings, preferring live prerequisite replies, preserving selected
+// commit payloads, and making status fallback evidence explicit. Bind the
+// complete reviewed owner set while preserving the historical packet maps
+// above as immutable evidence of their original source.
 export const CORRECTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/artifacts/internal/operations/task_check.go':'2a7f3e5acaede42713122e44e18125135802fcd5',
   'core/artifacts/internal/operations/task_context.go':'f21963bf0274d8685995a6ea0640dd4a9b6101ca',
-  'core/pysrc/_bashguardlib.py':'a69a3bb341a78d1988448aa1b924d209d813014f',
-  'core/pysrc/_replylib.py':'339cbdc09b3c222d2b7e1a19a7f08c2ac1ea3ea3',
+  'core/pysrc/_bashguardlib.py':'0305675382ab4e786bda07c5df3d58e599c0d984',
+  'core/pysrc/_replylib.py':'7fac66715cce49faf1fbfe60a3da90f1e4367a6b',
   'core/surface/SPRINT.md':'fcbcfa95c8d05d80bd72d03d4fccb8cc68654048',
   'core/surface/agents/INDEX.md':'4e03630fe467a40aa55063496a341f8900a958c7',
   'core/surface/commands/doctor.md':'af1eb7cbb7dda70519b1294c2538af26494fe61a',
   'core/surface/commands/review.md':'2fadd4b755df269e8bd790b6106183da5ce8abc9',
-  'core/surface/commands/status.md':'da2611e402d681adb960f6e1d6798657d2521536',
+  'core/surface/commands/status.md':'2eb8ef670b33986008d6207246d8e52957965af0',
   'core/surface/includes/artifacts.md':'e38db59be8bdd1cbbb798c63528d6e781ed1dc48',
   'core/surface/includes/routing-table.md':'ff2b38c3a4d4f77564fcbe7269faf1e95a9b1d8c',
   'core/surface/skills/INDEX.md':'0bc0a30080231252bcf0b00b4fe565aba31d61b8',
-  'core/surface/skills/commit-gate/SKILL.md':'9bea4a81b421674396d7ad2d9c57d725b38f0e57',
+  'core/surface/skills/commit-gate/SKILL.md':'90fd2ecb95cf61213c4a8c20f99716a41136d03a',
   'core/surface/skills/executing-plans/SKILL.md':'6e456bf6612cb1acb531e1b767cb4a73d72854d4',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'203bf57f6ffb9cb155be29a362103101754219bd',
   'core/surface/skills/subagent-driven-development/SKILL.md':'3836c58d0658433064b161381334ec8dc38da6fd',

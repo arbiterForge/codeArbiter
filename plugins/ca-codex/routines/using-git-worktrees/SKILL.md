@@ -44,7 +44,11 @@ current base, under a dedicated parent directory outside the main working tree
 - Branch name MUST be unique and traceable to its unit's task ID.
 - Retain the integration owner, base, branch, path ownership and each worktree path in the existing handoff record; update `.codearbiter/.worktrees.json` where that scratch manifest is already supported. Do not introduce a mandatory new schema to make ordinary isolation possible.
 
-Gate: every unit has a distinct worktree on a distinct branch, all rooted at the same verified base and recorded for resumption. Preserve unrelated dirty paths by creating a new worktree rather than cleaning, resetting, stashing or overwriting them.
+Before provisioning, inventory dirty inputs relevant to each unit. A fresh worktree does not contain
+uncommitted caller bytes: reproduce and verify the exact relevant inputs in the assigned worktree,
+or stop until the caller resolves them. Preserve unrelated dirty paths by leaving them untouched.
+
+Gate: every unit has a distinct worktree on a distinct branch, all rooted at the same verified base and recorded for resumption. Every relevant dirty input is either reproduced and verified in its unit worktree or named as a stop; no cleaning, resetting, stashing or overwriting occurred.
 
 ## Phase 2 — Isolated work · gate: BLOCK
 
@@ -79,10 +83,16 @@ per-unit PR or finish was opened.
 
 ## Phase 4 — Cleanup handoff · gate: BLOCK
 
-Record which worktrees and branches remain after fold-back. Route any actual deletion through
-`post-merge-cleanup` and its fetched-containment proof and explicit confirmation naming each item.
-Do not auto-delete an integrated, unaccepted or abandoned unit merely to close this skill.
-Keep its handoff/manifest entry until the selected cleanup action succeeds.
+Record which worktrees and branches remain after fold-back. Integrated unit worktrees and branches
+remain retained by default: they have no per-unit merged PR, so `post-merge-cleanup` cannot prove
+them merged. This phase is their removal path only when all of the following hold: the recorded unit
+tip is an ancestor of the caller's consolidated working branch after fold-back; the unit worktree is
+clean with no unique untracked or stashed residue; and the existing explicit cleanup confirmation
+names both its path and branch. Then remove that exact worktree with `git worktree remove` and delete
+that exact branch with `git branch -d`; never use `-D`. If any proof or confirmation is absent, retain
+the unit and its handoff entry. Continue to route cleanup of the consolidated PR branch itself through
+`post-merge-cleanup`. Do not auto-delete an integrated, unaccepted or abandoned unit merely to close
+this skill.
 
 Gate: every remaining worktree is accounted for; no unreviewed work or user data is discarded.
 
