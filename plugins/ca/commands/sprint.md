@@ -7,6 +7,18 @@ argument-hint: "[goal] [--farm]"
 
 The user's requested sprint establishes its working scope. Use `brainstorming` to clarify genuinely missing outcomes, `writing-plans` to maintain a practical plan, and `subagent-driven-development` to execute through real task dependencies without per-batch permission questions. Record meaningful choices and honest evidence; do not invent approvals, clear user stops, or infer tests passed from progress labels.
 
+For each independently actionable deliverable, select or create one work ID
+through the installed `hooks/work.py` facade. Use an explicit ID or stable
+source origin to resume; title and command invocation are not identity. A
+single-outcome sprint may use one item. For several deliverables, set the same
+optional cycle key on each item with `work.py set-cycle`, or pass `--cycle-id`
+on creation. The cycle groups member work IDs; it does not copy their specs,
+plans, task states or checks into a second ledger. `work.py cycle-view
+<cycle-id>` is the derived group overview. Keep real spec/plan attachments on
+their selected member work item and report local progress, checks, PR delivery
+and provider effects independently. See `${CLAUDE_PLUGIN_ROOT}/includes/helper-invocation.md` for
+literal helper invocation and retry boundaries.
+
 ## Flow
 
 Load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`:

@@ -83,12 +83,16 @@ below remain in force for repositories that already opted in.
    state. Pass `--stage N` to set the initial maturity value (default `1`). Use `--check` to report
    state without creating anything.
 
-2. It creates `.codearbiter/` with: `CONTEXT.md` (`arbiter: enabled`, `stage: N`,
-   `context-format: html`, stub body), `open-tasks.md`, `done-tasks.md`, `open-questions.md`,
-   `overrides.log` (audit header), `last-checkpoint` (`0`) and a `.gitattributes` that keeps Git
-   from converting the line endings of native HTML artifacts. Narrative context is HTML knowledge
-   under `.codearbiter/context/` (see `<plugin-root>/includes/knowledge.md`); `--format markdown`
-   scaffolds the legacy Markdown documents instead.
+2. The default creates `.codearbiter/` with `CONTEXT.md` (`arbiter: enabled`,
+   `stage: N`, `context-format: html`, stub body), `open-questions.md`,
+   `overrides.log` (audit header), `last-checkpoint` (`0`) and `.gitattributes`
+   exact-byte rules. It does not create `open-tasks.md` or `done-tasks.md`.
+   The HTML knowledge population step creates the native portable work project
+   identity in the same transaction as the initialized marker. Until then,
+   native work creation refuses; do not create a placeholder task or board.
+   `--format markdown` retains the legacy Markdown documents and both task
+   boards. An existing HTML project with a legacy board stays legacy until
+   explicit adoption. See `<plugin-root>/includes/knowledge.md`.
 
 3. **Then route to the populator** — the stub is not yet usable:
    - **Source code already exists** in the repo → route to `/ca-create-context` (brownfield: bounded inspection and optional agents

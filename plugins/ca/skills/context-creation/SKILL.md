@@ -256,10 +256,12 @@ Do NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md`
 ## Phase 6 — Initialization lock · gate: BLOCK
 
 Run `knowledge.py initialize`. The engine checks that all five knowledge
-documents exist and parse and that the task board is well formed, then adds the
-standalone `<!--INITIALIZED-->` marker to `CONTEXT.md` in one journaled step.
+documents exist and parse. For a selected legacy owner it validates the task
+board; for a new native owner it creates the portable project ID. It writes the
+standalone `<!--INITIALIZED-->` marker to `CONTEXT.md` in the same journaled
+transaction as any new project identity.
 Unknown records and open questions do not prevent it. A refusal names the
-document or board to repair; never append the marker by hand.
+document or selected work owner to repair; never append the marker by hand.
 
 Report which categories were inspected, remaining unknowns, documents changed
 and actual checks. The marker records completed population; it is not a

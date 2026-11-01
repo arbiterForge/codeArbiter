@@ -7,6 +7,41 @@ argument-hint: "<what you want to build>"
 
 The feature entry maintains a useful spec and plan before full-lane implementation. The user request supplies the intended authorization; the artifact engine does not require another permission code. Check criteria and applicable tests before claiming completion.
 
+## Durable work outcome
+
+Use the installed `hooks/work.py` facade through `${CLAUDE_PLUGIN_ROOT}/includes/helper-invocation.md`
+from the intended project worktree. An actionable feature has one `WORK-ID`
+through authoring, implementation and delivery. If the request names a work ID,
+read `work.py context <WORK-ID>` first and retain its exact bindings. Never
+equate two outcomes by title. If selection is ambiguous, list the bounded
+candidates and ask for an exact ID before changing either item.
+
+For a full lane, resolve or create the canonical spec first. If an explicit
+`WORK-ID` was already selected, retain it and attach the actual spec ID there
+with `work.py attach <WORK-ID> --spec-id <SPEC-ID> --operation-id <stable-id>`.
+Otherwise search its stable origin with `work.py origins --origin
+feature-spec#<SPEC-ID>`. Reuse the returned work ID, or create once with
+`work.py create --title <outcome> --intent <outcome> --type feature --spec-id
+<SPEC-ID> --origin feature-spec#<SPEC-ID>` and a stable operation ID. A lost
+response is retried with the same operation ID or resolved by that exact
+origin; it is not a reason to create another item. Once the real
+plan exists, attach its `PLAN-ID` with `work.py attach <WORK-ID> --plan-id
+<PLAN-ID> --operation-id <stable-id>`. Recheck the selected work context after
+an uncertain attachment. A mismatched existing binding is a scoped conflict;
+do not hide it by opening another work item.
+
+For a small lane, keep the mini-spec inline. Create a work item when the
+authorized change becomes actionable, without creating an HTML spec or plan for
+bookkeeping. Use a durable external source key as `--origin` when one exists;
+otherwise retain and report the returned work ID for exact resume. On a later
+session, select that ID via `work.py list`/`get`, never a title-only match.
+Run `work.py view <WORK-ID> --save` after work changes and report its returned
+local page path. The page is a replaceable snapshot; the work record remains
+canonical. `work.py view <WORK-ID>` still prints HTML when a caller needs it.
+Local `complete` records implementation progress, not passing checks, PR merge,
+release or provider synchronization. Preserve the existing test, host, commit
+and PR boundaries.
+
 ## Structured-artifact boundary
 
 For new full-lane work or an existing `.html` spec/plan match, load

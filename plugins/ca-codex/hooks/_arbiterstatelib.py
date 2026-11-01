@@ -43,6 +43,7 @@
 
 import os
 import re
+import stat
 
 # #437 (mode-plane-deterministic-flip, T-51): the mode plane replaces the old
 # presence-only 'dev-active' marker this module used to read. Imported
@@ -161,7 +162,16 @@ def _arbiter_enabled(ctx_path, frontmatter_enabled=None, ctx_text=None):
 def native_work_selected(cad):
     """Mirror work.py's owner choice without starting the artifact engine."""
     work_dir = os.path.join(cad, "work")
-    if not os.path.isfile(os.path.join(cad, "open-tasks.md")):
+    board = os.path.join(cad, "open-tasks.md")
+    if os.path.lexists(board):
+        try:
+            info = os.lstat(board)
+        except OSError:
+            return True
+        if (not stat.S_ISREG(info.st_mode) or
+                getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)):
+            return True  # An unsafe board is never counted as healthy legacy work.
+    else:
         return os.path.lexists(work_dir)
     if not os.path.lexists(work_dir):
         return False

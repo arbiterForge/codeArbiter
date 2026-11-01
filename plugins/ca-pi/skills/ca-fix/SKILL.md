@@ -8,6 +8,26 @@ argument-hint: "<what's happening vs. what should happen>"
 
 The only permitted entry to bug-fix work. No fix code is written before a regression test reproduces the defect and goes red for the right reason. Give the observed behavior and the expected behavior, plus a stack trace or reproduction when you have one.
 
+## Work identity after confirmation
+
+Use the installed `hooks/work.py` facade through `<plugin-root>/includes/helper-invocation.md`
+from the selected worktree. A diagnosis, unresolved cause, `no_action` result
+or design question creates no work item. Once the caller has authorized an
+actionable repair and the regression is red for the right reason, select the
+explicit `WORK-ID` if supplied. Otherwise create one `--type fix` item with
+the observed symptom and expected behavior as its intent, using an exact
+durable source key as `--origin` when available. Retain the returned work ID
+through repair, verification and delivery. A second bug with the same title is
+distinct unless its exact ID or origin proves otherwise.
+
+On resume use `work.py context <WORK-ID>` and current evidence, not a new
+title match or transient debug attempt. Attach a real existing spec/plan only
+when the repair uses one. Keep root-cause citations and regression outcomes in
+their current owners. Refresh and report the local derived page with
+`work.py view <WORK-ID> --save`; it is a snapshot of canonical work.
+`work.py complete` means local implementation progress only. Unknown checks,
+PR delivery and provider effects remain separately reported.
+
 **Orientation:** if the code map is present (`.codearbiter/code-map.md`, or its HTML knowledge document), read it before diagnosing — a coarse concern→path→role map that helps locate the defect. Absent is fine; it is read-on-demand.
 
 For a confirmed bug, the author reads the current scoped map,

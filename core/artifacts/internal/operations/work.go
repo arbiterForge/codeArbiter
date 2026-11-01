@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
@@ -107,6 +108,9 @@ func (e *Engine) workCreate(r object) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := e.refuseLegacyWorkOwner(); err != nil {
+		return nil, err
+	}
 	projectAfter := projectBefore
 	if projectBefore != nil && model.S(r["origin"]) != "" {
 		prior, path, err := e.workByOrigin(model.S(r["origin"]), projectID)
@@ -126,9 +130,6 @@ func (e *Engine) workCreate(r object) (any, error) {
 				(currentPlan == "" || requestedPlan == "" || currentPlan == requestedPlan) &&
 				((currentSpec == "" && requestedSpec != "") || (currentPlan == "" && requestedPlan != ""))
 			if canRepair {
-				if err := e.refuseLegacyWorkOwner(); err != nil {
-					return nil, err
-				}
 				if requestedSpec == "" {
 					requestedSpec = currentSpec
 				}
@@ -175,10 +176,17 @@ func (e *Engine) workCreate(r object) (any, error) {
 			return out, nil
 		}
 	}
-	if err := e.refuseLegacyWorkOwner(); err != nil {
-		return nil, err
-	}
 	if projectID == "" {
+		// A newly enrolled HTML project gains its portable identity in the same
+		// transaction as the initialized marker. Its first work item must wait
+		// for that boundary, including in a clone of an incomplete scaffold.
+		ctx, readErr := e.FS.Read(contextPath, canonical.MaxBytes)
+		if readErr == nil && contextdocument.IsHTMLFormat(ctx) {
+			return nil, fault.At("PROJECT_NOT_INITIALIZED", "", projectPath, "initialize HTML knowledge before creating native work")
+		}
+		if readErr != nil && !os.IsNotExist(readErr) {
+			return nil, readErr
+		}
 		entries, err := e.FS.List(".codearbiter/work")
 		if err != nil && !os.IsNotExist(err) {
 			return nil, err

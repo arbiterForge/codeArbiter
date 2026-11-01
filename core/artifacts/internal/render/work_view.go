@@ -117,6 +117,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		}
 	}
 	w.WriteString(`<!doctype html>
+<!-- codeArbiter derived work view; regenerate from canonical work with work.py view --save -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>`)
 	w.WriteString(esc(data.Title) + ` · codeArbiter work</title><style>`)
 	w.Write(CSS())

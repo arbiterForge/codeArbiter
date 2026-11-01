@@ -163,10 +163,11 @@ Preserve
 
 ## 5. Initialize and return to work
 
-Run `knowledge.py initialize`. It checks that the knowledge documents exist and
-parse and that the task board is well formed, then adds the standalone
-`<!--INITIALIZED-->` marker to `CONTEXT.md`. Open questions do not prevent it.
-A refusal names the document to repair; never append the marker manually.
+Run `knowledge.py initialize`. It checks that the five knowledge documents
+exist and parse. A selected legacy board is validated; a new native owner gets
+its portable project ID in the same transaction as the standalone
+`<!--INITIALIZED-->` marker. Open questions do not prevent it. A refusal names
+the document or work owner to repair; never append the marker manually.
 
 Report the populated context, open questions and any actual checks, then continue
 authorized work. Initialization records population; it does not certify host

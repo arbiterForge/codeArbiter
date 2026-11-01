@@ -67,9 +67,10 @@ func (e *Engine) knowledgeContext(r object, budget int) (any, error) {
 	return out, nil
 }
 
-// knowledgeInitialize records that a converted repository's knowledge is
-// structurally available. It checks the documents parse and the boards are
-// present; it does not require answered questions, sources or run commands.
+// knowledgeInitialize records that HTML knowledge is structurally available.
+// It verifies the selected work owner and creates a portable project identity
+// with the marker for a new native project. It does not require answered
+// questions, sources or run commands.
 func (e *Engine) knowledgeInitialize(r object) (any, error) {
 	before, err := e.FS.Read(contextPath, canonical.MaxBytes)
 	if err != nil {
@@ -97,19 +98,66 @@ func (e *Engine) knowledgeInitialize(r object) (any, error) {
 			return nil, fault.At("INVALID_CONTEXT_OUTPUT", knowledgeID(doc.slug), "", "knowledge document is absent; create it, even empty, before initializing")
 		}
 	}
-	board, err := e.FS.Read(".codearbiter/open-tasks.md", canonical.MaxBytes)
+	projectID, _, err := e.projectIdentity()
 	if err != nil {
-		return nil, fault.New("INVALID_CONTEXT_OUTPUT", "task board is absent")
-	}
-	if err := contextdocument.ValidateBoard(board); err != nil {
 		return nil, err
+	}
+	nativeNew := false
+	if projectID != "" {
+		if err := e.refuseLegacyWorkOwner(); err != nil {
+			return nil, err
+		}
+	} else {
+		board, err := e.FS.Read(".codearbiter/open-tasks.md", canonical.MaxBytes)
+		if err == nil {
+			if err := contextdocument.ValidateBoard(board); err != nil {
+				return nil, err
+			}
+			entries, listErr := e.FS.List(".codearbiter/work")
+			if listErr != nil && !os.IsNotExist(listErr) {
+				return nil, listErr
+			}
+			if len(entries) != 0 {
+				return nil, fault.At("LEGACY_CONFLICT", "", projectPath, "legacy task board and native work state both exist")
+			}
+		} else if os.IsNotExist(err) {
+			entries, listErr := e.FS.List(".codearbiter/work")
+			if listErr != nil && !os.IsNotExist(listErr) {
+				return nil, listErr
+			}
+			if len(entries) != 0 {
+				return nil, fault.At("INVALID_PROJECT", "", projectPath, "work files exist without a portable project identity")
+			}
+			nativeNew = true
+		} else {
+			return nil, err
+		}
 	}
 	after, err := contextdocument.MarkerInsert(before)
 	if err != nil {
 		return nil, err
 	}
+	edits := []store.Edit{{Path: contextPath, Before: before, After: after}}
 	result := map[string]any{"target_path": contextPath, "document_sha256": canonical.BytesHash(after), "mode": "knowledge-initialize"}
-	o, err := e.FS.Commit(model.S(r["operation_id"]), e.RequestHash, []store.Edit{{Path: contextPath, Before: before, After: after}}, result)
+	if projectID != "" {
+		result["project_id"] = projectID
+	}
+	if nativeNew {
+		projectID, err = newOpaqueID("PROJECT-")
+		if err != nil {
+			return nil, err
+		}
+		projectAfter, err := canonical.Marshal(object{"format": "codearbiter.project", "version": int64(1), "owner": "native", "project_id": projectID})
+		if err != nil {
+			return nil, err
+		}
+		if err := e.FS.Mkdir(".codearbiter/work"); err != nil {
+			return nil, err
+		}
+		edits = append(edits, store.Edit{Path: projectPath, Before: nil, After: projectAfter})
+		result["project_id"] = projectID
+	}
+	o, err := e.FS.Commit(model.S(r["operation_id"]), e.RequestHash, edits, result)
 	if err != nil {
 		return nil, err
 	}

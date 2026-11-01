@@ -129,6 +129,8 @@ FILES = {
     "overrides.log": OVERRIDES,
     "last-checkpoint": "0\n",
 }
+NATIVE_FILES = {name: body for name, body in FILES.items()
+                if name not in {"open-tasks.md", "done-tasks.md"}}
 
 
 def project_root(opt):
@@ -158,16 +160,50 @@ def _regular_scaffold_entry(path, *, directory):
                             else stat.S_ISREG(info.st_mode))
 
 
-def _scaffold_inventory(cad, ctx, requested_stage):
+def _scaffold_inventory(cad, ctx, requested_stage, requested_format):
     """Return absent scaffold names only when surviving state is safe to retain."""
-    names = ("CONTEXT.md", *FILES)
     if os.path.lexists(cad) and not _regular_scaffold_entry(cad, directory=True):
         raise SystemExit(f"REFUSING: {cad} is not a regular project-state directory.")
-    present = {name for name in names if os.path.lexists(os.path.join(cad, name))}
+    present = {name for name in ("CONTEXT.md", *FILES)
+               if os.path.lexists(os.path.join(cad, name))}
+    if "done-tasks.md" in present and "open-tasks.md" not in present:
+        raise SystemExit("REFUSING: legacy archive exists without its selected task board.")
+    # A retained board owns work regardless of context format. Once CONTEXT.md
+    # exists its format owns partial recovery; --format only chooses a new root.
+    selected_format = requested_format
+    if "CONTEXT.md" not in present and "open-tasks.md" in present:
+        selected_format = "markdown"  # An old partial board keeps its legacy format.
+    if "CONTEXT.md" in present:
+        if not _regular_scaffold_entry(ctx, directory=False):
+            raise SystemExit(f"REFUSING: {ctx} is not a regular scaffold file.")
+        try:
+            with open(ctx, encoding="utf-8") as handle:
+                body = handle.read()
+        except (OSError, UnicodeError) as exc:
+            raise SystemExit(f"REFUSING: cannot inspect {ctx}: {exc}") from None
+        lines = body.splitlines()
+        boundary = next((index for index, line in enumerate(lines[1:], 1)
+                         if line.strip() == "---"), None)
+        formats = ([line.strip() for line in lines[1:boundary]
+                    if line.strip().startswith("context-format:")]
+                   if lines and lines[0].strip() == "---" and boundary is not None else [])
+        if len(formats) > 1 or formats and formats[0] != "context-format: html":
+            raise SystemExit(f"REFUSING: {ctx} has an unsupported context format.")
+        selected_format = "html" if formats else "markdown"
+    work_dir = os.path.join(cad, "work")
+    if os.path.lexists(work_dir):
+        if not _regular_scaffold_entry(work_dir, directory=True):
+            raise SystemExit(f"REFUSING: {work_dir} is not a regular work directory.")
+        with os.scandir(work_dir) as entries:
+            has_work = next(entries, None) is not None
+        if has_work:
+            raise SystemExit("REFUSING: native work state already exists; inspect ownership and recovery before scaffolding.")
+    selected_files = FILES if selected_format == "markdown" or "open-tasks.md" in present else NATIVE_FILES
+    names = ("CONTEXT.md", *selected_files)
     if not present:
         if os.path.isdir(cad) and os.listdir(cad):
             raise SystemExit(f"REFUSING: {cad} has existing state without a scaffold; inspect it first.")
-        return list(names), False
+        return list(names), False, selected_files, selected_format
     for name in present:
         path = os.path.join(cad, name)
         if not _regular_scaffold_entry(path, directory=False):
@@ -216,7 +252,7 @@ def _scaffold_inventory(cad, ctx, requested_stage):
             valid = False
         if not valid:
             raise SystemExit("REFUSING: last-checkpoint is malformed; preserve it for review.")
-    return [name for name in names if name not in present], True
+    return [name for name in names if name not in present], True, selected_files, selected_format
 
 
 def _create_scaffold_file(path, content, *, newline=None):
@@ -393,7 +429,7 @@ def main(argv=None):
         print("work Git attributes: " + _repair_work_attributes(cad))
         return
 
-    absent, recovering = _scaffold_inventory(cad, ctx, requested_stage)
+    absent, recovering, selected_files, selected_format = _scaffold_inventory(cad, ctx, requested_stage, args.format)
     if recovering and not absent:
         raise SystemExit(
             f"REFUSING: {ctx} already exists. .codearbiter/ is already scaffolded here. "
@@ -411,9 +447,9 @@ def main(argv=None):
     if "CONTEXT.md" in absent:
         _create_scaffold_file(ctx, CONTEXT.format(
             stage=args.stage, name=name, create_context=_cc, decompose=_dc,
-            format_line="context-format: html\n" if args.format == "html" else ""))
+            format_line="context-format: html\n" if selected_format == "html" else ""))
         created.append("CONTEXT.md")
-    for fname, content in FILES.items():
+    for fname, content in selected_files.items():
         if fname in absent:
             # Match taskwrite's LF output for this shared append-only template
             # on Windows too; other scaffold files retain their existing EOLs.
