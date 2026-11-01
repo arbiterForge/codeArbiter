@@ -85,6 +85,17 @@ describe("parseTopicMap", () => {
     expect(() => parseTopicMap({ "guides/alpha": [1] })).toThrow(/"guides\/alpha"/);
     expect(parseTopicMap({ "guides/alpha": ["F01-one"] })).toEqual({ "guides/alpha": ["F01-one"] });
   });
+
+  it("keeps a JSON \"__proto__\" key as an entry so validation names it", () => {
+    // JSON.parse makes "__proto__" an own property. On a plain object, assigning it would replace
+    // the prototype instead, and an unknown page would pass validation unseen.
+    const raw: unknown = JSON.parse(
+      '{"__proto__": ["F01-one"], "guides/alpha": ["F01-one"], "concepts/beta": ["F02-two"]}',
+    );
+    const map = parseTopicMap(raw);
+    expect(Object.keys(map)).toContain("__proto__");
+    expect(() => validateTopicMap(map, lessons, pages)).toThrow(/unknown guide or concept page "__proto__"/);
+  });
 });
 
 describe("loadTopicMap", () => {

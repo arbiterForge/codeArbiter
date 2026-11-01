@@ -37,7 +37,9 @@ export function parseTopicMap(raw: unknown): TopicMap {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     throw new Error("Topic map must be an object of page slugs to lesson ID lists");
   }
-  const map: TopicMap = {};
+  // No prototype: a JSON "__proto__" key is an own property, and on a plain object assigning it
+  // would replace the prototype and hide the entry from validation.
+  const map: TopicMap = Object.create(null);
   for (const [slug, ids] of Object.entries(raw)) {
     if (!Array.isArray(ids) || ids.some((id) => typeof id !== "string")) {
       throw new Error(`Topic map entry "${slug}" must be a list of lesson ID strings`);
