@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.1] - 2026-11-01
+
+### Added
+
+- Add opt-in tracker coordination for native work transitions, with explicit GitHub Issue and Project synchronization after a verified merge.
+
 ## [3.8.0] - 2026-10-31
 
 ### Added

@@ -275,7 +275,9 @@ func (e *Engine) stageMappedIssue(next *model.Document, coordination object) err
 	if model.S(current["binding_generation"]) != generation ||
 		model.I(current["remote_issue_number"]) < 1 || model.S(current["remote_issue_url"]) == "" {
 		if model.S(current["kind"]) == "create_issue" && model.S(current["status"]) == "pending" {
-			coordination["predecessor_issue_intent_id"] = current["intent_id"]
+			if intentID := model.S(current["intent_id"]); intentID != "" {
+				coordination["predecessor_issue_intent_id"] = intentID
+			}
 		}
 		coordination["issue_status"] = "waiting_binding"
 		return nil

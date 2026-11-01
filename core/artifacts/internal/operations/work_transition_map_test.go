@@ -200,9 +200,9 @@ func TestTrackerCoordinationT03NullTargetRetiresOnlyUnsentIssue(t *testing.T) {
 		"remote_issue_number": int64(42), "remote_issue_url": "https://github.com/example/repo/issues/42", "remote_state": "closed"})
 	call("work-transition-map-configure", object{"operation_id": "tracker-null-map-001", "enabled": true,
 		"issue_generation": provider["binding_generation"], "actions": object{
-			"start": object{"issue_state": "open", "project_option_id": nil},
+			"start":    object{"issue_state": "open", "project_option_id": nil},
 			"complete": object{"issue_state": nil, "project_option_id": nil},
-			"reopen": object{"issue_state": "open", "project_option_id": nil},
+			"reopen":   object{"issue_state": "open", "project_option_id": nil},
 		}})
 	started := call("work-update", object{"operation_id": "tracker-null-start-001", "work_id": work["work_id"], "action": "start", "expected": expected(bound)})
 	if model.S(model.M(started["provider_effect"])["status"]) != "pending" {
@@ -325,9 +325,9 @@ func TestTrackerCoordinationT02MalformedOptionalMapKeepsLocalProgress(t *testing
 	malformed, err := canonical.Marshal(object{"format": "codearbiter.work-transition-map", "version": int64(1),
 		"enabled": true, "project_id": work["project_id"], "issue_generation": strings.Repeat("a", 64),
 		"project_generation": int64(1), "project_field_id": nil, "actions": object{
-			"start": object{"issue_state": nil, "project_option_id": nil},
+			"start":    object{"issue_state": nil, "project_option_id": nil},
 			"complete": object{"issue_state": "closed", "project_option_id": nil},
-			"reopen": object{"issue_state": nil, "project_option_id": nil},
+			"reopen":   object{"issue_state": nil, "project_option_id": nil},
 		}})
 	if err != nil {
 		t.Fatal(err)
@@ -358,5 +358,64 @@ func TestTrackerCoordinationT02MalformedOptionalMapKeepsLocalProgress(t *testing
 		"action": "complete", "expected": object{"revision": third["revision"], "model_sha256": third["model_sha256"]}})
 	if complete["state"] != "complete" || model.S(model.M(complete["coordination"])["issue_status"]) != "unavailable" {
 		t.Fatalf("large optional map read limit denied local progress: %+v", complete)
+	}
+}
+
+func TestTrackerCoordinationLegacyPendingCreateWithoutIntentKeepsLocalProgress(t *testing.T) {
+	root := testutil.Root(t)
+	call := func(op string, fields object) object {
+		t.Helper()
+		fields["protocol"] = Protocol
+		got, err := Run(root, op, fields)
+		if err != nil {
+			t.Fatalf("%s: %v", op, err)
+		}
+		return got.(map[string]any)
+	}
+	call("init-store", object{})
+	work := call("work-create", object{"operation_id": "legacy-intent-work-001", "title": "Legacy pending issue",
+		"intent": "Complete locally", "work_type": "fix"})
+	provider := call("work-provider-configure", object{"operation_id": "legacy-intent-provider-001",
+		"repository": "example/repo", "credential_ref": "GH_TOKEN", "effect_timing": "after_merge"})
+	staged := call("work-effect-stage", object{"operation_id": "legacy-intent-stage-001", "work_id": work["work_id"],
+		"binding_generation": provider["binding_generation"],
+		"expected":           object{"revision": work["revision"], "model_sha256": work["model_sha256"]}})
+	path := filepath.Join(root, filepath.FromSlash(workPath(model.S(work["work_id"]))))
+	body, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy, err := render.Parse(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	delete(model.M(model.M(legacy.Data["execution"])["provider_effect"]), "intent_id")
+	legacy, err = render.Prepare(legacy.Data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, err = render.Render(legacy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, body, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	call("work-transition-map-configure", object{"operation_id": "legacy-intent-map-001", "enabled": true,
+		"issue_generation": provider["binding_generation"], "actions": object{
+			"start":    object{"issue_state": nil, "project_option_id": nil},
+			"complete": object{"issue_state": "closed", "project_option_id": nil},
+			"reopen":   object{"issue_state": "open", "project_option_id": nil},
+		}})
+	current := call("work-get", object{"work_id": work["work_id"]})
+	if current["revision"] != staged["revision"] {
+		t.Fatal("historical effect changed its revision")
+	}
+	completed := call("work-update", object{"operation_id": "legacy-intent-complete-001", "work_id": work["work_id"],
+		"action": "complete", "expected": object{"revision": current["revision"], "model_sha256": current["model_sha256"]}})
+	coordination := model.M(completed["coordination"])
+	if completed["state"] != "complete" || coordination["issue_status"] != "waiting_binding" ||
+		coordination["predecessor_issue_intent_id"] != nil {
+		t.Fatalf("legacy pending issue blocked local completion or invented intent lineage: %+v", completed)
 	}
 }

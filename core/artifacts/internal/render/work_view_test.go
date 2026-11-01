@@ -86,3 +86,20 @@ func TestWorkViewLinksOnlyExactGithubWorkURLs(t *testing.T) {
 		t.Fatal("unverified provider text became a navigation target")
 	}
 }
+
+func TestWorkViewPausedMappingDoesNotInventDisabledCause(t *testing.T) {
+	view, err := WorkView(WorkViewData{
+		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+		Title: "Mapped work", Intent: "Keep the issue synchronized", WorkType: "fix",
+		State: "complete", CheckStatus: "unknown", CoordinationSendStatus: "paused",
+		CoordinationIssueStatus: "paused",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(view), "because the transition map is disabled") ||
+		!strings.Contains(string(view), "transition map and provider bindings are checked") ||
+		!strings.Contains(string(view), "work.py transition-map-get") {
+		t.Fatal("paused mapping view asserted one cause when the binding may have changed")
+	}
+}

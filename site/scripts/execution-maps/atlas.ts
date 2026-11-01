@@ -208,6 +208,18 @@ export const NATIVE_FIRST_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fr
   'core/surface/skills/executing-plans/SKILL.md':'4d39e29928191462bc5af3af45646f39281906fe',
   'core/surface/skills/writing-plans/SKILL.md':'111e5e41743c4fa28df86c0e298dc2eed6c63a20',
 });
+// The tracker coordination change adds opt-in native mapping to existing work
+// owners. Their route and approval ownership stays the same; bind the reviewed
+// current blobs so the Atlas does not claim older source text is current.
+export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/artifacts/internal/operations/protocol.go':'44be324492ab1db2fea30e46308001c059b8192e',
+  'core/pysrc/_artifactlib.py':'d724140df90601c934c8f246906c71a9aba609f3',
+  'core/surface/commands/feature.md':'56e585ffcec80cab51db58835be4be6b830477ed',
+  'core/surface/commands/fix.md':'fd27e64c05bbf408a123163940441d3165161426',
+  'core/surface/commands/sprint.md':'38b3ada6685e031fbdc623081b86463c27976112',
+  'core/surface/commands/task.md':'417e2944dbda8d3df35acb57a41cfbe63a0500f6',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'93ee13d53363db93970b6ea0c26245a333a908f7',
+});
 // H-05, H-11 and H-18 read a `sed` as a read only when its options and visible
 // script cannot write. The shared shell guard changes what it refuses, not
 // where; the recovery, read and proof routes that cite it keep their geometry.
@@ -352,7 +364,7 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);
@@ -378,7 +390,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
   // Retain the historical assistive packet while checking later work-system
   // owner changes against their separately reviewed current blobs.
-  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??blob);
   for(const command of atlas.commands) {
     if(RETIRED_COMMANDS[command.name]) {
       const owner=commandMetadata(command.name,historical);

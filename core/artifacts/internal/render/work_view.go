@@ -129,8 +129,8 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		obstacle = "The saved transition mapping needs repair or explicit rebinding."
 		next = "Inspect the map and bound provider identities before another send."
 	} else if data.CoordinationSendStatus == "paused" || data.CoordinationIssueStatus == "paused" || data.CoordinationProjectStatus == "paused" {
-		obstacle = "Mapped tracker effects are paused because the transition map is disabled."
-		next = "Inspect the pending mapped effects before explicitly resuming or cancelling them."
+		obstacle = "Mapped tracker sends are paused until the transition map and provider bindings are checked."
+		next = "Run work.py transition-map-get and inspect the pending effects before explicitly resuming or cancelling them."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."
