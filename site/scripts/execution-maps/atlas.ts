@@ -199,13 +199,13 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
 export const NATIVE_FIRST_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/pysrc/init-codearbiter.py':'40a841ce804efc29ace2abe75fe4c2989b9131b8',
   'core/surface/SPRINT.md':'f5eea338a7a053d6dbaff0f9332dcfe9bf5f82e7',
-  'core/surface/commands/feature.md':'88946372f0306bebbe8103339273435f4f7e182e',
-  'core/surface/commands/fix.md':'cea5998051b22c52bfddfc81812792091ed838d5',
+  'core/surface/commands/feature.md':'6a5fcbc7469ac82a2586ff3ae168d7c0fa5fd907',
+  'core/surface/commands/fix.md':'e81d7a9190b160d248aa7ea322b272cb8fa5badc',
   'core/surface/commands/init.md':'d6247fa1f33c84a56fc7ba29f1b55176e3f1b45f',
   'core/surface/commands/sprint.md':'806c91354eb02a9d6bbfecd8afad778477ec153d',
   'core/surface/skills/context-creation/SKILL.md':'130632a148a0120cd6f9099e7a73225c475bc080',
   'core/surface/skills/decompose/SKILL.md':'47da223845bf3da00acef20b5959fb6abb96f55b',
-  'core/surface/skills/executing-plans/SKILL.md':'38a42fddfdb46a4e474f1b6eb12c69b4ca7f21de',
+  'core/surface/skills/executing-plans/SKILL.md':'4d39e29928191462bc5af3af45646f39281906fe',
   'core/surface/skills/writing-plans/SKILL.md':'111e5e41743c4fa28df86c0e298dc2eed6c63a20',
 });
 // H-05, H-11 and H-18 read a `sed` as a read only when its options and visible

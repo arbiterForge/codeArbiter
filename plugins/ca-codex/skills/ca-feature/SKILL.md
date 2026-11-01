@@ -34,11 +34,13 @@ do not hide it by opening another work item.
 For a small lane, keep the mini-spec inline. Create a work item when the
 authorized change becomes actionable, without creating an HTML spec or plan for
 bookkeeping. Use a durable external source key as `--origin` when one exists;
-otherwise retain and report the returned work ID for exact resume. On a later
+otherwise pass a stable `--operation-id` and reuse it for an uncertain retry.
+Retain and report the returned work ID for exact resume. On a later
 session, select that ID via `work.py list`/`get`, never a title-only match.
-Run `work.py view <WORK-ID> --save` after work changes and report its returned
+For native-owned work, run `work.py view <WORK-ID> --save` after changes and report its returned
 local page path. The page is a replaceable snapshot; the work record remains
-canonical. `work.py view <WORK-ID>` still prints HTML when a caller needs it.
+canonical. `work.py view <WORK-ID>` still prints HTML when a native caller needs it.
+Legacy board work has no native derived view; use its selected board owner.
 Local `complete` records implementation progress, not passing checks, PR merge,
 release or provider synchronization. Preserve the existing test, host, commit
 and PR boundaries.

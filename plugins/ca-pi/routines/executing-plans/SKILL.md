@@ -8,10 +8,11 @@ disable-model-invocation: true
 
 Coordinate implementation of an already-authorized `/feature` plan. The spec/plan is a **maintained working agreement**, not an additional permission system. This coordinator schedules work and reports progress; `subagent-driven-development` owns implementation and scoped checks.
 Keep the feature caller's selected `WORK-ID` through batches and restarts. Read
-its current context when resuming and refresh its derived overview with
-`work.py view <WORK-ID> --save`, reporting the returned local path
+its current context when resuming. For native-owned work, refresh its derived
+overview with `work.py view <WORK-ID> --save`, reporting the returned local path
 with task and check results. Plan task IDs stay with the plan; do not mint a new
-work item for every task or checkpoint. The work item's local completion is
+work item for every task or checkpoint. Legacy board work has no native derived
+view; use its selected board owner. The work item's local completion is
 separate from checks, review and PR delivery.
 
 ## Structured-artifact format boundary
