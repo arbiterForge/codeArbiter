@@ -12,7 +12,7 @@ journey:
 
 `.codearbiter/` is codeArbiter's project-state store: a root-level directory, outside `.claude/`,
 so it survives even if the plugin itself is uninstalled. It holds the project's own record (its
-spec, task board, decisions, and audit trail), separate from the plugin code that reads and
+spec, selected work state, decisions, and audit trail), separate from the plugin code that reads and
 writes it. `/ca:init` scaffolds it; `/ca:create-context` (existing codebase) or `/ca:decompose`
 (greenfield) populates it. Its presence and content is the plugin's actual contract with your
 repo: if you want to know what codeArbiter knows about your project, or what it will do next,
@@ -37,6 +37,12 @@ carries `context-format: html` for them. Repositories scaffolded earlier keep th
 documents and [`.provenance/` records](/codearbiter-directory/files/#provenance) until their owner converts them explicitly
 with `knowledge.py convert`, agent-recorded content, a mapping from every returned section to saved records or notes, and `convert --finish <token> --coverage @checklist.json`. In both formats `CONTEXT.md` owns activation and stage, and the scope
 blocks in `security-controls.md` stay the operative migration, CI and deploy configuration.
+
+New HTML scaffolds have no legacy work board. Knowledge initialization creates
+`work/project.json` together with the initialized marker, so clones share one
+project ID before either creates its first work item. Explicit `--format markdown`
+scaffolds the legacy boards; an existing HTML project with a board remains
+legacy-owned until its selected adoption.
 
 ## Project plans are not feature execution plans
 
@@ -66,7 +72,8 @@ review, progress and recovery boundaries.
 | `.gitattributes` | `/ca:init` (HTML format) and `knowledge.py convert --finish` | Git | Keep it: it stops line-ending conversion of native HTML artifacts |
 | `open-tasks.md` (legacy owner) | `/ca:task` through `taskwrite.py` | selected work facade, statusline, `SessionStart` | No: guarded to the legacy writer (hook `H-22`) |
 | `done-tasks.md` (legacy owner) | `/ca:standup`'s selected archival sweep | legacy history, read on demand | No: guarded (hook `H-22`, append-only) |
-| `work/project.json`, `work/*.html` (native owner) | `work.py` through the native engine | selected work calls and derived views | No: use stable Work IDs and native operations |
+| `work/project.json`, `work/*.html` (native owner) | HTML knowledge initialization creates the project ID; `work.py` creates and updates items through the native engine | selected work calls and derived views | No: use stable Work IDs and native operations |
+| `views/work/*.html` (derived) | `work.py view <WORK-ID> --save` | browser, local review | Regenerate after work changes; never edit as canonical state |
 | `work/provider.json` | `work.py provider-configure` | explicit GitHub sync | No: finite provider binding; no credential value is stored |
 | `work/project-provider.json` | `work.py project-configure` | optional GitHub Projects item and single-select effects | No: binds to the issue provider; no credential value is stored |
 | `legacy/open-tasks.md`, `legacy/done-tasks.md` | selected journaled work adoption | historical byte-exact snapshots | No: retained originals, not writable boards |

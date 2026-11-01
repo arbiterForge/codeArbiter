@@ -10,7 +10,7 @@ and durable project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 3.7.2" src="https://img.shields.io/badge/version-3.7.2-2b7489">
+<img alt="version 3.8.0" src="https://img.shields.io/badge/version-3.8.0-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-17-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
@@ -261,10 +261,12 @@ The project record lives beside the code:
 ```text
 .codearbiter/
 ├── CONTEXT.md             activation, vocabulary, maturity, current objective
-├── tech-stack.md          approved technologies and versions
-├── coding-standards.md    implementation and verification rules
-├── security-controls.md   security contract reviewers evaluate
-├── open-tasks.md          durable task board
+├── context/               native HTML knowledge (new default)
+├── work/                  portable project ID and native work items (new default)
+├── tech-stack.md          legacy Markdown knowledge
+├── coding-standards.md    legacy Markdown knowledge
+├── security-controls.md   security policy; scope blocks persist after conversion
+├── open-tasks.md          legacy work board (existing or explicit Markdown)
 ├── open-questions.md      unresolved [CONFIRM-NN] decisions
 ├── decisions/             numbered ADRs
 ├── specs/ and plans/      approved intent and execution

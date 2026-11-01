@@ -1296,7 +1296,9 @@ class TestPartialOnboardingRecovery(unittest.TestCase):
     def _init(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
-            initializer.main(["--root", str(self.root)])
+            # This fixture exercises the retained legacy board and archive
+            # recovery path, which now needs an explicit Markdown enrollment.
+            initializer.main(["--root", str(self.root), "--format", "markdown"])
         return out.getvalue()
 
     def _snapshot(self):

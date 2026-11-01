@@ -833,7 +833,7 @@ class DoneTasksShapeTest(unittest.TestCase):
                     self.assertEqual(result.returncode, 0, result.stderr)
                 initialized = subprocess.run(
                     [sys.executable, "-B", str(hooks / "init-codearbiter.py"),
-                     "--root", str(fresh)], cwd=fresh, env=env,
+                     "--root", str(fresh), "--format", "markdown"], cwd=fresh, env=env,
                     capture_output=True, timeout=30)
                 self.assertEqual(initialized.returncode, 0, initialized.stderr)
                 scaffold = (fresh / ".codearbiter/done-tasks.md").read_bytes()

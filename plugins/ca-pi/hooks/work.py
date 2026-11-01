@@ -12,7 +12,10 @@ import argparse
 import hashlib
 import json
 import os
+import re
+import stat
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _artifactlib  # noqa: E402
@@ -26,6 +29,12 @@ def _client(root):
 
 def _selected_client(root):
     board = os.path.join(root, ".codearbiter", "open-tasks.md")
+    if os.path.lexists(board):
+        info = os.lstat(board)
+        reparse = getattr(info, "st_file_attributes", 0) & getattr(
+            stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        if reparse or not stat.S_ISREG(info.st_mode):
+            raise ValueError("legacy work board is not a regular file; preserve it for inspection")
     if os.path.isfile(board):
         work_dir = os.path.join(root, ".codearbiter", "work")
         if os.path.lexists(work_dir):
@@ -65,8 +74,9 @@ def _parser():
     context.add_argument("--legacy-offset", type=int, help="Read the next page of an adopted task's original details")
     context.add_argument("--path", action="append", help="Select knowledge relevant to this work path")
     context.add_argument("--knowledge-ref", action="append", help="Select an exact knowledge record even without a path")
-    view = sub.add_parser("view", help="Print an inert HTML overview of selected native work")
+    view = sub.add_parser("view", help="Print or save an inert HTML overview of selected native work")
     view.add_argument("work_id")
+    view.add_argument("--save", action="store_true", help="Refresh a derived local HTML page and print its path")
     listing = sub.add_parser("list", help="Page through active and archived local work")
     listing.add_argument("--offset", type=int, default=0)
     listing.add_argument("--limit", type=int, default=32)
@@ -353,6 +363,53 @@ def _dispatch_request(payload, client):
     return client.call(operation, payload["request"])
 
 
+_DERIVED_VIEW_MARKER = "<!-- codeArbiter derived work view; regenerate from canonical work with work.py view --save -->"
+
+
+def _save_derived_view(root, result):
+    """Materialize one replaceable snapshot without changing canonical work."""
+    view_path = result["view_path"]
+    if (not isinstance(view_path, str) or
+            re.fullmatch(r"\.codearbiter/views/work/WORK-[A-Za-z0-9-]+\.html", view_path) is None or
+            view_path != f'.codearbiter/views/work/{result["work_id"]}.html'):
+        raise ValueError("native work view returned an unsafe path")
+    html = result["html"]
+    if not isinstance(html, str) or not html.startswith("<!doctype html>\n" + _DERIVED_VIEW_MARKER):
+        raise ValueError("native work view is not a recognized derived page")
+    directory = root
+    for part in (".codearbiter", "views", "work"):
+        directory = os.path.join(directory, part)
+        if not os.path.lexists(directory):
+            os.mkdir(directory)
+        info = os.lstat(directory)
+        if (not stat.S_ISDIR(info.st_mode) or
+                getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)):
+            raise ValueError(f"derived view directory is unsafe: {directory}")
+    target = os.path.join(directory, os.path.basename(view_path))
+    if os.path.lexists(target):
+        info = os.lstat(target)
+        if (not stat.S_ISREG(info.st_mode) or
+                getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)):
+            raise ValueError(f"derived view target is unsafe: {target}")
+        with open(target, encoding="utf-8") as handle:
+            if not handle.read(512).startswith("<!doctype html>\n" + _DERIVED_VIEW_MARKER):
+                raise ValueError(f"derived view target has unrecognized content: {target}")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", newline="\n", dir=directory,
+                                         prefix=".work-view-", suffix=".tmp", delete=False) as handle:
+            temporary = handle.name
+            handle.write(html)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, target)
+        temporary = None
+    finally:
+        if temporary is not None and os.path.exists(temporary):
+            os.unlink(temporary)
+    return {key: result[key] for key in ("work_id", "revision", "model_sha256", "view_path", "canonical")}
+
+
 def main(argv=None):
     utf8_stdio()
     try:
@@ -364,8 +421,12 @@ def main(argv=None):
             result = _dispatch_request(json.loads(raw), _selected_client(project_root()))
         else:
             args = _parser().parse_args(argv)
-            result = _dispatch(args, _selected_client(project_root()))
-            raw_view = args.verb in ("view", "project-view", "cycle-view")
+            root = project_root()
+            result = _dispatch(args, _selected_client(root))
+            if args.verb == "view" and args.save:
+                result = _save_derived_view(root, result)
+            else:
+                raw_view = args.verb in ("view", "project-view", "cycle-view")
     except _artifactlib.ArtifactError as exc:
         print(json.dumps({"ok": False, "code": exc.code, "error": str(exc)}))
         return 1

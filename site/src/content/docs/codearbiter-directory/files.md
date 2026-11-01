@@ -38,6 +38,9 @@ The body needs an `<!--INITIALIZED-->` marker before the file counts as populate
 checks for it: present with source code in the repo but the marker absent routes to
 `/ca:create-context`; absent with no source routes to `/ca:decompose`. Once the marker and
 frontmatter are both in place, the orchestrator persona loads on every session in this repo.
+For a new HTML project, native knowledge initialization writes this marker and
+`work/project.json` together, establishing one portable project ID before the first work item.
+The default scaffold has no legacy task board; `--format markdown` creates legacy boards.
 
 <figure class="ca-diagram">
   <img

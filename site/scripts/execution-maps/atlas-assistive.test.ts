@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beforeAll,describe,expect,it} from 'vitest';
-import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,SED_READ_SOURCE_BLOBS,WORK_SYSTEM_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
+import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,SED_READ_SOURCE_BLOBS,WORK_SYSTEM_SOURCE_BLOBS,NATIVE_FIRST_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
 import {geometryRecord,REVIEWED_AT,validateAtlas} from './atlas-model';
 import {nodeDetails,renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 
@@ -25,7 +25,7 @@ describe('assistive candidate versus retained historical routes',()=>{
     });
     let offset=0;
     for(const change of update.changes) {
-      const later=SED_READ_SOURCE_BLOBS[change.path]??WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
+      const later=NATIVE_FIRST_SOURCE_BLOBS[change.path]??SED_READ_SOURCE_BLOBS[change.path]??WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
         ??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)
         ??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');

@@ -451,7 +451,7 @@ else must match.
 |---|------|--------------|------------------------|
 | O1 | Surface discovery | Open the catalog: `COMMANDS.md` in the installed plugin | The full command catalog is listed. Every generated entry resolves; `prune` and `statusline` are absent on Codex **by design** (§6) |
 | O2 | Dormant diagnosis | Invoke `$ca-doctor` / `/ca:doctor` | Reports the repo is dormant and points at the host-native init spelling (`$ca-init` on Codex, `/ca:init` on Claude — the `cmd_ref` runtime seam, M3/D6) |
-| O3 | Opt in | Invoke `$ca-init` / `/ca:init` | `.codearbiter/` scaffolded: stub `CONTEXT.md` (`arbiter: enabled`, no init sentinel), `open-tasks.md`, `open-questions.md`, `overrides.log`, `last-checkpoint`; routes you toward the populator |
+| O3 | Opt in | Invoke `$ca-init` / `/ca:init` | `.codearbiter/` scaffolded: stub HTML `CONTEXT.md` (`arbiter: enabled`, no init sentinel), `open-questions.md`, `overrides.log`, `last-checkpoint`, and exact-byte Git attributes, with no legacy work board; routes you toward the populator. Explicit `--format markdown` keeps the legacy boards. |
 | O4 | Activation | Restart the session in the same directory | The `=== codeArbiter startup state ===` banner now injects, reports **NOT INITIALIZED**, and routes to `$ca-decompose` / `$ca-create-context` |
 | O5 | Enforcement live | Repeat scenario A: edit the fresh `CONTEXT.md` to `arbiter: disabled` | **BLOCKED** (H-18) — the store the user just created is already protected |
 | O6 | Baseline still clean | Repeat scenario G: append a line to `src/hello.txt` | **ALLOWED** — onboarding must not leave the repo over-gated |

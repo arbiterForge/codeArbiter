@@ -143,6 +143,14 @@ LEGACY_FORMAT_REFERENCE_SHA256['create-context'] = (
     '29e913606d90480243f89ef70e1e6a44d4518e01b90e04c7e843689eca8a00d3',
 )
 
+# Native-first initialization updates the default scaffold and the HTML
+# population instructions. Keep their complete bodies pinned at this revision.
+EXPECTED_DEFAULT_BODY_SHA256['init'] = '421380674cfd31081e78df5d2e2d37d867124a0a3851a19bc0d3884c820dff97'
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': 'b745c628b409c0625b650c8ac67be43893b307e6ceb42aa417d7d8c1b4493ab6',
+    'decompose': '494371267c4d544ea7d6c2b4743af5912e57d32e2c58b8934621b449bd238ad7',
+})
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:

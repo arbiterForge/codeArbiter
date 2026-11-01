@@ -6,8 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-10-31
+
 ### Added
 
+- Start new HTML projects with a portable native work identity at knowledge
+  initialization; keep explicit Markdown and existing legacy boards selected.
+- Retain stable work IDs through feature, fix and sprint work, and refresh a
+  selected local overview with `work.py view <WORK-ID> --save`.
 - Stage and reconcile explicit GitHub issue status updates for bound native work,
   with readback and a recorded conflict when the observed remote status changes.
 - Adopt an existing correlated GitHub issue without creating a duplicate.

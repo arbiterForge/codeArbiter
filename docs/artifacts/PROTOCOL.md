@@ -290,8 +290,12 @@ The host helper `hooks/knowledge.py` wraps these for skills; see
 
 ## Local work items (initial slice)
 
-`work-create` mints an opaque `WORK-` identity and, for a new native project,
-an opaque portable `PROJECT-` identity in `.codearbiter/work/project.json`.
+For a new HTML/native project, `knowledge-initialize` writes the initialized
+marker and an opaque portable `PROJECT-` identity in
+`.codearbiter/work/project.json` in one journaled transaction, before any work
+item exists. Independent clones of that initialized commit share the project
+identity. `work-create` then mints a distinct opaque `WORK-` identity and
+refuses an HTML scaffold that has not completed knowledge initialization.
 The project identity and each work HTML file are canonical tracked state;
 `.codearbiter/.artifacts` remains the local journal, not the only copy of the
 backlog. A repository with a legacy `open-tasks.md` still uses that board as its
@@ -425,11 +429,13 @@ reported check without treating that report as verified evidence. Progress,
 checks, delivery and tracker sync remain separate; unknown
 check or delivery state is never inferred from completion. The overview has no
 canonical model container, is not stored by the engine and is rejected by
-`render.Parse`. `hooks/work.py view <WORK-ID>` prints the HTML to stdout. The
-response also provides `view_path: .codearbiter/views/work/<WORK-ID>.html`;
-saving the HTML there makes its relative spec and plan links valid. This
-derived location stays outside canonical artifact discovery. The command does
-not write a second work owner or scan unrelated artifacts. Native
+`render.Parse`. `hooks/work.py view <WORK-ID>` prints the HTML to stdout;
+`hooks/work.py view <WORK-ID> --save` atomically refreshes its derived local
+page at `.codearbiter/views/work/<WORK-ID>.html` and prints that path. It
+refuses to replace unrecognized content at the target. The page's relative
+spec and plan links work at that path. The derived page stays outside canonical
+artifact discovery and is refreshed after work changes. Neither form writes a
+second work owner or scans unrelated artifacts. Native
 `project-view` renders one bounded `work-list` page as an inert project work
 overview. It shows local progress and checks separately, directs delivery and
 tracker state to each work item, and links to the existing

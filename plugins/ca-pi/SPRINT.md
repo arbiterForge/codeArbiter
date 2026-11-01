@@ -4,6 +4,15 @@
 
 The user's sprint request authorizes the agreed work. Build and maintain its spec and plan, then execute **without a second artifact approval system**. Make ordinary in-scope method decisions, record meaningful deviations, verify outcomes, and report real blockers. Do not make the user repeatedly certify prerequisites or evidence identities.
 
+Keep one `WORK-ID` per actionable deliverable through restarts. Select an
+existing exact ID or stable origin before creating another item through the
+installed `hooks/work.py` facade. A cycle key groups multiple member IDs via
+`set-cycle`; `cycle-view` is derived, with no second writable task ledger.
+Single-outcome sprints may keep one work item. Attach only real spec and plan
+identities to their owning work item and report the selected work or cycle view
+as the human entry point. Local completion never certifies checks, PR delivery
+or provider synchronization.
+
 ## Representation and resume
 
 For new full sprint work or an existing HTML spec/plan, load `<plugin-root>/includes/artifacts.md` and use `_select_authoring_route` with the trusted root, slug, `workflow: sprint`, `lane: full`. New complete sprint artifacts default to canonical HTML through the pinned native writer. An existing Markdown pair remains Markdown; a complete same-extension spec/plan pair is authoritative. A mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format, and the next plan must use the same extension. Do not create, rename, or convert a counterpart to repair ambiguity.
