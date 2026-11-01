@@ -1,5 +1,8 @@
 ---
 import ArbiterIcon, { type ArbiterIconName } from "./ArbiterIcon.astro";
+import topicMap from "../data/topic-map.json";
+import { academyLessons } from "../generated/academy-content";
+import { lessonIdsForPage } from "../../scripts/topic-map";
 
 interface Props {
   level: "Foundation" | "Practitioner" | "Power user" | "Reference" | "Labs" | "Academy";
@@ -23,6 +26,16 @@ const iconByLevel: Record<Props["level"], ArbiterIconName> = {
   Labs: "forge",
   Academy: "forge",
 };
+
+// A guide or concept page lists the Academy lessons that practice it. The same map links each
+// lesson back to this page (scripts/topic-map.ts, scripts/generate-academy.ts).
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pageId = Astro.locals.starlightRoute?.id ?? "";
+const practice = lessonIdsForPage(topicMap, pageId).map((lessonId) => {
+  const lesson = academyLessons.find((item) => item.id === lessonId);
+  if (!lesson) throw new Error(`Topic map names unknown Academy lesson ${lessonId} for ${pageId}`);
+  return { href: `${base}/academy/${lessonId.toLowerCase()}/`, label: `${lessonId.split("-")[0]}: ${lesson.guide.title}` };
+});
 ---
 
 <!-- One line by default (DOCS-OVERHAUL M4): level, time and outcome. Prerequisites
@@ -35,6 +48,19 @@ const iconByLevel: Record<Props["level"], ArbiterIconName> = {
     </span>
     <span class="ca-page-context__outcome"><strong>Outcome:</strong> {outcome}</span>
   </p>
+  {
+    practice.length > 0 && (
+      <p class="ca-page-context__practice">
+        <strong>Practice in Arbiter Academy:</strong>{" "}
+        {practice.map((lesson, index) => (
+          <>
+            {index > 0 && " · "}
+            <a href={lesson.href}>{lesson.label}</a>
+          </>
+        ))}
+      </p>
+    )
+  }
   {
     (prerequisites.length > 0 || proof) && (
       <details class="ca-page-context__more">

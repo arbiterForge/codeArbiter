@@ -501,6 +501,17 @@ details.ca-source pre {
   color: var(--ca-ink-soft);
 }
 
+/* Guides and concepts that Academy lessons practice link to those lessons. */
+.ca-page-context .ca-page-context__practice {
+  margin-block-start: var(--ca-space-2);
+  color: var(--ca-ink-soft);
+}
+
+.ca-page-context__practice a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .ca-page-context .ca-page-context__more {
   margin-block-start: var(--ca-space-2);
   padding: 0;

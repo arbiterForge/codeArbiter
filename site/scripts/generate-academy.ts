@@ -1,5 +1,6 @@
 import type { AcademySource } from "./academy-source";
 import { academyTracks, buildAcademyWayfinding } from "./academy-wayfinding";
+import type { TopicPage } from "./topic-map";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -146,8 +147,26 @@ function renderIndex(source: AcademySource): string {
   ].join("\n");
 }
 
-/** Render a lesson with authored next-lab links and curriculum reading position. */
-function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknown, guides: ParsedGuide[]): string {
+/** Escape the characters that would end a Markdown link label or open MDX syntax. */
+function linkLabel(value: string): string {
+  return value.replace(/[\\[\]<>{}*_`]/g, "\\$&");
+}
+
+/** One plain line pointing a lesson back to the guide or concept pages it practices. */
+function renderTopicLinks(pages: readonly TopicPage[]): string[] {
+  if (pages.length === 0) return [];
+  const links = pages.map((page) => `[${linkLabel(page.title)}](${page.href}) (${page.kind})`);
+  return [`**Read alongside this lesson:** ${links.join(" · ")}`, ""];
+}
+
+/** Render a lesson with authored next-lab links, curriculum reading position and its guide links. */
+function renderLesson(
+  source: AcademySource,
+  guide: ParsedGuide,
+  actions: unknown,
+  guides: ParsedGuide[],
+  topicPages: readonly TopicPage[] = [],
+): string {
   const place = buildAcademyWayfinding(guides).find(item => item.id === guide.id)!;
   /** Produce frontmatter pagination without inventing a successor for the final lesson. */
   const pagination = (direction: "prev" | "next", id: string | null) => id === null
@@ -176,6 +195,7 @@ function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknow
     "",
     `<AcademyWayfinding labId=${yamlString(guide.id)} />`,
     "",
+    ...renderTopicLinks(topicPages),
     `<AcademyCommandPreferences labId=${yamlString(guide.id)} />`,
     "",
     renderGuideMarkdown(guide, actions),
@@ -228,11 +248,16 @@ function renderTypedContent(source: AcademySource, guides: ParsedGuide[]): strin
     `export const academyLessons = academyContent.lessons;\n`;
 }
 
-/** Generate source-backed Academy lessons, track overviews, and sidebar entries. */
+/** Generate source-backed Academy lessons, track overviews, and sidebar entries.
+ *
+ * When `topics` is supplied (lesson ID to the guide and concept pages it practices), each lesson
+ * page links to those pages and a lesson the map leaves out fails generation. Omitting it renders
+ * no guide links, which keeps fixture-sized sources usable in tests. */
 export function generateAcademy(
   source: AcademySource,
   docsRoot: string,
   generatedRoot: string,
+  topics?: ReadonlyMap<string, readonly TopicPage[]>,
 ): AcademyGenerationResult {
   const guides = source.lessons.map((lesson) => {
     const guide = parseGuide(lesson.guide);
@@ -248,6 +273,13 @@ export function generateAcademy(
     }
   }
   buildAcademyWayfinding(guides);
+  if (topics) {
+    for (const guide of guides) {
+      if (!topics.get(guide.id)?.length) {
+        throw new Error(`Topic map has no guide or concept page for lesson "${guide.id}"`);
+      }
+    }
+  }
   const academyRoot = join(docsRoot, "academy");
   rmSync(academyRoot, { force: true, recursive: true });
   mkdirSync(academyRoot, { recursive: true });
@@ -255,7 +287,7 @@ export function generateAcademy(
 
   writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source));
   for (const [index, guide] of guides.entries()) {
-    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions, guides));
+    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions, guides, topics?.get(guide.id)));
   }
 
   const trackRoot = join(academyRoot, "tracks");
