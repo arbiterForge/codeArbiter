@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import ts from "typescript";
 
 const GOVERNANCE_TARGETS = ["ca", "ca-codex", "ca-pi"] as const;
 const DECLARED_TARGETS = new Set([...GOVERNANCE_TARGETS, "ca-sandbox"]);
@@ -14,6 +15,9 @@ const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.
 const COMMIT_SHA = /^[0-9a-f]{40}$/i;
 const NONZERO_LOWER_COMMIT_SHA = /^(?!0{40}$)[0-9a-f]{40}$/;
 const DIRECT_HOOK_SOURCE = "plugins/ca/hooks/pre-bash.py";
+/** Where ca-pi declares the exact Pi versions it accepts (#1071). */
+export const PI_COMPATIBILITY_SOURCE = "plugins/ca-pi/tools/src/compatibility.ts";
+const EXACT_VERSION = /^\d+\.\d+\.\d+$/;
 const DIRECT_HOOK_EVIDENCE_KIND = "direct-hook-invocation-rendered-replay";
 const ORIGINAL_LEDGER_PATH = ".github/published-tags.json";
 const LEDGER_NAMESPACES = ["v*", "ca-sandbox-v*", "ca-codex-v*", "ca-pi-v*"] as const;
@@ -62,8 +66,17 @@ export interface DirectHookReplayEvidence {
   sourceSha256: string;
 }
 
+/** The Pi versions the selected ca-pi tag accepts, read at that tag's commit. */
+export interface PublishedPiSupport {
+  target: "ca-pi";
+  tag: string;
+  publicationCommit: string;
+  path: string;
+  versions: string[];
+}
+
 export interface ReleaseApplicabilityRecord {
-  schemaVersion: 2;
+  schemaVersion: 3;
   evidenceBoundary: {
     claim: "release-and-build-identity";
     doesNotCertify: [
@@ -75,6 +88,7 @@ export interface ReleaseApplicabilityRecord {
   };
   build: DocumentationBuildIdentity;
   hosts: VerifiedGovernanceRelease[];
+  publishedPiSupport: PublishedPiSupport;
   proof: {
     claim: "direct-hook-replay-source-applicability";
     evidenceKind: string;
@@ -495,6 +509,54 @@ export function deriveVerifiedGovernanceReleases(
   });
 }
 
+/**
+ * The exact Pi versions in a ca-pi tag's `SUPPORTED_PI_VERSIONS`, sorted. The
+ * published install instructions pin that tag, so a promotion merged but not yet
+ * released must not change what they require.
+ */
+/**
+ * Parsed as TypeScript so a commented-out declaration is never mistaken for the
+ * one ca-pi enforces, and an array hole is an error rather than a skipped entry.
+ */
+function parsePublishedPiSupport(text: string, tag: string): string[] {
+  const where = `Published Pi compatibility for ${tag}`;
+  const source = ts.createSourceFile(PI_COMPATIBILITY_SOURCE, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const declarations: ts.VariableDeclaration[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === "SUPPORTED_PI_VERSIONS") {
+      declarations.push(node);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  if (declarations.length !== 1) {
+    throw new Error(
+      `${where}: expected exactly one SUPPORTED_PI_VERSIONS declaration, found ${declarations.length}`,
+    );
+  }
+  const initializer = declarations[0].initializer;
+  const list = initializer && ts.isNewExpression(initializer) && ts.isIdentifier(initializer.expression)
+    && initializer.expression.text === "Set" && initializer.arguments?.length === 1
+    ? initializer.arguments[0]
+    : undefined;
+  if (!list || !ts.isArrayLiteralExpression(list)) {
+    throw new Error(`${where}: SUPPORTED_PI_VERSIONS must be a new Set built from an array literal`);
+  }
+  if (list.elements.length === 0) throw new Error(`${where}: SUPPORTED_PI_VERSIONS is empty`);
+  const versions = list.elements.map((element) => {
+    if (ts.isOmittedExpression(element)) {
+      throw new Error(`${where}: SUPPORTED_PI_VERSIONS has an empty entry`);
+    }
+    if (!ts.isStringLiteral(element) || !EXACT_VERSION.test(element.text)) {
+      throw new Error(
+        `${where}: SUPPORTED_PI_VERSIONS entry ${element.getText(source)} is not an exact X.Y.Z version`,
+      );
+    }
+    return element.text;
+  });
+  return [...new Set(versions)].sort((left, right) => compareVersions(parseVersion(left)!, parseVersion(right)!));
+}
+
 export function resolveDocumentationBuildIdentity(
   git: ReleaseApplicabilityGit,
   environment: Readonly<Record<string, string | undefined>>,
@@ -573,6 +635,23 @@ export function createReleaseApplicabilityRecord({
     );
   }
 
+  const publishedPi = hosts[2];
+  let publishedPiSource: string;
+  try {
+    publishedPiSource = git.readAtCommit(publishedPi.publicationCommit, PI_COMPATIBILITY_SOURCE);
+  } catch {
+    throw new Error(
+      `Cannot read published Pi compatibility ${PI_COMPATIBILITY_SOURCE} for ${publishedPi.tag} from ${publishedPi.publicationCommit}`,
+    );
+  }
+  const publishedPiSupport: PublishedPiSupport = {
+    target: "ca-pi",
+    tag: publishedPi.tag,
+    publicationCommit: publishedPi.publicationCommit,
+    path: PI_COMPATIBILITY_SOURCE,
+    versions: parsePublishedPiSupport(publishedPiSource, publishedPi.tag),
+  };
+
   const replayDigest = proof.sourceSha256.toLowerCase();
   const currentDigest = sha256(currentHookSource);
   const publishedDigest = sha256(publishedHookSource);
@@ -585,7 +664,7 @@ export function createReleaseApplicabilityRecord({
       + `latest published ca artifact source ${publishedMatches ? "matches" : "does not match"}.`;
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     evidenceBoundary: {
       claim: "release-and-build-identity",
       doesNotCertify: [
@@ -601,6 +680,7 @@ export function createReleaseApplicabilityRecord({
       dirty: build.dirty,
     },
     hosts,
+    publishedPiSupport,
     proof: {
       claim: "direct-hook-replay-source-applicability",
       evidenceKind: proof.evidenceKind,
@@ -636,6 +716,11 @@ export function createReleaseApplicabilityRecord({
         kind: "published-hook-source",
         path: proof.source,
         commit: publishedCa.publicationCommit,
+      },
+      {
+        kind: "published-pi-compatibility",
+        path: PI_COMPATIBILITY_SOURCE,
+        commit: publishedPi.publicationCommit,
       },
     ],
   };

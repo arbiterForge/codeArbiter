@@ -1,5 +1,5 @@
 /** forge-status.test.ts — codeArbiter's site-side Feature Forge allowlist tests. */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { repositoryVersionFacts } from "../../scripts/version-facts";
 import {
   getCommandForgeStatus,
@@ -102,5 +102,25 @@ describe("FORGE_FEATURES (the catalog source)", () => {
   it("only command/flag features reach PREVIEW_COMMANDS (plugins are excluded from badging)", () => {
     const commandFeatures = FORGE_FEATURES.filter((f) => f.command).map((f) => f.command);
     expect(Object.keys(PREVIEW_COMMANDS).sort()).toEqual([...commandFeatures].sort());
+  });
+
+  // gen.ts imports this module (for the badges) before it writes the release
+  // record that pi.supported comes from; a fresh checkout has no record yet.
+  it("reads no version facts until a catalog requirement is rendered", async () => {
+    vi.resetModules();
+    vi.doMock("../../scripts/version-facts", () => ({
+      repositoryVersionFacts: () => {
+        throw new Error("version facts read before generation");
+      },
+    }));
+    try {
+      const fresh = await import("../../scripts/generator/forge-status");
+      expect(fresh.getCommandForgeStatus("prune")).toMatchObject({ kind: "preview-command" });
+      const pi = fresh.FORGE_FEATURES.find((f) => f.name.toLowerCase().includes("ca-pi"));
+      expect(() => pi?.requires).toThrow(/before generation/);
+    } finally {
+      vi.doUnmock("../../scripts/version-facts");
+      vi.resetModules();
+    }
   });
 });

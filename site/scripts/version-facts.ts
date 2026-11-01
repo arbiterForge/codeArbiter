@@ -100,9 +100,9 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
     facts[name] = { value, source };
   };
 
+  // pi.supported is what the published ca-pi tag accepts (#1071), so it comes
+  // from the release record below, not from this development tree.
   const piSource = read(SOURCES.piCompatibility);
-  const piSet = exactlyOne(piSource, /const SUPPORTED_PI_VERSIONS = new Set\(\[([^\]]*)\]\)/, "pi.supported", SOURCES.piCompatibility);
-  add("pi.supported", quotedList(piSet[1], "pi.supported", SOURCES.piCompatibility).join(" or "), SOURCES.piCompatibility);
 
   const piPackage = JSON.parse(read(SOURCES.piPackage)) as { engines?: { node?: unknown } };
   const nodeRange = piPackage.engines?.node;
@@ -182,10 +182,11 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
 
   add("ca.version", manifestVersion(read, SOURCES.caManifest, "ca.version"), SOURCES.caManifest);
 
-  // Latest published releases come from the generated release-applicability
-  // record (highest stable release tag per host). `npm run gen` writes it before
-  // any build; before generation it is absent, and a `release.*` token then
-  // fails as unknown. A present but unreadable record is an error, never absent.
+  // Latest published releases, and the Pi versions the latest ca-pi tag supports,
+  // come from the generated release-applicability record. `npm run gen` writes it
+  // before any build; before generation it is absent, and a `release.*` or
+  // `pi.supported` token then fails as unknown. A present but unreadable record
+  // is an error, never absent.
   let record: string | undefined;
   try {
     record = read(SOURCES.releaseRecord);
@@ -193,7 +194,10 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
     if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) throw error;
   }
   if (record !== undefined) {
-    const parsed = JSON.parse(record) as { hosts?: Array<{ target?: unknown; version?: unknown }> };
+    const parsed = JSON.parse(record) as {
+      hosts?: Array<{ target?: unknown; version?: unknown }>;
+      publishedPiSupport?: { versions?: unknown };
+    };
     if (!Array.isArray(parsed.hosts)) {
       throw new Error(`Version fact release.*: ${SOURCES.releaseRecord} has no hosts array`);
     }
@@ -203,6 +207,17 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
       }
       add(`release.${host.target}`, semver(host.version, `release.${host.target}`, SOURCES.releaseRecord), SOURCES.releaseRecord);
     }
+    const piVersions = parsed.publishedPiSupport?.versions;
+    if (!Array.isArray(piVersions) || piVersions.length === 0) {
+      throw new Error(`Version fact pi.supported: ${SOURCES.releaseRecord} has no publishedPiSupport versions`);
+    }
+    const piSupported = piVersions.map((version) => {
+      if (typeof version !== "string") {
+        throw new Error(`Version fact pi.supported: ${SOURCES.releaseRecord} has a non-string Pi version`);
+      }
+      return semver(version, "pi.supported", SOURCES.releaseRecord);
+    });
+    add("pi.supported", piSupported.join(" or "), SOURCES.releaseRecord);
   }
 
   return facts;

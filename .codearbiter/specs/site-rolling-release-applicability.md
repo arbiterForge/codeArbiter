@@ -3,7 +3,8 @@
 **State:** APPROVED
 **Approved by:** repository owner standing campaign authority recorded 2026-09-14, including autonomous issue disposition, continuous campaign execution, rolling host-version policy, and SMARTS-directed enforceability
 **Amended:** 2026-10-30 by the repository owner through `/ca:conflict` (option "Derive from tags"): ADR-0040 stopped new tags from requiring a receipt, so the receipt ledger lagged publication and the site presented ca 2.21.15 as latest after 3.6.0 shipped. "Current published" is now the highest stable release tag; receipt status is a separate field.
-**Governs:** site/scripts/release-applicability.ts, site/scripts/gen.ts, site/src/generated/release-applicability.json, site/src/pages/release-applicability.json.ts, site/src/components/ReleaseApplicability.astro, site/src/components/HookProof.astro, site/src/content/docs/getting-started/compatibility.mdx, site/test/release-applicability/**, site/test/landing/landing-page.test.ts, .github/workflows/docs.yml, .github/scripts/test_ci_impact.py
+**Amended:** 2026-10-31 by the repository owner (issue #1071, deferred from the #1070 review): the Pi page pins the published `ca-pi` tag, but its Pi prerequisite came from the development tree, so a merged but unreleased promotion could require a Pi version that tag rejects. The record now carries the Pi versions the selected `ca-pi` tag accepts (schema 3), and the published Pi prerequisite derives from it.
+**Governs:** site/scripts/release-applicability.ts, site/scripts/version-facts.ts, site/scripts/gen.ts, site/src/generated/release-applicability.json, site/src/pages/release-applicability.json.ts, site/src/components/ReleaseApplicability.astro, site/src/components/HookProof.astro, site/src/content/docs/getting-started/compatibility.mdx, site/test/release-applicability/**, site/test/landing/landing-page.test.ts, .github/workflows/docs.yml, .github/scripts/test_ci_impact.py
 
 ## Problem
 
@@ -23,6 +24,7 @@ A hand-authored table was rejected because it would recreate the drift this feat
 - Derive current published releases independently for the ca, ca-codex, and ca-pi governance hosts from the repository release declarations and the release tags in the checkout, and report each selected tag's original-publication receipt status separately.
 - Verify each selected tag against the manifest at the commit the tag peels to instead of substituting current development manifests.
 - Bind the existing direct-hook replay to both its current source bytes and the latest published ca artifact bytes.
+- Record the exact Pi versions the selected `ca-pi` tag accepts, read at that tag's commit, so the published Pi prerequisite matches the release the install instructions pin.
 - Render the results on the public compatibility and proof surfaces and expose the same record as machine-readable static JSON.
 - Make GitHub Pages rebuild when the publication receipt or release declaration changes or a release run completes, and fail when required release, historical manifest, build, or proof evidence is malformed or unavailable.
 - Preserve the existing support, maturity, trust, and evidence-boundary language.
@@ -34,6 +36,7 @@ Out of scope: live client-side GitHub API calls, a single portfolio version, new
 - The governed host set is exactly `ca`, `ca-codex`, and `ca-pi`; `ca-sandbox` is infrastructure rather than a governance host.
 - “Current published” means the highest stable SemVer release tag in the checkout for that target prefix (a longer declared prefix owns its own tags). Prereleases do not qualify, a malformed matching tag fails, and a host with no stable tag fails closed. Each host row also states whether that tag's original-publication receipt is `recorded` in `.github/published-tags.json` or `not-recorded`; a recorded receipt naming a different commit than the tag fails. The receipt status is never presented as a live tag audit, and a tag is never called a receipt.
 - Each selected tag must equal the `version` in its target's declared manifest at the commit the tag peels to. Current development manifests are never substituted.
+- The published Pi support is the `SUPPORTED_PI_VERSIONS` set in `plugins/ca-pi/tools/src/compatibility.ts` at the selected `ca-pi` tag's commit, parsed as TypeScript so a commented-out declaration does not count: exactly one declaration, a `new Set` of an array literal of quoted exact `X.Y.Z` versions, sorted, recorded as `publishedPiSupport` with that tag, commit and path, and listed as a `published-pi-compatibility` evidence source. A missing object, missing or duplicated declaration, non-array initializer, empty set, empty entry, or non-exact entry fails generation. The `pi.supported` version fact reads this field, never the development tree. It is a declared support set, not runtime certification.
 - GitHub Actions requires a valid 40-hex `GITHUB_SHA` equal to `HEAD`. Local generation records exact `HEAD` and whether tracked or untracked work makes the tree dirty.
 - The public record uses full commit identities. Rendered summaries may show 12 characters only when the link and accessible label retain the full SHA.
 - Proof applicability is a digest equality statement. A mismatch is rendered explicitly and never promoted to compatibility or host-registration evidence.
@@ -53,6 +56,7 @@ Out of scope: live client-side GitHub API calls, a single portfolio version, new
 7. `/release-applicability.json` returns the same generated record used by both rendered surfaces with `application/json; charset=utf-8`.
 8. The Pages workflow checks out full history for both validation and build and triggers on the publication receipt, the release-target declaration, and every completed release run on main, so a later independently versioned host publication cannot leave the deployed applicability surface stale.
 9. Focused derivation, rendering, workflow, and proof regressions fail first, then pass. The complete site tests, typecheck, build, link audit, stage-2 site coverage floor, repository CI-impact checks, independent review, exact-head PR CI, merge, exact-main Pages deployment, and live source/rendered checks pass without a product or adapter release.
+10. Generation records the Pi versions the selected `ca-pi` tag accepts, read at that tag's commit, and fails closed on an unreadable or malformed declaration; a change to `compatibility.ts` that has not been released leaves the published Pi prerequisite unchanged.
 
 ## Open questions
 
