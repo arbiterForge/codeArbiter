@@ -182,10 +182,11 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
 
   add("ca.version", manifestVersion(read, SOURCES.caManifest, "ca.version"), SOURCES.caManifest);
 
-  // Latest published releases come from the generated release-applicability
-  // record (highest stable release tag per host). `npm run gen` writes it before
-  // any build; before generation it is absent, and a `release.*` token then
-  // fails as unknown. A present but unreadable record is an error, never absent.
+  // Latest published releases, and the Pi versions the latest ca-pi tag supports,
+  // come from the generated release-applicability record. `npm run gen` writes it
+  // before any build; before generation it is absent, and a `release.*` or
+  // `pi.supported` token then fails as unknown. A present but unreadable record
+  // is an error, never absent.
   let record: string | undefined;
   try {
     record = read(SOURCES.releaseRecord);
