@@ -12,7 +12,7 @@ from threading import Thread
 import unittest
 from unittest import mock
 
-from test_artifact_authoring import build_installation
+from test_artifact_authoring import build_installation, physical_test_directory
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "core/pysrc"))
@@ -568,7 +568,7 @@ class GithubWorkTest(unittest.TestCase):
         config, _, _, transport = self._mapped_issue_after_merge()
         temp = tempfile.TemporaryDirectory(prefix="ca-work-other-clone-")
         self.addCleanup(temp.cleanup)
-        other = Path(temp.name) / "clone"
+        other = physical_test_directory(temp.name) / "clone"
         shutil.copytree(self.root, other)
         other_client = _artifactlib.ArtifactClient(other, self.installation)
         selected = other_client.call("work-get", {"work_id": self.work_id})
@@ -661,7 +661,7 @@ class GithubWorkTest(unittest.TestCase):
         transport.merged_work = (self.root / ".codearbiter/work" / (self.work_id + ".html")).read_bytes()
         temp = tempfile.TemporaryDirectory(prefix="ca-work-restaged-clone-")
         self.addCleanup(temp.cleanup)
-        other = Path(temp.name) / "clone"
+        other = physical_test_directory(temp.name) / "clone"
         shutil.copytree(self.root, other)
         other_client = _artifactlib.ArtifactClient(other, self.installation)
         selected = other_client.call("work-get", {"work_id": self.work_id})
