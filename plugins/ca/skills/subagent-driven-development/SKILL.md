@@ -13,6 +13,9 @@ Execute an existing plan. The plan helps the agent remember the intended result;
 Load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` for artifact I/O and preserve the selected spec/plan representation. For an explicitly selected Markdown `plan.json` farm workflow, follow `${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/references/farm-dispatch.md` and its provider, budget and circuit-breaker requirements.
 
 **Scope:** with an explicit `scope` from `executing-plans`, work only on the named tasks; without it, `/sprint` works across the plan. A checkpoint is an organizing group, not independent permission to do the next task.
+Keep the caller's requested outcome and covered delivery actions alongside
+the selected task identity. An author unit's completion does not finish a
+larger authorized outcome or grant a separate commit, merge or publication.
 
 ## 1. Orient and select actual work
 
@@ -40,6 +43,10 @@ For a `fact` prerequisite, check it with ordinary authorized tools and record th
 Record `task-start` when beginning a pending HTML task using the current revision/model hash and a durable operation ID. `task-start` does not need approval receipts, a complete context ticket, a source snapshot, or a reviewer. It cannot clear a recorded stop or start already-running work again.
 
 **After process recreation**, rediscover the same authoritative pair and query `identity` and `eligible` again. Inspect the current worktree, outstanding tool runs, and task results before deciding whether an `IN_PROGRESS` task is still active, partly finished, or ready. Use a reasoned `task-reconcile` to reflect known progress; do not duplicate execution or manufacture evidence. Resume a `BLOCKED` task only after its actual blocker or user's stop has been resolved. CAS/replay remain mandatory: on a lost response, check the journal or retry the same operation ID and identical request rather than reissuing a mutation under a new identity.
+Read the existing handoff's integration owner, base, shared-file ownership,
+branch/PR grouping and remaining obligations before redispatch. Preserve an
+explicit user combine/sequence choice; do not ask the same delivery question
+because another unit or branch is now active.
 
 ## 2. Implement or delegate the useful unit
 
@@ -87,6 +94,10 @@ report does not become successful because the task was marked `DONE`.
 The latest reported failure remains visible even after an older pass; fix
 only relevant work and record another actual result as appropriate. Avoid
 turning this bookkeeping into an extra testing or approval phase.
+For delegated commands, inspect accessible output and source/input identity.
+Reuse a still-applicable result under `${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`;
+rerun only missing, changed, insufficient or unresolved proof. An author's
+unsubstantiated success sentence is not a passing check.
 
 ## 4. Persist honest progress and return
 
@@ -96,6 +107,12 @@ For Markdown, keep its one task ledger and original format; do not treat past st
 
 - **Scoped invocation:** return completed tasks, checks actually run, unresolved issues, and next work to `executing-plans`. Do not call `commit-gate` yourself.
 - **Full-plan invocation:** provide the same honest summary to `/sprint`; it owns the authorized commit and PR handoff. A completed implementation batch with failing or unrun required checks is not release-ready.
+
+Before either return, compare the work with the caller's original outcome:
+which tasks and checks are actually complete, which defects remain, and what
+dependency-clean task can continue now. Report one finished slice accurately;
+under a scoped call return that next task to the coordinator, and under a
+full-plan call continue it without a routine user acknowledgement.
 
 ## Hard boundaries
 

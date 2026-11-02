@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.2] - 2026-11-01
+
+### Fixed
+
+- Classify approved runtime secret transport from the active security policy while retaining blocked sinks.
+- Correct literal-data, read-only search, copy-source, and index-only restore guard verdicts without admitting protected writes.
+- Keep ordinary alphanumeric prose out of approval-code capture unless its code is retained.
+- Preserve unresolved work failures in context and views, report executing payload identity, and carry scoped authority and review evidence through handoffs.
+
 ## [0.27.1] - 2026-11-01
 
 ### Added

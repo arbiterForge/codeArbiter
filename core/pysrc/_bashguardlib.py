@@ -1090,6 +1090,20 @@ def _effective_exec_root(payload, root):
     return exec_root
 
 
+def _effective_command_cwd(payload, root):
+    """Return the directory from which this command's relative paths run."""
+    data = payload if isinstance(payload, dict) else {}
+    tool_input = data.get("tool_input")
+    workdir = tool_input.get("workdir") if isinstance(tool_input, dict) else None
+    candidate = data.get("cwd")
+    if (data.get("tool_name") in _CODEX_EXPLICIT_WORKDIR_TOOLS
+            and isinstance(workdir, str) and os.path.isdir(workdir)):
+        candidate = workdir
+    if not isinstance(candidate, str) or not os.path.isdir(candidate):
+        return root
+    return os.path.abspath(candidate)
+
+
 # D-3 (spec pre-release-hardening, #223): the raw-`cmd` fallback below (used
 # when a heredoc is present) must fire ONLY when the heredoc body can
 # genuinely reach a shell — via EITHER of two independent routes, checked by
@@ -1625,6 +1639,33 @@ def _is_direct_taskwrite(cmd):
     return positional == 1
 
 
+def _index_only_restore(cmd):
+    """Recognize a literal index-only unstage, with no executable tail."""
+    return bool(re.fullmatch(
+        r"[ \t]*git(?:[ \t]+-C[ \t]+[\w./\\:-]+)?[ \t]+restore"
+        r"[ \t]+--staged[ \t]+--[ \t]+[\w./\\-]+"
+        r"(?:[ \t]+[\w./\\-]+)*[ \t]*", cmd, re.I))
+
+
+def _literal_copy_item_target(cmd, base):
+    """Resolve the effective target of one literal Copy-Item command."""
+    operand = r"(?:'[^'\r\n]+'|\"[^\"\r\n]+\"|[\w./\\:-]+)"
+    match = re.fullmatch(
+        r"[ \t]*Copy-Item[ \t]+-LiteralPath[ \t]+(?P<src>" + operand +
+        r")[ \t]+-Destination[ \t]+(?P<dst>" + operand + r")[ \t]*",
+        cmd, re.I)
+    if not match:
+        return None
+    source = match["src"].strip("'\"")
+    dest = match["dst"].strip("'\"")
+    if any(ch in source + dest for ch in "`$*?[]{};|&"):
+        return None
+    target = dest if os.path.isabs(dest) else os.path.join(base, dest)
+    if os.path.isdir(target):
+        target = os.path.join(target, os.path.basename(source.replace("\\", "/")))
+    return target
+
+
 def _check_h05_audit_log(cmd):
     """H-05: the audit trail is append-only — block truncation/removal of the
     audit logs via shell verbs (Write/Edit are guarded separately). The
@@ -1645,7 +1686,7 @@ def _check_h05_audit_log(cmd):
                      ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
     if enrolled_name and (
             LOG_TRUNC_RE.search(cmd) or _shell_write(cmd, LOG_DESTROY_RE)
-            or LOG_GIT_RESTORE_RE.search(cmd)
+            or LOG_GIT_RESTORE_RE.search(cmd) and not _index_only_restore(cmd)
             or _interp_protected_write(cmd, LOG_INTERP_RE, LOG_NAME_RE)
             and not _is_direct_taskwrite(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
@@ -1727,7 +1768,7 @@ def _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback):
                       "prohibited.")
 
 
-def _check_h22_state(cmd, root):
+def _check_h22_state(cmd, root, cwd=None):
     """H-22: the protected-state registry's shell flank (B-04/B1, #564).
     Walks the precompiled per-entry pairs (`_STATE_WRITE_RES`); a command
     that redirects into, or runs a write/delete verb against, a registered
@@ -1759,10 +1800,24 @@ def _check_h22_state(cmd, root):
     scans the unmodified command text; only the write-verb leg needs the
     strip, since `install` is the one verb in `_STATE_WRITE_VERBS` that is
     also a common package-manager subcommand."""
+    copy_base = cwd if isinstance(cwd, str) and os.path.isdir(cwd) else root
+    copy_target = _literal_copy_item_target(cmd, copy_base)
+    if copy_target is not None:
+        # A copy reads its source. Resolve the destination through the same
+        # raw/realpath classifier used by the Write/Edit flanks.
+        import _protectedlib
+        if "state" in _protectedlib.classify_protected(copy_target, root):
+            rel_path, policy = _protectedstatelib.resolve_registered_path(copy_target, root)
+            if policy == ProtectedPolicy.MARKER_GATED and marker_gated_write_admitted(rel_path, root):
+                return
+            block("H-22", f"'{rel_path}' is protected project state (policy={policy.value}) "
+                          "— direct shell replacement is prohibited; use the sanctioned helper.")
+        return
     verb_scan_cmd = _strip_pkg_manager_install(cmd)
     for rel_path, policy, redirect_re, write_re, git_restore_re, interp_re in _STATE_WRITE_RES:
         if not (redirect_re.search(cmd) or write_re.search(verb_scan_cmd)
-                or git_restore_re.search(cmd) or interp_re.search(cmd)):
+                or git_restore_re.search(cmd) and not _index_only_restore(cmd)
+                or interp_re.search(cmd)):
             continue
         if policy == ProtectedPolicy.MARKER_GATED and marker_gated_write_admitted(rel_path, root):
             continue
@@ -1778,7 +1833,8 @@ def _check_h22_state(cmd, root):
                           f"this policy. Use the sanctioned helper.")
     for rel_path, _policy, redirect_re, write_re, git_restore_re, interp_re in _CONTEXT_STATE_WRITE_RES:
         if not (redirect_re.search(cmd) or write_re.search(verb_scan_cmd)
-                or git_restore_re.search(cmd) or interp_re.search(cmd)):
+                or git_restore_re.search(cmd) and not _index_only_restore(cmd)
+                or interp_re.search(cmd)):
             continue
         if _protectedstatelib.lookup_policy(rel_path, root=root) == ProtectedPolicy.HELPER_ONLY:
             block("H-22", f"'{rel_path}' is protected context state — direct shell replacement "
@@ -2078,6 +2134,42 @@ def _debug_validation_command_view(cmd):
     return invocation
 
 
+def _literal_ps_here_string_view(cmd):
+    """Hide only the body of one complete, literal Set-Content here-string."""
+    text = cmd.replace("\r\n", "\n")
+    if re.search(r"\r|`|[\u2018-\u201b]", text):
+        return cmd
+    prefix = re.match(
+        r'''\A[ \t]*Set-Content[ \t]+-LiteralPath[ \t]+"\$env:TEMP\\[\w.-]+"'''
+        r"[ \t]+-Value[ \t]+@'\n", text, re.I)
+    if not prefix:
+        return cmd
+    body = text[prefix.end():]
+    closer = re.search(r"(?m)^'@[ \t]*$", body)
+    if not closer:
+        return cmd
+    if re.search(r"(?m)^'@", body[:closer.start()]):
+        return cmd
+    close_end = prefix.end() + closer.end()
+    if text[close_end:].strip():
+        return cmd
+    return text[:prefix.end()] + "[literal data]\n'@"
+
+
+def _read_only_rg_pattern_view(cmd):
+    """Mask a quoted rg search pattern in the observed read-only pipeline."""
+    path = r"(?!-)[\w./\\:-]+"
+    match = re.fullmatch(
+        r"[ \t]*Get-Content[ \t]+" + path +
+        r";[ \t]*rg[ \t]+-n[ \t]+'(?P<pattern>[^'\r\n]*)'"
+        r"[ \t]+" + path + r"(?:[ \t]+" + path + r")*"
+        r"[ \t]+2>\$null[ \t]*\|[ \t]*Select-Object[ \t]+-First[ \t]+[1-9][0-9]*[ \t]*",
+        cmd, re.I)
+    if not match:
+        return cmd
+    return cmd[:match.start("pattern")] + "literal-pattern" + cmd[match.end("pattern"):]
+
+
 def run_guards(payload, root, ti):
     """Run every H-NN gate against `ti` (the already host-normalized Bash/
     PowerShell tool_input — see pre-bash.py's `_run`, which resolves it via
@@ -2089,6 +2181,8 @@ def run_guards(payload, root, ti):
     gate, each still carrying its H-NN ID."""
     cmd = _debug_validation_command_view(ti.get("command", "") or "")
     cmd = _literal_python_read_view(cmd)
+    cmd = _literal_ps_here_string_view(cmd)
+    cmd = _read_only_rg_pattern_view(cmd)
 
     # Heredoc bodies are stdin text, not arguments — match the git command over
     # a body-stripped view so message content (which may contain `;`/`|`/`&`,
@@ -2163,7 +2257,7 @@ def run_guards(payload, root, ti):
     _check_h11_decisions(cmd)
     _check_h18_context_md(cmd)
     _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback)
-    _check_h22_state(cmd, root)
+    _check_h22_state(cmd, root, _effective_command_cwd(payload, root))
     _check_h09b_h10b_crypto_secret(commit, add, cwd, root)
     _check_h14_migration(commit, add, cwd, root)
 

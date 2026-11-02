@@ -151,7 +151,12 @@ describe('C04 distinct workflow routes', () => {
     expect(map.sources.pair.quote).toContain('recoverable native transaction');
     expect(read(map.sources.pair.path)).toContain(map.sources.pair.currentQuote!);
     expect(mapText('sprint')).toContain('not re-invoked');
-    expect(map.outcome).toContain('never merges');
+    expect(map.outcome).toContain('never infers merge');
+    const finish=nodes.find(node => node.id === 'sprint-finish')!;
+    expect(finish.detail).toContain('earlier same-scope merge grant');
+    expect(finish.detail).toContain('exact-head checks and review');
+    expect(finish.detail).toContain('Discard still needs named-branch confirmation');
+    expect(getWorkflow('sprint').endpoint).toContain('prior same-scope grant');
     expect(mapText('sprint')).toContain('HTML'); expect(mapText('sprint')).toContain('farm');
   });
   it('current sprint advice preserves ancestry, bounded delivery and proportional checks', () => {

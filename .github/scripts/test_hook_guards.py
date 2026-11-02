@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import hashlib
 from contextlib import redirect_stderr
 from io import StringIO
 from unittest.mock import patch
@@ -48,11 +49,11 @@ failures = []
 checks = 0
 
 
-def sh(args, cwd, **kw):
+def sh(args, cwd, *, env_overrides=None, **kw):
     # Pin CLAUDE_PROJECT_DIR to the fixture repo: project_root() trusts the
     # harness signal first, and a value leaking in from a live Claude session
     # would silently point every guard at the developer's real repo.
-    env = {**os.environ, "CLAUDE_PROJECT_DIR": cwd}
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": cwd, **(env_overrides or {})}
     return subprocess.run(args, cwd=cwd, capture_output=True, text=True,
                           encoding="utf-8", errors="replace", timeout=60,
                           env=env, **kw)
@@ -94,6 +95,231 @@ def expect_allow(fixture, command, label):
           f"  exit={r.returncode} stderr={r.stderr.strip()[:300]!r}")
 
 
+def enroll_context_target(fixture):
+    """Record one valid committed native context transaction for H-22."""
+    operation = "context01"
+    transaction = {
+        "format": "codearbiter.transaction/0.2.0",
+        "operation_id": operation,
+        "request_sha256": "a" * 64,
+        "state": "committed",
+        "entries": [
+            {"path": ".codearbiter/security-controls.md",
+             "stage": f".codearbiter/.ca-artifact-{operation}-0.new",
+             "backup": f".codearbiter/.artifacts/history/{operation}-0.before",
+             "before_sha256": "b" * 64, "after_sha256": "c" * 64, "size": 8},
+            {"path": ".codearbiter/.provenance/security-controls.json",
+             "stage": f".codearbiter/.provenance/.ca-artifact-{operation}-1.new",
+             "backup": f".codearbiter/.artifacts/history/{operation}-1.before",
+             "before_sha256": "d" * 64, "after_sha256": "e" * 64, "size": 8},
+        ],
+        "result": {"document_id": "security-controls",
+                   "target_path": ".codearbiter/security-controls.md",
+                   "document_sha256": "c" * 64,
+                   "provenance_sha256": "e" * 64,
+                   "mode": "update"},
+    }
+    directory = os.path.join(fixture, ".codearbiter", ".artifacts", "transactions")
+    os.makedirs(directory, exist_ok=True)
+    with open(os.path.join(directory, operation + ".json"), "w", encoding="utf-8") as out:
+        json.dump(transaction, out, sort_keys=True)
+
+
+def exercise_index_only_restore(fixture, label):
+    ledger = ".codearbiter/decisions/decision-log.md"
+    full = os.path.join(fixture, *ledger.split("/"))
+    with open(full, "a", encoding="utf-8") as out:
+        out.write("next\n")
+    git(["add", "--", ledger], fixture)
+    before = open(full, "rb").read()
+    before_hash = hashlib.sha256(before).hexdigest()
+    command = f"git restore --staged -- {ledger}"
+    for attempt in range(2):
+        expect_allow(fixture, command, f"{label} index-only restore attempt {attempt + 1}")
+        result = sh(["git", "restore", "--staged", "--", ledger], fixture)
+        check(result.returncode == 0, label, result.stderr)
+        staged = sh(["git", "diff", "--cached", "--name-only", "--", ledger], fixture)
+        check(staged.returncode == 0 and not staged.stdout.strip(), label,
+              "index entry remained staged")
+        after = open(full, "rb").read()
+        check(after == before and hashlib.sha256(after).hexdigest() == before_hash, label,
+              "worktree ledger bytes changed")
+
+
+def check_corrective_guard_cases(fixture):
+    """The four command shapes from the corrective packet, with write controls."""
+    body = ("Set-Content -LiteralPath \"$env:TEMP\\ca-pr-body.md\" -Value @'\n"
+            "See [ADR-0043](https://github.com/arbiterForge/codeArbiter/blob/main/"
+            ".codearbiter/decisions/0043-assistive-state-engine.md).\n'@")
+    expect_allow(fixture, body, "literal PR body is data")
+    expect_block(fixture, body + "; Set-Content .codearbiter/decisions/0001-seed.md x",
+                 "H-11", "literal body cannot hide following ADR write")
+    expect_block(
+        fixture,
+        "Set-Content -LiteralPath \"$env:TEMP\\ca-pr-body.md\" -Value @'\n"
+        "ordinary text\n\u2019@; Remove-Item .codearbiter/decisions/0001-seed.md; @'\n"
+        "more\n'@",
+        "H-11", "curly quote cannot close a masked literal body early",
+    )
+    expect_block(
+        fixture,
+        "Set-Content -LiteralPath \"$env:TEMP\\ca-pr-body.md\" -Value @'\n"
+        "ordinary text\n'@; Remove-Item .codearbiter/decisions/0001-seed.md; @'\n"
+        "more\n'@",
+        "H-11", "ASCII closer with an executable tail cannot be masked as literal data",
+    )
+    expect_block(fixture,
+                 "Set-Content -LiteralPath '.codearbiter/decisions/0001-seed.md' -Value @'\n"
+                 "ordinary text\n'@", "H-11", "protected Set-Content destination remains guarded")
+
+    for word in ("Node", "python", "ruby"):
+        query = ("Get-Content core/surface/agents/dependency-reviewer.md; rg -n "
+                 f"'dependenc|supply|license|Astro|setup-python|codeql|{word}' "
+                 ".codearbiter/security-controls.md .codearbiter/decisions "
+                 "2>$null | Select-Object -First 100")
+        expect_allow(fixture, query, f"read-only rg pattern containing {word}")
+    expect_block(
+        fixture,
+        "Get-Content core/surface/agents/dependency-reviewer.md; "
+        "rg -n 'Node' --pre ./tool.ps1 .codearbiter/decisions "
+        "2>$null | Select-Object -First 1",
+        "H-11", "rg executable options cannot enter the read-only grammar",
+    )
+    expect_block(fixture,
+                 "Get-Content core/surface/agents/dependency-reviewer.md; "
+                 "rg -n 'Node' .codearbiter/decisions | "
+                 "Set-Content .codearbiter/decisions/0001-seed.md",
+                 "H-11", "read-only prefix cannot hide a writing pipeline")
+
+    ledger = ".codearbiter/decisions/decision-log.md"
+    expect_allow(fixture, f"git restore --staged -- {ledger}",
+                 "index-only restore leaves audit worktree untouched")
+    for command in (f"git restore --worktree -- {ledger}",
+                    f"git restore -- {ledger}",
+                    f"git restore --staged --worktree -- {ledger}",
+                    f"git restore --staged -- {ledger}; rm {ledger}"):
+        expect_block(fixture, command, "H-05", f"worktree restore remains blocked: {command}")
+
+    # The committed native transaction activates H-22 through the packaged
+    # guard, rather than substituting a mocked policy lookup.
+    enroll_context_target(fixture)
+    docs = os.path.join(fixture, "docs")
+    os.makedirs(docs, exist_ok=True)
+    with open(os.path.join(docs, "security-controls.md"), "w", encoding="utf-8") as out:
+        out.write("draft fixture\n")
+    copy_command = ("Copy-Item -LiteralPath '.codearbiter/security-controls.md' "
+                    "-Destination 'docs/security-controls-draft.md'")
+    expect_allow(fixture, copy_command, "active protected copy source is read")
+    expect_block(fixture,
+                 "Copy-Item -LiteralPath 'docs/security-controls.md' "
+                 "-Destination '.codearbiter/security-controls.md'",
+                 "H-22", "active protected copy destination stays blocked")
+    shell = shutil.which("pwsh") or shutil.which("powershell")
+    if shell:
+        source = os.path.join(fixture, ".codearbiter", "security-controls.md")
+        destination = os.path.join(fixture, "docs", "security-controls-draft.md")
+        with open(source, "rb") as stream:
+            source_bytes = stream.read()
+        # PowerShell writes command-discovery data beneath its user/cache paths
+        # even with -NoProfile. Keep that test-only state inside the disposable
+        # fixture so the hermeticity suite's redirected user home stays pristine.
+        powershell_home = os.path.join(fixture, ".powershell-home")
+        powershell_cache = os.path.join(fixture, ".powershell-cache")
+        executed = sh(
+            [shell, "-NoProfile", "-NonInteractive", "-Command", copy_command],
+            fixture,
+            env_overrides={
+                "HOME": powershell_home,
+                "USERPROFILE": powershell_home,
+                "XDG_CACHE_HOME": powershell_cache,
+                "PSModuleAnalysisCachePath": os.path.join(powershell_cache, "ModuleAnalysisCache"),
+                "POWERSHELL_TELEMETRY_OPTOUT": "1",
+                "POWERSHELL_UPDATECHECK": "Off",
+            },
+        )
+        check(executed.returncode == 0, "execute allowed Copy-Item", executed.stderr)
+        with open(source, "rb") as stream:
+            check(stream.read() == source_bytes, "Copy-Item source hash",
+                  "protected source bytes changed")
+        with open(destination, "rb") as stream:
+            check(stream.read() == source_bytes, "Copy-Item destination bytes",
+                  "draft bytes differ from source")
+
+    # Direct parser variants retain absolute, directory and symlink controls.
+    guard = pre_bash._bashguardlib
+    state = guard._protectedstatelib
+    policy_lookup = state.lookup_policy
+    context = os.path.join(fixture, ".codearbiter", "security-controls.md")
+    for path in (context, os.path.join(docs, "security-controls.md")):
+        with open(path, "w", encoding="utf-8") as out:
+            out.write("fixture\n")
+
+    def qualified_context(rel_path, registry=None, *, root=None):
+        if rel_path.replace("\\", "/").lower().endswith(".codearbiter/security-controls.md"):
+            return state.ProtectedPolicy.HELPER_ONLY
+        return policy_lookup(rel_path, registry, root=root)
+
+    def h22_result(command, cwd=None):
+        with redirect_stderr(StringIO()), patch.object(guard, "block", side_effect=SystemExit(2)):
+            try:
+                guard._check_h22_state(command, fixture, cwd)
+                return 0
+            except SystemExit as exc:
+                return exc.code
+
+    with patch.object(state, "lookup_policy", side_effect=qualified_context):
+        for command in (
+            "Copy-Item -LiteralPath '.codearbiter/security-controls.md' "
+            "-Destination 'docs/security-controls-draft.md'",
+            "Copy-Item -LiteralPath '.codearbiter/security-controls.md' "
+            "-Destination 'docs/security-controls.md'",
+            f"Copy-Item -LiteralPath '{context}' "
+            f"-Destination '{os.path.join(docs, 'security-controls-draft.md')}'",
+        ):
+            check(h22_result(command) == 0, "protected copy source is read", command)
+        for command in (
+            "Copy-Item -LiteralPath 'docs/security-controls-draft.md' "
+            "-Destination '.codearbiter/security-controls.md'",
+            "Copy-Item -LiteralPath 'docs/security-controls.md' -Destination '.codearbiter/'",
+            "Copy-Item -LiteralPath '.codearbiter/security-controls.md' -Destination $draft",
+        ):
+            check(h22_result(command) == 2, "copy target stays protected", command)
+        relative_from_docs = (
+            "Copy-Item -LiteralPath 'security-controls-draft.md' "
+            "-Destination '../.codearbiter/security-controls.md'"
+        )
+        check(h22_result(relative_from_docs, docs) == 2,
+              "relative copy target resolves from execution cwd", relative_from_docs)
+        check(guard._effective_command_cwd({"cwd": docs}, fixture) == docs,
+              "payload cwd selects copy base", docs)
+        check(guard._effective_command_cwd(
+            {"tool_name": "functions.exec", "cwd": fixture,
+             "tool_input": {"workdir": docs}}, fixture) == docs,
+            "explicit Codex workdir selects copy base", docs)
+        alias = os.path.join(docs, "context-alias.md")
+        try:
+            os.symlink(context, alias)
+        except (OSError, NotImplementedError):
+            pass
+        else:
+            command = "Copy-Item -LiteralPath 'notes.txt' -Destination 'docs/context-alias.md'"
+            try:
+                check(h22_result(command) == 2, "symlink copy target stays protected", command)
+            finally:
+                os.unlink(alias)
+
+    exercise_index_only_restore(fixture, "main worktree")
+    linked = fixture + "-linked"
+    git(["worktree", "add", "-q", "-b", "feat/linked-guard", linked, "HEAD"], fixture)
+    enroll_context_target(linked)
+    expect_allow(linked, copy_command, "linked worktree protected copy source is read")
+    expect_block(linked,
+                 "Copy-Item -LiteralPath 'docs/security-controls.md' "
+                 "-Destination '.codearbiter/security-controls.md'",
+                 "H-22", "linked worktree protected destination stays blocked")
+    exercise_index_only_restore(linked, "linked worktree")
+
+
 def make_fixture(base, branch):
     """An arbiter-enabled repo with one commit, on `branch`."""
     root = os.path.join(base, f"fixture-{branch.replace('/', '-')}")
@@ -109,13 +335,19 @@ def make_fixture(base, branch):
         f.write("[2026-01-01T00:00:00Z] | BY: harness | GATE: none | REASON: seed\n")
     with open(os.path.join(ca, "decisions", "0001-seed.md"), "w", encoding="utf-8") as f:
         f.write("# ADR-0001\nseed decision\n")
+    with open(os.path.join(ca, "decisions", "decision-log.md"), "w", encoding="utf-8") as f:
+        f.write("seed\n")
+    with open(os.path.join(ca, "security-controls.md"), "w", encoding="utf-8") as f:
+        f.write("security fixture\n")
     os.makedirs(os.path.join(root, "src"))
     for rel in ("src/app.py", "notes.txt"):
         with open(os.path.join(root, rel), "w", encoding="utf-8") as f:
             f.write("print('hello')\n")
     git(["add", "src/app.py", "notes.txt",
          ".codearbiter/CONTEXT.md", ".codearbiter/overrides.log",
-         ".codearbiter/decisions/0001-seed.md"], root)
+         ".codearbiter/decisions/0001-seed.md",
+         ".codearbiter/decisions/decision-log.md",
+         ".codearbiter/security-controls.md"], root)
     git(["commit", "-q", "-m", "seed"], root)
     return root
 
@@ -361,6 +593,7 @@ def main():
         check_commit_pathspecs()                    # pure parser units (no fixture)
         fx = make_fixture(base, "feat/work")        # the normal case: a feature branch
         fx_main = make_fixture(base, "main")        # only for on-main push/commit cases
+        check_corrective_guard_cases(fx)
         check_taskwrite_audit_arguments(fx)
         check_debug_validation_data(fx)
         check_staging_command_boundaries(fx)

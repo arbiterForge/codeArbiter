@@ -35,6 +35,8 @@ type WorkViewAttachment struct {
 type WorkViewTask struct {
 	ID, Title, State, NextAction, ReportedOutcome, ReportedFreshness string
 	BindingCurrent                                                   bool
+	UnresolvedCount, IgnoredReports                                  int64
+	HistoryUnassessed                                                bool
 }
 
 var githubWorkURL = regexp.MustCompile(`^https://github\.com/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/(?:issues|pull)/[1-9][0-9]*$`)
@@ -131,6 +133,8 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	} else if data.CoordinationSendStatus == "paused" || data.CoordinationIssueStatus == "paused" || data.CoordinationProjectStatus == "paused" {
 		obstacle = "Mapped tracker sends are paused until the transition map and provider bindings are checked."
 		next = "Run work.py transition-map-get and inspect the pending effects before explicitly resuming or cancelling them."
+	} else if data.PlanTask != nil && data.PlanTask.UnresolvedCount > 0 {
+		obstacle = "A declared plan check was reported failing; its applicability may be unassessed and it remains unresolved."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."
@@ -240,6 +244,15 @@ func WorkView(data WorkViewData) ([]byte, error) {
 				w.WriteString(`<p>Source binding changed; reconcile the plan before relying on its task requirements.</p>`)
 			}
 			w.WriteString(`<p>` + esc(task.NextAction) + `</p>`)
+			if task.UnresolvedCount > 0 {
+				w.WriteString(`<p>Unresolved reported failure: ` + strconv.FormatInt(task.UnresolvedCount, 10) + ` declared command(s); applicability may be unassessed or limited to partial source scope. Review exact task history and attested evidence before claiming verification.</p>`)
+			}
+			if task.HistoryUnassessed {
+				w.WriteString(`<p>Earlier check history was trimmed and remains unassessed.</p>`)
+			}
+			if task.IgnoredReports > 0 {
+				w.WriteString(`<p>` + strconv.FormatInt(task.IgnoredReports, 10) + ` report(s) were stale or unrelated to current declared checks.</p>`)
+			}
 			if task.ReportedOutcome == "" {
 				w.WriteString(`<p>No check report recorded for this task.</p>`)
 			} else {

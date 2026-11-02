@@ -88,6 +88,17 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 
 	status := model.S(state(d, id)["state"])
 	checks, historyBounded := e.assessTaskChecks(d, spec.Doc, id)
+	checkSummary := checkConflictsAssessed(d, id, nil, checks, historyBounded)
+	checkSummary["assessment"] = "caller_reported_advisory"
+	checkSummary["evidence_assessed"] = false
+	checkSummary["scope_complete"] = false
+	checkSummary["verification_boundary_assessed"] = false
+	unresolved := model.A(checkSummary["conflicting_check_reports"])
+	checkSummary["conflicting_check_reports_omitted"] = int64(0)
+	if len(unresolved) > 3 {
+		checkSummary["conflicting_check_reports"] = unresolved[:3]
+		checkSummary["conflicting_check_reports_omitted"] = int64(len(unresolved) - 3)
+	}
 	// Small model-facing packet: last three reports only. The typed HTML
 	// includes the bounded recorded history; native transaction before-images
 	// retain older reports. Neither claims source-file applicability.
@@ -114,7 +125,7 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 		"prerequisites": prerequisites, "unscoped_prerequisites": unscoped,
 		"waiting_prerequisites": waitingOnFacts,
 		"reported_checks":       shown, "check_reports_omitted": int64(len(checks) - len(shown)),
-		"check_history_bounded": historyBounded, "checks_are_verified": false,
+		"check_history_bounded": historyBounded, "check_summary": checkSummary, "checks_are_verified": false,
 		"next_action":        "Inspect the recorded dependencies and checks; execute work through existing host permissions.",
 		"omitted_context":    model.List("unrelated tasks", "broader specification decisions", "constraints without declared applicability", "referenced intent and source records", "full source and test output"),
 		"omitted_references": model.List(omittedRefs...),
@@ -125,6 +136,10 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 		out["next_action"] = "Inspect the recorded stop; do not clear it or redispatch until the actual condition or user decision is resolved."
 	} else if len(waiting) != 0 {
 		out["next_action"] = "Inspect unresolved dependencies and preserve their recorded stops; continue independent work while those conditions remain unresolved."
+	} else if checkSummary["has_conflicting_check_reports"] == true {
+		out["next_action"] = "An applicable declared command was reported failing, with no later applicable reported pass; declared input scope is partial. Inspect its exact task history and attested evidence before claiming verification."
+	} else if checkSummary["check_history_unassessed"] == true {
+		out["next_action"] = "Earlier check history was trimmed and remains unassessed; inspect exact history before claiming verification."
 	} else if len(shown) > 0 {
 		latest := model.M(shown[len(shown)-1])
 		switch model.S(latest["reported_outcome"]) {

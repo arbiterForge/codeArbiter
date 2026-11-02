@@ -179,6 +179,11 @@ def _entries(now: int | None = None):
                 continue
             if _identity(Path(value["repository"].get("path", ""))) != value["repository"]:
                 continue
+            if value.get("retired") is True:
+                if int(value.get("retired_until", 0)) <= now:
+                    continue
+                yield path, value, False
+                continue
             yield path, value, int(value.get("expires_at", 0)) > now
         except (OSError, UnicodeError, ValueError, TypeError, ReplyCodeError):
             continue
@@ -214,11 +219,11 @@ def issue_code(root, route: str, artifact_id: str, full_reply: str, *,
         raise ReplyCodeError("reply code request is invalid")
     repository = _identity(Path(root))
     path = _registry() / f"{_key(route, artifact_id, repository)}.json"
-    live = {value.get("short_reply") for other, value, alive in _entries() if alive and other != path}
+    reserved = {value.get("short_reply") for other, value, _alive in _entries() if other != path}
     for _ in range(64):
         code = "".join(secrets.choice(CODE_ALPHABET) for _ in range(4))
         short = " ".join([*short_prefix, code])
-        if short not in live and canonicalize(short) == short:
+        if short not in reserved and canonicalize(short) == short:
             break
     else:
         raise ReplyCodeError("no free reply code")
@@ -251,11 +256,41 @@ def retire_code(root, route: str, artifact_id: str) -> None:
         key = _key(route, artifact_id, repository)
     except (ReplyCodeError, OSError):
         return
-    for name in (f"{key}.json", f"ask-{key}.ask"):
-        try:
-            (_registry() / name).unlink()
-        except (FileNotFoundError, ReplyCodeError, OSError):
-            pass
+    if route != "prerequisite":
+        for name in (f"{key}.json", f"ask-{key}.ask"):
+            try:
+                (_registry() / name).unlink()
+            except (FileNotFoundError, ReplyCodeError, OSError):
+                pass
+        return
+    # A repeated prerequisite reply must remain visibly rejected across hook
+    # processes. Replace its secret-bearing expansion with a short-lived,
+    # non-authoritative tombstone; approval/reconciliation keep their existing
+    # deletion behavior because code-shaped words there can be ordinary prose.
+    try:
+        registry = _registry()
+        path = registry / f"{key}.json"
+        current = next((value for other, value, _alive in _entries() if other == path), None)
+        if current is not None:
+            retired_at = int(time.time())
+            value = {
+                "format": FORMAT,
+                "route": current.get("route"),
+                "artifact_id": current.get("artifact_id"),
+                "repository": current.get("repository"),
+                "short_reply": current.get("short_reply"),
+                "names": list(current.get("names") or []),
+                "expires_at": 0,
+                "retired": True,
+                "retired_until": retired_at + CODE_TTL_SECONDS,
+            }
+            value["integrity_sha256"] = _digest(_canonical(value))
+            _write(path, value)
+        else:
+            path.unlink(missing_ok=True)
+        (registry / f"ask-{key}.ask").unlink(missing_ok=True)
+    except (FileNotFoundError, ReplyCodeError, OSError, TypeError, ValueError):
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -430,15 +465,21 @@ def _capture_attempt(raw, route: str) -> bool:
             continue
         token = fields[-1][0].rstrip(",.!?")
         if CODE_RE.fullmatch(token.upper()):
-            if not token.isalpha():
-                return True
-            # Ordinary words overlap the code alphabet in EVERY casing:
-            # "Approve DATA migration" is not a protocol request. Only a
-            # retained matching code makes an all-letter token diagnostic.
+            # The code alphabet also overlaps ordinary alphanumeric names
+            # (PHP8, SHA3, AVX2). Either kind is a reply candidate only when
+            # its code is retained for this route.
             # Exact armed replies remain case-insensitive; prose is not repaired.
+            entries = list(_entries())
             if any(value.get("route") == route
                    and value.get("short_reply", "").rsplit(" ", 1)[-1] == token.upper()
-                   for _path, value, _alive in _entries()):
+                   and (value.get("retired") is not True
+                        or (route == "prerequisite" and len(words) == count
+                            and any(ch.isdigit() for ch in token)))
+                   for _path, value, _alive in entries):
+                return True
+            if route == "prerequisite" and len(words) == count and any(
+                    value.get("route") == route and alive
+                    for _path, value, alive in entries):
                 return True
             continue
         if "I" in shape and re.fullmatch(r"[A-Za-z0-9_-]{12,128}", token):
@@ -516,7 +557,13 @@ def expand(canonical: str) -> dict[str, str]:
         expected = candidates[0][0].get("short_reply")
         return {"text": canonical,
                 "notice": f"codeArbiter: reply code {code} was armed as `{expected}`; resend exactly that."}
+    if len(exact) != 1:
+        return {"text": canonical,
+                "notice": f"codeArbiter: reply code {code} matches no armed request."}
     value, alive = exact[0]
+    if not alive and value.get("retired") is True:
+        return {"text": canonical,
+                "notice": f"codeArbiter: reply code {code} matches no armed request."}
     if not alive:
         return {"text": canonical, "notice": f"codeArbiter: reply code {code} has expired; ask for a new one."}
     if names and names != value.get("names", [])[:len(names)] and names != value.get("names", []):

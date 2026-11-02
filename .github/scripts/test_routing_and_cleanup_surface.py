@@ -539,6 +539,17 @@ class TestSprintRecoveryAndLimits(unittest.TestCase):
                 self.assertIn('Do not call `commit-gate`', text)
                 self.assertIn('not release-ready', text)
 
+    def test_scope_continuity_does_not_reask_or_hide_remaining_work(self):
+        sprint = read('core/surface/SPRINT.md')
+        commit = read('core/surface/skills/commit-gate/SKILL.md')
+        finish = read('core/surface/skills/finishing-a-development-branch/SKILL.md')
+        self.assertIn('outcome, scope and duration', commit)
+        self.assertIn('unrelated preexisting paths', commit)
+        self.assertIn('covered delivery actions', sprint)
+        self.assertIn('remaining obligations', sprint)
+        self.assertIn('explicit earlier merge authority', finish)
+        self.assertIn('per-item confirmation', finish)
+
 
 
 class TestCallerAwareSpecAndCheckpointContract(unittest.TestCase):

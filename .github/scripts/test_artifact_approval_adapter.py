@@ -199,7 +199,8 @@ class ApprovalAdapterTest(unittest.TestCase):
             )
         pending = (self.root / self.adapter.PENDING).read_bytes()
         calls = list(self.client.calls)
-        for prompt in ("Approve DATA", "Approve DATA migration", "Approve READ access", "APPROVE DATA MIGRATION"):
+        for prompt in ("Approve DATA", "Approve DATA migration", "Approve READ access", "APPROVE DATA MIGRATION",
+                       "Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 support"):
             with self.subTest(prompt=prompt):
                 self.assertEqual(self.hook(prompt), "")
         self.assertEqual((self.root / self.adapter.PENDING).read_bytes(), pending)
@@ -217,7 +218,6 @@ class ApprovalAdapterTest(unittest.TestCase):
         before = list(self.client.calls)
         unknown = "K7MQ" if armed["code"] != "K7MQ" else "J8NR"
         cases = {
-            f"  approve {unknown}": "matches no armed request",
             f"approve SPEC-OTHER {armed['code']}": "belongs to SPEC-EXAMPLE",
             armed["reply"] + ", please": "Send only the reply line",
             "approve SPEC-EXAMPLE wrong-token-value": "Send only the reply line",
@@ -225,6 +225,7 @@ class ApprovalAdapterTest(unittest.TestCase):
         for prompt, expected in cases.items():
             with self.subTest(prompt=prompt):
                 self.assertIn(expected, self.hook(prompt))
+        self.assertEqual(self.hook(f"  approve {unknown}"), "")
         self.assertEqual(self.hook("yes"), "")
         self.assertEqual(self.hook("please approve it"), "")
         self.assertEqual(self.client.calls, before)
@@ -337,12 +338,11 @@ class ApprovalAdapterTest(unittest.TestCase):
 
     def test_near_miss_log_is_bounded_escaped_and_only_when_active(self):
         armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-log")
-        unknown = "K7MQ" if armed["code"] != "K7MQ" else "J8NR"
         log = self.root / ".codearbiter/.markers/reply-diagnostics.log"
-        self.hook(f"approve {unknown}\u200b")
+        self.hook(f"approve {armed['code']}\u200b pasted text")
         self.assertFalse(log.exists())
         (self.root / ".codearbiter" / "CONTEXT.md").write_text("---\nfixture: active\n---\n", encoding="utf-8")
-        self.hook(f"approve {unknown}\u200b " + "pasted-text " * 60)
+        self.hook(f"approve {armed['code']}\u200b " + "pasted-text " * 60)
         line = log.read_text(encoding="ascii")
         self.assertIn("U+200B", line)
         self.assertLess(len(line), 1400)

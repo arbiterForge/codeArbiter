@@ -180,6 +180,36 @@ def check_payload(root, host=None):
             pass
 
 
+def report_payload_identity(identity):
+    """Explain the executing-root observation without promoting manifest claims."""
+    def display(value, limit):
+        rendered = []
+        for character in str(value):
+            code = ord(character)
+            rendered.append(f"\\x{code:02x}" if code < 32 or 127 <= code <= 159 else character)
+        return "".join(rendered)[:limit]
+
+    adapter = display(identity.get("adapter", "unknown"), 40)
+    version = display(identity.get("adapter_version", "unknown"), 80)
+    root = display(identity.get("executing_root", "unknown"), 512)
+    if version == "unknown":
+        warn(f"executing {adapter} version unknown at {root} "
+             f"({identity.get('adapter_manifest_status', 'unknown')} manifest)")
+    else:
+        ok(f"executing {adapter} {version} from {root} (observed adapter manifest)")
+    if version != "unknown" and not identity.get("descriptor_matches_manifest"):
+        warn("executing adapter manifest disagrees with the loaded host descriptor; "
+             "inspect this installation before relying on its version label")
+    if identity.get("native_manifest_status") == "declared":
+        ok(f"native helper manifest version {display(identity['native_version'], 80)}, protocol "
+           f"{display(identity['native_protocol'], 80)}, schema {display(identity['native_schema_version'], 80)} "
+           "declared; executable integrity not checked by this observation")
+    else:
+        warn("native helper manifest identity unknown "
+             f"({identity.get('native_manifest_status', 'unknown')}); "
+             "the on-demand capability check determines installed health")
+
+
 def _artifact_client(plugin_root_path, repository_root):
     """Construct the installation-pinned client without PATH or repo fallback."""
     try:
@@ -257,7 +287,8 @@ def check_artifact_capability(plugin_root_path, repository_root=None):
         return
     ok(
         "artifact capability available: "
-        f"{capabilities['platform']}, schema {capabilities['schema_version']}"
+        f"{capabilities['platform']}, schema {capabilities['schema_version']}; "
+        "native helper executable digest verified against the pinned release manifest by this probe"
     )
 
     if not _repository_has_html(repository_root):
@@ -527,6 +558,7 @@ def main():
     host = get_host()
     check_host(host)
     check_interpreters()
+    report_payload_identity(hostapi.observe_payload_identity(host, root))
     check_payload(root, host)
     repo_root = check_repo()
     check_artifact_capability(root, repo_root)

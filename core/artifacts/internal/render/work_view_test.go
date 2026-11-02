@@ -40,6 +40,95 @@ func TestWorkViewNamesFailedChecksAfterLocalCompletion(t *testing.T) {
 	}
 }
 
+func TestWorkViewKeepsConfirmedBlockersAheadOfAdvisoryTaskReports(t *testing.T) {
+	tests := []struct {
+		name           string
+		data           WorkViewData
+		wantNext       string
+		wantTaskDetail string
+	}{
+		{
+			name: "failed check",
+			data: WorkViewData{
+				ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+				Title: "Deliver local work", Intent: "Keep the blocking check visible", WorkType: "fix",
+				State: "active", CheckStatus: "failed",
+				Plan: &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+				PlanTask: &WorkViewTask{ID: "T-001", Title: "Implement", State: "REVIEW", NextAction: "Review the task", UnresolvedCount: 1},
+			},
+			wantNext:       "Investigate the failed check",
+			wantTaskDetail: "Unresolved reported failure",
+		},
+		{
+			name: "unknown remote outcome",
+			data: WorkViewData{
+				ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+				Title: "Deliver local work", Intent: "Keep remote uncertainty visible", WorkType: "fix",
+				State: "active", CheckStatus: "unknown", ProviderEffectStatus: "outcome_unknown",
+				Plan: &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+				PlanTask: &WorkViewTask{ID: "T-001", Title: "Implement", State: "REVIEW", NextAction: "Review the task", UnresolvedCount: 1},
+			},
+			wantNext:       "Reconcile the remote issue",
+			wantTaskDetail: "Unresolved reported failure",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			html, err := WorkView(tt.data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			view := string(html)
+			start := strings.Index(view, "<dt>Next action</dt><dd>")
+			if start < 0 {
+				t.Fatal("work view omitted snapshot next action")
+			}
+			next := strings.SplitN(view[start:], "</dd>", 2)[0]
+			if !strings.Contains(next, tt.wantNext) || !strings.Contains(view, tt.wantTaskDetail) {
+				t.Fatalf("advisory task report displaced a confirmed blocker: %s", view)
+			}
+		})
+	}
+}
+
+func TestWorkViewDoesNotClaimEveryReportedFailureWasAssessed(t *testing.T) {
+	html, err := WorkView(WorkViewData{
+		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+		Title: "Check advisory evidence", Intent: "Keep assessment limits visible", WorkType: "fix", State: "active",
+		Plan:     &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+		PlanTask: &WorkViewTask{ID: "T-001", Title: "Verify", State: "REVIEW", NextAction: "Review evidence", UnresolvedCount: 1},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	view := string(html)
+	if !strings.Contains(view, "applicability may be unassessed") || strings.Contains(view, "assessed against partial source scope") {
+		t.Fatalf("work view overstated advisory assessment: %s", view)
+	}
+}
+
+func TestWorkViewKeepsBlockedTaskStopAheadOfReportedFailure(t *testing.T) {
+	html, err := WorkView(WorkViewData{
+		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+		Title: "Stopped work", Intent: "Keep the owner stop visible", WorkType: "fix", State: "active",
+		Plan: &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+		PlanTask: &WorkViewTask{ID: "T-001", Title: "Implement stage 1", State: "BLOCKED",
+			NextAction: "Inspect the recorded stop; do not clear it until the owner resumes.", UnresolvedCount: 1},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	view := string(html)
+	start := strings.Index(view, "<dt>Next action</dt><dd>")
+	if start < 0 {
+		t.Fatal("work view omitted snapshot next action")
+	}
+	next := strings.SplitN(view[start:], "</dd>", 2)[0]
+	if !strings.Contains(next, "do not clear") || !strings.Contains(view, "Unresolved reported failure") {
+		t.Fatalf("reported check displaced the owner stop or vanished: next=%q", next)
+	}
+}
+
 func TestWorkViewExplainsBoundStatusConflictWithoutClaimingDelivery(t *testing.T) {
 	html, err := WorkView(WorkViewData{
 		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",

@@ -138,6 +138,13 @@ class ReadOnlyReviewFunnelTest(unittest.TestCase):
         self.assertNotIn("discards noise", dispatch)
         self.assertIn("Every reviewer finding", dispatch)
 
+    def test_author_collection_does_not_invoke_review_verdict(self):
+        dispatch = _read("core/surface/skills/dispatching-parallel-agents/SKILL.md")
+        self.assertIn("Author/scout batches return inspected results directly", dispatch)
+        self.assertIn("Explicit review batches use finding-triage then verdict-aggregator", dispatch)
+        self.assertIn("ERRORED", dispatch)
+        self.assertIn("DEFERRED", dispatch)
+
     def test_curated_review_projection_uses_the_read_only_terminal(self):
         curated_review = _read("site/src/curated/commands/review.md")
         self.assertIn("verdict-aggregator", curated_review)

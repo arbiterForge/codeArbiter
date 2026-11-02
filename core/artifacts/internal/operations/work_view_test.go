@@ -107,6 +107,60 @@ func TestWorkViewSelectsActualPlanTaskWithoutPromotingChecks(t *testing.T) {
 	}
 }
 
+func TestWorkViewKeepsUnresolvedPlanFailureAfterUnrelatedPasses(t *testing.T) {
+	f := newAssistiveFixture(t)
+	created := f.call("work-create", object{"operation_id": "plan-failure-view-001", "title": "Fix selected work",
+		"intent": "Keep unresolved verification visible", "work_type": "fix",
+		"spec_id": "SPEC-EXAMPLE", "plan_id": "PLAN-EXAMPLE"})
+	scopedWrite(t, f.root, "src/stage1.go", "package stage1\n")
+	reportFor(f, "fail", true)
+	for i := 0; i < 3; i++ {
+		r := reportedCommand("pass", false)
+		model.M(r["check"])["argv"] = model.List("python", "-c", "print('unrelated')")
+		f.mutate("task-check", r)
+	}
+	context := f.call("work-context", object{"work_id": created["work_id"]})
+	selected := model.M(context["plan_task"])
+	if model.M(selected["check_summary"])["has_conflicting_check_reports"] != true {
+		t.Fatalf("work context hid selected task's unresolved failure: %v", selected)
+	}
+	html := model.S(f.call("work-view", object{"work_id": created["work_id"]})["html"])
+	if !strings.Contains(html, "Unresolved reported failure") || strings.Contains(html, "Checks passed") {
+		t.Fatalf("derived view lost verification obstacle: %s", html)
+	}
+}
+
+func TestWorkContextShowsBlockedPlanTaskAndUnresolvedReportWithoutChangingIt(t *testing.T) {
+	f := newAssistiveFixture(t)
+	created := f.call("work-create", object{"operation_id": "plan-blocked-view-001", "title": "Stopped work",
+		"intent": "Keep the owner stop visible", "work_type": "fix",
+		"spec_id": "SPEC-EXAMPLE", "plan_id": "PLAN-EXAMPLE"})
+	scopedWrite(t, f.root, "src/stage1.go", "package stage1\n")
+	reportFor(f, "fail", true)
+	f.mutate("task-block", object{"task": "T-001", "reason": "Owner paused this work."})
+	before := f.doc("PLAN-EXAMPLE")
+	context := f.call("work-context", object{"work_id": created["work_id"]})
+	selected := model.M(context["plan_task"])
+	if selected["id"] != "T-001" || selected["state"] != "BLOCKED" ||
+		model.M(selected["check_summary"])["has_conflicting_check_reports"] != true ||
+		!strings.Contains(model.S(selected["next_action"]), "do not clear") {
+		t.Fatalf("work context hid blocked task, its stop, or its reported failure: %v", selected)
+	}
+	html := model.S(f.call("work-view", object{"work_id": created["work_id"]})["html"])
+	start := strings.Index(html, "<dt>Next action</dt><dd>")
+	if start < 0 {
+		t.Fatal("work view omitted snapshot next action")
+	}
+	next := strings.SplitN(html[start:], "</dd>", 2)[0]
+	if !strings.Contains(next, "do not clear") || !strings.Contains(html, "Unresolved reported failure") {
+		t.Fatalf("work view displaced the stop or hid the report: next=%q", next)
+	}
+	after := f.doc("PLAN-EXAMPLE")
+	if after.Hash() != before.Hash() || model.S(state(after, "T-001")["state"]) != "BLOCKED" {
+		t.Fatal("work-context or work-view changed the blocked plan task")
+	}
+}
+
 func TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue(t *testing.T) {
 	root := testutil.Root(t)
 	call := func(op string, request object) object {

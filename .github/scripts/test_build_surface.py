@@ -1663,7 +1663,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                            ('pi', 'skills/ca-commit/SKILL.md')):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[path].decode()
-                for obligation in ('Confirm the user explicitly authorized this commit.',
+                for obligation in ('Confirm the user explicitly authorized this selected commit.',
                                    'current', 'verification-boundary', '## Phase 7',
                                    '## Phase 9', 'postponing a commit',
                                    'never implies a push or PR'):
@@ -1954,12 +1954,27 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
         for host in self.outputs:
             text = self.entry(host, 'pr')
             self.assertIn('Do not repeat a branch-fate menu', text)
-            self.assertIn('feature-terminal handoff keeps its existing terminal', text)
-            self.assertIn('sprint-terminal handoff selects open PR only', text)
+            self.assertIn('feature or sprint handoff', text)
+            self.assertIn('explicit earlier merge authority', text)
+            self.assertIn('unqualified sprint defaults to open PR only', text)
             self.assertIn('MUST NOT auto-merge under', text)
             self.assertIn('MUST NOT discard a branch without explicit user confirmation', text)
             self.assertIn('MUST NOT delete un-pushed commits silently', text)
             self.assertIn('current exact head', text)
+
+    def test_secret_source_guidance_uses_active_policy(self):
+        secret = (REPO_ROOT / 'core/surface/skills/secret-handling/SKILL.md').read_text(encoding='utf-8')
+        reviewer = (REPO_ROOT / 'core/surface/agents/auth-crypto-reviewer.md').read_text(encoding='utf-8')
+        policy = (REPO_ROOT / '.codearbiter/security-controls.md').read_text(encoding='utf-8')
+        self.assertRegex(policy, r"owning process's\s+approved environment")
+        self.assertIn('runtime transport', policy)
+        self.assertIn('reading `process.env` alone neither approves nor rejects', secret)
+        self.assertNotIn('MUST NOT source a secret from a hardcoded literal, `process.env`', secret)
+        self.assertIn('unrelated child', secret)
+        self.assertIn('Do not reject an approved owning-process environment', reviewer)
+        self.assertIn('token-shaped dummy value in changed source', secret)
+        self.assertIn('token-shaped dummy value hardcoded in changed source', reviewer)
+        self.assertIn('policy-approved runtime source/transport', secret)
 
     def test_pr_current_acceptance_and_ancestry_preflight_is_identical(self):
         import hashlib

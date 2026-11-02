@@ -181,6 +181,12 @@ func (e *Engine) assessTaskChecks(d, spec *model.Document, id string) ([]any, bo
 // them. Unbound failures are disclosed as uncertain, never silently passed.
 func (e *Engine) checkConflicts(d, spec *model.Document, id string, covered map[string]bool) object {
 	checks, trimmed := e.assessTaskChecks(d, spec, id)
+	return checkConflictsAssessed(d, id, covered, checks, trimmed)
+}
+
+// checkConflictsAssessed reuses a single bounded assessment for compact context
+// and explicit verification, without reading task source inputs a second time.
+func checkConflictsAssessed(d *model.Document, id string, covered map[string]bool, checks []any, trimmed bool) object {
 	entries := model.A(model.M(model.M(d.Data["execution"])["task_check_observations"])[id])
 	failures := map[int64]object{}
 	decisive := map[int64]bool{}
