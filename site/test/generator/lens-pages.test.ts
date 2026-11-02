@@ -205,7 +205,7 @@ describe("generate — tribunal-lens collection wiring", () => {
     );
     expect(historical).toHaveLength(11);
     for (const slug of historical) {
-      expect(config).toContain(`"/reference/agents/tribunal-${slug}-reviewer": \`\${BASE}/reference/tribunal-lenses/${slug}\``);
+      expect(config).toContain(`"/reference/agents/tribunal-${slug}-reviewer": \`\${base}/reference/tribunal-lenses/${slug}\``);
       expect(result.lensPages.some((page) => page.slug === slug)).toBe(true);
     }
   });

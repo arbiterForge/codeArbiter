@@ -133,7 +133,8 @@ describe('atlas source and original-composition regression contract',{timeout:30
       const reviewedTree=git(['rev-parse',`${REVALIDATED_AT}:${lensDir}`]);
       const emptyTree=git(['mktree'],'');
       git(['replace',reviewedTree,emptyTree]);
-    });
+    // A shared clone plus dozens of blob restores outlasts vitest's 10 s hook default on Windows (#1083).
+    },120_000);
     afterAll(()=>{if(dir)rmSync(dir,{recursive:true,force:true});});
     it('ignores replacement refs for reviewed blobs and lens rosters',()=>{
       expect.soft(()=>checkReviewedSource(dir,'core/source.md',pin)).toThrow(/Atlas source changed/);
