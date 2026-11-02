@@ -79,10 +79,31 @@ func TestWorkViewKeepsConfirmedBlockersAheadOfAdvisoryTaskReports(t *testing.T) 
 				t.Fatal(err)
 			}
 			view := string(html)
-			if !strings.Contains(view, tt.wantNext) || !strings.Contains(view, tt.wantTaskDetail) {
+			start := strings.Index(view, "<dt>Next action</dt><dd>")
+			if start < 0 {
+				t.Fatal("work view omitted snapshot next action")
+			}
+			next := strings.SplitN(view[start:], "</dd>", 2)[0]
+			if !strings.Contains(next, tt.wantNext) || !strings.Contains(view, tt.wantTaskDetail) {
 				t.Fatalf("advisory task report displaced a confirmed blocker: %s", view)
 			}
 		})
+	}
+}
+
+func TestWorkViewDoesNotClaimEveryReportedFailureWasAssessed(t *testing.T) {
+	html, err := WorkView(WorkViewData{
+		ID: "WORK-0123456789ABCDEF0123456789ABCDEF", ProjectID: "PROJECT-0123456789ABCDEF0123456789ABCDEF",
+		Title: "Check advisory evidence", Intent: "Keep assessment limits visible", WorkType: "fix", State: "active",
+		Plan:     &WorkViewAttachment{ID: "PLAN-WORK", Title: "Plan", Href: "../../plans/work.html"},
+		PlanTask: &WorkViewTask{ID: "T-001", Title: "Verify", State: "REVIEW", NextAction: "Review evidence", UnresolvedCount: 1},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	view := string(html)
+	if !strings.Contains(view, "applicability may be unassessed") || strings.Contains(view, "assessed against partial source scope") {
+		t.Fatalf("work view overstated advisory assessment: %s", view)
 	}
 }
 

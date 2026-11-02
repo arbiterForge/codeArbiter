@@ -2144,8 +2144,11 @@ def _literal_ps_here_string_view(cmd):
         r"[ \t]+-Value[ \t]+@'\n", text, re.I)
     if not prefix:
         return cmd
-    closer = re.search(r"(?m)^'@[ \t]*$", text[prefix.end():])
+    body = text[prefix.end():]
+    closer = re.search(r"(?m)^'@[ \t]*$", body)
     if not closer:
+        return cmd
+    if re.search(r"(?m)^'@", body[:closer.start()]):
         return cmd
     close_end = prefix.end() + closer.end()
     if text[close_end:].strip():

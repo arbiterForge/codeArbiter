@@ -219,11 +219,11 @@ def issue_code(root, route: str, artifact_id: str, full_reply: str, *,
         raise ReplyCodeError("reply code request is invalid")
     repository = _identity(Path(root))
     path = _registry() / f"{_key(route, artifact_id, repository)}.json"
-    live = {value.get("short_reply") for other, value, alive in _entries() if alive and other != path}
+    reserved = {value.get("short_reply") for other, value, _alive in _entries() if other != path}
     for _ in range(64):
         code = "".join(secrets.choice(CODE_ALPHABET) for _ in range(4))
         short = " ".join([*short_prefix, code])
-        if short not in live and canonicalize(short) == short:
+        if short not in reserved and canonicalize(short) == short:
             break
     else:
         raise ReplyCodeError("no free reply code")
@@ -557,7 +557,9 @@ def expand(canonical: str) -> dict[str, str]:
         expected = candidates[0][0].get("short_reply")
         return {"text": canonical,
                 "notice": f"codeArbiter: reply code {code} was armed as `{expected}`; resend exactly that."}
-    exact.sort(key=lambda pair: not pair[1])
+    if len(exact) != 1:
+        return {"text": canonical,
+                "notice": f"codeArbiter: reply code {code} matches no armed request."}
     value, alive = exact[0]
     if not alive and value.get("retired") is True:
         return {"text": canonical,

@@ -110,8 +110,12 @@ class TestExecutingPayloadIdentity(unittest.TestCase):
             thread.join(0.5)
             blocked = thread.is_alive()
             if blocked:
-                with open(manifest, "wb", buffering=0) as stream:
-                    stream.write(b"{}")
+                try:
+                    descriptor = os.open(manifest, os.O_WRONLY | os.O_NONBLOCK)
+                except OSError:
+                    descriptor = -1
+                if descriptor >= 0:
+                    os.close(descriptor)
                 thread.join(1)
             self.assertFalse(blocked, "identity observation blocked while opening a FIFO")
             self.assertEqual(result["value"]["adapter_manifest_status"], "invalid")

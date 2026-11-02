@@ -44,11 +44,14 @@ current base, under a dedicated parent directory outside the main working tree
 - Branch name MUST be unique and traceable to its unit's task ID.
 - Retain the integration owner, base, branch, path ownership and each worktree path in the existing handoff record; update `.codearbiter/.worktrees.json` where that scratch manifest is already supported. Do not introduce a mandatory new schema to make ordinary isolation possible.
 
-Before provisioning, inventory dirty inputs relevant to each unit. A fresh worktree does not contain
-uncommitted caller bytes: reproduce and verify the exact relevant inputs in the assigned worktree,
-or stop until the caller resolves them. Preserve unrelated dirty paths by leaving them untouched.
+Before provisioning, inventory dirty inputs relevant to each unit and record each path's SHA-256 or
+absence. A fresh worktree does not contain uncommitted caller bytes. If a dirty input overlaps a
+unit-owned path, stop: the unit cannot safely distinguish caller work from its own delta. Otherwise,
+reproduce it only as a read-only baseline, verify its hash before and after unit work, and exclude it
+from the unit index and commits. Recheck the caller copy is still byte-identical before fold-back.
+Preserve unrelated dirty paths by leaving them untouched.
 
-Gate: every unit has a distinct worktree on a distinct branch, all rooted at the same verified base and recorded for resumption. Every relevant dirty input is either reproduced and verified in its unit worktree or named as a stop; no cleaning, resetting, stashing or overwriting occurred.
+Gate: every unit has a distinct worktree on a distinct branch, all rooted at the same verified base and recorded for resumption. Every relevant dirty input is either a content-addressed read-only baseline outside unit ownership or a named stop; unit commits exclude those baselines, and no cleaning, resetting, stashing or overwriting occurred.
 
 ## Phase 2 — Isolated work · gate: BLOCK
 
@@ -71,7 +74,9 @@ unit on its own. Per unit, in order:
    and rerun only missing or affected checks. An explicit review batch retains its triaged verdict.
    An unaccepted unit does not fold back.
 2. Integrate its branch onto the caller's working branch (merge or rebase), resolving any conflict
-   here, in the open. Never integrate onto `main` or the default branch.
+   here, in the open. If a rebase rewrites the unit branch, immediately refresh its recorded tip in
+   the handoff before fold-back and use that refreshed tip for later ancestry proof. Never integrate
+   onto `main` or the default branch.
 
 The consolidated working branch then takes the caller's normal single exit — ONE `commit-gate` pass
 and ONE `finishing-a-development-branch` decision, run by the caller, not per unit. This skill
@@ -85,8 +90,9 @@ per-unit PR or finish was opened.
 
 Record which worktrees and branches remain after fold-back. Integrated unit worktrees and branches
 remain retained by default: they have no per-unit merged PR, so `post-merge-cleanup` cannot prove
-them merged. This phase is their removal path only when all of the following hold: the recorded unit
-tip is an ancestor of the caller's consolidated working branch after fold-back; the unit worktree is
+them merged. This phase is their removal path only when all of the following hold: for a rebased unit,
+the recorded tip was refreshed after rebase; the current recorded tip is an ancestor of the caller's
+consolidated working branch after fold-back; the unit worktree is
 clean with no unique untracked or stashed residue; and the existing explicit cleanup confirmation
 names both its path and branch. Then remove that exact worktree with `git worktree remove` and delete
 that exact branch with `git branch -d`; never use `-D`. If any proof or confirmation is absent, retain

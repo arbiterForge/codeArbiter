@@ -203,7 +203,7 @@ class ShortCodeTest(unittest.TestCase):
         self.assertEqual(self.lib.expand("approve AAAA")["text"], f"approve SPEC-1 {TOKEN}")
         self.assertEqual(self.lib.expand("approve BBBB")["text"], f"approve SPEC-2 {TOKEN}")
 
-    def test_live_request_wins_when_a_retained_tombstone_reuses_its_code(self):
+    def test_retained_prerequisite_code_is_not_reused_by_another_request(self):
         other = self.base / "other"
         (other / ".codearbiter").mkdir(parents=True)
         with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
@@ -211,15 +211,52 @@ class ShortCodeTest(unittest.TestCase):
                 self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
                 names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
         self.lib.retire_code(self.repo, "prerequisite", "SPEC-X")
-        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ" "M8NR")):
             live = self.lib.issue_code(
                 other, "prerequisite", "SPEC-Y", f"satisfy-prerequisite SPEC-Y {'z' * 32}",
                 names=["SPEC-Y"], short_prefix=["satisfy-prerequisite"])
-        self.assertEqual(retired["short_reply"], live["short_reply"])
+        self.assertNotEqual(retired["short_reply"], live["short_reply"])
+        self.assertIn("no armed request", self.lib.expand(retired["short_reply"])["notice"])
         self.assertEqual(
             self.lib.expand(live["short_reply"]),
             {"text": f"satisfy-prerequisite SPEC-Y {'z' * 32}", "notice": ""},
         )
+
+    def test_rearming_the_same_prerequisite_may_reclaim_its_reserved_code(self):
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            first = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        self.lib.retire_code(self.repo, "prerequisite", "SPEC-X")
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            rearmed = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {'z' * 32}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        self.assertEqual(first["short_reply"], rearmed["short_reply"])
+        self.assertEqual(self.lib.expand(rearmed["short_reply"])["text"],
+                         f"satisfy-prerequisite SPEC-X {'z' * 32}")
+
+    def test_legacy_ambiguous_prerequisite_code_is_rejected(self):
+        other = self.base / "other"
+        (other / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            first = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("M8NR")):
+            self.lib.issue_code(
+                other, "prerequisite", "SPEC-Y", f"satisfy-prerequisite SPEC-Y {'z' * 32}",
+                names=["SPEC-Y"], short_prefix=["satisfy-prerequisite"])
+        other_entry = next(path for path in self.lib._registry().glob("*.json")
+                           if json.loads(path.read_text(encoding="utf-8"))["artifact_id"] == "SPEC-Y")
+        value = json.loads(other_entry.read_text(encoding="utf-8"))
+        value["short_reply"] = first["short_reply"]
+        unsigned = {key: item for key, item in value.items() if key != "integrity_sha256"}
+        value["integrity_sha256"] = self.lib._digest(self.lib._canonical(unsigned))
+        other_entry.write_text(json.dumps(value), encoding="utf-8")
+        result = self.lib.expand(first["short_reply"])
+        self.assertEqual(result["text"], first["short_reply"])
+        self.assertIn("no armed request", result["notice"])
 
     def test_sprint_short_form_restates_the_armed_mode(self):
         full = f"approve-sprint SPEC-X PLAN-X delegate-methods {TOKEN}"

@@ -134,7 +134,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 		obstacle = "Mapped tracker sends are paused until the transition map and provider bindings are checked."
 		next = "Run work.py transition-map-get and inspect the pending effects before explicitly resuming or cancelling them."
 	} else if data.PlanTask != nil && data.PlanTask.UnresolvedCount > 0 {
-		obstacle = "A declared plan check was reported failing and remains unresolved within its partial source scope."
+		obstacle = "A declared plan check was reported failing; its applicability may be unassessed and it remains unresolved."
 	} else if data.State == "complete" && checkStatus == "unknown" {
 		obstacle = "Check evidence is unknown."
 		next = "Record the result of the relevant checks."
@@ -245,7 +245,7 @@ func WorkView(data WorkViewData) ([]byte, error) {
 			}
 			w.WriteString(`<p>` + esc(task.NextAction) + `</p>`)
 			if task.UnresolvedCount > 0 {
-				w.WriteString(`<p>Unresolved reported failure: ` + strconv.FormatInt(task.UnresolvedCount, 10) + ` declared command(s), assessed against partial source scope. Review exact task history and attested evidence before claiming verification.</p>`)
+				w.WriteString(`<p>Unresolved reported failure: ` + strconv.FormatInt(task.UnresolvedCount, 10) + ` declared command(s); applicability may be unassessed or limited to partial source scope. Review exact task history and attested evidence before claiming verification.</p>`)
 			}
 			if task.HistoryUnassessed {
 				w.WriteString(`<p>Earlier check history was trimmed and remains unassessed.</p>`)

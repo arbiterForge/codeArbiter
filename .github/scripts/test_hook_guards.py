@@ -161,6 +161,13 @@ def check_corrective_guard_cases(fixture):
         "more\n'@",
         "H-11", "curly quote cannot close a masked literal body early",
     )
+    expect_block(
+        fixture,
+        "Set-Content -LiteralPath \"$env:TEMP\\ca-pr-body.md\" -Value @'\n"
+        "ordinary text\n'@; Remove-Item .codearbiter/decisions/0001-seed.md; @'\n"
+        "more\n'@",
+        "H-11", "ASCII closer with an executable tail cannot be masked as literal data",
+    )
     expect_block(fixture,
                  "Set-Content -LiteralPath '.codearbiter/decisions/0001-seed.md' -Value @'\n"
                  "ordinary text\n'@", "H-11", "protected Set-Content destination remains guarded")
