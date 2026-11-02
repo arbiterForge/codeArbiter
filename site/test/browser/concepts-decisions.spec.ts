@@ -90,7 +90,7 @@ test('all evidence selections remain labelled, complete and read-only across nav
   await page.locator('[data-evidence-case="accepted"] a').first().click();
   // Astro's client navigation completes after the click. Back must leave the
   // actual destination, not race against history insertion on the origin page.
-  await expect(page).toHaveURL(/\/reference\/skills\/decision-lifecycle\/$/);
+  await expect(page).toHaveURL(/\/reference\/commands\/adr\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/concepts\/adrs\/$/);

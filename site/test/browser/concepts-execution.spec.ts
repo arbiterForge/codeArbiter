@@ -143,7 +143,7 @@ test('navigation/back reconnects the map and selection has no persistence or net
   expect(await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }))).toEqual(before);
   expect(requests).toEqual([]); page.off('request', listener);
   await map(page).locator('[data-map-step="commit"] h5 a').click();
-  await expect(page).toHaveURL(/\/reference\/skills\/commit-gate\/$/);
+  await expect(page).toHaveURL(/\/reference\/commands\/commit\/$/);
   await page.goBack();
   await map(page).locator('[data-map-select="accept"]').click();
   await expect(map(page).locator('[data-map-chapter="accept"]')).toBeVisible();
