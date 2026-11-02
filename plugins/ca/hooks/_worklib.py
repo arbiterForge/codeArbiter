@@ -78,6 +78,15 @@ def _read_bounded(path, limit, *, optional=False):
     return raw.decode("utf-8")
 
 
+def _archive_copy(previous, record, archived):
+    """Archive writes the done copy first. An identical board copy may remain
+    after a crash; report that state without inventing a second item or
+    choosing between distinct rows."""
+    return (archived and previous["state"] == "complete"
+            and all(previous[key] == record[key] for key in
+                    ("title", "intent", "work_type", "spec_id", "plan_id", "origin")))
+
+
 def _scan(root):
     base = Path(root) / ".codearbiter"
     open_text = _read_bounded(base / "open-tasks.md", _BOARD_MAX)
@@ -85,10 +94,9 @@ def _scan(root):
                                  optional=True)
     found = {}
     # A (from ...) origin records provenance and several older follow-ups can
-    # share one (#1080). Rows without an explicit Work ID derive their ID from
-    # the origin alone, so such rows are kept per origin until the scan ends.
+    # share one (#1080). Rows are grouped per origin until the scan ends.
     derived = {}
-    origin_items = {}
+    explicit_sources = {}
     seen_operations = {}
     unkeyed = 0
     for text, archived in ((open_text, False), (archive_text, True)):
@@ -135,38 +143,41 @@ def _scan(root):
             record["board_sha256"] = hashlib.sha256(
                 (("archive" if archived else "open") + "\0" + physical).encode("utf-8")
             ).hexdigest()
-            # Archive writes the done copy first. An identical board copy may
-            # remain after a crash; report that state without inventing a
-            # second item or choosing between distinct rows.
-            def archive_copy_of(previous):
-                return (archived and previous["state"] == "complete"
-                        and all(previous[key] == record[key] for key in
-                                ("title", "intent", "work_type", "spec_id", "plan_id", "origin")))
             if explicit:
                 previous = found.get(work_id)
                 if previous is not None:
-                    if not archive_copy_of(previous):
+                    if not _archive_copy(previous, record, archived):
                         raise ValueError(f"duplicate legacy work ID {work_id}")
                     previous["archive_pending"] = True
                     continue
                 found[work_id] = record
+                explicit_sources.setdefault(source, []).append(work_id)
             else:
+                # Only the origin identifies an origin-only row, so its archive
+                # copy must also match the whole task block the archiver copies.
                 items = derived.setdefault(source, [])
-                previous = next((item for item in items if archive_copy_of(item)), None)
+                previous = next((item for item, block in items
+                                 if block == physical and _archive_copy(item, record, archived)), None)
                 if previous is not None:
                     previous["archive_pending"] = True
                     continue
-                items.append(record)
-            origin_items[source] = origin_items.get(source, 0) + 1
-    for source, items in derived.items():
-        if len(items) > 1:
-            # No title-independent key separates them; selected adoption only.
-            unkeyed += len(items)
+                items.append((record, physical))
+    ambiguous = set()
+    for source in sorted(set(derived) | set(explicit_sources)):
+        items, ids = derived.get(source, []), explicit_sources.get(source, [])
+        if len(items) + len(ids) > 1:
+            # The board writer selects a row by its origin, so no row sharing
+            # one can be updated; list none of them (selected adoption only).
+            unkeyed += len(items) + len(ids)
+            ambiguous.add(source)
+            for work_id in ids:
+                del found[work_id]
             continue
-        if items[0]["work_id"] in found:
-            raise ValueError(f"duplicate legacy work ID {items[0]['work_id']}")
-        found[items[0]["work_id"]] = items[0]
-    ambiguous = {source for source, count in origin_items.items() if count > 1}
+        if items:
+            record = items[0][0]
+            if record["work_id"] in found:
+                raise ValueError(f"duplicate legacy work ID {record['work_id']}")
+            found[record["work_id"]] = record
     return found, unkeyed, ambiguous
 
 

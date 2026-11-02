@@ -850,28 +850,39 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual([entry["origin"] for entry in page["entries"]], ["spec:lone"])
         self.assertEqual(page["entries"][0]["work_id"], _worklib._id("spec:lone"))
 
-    def test_legacy_explicit_ids_sharing_an_origin_stay_listed(self) -> None:
+    def test_legacy_explicit_ids_sharing_an_origin_are_not_listed(self) -> None:
+        # The board writer selects a row by origin, so a listed row in a shared
+        # group could never be started, completed or renamed through work.py.
         ids = ("WORK-" + "C" * 32, "WORK-" + "D" * 32)
         self._shared_origin_board(*(
             f"- [ ] Follow-up {n}  (from spec:shared)\n"
             "  - Work origin: spec:shared\n"
             f"  - Work ID: {work_id}\n" for n, work_id in enumerate(ids)))
         page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
-        self.assertEqual(sorted(entry["work_id"] for entry in page["entries"]), list(ids))
-        self.assertEqual(page["unkeyed_count"], 0)
+        self.assertEqual((page["entries"], page["unkeyed_count"]), ([], 2))
+        for work_id in ids:
+            with self.assertRaisesRegex(ValueError, "unknown legacy work ID"):
+                _worklib.dispatch(str(self.root), "work-get", {"work_id": work_id})
 
-    def test_legacy_origin_only_row_keeps_derived_id_beside_explicit_sibling(self) -> None:
-        # An explicit-ID sibling must not unkey a row whose derived ID may already be in use.
-        explicit = "WORK-" + "E" * 32
+    def test_legacy_explicit_sibling_unkeys_the_whole_shared_group(self) -> None:
+        # An explicit-ID sibling sharing the derived row's origin also fails closed,
+        # so neither row's ID can resolve to the other.
         self._shared_origin_board(
             "- [ ] Original follow-up  (from spec:shared)\n",
             "- [ ] Later follow-up  (from spec:shared)\n"
             "  - Work origin: spec:shared\n"
-            f"  - Work ID: {explicit}\n")
+            f"  - Work ID: {_worklib._id('spec:shared')}\n")
         page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
-        self.assertEqual(sorted(entry["work_id"] for entry in page["entries"]),
-                         sorted([_worklib._id("spec:shared"), explicit]))
-        self.assertEqual(page["unkeyed_count"], 0)
+        self.assertEqual((page["entries"], page["unkeyed_count"]), ([], 2))
+
+    def test_legacy_distinct_archived_row_with_matching_fields_is_not_a_copy(self) -> None:
+        # Same title and origin but a different completion date: a distinct row,
+        # not an interrupted archive's copy, so the shared origin is ambiguous.
+        board = self._shared_origin_board("- [x] Follow-up  (from spec:shared) (done 2026-10-01)\n")
+        (board.parent / "done-tasks.md").write_text(
+            "- [x] Follow-up  (from spec:shared) (done 2026-09-01)\n", encoding="utf-8")
+        page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
+        self.assertEqual((page["total"], page["unkeyed_count"]), (0, 2))
 
     def test_legacy_ambiguous_origin_lookup_fails_closed(self) -> None:
         board = self._shared_origin_board(

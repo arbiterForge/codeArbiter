@@ -128,16 +128,19 @@ class AdoptionInventoryTest(unittest.TestCase):
         self.assertFalse(lone["origin"].startswith("legacy:open#"))
         self.assertEqual(lone["work_id"], _worklib._id("spec:lone"))
 
-    def test_shared_origin_keeps_ids_the_legacy_listing_exposed(self):
+    def test_shared_origin_keeps_explicit_ids_and_reseeds_derived_ones(self):
         explicit = "WORK-" + "F" * 32
         self.board.write_text("- [ ] Original follow-up (from spec:shared)\n"
                               "- [ ] Later follow-up (from spec:shared)\n"
                               "  - Work origin: spec:shared\n"
                               f"  - Work ID: {explicit}\n", encoding="utf-8")
-        listed = {entry["work_id"] for entry in
-                  _worklib.dispatch(str(self.root), "work-list", {"limit": 10})["entries"]}
+        # The legacy listing exposes neither row of a shared group (#1080).
+        self.assertEqual(_worklib.dispatch(str(self.root), "work-list", {"limit": 10})["entries"], [])
         rows = _workadopt.preview(self.root)["rows"]
-        self.assertEqual({row["work_id"] for row in rows}, listed)
+        self.assertIn(explicit, {row["work_id"] for row in rows})
+        derived = next(row for row in rows if row["work_id"] != explicit)
+        self.assertEqual(derived["work_id"], _worklib._id(derived["origin"]))
+        self.assertNotEqual(derived["work_id"], _worklib._id("spec:shared"))
         self.assertEqual(len({row["origin"] for row in rows}), 2)
 
     def test_identical_open_and_archive_copies_still_refuse(self):

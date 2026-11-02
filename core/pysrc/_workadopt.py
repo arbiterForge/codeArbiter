@@ -103,10 +103,11 @@ def _separate_shared_origins(rows):
 
     The origin is provenance, and several older rows can share one. Each such
     row takes the position-seeded origin that rows without one already get and
-    keeps the shared value as legacy_origin. Work IDs the legacy listing already
-    exposes stay: an explicit Work ID, or the derived ID of the only origin-only
-    row in its group. Rows that look like an interrupted archive's identical
-    copy are left alone, so the duplicate checks below still refuse them.
+    keeps the shared value as legacy_origin. An explicit Work ID stays; an
+    origin-only row's ID follows its new origin, since the legacy listing
+    exposes no row in a shared group. Rows that look like an interrupted
+    archive's identical copy are left alone, so the duplicate checks below
+    still refuse them.
     """
     groups = {}
     for row in rows:
@@ -116,10 +117,9 @@ def _separate_shared_origins(rows):
     for group in groups.values():
         if len(group) < 2 or len({tuple(row[key] for key in content) for row in group}) < len(group):
             continue
-        derived = [row for row in group if not row["_explicit_id"]]
         for row in group:
             row["origin"] = row["_seeded_origin"]
-            if len(derived) > 1 and not row["_explicit_id"]:
+            if not row["_explicit_id"]:
                 row["work_id"] = _worklib._id(row["origin"])
     for row in rows:
         del row["_explicit_id"], row["_seeded_origin"]
