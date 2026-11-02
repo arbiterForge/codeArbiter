@@ -63,14 +63,13 @@ def _rows(text, location):
         legacy_origin = board.origin_for_task(lines, task)
         if metadata.get("Work origin") and metadata["Work origin"] != legacy_origin:
             raise ValueError("legacy origin metadata disagrees with the task row")
-        seed = f"{location}\0{task.lineno}\0{block}".encode("utf-8")
-        seeded_origin = "legacy:" + location + "#" + hashlib.sha256(seed).hexdigest()[:32]
         if legacy_origin and _ORIGIN.fullmatch(legacy_origin):
             origin = legacy_origin
         elif legacy_origin:
             origin = "legacy:origin#" + hashlib.sha256(legacy_origin.encode("utf-8")).hexdigest()[:32]
         else:
-            origin = seeded_origin
+            seed = f"{location}\0{task.lineno}\0{block}".encode("utf-8")
+            origin = "legacy:" + location + "#" + hashlib.sha256(seed).hexdigest()[:32]
         # Preserve IDs already exposed by the legacy adapter, even when the
         # historical source does not fit the native origin grammar.
         work_id = metadata.get("Work ID") or _worklib._id(legacy_origin or origin)
@@ -93,35 +92,8 @@ def _rows(text, location):
             "completed_at": task.done.isoformat() if task.done else None,
             "line": task.lineno, "block_sha256": hashlib.sha256(block.encode("utf-8")).hexdigest(),
             "spec_id": metadata.get("Spec ID"), "plan_id": metadata.get("Plan ID"),
-            "_explicit_id": "Work ID" in metadata, "_seeded_origin": seeded_origin,
         })
     return result
-
-
-def _separate_shared_origins(rows):
-    """Give rows that share a (from ...) origin their own native origin (#1084).
-
-    The origin is provenance, and several older rows can share one. Each such
-    row takes the position-seeded origin that rows without one already get and
-    keeps the shared value as legacy_origin. An explicit Work ID stays; an
-    origin-only row's ID follows its new origin, since the legacy listing
-    exposes no row in a shared group. Rows whose whole task blocks match, as an
-    interrupted archive's copy does, are left alone, so the duplicate checks
-    below still refuse them.
-    """
-    groups = {}
-    for row in rows:
-        if row["legacy_origin"]:
-            groups.setdefault(row["legacy_origin"], []).append(row)
-    for group in groups.values():
-        if len(group) < 2 or len({row["block_sha256"] for row in group}) < len(group):
-            continue
-        for row in group:
-            row["origin"] = row["_seeded_origin"]
-            if not row["_explicit_id"]:
-                row["work_id"] = _worklib._id(row["origin"])
-    for row in rows:
-        del row["_explicit_id"], row["_seeded_origin"]
 
 
 def _inventory(root, *, snapshot=False):
@@ -137,7 +109,6 @@ def _inventory(root, *, snapshot=False):
     rows = _rows(active[1], "open")
     if archive:
         rows.extend(_rows(archive[1], "archive"))
-    _separate_shared_origins(rows)
     if len(rows) > 507:
         raise ValueError("legacy board has too many rows for one native transaction")
     for key in ("work_id", "origin", "alias"):

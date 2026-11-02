@@ -18,7 +18,6 @@ predate the plugin rewrite and are grouped by date.
 
 - List legacy board work when several rows share one `(from ...)` origin. Rows that share an origin are now counted as unkeyed, because the board writer selects a row by its origin, and an origin lookup or create on a shared origin refuses as ambiguous; before, one shared origin made `work.py list`, `/ca:task` and the `/ca:standup` work sweep fail for the whole board.
 - State the compact `--gate` identifier format in `/ca:override` with examples; a descriptive gate name was refused by the audit helper and the override went unrecorded.
-- Adopt legacy board rows that share one `(from ...)` origin as distinct native work items, keeping the shared origin as provenance; adoption refused the whole board before.
 
 ## [3.8.2] - 2026-11-01
 

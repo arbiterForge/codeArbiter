@@ -301,10 +301,6 @@ EXPECTED_SUITES = {
         "test_facade_exposes_read_only_preview",
         "test_archived_row_is_inventoried_and_cross_board_alias_collision_refused",
         "test_keyed_legacy_row_keeps_its_pre_adoption_work_id",
-        "test_rows_sharing_an_origin_adopt_as_distinct_items",
-        "test_shared_origin_keeps_explicit_ids_and_reseeds_derived_ones",
-        "test_identical_open_and_archive_copies_still_refuse",
-        "test_same_title_rows_with_different_blocks_adopt_separately",
         "test_scaffold_instructions_and_fenced_example_are_not_adopted",
     },
     "test_work_github.py": {
