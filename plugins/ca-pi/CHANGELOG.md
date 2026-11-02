@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.3] - 2026-11-02
+
+### Fixed
+
+- Keep legacy board work readable when several rows share one `(from ...)` origin; shared-origin rows are counted as unkeyed and origin lookups on them refuse as ambiguous.
+- State the compact `--gate` identifier format in `/ca:override` with examples; a descriptive gate name was refused by the audit helper and the override went unrecorded.
+
 ## [0.27.2] - 2026-11-01
 
 ### Fixed

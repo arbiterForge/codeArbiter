@@ -150,7 +150,12 @@ class TestPersonaRemovedFromSessionStart(unittest.TestCase):
         self.assertNotIn("ORCHESTRATOR", text)
         self.assertIn("=== codeArbiter startup state ===", text)
         self.assertIn("host: fakehost", text)
-        self.assertIn("codeArbiter: executing ca 3.8.2", text)
+        # Read the version from the manifest the line reports, so a release bump
+        # does not break this persona check.
+        with open(os.path.join(REPO_ROOT, "plugins", "ca", ".claude-plugin", "plugin.json"),
+                  encoding="utf-8") as manifest:
+            version = json.load(manifest)["version"]
+        self.assertIn(f"codeArbiter: executing ca {version}", text)
         self.assertIn("stage: 2", text)
 
 

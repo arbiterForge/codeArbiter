@@ -52,6 +52,25 @@ class LockedOverrideAppendTests(unittest.TestCase):
         self.assertIn(b"BY: fixture@example.test | GATE: H-05", raw)
         self.assertIn(b"REASON: specific justification", raw)
 
+    def test_command_source_documents_the_gate_identifier_the_helper_accepts(self):
+        # #1081: the command told the model to pass "<gate bypassed>", a description the
+        # helper refuses. Pin the documented format and examples to GATE_RE.
+        import re
+
+        command = (HOOKS.parent / "commands" / "override.md").read_text(encoding="utf-8")
+        flow = " ".join(command.split())
+        self.assertIn("`--gate` takes a compact gate identifier", flow)
+        examples = re.search(r"for example `([^`]+)` or `([^`]+)`", flow)
+        self.assertIsNotNone(examples, "the --gate rule must give identifier examples")
+        for example in examples.groups():
+            with self.subTest(example=example):
+                self.assertIsNotNone(appender.GATE_RE.fullmatch(example))
+                result = self.run_helper("--gate", example, "--reason", "specific justification")
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        placeholder = re.search(r'--gate "<([^>]+)>"', command).group(1)
+        self.assertIsNotNone(appender.GATE_RE.fullmatch(placeholder),
+                             f"placeholder <{placeholder}> must read as an identifier")
+
     def test_lock_contention_refuses_without_mutation(self):
         before = self.log.read_bytes()
         holder = acquire_lock(audit_lock_key(self.root, self.log))

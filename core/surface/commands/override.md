@@ -14,16 +14,21 @@ logged, always visible, never silent. Single identity, single confirm.
    vague reason ("just skip it") and ask for a specific one.
 2. Detect the operator identity from `git config user.email` only. If it is unset, ask the user once
    to state their identity for the log. (No platform ladder, no second confirmation.)
-3. For an ordinary override, use the private locked audit helper from the repository root:
+3. For an ordinary override, use the private locked audit helper from the repository root.
+   `--gate` takes a compact gate identifier, not a description: it starts with an ASCII
+   letter or digit and uses only ASCII letters and digits, `.`, `_`, `:` and `-`, with no
+   spaces, up to 128 characters, for example `lint:max-line-length` or `coverage-threshold`.
+   The helper refuses anything else. Put the human explanation in `--reason`. A security
+   gate such as H-09b/H-10b never takes this path; see the security ceiling below.
 
    ```sh
-   python3 "{{PLUGIN_ROOT}}/hooks/append-override.py" --gate "<gate bypassed>" --reason "<specific reason>"
+   python3 "{{PLUGIN_ROOT}}/hooks/append-override.py" --gate "<gate-id>" --reason "<specific reason>"
    ```
 
    It appends one line to `{{PROJECT_DIR}}/.codearbiter/overrides.log`:
 
    ```
-   [ISO-8601 timestamp] | BY: <email> | GATE: <gate bypassed> | REASON: <reason>
+   [ISO-8601 timestamp] | BY: <email> | GATE: <gate-id> | REASON: <reason>
    ```
 
    The log is append-only — never edited or deleted, committed as a permanent audit artifact. The
