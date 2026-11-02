@@ -260,6 +260,15 @@ describe("captured runs (AC-05)", () => {
     expect(paths.every((path) => !path.startsWith("site/"))).toBe(true);
   }, 60_000);
 
+  it.each(["statusline-refusal", "context-scaffold-frontmatter"])(
+    "records _host.py for %s, which hostapi.load_host() runs by file path",
+    (id) => {
+      const target = CAPTURE_TARGETS.find((candidate) => candidate.id === id)!;
+      expect(runCapture(target).sources.map((source) => source.path)).toContain("plugins/ca/hooks/_host.py");
+    },
+    60_000,
+  );
+
   it("captures the exit status and stderr of a refusal, not only successful stdout", () => {
     const target = CAPTURE_TARGETS.find((candidate) => candidate.id === "statusline-refusal")!;
     const record = runCapture(target);

@@ -108,11 +108,11 @@ function renderFrame(lines: TranscriptLine[], label: string): string {
 </svg>`;
 }
 
-async function makeVideo(
-  frames: Array<{ lines: TranscriptLine[]; duration: number }>,
-  label: string,
-  frameRoot: string,
-) {
+type Frames = Array<{ lines: TranscriptLine[]; duration: number }>;
+/** Renders the replay media (mp4, webm, poster) for `frames` into `outDir`. */
+type RenderMedia = (frames: Frames, label: string, frameRoot: string, outDir: string) => Promise<void>;
+
+const makeVideo: RenderMedia = async (frames, label, frameRoot, outDir) => {
   const concatLines: string[] = [];
   for (const [index, frame] of frames.entries()) {
     const framePath = join(frameRoot, `frame-${index.toString().padStart(2, "0")}.png`);
@@ -128,7 +128,7 @@ async function makeVideo(
   const shared = ["-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concatPath, "-vf", "fps=30,format=yuv420p"];
   const mp4 = run(
     "ffmpeg",
-    [...shared, "-c:v", "libx264", "-crf", "24", "-preset", "slow", "-movflags", "+faststart", "-y", join(outputDir, "hook-proof.mp4")],
+    [...shared, "-c:v", "libx264", "-crf", "24", "-preset", "slow", "-movflags", "+faststart", "-y", join(outDir, "hook-proof.mp4")],
     siteRoot,
   );
   if (mp4.status !== 0) {
@@ -136,14 +136,14 @@ async function makeVideo(
   }
   const webm = run(
     "ffmpeg",
-    [...shared, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "35", "-an", "-y", join(outputDir, "hook-proof.webm")],
+    [...shared, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "35", "-an", "-y", join(outDir, "hook-proof.webm")],
     siteRoot,
   );
   if (webm.status !== 0) {
     throw new Error(`ffmpeg WebM render failed (${webm.status}):\n${webm.stderr}`);
   }
-  await sharp(lastFrame).webp({ quality: 88 }).toFile(join(outputDir, "hook-proof-poster.webp"));
-}
+  await sharp(lastFrame).webp({ quality: 88 }).toFile(join(outDir, "hook-proof-poster.webp"));
+};
 
 /** The record release applicability reads. Its schema is fixed; see the header comment. */
 interface HookProofRecord {
@@ -186,8 +186,18 @@ function evidenceOf(record: HookProofRecord): string {
  * evidence. They are rewritten only when the recorded evidence differs (the
  * hook changed, or its behavior did) or when `force` asks for a fresh render.
  */
-export async function captureHookProof(options: { force?: boolean } = {}): Promise<void> {
-  mkdirSync(outputDir, { recursive: true });
+export async function captureHookProof(
+  options: {
+    force?: boolean;
+    /** Where the proof record and media live. Defaults to the committed landing assets. */
+    outputDir?: string;
+    /** Renders the replay media. Defaults to ffmpeg and sharp; replaceable so a render failure can be tested. */
+    render?: RenderMedia;
+  } = {},
+): Promise<void> {
+  const outDir = options.outputDir ?? outputDir;
+  const render = options.render ?? makeVideo;
+  mkdirSync(outDir, { recursive: true });
   const fixture = createFixture();
   let frameRoot: string | undefined;
   try {
@@ -256,7 +266,7 @@ export async function captureHookProof(options: { force?: boolean } = {}): Promi
       },
     };
 
-    const proofPath = join(outputDir, "hook-proof.json");
+    const proofPath = join(outDir, "hook-proof.json");
     const previous = existsSync(proofPath) ? (JSON.parse(readFileSync(proofPath, "utf8")) as HookProofRecord) : undefined;
     if (!options.force && previous && evidenceOf(previous) === evidenceOf(record)) {
       process.stdout.write(
@@ -265,7 +275,6 @@ export async function captureHookProof(options: { force?: boolean } = {}): Promi
       );
       return;
     }
-    writeFileSync(proofPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");
 
     const blockLines = stderr.split("\n").flatMap((line) => wrapLine(line, 77));
     const timeline: TranscriptLine[] = [
@@ -320,11 +329,14 @@ export async function captureHookProof(options: { force?: boolean } = {}): Promi
       },
     ];
     frameRoot = mkdtempSync(join(tmpdir(), "codearbiter-proof-frames-"));
-    await makeVideo(timeline.length ? frames : [], capturedAt.slice(0, 10), frameRoot);
+    await render(timeline.length ? frames : [], capturedAt.slice(0, 10), frameRoot, outDir);
+    // Last, and only once the media exist: a record that already matches the hook
+    // would make every later run report "unchanged" and never retry a failed render.
+    writeFileSync(proofPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");
     process.stdout.write(
       `Captured direct H-03 hook invocation from ${record.source} at ${capturedAt}\n` +
       `Source SHA-256: ${sourceSha256}\n` +
-      `Artifacts: ${relative(siteRoot, outputDir)}\n`,
+      `Artifacts: ${relative(siteRoot, outDir)}\n`,
     );
   } finally {
     fixture.dispose();

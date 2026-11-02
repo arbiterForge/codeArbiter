@@ -7,14 +7,14 @@
  * captured tool changed after its output was recorded (verify.ts).
  */
 
-import { spawnSync } from "node:child_process";
+import { spawnSync, type SpawnSyncOptionsWithStringEncoding, type SpawnSyncReturns } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { createFixture, type Fixture } from "./fixture";
 import { FIXTURE_PREFIX, hashFileLf, normalizeArgv, normalizeText } from "./normalize";
 
 export const REPO_ROOT = resolve(import.meta.dirname, "..", "..", "..");
-const RUNNER = join(import.meta.dirname, "py-runner.py");
+export const RUNNER = join(import.meta.dirname, "py-runner.py");
 const RUN_TIMEOUT_MS = 60_000;
 
 /** Which text a capture shows: one of the tool's streams, or a file the tool left in the fixture. */
@@ -62,6 +62,39 @@ export interface PythonRun {
   modules: string[];
 }
 
+/**
+ * The interpreters to try, in order. An explicit PYTHON is used alone. Otherwise
+ * a POSIX host tries `python3` and then `python`, because many hosts ship only
+ * one of them; Windows tries only `python`, since `python3` there is usually the
+ * Microsoft Store stub rather than an interpreter.
+ */
+export function pythonCandidates(env: NodeJS.ProcessEnv, platform: NodeJS.Platform): string[] {
+  if (env.PYTHON) return [env.PYTHON];
+  return platform === "win32" ? ["python"] : ["python3", "python"];
+}
+
+/**
+ * Spawn the first interpreter that exists. Only "not found" moves on to the next
+ * candidate; any other failure, and any non-zero exit, is returned as it is so a
+ * broken interpreter is never hidden by a second try.
+ */
+export function spawnPython(
+  candidates: readonly string[],
+  args: string[],
+  options: SpawnSyncOptionsWithStringEncoding,
+  spawn: typeof spawnSync = spawnSync,
+): { python: string; result: SpawnSyncReturns<string> } {
+  let python = candidates[0];
+  let result = spawn(python, args, options);
+  for (const next of candidates.slice(1)) {
+    const notFound = result.error && (result.error as NodeJS.ErrnoException).code === "ENOENT";
+    if (!notFound) break;
+    python = next;
+    result = spawn(python, args, options);
+  }
+  return { python, result };
+}
+
 /** Run a repository script through the module-recording runner inside `fixture`. */
 export function runPythonEntry(
   fixture: Fixture,
@@ -75,15 +108,18 @@ export function runPythonEntry(
     throw new Error(`Capture tool must be inside the repository: ${tool}`);
   }
   const sideFile = join(fixture.tmp, "loaded-modules.json");
-  const python = process.env.PYTHON || "python";
-  const result = spawnSync(python, ["-B", "-X", "utf8", RUNNER, sideFile, REPO_ROOT, entry, ...args], {
-    cwd: fixture.project,
-    env: { ...fixture.env, ...options.env },
-    input: options.stdin,
-    encoding: "utf8",
-    windowsHide: true,
-    timeout: RUN_TIMEOUT_MS,
-  });
+  const { python, result } = spawnPython(
+    pythonCandidates(process.env, process.platform),
+    ["-B", "-X", "utf8", RUNNER, sideFile, REPO_ROOT, entry, ...args],
+    {
+      cwd: fixture.project,
+      env: { ...fixture.env, ...options.env },
+      input: options.stdin,
+      encoding: "utf8",
+      windowsHide: true,
+      timeout: RUN_TIMEOUT_MS,
+    },
+  );
   if (result.error) throw new Error(`Could not run ${python} for ${tool}: ${result.error.message}`);
   if (result.status === null) throw new Error(`${tool} did not finish: ${result.signal ?? "no exit status"}`);
   let modules: string[];

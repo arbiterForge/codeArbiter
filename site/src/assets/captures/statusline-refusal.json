@@ -30,6 +30,10 @@
       "sha256": "966c876c032d026459dc4c0af2fffaa822a222426ca9150a7cb068456272dc5e"
     },
     {
+      "path": "plugins/ca/hooks/_host.py",
+      "sha256": "9a5bc99b8c96938467357ba27220da15b5f111484898a20c96b2624049220c49"
+    },
+    {
       "path": "plugins/ca/hooks/_pathnorm.py",
       "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
     },

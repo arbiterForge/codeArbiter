@@ -8,12 +8,14 @@ the repository modules the interpreter actually imported, not just the entry
 script. The entry runs under the same conditions as a direct invocation:
 `__main__`, its own directory first on `sys.path`, `sys.argv[0]` as its path, and
 the interpreter's own exit-status rules for `SystemExit`. After the run, the
-repository files in `sys.modules` (plus the entry) are written to <side-file> as
-a JSON list of repository-relative POSIX paths.
+repository files the run executed are written to <side-file> as a JSON list of
+repository-relative POSIX paths. Those are the entry, every module in
+`sys.modules`, and every other Python file whose code was executed, which an
+audit hook sees even when a tool loads a file by path and never registers it
+(`hostapi.load_host()` does this to `_host.py`).
 
-Limit: modules a tool loads in a child process, or loads by file path without
-registering them in `sys.modules`, are not seen. The harness hashes only what
-this reports, so a capture of such a tool must name those files itself.
+Limit: code a tool runs in a child process is not seen. The harness hashes only
+what this reports, so a capture of such a tool must name those files itself.
 """
 
 import json
@@ -21,6 +23,17 @@ import os
 import runpy
 import sys
 import traceback
+
+
+_EXECUTED = set()
+
+
+def _note_executed(event, args):
+    """Audit hook: remember the file of every code object Python executes (never raises)."""
+    if event == "exec" and args:
+        filename = getattr(args[0], "co_filename", None)
+        if isinstance(filename, str) and filename.endswith(".py"):
+            _EXECUTED.add(filename)
 
 
 def _inside(path, root):
@@ -31,8 +44,8 @@ def _inside(path, root):
 
 def _loaded_repository_files(repo_root, entry, runner):
     found = {entry}
-    for module in list(sys.modules.values()):
-        filename = getattr(module, "__file__", None)
+    registered = (getattr(module, "__file__", None) for module in list(sys.modules.values()))
+    for filename in [*registered, *_EXECUTED]:
         if not filename or not str(filename).endswith(".py"):
             continue
         real = os.path.realpath(filename)
@@ -57,6 +70,7 @@ def main():
     repo_root = os.path.realpath(repo_root)
     entry = os.path.realpath(entry)
     runner = os.path.realpath(__file__)
+    sys.addaudithook(_note_executed)
     sys.argv = [entry, *arguments]
     sys.path[0] = os.path.dirname(entry)  # what `python <entry>` puts first, instead of this file's directory
     status = 0
