@@ -3,8 +3,8 @@ entity: commands/add-dep
 related: [agents/dependency-reviewer, review]
 use_when: "You want to adopt a new or changed third-party dependency, or run one named tool once for a one-time inspection without adopting it."
 avoid_when: "Removing a dependency or updating one as part of a code change, which belong in `/ca:fix` or `/ca:feature`; for a package question with nothing to install, ask it directly."
-asks: "The package and, if you have one, an exact version. After the dependency reviewer clears it, you confirm the exact install command before anything runs."
-produces: "A written review of the package's license, source and supply-chain risk, and an install only after you confirm it, with manifest and lockfile changed together."
+asks: "To adopt a package, the package and, if you have one, an exact version; after the dependency reviewer clears it, you confirm the exact install command before anything runs. For a one-time inspection of a tool you name, you confirm one pinned command, with no review."
+produces: "For adoption, a written review of the package's license, source and supply-chain risk, then an install only after you confirm it, with manifest and lockfile changed together. For a one-time inspection, one confirmed run of a pinned tool and a report of the command and where its output went, with no manifest or lockfile change."
 gates:
   - gate: dependency review
     when: before dependency adoption through this command

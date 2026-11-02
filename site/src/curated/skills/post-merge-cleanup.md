@@ -8,7 +8,7 @@ produces: "A clean, current default-branch checkout, the removals you approved, 
 gates:
   - gate: merge proof
     when: phase 1 compares the topic HEAD with the fetched default ref
-    effect: work stops unless HEAD is proven contained in the fetched default branch, by ancestry or, for a squash merge, by the merged PR record matching HEAD
+    effect: work stops unless HEAD is proven contained in the fetched default branch, by ancestry, by the merged PR record matching HEAD for a squash merge, or, when gh is unavailable or no PR record exists, by a tree byte-identical to the fetched default branch
   - gate: item classification
     when: phase 2 inventories tracked changes, untracked files, and stashes
     effect: every item receives a reasoned class and any uncertainty receives the most conservative class
@@ -27,7 +27,10 @@ local tidying so no generated file, scratch note, stash, or branch is discarded 
 looks obsolete. It proves that the branch's work reached the fetched default branch before anything
 local is touched, and it never treats an upstream marked `gone` as proof. A squash merge leaves no
 commit ancestry back to the branch, so when the ancestry check fails it falls back to the merged PR
-record, where the PR's `headRefOid` must equal local HEAD, and it reports whichever proof held.
+record, where the PR's `headRefOid` must equal local HEAD. When `gh` is unavailable or no PR record
+exists, a tree byte-identical to the fetched default branch (`git diff --quiet origin/<default> HEAD`)
+is accepted as a last fallback and reported as such. It reports whichever proof held. If none of the
+three holds, it stops, names the commits that have not landed, and deletes nothing.
 
 ## Usage
 

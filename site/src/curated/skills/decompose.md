@@ -23,10 +23,13 @@ Develops greenfield context from a resumable interview. It asks about missing fa
 consequential choices across six areas: vision, users and flows, functional scope, technical
 shape, integrations, and risks, in whatever order the conversation makes natural.
 
-Each question is saved as a decomposition record when it is asked, and your answer is saved as
-soon as you give it, so a closed session loses nothing. Answered questions stay settled: a resumed
-interview continues with the open question that matters most for what you want to do next, not a
-fixed first-unfinished step. A restart retires earlier records; it never deletes them.
+Each question you answer is saved as an answered decomposition record with your actual answer. A
+question that is unanswered or deferred is not a decomposition record. It is kept in
+`open-questions.md`, which tracks its live status, and the decomposition links to it by identity.
+A closed session therefore keeps the unanswered question there, where it can be found and resumed.
+Answered questions stay settled: a resumed interview continues with the open question that matters
+most for what you want to do next, not a fixed first-unfinished step. A restart retires earlier
+records; it never deletes them.
 
 ## Usage
 
@@ -57,10 +60,10 @@ Use [Plan a new project](/guides/plan-a-new-project/) for preparation, review an
 ## Deliverables and their continuing role
 
 Decomposition is one native HTML document, `.codearbiter/decomposition/project.html`. Its
-`question` records hold the interview; `capability`, `component`, `phase` and `work_item`
+`question` records hold the answered interview questions; `capability`, `component`, `phase` and `work_item`
 records hold the intended architecture, phased plan and backlog. Later reconciliation reads these
 records by their stable IDs. User-decided architectural choices go through the decision-lifecycle
-owner and are linked from `decision` records; unresolved choices remain open questions.
+owner and are linked from `decision` records; unresolved choices stay in `open-questions.md`.
 
 | Record | Job |
 |---|---|
@@ -80,8 +83,9 @@ passing tests, installed-host qualification, or permission to merge.
 
 1. Create any missing knowledge documents and read the decomposition records. Answered questions
    are settled; resume with the open question that matters most.
-2. Save each question when it is asked and each actual answer as soon as it is given. Resolve
-   consequential gaps before their dependent output.
+2. Save each answered question, with your actual answer, as a decomposition record, and keep each
+   unanswered or deferred question in `open-questions.md`. Resolve consequential gaps before their
+   dependent output.
 3. Synthesize capability, component, phase and work-item records, show them, apply corrections and
    record the user's actual confirmation.
 4. Add knowledge records for what is known, promote each approved work item once with

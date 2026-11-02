@@ -1,7 +1,7 @@
 ---
 entity: commands/standup
 related: [status, task]
-use_when: "You want the daily cleanup pass: fast-forward the default branch, clear merged branches and stale worktrees, and surface stashes, uncommitted changes and tasks that look done."
+use_when: "You want the daily cleanup pass: fast-forward the current branch when it is clean and behind its upstream, clear merged branches and stale worktrees, and surface stashes, uncommitted changes and tasks that look done."
 avoid_when: "A read-only snapshot, which is `/ca:status`; install health, which is `/ca:doctor`; transcript hygiene, which is `/ca:prune`; or committing staged work, which is `/ca:commit`."
 asks: "A yes for each destructive step: each merged branch, each stale worktree (as one named group or one by one) and each task to archive. Nothing is removed without it."
 produces: "A hygiene report with suggested next steps, and only the removals and archives you approved. The task board is never flipped for you."
@@ -19,7 +19,8 @@ gates:
 
 ## What it does
 
-The daily hygiene checklist, made routine and gated: fetch and offer a fast-forward pull, list
+The daily hygiene checklist, made routine and gated: fetch and offer a fast-forward pull of the
+current branch, list
 locally-merged branches for individual confirm-and-delete, list stale worktrees for either
 confirm-and-delete as one named group or individually, surface stashes, uncommitted changes, and
 un-pushed commits with a suggested next step, run a read-only advisory board-drift sweep comparing

@@ -10,8 +10,15 @@ import { READER_FIELD_SPEC, type ReaderFields, type ReaderShape } from "./types"
 const INLINE_TOKEN =
   /(?<!`)(`+)(?!`)([\s\S]*?[^`])\1(?!`)|\[([^\]]+)\]\(([^)\s]+)\)/g;
 
-/** A link target is kept only when it has no scheme or the scheme is benign. */
-function isSafeHref(href: string): boolean {
+/**
+ * A link target is kept only when it has no scheme or the scheme is benign.
+ * A browser drops leading control characters and spaces, and tab or newline
+ * inside the scheme, before it reads the scheme, so a target holding any
+ * control character, DEL or whitespace is refused before the scheme is checked.
+ */
+export function isSafeHref(href: string): boolean {
+  // eslint-disable-next-line no-control-regex
+  if (/[\x00-\x20\x7f\s]/.test(href)) return false;
   const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(href);
   return scheme === null || /^(https?|mailto)$/i.test(scheme[1]);
 }

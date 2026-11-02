@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { generate } from "../../scripts/generator/generate";
 import { loadCurated } from "../../scripts/generator/load-curated";
-import { renderReaderFields } from "../../scripts/generator/render-reader-fields";
+import { isSafeHref, renderReaderFields } from "../../scripts/generator/render-reader-fields";
 import type { ReaderShape } from "../../scripts/generator/types";
 import { buildPlugin, cleanupFixtures, tempDir, writeCurated } from "./plugin-fixture";
 
@@ -341,6 +341,26 @@ describe("renderReaderFields", () => {
     expect(markdown).not.toContain('href="javascript');
   });
 
+  it("keeps a link whose target has no scheme or a benign one", () => {
+    const markdown = renderReaderFields(
+      { ...WORKFLOW, asks: "see [a](/guides/x/), [b](https://example.com/y) and [c](mailto:a@example.com)" },
+      "workflow",
+    );
+    expect(valuesOf(markdown)[2]).toBe(
+      'see <a href="/guides/x/">a</a>, <a href="https://example.com/y">b</a> and <a href="mailto:a@example.com">c</a>',
+    );
+  });
+
+  it("does not link a target that hides its scheme behind a control character", () => {
+    const markdown = renderReaderFields(
+      { ...WORKFLOW, asks: "a [x](\x01javascript:alert(1)) and [y](\x1fjavascript:alert(2)) and [z](\x7fjavascript:alert(3))" },
+      "workflow",
+    );
+    expect(markdown).not.toContain("<a ");
+    expect(markdown).not.toContain("href=");
+    expect(valuesOf(markdown)[2]).toContain("javascript:");
+  });
+
   it("does not read identifiers with underscores as emphasis", () => {
     const markdown = renderReaderFields({ ...WORKFLOW, produces: "one of confirmed_code_defect or no_action" }, "workflow");
     expect(valuesOf(markdown)[3]).toBe("one of confirmed_code_defect or no_action");
@@ -349,6 +369,45 @@ describe("renderReaderFields", () => {
   it("renders nothing without a reader shape or without fields", () => {
     expect(renderReaderFields(WORKFLOW, undefined)).toBe("");
     expect(renderReaderFields(undefined, "workflow")).toBe("");
+  });
+});
+
+describe("isSafeHref", () => {
+  it.each([
+    ["a root-relative path", "/guides/adding-a-dependency/"],
+    ["a relative path", "../concepts/"],
+    ["a fragment", "#what-it-does"],
+    ["an https URL", "https://example.com/a?b=c"],
+    ["an http URL", "http://example.com/"],
+    ["a mailto address", "mailto:team@example.com"],
+    ["an upper-case allowed scheme", "HTTPS://example.com/"],
+  ])("accepts %s", (_label, href) => {
+    expect(isSafeHref(href)).toBe(true);
+  });
+
+  it.each([
+    ["javascript:", "javascript:alert(1)"],
+    ["mixed-case javascript:", "JaVaScRiPt:alert(1)"],
+    ["data:", "data:text/html,x"],
+    ["vbscript:", "vbscript:msgbox(1)"],
+    ["file:", "file:///etc/passwd"],
+  ])("rejects a %s scheme", (_label, href) => {
+    expect(isSafeHref(href)).toBe(false);
+  });
+
+  it.each([
+    ["a leading C0 control character", "\x01javascript:alert(1)"],
+    ["a leading NUL", "\x00javascript:alert(1)"],
+    ["a leading unit separator", "\x1fjavascript:alert(1)"],
+    ["a leading DEL", "\x7fjavascript:alert(1)"],
+    ["a leading space", " javascript:alert(1)"],
+    ["a leading tab", "\tjavascript:alert(1)"],
+    ["an embedded newline in the scheme", "java\nscript:alert(1)"],
+    ["an embedded control character in an allowed scheme", "https\x01://example.com/"],
+    ["a leading space before an allowed scheme", " https://example.com/"],
+    ["a non-breaking space", "\u00a0javascript:alert(1)"],
+  ])("rejects %s", (_label, href) => {
+    expect(isSafeHref(href)).toBe(false);
   });
 });
 
