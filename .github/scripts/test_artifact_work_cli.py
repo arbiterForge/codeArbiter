@@ -833,6 +833,81 @@ class WorkCLITest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicate legacy Work ID"):
             _worklib.dispatch(str(self.root), "work-list", {"limit": 1})
 
+    def _shared_origin_board(self, *rows: str) -> Path:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text("# Existing owner\n\n## In-flight\n" + "".join(rows), encoding="utf-8")
+        return board
+
+    def test_legacy_rows_sharing_an_origin_are_unkeyed_not_fatal(self) -> None:
+        # #1080: a (from ...) tag records provenance, and older follow-ups share one.
+        self._shared_origin_board(
+            "- [ ] First follow-up  (from spec:shared)\n",
+            "- [ ] Second follow-up  (from spec:shared)\n",
+            "- [ ] Lone task  (from spec:lone)\n")
+        page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
+        self.assertEqual(page["unkeyed_count"], 2)
+        self.assertEqual([entry["origin"] for entry in page["entries"]], ["spec:lone"])
+        self.assertEqual(page["entries"][0]["work_id"], _worklib._id("spec:lone"))
+
+    def test_legacy_explicit_ids_sharing_an_origin_stay_listed(self) -> None:
+        ids = ("WORK-" + "C" * 32, "WORK-" + "D" * 32)
+        self._shared_origin_board(*(
+            f"- [ ] Follow-up {n}  (from spec:shared)\n"
+            "  - Work origin: spec:shared\n"
+            f"  - Work ID: {work_id}\n" for n, work_id in enumerate(ids)))
+        page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
+        self.assertEqual(sorted(entry["work_id"] for entry in page["entries"]), list(ids))
+        self.assertEqual(page["unkeyed_count"], 0)
+
+    def test_legacy_origin_only_row_keeps_derived_id_beside_explicit_sibling(self) -> None:
+        # An explicit-ID sibling must not unkey a row whose derived ID may already be in use.
+        explicit = "WORK-" + "E" * 32
+        self._shared_origin_board(
+            "- [ ] Original follow-up  (from spec:shared)\n",
+            "- [ ] Later follow-up  (from spec:shared)\n"
+            "  - Work origin: spec:shared\n"
+            f"  - Work ID: {explicit}\n")
+        page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
+        self.assertEqual(sorted(entry["work_id"] for entry in page["entries"]),
+                         sorted([_worklib._id("spec:shared"), explicit]))
+        self.assertEqual(page["unkeyed_count"], 0)
+
+    def test_legacy_ambiguous_origin_lookup_fails_closed(self) -> None:
+        board = self._shared_origin_board(
+            "- [ ] First follow-up  (from spec:shared)\n",
+            "- [ ] Second follow-up  (from spec:shared)\n",
+            "- [ ] Lone task  (from spec:lone)\n")
+        # A shared origin is unreadable as one item, never absent (which would invite a duplicate).
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            _worklib.dispatch(str(self.root), "work-origins", {"origins": ["spec:shared"]})
+        lone = _worklib.dispatch(str(self.root), "work-origins", {"origins": ["spec:lone"]})
+        self.assertEqual(lone["matches"][0]["work_id"], _worklib._id("spec:lone"))
+        original = board.read_bytes()
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            _worklib.dispatch(str(self.root), "work-create", {
+                "operation_id": "op-ambiguous", "title": "Third", "intent": "Third",
+                "work_type": "fix", "origin": "spec:shared"})
+        self.assertEqual(board.read_bytes(), original)
+
+    def test_legacy_origin_only_archive_copy_stays_one_item(self) -> None:
+        board = self._shared_origin_board()
+        for argv in (["add", "--from=spec:archived", "--desc=Archived follow-up", "--", "Archived follow-up"],
+                     ["start", "ignored", "--from", "spec:archived", "--date", "2026-10-29"],
+                     ["done", "ignored", "--from", "spec:archived", "--date", "2026-10-30"]):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(taskwrite.main(argv, root=str(self.root)), 0)
+        before_archive = board.read_text(encoding="utf-8")
+        self.assertNotIn("Work ID:", before_archive)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(taskwrite.main(["archive", "ignored", "--from", "spec:archived"],
+                                            root=str(self.root)), 0)
+        board.write_text(before_archive, encoding="utf-8")  # a crash after the archive copy
+        page = _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
+        self.assertEqual((page["total"], page["unkeyed_count"]), (1, 0))
+        selected = _worklib.dispatch(str(self.root), "work-get", {"work_id": _worklib._id("spec:archived")})
+        self.assertTrue(selected.get("archive_pending"))
+
     def test_legacy_work_updates_keep_unknown_check_and_exact_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)

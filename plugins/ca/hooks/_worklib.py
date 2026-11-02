@@ -84,7 +84,11 @@ def _scan(root):
     archive_text = _read_bounded(base / "done-tasks.md", _ARCHIVE_MAX,
                                  optional=True)
     found = {}
-    seen_sources = {}
+    # A (from ...) origin records provenance and several older follow-ups can
+    # share one (#1080). Rows without an explicit Work ID derive their ID from
+    # the origin alone, so such rows are kept per origin until the scan ends.
+    derived = {}
+    origin_items = {}
     seen_operations = {}
     unkeyed = 0
     for text, archived in ((open_text, False), (archive_text, True)):
@@ -108,12 +112,10 @@ def _scan(root):
                 prior_source = seen_operations.setdefault(operation_id, source)
                 if prior_source != source:
                     raise ValueError("legacy work operation ID belongs to multiple origins")
-            work_id = fields.get("Work ID") or _id(source)
+            explicit = fields.get("Work ID")
+            work_id = explicit or _id(source)
             if _WORK_ID.fullmatch(work_id) is None:
                 raise ValueError(f"invalid legacy work ID for origin {source!r}")
-            prior_id = seen_sources.setdefault(source, work_id)
-            if prior_id != work_id:
-                raise ValueError(f"duplicate legacy work origin {source!r}")
             record = {
                 "work_id": work_id, "owner": "legacy", "origin": source,
                 "title": _title(task, source),
@@ -133,19 +135,39 @@ def _scan(root):
             record["board_sha256"] = hashlib.sha256(
                 (("archive" if archived else "open") + "\0" + physical).encode("utf-8")
             ).hexdigest()
-            previous = found.get(work_id)
-            if previous is not None:
-                # Archive writes the done copy first. An identical board copy
-                # may remain after a crash; report that state without inventing
-                # a second item or choosing between distinct rows.
-                if (archived and previous["state"] == "complete"
+            # Archive writes the done copy first. An identical board copy may
+            # remain after a crash; report that state without inventing a
+            # second item or choosing between distinct rows.
+            def archive_copy_of(previous):
+                return (archived and previous["state"] == "complete"
                         and all(previous[key] == record[key] for key in
-                                ("title", "intent", "work_type", "spec_id", "plan_id", "origin"))):
+                                ("title", "intent", "work_type", "spec_id", "plan_id", "origin")))
+            if explicit:
+                previous = found.get(work_id)
+                if previous is not None:
+                    if not archive_copy_of(previous):
+                        raise ValueError(f"duplicate legacy work ID {work_id}")
                     previous["archive_pending"] = True
                     continue
-                raise ValueError(f"duplicate legacy work origin {source!r}")
-            found[work_id] = record
-    return found, unkeyed
+                found[work_id] = record
+            else:
+                items = derived.setdefault(source, [])
+                previous = next((item for item in items if archive_copy_of(item)), None)
+                if previous is not None:
+                    previous["archive_pending"] = True
+                    continue
+                items.append(record)
+            origin_items[source] = origin_items.get(source, 0) + 1
+    for source, items in derived.items():
+        if len(items) > 1:
+            # No title-independent key separates them; selected adoption only.
+            unkeyed += len(items)
+            continue
+        if items[0]["work_id"] in found:
+            raise ValueError(f"duplicate legacy work ID {items[0]['work_id']}")
+        found[items[0]["work_id"]] = items[0]
+    ambiguous = {source for source, count in origin_items.items() if count > 1}
+    return found, unkeyed, ambiguous
 
 
 def _records(root):
@@ -171,12 +193,15 @@ def dispatch(root, operation, request):
     if unknown:
         raise ValueError(f"unknown legacy work request field: {sorted(unknown)[0]}")
     if operation == "work-create":
-        _records(root)  # refuse malformed/unreadable prior state before the board writer runs
+        # Refuse malformed/unreadable prior state before the board writer runs.
+        ambiguous = _scan(root)[2]
         origin = request.get("origin")
         operation_id = request.get("operation_id")
         if not isinstance(operation_id, str) or not operation_id.strip():
             raise ValueError("legacy work create needs a stable operation_id")
         source = _source(origin, operation_id)
+        if source in ambiguous:
+            raise ValueError(f"legacy work origin {source!r} is ambiguous: several board rows share it")
         if not isinstance(request.get("title"), str) or not isinstance(request.get("intent"), str):
             raise ValueError("legacy work create needs title and intent")
         if request.get("work_type") not in ("feature", "fix", "chore", "spike", "unknown"):
@@ -247,7 +272,7 @@ def dispatch(root, operation, request):
                 or not 1 <= limit <= 64 or type(budget) is not int
                 or not 1024 <= budget <= 65536):
             raise ValueError("invalid legacy work listing bounds")
-        records, unkeyed = _scan(root)
+        records, unkeyed, _ambiguous = _scan(root)
         ids = sorted(records)
         digest = hashlib.sha256(json.dumps(ids, separators=(",", ":")).encode("utf-8")).hexdigest()
         if offset > len(ids):
@@ -280,7 +305,11 @@ def dispatch(root, operation, request):
                        or "\n" in origin or "\r" in origin or "(" in origin or ")" in origin
                        for origin in origins)):
             raise ValueError("invalid legacy origin query")
-        records = _records(root)
+        records, _unkeyed, ambiguous = _scan(root)
+        shared = sorted(set(origins) & ambiguous)
+        if shared:
+            # Unreadable as one item is not absent; an empty match would invite a duplicate.
+            raise ValueError(f"legacy work origin {shared[0]!r} is ambiguous: several board rows share it")
         found = {record["origin"]: record for record in records.values()}
         return {"matches": [{"origin": origin, "work_id": found[origin]["work_id"],
                              "state": found[origin]["state"]}
