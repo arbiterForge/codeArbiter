@@ -11,6 +11,7 @@ import { renderConfigurationReference } from "./generator/configuration-referenc
 import { loadAcademySource } from "./academy-source";
 import { generateAcademy } from "./generate-academy";
 import { generateReleaseApplicability } from "./release-applicability";
+import { assertCapturesFresh } from "./capture/verify";
 
 const here = dirname(fileURLToPath(import.meta.url)); // site/scripts
 const repoRoot = resolve(here, "..", ".."); // -> repo root
@@ -25,6 +26,18 @@ const releaseApplicabilityPath = join(
   "generated",
   "release-applicability.json",
 );
+
+// The guides render captured tool output, which is only true while the tool is
+// unchanged. A capture records the hash of every source its run executed, so a
+// changed source fails here, before anything is generated, with the capture,
+// the source and the refresh command named (AC-06).
+try {
+  const captures = assertCapturesFresh(repoRoot, join(here, "..", "src", "assets", "captures"));
+  console.log(`Verified ${captures.length} captured guide examples against the working tree`);
+} catch (error) {
+  console.error((error as Error).message);
+  process.exit(1);
+}
 
 const result = generate(srcDir, outDir, sidebarPath, curatedDir, true);
 const counts = result.pages.reduce<Record<string, number>>((acc, p) => {

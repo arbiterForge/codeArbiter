@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "id": "context-scaffold-frontmatter",
+  "title": "The activation frontmatter the scaffolder writes to CONTEXT.md",
+  "tool": "plugins/ca/hooks/init-codearbiter.py",
+  "argv": [
+    "python",
+    "plugins/ca/hooks/init-codearbiter.py"
+  ],
+  "exitCode": 0,
+  "shown": "file .codearbiter/CONTEXT.md (first 5 lines)",
+  "output": "---\narbiter: enabled\nstage: 1\ncontext-format: html\n---",
+  "hashing": "sha256 over file bytes with CRLF collapsed to LF",
+  "sources": [
+    {
+      "path": "plugins/ca/hooks/_activationlib.py",
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97"
+    },
+    {
+      "path": "plugins/ca/hooks/_artifactlib.py",
+      "sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1"
+    },
+    {
+      "path": "plugins/ca/hooks/_durabilitylib.py",
+      "sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b"
+    },
+    {
+      "path": "plugins/ca/hooks/_entrylib.py",
+      "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a"
+    },
+    {
+      "path": "plugins/ca/hooks/_gitexec.py",
+      "sha256": "6dc323512f8a50b2a82a8ff63cd5eb2d1e98aefb9dafcc802b8053a2bc838d68"
+    },
+    {
+      "path": "plugins/ca/hooks/_githooks.py",
+      "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+    },
+    {
+      "path": "plugins/ca/hooks/_hooklib.py",
+      "sha256": "966c876c032d026459dc4c0af2fffaa822a222426ca9150a7cb068456272dc5e"
+    },
+    {
+      "path": "plugins/ca/hooks/_pathnorm.py",
+      "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
+    },
+    {
+      "path": "plugins/ca/hooks/_protectedlib.py",
+      "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3"
+    },
+    {
+      "path": "plugins/ca/hooks/_scopelib.py",
+      "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b"
+    },
+    {
+      "path": "plugins/ca/hooks/_sensitivelib.py",
+      "sha256": "ccb2b1c7b6912aac52bf0aae5fbba8bd0a8e66e4c4fae5a28458ab4790d38c34"
+    },
+    {
+      "path": "plugins/ca/hooks/_taskboardlib.py",
+      "sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46"
+    },
+    {
+      "path": "plugins/ca/hooks/_taskexcludelib.py",
+      "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+    },
+    {
+      "path": "plugins/ca/hooks/hostapi.py",
+      "sha256": "79074209309f3928a8fe3084a224c8befb6e1c0acf0fe6ec7b7d9b1d1f790514"
+    },
+    {
+      "path": "plugins/ca/hooks/init-codearbiter.py",
+      "sha256": "faaeaf09ccfcaa893ec6d2b9f966a86e58aea8a5eb8daec4f4760c0587cddc0b"
+    }
+  ]
+}

@@ -16,6 +16,8 @@ import WorkflowMap from '../../../components/WorkflowMap.astro';
 
 import ReaderJourney from '../../../components/ReaderJourney.astro';
 
+import CapturedRun from '../../../components/CapturedRun.astro';
+
 export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 The repository opt-in is shared by Claude Code, Codex, and Pi. Run `/ca:init` in Claude Code,
@@ -131,13 +133,10 @@ Do not mark a stub initialized just because the activation flag exists.
 
 ## 3. Confirm the Activation Flag
 
-Open `.codearbiter/CONTEXT.md` and confirm the leading frontmatter:
+Open `.codearbiter/CONTEXT.md` and confirm the leading frontmatter. A fresh scaffold writes these
+first five lines; `stage` and `context-format` record the maturity stage and the context format:
 
-```yaml
----
-arbiter: enabled
----
-```
+<CapturedRun id="context-scaffold-frontmatter" />
 
 Two things to verify:
 

@@ -213,11 +213,12 @@ If the renderer file is absent mid-update, the self-heal skips the write. A late
 
 ## Unparseable Settings File
 
-`/ca:statusline` refuses to touch `~/.claude/settings.json` when the file is not valid JSON:
+`/ca:statusline` refuses to touch `~/.claude/settings.json` when the file is not valid JSON. The wiring
+script prints this and exits with status 1. The run below used a temporary home directory whose
+settings file was cut off mid-edit; the parenthesised text is the JSON parser's own message and
+changes with the damage:
 
-```
-REFUSING TO WRITE: ~/.claude/settings.json is not valid JSON (...).
-Fix it by hand, then re-run - I will not clobber an unparseable settings file.
+```text capture="statusline-refusal"
 ```
 
 Open the file in a text editor, restore valid JSON, then re-run `/ca:statusline`.

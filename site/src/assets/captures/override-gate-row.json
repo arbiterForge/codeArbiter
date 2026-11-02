@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "override-gate-row",
+  "title": "The audit row an ordinary override appends",
+  "tool": "plugins/ca/hooks/append-override.py",
+  "argv": [
+    "python",
+    "plugins/ca/hooks/append-override.py",
+    "--gate",
+    "design-review",
+    "--reason",
+    "design review: retain the deprecated v2 compatibility selector until the documented v3 removal release; supported v2 clients still depend on it, this commit only"
+  ],
+  "exitCode": 0,
+  "shown": "file .codearbiter/overrides.log (last 1 lines)",
+  "output": "[<timestamp>] | BY: you@example.com | GATE: design-review | REASON: design review: retain the deprecated v2 compatibility selector until the documented v3 removal release; supported v2 clients still depend on it, this commit only",
+  "hashing": "sha256 over file bytes with CRLF collapsed to LF",
+  "sources": [
+    {
+      "path": "plugins/ca/hooks/_activationlib.py",
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97"
+    },
+    {
+      "path": "plugins/ca/hooks/_gitexec.py",
+      "sha256": "6dc323512f8a50b2a82a8ff63cd5eb2d1e98aefb9dafcc802b8053a2bc838d68"
+    },
+    {
+      "path": "plugins/ca/hooks/_hooklib.py",
+      "sha256": "966c876c032d026459dc4c0af2fffaa822a222426ca9150a7cb068456272dc5e"
+    },
+    {
+      "path": "plugins/ca/hooks/_overrideappendlib.py",
+      "sha256": "f24b383542390db1a5794fb63bc239408fac8c45285aeb38a28946aede85b820"
+    },
+    {
+      "path": "plugins/ca/hooks/_pathnorm.py",
+      "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
+    },
+    {
+      "path": "plugins/ca/hooks/_protectedlib.py",
+      "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3"
+    },
+    {
+      "path": "plugins/ca/hooks/_scopelib.py",
+      "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b"
+    },
+    {
+      "path": "plugins/ca/hooks/_sensitivelib.py",
+      "sha256": "ccb2b1c7b6912aac52bf0aae5fbba8bd0a8e66e4c4fae5a28458ab4790d38c34"
+    },
+    {
+      "path": "plugins/ca/hooks/append-override.py",
+      "sha256": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e"
+    },
+    {
+      "path": "plugins/ca/hooks/hostapi.py",
+      "sha256": "79074209309f3928a8fe3084a224c8befb6e1c0acf0fe6ec7b7d9b1d1f790514"
+    }
+  ]
+}

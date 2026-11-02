@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "statusline-refusal",
+  "title": "What /ca:statusline prints when settings.json is not valid JSON",
+  "tool": "plugins/ca/hooks/wire-statusline.py",
+  "argv": [
+    "python",
+    "plugins/ca/hooks/wire-statusline.py",
+    "install"
+  ],
+  "exitCode": 1,
+  "shown": "stderr",
+  "output": "REFUSING TO WRITE: ~/.claude/settings.json is not valid JSON (Expecting value: line 2 column 1 (char 12)). Fix it by hand, then re-run - I will not clobber an unparseable settings file.",
+  "hashing": "sha256 over file bytes with CRLF collapsed to LF",
+  "sources": [
+    {
+      "path": "plugins/ca/hooks/_activationlib.py",
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97"
+    },
+    {
+      "path": "plugins/ca/hooks/_durabilitylib.py",
+      "sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b"
+    },
+    {
+      "path": "plugins/ca/hooks/_gitexec.py",
+      "sha256": "6dc323512f8a50b2a82a8ff63cd5eb2d1e98aefb9dafcc802b8053a2bc838d68"
+    },
+    {
+      "path": "plugins/ca/hooks/_hooklib.py",
+      "sha256": "966c876c032d026459dc4c0af2fffaa822a222426ca9150a7cb068456272dc5e"
+    },
+    {
+      "path": "plugins/ca/hooks/_pathnorm.py",
+      "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
+    },
+    {
+      "path": "plugins/ca/hooks/_protectedlib.py",
+      "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3"
+    },
+    {
+      "path": "plugins/ca/hooks/_scopelib.py",
+      "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b"
+    },
+    {
+      "path": "plugins/ca/hooks/_sensitivelib.py",
+      "sha256": "ccb2b1c7b6912aac52bf0aae5fbba8bd0a8e66e4c4fae5a28458ab4790d38c34"
+    },
+    {
+      "path": "plugins/ca/hooks/hostapi.py",
+      "sha256": "79074209309f3928a8fe3084a224c8befb6e1c0acf0fe6ec7b7d9b1d1f790514"
+    },
+    {
+      "path": "plugins/ca/hooks/wire-statusline.py",
+      "sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+---
+/**
+ * A guide example rendered from a committed capture of a codeArbiter tool.
+ *
+ * The output is the normalized result of running the tool against a temporary
+ * fixture (site/scripts/capture); the frame title names the tool and the first
+ * 12 hex characters of its entry script's sha256. `npm run gen` fails when any
+ * source the run executed has changed since, so the block cannot go stale
+ * quietly. Plain `.md` guides, which cannot import this component, reach the
+ * same output through a `capture="<id>"` fence (see scripts/capture/render.ts).
+ */
+import { Code } from "@astrojs/starlight/components";
+import { capturedRunLabel, type LabelledCapture } from "../../scripts/capture/label";
+
+interface Props {
+  id: string;
+}
+
+interface Capture extends LabelledCapture {
+  output: string;
+}
+
+const captures = import.meta.glob<Capture>("../assets/captures/*.json", { eager: true, import: "default" });
+const { id } = Astro.props;
+const capture = captures[`../assets/captures/${id}.json`];
+if (!capture) throw new Error(`No capture named "${id}". Run \`npm run capture\` and check the id.`);
+---
+
+<div class="ca-captured-run" data-capture={capture.id}>
+  <Code code={capture.output} lang="text" title={capturedRunLabel(capture)} wrap />
+</div>
