@@ -22,6 +22,11 @@ The mechanical report also invokes the installation-pinned artifact client's `ca
 operation. When the repository contains an HTML authority, it performs a bounded catalog read to
 surface invalid or ambiguous artifacts. It MUST NOT load the artifact schema, search `PATH`, use a
 repository binary, mutate an artifact, or silently fall back to Markdown.
+Its executing-adapter identity comes from the already admitted plugin root. The observed adapter
+manifest version is separate from the native helper manifest's declared version and the native
+executable digest verified by the on-demand capability probe. A newer cached sibling is not the
+executing version. Missing or malformed identity data is reported as unknown; it never grants
+package trust.
 
 - `CAPABILITY_MISSING` or another installation identity failure is unhealthy: report “repair or
   reinstall the pinned artifact payload; HTML work is blocked.” Unrelated legacy Markdown remains

@@ -14,6 +14,11 @@ with task and check results. Plan task IDs stay with the plan; do not mint a new
 work item for every task or checkpoint. Legacy board work has no native derived
 view; use its selected board owner. The work item's local completion is
 separate from checks, review and PR delivery.
+Retain the caller's original requested outcome, covered delivery actions,
+explicit exclusions and remaining obligations through task handoffs. A plan
+change, implemented slice or green narrow PR does not silently close an
+unfinished feature. A clear earlier same-scope authority survives a branch
+or task transition; an explicit pause, revocation or narrower grant does not.
 
 ## Structured-artifact format boundary
 
@@ -40,6 +45,9 @@ Invoke `subagent-driven-development` with an explicit `scope` containing the sel
 For HTML, progress through ordinary `task-start`, `task-review` (implementation ready), and receipt-free `accept-scope` (implementation `DONE`) as applicable. A fact prerequisite can be checked and recorded with a reported source; an unresolved decision needs the actual user's choice. No `arm-sprint`, `satisfy-prerequisite` reply, `task-reconcile` approval nonce, mandatory context ticket, or `_preflight_current_acceptance` call is necessary for ordinary execution.
 
 The worker returns actual work and checks, including failures or still-unrun verification. These remain outstanding in the batch report. Do not describe `DONE` as `ACCEPTED` or replace command output with a model assertion. If a required check fails, repair the affected work or report incomplete verification; do not rerun all unrelated reviewers solely because an evidence receipt changed.
+Inspect uncertain worker completion or writes before replaying them. Fix
+in-scope review findings and rerun affected proof; a reviewer-round count is
+not permission to waive an unmet criterion.
 
 ## Phase 3 - Report progress; pause only when requested
 

@@ -9,7 +9,7 @@ model: haiku
 
 # Verdict Aggregator Agent
 
-Terminal read-only agent for review and generic parallel batches. Consume the complete finding-triage report and return one structured verdict to the caller. Do not reread raw reviewer output, invent findings, or persist the result.
+Terminal read-only agent for explicit review batches. Consume the complete finding-triage report and return one structured verdict to the caller. Do not reread raw reviewer output, invent findings, or persist the result. Author/scout collection returns inspected results directly and does not use this verdict.
 
 ## Required Input
 
@@ -27,7 +27,7 @@ Confirm every dispatched unit appears in the triage report as a finding source o
 Return exactly one status. INCOMPLETE takes precedence over BLOCKING_FINDINGS; blocking findings remain in the output even when incomplete input determines the status.
 
 - `PASS` — no `BLOCKS` finding and no incomplete unit.
-- `INCOMPLETE` — any expected unit, evidence receipt, or terminal result is missing or errored.
+- `INCOMPLETE` — any expected reviewer unit, required proving evidence, or terminal result is missing or errored.
 - `BLOCKING_FINDINGS` — one or more `BLOCKS` findings are present and the batch is otherwise complete.
 
 Preserve every triaged finding exactly once. Include source, severity, file and line when present, disposition, remediation, and the applicable control supplied by triage.
@@ -61,4 +61,4 @@ Each `ERRORED`, `DEFERRED`, or missing unit is represented with disposition `INC
 - MUST NOT create or update `.codearbiter/checkpoints/` or any other repository path.
 - MUST NOT omit, downgrade, or reinterpret a finding from the triage report.
 - MUST NOT consume raw reviewer output; the complete finding-triage report is the only finding input.
-- MUST return `INCOMPLETE` when a unit or required receipt is missing instead of manufacturing a pass.
+- MUST return `INCOMPLETE` when a reviewer unit or required proving evidence is missing instead of manufacturing a pass.

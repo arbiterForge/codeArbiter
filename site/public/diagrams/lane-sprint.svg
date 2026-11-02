@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 2208" role="img" data-diagram-system="ca-v2" data-execution-map="sprint">
-<title>An authorized sprint reaches a PR</title><desc>Current assistive source flow with retained historical citations. The user's request authorizes the agreed work; ordinary drafts, task progress and in-scope methods require no second artifact approval, context ticket or receipt-driven reviewer chain. Actual user stops, host/security controls and commit/publication permissions remain. This source explanation is not a captured live host run. Actual endpoint: An implementation report and authorized open PR with actual checks, meaningful decisions and remaining work. Reported DONE does not certify verification or release; the sprint never merges or discards work without separate authority. Conditions and return paths remain in the companion reading view.</desc>
+<title>An authorized sprint reaches a PR</title><desc>Current assistive source flow with retained historical citations. The user's request authorizes the agreed work; ordinary drafts, task progress and in-scope methods require no second artifact approval, context ticket or receipt-driven reviewer chain. Actual user stops, host/security controls and commit/publication permissions remain. This source explanation is not a captured live host run. Actual endpoint: A checked report and open PR. Sprint never infers merge; an earlier same-scope grant can authorize a ready PR. Discard needs named-branch confirmation. Conditions and return paths remain in the companion reading view.</desc>
 <rect width="900" height="2208" fill="#090d12"/>
 <text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">SPRINT • COMMANDS / SKILLS / AGENTS</text>
 <text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Agree the outcome → implement within scope → report and hand off</text>
@@ -123,7 +123,7 @@
 </svg>
 <text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Commit and hand off the PR</text>
 <svg x="0" y="1672" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="handoff">
-<title>Commit and hand off the PR</title><desc>skill: commit-gate → skill: finishing-a-development-branch → command: /ca:pr procedure reused in place → agent: PR reviewers and verdict funnel. Inspect the actual PR head, observed checks, meaningful decisions and unresolved findings. Commit and PR actions use existing authorization; merge and publication remain separate.</desc>
+<title>Commit and hand off the PR</title><desc>skill: commit-gate → skill: finishing-a-development-branch → command: /ca:pr procedure reused in place → agent: PR reviewers and verdict funnel. Use existing commit and PR authority. Merge needs an earlier same-scope grant plus green exact-head review; publication remains separate.</desc>
 <defs><marker id="asset-sprint-handoff-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Commit and hand off the PR</text>
@@ -144,7 +144,7 @@
 <text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">12</text>
 <text x="214.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">commit-gate</text>
 </g>
-<g data-map-node="sprint-finish" data-role="skill"><title>finishing-a-development-branch. Sprint mode selects Open a PR instead of asking for attended terminal choices. Merge and discard are excluded.</title>
+<g data-map-node="sprint-finish" data-role="skill"><title>finishing-a-development-branch. Sprint defaults to Open a PR. An earlier same-scope merge grant selects Merge via PR after exact-head checks and review. Discard still needs named-branch confirmation.</title>
 <rect x="319" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="332" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">13</text>
 <text x="403.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Finish branch</text>
@@ -163,5 +163,5 @@
 </g>
 <text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
 </svg>
-<text x="24" y="2164" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">An honest implementation report and authorized PR; merge remains separate.</text>
+<text x="24" y="2164" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Open PR by default; a prior same-scope grant can authorize a ready merge.</text>
 </svg>

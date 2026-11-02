@@ -1049,6 +1049,20 @@ def emit_banner(host_name, mode):
     print(f"mode: {mode}")
 
 
+def emit_payload_identity(identity):
+    """One startup line from the executing root; never a cache or release claim."""
+    def clean(value):
+        return str(value).replace("\n", " ").replace("\r", " ")[:80]
+
+    adapter = clean(identity.get("adapter", "unknown"))
+    version = clean(identity.get("adapter_version", "unknown"))
+    if version == "unknown":
+        status = clean(identity.get("adapter_manifest_status", "unknown"))
+        print(f"codeArbiter: executing {adapter} version unknown ({status} manifest; inspect installation)")
+    else:
+        print(f"codeArbiter: executing {adapter} {version} (observed hook manifest; native helper not checked)")
+
+
 def emit_not_initialized(root, host, mode):
     """The NOT-INITIALIZED early-exit banner — mode-aware TEXT, not an
     unconditional print (a non-arbiter mode has no commands, so instructing
@@ -1278,6 +1292,12 @@ def main():
     # host (FailClosedHost -> name "unknown", #255) is visible right in the
     # banner instead of being indistinguishable from a working install.
     emit_banner(getattr(host, "name", "unknown"), mode)
+    try:
+        payload_identity = hostapi.observe_payload_identity(host, plugin)
+    except Exception:  # noqa: BLE001 - diagnostics never disable startup enforcement
+        payload_identity = {"adapter": getattr(host, "adapter_name", "unknown"),
+                            "adapter_version": "unknown", "adapter_manifest_status": "unavailable"}
+    emit_payload_identity(payload_identity)
 
     ctx_text = read_text(ctx) or ""
     if not initialized_body_text(ctx_text):

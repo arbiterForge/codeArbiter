@@ -69,7 +69,7 @@ Read-only review of a change. Routes to `dispatching-parallel-agents` (`<plugin-
    | `coverage-auditor` | any source change (test coverage vs. obligations) |
    | `architecture-drift-reviewer` | code that may diverge from accepted ADRs in `.codearbiter/decisions/` |
 
-4. Route to `dispatching-parallel-agents` with that unit list (read-only batch — no collision check).
+4. Route to `dispatching-parallel-agents` with that unit list and the explicit review completion contract (read-only batch — no collision check).
    It dedupes overlapping findings, then funnels through `finding-triage` (severity + inline
    `[NEEDS-TRIAGE]` on out-of-scope items) → `verdict-aggregator` (single read-only verdict).
 5. Surface the aggregated verdict: findings by severity, file:line, remediation, and the applicable

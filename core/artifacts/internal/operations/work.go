@@ -661,6 +661,17 @@ func (e *Engine) workContext(r object) (any, error) {
 				}
 			}
 		}
+		if chosen == nil {
+			// A blocked task is a diagnostic fallback only. Keep scheduler
+			// eligibility unchanged, but show its recorded stop in selected work.
+			for _, value := range model.A(planDoc.Norm()["tasks"]) {
+				task := model.M(value)
+				if model.S(state(planDoc, model.S(task["id"]))["state"]) == "BLOCKED" {
+					chosen = task
+					break
+				}
+			}
+		}
 		if chosen != nil {
 			id := model.S(chosen["id"])
 			projection := object{"id": id, "title": chosen["title"],
@@ -669,6 +680,7 @@ func (e *Engine) workContext(r object) (any, error) {
 			if packet, err := planner.taskContext(planDoc, id, 32768); err == nil {
 				selected := model.M(packet)
 				projection["next_action"] = selected["next_action"]
+				projection["check_summary"] = selected["check_summary"]
 				if reports := model.A(selected["reported_checks"]); len(reports) != 0 {
 					latest := model.M(reports[len(reports)-1])
 					projection["last_reported_check"] = object{"reported_outcome": latest["reported_outcome"],

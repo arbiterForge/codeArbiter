@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.2] - 2026-11-01
+
+### Fixed
+
+- Classify approved runtime secret transport using the active security policy and keep prohibited sinks blocked.
+- Allow literal PR-body data, read-only search patterns, protected-file copy sources, and index-only unstaging without relaxing protected-write guards.
+- Keep ordinary alphanumeric prose out of approval-code capture unless its code is retained.
+- Preserve unresolved native work failures in compact context and derived views, and identify the executing hook payload in startup and doctor diagnostics.
+- Carry scoped task authority and applicable review evidence through sprint and handoff flows.
+
 ## [3.8.1] - 2026-11-01
 
 ### Added

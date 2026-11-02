@@ -1068,6 +1068,30 @@ class _VerdictFixture(unittest.TestCase):
         with open(path, "w", encoding="utf-8") as f:
             f.write(text)
 
+    def enroll_context_target(self):
+        operation = "context01"
+        transaction = {
+            "format": "codearbiter.transaction/0.2.0", "operation_id": operation,
+            "request_sha256": "a" * 64, "state": "committed",
+            "entries": [
+                {"path": ".codearbiter/security-controls.md",
+                 "stage": f".codearbiter/.ca-artifact-{operation}-0.new",
+                 "backup": f".codearbiter/.artifacts/history/{operation}-0.before",
+                 "before_sha256": "b" * 64, "after_sha256": "c" * 64, "size": 8},
+                {"path": ".codearbiter/.provenance/security-controls.json",
+                 "stage": f".codearbiter/.provenance/.ca-artifact-{operation}-1.new",
+                 "backup": f".codearbiter/.artifacts/history/{operation}-1.before",
+                 "before_sha256": "d" * 64, "after_sha256": "e" * 64, "size": 8},
+            ],
+            "result": {"document_id": "security-controls",
+                       "target_path": ".codearbiter/security-controls.md",
+                       "document_sha256": "c" * 64, "provenance_sha256": "e" * 64,
+                       "mode": "update"},
+        }
+        self._write(os.path.join(self.ca, "security-controls.md"), "security fixture\n")
+        self._write(os.path.join(self.ca, ".artifacts", "transactions", operation + ".json"),
+                    json.dumps(transaction, sort_keys=True))
+
     def _spawn(self, script, payload, claude_env):
         env = dict(os.environ)
         if claude_env:
@@ -1191,6 +1215,27 @@ class TestCodexPreBashParity(_VerdictFixture):
 
     def test_no_verify_commit_blocks(self):
         self.assertBlocked(self.codex_bash('git commit --no-verify -m "x"'), "H-20")
+
+    def test_active_context_copy_source_allowed_and_destination_blocked(self):
+        self.enroll_context_target()
+        docs = os.path.join(self.root, "docs")
+        os.makedirs(docs)
+        self._write(os.path.join(docs, "security-controls.md"), "draft fixture\n")
+        allowed = ("Copy-Item -LiteralPath '.codearbiter/security-controls.md' "
+                   "-Destination 'docs/security-controls-draft.md'")
+        self.assertAllowed(self.codex_bash(allowed))
+        source = os.path.join(self.ca, "security-controls.md")
+        destination = os.path.join(docs, "security-controls-draft.md")
+        with open(source, "rb") as stream:
+            before = stream.read()
+        shutil.copyfile(source, destination)
+        with open(source, "rb") as stream:
+            self.assertEqual(stream.read(), before)
+        with open(destination, "rb") as stream:
+            self.assertEqual(stream.read(), before)
+        self.assertBlocked(self.codex_bash(
+            "Copy-Item -LiteralPath 'docs/security-controls.md' "
+            "-Destination '.codearbiter/security-controls.md'"), "H-22")
 
 
 class TestPruneEntryHostGate(unittest.TestCase):

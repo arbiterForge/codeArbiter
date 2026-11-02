@@ -203,6 +203,61 @@ class ShortCodeTest(unittest.TestCase):
         self.assertEqual(self.lib.expand("approve AAAA")["text"], f"approve SPEC-1 {TOKEN}")
         self.assertEqual(self.lib.expand("approve BBBB")["text"], f"approve SPEC-2 {TOKEN}")
 
+    def test_retained_prerequisite_code_is_not_reused_by_another_request(self):
+        other = self.base / "other"
+        (other / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            retired = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        self.lib.retire_code(self.repo, "prerequisite", "SPEC-X")
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ" "M8NR")):
+            live = self.lib.issue_code(
+                other, "prerequisite", "SPEC-Y", f"satisfy-prerequisite SPEC-Y {'z' * 32}",
+                names=["SPEC-Y"], short_prefix=["satisfy-prerequisite"])
+        self.assertNotEqual(retired["short_reply"], live["short_reply"])
+        self.assertIn("no armed request", self.lib.expand(retired["short_reply"])["notice"])
+        self.assertEqual(
+            self.lib.expand(live["short_reply"]),
+            {"text": f"satisfy-prerequisite SPEC-Y {'z' * 32}", "notice": ""},
+        )
+
+    def test_rearming_the_same_prerequisite_may_reclaim_its_reserved_code(self):
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            first = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        self.lib.retire_code(self.repo, "prerequisite", "SPEC-X")
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            rearmed = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {'z' * 32}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        self.assertEqual(first["short_reply"], rearmed["short_reply"])
+        self.assertEqual(self.lib.expand(rearmed["short_reply"])["text"],
+                         f"satisfy-prerequisite SPEC-X {'z' * 32}")
+
+    def test_legacy_ambiguous_prerequisite_code_is_rejected(self):
+        other = self.base / "other"
+        (other / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("K7MQ")):
+            first = self.lib.issue_code(
+                self.repo, "prerequisite", "SPEC-X", f"satisfy-prerequisite SPEC-X {TOKEN}",
+                names=["SPEC-X"], short_prefix=["satisfy-prerequisite"])
+        with mock.patch.object(self.lib.secrets, "choice", side_effect=iter("M8NR")):
+            self.lib.issue_code(
+                other, "prerequisite", "SPEC-Y", f"satisfy-prerequisite SPEC-Y {'z' * 32}",
+                names=["SPEC-Y"], short_prefix=["satisfy-prerequisite"])
+        other_entry = next(path for path in self.lib._registry().glob("*.json")
+                           if json.loads(path.read_text(encoding="utf-8"))["artifact_id"] == "SPEC-Y")
+        value = json.loads(other_entry.read_text(encoding="utf-8"))
+        value["short_reply"] = first["short_reply"]
+        unsigned = {key: item for key, item in value.items() if key != "integrity_sha256"}
+        value["integrity_sha256"] = self.lib._digest(self.lib._canonical(unsigned))
+        other_entry.write_text(json.dumps(value), encoding="utf-8")
+        result = self.lib.expand(first["short_reply"])
+        self.assertEqual(result["text"], first["short_reply"])
+        self.assertIn("no armed request", result["notice"])
+
     def test_sprint_short_form_restates_the_armed_mode(self):
         full = f"approve-sprint SPEC-X PLAN-X delegate-methods {TOKEN}"
         issued = self.lib.issue_code(self.repo, "approval", "PLAN-X", full, names=["SPEC-X", "PLAN-X"],
@@ -233,6 +288,7 @@ class OrdinaryPromptTest(unittest.TestCase):
         "approval": ("Approve", "approve.", "`approve`", "Approve plan", "approve the plan", "Approve the sprint", "approve and execute the sprint",
                      "approve-sprint", "approve-sprint delegate", "do not approve", "Stop",
                      "Approve DATA", "Approve DATA migration", "Approve READ access",
+                     "Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 support",
                      "APPROVE DATA MIGRATION", "Approve the TASK", "Approve the TEST",
                      "approve-sprint delegate DATA", "approve-sprint delegate DATA migration"),
         "prerequisite": ("satisfy-prerequisite", "satisfy-prerequisite by checking the tool", "Stop",
@@ -296,7 +352,8 @@ class OrdinaryPromptTest(unittest.TestCase):
                 with self.subTest(route=route, prompt=prompt), mock.patch.object(
                     replies, "expand", side_effect=lambda value: {"text": value, "notice": ""}
                 ), mock.patch.object(replies, "_entries", return_value=[
-                    (None, {"route": route, "short_reply": "reply ZZZZ",
+                    (None, {"route": route, "short_reply":
+                            "reply K7MQ" if "K7MQ" in prompt else "reply ZZZZ",
                             "full_reply": replies.canonicalize(prompt).split(",")[0]}, True)
                 ]):
                     self.assertTrue(replies.prepare(prompt, route)["attempted"])
@@ -320,15 +377,64 @@ class OrdinaryPromptTest(unittest.TestCase):
                 self.assertNotEqual(prepared["text"], FULL)
         self.assertFalse(replies.prepare("reconcile DATA", "reconciliation")["attempted"])
         replies.retire_code(root, "approval", "SPEC-X")
+        self.assertFalse(replies.prepare("approve DATA", "approval")["attempted"])
         self.assertFalse(replies.prepare("Approve DATA migration", "approval")["attempted"])
 
-    def test_unrecognized_mixed_codes_remain_diagnostic_not_authority(self):
+    def test_retired_prerequisite_code_keeps_only_a_bounded_non_secret_tombstone(self):
         replies = importlib.import_module("_replylib")
-        for prompt in ("Approve K7MQ", "approve k7mq extra"):
+        root = Path(self.temp.name) / "retired-prerequisite"
+        (root / ".codearbiter").mkdir(parents=True)
+        full = f"satisfy-prerequisite PLAN-X PRE-X {TOKEN}"
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("K7MQ")):
+            replies.issue_code(root, "prerequisite", "PLAN-X", full,
+                               names=["PLAN-X", "PRE-X"],
+                               short_prefix=["satisfy-prerequisite"])
+        replies.retire_code(root, "prerequisite", "PLAN-X")
+        retired = json.loads(next(replies._registry().glob("*.json")).read_text(encoding="utf-8"))
+        self.assertTrue(retired["retired"])
+        self.assertEqual(retired["short_reply"], "satisfy-prerequisite K7MQ")
+        self.assertNotIn("full_reply", retired)
+        self.assertIn("matches no armed request",
+                      replies.prepare("satisfy-prerequisite K7MQ", "prerequisite")["notice"])
+        with mock.patch.object(replies.time, "time", return_value=retired["retired_until"]):
+            self.assertFalse(
+                replies.prepare("satisfy-prerequisite K7MQ", "prerequisite")["attempted"]
+            )
+
+    def test_unrecognized_mixed_codes_are_ordinary_without_a_matching_request(self):
+        replies = importlib.import_module("_replylib")
+        for prompt in ("Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 optimizations",
+                       "Approve K7MQ", "approve k7mq extra"):
             with self.subTest(prompt=prompt):
                 result = replies.prepare(prompt, "approval")
-                self.assertTrue(result["attempted"])
-                self.assertNotEqual(result["text"], FULL)
+                self.assertEqual(result, {"text": prompt, "notice": "", "attempted": False})
+
+    def test_matching_alphanumeric_code_remains_an_exact_reply(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "armed-mixed"
+        (root / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("PHP8")):
+            issued = replies.issue_code(root, "approval", "SPEC-PHP", FULL,
+                                        names=["SPEC-PHP"], short_prefix=["approve"])
+        self.assertEqual(issued["code"], "PHP8")
+        self.assertEqual(replies.prepare("Approve php8", "approval"),
+                         {"text": FULL, "notice": "", "attempted": True})
+        appended = replies.prepare("Approve PHP8 migration", "approval")
+        self.assertTrue(appended["attempted"])
+        self.assertNotEqual(appended["text"], FULL)
+        self.assertFalse(replies.prepare("Approve SHA3 support", "approval")["attempted"])
+
+    def test_unrelated_armed_code_does_not_capture_product_names(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "armed-other"
+        (root / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("K7MQ")):
+            replies.issue_code(root, "approval", "SPEC-OTHER", FULL,
+                               names=["SPEC-OTHER"], short_prefix=["approve"])
+        for prompt in ("Approve PHP8 migration", "Approve SHA3 support", "Approve AVX2 support"):
+            with self.subTest(prompt=prompt):
+                self.assertEqual(replies.prepare(prompt, "approval"),
+                                 {"text": prompt, "notice": "", "attempted": False})
 
     def test_long_words_without_a_retained_request_are_ordinary_prose(self):
         replies = importlib.import_module("_replylib")

@@ -36,7 +36,7 @@ reached the same way.
 | Governance record for a window | `/audit` | — | Read-only; never overwrites a packet; audit lines quoted verbatim |
 | Release / version tag | `/release` → `release` skill | `commit-gate` (release commit); CHANGELOG prose applies `anti-slop-design` (`core` §3.A/§3.B) | No tag on a red suite; tag not pushed unbidden |
 | Code uses crypto / hashing / signing / TLS / random | `crypto-compliance` skill | `auth-crypto-reviewer` | BLOCK on any banned primitive |
-| Code reads / writes / passes a secret | `secret-handling` skill | `auth-crypto-reviewer` | BLOCK on a secret outside the approved store |
+| Code reads / writes / passes a secret | `secret-handling` skill | `auth-crypto-reviewer` | BLOCK on an unapproved origin, access/transport, sink or lifetime under the active policy |
 | Auth / crypto / key change | `auth-crypto-reviewer` | `security-reviewer` | BLOCK on banned primitive, exposed secret, shell injection |
 | Migration file added or changed | `migration-reviewer` | — | BLOCK on missing classification or irreversible destructive op |
 | `package.json` / lockfile / base image changed | `/add-dep` → `dependency-reviewer` | — | BLOCK on denied license or supply-chain concern |
