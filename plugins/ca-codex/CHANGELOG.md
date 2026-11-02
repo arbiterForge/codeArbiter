@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.3] - 2026-11-02
+
+### Fixed
+
+- Keep legacy board work readable when several rows share one `(from ...)` origin; shared-origin rows without an explicit Work ID are counted as unkeyed and origin lookups on them refuse as ambiguous.
+- State the compact `--gate` identifier format in `/ca:override` with examples; a descriptive gate name was refused by the audit helper and the override went unrecorded.
+
 ## [0.26.2] - 2026-11-01
 
 ### Fixed
