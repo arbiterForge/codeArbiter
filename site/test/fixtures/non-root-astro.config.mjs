@@ -1,12 +1,14 @@
 import { unified } from "@astrojs/markdown-remark";
 import { rehypeBaseLinks } from "../../scripts/rehype-base-links.ts";
 import { rehypeTableShell } from "../../scripts/rehype-table-shell.ts";
-import currentConfig from "../../astro.config.mjs";
+import currentConfig, { siteRedirects } from "../../astro.config.mjs";
 import { fileURLToPath } from "node:url";
 
 export default {
   ...currentConfig,
   base: "/docs/",
+  // The root map's destinations carry the root base; rebuild them for /docs.
+  redirects: siteRedirects("/docs"),
   // The alternate base must reach the Markdown processor too, not only Astro routes.
   markdown: { ...currentConfig.markdown, processor: unified({
     rehypePlugins: [rehypeBaseLinks("/docs"), rehypeTableShell()],

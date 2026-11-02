@@ -63,6 +63,33 @@ try {
 // A missing catalog or a broken pairing throws here and stops the build.
 const workflowPairs = loadWorkflowPairs(fileURLToPath(new URL("../plugins/ca", import.meta.url)));
 
+/**
+ * The site's redirect map for a given base. A build under another base (the
+ * non-root test fixture) must rebuild it rather than spread the root map,
+ * whose destinations carry this config's BASE (#1082).
+ */
+export function siteRedirects(base) {
+  return {
+    ...mergedSkillRedirects(workflowPairs, base),
+    ...legacySecondSlugRedirects(LEGACY_SECOND_SLUG_SKILLS, workflowPairs, base),
+    // The eleven per-lens tribunal reviewer agents were consolidated into the
+    // one generic tribunal-lens-reviewer agent; the per-lens documentation now
+    // lives in the tribunal-lenses collection. Redirect each retired agent
+    // page URL to its lens page (same base-handling rules as above).
+    "/reference/agents/tribunal-appsec-reviewer": `${base}/reference/tribunal-lenses/appsec`,
+    "/reference/agents/tribunal-architecture-reviewer": `${base}/reference/tribunal-lenses/architecture`,
+    "/reference/agents/tribunal-coverage-reviewer": `${base}/reference/tribunal-lenses/coverage`,
+    "/reference/agents/tribunal-infra-reviewer": `${base}/reference/tribunal-lenses/infra`,
+    "/reference/agents/tribunal-migration-reviewer": `${base}/reference/tribunal-lenses/migration`,
+    "/reference/agents/tribunal-observability-reviewer": `${base}/reference/tribunal-lenses/observability`,
+    "/reference/agents/tribunal-performance-reviewer": `${base}/reference/tribunal-lenses/performance`,
+    "/reference/agents/tribunal-reliability-reviewer": `${base}/reference/tribunal-lenses/reliability`,
+    "/reference/agents/tribunal-secrets-supply-reviewer": `${base}/reference/tribunal-lenses/secrets-supply`,
+    "/reference/agents/tribunal-test-fidelity-reviewer": `${base}/reference/tribunal-lenses/test-fidelity`,
+    "/reference/agents/tribunal-typesafety-reviewer": `${base}/reference/tribunal-lenses/typesafety`,
+  };
+}
+
 export default defineConfig({
   // GitHub Pages site on the apex custom domain: served from https://codearbiter.dev/.
   // `base` also applies in local dev — the dev server serves at the root.
@@ -111,25 +138,7 @@ export default defineConfig({
   // redirect Location/meta-refresh target — it is NOT base-prefixed
   // automatically — so destinations must carry the base explicitly to land on
   // a real page (built from the shared BASE constant above).
-  redirects: {
-    ...mergedSkillRedirects(workflowPairs, BASE),
-    ...legacySecondSlugRedirects(LEGACY_SECOND_SLUG_SKILLS, workflowPairs, BASE),
-    // The eleven per-lens tribunal reviewer agents were consolidated into the
-    // one generic tribunal-lens-reviewer agent; the per-lens documentation now
-    // lives in the tribunal-lenses collection. Redirect each retired agent
-    // page URL to its lens page (same base-handling rules as above).
-    "/reference/agents/tribunal-appsec-reviewer": `${BASE}/reference/tribunal-lenses/appsec`,
-    "/reference/agents/tribunal-architecture-reviewer": `${BASE}/reference/tribunal-lenses/architecture`,
-    "/reference/agents/tribunal-coverage-reviewer": `${BASE}/reference/tribunal-lenses/coverage`,
-    "/reference/agents/tribunal-infra-reviewer": `${BASE}/reference/tribunal-lenses/infra`,
-    "/reference/agents/tribunal-migration-reviewer": `${BASE}/reference/tribunal-lenses/migration`,
-    "/reference/agents/tribunal-observability-reviewer": `${BASE}/reference/tribunal-lenses/observability`,
-    "/reference/agents/tribunal-performance-reviewer": `${BASE}/reference/tribunal-lenses/performance`,
-    "/reference/agents/tribunal-reliability-reviewer": `${BASE}/reference/tribunal-lenses/reliability`,
-    "/reference/agents/tribunal-secrets-supply-reviewer": `${BASE}/reference/tribunal-lenses/secrets-supply`,
-    "/reference/agents/tribunal-test-fidelity-reviewer": `${BASE}/reference/tribunal-lenses/test-fidelity`,
-    "/reference/agents/tribunal-typesafety-reviewer": `${BASE}/reference/tribunal-lenses/typesafety`,
-  },
+  redirects: siteRedirects(BASE),
   // Astro 7.1 made Sätteri the default Markdown processor and deprecated the
   // top-level `markdown.remarkPlugins` / `rehypePlugins` / `remarkRehype` keys.
   // Setting `processor` explicitly is the supported replacement: it selects the
