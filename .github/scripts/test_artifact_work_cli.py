@@ -919,6 +919,28 @@ class WorkCLITest(unittest.TestCase):
         selected = _worklib.dispatch(str(self.root), "work-get", {"work_id": _worklib._id("spec:archived")})
         self.assertTrue(selected.get("archive_pending"))
 
+    def test_legacy_explicit_id_archive_copy_must_match_its_whole_block(self) -> None:
+        board = self._shared_origin_board()
+        created = _worklib.dispatch(str(self.root), "work-create", {
+            "operation_id": "op-explicit-archive", "title": "Explicit follow-up",
+            "intent": "Explicit follow-up", "work_type": "fix", "origin": "spec:explicit"})
+        for argv in (["start", "ignored", "--from", "spec:explicit", "--date", "2026-10-29"],
+                     ["done", "ignored", "--from", "spec:explicit", "--date", "2026-10-30"]):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(taskwrite.main(argv, root=str(self.root)), 0)
+        before_archive = board.read_text(encoding="utf-8")
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(taskwrite.main(["archive", "ignored", "--from", "spec:explicit"],
+                                            root=str(self.root)), 0)
+        board.write_text(before_archive, encoding="utf-8")  # a crash after the archive copy
+        selected = _worklib.dispatch(str(self.root), "work-get", {"work_id": created["work_id"]})
+        self.assertTrue(selected.get("archive_pending"))
+        archive = board.parent / "done-tasks.md"
+        archive.write_text(archive.read_text(encoding="utf-8").replace("2026-10-30", "2026-10-31"),
+                           encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "duplicate legacy work ID"):
+            _worklib.dispatch(str(self.root), "work-list", {"limit": 8})
+
     def test_legacy_work_updates_keep_unknown_check_and_exact_identity(self) -> None:
         board = self.root / ".codearbiter" / "open-tasks.md"
         board.parent.mkdir(parents=True)

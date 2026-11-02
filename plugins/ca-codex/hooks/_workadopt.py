@@ -105,17 +105,16 @@ def _separate_shared_origins(rows):
     row takes the position-seeded origin that rows without one already get and
     keeps the shared value as legacy_origin. An explicit Work ID stays; an
     origin-only row's ID follows its new origin, since the legacy listing
-    exposes no row in a shared group. Rows that look like an interrupted
-    archive's identical copy are left alone, so the duplicate checks below
-    still refuse them.
+    exposes no row in a shared group. Rows whose whole task blocks match, as an
+    interrupted archive's copy does, are left alone, so the duplicate checks
+    below still refuse them.
     """
     groups = {}
     for row in rows:
         if row["legacy_origin"]:
             groups.setdefault(row["legacy_origin"], []).append(row)
-    content = ("title", "intent", "work_type", "spec_id", "plan_id")
     for group in groups.values():
-        if len(group) < 2 or len({tuple(row[key] for key in content) for row in group}) < len(group):
+        if len(group) < 2 or len({row["block_sha256"] for row in group}) < len(group):
             continue
         for row in group:
             row["origin"] = row["_seeded_origin"]

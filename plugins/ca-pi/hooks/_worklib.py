@@ -97,6 +97,7 @@ def _scan(root):
     # share one (#1080). Rows are grouped per origin until the scan ends.
     derived = {}
     explicit_sources = {}
+    explicit_blocks = {}
     seen_operations = {}
     unkeyed = 0
     for text, archived in ((open_text, False), (archive_text, True)):
@@ -143,18 +144,19 @@ def _scan(root):
             record["board_sha256"] = hashlib.sha256(
                 (("archive" if archived else "open") + "\0" + physical).encode("utf-8")
             ).hexdigest()
+            # The archiver copies the whole task block, so a crash copy must match
+            # it exactly; a changed row is distinct, not a copy.
             if explicit:
                 previous = found.get(work_id)
                 if previous is not None:
-                    if not _archive_copy(previous, record, archived):
+                    if explicit_blocks[work_id] != physical or not _archive_copy(previous, record, archived):
                         raise ValueError(f"duplicate legacy work ID {work_id}")
                     previous["archive_pending"] = True
                     continue
                 found[work_id] = record
+                explicit_blocks[work_id] = physical
                 explicit_sources.setdefault(source, []).append(work_id)
             else:
-                # Only the origin identifies an origin-only row, so its archive
-                # copy must also match the whole task block the archiver copies.
                 items = derived.setdefault(source, [])
                 previous = next((item for item, block in items
                                  if block == physical and _archive_copy(item, record, archived)), None)

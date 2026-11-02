@@ -268,6 +268,7 @@ EXPECTED_SUITES = {
         "test_legacy_distinct_archived_row_with_matching_fields_is_not_a_copy",
         "test_legacy_ambiguous_origin_lookup_fails_closed",
         "test_legacy_origin_only_archive_copy_stays_one_item",
+        "test_legacy_explicit_id_archive_copy_must_match_its_whole_block",
         "test_legacy_json_request_refuses_unknown_field_before_write",
         "test_legacy_origin_survives_board_archive_and_replay",
         "test_legacy_title_omits_date_before_origin_marker",
@@ -303,6 +304,7 @@ EXPECTED_SUITES = {
         "test_rows_sharing_an_origin_adopt_as_distinct_items",
         "test_shared_origin_keeps_explicit_ids_and_reseeds_derived_ones",
         "test_identical_open_and_archive_copies_still_refuse",
+        "test_same_title_rows_with_different_blocks_adopt_separately",
         "test_scaffold_instructions_and_fenced_example_are_not_adopted",
     },
     "test_work_github.py": {

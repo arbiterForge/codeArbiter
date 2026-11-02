@@ -143,6 +143,15 @@ class AdoptionInventoryTest(unittest.TestCase):
         self.assertNotEqual(derived["work_id"], _worklib._id("spec:shared"))
         self.assertEqual(len({row["origin"] for row in rows}), 2)
 
+    def test_same_title_rows_with_different_blocks_adopt_separately(self):
+        # Matching fields are not a crash copy when the task blocks differ.
+        self.board.write_text("- [x] Follow-up (from spec:shared) (done 2026-10-01)\n", encoding="utf-8")
+        (self.root / ".codearbiter" / "done-tasks.md").write_text(
+            "- [x] Follow-up (from spec:shared) (done 2026-09-01)\n", encoding="utf-8")
+        rows = _workadopt.preview(self.root)["rows"]
+        self.assertEqual(len({row["origin"] for row in rows}), 2)
+        self.assertEqual(len({row["work_id"] for row in rows}), 2)
+
     def test_identical_open_and_archive_copies_still_refuse(self):
         row = "- [x] Finished follow-up (from spec:shared)\n"
         self.board.write_text(row, encoding="utf-8")
