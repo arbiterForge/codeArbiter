@@ -87,8 +87,10 @@ The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
   eyebrow. Digests, tags and publication commits stay inside the replay's disclosure. The artifact
   workbench, trust row and curriculum live on the product tour, the first-feature guide and the
   Academy.
-- **Orientation strip.** `PageContext` renders one line (level, time, outcome). Prerequisites and
-  the completion check open from `.ca-page-context__more`.
+- **Orientation strip.** `PageContext` renders one line (level, time, outcome). A guide or concept
+  page that Academy lessons practice adds a second line, `.ca-page-context__practice`, linking those
+  lessons (`src/data/topic-map.json`). Prerequisites and the completion check open from
+  `.ca-page-context__more`.
 - **Narrow screens.** At 50rem and below the splash docs rail becomes a compact tab on the tray's
   moving edge and the landing takes the full width. The drawer's keyboard and focus contract is
   unchanged.
