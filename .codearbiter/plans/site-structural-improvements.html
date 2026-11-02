@@ -1,0 +1,1966 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Site structural improvements: one page per workflow, captured examples, one teaching layer · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-SITE-STRUCTURAL-IMPROVEMENTS</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/site-structural-improvements.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Site structural improvements: one page per workflow, captured examples, one teaching layer</h1><p class="deck">Three independent site pull requests (reference, captured examples, guide-lesson links) and one arbiter-academy pull request; Academy publication waits for explicit authorization.</p><div class="meta"><span>PLAN-SITE-STRUCTURAL-IMPROVEMENTS</span><span>Revision 50 · schema 0.3.2</span><span>21 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SITE-STRUCTURAL-IMPROVEMENTS</div><div class="field"><span class="label">Binding mode</span>draft_preview</div><div class="field"><span class="label">Normative sha256</span>bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2>
+<!-- CA:BEGIN:PRE-01 -->
+<article class="record" id="PRE-01" data-ca-symbol="PRE-01" data-ca-kind="prerequisites"><div class="record-head"><a class="id" href="#PRE-01">PRE-01</a><h3>Topic map merged</h3></div><div class="field"><span class="label">Kind</span>fact</div><div class="field"><span class="label">Requirement</span>The T-12 topic-map pull request is merged to main.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Task refs</span><ul class="items"><li><a href="#T-13">T-13</a></li></ul></div><details><summary>Recorded prerequisite assessment</summary><div class="fields"><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Kind</span>fact</div><div class="field"><span class="label">Needs decision</span>false</div><div class="field"><span class="label">Observation</span><div class="fields"></div></div><div class="field"><span class="label">Outcome</span>unknown</div><div class="field"><span class="label">Provenance</span>none</div><div class="field"><span class="label">Recorded state</span>not_satisfied</div><div class="field"><span class="label">Requirement</span>The T-12 topic-map pull request is merged to main.</div><div class="field"><span class="label">Scope</span>tasks</div><div class="field"><span class="label">Task refs</span><ul class="items"><li><a href="#T-13">T-13</a></li></ul></div><div class="field"><span class="label">Title</span>Topic map merged</div></div></details></article>
+<!-- CA:END:PRE-01 -->
+
+<!-- CA:BEGIN:PRE-02 -->
+<article class="record" id="PRE-02" data-ca-symbol="PRE-02" data-ca-kind="prerequisites"><div class="record-head"><a class="id" href="#PRE-02">PRE-02</a><h3>Academy publication authorized</h3></div><div class="field"><span class="label">Kind</span>decision</div><div class="field"><span class="label">Requirement</span>The user explicitly authorizes tagging the next Academy preview and bumping the academy-source submodule.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Task refs</span><ul class="items"><li><a href="#T-14">T-14</a></li></ul></div><details><summary>Recorded prerequisite assessment</summary><div class="fields"><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Kind</span>decision</div><div class="field"><span class="label">Needs decision</span>true</div><div class="field"><span class="label">Observation</span><div class="fields"></div></div><div class="field"><span class="label">Outcome</span>unknown</div><div class="field"><span class="label">Provenance</span>none</div><div class="field"><span class="label">Recorded state</span>not_satisfied</div><div class="field"><span class="label">Requirement</span>The user explicitly authorizes tagging the next Academy preview and bumping the academy-source submodule.</div><div class="field"><span class="label">Scope</span>tasks</div><div class="field"><span class="label">Task refs</span><ul class="items"><li><a href="#T-14">T-14</a></li></ul></div><div class="field"><span class="label">Title</span>Academy publication authorized</div></div></details></article>
+<!-- CA:END:PRE-02 -->
+</section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-01 -->
+<article class="record" id="T-01" data-ca-symbol="T-01" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-01">T-01</a><h3>Derive pairs and render one page per workflow</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-01">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-01</a></li><li><a href="../specs/site-structural-improvements.html#AC-10">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both new tests and the sidebar test pass.</li><li>npm run gen emits 33 command pages and 13 skill pages (22 shipped skills minus the 9 merged).</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/scripts/generator/workflow-pairs.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/generate.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/render-command-page.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/build-index.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/types.ts</code></td></tr><tr><td>create</td><td><code>site/test/generator/merged-workflow-pages.test.ts</code></td></tr><tr><td>create</td><td><code>site/test/generator/command-url-stability.test.ts</code></td></tr><tr><td>modify</td><td><code>site/test/reference-sidebar.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the generator files and delete the two new tests.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Snapshot today&#39;s 33 command URLs into command-url-stability.test.ts before changing anything.</li><li>Write merged-workflow-pages.test.ts and watch it fail: 9 merged pages with one ca-source embed each, no page for their 9 skills, 4 alias pages pointing to replacement and skill page.</li><li>In workflow-pairs.ts, pair a command with a skill when the command source&#39;s first heading names a shipped skill directory; read each command&#39;s visibility from the catalog; fail on an unknown or duplicated owner.</li><li>Core and advanced pairs: render the command&#39;s curated text, then the skill&#39;s under How it runs, then one source embed, and emit no skill page.</li><li>Alias pairs: keep the skill page as the workflow page; render the alias page as the Compatibility section, a pointer paragraph and its source embed.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/merged-workflow-pages.test.ts&#34;,&#34;test/generator/command-url-stability.test.ts&#34;,&#34;test/reference-sidebar.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The merged-page, URL-stability and sidebar tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/generator/merged-workflow-pages.test.ts</li><li>test/generator/command-url-stability.test.ts</li><li>test/reference-sidebar.test.ts</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/merged-workflow-pages.test.ts&#34;,&#34;test/generator/command-url-stability.test.ts&#34;,&#34;test/reference-sidebar.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:05:32Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>a2dc3e3cb6b92f8b860a42b05691b2b84eec961c33c71f1b4d47172d09f402d3</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01a author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>53 passed; npm run gen emitted 33 command and 13 skill pages</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-01 -->
+
+<!-- CA:BEGIN:T-02 -->
+<article class="record" id="T-02" data-ca-symbol="T-02" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-02">T-02</a><h3>Redirect merged skill URLs and repoint inbound links</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-02">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-02</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The redirect test passes.</li><li>The link audit finds no link to a merged skill URL.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>site/astro.config.mjs</code></td></tr><tr><td>create</td><td><code>site/test/generator/merged-workflow-redirects.test.ts</code></td></tr><tr><td>modify</td><td><code>site/src/content/docs</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert astro.config.mjs and the link edits.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the redirect test against the derived pair list and watch it fail.</li><li>Generate the 9 redirects from workflow-pairs.ts into the astro redirects map; do not hand-list them.</li><li>Point the -2 redirects of the four merged skills (debug, refactor, release, tribunal) straight at the command pages; leave context-check-2 and decompose-2 on their skill pages.</li><li>Repoint in-site links to the 9 merged skill URLs at the command pages; links to alias-owning and internal-only skills stay.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/merged-workflow-redirects.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Redirects cover exactly the derived pairs.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/generator/merged-workflow-redirects.test.ts</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;build&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The site builds.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No broken links.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/merged-workflow-redirects.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-02T00:28:41Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>9231312f812c125e7b5e1157d91263cee11c0cf878fbd54afcc5289c2f150820</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01c author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>Redirects cover exactly the derived pairs; 15 stubs in dist</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;build&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-02T00:28:41Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>9231312f812c125e7b5e1157d91263cee11c0cf878fbd54afcc5289c2f150820</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01c author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>Site builds</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>2</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-02T00:28:42Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>9231312f812c125e7b5e1157d91263cee11c0cf878fbd54afcc5289c2f150820</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01c author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>30971 links, 194 pages; audit now fails links that land on redirect stubs</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-02 -->
+
+<!-- CA:BEGIN:T-03 -->
+<article class="record" id="T-03" data-ca-symbol="T-03" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-03">T-03</a><h3>Reader-field schema and rendering</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-03">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-03</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The reader-field tests pass on fixtures.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>site/scripts/generator/load-curated.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/types.ts</code></td></tr><tr><td>create</td><td><code>site/scripts/generator/render-reader-fields.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/render-command-page.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/render-skill-page.ts</code></td></tr><tr><td>create</td><td><code>site/test/generator/reader-fields.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the loader and renderer changes.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write reader-fields.test.ts with fixtures missing a field and missing the Example heading; watch it fail.</li><li>Core, advanced and internal command files and alias-owning skill files require use_when, avoid_when, asks and produces in frontmatter and an Example heading in the body; internal-only skill files require runs_inside and produces; alias command files require none.</li><li>Fail generation naming the file and the field; render the fields in the fixed order above the body.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/reader-fields.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Reader-field tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/generator/reader-fields.test.ts</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/reader-fields.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:05:33Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>8d6ea5c73369247547533150f8d7f38ae11cd1635eef904e4d6dd5c2121870a1</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01a author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>41 passed; 18 mutants killed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-03 -->
+
+<!-- CA:BEGIN:T-04 -->
+<article class="record" id="T-04" data-ca-symbol="T-04" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-04">T-04</a><h3>Write the reader fields and trim the 9 merged pairs</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-01">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-01</a></li><li><a href="../specs/site-structural-improvements.html#AC-03">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-03</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-03">T-03</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>npm run gen passes with all fields present.</li><li>Every generator test passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>site/src/curated/commands</code></td></tr><tr><td>modify</td><td><code>site/src/curated/skills</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Restore the curated directory from the base commit.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Keep each merged skill&#39;s curated file as the How it runs source the T-01 renderer reads; trim sentences the command file already says so the merged page reads once. Do not delete those 9 files.</li><li>Cut the 4 alias command files to at most one sentence; the generated Compatibility pointer carries the redirect, and any unique content moves to the skill page.</li><li>Write the four reader fields for the 28 non-alias commands and the 4 alias-owning skills from their sources, replacing each When to reach for it section with use_when; make the loader reject a remaining When to reach for it heading.</li><li>Add an Example section where one is missing (cleanup&#39;s moves to the post-merge-cleanup skill page; tribunal needs one).</li><li>Write runs_inside and produces for the 9 internal-only skills.</li><li>Run npm run gen until it passes; do not relax a required field to get there.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;gen&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Generation passes with every required field present.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>All generator tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/generator</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;gen&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:31:37Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>917a7cdbf26f70b1ea138477d2544b4e7b411a14be472a09e6e30a9f56390992</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01b author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>Exit 0; was 151 missing fields in 41 files</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:31:37Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>917a7cdbf26f70b1ea138477d2544b4e7b411a14be472a09e6e30a9f56390992</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01b author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>43 files, 492 tests pass</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-04 -->
+
+<!-- CA:BEGIN:T-05 -->
+<article class="record" id="T-05" data-ca-symbol="T-05" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-05">T-05</a><h3>Curated drift check</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-04">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-04</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-04">T-04</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The drift tests pass.</li><li>npm run gen passes over the real curated set.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/scripts/generator/curated-drift.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generator/generate.ts</code></td></tr><tr><td>create</td><td><code>site/test/generator/curated-drift.test.ts</code></td></tr><tr><td>modify</td><td><code>site/src/curated</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Remove the check and its call; keep the prose corrections.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write curated-drift.test.ts with fixtures: a removed /ca: flag, an unknown /ca: command, and a git flag that must be ignored; watch it fail.</li><li>Attribute each --flag to the nearest preceding /ca:&lt;name&gt; on its line or code block, or to the page&#39;s command inside its Usage block; check it against that command&#39;s source; check every /ca:&lt;name&gt; against the catalog; report all misses at once.</li><li>Run it over the real curated set and correct each real miss in the prose; never add an allowlist.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/curated-drift.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Drift tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/generator/curated-drift.test.ts</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;gen&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The real curated set has no drift.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/curated-drift.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-02T00:28:42Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>021ba4feb3e757d66c37abaa949939081635dd4ab59e4faacecac0af421ea5d7</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01c author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>Drift tests pass; 15 mutants killed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;gen&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-02T00:28:43Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>021ba4feb3e757d66c37abaa949939081635dd4ab59e4faacecac0af421ea5d7</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-01c author report, worktree claude/site-structural-sprint (uncommitted)</div><div class="field"><span class="label">Summary</span>Real curated set has no drift after one prose fix (prune.md --resume)</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-05 -->
+
+<!-- CA:BEGIN:T-06 -->
+<article class="record" id="T-06" data-ca-symbol="T-06" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-06">T-06</a><h3>Verify and open the reference pull request</h3><span class="badge">IN_PROGRESS</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-10">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-02">T-02</a></li><li><a href="#T-04">T-04</a></li><li><a href="#T-05">T-05</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Every check below passes on the branch.</li><li>The pull request is open with CI results attached.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>site</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Close the pull request.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Run the full verification set.</li><li>Inspect /reference/commands/commit/ and one internal-only skill page at desktop and phone widths.</li><li>Commit through commit-gate and open the pull request; do not merge.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Type check is clean.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;test&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Build, vitest, Academy base and rendered release-applicability checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>vitest run (all site suites)</li><li>test:academy-base</li><li>test:release-applicability-rendered</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No broken internal links or fragments.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/check_site_voice.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Voice check passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_codex_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Codex doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_pi_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Pi doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_ci_impact.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>CI impact filter tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>IN_PROGRESS</div></div></details></article>
+<!-- CA:END:T-06 -->
+
+<!-- CA:BEGIN:T-07 -->
+<article class="record" id="T-07" data-ca-symbol="T-07" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-07">T-07</a><h3>Inventory every guide example</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-07">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-07</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Every guide block appears in the inventory with a class.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/scripts/capture/guide-examples.json</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Delete the inventory file.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>List every fenced text or console block in site/src/content/docs/guides/**.</li><li>Classify each as capturable (output of a deterministic codeArbiter tool) or illustrative (a user request or model narration), and name the tool and fixture for each capturable one.</li><li>Record the inventory in guide-examples.json; the content test in T-10 reads it.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;node&#34;,&#34;-e&#34;,&#34;JSON.parse(require(&#39;fs&#39;).readFileSync(&#39;scripts/capture/guide-examples.json&#39;,&#39;utf8&#39;))&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The inventory parses.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;node&#34;,&#34;-e&#34;,&#34;JSON.parse(require(&#39;fs&#39;).readFileSync(&#39;scripts/capture/guide-examples.json&#39;,&#39;utf8&#39;))&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:19:44Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>missing_declared_inputs</div><div class="field"><span class="label">Source</span>CP-02 author report, worktree claude/site-captured-examples (uncommitted)</div><div class="field"><span class="label">Summary</span>Inventory of 50 blocks parses: 5 capturable, 6 illustrative, 39 input</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-07 -->
+
+<!-- CA:BEGIN:T-08 -->
+<article class="record" id="T-08" data-ca-symbol="T-08" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-08">T-08</a><h3>Capture harness</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-05">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-05</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Normalizer and harness tests pass.</li><li>npm run capture regenerates hook-proof.json with an unchanged schema.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/scripts/capture/harness.ts</code></td></tr><tr><td>create</td><td><code>site/scripts/capture/normalize.ts</code></td></tr><tr><td>create</td><td><code>site/scripts/capture/fixture.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/capture-hook-proof.ts</code></td></tr><tr><td>modify</td><td><code>site/package.json</code></td></tr><tr><td>create</td><td><code>site/test/capture/capture-harness.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the harness and restore capture-hook-proof.ts.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write normalizer tests with Windows and Linux raw samples and watch them fail.</li><li>Normalize temporary paths, commit SHAs, timestamps and line endings.</li><li>Record argv, output and sha256 for the entry script and every in-repository module the interpreter loaded during the run.</li><li>Move capture-hook-proof.ts onto the harness without changing hook-proof.json&#39;s schema or its current-and-published applicability check; add npm run capture.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/capture/capture-harness.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Harness tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/capture/capture-harness.test.ts</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/landing/landing-page.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The landing hook replay still renders.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/landing/landing-page.test.ts</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/capture/capture-harness.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:19:45Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>1a11c80aa47cb883cb444c0876ea7ef144b8e582c32b49efccbdaca150949ec9</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-02 author report, worktree claude/site-captured-examples (uncommitted)</div><div class="field"><span class="label">Summary</span>Harness and normalizer tests pass; mutants killed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/landing/landing-page.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:19:45Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>1a11c80aa47cb883cb444c0876ea7ef144b8e582c32b49efccbdaca150949ec9</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-02 author report, worktree claude/site-captured-examples (uncommitted)</div><div class="field"><span class="label">Summary</span>Landing hook replay renders; proof schema and sourceSha256 unchanged</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-08 -->
+
+<!-- CA:BEGIN:T-09 -->
+<article class="record" id="T-09" data-ca-symbol="T-09" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-09">T-09</a><h3>Stale-capture check and CapturedRun component</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-06">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-06</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-08">T-08</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The stale-capture test passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/scripts/capture/verify.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/gen.ts</code></td></tr><tr><td>create</td><td><code>site/src/components/CapturedRun.astro</code></td></tr><tr><td>create</td><td><code>site/test/capture/stale-capture.test.ts</code></td></tr><tr><td>inspect</td><td><code>.github/workflows/docs.yml</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Remove the gen call and the component.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write stale-capture.test.ts with a fixture whose source hash is wrong; watch it fail.</li><li>Compare every capture&#39;s recorded hashes with the working tree during gen; name the capture, the source and npm run capture on a mismatch.</li><li>Add a test that every captured source path matches a docs.yml push and pull_request path filter; if one does not, add it to docs.yml and route that commit to the security reviewer.</li><li>Render a capture as a code block labelled with its tool and source version.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/capture/stale-capture.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Stale-capture tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/capture/stale-capture.test.ts</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/capture/stale-capture.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:19:45Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>a5f9eb0857eb77bd5ca7329913a18ec44a3752895afe425993b99c5a1184636d</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-02 author report, worktree claude/site-captured-examples (uncommitted)</div><div class="field"><span class="label">Summary</span>Stale-capture tests pass; corrupted hash fails real gen naming the capture and npm run capture</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-09 -->
+
+<!-- CA:BEGIN:T-10 -->
+<article class="record" id="T-10" data-ca-symbol="T-10" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-10">T-10</a><h3>Capture the inventoried examples and wire the guides</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-07">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-07</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li><li><a href="#T-09">T-09</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Every capturable block renders from a capture.</li><li>No unlabelled hand-written output block remains.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/src/assets/captures</code></td></tr><tr><td>modify</td><td><code>site/src/content/docs/guides</code></td></tr><tr><td>create</td><td><code>site/test/content/guide-examples.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Restore the guides and delete the captures.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write guide-examples.test.ts from the inventory and watch it fail.</li><li>Add a capture target for each capturable block, run npm run capture, and replace the hand-written block with CapturedRun.</li><li>Keep illustrative blocks labelled; never relabel a capturable block to pass the test.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;capture&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Captures regenerate without error.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/content/guide-examples.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Guide example classification passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/content/guide-examples.test.ts</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;capture&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:19:46Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>cdb48fe906c4ce76f0b793e1ce77322606e8c6d07c81ad0153b9cdd0fe64304f</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-02 author report, worktree claude/site-captured-examples (uncommitted)</div><div class="field"><span class="label">Summary</span>Two runs leave capture and proof assets byte-identical</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/content/guide-examples.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T20:19:47Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>cdb48fe906c4ce76f0b793e1ce77322606e8c6d07c81ad0153b9cdd0fe64304f</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-02 author report, worktree claude/site-captured-examples (uncommitted)</div><div class="field"><span class="label">Summary</span>Guide example classification passes; literal negative control fails naming overriding-a-gate.md</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-10 -->
+
+<!-- CA:BEGIN:T-11 -->
+<article class="record" id="T-11" data-ca-symbol="T-11" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-11">T-11</a><h3>Verify and open the captured-examples pull request</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-10">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-10">T-10</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Every check below passes on the branch.</li><li>The pull request is open.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>site</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Close the pull request.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Run the full verification set.</li><li>Inspect two guides with captures at desktop and phone widths.</li><li>Commit through commit-gate and open the pull request; do not merge.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Type check is clean.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;test&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Build, vitest, Academy base and rendered release-applicability checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>vitest run (all site suites)</li><li>test:academy-base</li><li>test:release-applicability-rendered</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No broken internal links or fragments.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/check_site_voice.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Voice check passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_codex_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Codex doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_pi_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Pi doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_ci_impact.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>CI impact filter tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-11 -->
+
+<!-- CA:BEGIN:T-12 -->
+<article class="record" id="T-12" data-ca-symbol="T-12" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-12">T-12</a><h3>Topic map and generated guide-lesson links</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-08">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-08</a></li><li><a href="../specs/site-structural-improvements.html#AC-10">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Topic-map tests pass.</li><li>Every lesson page links to its guide.</li><li>The pull request is open.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>site/src/data/topic-map.json</code></td></tr><tr><td>create</td><td><code>site/scripts/topic-map.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generate-academy.ts</code></td></tr><tr><td>modify</td><td><code>site/src/components/PageContext.astro</code></td></tr><tr><td>create</td><td><code>site/test/generator/topic-map.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the map, the generator change and the component change.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write topic-map.test.ts with a bad lesson ID and an unmapped lesson; watch it fail.</li><li>Map each of the 19 lessons to its guide or concept page; validate every slug and lesson ID during gen.</li><li>Render a practice link on mapped guides and a guide link on each generated lesson page.</li><li>Run the full verification set, commit through commit-gate and open the pull request; do not merge.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/topic-map.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Topic-map tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test/generator/topic-map.test.ts</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Type check is clean.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;test&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Build, vitest, Academy base and rendered release-applicability checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>vitest run (all site suites)</li><li>test:academy-base</li><li>test:release-applicability-rendered</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No broken internal links or fragments.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/check_site_voice.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Voice check passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_codex_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Codex doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_pi_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Pi doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_ci_impact.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>CI impact filter tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Implementation reported complete; verification and review are not assessed by this progress update.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;test/generator/topic-map.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T19:56:29Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-03 author report, worktree claude/site-topic-map at 368ae7e2</div><div class="field"><span class="label">Summary</span>19 topic-map tests passed</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T19:56:30Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-03 author report, worktree claude/site-topic-map at 368ae7e2</div><div class="field"><span class="label">Summary</span>Type check clean after npm run gen</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;test&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>2</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T19:56:30Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-03 author report, worktree claude/site-topic-map at 368ae7e2</div><div class="field"><span class="label">Summary</span>99 files, 1246 tests; academy base and rendered release applicability OK</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>3</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T19:56:31Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-03 author report, worktree claude/site-topic-map at 368ae7e2</div><div class="field"><span class="label">Summary</span>34242 links, no failures</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/check_site_voice.py&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>4</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>agent_report</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-01T19:56:32Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>CP-03 author report, worktree claude/site-topic-map at 368ae7e2</div><div class="field"><span class="label">Summary</span>57 authored pages clean</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-12 -->
+
+<!-- CA:BEGIN:T-13 -->
+<article class="record" id="T-13" data-ca-symbol="T-13" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-13">T-13</a><h3>Academy pull request: shorten mechanism sections</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-04</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-09">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-09</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-12">T-12</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The Academy suite passes.</li><li>The arbiter-academy pull request is open.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-04</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>academy-source/academy/tracks</code></td></tr><tr><td>create</td><td><code>academy-source/tests/test_mechanism_links.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Close the Academy pull request.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Start only after the topic-map pull request (T-12) is merged to main.</li><li>On a branch of arbiterForge/arbiter-academy, write test_mechanism_links.py and watch it fail.</li><li>Cut each lesson&#39;s Understand the mechanism section to a summary of at most 80 words with a link to its canonical page from the merged topic map.</li><li>Run the Academy suite and open the pull request there; stop. Tagging and the submodule bump are T-14.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;discover&#34;,&#34;-v&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The Academy suite, including the new test, passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>academy-source</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>tests.test_mechanism_links</li><li>tests.test_foundations_labs</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-13 -->
+
+<!-- CA:BEGIN:T-14 -->
+<article class="record" id="T-14" data-ca-symbol="T-14" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-14">T-14</a><h3>Publish the Academy preview and bump the submodule</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-04</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/site-structural-improvements.html#AC-09">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-09</a></li><li><a href="../specs/site-structural-improvements.html#AC-10">SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-13">T-13</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The site builds against the new Academy tag and its checks pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-04</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>academy-source</code></td></tr><tr><td>modify</td><td><code>.gitmodules</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Reset the submodule pin to preview-0.32.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Wait for the user&#39;s explicit authorization to tag the Academy preview; the sprint request does not grant it.</li><li>After the Academy pull request merges and is tagged, bump the submodule pin and run the site checks.</li><li>Commit through commit-gate and open the pull request; do not merge.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;test:academy-source&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Academy source checks pass against the new pin.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>scripts/academy-source.test.ts</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Type check is clean.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;test&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Build, vitest, Academy base and rendered release-applicability checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>vitest run (all site suites)</li><li>test:academy-base</li><li>test:release-applicability-rendered</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No broken internal links or fragments.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/check_site_voice.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Voice check passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_codex_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Codex doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_public_pi_docs.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Public Pi doc checks pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_ci_impact.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>CI impact filter tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-14 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>Reference: one page per workflow</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>33 command pages carry the reader fields and one source embed, merged skill URLs redirect, the drift check passes, and the reference pull request is open.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-02">T-02</a></li><li><a href="#T-03">T-03</a></li><li><a href="#T-04">T-04</a></li><li><a href="#T-05">T-05</a></li><li><a href="#T-06">T-06</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Captured examples</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>Every capturable guide example renders from a hash-bound capture and the captured-examples pull request is open.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-07">T-07</a></li><li><a href="#T-08">T-08</a></li><li><a href="#T-09">T-09</a></li><li><a href="#T-10">T-10</a></li><li><a href="#T-11">T-11</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+
+<!-- CA:BEGIN:CP-03 -->
+<article class="record" id="CP-03" data-ca-symbol="CP-03" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-03">CP-03</a><h3>Guide and lesson links</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>Every lesson links to its guide and back, and the links pull request is open.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-12">T-12</a></li></ul></div></article>
+<!-- CA:END:CP-03 -->
+
+<!-- CA:BEGIN:CP-04 -->
+<article class="record" id="CP-04" data-ca-symbol="CP-04" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-04">CP-04</a><h3>Academy</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-03">CP-03</a></li></ul></div><div class="field"><span class="label">Exit</span>The Academy pull request is open; publication waits for explicit authorization.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-13">T-13</a></li><li><a href="#T-14">T-14</a></li></ul></div></article>
+<!-- CA:END:CP-04 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-DELIVERY -->
+<article class="record" id="SEC-DELIVERY" data-ca-symbol="SEC-DELIVERY" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-DELIVERY">SEC-DELIVERY</a><h3>Delivery and parallelism</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>CP-01, CP-02 and CP-03 share no task dependency and land as three separate pull requests, so they can run in parallel worktrees. Two overlaps need a rebase by whichever merges second: T-09 and T-12 both touch site/scripts/gen.ts, and T-02&#39;s link repointing and T-10&#39;s capture wiring both edit guides.</p></div><div class="block"><p>CP-04 starts only after CP-03&#39;s pull request is merged (PRE-01). Merging any pull request, tagging the Academy preview and bumping the submodule each need the user&#39;s separate authorization; T-14 is blocked on PRE-02.</p></div></div></article>
+<!-- CA:END:SEC-DELIVERY -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2><span class="missing">None recorded</span></section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Observed date</span>2026-11-01</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group" id="group-verification_inputs"><a class="back" href="#main-content">Top</a><h2>Verification inputs</h2><div class="fields"><div class="field"><span class="label">Exclude directories</span><ul class="items"><li>site/node_modules</li><li>site/dist</li></ul></div><div class="field"><span class="label">Roots</span><ul class="items"><li>site</li><li>academy-source</li><li>.github/scripts</li><li>.github/workflows/docs.yml</li><li>plugins/ca/commands</li><li>plugins/ca/skills</li><li>core/surface</li><li>.gitmodules</li></ul></div></div></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 3b1ebf10ee10e8a184e118d0ca2b3044e59423c627dc8d25e244bebafafdf3e8<br>Model SHA-256: 3174e4f1bfb37a398d979bcc837aaf7695af9176807515dbf48f4e5f40f55af0</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-SITE-STRUCTURAL-IMPROVEMENTS",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {
+      "PRE-01": "not_satisfied",
+      "PRE-02": "not_satisfied"
+    },
+    "scopes": {},
+    "task_check_observations": {
+      "T-01": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/generator/merged-workflow-pages.test.ts",
+            "test/generator/command-url-stability.test.ts",
+            "test/reference-sidebar.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "ea70b14152b1f3016f51fbfdf12c2bd1beb0b07864e6e43c26a673ff465c401d",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:05:32Z",
+          "recording_operation_id": "sss-T-01-check-0",
+          "scoped_inputs_sha256": "a2dc3e3cb6b92f8b860a42b05691b2b84eec961c33c71f1b4d47172d09f402d3",
+          "source": "CP-01a author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "53 passed; npm run gen emitted 33 command and 13 skill pages",
+          "task_subject_sha256": "09a46655521f6f16863724d708ab4f07a3faa21dca26dd5dbe20a3062d2ef611"
+        }
+      ],
+      "T-02": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/generator/merged-workflow-redirects.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "699d2188bcf58b6756003b6d0a23d92ad01f79c10389fcac632645c3f1b5bda0",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-02T00:28:41Z",
+          "recording_operation_id": "sss-T-02-check-0",
+          "scoped_inputs_sha256": "9231312f812c125e7b5e1157d91263cee11c0cf878fbd54afcc5289c2f150820",
+          "source": "CP-01c author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Redirects cover exactly the derived pairs; 15 stubs in dist",
+          "task_subject_sha256": "3f9271127700c9f7540cace5befeeb570df55bf2fb7aa452f13ee563c4be94a6"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "build"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "699d2188bcf58b6756003b6d0a23d92ad01f79c10389fcac632645c3f1b5bda0",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-02T00:28:41Z",
+          "recording_operation_id": "sss-T-02-check-1",
+          "scoped_inputs_sha256": "9231312f812c125e7b5e1157d91263cee11c0cf878fbd54afcc5289c2f150820",
+          "source": "CP-01c author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Site builds",
+          "task_subject_sha256": "3f9271127700c9f7540cace5befeeb570df55bf2fb7aa452f13ee563c4be94a6"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "link-audit"
+          ],
+          "command_index": 2,
+          "criterion_subject_sha256": "699d2188bcf58b6756003b6d0a23d92ad01f79c10389fcac632645c3f1b5bda0",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-02T00:28:42Z",
+          "recording_operation_id": "sss-T-02-check-2",
+          "scoped_inputs_sha256": "9231312f812c125e7b5e1157d91263cee11c0cf878fbd54afcc5289c2f150820",
+          "source": "CP-01c author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "30971 links, 194 pages; audit now fails links that land on redirect stubs",
+          "task_subject_sha256": "3f9271127700c9f7540cace5befeeb570df55bf2fb7aa452f13ee563c4be94a6"
+        }
+      ],
+      "T-03": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/generator/reader-fields.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "d4dd6695b4cdae145efbd7522e69c7b3d9ad103f25cf1dd218b0ef994db455ea",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:05:33Z",
+          "recording_operation_id": "sss-T-03-check-0",
+          "scoped_inputs_sha256": "8d6ea5c73369247547533150f8d7f38ae11cd1635eef904e4d6dd5c2121870a1",
+          "source": "CP-01a author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "41 passed; 18 mutants killed",
+          "task_subject_sha256": "3ad69248f68d6af42b80eb02eaf1d468dfa5e29530e8e3eb3a6579e9e471f519"
+        }
+      ],
+      "T-04": [
+        {
+          "argv": [
+            "npm",
+            "run",
+            "gen"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "0192df35e7245bd420fe7499dc427d6cf6ab90f084fa04ba6c0ff5a0937de6ef",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:31:37Z",
+          "recording_operation_id": "sss-T-04-check-0",
+          "scoped_inputs_sha256": "917a7cdbf26f70b1ea138477d2544b4e7b411a14be472a09e6e30a9f56390992",
+          "source": "CP-01b author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Exit 0; was 151 missing fields in 41 files",
+          "task_subject_sha256": "97cacfd29d684c67ed4d47209ce496676db81934e4224cdc7584f178e4ef9faa"
+        },
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/generator"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "0192df35e7245bd420fe7499dc427d6cf6ab90f084fa04ba6c0ff5a0937de6ef",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:31:37Z",
+          "recording_operation_id": "sss-T-04-check-1",
+          "scoped_inputs_sha256": "917a7cdbf26f70b1ea138477d2544b4e7b411a14be472a09e6e30a9f56390992",
+          "source": "CP-01b author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "43 files, 492 tests pass",
+          "task_subject_sha256": "97cacfd29d684c67ed4d47209ce496676db81934e4224cdc7584f178e4ef9faa"
+        }
+      ],
+      "T-05": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/generator/curated-drift.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "5e80c7255e6aa000e4801d9d0ad72af5d89e7fbb78ec84b53d6eb5c0e55bbcd5",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-02T00:28:42Z",
+          "recording_operation_id": "sss-T-05-check-3",
+          "scoped_inputs_sha256": "021ba4feb3e757d66c37abaa949939081635dd4ab59e4faacecac0af421ea5d7",
+          "source": "CP-01c author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Drift tests pass; 15 mutants killed",
+          "task_subject_sha256": "6b1cf06482dcefb48a9994fe24701ff5ea0e4136a88b4207ed225cffdda59804"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "gen"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "5e80c7255e6aa000e4801d9d0ad72af5d89e7fbb78ec84b53d6eb5c0e55bbcd5",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-02T00:28:43Z",
+          "recording_operation_id": "sss-T-05-check-4",
+          "scoped_inputs_sha256": "021ba4feb3e757d66c37abaa949939081635dd4ab59e4faacecac0af421ea5d7",
+          "source": "CP-01c author report, worktree claude/site-structural-sprint (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Real curated set has no drift after one prose fix (prune.md --resume)",
+          "task_subject_sha256": "6b1cf06482dcefb48a9994fe24701ff5ea0e4136a88b4207ed225cffdda59804"
+        }
+      ],
+      "T-07": [
+        {
+          "argv": [
+            "node",
+            "-e",
+            "JSON.parse(require('fs').readFileSync('scripts/capture/guide-examples.json','utf8'))"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "86e201c26cfa04bd1dda52d16e2affe8e8cbbcf51a9943c2b8d69993527dbedf",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:19:44Z",
+          "recording_operation_id": "sss-T-07-check-0",
+          "scope_unassessed_reason": "missing_declared_inputs",
+          "source": "CP-02 author report, worktree claude/site-captured-examples (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Inventory of 50 blocks parses: 5 capturable, 6 illustrative, 39 input",
+          "task_subject_sha256": "6aea081f32f2f142a2cb62e970a286392c6ef12dc5b2dbc899ca961de2d4da18"
+        }
+      ],
+      "T-08": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/capture/capture-harness.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "d88f688cb6f307627bd4c5b78ad8b1c2cd913a264d2d4d9b3839e9ae5ccf0506",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:19:45Z",
+          "recording_operation_id": "sss-T-08-check-0",
+          "scoped_inputs_sha256": "1a11c80aa47cb883cb444c0876ea7ef144b8e582c32b49efccbdaca150949ec9",
+          "source": "CP-02 author report, worktree claude/site-captured-examples (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Harness and normalizer tests pass; mutants killed",
+          "task_subject_sha256": "3a2e880edfe25dbfd55c0d4ed246c82a68147b5df89492b7ba15710654720ed3"
+        },
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/landing/landing-page.test.ts"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "d88f688cb6f307627bd4c5b78ad8b1c2cd913a264d2d4d9b3839e9ae5ccf0506",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:19:45Z",
+          "recording_operation_id": "sss-T-08-check-1",
+          "scoped_inputs_sha256": "1a11c80aa47cb883cb444c0876ea7ef144b8e582c32b49efccbdaca150949ec9",
+          "source": "CP-02 author report, worktree claude/site-captured-examples (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Landing hook replay renders; proof schema and sourceSha256 unchanged",
+          "task_subject_sha256": "3a2e880edfe25dbfd55c0d4ed246c82a68147b5df89492b7ba15710654720ed3"
+        }
+      ],
+      "T-09": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/capture/stale-capture.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "3489ec3061529fef28dd193e29f444079ea91482434d3bf50444322a5edaac89",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:19:45Z",
+          "recording_operation_id": "sss-T-09-check-0",
+          "scoped_inputs_sha256": "a5f9eb0857eb77bd5ca7329913a18ec44a3752895afe425993b99c5a1184636d",
+          "source": "CP-02 author report, worktree claude/site-captured-examples (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Stale-capture tests pass; corrupted hash fails real gen naming the capture and npm run capture",
+          "task_subject_sha256": "986ae6bbbc51d81963d7eda288d7d200c32bfd0d378d270cef2b5ee3bdf3f8bd"
+        }
+      ],
+      "T-10": [
+        {
+          "argv": [
+            "npm",
+            "run",
+            "capture"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "86e201c26cfa04bd1dda52d16e2affe8e8cbbcf51a9943c2b8d69993527dbedf",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:19:46Z",
+          "recording_operation_id": "sss-T-10-check-0",
+          "scoped_inputs_sha256": "cdb48fe906c4ce76f0b793e1ce77322606e8c6d07c81ad0153b9cdd0fe64304f",
+          "source": "CP-02 author report, worktree claude/site-captured-examples (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Two runs leave capture and proof assets byte-identical",
+          "task_subject_sha256": "2d7c1143c1b4e98e8101b654c51a7264be9f546d0ca97e470cc10f6b74103068"
+        },
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/content/guide-examples.test.ts"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "86e201c26cfa04bd1dda52d16e2affe8e8cbbcf51a9943c2b8d69993527dbedf",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T20:19:47Z",
+          "recording_operation_id": "sss-T-10-check-1",
+          "scoped_inputs_sha256": "cdb48fe906c4ce76f0b793e1ce77322606e8c6d07c81ad0153b9cdd0fe64304f",
+          "source": "CP-02 author report, worktree claude/site-captured-examples (uncommitted)",
+          "source_normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+          "summary": "Guide example classification passes; literal negative control fails naming overriding-a-gate.md",
+          "task_subject_sha256": "2d7c1143c1b4e98e8101b654c51a7264be9f546d0ca97e470cc10f6b74103068"
+        }
+      ],
+      "T-12": [
+        {
+          "argv": [
+            "npx",
+            "vitest",
+            "run",
+            "test/generator/topic-map.test.ts"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "f740398a975b629418ad1f086e6051743e28a665a0ba5fd0828e85af8f06790e",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T19:56:29Z",
+          "recording_operation_id": "sss-t12-check-0",
+          "scoped_inputs_sha256": "5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6",
+          "source": "CP-03 author report, worktree claude/site-topic-map at 368ae7e2",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "19 topic-map tests passed",
+          "task_subject_sha256": "3381daf164998b31f1c6a6652bf76c7b7d54eee814629b130d41cb211fcd799d"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "typecheck"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "f740398a975b629418ad1f086e6051743e28a665a0ba5fd0828e85af8f06790e",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T19:56:30Z",
+          "recording_operation_id": "sss-t12-check-1",
+          "scoped_inputs_sha256": "5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6",
+          "source": "CP-03 author report, worktree claude/site-topic-map at 368ae7e2",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "Type check clean after npm run gen",
+          "task_subject_sha256": "3381daf164998b31f1c6a6652bf76c7b7d54eee814629b130d41cb211fcd799d"
+        },
+        {
+          "argv": [
+            "npm",
+            "test"
+          ],
+          "command_index": 2,
+          "criterion_subject_sha256": "f740398a975b629418ad1f086e6051743e28a665a0ba5fd0828e85af8f06790e",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T19:56:30Z",
+          "recording_operation_id": "sss-t12-check-2",
+          "scoped_inputs_sha256": "5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6",
+          "source": "CP-03 author report, worktree claude/site-topic-map at 368ae7e2",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "99 files, 1246 tests; academy base and rendered release applicability OK",
+          "task_subject_sha256": "3381daf164998b31f1c6a6652bf76c7b7d54eee814629b130d41cb211fcd799d"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "link-audit"
+          ],
+          "command_index": 3,
+          "criterion_subject_sha256": "f740398a975b629418ad1f086e6051743e28a665a0ba5fd0828e85af8f06790e",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T19:56:31Z",
+          "recording_operation_id": "sss-t12-check-3",
+          "scoped_inputs_sha256": "5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6",
+          "source": "CP-03 author report, worktree claude/site-topic-map at 368ae7e2",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "34242 links, no failures",
+          "task_subject_sha256": "3381daf164998b31f1c6a6652bf76c7b7d54eee814629b130d41cb211fcd799d"
+        },
+        {
+          "argv": [
+            "python",
+            ".github/scripts/check_site_voice.py"
+          ],
+          "command_index": 4,
+          "criterion_subject_sha256": "f740398a975b629418ad1f086e6051743e28a665a0ba5fd0828e85af8f06790e",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "agent_report",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-01T19:56:32Z",
+          "recording_operation_id": "sss-t12-check-4",
+          "scoped_inputs_sha256": "5eb84538554b439e37b78fb6cda81ab58ed6282273f90f0cebe1dc2c9804bed6",
+          "source": "CP-03 author report, worktree claude/site-topic-map at 368ae7e2",
+          "source_normative_sha256": "90020483a96aec8967e774708898ce119f75079ca30702b637000f63a71b524d",
+          "summary": "57 authored pages clean",
+          "task_subject_sha256": "3381daf164998b31f1c6a6652bf76c7b7d54eee814629b130d41cb211fcd799d"
+        }
+      ]
+    },
+    "tasks": {
+      "T-01": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-02": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-03": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-04": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-05": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-06": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "IN_PROGRESS"
+      },
+      "T-07": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-08": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-09": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-10": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-11": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-12": {
+        "evidence_refs": [],
+        "reason": "Implementation reported complete; verification and review are not assessed by this progress update.",
+        "state": "REVIEW"
+      },
+      "T-13": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-14": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "3174e4f1bfb37a398d979bcc837aaf7695af9176807515dbf48f4e5f40f55af0",
+    "normative_sha256": "3b1ebf10ee10e8a184e118d0ca2b3044e59423c627dc8d25e244bebafafdf3e8",
+    "symbol_count": 21
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": null,
+      "observed_date": "2026-11-01",
+      "repository": null
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "33 command pages carry the reader fields and one source embed, merged skill URLs redirect, the drift check passes, and the reference pull request is open.",
+        "id": "CP-01",
+        "tasks": [
+          "T-01",
+          "T-02",
+          "T-03",
+          "T-04",
+          "T-05",
+          "T-06"
+        ],
+        "title": "Reference: one page per workflow"
+      },
+      {
+        "depends_on": [],
+        "exit": "Every capturable guide example renders from a hash-bound capture and the captured-examples pull request is open.",
+        "id": "CP-02",
+        "tasks": [
+          "T-07",
+          "T-08",
+          "T-09",
+          "T-10",
+          "T-11"
+        ],
+        "title": "Captured examples"
+      },
+      {
+        "depends_on": [],
+        "exit": "Every lesson links to its guide and back, and the links pull request is open.",
+        "id": "CP-03",
+        "tasks": [
+          "T-12"
+        ],
+        "title": "Guide and lesson links"
+      },
+      {
+        "depends_on": [
+          "CP-03"
+        ],
+        "exit": "The Academy pull request is open; publication waits for explicit authorization.",
+        "id": "CP-04",
+        "tasks": [
+          "T-13",
+          "T-14"
+        ],
+        "title": "Academy"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [
+      {
+        "id": "PRE-01",
+        "kind": "fact",
+        "requirement": "The T-12 topic-map pull request is merged to main.",
+        "source_refs": [],
+        "task_refs": [
+          "T-13"
+        ],
+        "title": "Topic map merged"
+      },
+      {
+        "id": "PRE-02",
+        "kind": "decision",
+        "requirement": "The user explicitly authorizes tagging the next Academy preview and bumping the academy-source submodule.",
+        "source_refs": [],
+        "task_refs": [
+          "T-14"
+        ],
+        "title": "Academy publication authorized"
+      }
+    ],
+    "retired_symbols": [],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "CP-01, CP-02 and CP-03 share no task dependency and land as three separate pull requests, so they can run in parallel worktrees. Two overlaps need a rebase by whichever merges second: T-09 and T-12 both touch site/scripts/gen.ts, and T-02's link repointing and T-10's capture wiring both edit guides.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "CP-04 starts only after CP-03's pull request is merged (PRE-01). Merging any pull request, tagging the Academy preview and bumping the submodule each need the user's separate authorization; T-14 is blocked on PRE-02.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-DELIVERY",
+        "title": "Delivery and parallelism"
+      }
+    ],
+    "sources": [],
+    "spec_ref": {
+      "artifact_id": "SPEC-SITE-STRUCTURAL-IMPROVEMENTS",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401"
+    },
+    "summary": "Three independent site pull requests (reference, captured examples, guide-lesson links) and one arbiter-academy pull request; Academy publication waits for explicit authorization.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-01",
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Both new tests and the sidebar test pass.",
+          "npm run gen emits 33 command pages and 13 skill pages (22 shipped skills minus the 9 merged)."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-01",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/scripts/generator/workflow-pairs.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/generate.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/render-command-page.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/build-index.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/types.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/test/generator/merged-workflow-pages.test.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/test/generator/command-url-stability.test.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/test/reference-sidebar.test.ts"
+          }
+        ],
+        "rollback": "Revert the generator files and delete the two new tests.",
+        "source_refs": [],
+        "steps": [
+          "Snapshot today's 33 command URLs into command-url-stability.test.ts before changing anything.",
+          "Write merged-workflow-pages.test.ts and watch it fail: 9 merged pages with one ca-source embed each, no page for their 9 skills, 4 alias pages pointing to replacement and skill page.",
+          "In workflow-pairs.ts, pair a command with a skill when the command source's first heading names a shipped skill directory; read each command's visibility from the catalog; fail on an unknown or duplicated owner.",
+          "Core and advanced pairs: render the command's curated text, then the skill's under How it runs, then one source embed, and emit no skill page.",
+          "Alias pairs: keep the skill page as the workflow page; render the alias page as the Compatibility section, a pointer paragraph and its source embed."
+        ],
+        "title": "Derive pairs and render one page per workflow",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/generator/merged-workflow-pages.test.ts",
+              "test/generator/command-url-stability.test.ts",
+              "test/reference-sidebar.test.ts"
+            ],
+            "assertion": "The merged-page, URL-stability and sidebar tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/generator/merged-workflow-pages.test.ts",
+              "test/generator/command-url-stability.test.ts",
+              "test/reference-sidebar.test.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-02"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "The redirect test passes.",
+          "The link audit finds no link to a merged skill URL."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-02",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "site/astro.config.mjs"
+          },
+          {
+            "action": "create",
+            "path": "site/test/generator/merged-workflow-redirects.test.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/src/content/docs"
+          }
+        ],
+        "rollback": "Revert astro.config.mjs and the link edits.",
+        "source_refs": [],
+        "steps": [
+          "Write the redirect test against the derived pair list and watch it fail.",
+          "Generate the 9 redirects from workflow-pairs.ts into the astro redirects map; do not hand-list them.",
+          "Point the -2 redirects of the four merged skills (debug, refactor, release, tribunal) straight at the command pages; leave context-check-2 and decompose-2 on their skill pages.",
+          "Repoint in-site links to the 9 merged skill URLs at the command pages; links to alias-owning and internal-only skills stay."
+        ],
+        "title": "Redirect merged skill URLs and repoint inbound links",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/generator/merged-workflow-redirects.test.ts"
+            ],
+            "assertion": "Redirects cover exactly the derived pairs.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/generator/merged-workflow-redirects.test.ts"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "build"
+            ],
+            "assertion": "The site builds.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "No broken links.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-03"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "The reader-field tests pass on fixtures."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-03",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/load-curated.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/types.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/scripts/generator/render-reader-fields.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/render-command-page.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/render-skill-page.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/test/generator/reader-fields.test.ts"
+          }
+        ],
+        "rollback": "Revert the loader and renderer changes.",
+        "source_refs": [],
+        "steps": [
+          "Write reader-fields.test.ts with fixtures missing a field and missing the Example heading; watch it fail.",
+          "Core, advanced and internal command files and alias-owning skill files require use_when, avoid_when, asks and produces in frontmatter and an Example heading in the body; internal-only skill files require runs_inside and produces; alias command files require none.",
+          "Fail generation naming the file and the field; render the fields in the fixed order above the body."
+        ],
+        "title": "Reader-field schema and rendering",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/generator/reader-fields.test.ts"
+            ],
+            "assertion": "Reader-field tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/generator/reader-fields.test.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-01",
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-03"
+        ],
+        "depends_on": [
+          "T-01",
+          "T-03"
+        ],
+        "done_when": [
+          "npm run gen passes with all fields present.",
+          "Every generator test passes."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-04",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "site/src/curated/commands"
+          },
+          {
+            "action": "modify",
+            "path": "site/src/curated/skills"
+          }
+        ],
+        "rollback": "Restore the curated directory from the base commit.",
+        "source_refs": [],
+        "steps": [
+          "Keep each merged skill's curated file as the How it runs source the T-01 renderer reads; trim sentences the command file already says so the merged page reads once. Do not delete those 9 files.",
+          "Cut the 4 alias command files to at most one sentence; the generated Compatibility pointer carries the redirect, and any unique content moves to the skill page.",
+          "Write the four reader fields for the 28 non-alias commands and the 4 alias-owning skills from their sources, replacing each When to reach for it section with use_when; make the loader reject a remaining When to reach for it heading.",
+          "Add an Example section where one is missing (cleanup's moves to the post-merge-cleanup skill page; tribunal needs one).",
+          "Write runs_inside and produces for the 9 internal-only skills.",
+          "Run npm run gen until it passes; do not relax a required field to get there."
+        ],
+        "title": "Write the reader fields and trim the 9 merged pairs",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "gen"
+            ],
+            "assertion": "Generation passes with every required field present.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/generator"
+            ],
+            "assertion": "All generator tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/generator"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-04"
+        ],
+        "depends_on": [
+          "T-04"
+        ],
+        "done_when": [
+          "The drift tests pass.",
+          "npm run gen passes over the real curated set."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-05",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/scripts/generator/curated-drift.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generator/generate.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/test/generator/curated-drift.test.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/src/curated"
+          }
+        ],
+        "rollback": "Remove the check and its call; keep the prose corrections.",
+        "source_refs": [],
+        "steps": [
+          "Write curated-drift.test.ts with fixtures: a removed /ca: flag, an unknown /ca: command, and a git flag that must be ignored; watch it fail.",
+          "Attribute each --flag to the nearest preceding /ca:\u003cname\u003e on its line or code block, or to the page's command inside its Usage block; check it against that command's source; check every /ca:\u003cname\u003e against the catalog; report all misses at once.",
+          "Run it over the real curated set and correct each real miss in the prose; never add an allowlist."
+        ],
+        "title": "Curated drift check",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/generator/curated-drift.test.ts"
+            ],
+            "assertion": "Drift tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/generator/curated-drift.test.ts"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "gen"
+            ],
+            "assertion": "The real curated set has no drift.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10"
+        ],
+        "depends_on": [
+          "T-02",
+          "T-04",
+          "T-05"
+        ],
+        "done_when": [
+          "Every check below passes on the branch.",
+          "The pull request is open with CI results attached."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-06",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "site"
+          }
+        ],
+        "rollback": "Close the pull request.",
+        "source_refs": [],
+        "steps": [
+          "Run the full verification set.",
+          "Inspect /reference/commands/commit/ and one internal-only skill page at desktop and phone widths.",
+          "Commit through commit-gate and open the pull request; do not merge."
+        ],
+        "title": "Verify and open the reference pull request",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "typecheck"
+            ],
+            "assertion": "Type check is clean.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "test"
+            ],
+            "assertion": "Build, vitest, Academy base and rendered release-applicability checks pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "vitest run (all site suites)",
+              "test:academy-base",
+              "test:release-applicability-rendered"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "No broken internal links or fragments.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/check_site_voice.py"
+            ],
+            "assertion": "Voice check passes.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_codex_docs.py"
+            ],
+            "assertion": "Public Codex doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_pi_docs.py"
+            ],
+            "assertion": "Public Pi doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_ci_impact.py"
+            ],
+            "assertion": "CI impact filter tests pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-07"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Every guide block appears in the inventory with a class."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-07",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/scripts/capture/guide-examples.json"
+          }
+        ],
+        "rollback": "Delete the inventory file.",
+        "source_refs": [],
+        "steps": [
+          "List every fenced text or console block in site/src/content/docs/guides/**.",
+          "Classify each as capturable (output of a deterministic codeArbiter tool) or illustrative (a user request or model narration), and name the tool and fixture for each capturable one.",
+          "Record the inventory in guide-examples.json; the content test in T-10 reads it."
+        ],
+        "title": "Inventory every guide example",
+        "verification": [
+          {
+            "argv": [
+              "node",
+              "-e",
+              "JSON.parse(require('fs').readFileSync('scripts/capture/guide-examples.json','utf8'))"
+            ],
+            "assertion": "The inventory parses.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-05"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Normalizer and harness tests pass.",
+          "npm run capture regenerates hook-proof.json with an unchanged schema."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-08",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/scripts/capture/harness.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/scripts/capture/normalize.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/scripts/capture/fixture.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/capture-hook-proof.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/package.json"
+          },
+          {
+            "action": "create",
+            "path": "site/test/capture/capture-harness.test.ts"
+          }
+        ],
+        "rollback": "Revert the harness and restore capture-hook-proof.ts.",
+        "source_refs": [],
+        "steps": [
+          "Write normalizer tests with Windows and Linux raw samples and watch them fail.",
+          "Normalize temporary paths, commit SHAs, timestamps and line endings.",
+          "Record argv, output and sha256 for the entry script and every in-repository module the interpreter loaded during the run.",
+          "Move capture-hook-proof.ts onto the harness without changing hook-proof.json's schema or its current-and-published applicability check; add npm run capture."
+        ],
+        "title": "Capture harness",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/capture/capture-harness.test.ts"
+            ],
+            "assertion": "Harness tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/capture/capture-harness.test.ts"
+            ]
+          },
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/landing/landing-page.test.ts"
+            ],
+            "assertion": "The landing hook replay still renders.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/landing/landing-page.test.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-06"
+        ],
+        "depends_on": [
+          "T-08"
+        ],
+        "done_when": [
+          "The stale-capture test passes."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-09",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/scripts/capture/verify.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/gen.ts"
+          },
+          {
+            "action": "create",
+            "path": "site/src/components/CapturedRun.astro"
+          },
+          {
+            "action": "create",
+            "path": "site/test/capture/stale-capture.test.ts"
+          },
+          {
+            "action": "inspect",
+            "path": ".github/workflows/docs.yml"
+          }
+        ],
+        "rollback": "Remove the gen call and the component.",
+        "source_refs": [],
+        "steps": [
+          "Write stale-capture.test.ts with a fixture whose source hash is wrong; watch it fail.",
+          "Compare every capture's recorded hashes with the working tree during gen; name the capture, the source and npm run capture on a mismatch.",
+          "Add a test that every captured source path matches a docs.yml push and pull_request path filter; if one does not, add it to docs.yml and route that commit to the security reviewer.",
+          "Render a capture as a code block labelled with its tool and source version."
+        ],
+        "title": "Stale-capture check and CapturedRun component",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/capture/stale-capture.test.ts"
+            ],
+            "assertion": "Stale-capture tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/capture/stale-capture.test.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-07"
+        ],
+        "depends_on": [
+          "T-07",
+          "T-09"
+        ],
+        "done_when": [
+          "Every capturable block renders from a capture.",
+          "No unlabelled hand-written output block remains."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-10",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/src/assets/captures"
+          },
+          {
+            "action": "modify",
+            "path": "site/src/content/docs/guides"
+          },
+          {
+            "action": "create",
+            "path": "site/test/content/guide-examples.test.ts"
+          }
+        ],
+        "rollback": "Restore the guides and delete the captures.",
+        "source_refs": [],
+        "steps": [
+          "Write guide-examples.test.ts from the inventory and watch it fail.",
+          "Add a capture target for each capturable block, run npm run capture, and replace the hand-written block with CapturedRun.",
+          "Keep illustrative blocks labelled; never relabel a capturable block to pass the test."
+        ],
+        "title": "Capture the inventoried examples and wire the guides",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "capture"
+            ],
+            "assertion": "Captures regenerate without error.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/content/guide-examples.test.ts"
+            ],
+            "assertion": "Guide example classification passes.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/content/guide-examples.test.ts"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10"
+        ],
+        "depends_on": [
+          "T-10"
+        ],
+        "done_when": [
+          "Every check below passes on the branch.",
+          "The pull request is open."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-11",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "site"
+          }
+        ],
+        "rollback": "Close the pull request.",
+        "source_refs": [],
+        "steps": [
+          "Run the full verification set.",
+          "Inspect two guides with captures at desktop and phone widths.",
+          "Commit through commit-gate and open the pull request; do not merge."
+        ],
+        "title": "Verify and open the captured-examples pull request",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "typecheck"
+            ],
+            "assertion": "Type check is clean.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "test"
+            ],
+            "assertion": "Build, vitest, Academy base and rendered release-applicability checks pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "vitest run (all site suites)",
+              "test:academy-base",
+              "test:release-applicability-rendered"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "No broken internal links or fragments.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/check_site_voice.py"
+            ],
+            "assertion": "Voice check passes.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_codex_docs.py"
+            ],
+            "assertion": "Public Codex doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_pi_docs.py"
+            ],
+            "assertion": "Public Pi doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_ci_impact.py"
+            ],
+            "assertion": "CI impact filter tests pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-08",
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Topic-map tests pass.",
+          "Every lesson page links to its guide.",
+          "The pull request is open."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-12",
+        "paths": [
+          {
+            "action": "create",
+            "path": "site/src/data/topic-map.json"
+          },
+          {
+            "action": "create",
+            "path": "site/scripts/topic-map.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generate-academy.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/src/components/PageContext.astro"
+          },
+          {
+            "action": "create",
+            "path": "site/test/generator/topic-map.test.ts"
+          }
+        ],
+        "rollback": "Revert the map, the generator change and the component change.",
+        "source_refs": [],
+        "steps": [
+          "Write topic-map.test.ts with a bad lesson ID and an unmapped lesson; watch it fail.",
+          "Map each of the 19 lessons to its guide or concept page; validate every slug and lesson ID during gen.",
+          "Render a practice link on mapped guides and a guide link on each generated lesson page.",
+          "Run the full verification set, commit through commit-gate and open the pull request; do not merge."
+        ],
+        "title": "Topic map and generated guide-lesson links",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "test/generator/topic-map.test.ts"
+            ],
+            "assertion": "Topic-map tests pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "test/generator/topic-map.test.ts"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "typecheck"
+            ],
+            "assertion": "Type check is clean.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "test"
+            ],
+            "assertion": "Build, vitest, Academy base and rendered release-applicability checks pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "vitest run (all site suites)",
+              "test:academy-base",
+              "test:release-applicability-rendered"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "No broken internal links or fragments.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/check_site_voice.py"
+            ],
+            "assertion": "Voice check passes.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_codex_docs.py"
+            ],
+            "assertion": "Public Codex doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_pi_docs.py"
+            ],
+            "assertion": "Public Pi doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_ci_impact.py"
+            ],
+            "assertion": "CI impact filter tests pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-09"
+        ],
+        "depends_on": [
+          "T-12"
+        ],
+        "done_when": [
+          "The Academy suite passes.",
+          "The arbiter-academy pull request is open."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-13",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "academy-source/academy/tracks"
+          },
+          {
+            "action": "create",
+            "path": "academy-source/tests/test_mechanism_links.py"
+          }
+        ],
+        "rollback": "Close the Academy pull request.",
+        "source_refs": [],
+        "steps": [
+          "Start only after the topic-map pull request (T-12) is merged to main.",
+          "On a branch of arbiterForge/arbiter-academy, write test_mechanism_links.py and watch it fail.",
+          "Cut each lesson's Understand the mechanism section to a summary of at most 80 words with a link to its canonical page from the merged topic map.",
+          "Run the Academy suite and open the pull request there; stop. Tagging and the submodule bump are T-14."
+        ],
+        "title": "Academy pull request: shorten mechanism sections",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "discover",
+              "-v"
+            ],
+            "assertion": "The Academy suite, including the new test, passes.",
+            "availability": "proposed",
+            "cwd": "academy-source",
+            "expected_exit": 0,
+            "required_tests": [
+              "tests.test_mechanism_links",
+              "tests.test_foundations_labs"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-09",
+          "SPEC-SITE-STRUCTURAL-IMPROVEMENTS#AC-10"
+        ],
+        "depends_on": [
+          "T-13"
+        ],
+        "done_when": [
+          "The site builds against the new Academy tag and its checks pass."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-14",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "academy-source"
+          },
+          {
+            "action": "modify",
+            "path": ".gitmodules"
+          }
+        ],
+        "rollback": "Reset the submodule pin to preview-0.32.",
+        "source_refs": [],
+        "steps": [
+          "Wait for the user's explicit authorization to tag the Academy preview; the sprint request does not grant it.",
+          "After the Academy pull request merges and is tagged, bump the submodule pin and run the site checks.",
+          "Commit through commit-gate and open the pull request; do not merge."
+        ],
+        "title": "Publish the Academy preview and bump the submodule",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "test:academy-source"
+            ],
+            "assertion": "Academy source checks pass against the new pin.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "scripts/academy-source.test.ts"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "typecheck"
+            ],
+            "assertion": "Type check is clean.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "test"
+            ],
+            "assertion": "Build, vitest, Academy base and rendered release-applicability checks pass.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "vitest run (all site suites)",
+              "test:academy-base",
+              "test:release-applicability-rendered"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "No broken internal links or fragments.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/check_site_voice.py"
+            ],
+            "assertion": "Voice check passes.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_codex_docs.py"
+            ],
+            "assertion": "Public Codex doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_public_pi_docs.py"
+            ],
+            "assertion": "Public Pi doc checks pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_ci_impact.py"
+            ],
+            "assertion": "CI impact filter tests pass.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "Site structural improvements: one page per workflow, captured examples, one teaching layer",
+    "verification_inputs": {
+      "exclude_directories": [
+        "site/node_modules",
+        "site/dist"
+      ],
+      "roots": [
+        "site",
+        "academy-source",
+        ".github/scripts",
+        ".github/workflows/docs.yml",
+        "plugins/ca/commands",
+        "plugins/ca/skills",
+        "core/surface",
+        ".gitmodules"
+      ]
+    }
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/site-structural-improvements.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 50,
+  "schema_version": "0.3.2",
+  "slug": "site-structural-improvements"
+}
+</script>
+</body></html>
