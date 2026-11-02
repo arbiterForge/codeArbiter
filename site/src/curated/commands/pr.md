@@ -1,10 +1,11 @@
 ---
 entity: commands/pr
 related: [commit, watch, skills/finishing-a-development-branch]
+use_when: "A branch is ready to propose for integration and you want a pull request opened with reviews matched to the diff."
+avoid_when: "Reviewing a diff without opening a pull request, which is `/ca:review`, or persisting work that is not yet committed, which is `/ca:commit`."
+asks: "Nothing required beyond an optional title. A CRITICAL or HIGH review finding stops the draft until you resolve it."
+produces: "An open pull request with a real summary, a test plan and links to related decisions, backed by current-head checks and the reviews the diff calls for. It does not merge."
 gates:
-  - gate: current-head readiness
-    when: before a PR is drafted
-    effect: applicable tests, secrets scanning and specialized review cover the actual base-to-HEAD diff; missing or failing checks remain pending
   - gate: path-matrix review coverage
     when: assessing the current branch
     effect: identify required specialized reviews and executable coverage; reuse current conclusions and dispatch missing or affected reviews
@@ -18,8 +19,7 @@ gates:
 Explicit PR entry and a direct request to open a PR use the same branch-finishing owner.
 Neither permits a direct push or force-push to the default branch. It establishes current-head
 readiness from the actual base-to-HEAD diff, including secrets scanning and specialized checks
-against that same subject. Reuse applicable observed results while source and inputs match, and
-run missing or affected checks. An empty index does not establish branch readiness, and preparing
+against that same subject. An empty index does not establish branch readiness, and preparing
 an already committed branch does not require a new commit.
 
 The diff selects the required reviewers: authentication, crypto and CI/deploy/infrastructure
@@ -81,8 +81,3 @@ Drafting PR: "fix(auth): rotate session token on privilege change"...
 PR opened: https://github.com/org/repo/pull/482
 CODEARBITER_BABYSIT is off — no CI watcher attached. Run /ca:watch to follow it manually.
 ```
-
-## When to reach for it
-
-Reach for `/ca:pr` when you're ready to propose the branch for integration. Authorized uncommitted
-work uses the commit owner first. To review a diff without opening a PR, use `/ca:review`.

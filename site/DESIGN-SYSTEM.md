@@ -89,6 +89,12 @@ The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
   Academy.
 - **Orientation strip.** `PageContext` renders one line (level, time, outcome). Prerequisites and
   the completion check open from `.ca-page-context__more`.
+- **At a glance.** A command or skill reference page puts its reader fields (use it when, don't
+  use it for, what it asks you, what it produces; internal-only skills: runs inside, what it
+  produces) under one `## At a glance` heading as a `<dl class="ca-reader-fields">`, in a fixed
+  order, directly above the body. It is not a card: label and value sit in two columns, and stack
+  at 50rem and below. The generator renders the values' inline markdown to escaped HTML
+  (`render-reader-fields.ts`), because a raw HTML block is not parsed as markdown.
 - **Narrow screens.** At 50rem and below the splash docs rail becomes a compact tab on the tray's
   moving edge and the landing takes the full width. The drawer's keyboard and focus contract is
   unchanged.

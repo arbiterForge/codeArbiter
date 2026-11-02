@@ -1,6 +1,8 @@
 ---
 entity: skills/writing-plans
 related: [commands/feature, commands/sprint, brainstorming, executing-plans]
+runs_inside: "`/ca:feature` and `/ca:sprint`, after the specification is saved."
+produces: "A maintained plan whose tasks name outcomes, paths, criterion IDs, dependencies and a concrete verification, saved and read back, with open decisions and pending checks listed."
 gates:
   - gate: criterion coverage
     when: assessing plan readiness

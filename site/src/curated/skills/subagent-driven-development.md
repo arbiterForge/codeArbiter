@@ -1,6 +1,8 @@
 ---
 entity: skills/subagent-driven-development
 related: [commands/sprint, executing-plans, tdd, dispatching-parallel-agents]
+runs_inside: "`/ca:feature`, through the plan coordinator for a named batch, and `/ca:sprint`, for the full plan."
+produces: "The completed tasks, the checks actually run and their results, unresolved issues and next work, returned to the caller. It does not commit."
 gates:
   - gate: applicable checks
     when: assessing implemented work

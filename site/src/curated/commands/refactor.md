@@ -1,16 +1,10 @@
 ---
 entity: commands/refactor
 related: [feature, fix, skills/refactor]
-gates:
-  - gate: named surface
-    when: before the restructure starts
-    effect: inspect the requested outcome and name the exact files, functions and consumers; ask only about consequential missing choices
-  - gate: parity coverage
-    when: before any code moves
-    effect: pre-existing tests must already cover the named surface, with at least one direct test per public method — an under-covered surface halts and backfills first
-  - gate: parity verification
-    when: after the restructure
-    effect: post-backfill baseline tests pass with preserved behavioral assertions; exhaustive exact-head proof runs in hosted CI before merge
+use_when: "Behavior stays the same and only the shape of the code changes: a rename, extract, inline, move or dedup."
+avoid_when: "The current behavior is wrong, which is `/ca:fix`, or the change adds behavior, which is `/ca:feature`."
+asks: "The exact surface being restructured and why it is worth doing. It shows the scope table and continues; only a material expansion needs another decision."
+produces: "The restructured code, passing characterization tests that show behavior is unchanged, and lint, type and coverage results for the touched surface."
 ---
 
 ## What it does
@@ -52,9 +46,3 @@ Running the post-backfill parity tests: 37 passed, 0 failed; behavioral assertio
 Exhaustive exact-head GitHub Actions checks remain required before merge.
 Coverage on the named surface: unchanged. Parity proven.
 ```
-
-## When to reach for it
-
-Reach for `/ca:refactor` when the behavior is staying the same and only the shape of the code is
-changing. If the motivation is "the current behavior is wrong," that's `/ca:fix`; if it adds new
-behavior, that's `/ca:feature`.

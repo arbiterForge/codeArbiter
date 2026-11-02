@@ -864,6 +864,51 @@ details.ca-source pre {
   margin-block-start: var(--ca-space-6);
 }
 
+/* "At a glance": a command or skill page's reader fields as one definition
+ * list under a single heading, label | value on wide screens. Starlight puts a
+ * top margin on every sibling in the content and indents <dd>, so the margins
+ * are reset here. */
+.sl-markdown-content .ca-reader-fields {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr);
+  gap: var(--ca-space-3) var(--ca-space-5);
+  align-items: baseline;
+  margin: var(--ca-space-3) 0 0;
+  padding: 0;
+}
+
+.sl-markdown-content .ca-reader-fields dt,
+.sl-markdown-content .ca-reader-fields dd {
+  margin: 0;
+  padding: 0;
+}
+
+.sl-markdown-content .ca-reader-fields dt {
+  color: var(--ca-ink-muted);
+  font-size: var(--ca-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sl-markdown-content .ca-reader-fields dd {
+  color: var(--ca-ink-soft);
+  font-size: var(--ca-text-md);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 50rem) {
+  .sl-markdown-content .ca-reader-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ca-space-1) 0;
+  }
+
+  .sl-markdown-content .ca-reader-fields dd:not(:last-child) {
+    margin-block-end: var(--ca-space-3);
+  }
+}
+
 @media (max-width: 42rem) {
   .ca-learning-map {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,6 +1,10 @@
 ---
 entity: commands/review
 related: [skills/dispatching-parallel-agents, pr, checkpoint]
+use_when: "You want a read-only review of your current change before opening a pull request, or of an inbound pull request."
+avoid_when: "Opening a pull request, which dispatches reviews itself through `/ca:pr`; a periodic full-codebase sweep, which is `/ca:checkpoint`; or a pre-implementation threat model, which is `/ca:threat-model`."
+asks: "Nothing required. Pass a path, a PR number or a PR URL to choose the target; with none it reviews the current uncommitted diff. Posting a comment on an inbound PR needs separate confirmation."
+produces: "A single triaged verdict with findings by severity, file and line, and remediation. No file is modified."
 gates:
   - gate: severity block
     when: a CRITICAL or HIGH finding surfaces on your own change
@@ -69,9 +73,3 @@ LOW    src/auth/login.test.ts  No test for expired-token rejection path.
 
 Verdict: 1 HIGH, 1 LOW — HIGH must be resolved before /ca:pr.
 ```
-
-## When to reach for it
-
-`/ca:pr` already dispatches this automatically when opening a PR, so a manual run is for checking
-before that point; a periodic full-codebase sweep is `/ca:checkpoint`'s job, and a
-pre-implementation threat model is `/ca:threat-model`'s.

@@ -46,7 +46,7 @@ Choose the owner before editing:
 |---|---|---|
 | Splash, onboarding, guides, concepts, operations | Human-authored page | `src/content/docs/` |
 | Command behavior | Plugin source + curated explanation | `../plugins/ca/commands/` and `src/curated/commands/` |
-| Skill behavior | Plugin source + curated explanation | `../plugins/ca/skills/` and `src/curated/skills/` |
+| Skill behavior | Plugin source + curated explanation | `../plugins/ca/skills/` and `src/curated/skills/`. A skill merged into its command has no page of its own (see below). |
 | Agent behavior | Plugin source + curated explanation | `../plugins/ca/agents/` and `src/curated/agents/` |
 | Hook gate messages and source links | Hook call sites | `../plugins/ca/hooks/*.py` |
 | Configuration variables | Typed configuration catalog | `scripts/generator/configuration-reference.ts` |
@@ -74,6 +74,17 @@ generated `reference/hooks-gates.md`, `reference/configuration.md`, and `changel
 
 Every command, skill, and agent must have a curated explanation. The coverage test fails when a
 new source entity ships without one.
+
+Not every skill has its own page. A command whose shipped source names its skill is one reference
+page. The source does this in its first heading: a bare skill name (`# commit-gate`) instead of the
+usual `# /ca:<name> — summary`. The page holds the command's curated text, then the skill's curated
+text under "How it runs", then one source embed holding both sources. That skill is not given a
+page of its own, but it still needs its curated file, because the command page renders it, and its
+old `/reference/skills/<name>/` URL redirects to the command page. When the command catalog marks
+the command as an alias, the skill page stays the workflow page and the alias page is a short
+pointer to it. Pairs are derived from the shipped sources and the command catalog
+(`scripts/generator/workflow-pairs.ts`), and so are the redirects (`astro.config.mjs`); neither is a
+hand-kept list, so a new pairing, or a broken one, shows up on the next build.
 
 ## Writing a usable page
 

@@ -76,7 +76,7 @@ export const adrCases: EvidenceCase[] = [
     supports: 'The choice is recorded and attributed. A sealed acceptance binding fixes which normative obligations later evidence must cover.',
     missing: 'Acceptance does not establish implemented code, passing tests, installed-host behavior or publication.',
     inspect: 'Resolve the full filename stem, acceptance source commit and complete sealed obligation set. An unsealed legacy baseline stays Accepted/Planned.',
-    href: '/reference/skills/decision-lifecycle/', source: 'lifecycle' },
+    href: '/reference/commands/adr/', source: 'lifecycle' },
   { id: 'implemented', label: 'Implemented', record: 'Current implementation evidence',
     example: 'Each sealed obligation now maps to a named source commit and the relevant input digests. The example has not yet supplied fresh verification for every obligation.',
     supports: 'The repository can derive Implemented only when every sealed obligation has the required current implementation evidence.',

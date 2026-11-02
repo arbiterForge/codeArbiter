@@ -1,6 +1,10 @@
 ---
 entity: commands/task
 related: [status, standup]
+use_when: "You need to add, start, complete or archive a task on the project board."
+avoid_when: "Only reading the board and its counts, which is `/ca:status`."
+asks: "The action and the task: a description for `add`, and an ID or title for `start`, `done` and `archive`. Prefer the dotted ID once a task has one."
+produces: "A schema-conformant, dated update to `.codearbiter/open-tasks.md`; `archive` moves the task's whole block to `done-tasks.md`."
 gates:
   - gate: writer-only mutation
     when: any add, start, or done invocation
@@ -46,8 +50,3 @@ same verb per-item as its archival sweep.
 Flipped poc.docs.0001 to done, dated 2026-07-02.
 open-tasks.md updated via taskwrite.py.
 ```
-
-## When to reach for it
-
-Any board write — adding, starting, or completing a task. To just read the board and its counts,
-use `/ca:status` instead; it's read-only.

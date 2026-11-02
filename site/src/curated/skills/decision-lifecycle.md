@@ -1,19 +1,12 @@
 ---
 entity: skills/decision-lifecycle
 related: [commands/adr, commands/adr-status, decision-variance]
-gates:
-  - gate: authoring
-    when: recording a new decision
-    effect: the decision content must come from you, not inference, and the record is never authored as the disposition of a routine finding
 ---
 
-## What it does
-
-One owner records architecture decisions you have already made and reports existing ADR
-health. Natural-language requests and the explicit `adr` and `adr-status` entries reach
-that owner. Choosing between competing options still belongs to decision-variance.
-
 ## Select the operation first
+
+The same owner reports existing ADR health, reached through the `adr-status` entry.
+Choosing between competing options still belongs to decision-variance.
 
 A status request reads existing records without loading the authoring procedure. It does
 not create a missing decisions directory, arm a marker, change a status, append a log, or

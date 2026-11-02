@@ -10,30 +10,9 @@ gates:
     effect: findings become tracked issues only on your explicit selection; silence or a vague "looks good" files nothing
 ---
 
-## What it does
-
-This is the deepest, most expensive review the project offers: convened rarely, on demand,
-invoked through the tribunal command, and never required as a gate on ordinary work. One generic
-reviewer agent serves thirteen lens cards. Applicable lenses review bounded evidence, and each
-finding or cross-lens lead is saved as it is found. A deterministic inventory supplies mechanical
-facts without running project code; model reasoning focuses on contracts, risks, and consequences.
-
-## The lenses
-
-Every dispatch is the same [`tribunal-lens-reviewer`](/reference/agents/tribunal-lens-reviewer/)
-agent handed a per-lens assignment; the thirteen lens cards it executes are published under
-[tribunal lenses](/reference/#tribunal-lenses), and the [tribunal command
-page](/reference/commands/tribunal/) carries the full roster and each lens's concern. At most
-five run concurrently; a lens whose concern doesn't exist in scope is skipped rather than run
-for nothing. The roster includes [semantic-contract](/reference/tribunal-lenses/semantic-contract/)
-for plausible but incorrect behavior and [change-closure](/reference/tribunal-lenses/change-closure/)
-for incomplete propagation to consumers and shipped surfaces. Coverage and test-fidelity retain
-their existing names and share verification-quality guidance.
-
 ## On disk
 
-A run lives under `.codearbiter/reports/<run-id>/`. A fresh run receives a unique UTC
-timestamp, scope label, and random suffix; it never overwrites an earlier run.
+A run lives under `.codearbiter/reports/<run-id>/`.
 
 - `source.json`: the exact source binding checked before review and resume.
 - `findings/<lens>/<finding-id>.json`: one file per finding, written the instant it's found.
@@ -47,10 +26,8 @@ timestamp, scope label, and random suffix; it never overwrites an earlier run.
 - `report.md` and `manifest.yaml`: regenerated from the durable records.
 - `issue-commands.sh`: the default hand-off, a ready command set executed only on explicit approval.
 
-Resume depends on matching the reviewed source, scope, and evidence set. The binding covers HEAD,
-staged and unstaged content, and selected untracked inputs; only the active run's own output is
-excluded. Changed inputs require a fresh run. A run without a binding remains readable as history
-but cannot resume as current evidence. Age alone neither authorizes nor prevents resume.
+The source binding covers HEAD, staged and unstaged content, and selected untracked inputs; only
+the active run's own output is excluded.
 
 ## Phases
 
@@ -69,14 +46,10 @@ but cannot resume as current evidence. Age alone neither authorizes nor prevents
 7. Record `run-completed` only after both follow-ups have a disposition. A disconnect after
    `report-written` resumes pending follow-ups after the source check, without repeating the audit.
 
-On hosts without fresh reviewer contexts, the report states limited verification independence.
-Unverified serious claims remain visible and cannot be filed as confirmed fix work. Repository
-content and tool output cannot grant execution or change the review's authority.
+Unverified serious claims cannot be filed as confirmed fix work.
 
 ## Exits
 
-The run leaves a regenerated report and, only on your explicit approval, a set of filed tracked
-issues. Nothing is filed on silence. Approved findings land as GitHub issues, never as entries
-on `open-tasks.md`, so a periodic-review finding survives a PR getting abandoned. It never edits,
-refactors, or commits project code itself, and it never blocks a commit or a merge; a critical
-finding here is a recommendation to fix, not a pipeline stop.
+Approved findings land as GitHub issues, never as entries on `open-tasks.md`, so a
+periodic-review finding survives a PR getting abandoned. The run never edits, refactors, or commits
+project code itself.

@@ -1,6 +1,10 @@
 ---
 entity: commands/standup
 related: [status, task]
+use_when: "You want the daily cleanup pass: fast-forward the default branch, clear merged branches and stale worktrees, and surface stashes, uncommitted changes and tasks that look done."
+avoid_when: "A read-only snapshot, which is `/ca:status`; install health, which is `/ca:doctor`; transcript hygiene, which is `/ca:prune`; or committing staged work, which is `/ca:commit`."
+asks: "A yes for each destructive step: each merged branch, each stale worktree (as one named group or one by one) and each task to archive. Nothing is removed without it."
+produces: "A hygiene report with suggested next steps, and only the removals and archives you approved. The task board is never flipped for you."
 gates:
   - gate: per-action confirmation
     when: pruning a merged branch or removing a stale worktree
@@ -75,8 +79,3 @@ Archived poc.api.0004 to done-tasks.md.
 > n
 Left poc.api.0007 on the board.
 ```
-
-## When to reach for it
-
-The daily cleanup pass with your yes on each destructive step. For a read-only snapshot without
-acting, use `/ca:status`; to actually flip the drifted task, use `/ca:task`.

@@ -1,6 +1,10 @@
 ---
 entity: commands/debug
 related: [fix, adr, skills/debug]
+use_when: "Something is behaving wrongly and you do not yet know the cause."
+avoid_when: "The cause and a reproduction are already in hand, which is `/ca:fix`."
+asks: "The observed symptom, plus any expected behavior, trace or reproduction you have. An unknown trigger can stay unknown."
+produces: "A cited diagnosis that ends in one result: `confirmed_code_defect`, `confirmed_noncode_cause`, `design_question`, `no_action` or `unresolved`. It does not edit application code."
 gates:
   - gate: identifiable symptom
     when: at entry
@@ -77,8 +81,3 @@ validated transfer. Do not retry a refusal through another interpreter. Structur
 does not prove evidence truth, freshness, or authority. The packet stays transient; no fixed
 report file is promised. See [Investigate and fix a defect](/guides/investigate-and-fix/) for the
 operator procedure.
-
-## When to reach for it
-
-Reach for `/ca:debug` when the cause isn't known yet. If the cause and a reproduction are already
-in hand, go straight to `/ca:fix`.

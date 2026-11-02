@@ -1,6 +1,8 @@
 ---
 entity: skills/dispatching-parallel-agents
 related: [subagent-driven-development, commands/review, commands/checkpoint]
+runs_inside: "`/ca:review` and `/ca:checkpoint` for their reviewer fleets, and `/ca:sprint` through the implementation step, whenever work splits across independent agents."
+produces: "One aggregated verdict, either a pass or a list of blocking findings, in place of raw agent output, with every dispatched unit ending in a recorded state."
 gates:
   - gate: partition
     when: before any agent is dispatched

@@ -169,7 +169,7 @@ When a batch is ready, run:
 /ca:commit
 ```
 
-The [commit-gate skill](/reference/skills/commit-gate/) is the only path to a git commit. It runs nine phases: permission, branch, classification, verification (tests, lint, secrets scan), behavioral proof, diff review, selective stage, message, and commit. A finding at any phase stops the commit.
+The [commit gate](/reference/commands/commit/) is the only path to a git commit. It runs nine phases: permission, branch, classification, verification (tests, lint, secrets scan), behavioral proof, diff review, selective stage, message, and commit. A finding at any phase stops the commit.
 
 The gate does not auto-decide hard gates. A secret in the diff, a crypto change, or a branch violation is a true stop that requires your explicit resolution. "It looks right" is not authorization.
 
@@ -221,6 +221,6 @@ test cannot stand in for all four, and an unfinished unrelated task does not era
 | writing-plans | [skills/writing-plans](/reference/skills/writing-plans/) |
 | tdd | [skills/tdd](/reference/skills/tdd/) |
 | executing-plans | [skills/executing-plans](/reference/skills/executing-plans/) |
-| commit-gate | [skills/commit-gate](/reference/skills/commit-gate/) |
+| commit-gate | [commands/commit](/reference/commands/commit/) |
 
 For the concepts behind gated lanes and gate strengths, see [Concepts](/concepts/).

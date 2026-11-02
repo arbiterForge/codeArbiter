@@ -1,6 +1,10 @@
 ---
 entity: commands/override
 related: [conflict, audit]
+use_when: "A gate is standing in the way of a change you have decided is correct and you want the bypass recorded."
+avoid_when: "Work that clears every gate on its own, or a contradiction between two sources, which is `/ca:conflict`."
+asks: "A specific reason naming the gate and why. A vague reason is rejected, and a security-critical stop also needs you to acknowledge the specific finding in your own words."
+produces: "One permanent line in `.codearbiter/overrides.log` with your identity, the gate and the reason, written before the action proceeds."
 gates:
   - gate: single-confirm log
     when: a routine gate is bypassed (lint, style, a non-security review finding)
@@ -40,9 +44,3 @@ Logged:
   [2026-07-02T14:03:11Z] | BY: dev@example.com | GATE: coverage-auditor | REASON: skip the coverage-auditor finding on the new formatter, it's test-only tooling
 Proceeding — override recorded in .codearbiter/overrides.log.
 ```
-
-## When to reach for it
-
-Only when a gate is actually standing in the way of a change you've decided is correct. Never
-needed for work that clears every gate on its own. For a rule conflict between two sources rather
-than a gate to bypass, that's `/ca:conflict`.

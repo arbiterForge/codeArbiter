@@ -1,10 +1,10 @@
 ---
 entity: commands/reconcile
 related: [adr, adr-status, conflict, skills/decision-variance]
-gates:
-  - gate: explicit choice per recorded variance
-    when: recording an arbitration outcome, not returning a report
-    effect: "Only your concrete choice is recorded. A choice you already supplied is carried forward without asking again; general delegation is not an arbitration decision."
+use_when: "You have a real architectural variance to examine, such as records that disagree with the scaffold or with a prior decision, and you want a report or a recorded choice."
+avoid_when: "Recording or checking ADRs, which are `/ca:adr` and `/ca:adr-status`; a rule conflict between sources, which is `/ca:conflict`; or a routine Git text conflict."
+asks: "An optional ADR, artifact or area to scope the pass. When you reconcile, you choose to ratify, supersede or defer each variance; a report-only request asks you nothing."
+produces: "A variance report with evidence, unresolved choices and coverage limits, and when you reconcile, your logged choice with your attribution. It never edits the artifacts or code itself."
 ---
 
 ## What it does
@@ -51,10 +51,3 @@ with your attribution. Reaffirming a decision against a changed source section
 appends a replacement binding with the current hash; it never edits the old entry.
 A replacement ADR or implementation is a separately authorized continuation. An
 already selected request passes to its owning procedure without another routing menu.
-
-## When to reach for it
-
-Use it to examine a real architectural variance. ADR recording and health use
-`decision-lifecycle`; ordinary explanation does not require reconciliation. Routine
-Git text conflicts stay with their existing workflow. Delegated sprint method
-choices retain sprint's SMARTS scoring and do not inherit an arbitration interview.

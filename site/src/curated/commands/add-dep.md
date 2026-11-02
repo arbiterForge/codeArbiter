@@ -1,6 +1,10 @@
 ---
 entity: commands/add-dep
 related: [agents/dependency-reviewer, review]
+use_when: "You want to adopt a new or changed third-party dependency, or run one named tool once for a one-time inspection without adopting it."
+avoid_when: "Removing a dependency or updating one as part of a code change, which belong in `/ca:fix` or `/ca:feature`; for a package question with nothing to install, ask it directly."
+asks: "The package and, if you have one, an exact version. After the dependency reviewer clears it, you confirm the exact install command before anything runs."
+produces: "A written review of the package's license, source and supply-chain risk, and an install only after you confirm it, with manifest and lockfile changed together."
 gates:
   - gate: dependency review
     when: before dependency adoption through this command
@@ -21,6 +25,9 @@ as clearance. Follow the project's declared advisory thresholds and documented j
 
 The gate is orchestrator-enforced, not hook-enforced. There is no pre-bash rule blocking every
 package-manager install outside this route; H-07 is a manifest-change advisory.
+
+Ask package questions directly when no execution is intended. The
+legacy `btw` reference in the embedded source is not a prerequisite for a read-only question.
 
 ## Usage
 
@@ -61,12 +68,5 @@ Wait for my confirmation. Preserve project artifacts and verify the result.
 No version or safety verdict is supplied by this example. The exact command still needs to be
 resolved and confirmed. Follow [Add a dependency safely](/guides/adding-a-dependency/) for the
 adoption-versus-inspection decision and before/after verification.
-
-## When to reach for it
-
-Use it for dependency adoption or the bounded one-time exception. Removing a dependency or
-updating one as part of a code change belongs in `fix` or `feature`; dependency changes receive
-review in the PR lane. Ask package questions directly when no execution is intended. The
-legacy `btw` reference in the embedded source is not a prerequisite for a read-only question.
 
 For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/adding-a-dependency/) and [Compare workflow routes](/concepts/workflow-routes/).

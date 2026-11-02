@@ -1,6 +1,10 @@
 ---
 entity: commands/fix
 related: [feature, refactor, skills/tdd]
+use_when: "A bug is confirmed and you want it repaired, starting with a regression test that fails for the right reason."
+avoid_when: "A request to find out why something fails, which is `/ca:debug`; new behavior, which is `/ca:feature`; or a restructure that keeps behavior the same, which is `/ca:refactor`."
+asks: "What is happening versus what should happen, plus a stack trace or reproduction if you have one."
+produces: "A regression test that reproduces the defect, a minimal fix that turns it green, and the remaining verification results, ready for the commit check."
 gates:
   - gate: regression test first
     when: before any fix code is written
@@ -54,11 +58,9 @@ Running... FAIL (expected reason: TypeError reading results[0], matches the obse
 Test is red for the right reason. Proceeding to the minimal fix.
 ```
 
-## When to reach for it
+## Handoff from `/ca:debug`
 
-Reach for `/ca:fix` when repair is authorized and a code defect is supported. For a diagnosis-only
-request, `/ca:debug` investigates and returns a recommendation without starting repair. A valid
-debug handoff can return `confirmed_code_defect`, `confirmed_noncode_cause`, `design_question`,
+A valid debug handoff can return `confirmed_code_defect`, `confirmed_noncode_cause`, `design_question`,
 `no_action`, or `unresolved`. Only a confirmed code defect with a supported regression obligation
 can continue the original authorized fix. Other results return to their owner or stop with the
 specified evidence, blocker, or resume condition. No-action makes no default board write.

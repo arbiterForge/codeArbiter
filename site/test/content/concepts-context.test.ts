@@ -110,7 +110,7 @@ describe('C03 teaching and historical boundaries', () => {
   it('does not promise universal provenance or silently convert missing data to fresh', () => {
     const provenance = page('provenance-drift');
     for (const phrase of ['drift_trigger', 'before', 'missing', 'interview', 'defer', 'silence']) expect(provenance.toLowerCase()).toContain(phrase.toLowerCase());
-    const curated = read('src/curated/commands/context-check.md');
+    const curated = read('src/curated/skills/context-check.md');
     expect(curated).not.toContain('commits ago'); expect(curated).not.toContain('auth/**');
     expect(curated).toContain('not repaired by re-baselining');
     expect(source('core/surface/skills/context-check/SKILL.md')).toContain('No staging, no commits here');

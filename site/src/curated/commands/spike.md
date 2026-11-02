@@ -1,6 +1,10 @@
 ---
 entity: commands/spike
 related: [feature, debug, skills/using-git-worktrees]
+use_when: "You do not yet know whether an approach works and need to write throwaway code to find out."
+avoid_when: "You already know what to build, which is `/ca:feature`, or you are diagnosing a defect, which is `/ca:debug`. A question you can answer by reading code is asked directly."
+asks: "The question to answer and an optional timebox. It restates the question and stops for your confirmation before it creates the spike branch."
+produces: "A findings note at `.codearbiter/spikes/<slug>.md` that records the question and the answer, committed on your branch through `/ca:commit`. The spike branch and its code are deleted and never merged."
 gates:
   - gate: named question
     when: before the branch is created
@@ -49,8 +53,3 @@ of file size; the current buffer-then-send path is the only blocker.
 Findings written to .codearbiter/spikes/streaming-csv-export.md.
 Branch spike/streaming-csv-export deleted.
 ```
-
-## When to reach for it
-
-Reach for `/ca:spike` when you don't yet know if an approach works. Once you do, hand the findings to
-`/ca:feature` — the implementation is written fresh, test-first, never copied from the spike branch.
