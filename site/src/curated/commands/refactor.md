@@ -15,7 +15,8 @@ The proof comes from a measured post-backfill baseline established before restru
 passing characterization tests where coverage is missing, then preserve their behavioral assertions.
 Necessary import or symbol-reference updates may adapt tests to the new structure while retaining
 the same oracle. A changed expected result belongs to feature or fix work. Required direct tests,
-coverage metrics and critical-path evidence still apply.
+coverage metrics and critical-path evidence still apply. The post-backfill parity tests run
+locally; the exhaustive exact-head proof runs in hosted CI before merge.
 
 The existing request authorizes the named refactor. Present its inspected scope table and
 continue; only a material expansion or changed outcome needs another decision.

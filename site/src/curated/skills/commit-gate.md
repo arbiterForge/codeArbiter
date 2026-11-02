@@ -29,9 +29,10 @@ controls still apply.
 1. Confirm explicit authorization to commit.
 2. Confirm the branch is not a protected one.
 3. Classify the staged change into a single commit type and flag any database migration.
-4. Establish current tests and lint, and scan the staged files for secrets. Reuse applicable
-   observed results and specialized reviews; run missing or affected work. Required markers
-   must still cover the actual staged content.
+4. Establish impact-bounded local tests and lint, and scan the staged files for secrets. Reuse
+   applicable observed results and specialized reviews; run missing or affected work. Required
+   markers must still cover the actual staged content. Exhaustive exact-head hosted CI remains
+   mandatory before merge; this gate does not claim it.
 5. Match current evidence to the claimed behavior. A criterion already proved on unchanged
    relevant inputs needs no repeated command solely because this phase began.
 5.5. Select changed claims intersecting staged sources. Reinspect that slice, then
