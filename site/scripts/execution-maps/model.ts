@@ -357,7 +357,7 @@ export const featureMap: ExecutionMap = {
             "commit-gate"
           ],
           "title": "commit-gate",
-          "href": "/reference/skills/commit-gate/",
+          "href": "/reference/commands/commit/",
           "source": "commit",
           "detail": "Use the commit owner only when committing is authorized. It checks the selected staged work, applicable tests, secrets and specialized controls, with fresh behavioral proof.",
           "output": "A selectively staged commit and observed gate results."
@@ -369,7 +369,7 @@ export const featureMap: ExecutionMap = {
             "Finish branch"
           ],
           "title": "finishing-a-development-branch",
-          "href": "/reference/skills/finishing-a-development-branch/",
+          "href": "/reference/commands/pr/",
           "source": "finish",
           "detail": "Retain an existing open-PR choice. Ask for branch disposition only if it is unclear. Merge and discard require their own explicit authorization and applicable evidence.",
           "output": "The selected terminal action supported by current branch state."

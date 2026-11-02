@@ -1,6 +1,8 @@
 ---
 entity: skills/crypto-compliance
 related: [secret-handling, commit-gate]
+runs_inside: "The commit check (`/ca:commit`), which routes any staged change that touches hashing, signing, encryption, key derivation, secure randomness or TLS through it."
+produces: "A pass or a block for the change. A clean pass is recorded so the commit check will accept a crypto-touching change, and any finding blocks it."
 gates:
   - gate: banned-primitive scan
     when: any change touches hashing, signing, encryption, key derivation, security-relevant randomness, or TLS configuration

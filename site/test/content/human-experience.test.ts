@@ -33,7 +33,7 @@ describe("human-operable product window", () => {
       expect(guide).toContain(filename);
       expect(source).toContain(filename);
     }
-    expect(read("src/curated/commands/decompose.md")).not.toContain("each answer lands on disk as it's given");
+    expect(read("src/curated/skills/decompose.md")).not.toContain("each answer lands on disk as it's given");
     expect(read("src/content/docs/guides/understand-an-existing-project.md")).toContain("does not create the greenfield three-document set");
   });
 
@@ -135,7 +135,7 @@ describe("human-operable product window", () => {
   });
 
   it("keeps curated review guidance aligned with the producer contract", () => {
-    const decompose = read("src/curated/commands/decompose.md");
+    const decompose = read("src/curated/skills/decompose.md");
     expect(decompose.replace(/\s+/g, " ")).toContain("Review all three planning documents");
     const source = read("../core/surface/skills/decompose/references/markdown-format.md").replace(/\s+/g, " ");
     expect(source).toContain("record the user's actual confirmation in `_session.md`");

@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Site structural improvements: one page per workflow, captured examples, one teaching layer · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-SITE-STRUCTURAL-IMPROVEMENTS</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/site-structural-improvements.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Site structural improvements: one page per workflow, captured examples, one teaching layer</h1><p class="deck">Readers get one reference page per workflow with a fixed shape and a drift check, guide examples captured from real deterministic tool runs, and guides and Academy lessons that link to each other instead of teaching twice.</p><div class="meta"><span>SPEC-SITE-STRUCTURAL-IMPROVEMENTS</span><span>Revision 4 · schema 0.3.2</span><span>62 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>A codeArbiter documentation reader choosing, running or learning a workflow, and the maintainer who keeps the docs true.</div><div class="field"><span class="label">Outcome</span>Each workflow has one reference page with the same reader shape and a build-time drift check. Guide examples of deterministic tool output render from captures bound to their source. Each task is explained once in the guides, and guides and lessons link to each other.</div><div class="field"><span class="label">Problem</span>Thirteen commands each have a separate skill page with separately written text, so a reader needs two pages for one workflow and they can disagree. Skill pages have no examples, and nothing checks hand-written reference text against the source it describes. Guides show system behaviour only in hand-written examples; the one captured run is the landing hook replay. Guides and Academy lessons cover the same tasks with no links between them, and lessons re-explain what the guides explain.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-01 -->
+<article class="record" id="SCOPE-01" data-ca-symbol="SCOPE-01" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-01">SCOPE-01</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Merge the 9 command/skill reference pairs whose command is core or advanced (adr, commit, debug, pr, reconcile, refactor, release, threat-model and tribunal) into one page at the command URL, with redirects from the skill URLs. The 4 pairs whose command is a compatibility alias (cleanup, context-check, create-context and decompose) keep the skill page as the workflow page and shorten the alias page to a pointer.</div></article>
+<!-- CA:END:SCOPE-01 -->
+
+<!-- CA:BEGIN:SCOPE-02 -->
+<article class="record" id="SCOPE-02" data-ca-symbol="SCOPE-02" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-02">SCOPE-02</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Reader fields in curated frontmatter, rendered in a fixed order on every workflow page, and a required Example heading in the body of every workflow page.</div></article>
+<!-- CA:END:SCOPE-02 -->
+
+<!-- CA:BEGIN:SCOPE-03 -->
+<article class="record" id="SCOPE-03" data-ca-symbol="SCOPE-03" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-03">SCOPE-03</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>A generation-time drift check of flags and commands named in curated reference text.</div></article>
+<!-- CA:END:SCOPE-03 -->
+
+<!-- CA:BEGIN:SCOPE-04 -->
+<article class="record" id="SCOPE-04" data-ca-symbol="SCOPE-04" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-04">SCOPE-04</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>A capture harness, a stale-capture build check, and captured runs for every guide example that shows deterministic tool output.</div></article>
+<!-- CA:END:SCOPE-04 -->
+
+<!-- CA:BEGIN:SCOPE-05 -->
+<article class="record" id="SCOPE-05" data-ca-symbol="SCOPE-05" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-05">SCOPE-05</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>A topic map in site/ that renders guide-to-lesson and lesson-to-guide links.</div></article>
+<!-- CA:END:SCOPE-05 -->
+
+<!-- CA:BEGIN:SCOPE-06 -->
+<article class="record" id="SCOPE-06" data-ca-symbol="SCOPE-06" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-06">SCOPE-06</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>An arbiter-academy pull request that shortens each lesson&#39;s mechanism section to a summary and a link.</div></article>
+<!-- CA:END:SCOPE-06 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NON-GOAL-01 -->
+<article class="record" id="NON-GOAL-01" data-ca-symbol="NON-GOAL-01" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-01">NON-GOAL-01</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Changing command names, routes, visibility groups or the reference sidebar taxonomy.</div></article>
+<!-- CA:END:NON-GOAL-01 -->
+
+<!-- CA:BEGIN:NON-GOAL-02 -->
+<article class="record" id="NON-GOAL-02" data-ca-symbol="NON-GOAL-02" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-02">NON-GOAL-02</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Removing or hiding the source-visible layer on any reference page.</div></article>
+<!-- CA:END:NON-GOAL-02 -->
+
+<!-- CA:BEGIN:NON-GOAL-03 -->
+<article class="record" id="NON-GOAL-03" data-ca-symbol="NON-GOAL-03" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-03">NON-GOAL-03</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Presenting user requests or model narration as captured; they stay labelled illustrative.</div></article>
+<!-- CA:END:NON-GOAL-03 -->
+
+<!-- CA:BEGIN:NON-GOAL-04 -->
+<article class="record" id="NON-GOAL-04" data-ca-symbol="NON-GOAL-04" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-04">NON-GOAL-04</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Tagging an Academy preview or bumping the academy-source submodule without separate explicit authorization.</div></article>
+<!-- CA:END:NON-GOAL-04 -->
+
+<!-- CA:BEGIN:NON-GOAL-05 -->
+<article class="record" id="NON-GOAL-05" data-ca-symbol="NON-GOAL-05" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-05">NON-GOAL-05</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Removing the 9 internal-only skill pages.</div></article>
+<!-- CA:END:NON-GOAL-05 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><ul class="items"><li><a href="#DEC-01">DEC-01</a></li><li><a href="#DEC-02">DEC-02</a></li><li><a href="#DEC-03">DEC-03</a></li><li><a href="#DEC-04">DEC-04</a></li><li><a href="#DEC-05">DEC-05</a></li><li><a href="#DEC-06">DEC-06</a></li></ul></div><div class="field"><span class="label">Choice</span>Extend the existing generator, curated-file loader and hook-proof capture pattern rather than adding new systems: derive the pairs from shipped sources, validate reader fields in the loader, hash-bind captures like hook-proof.json, and render cross-links from one topic map.</div><div class="field"><span class="label">Tradeoff</span>Curated files grow structured frontmatter and 13 pairs need one editorial merge, in exchange for one page per workflow and build failures where today prose drifts silently.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CON-01 -->
+<article class="record" id="CON-01" data-ca-symbol="CON-01" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-01">CON-01</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-01</li><li>AC-02</li><li>AC-10</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-05">SRC-05</a></li></ul></div><div class="field"><span class="label">Statement</span>Command URLs, names and sidebar visibility groups stay as site-command-visibility-navigation defines them.</div></article>
+<!-- CA:END:CON-01 -->
+
+<!-- CA:BEGIN:CON-02 -->
+<article class="record" id="CON-02" data-ca-symbol="CON-02" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-02">CON-02</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-01</li><li>AC-10</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Statement</span>Every reference page keeps the collapsed, search-excluded verbatim source layer the docs-site-overhaul spec requires.</div></article>
+<!-- CA:END:CON-02 -->
+
+<!-- CA:BEGIN:CON-03 -->
+<article class="record" id="CON-03" data-ca-symbol="CON-03" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-03">CON-03</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-05</li><li>AC-07</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Statement</span>Captures run only codeArbiter&#39;s own deterministic tools against a temporary fixture: no model call, no network, no write outside the temporary directory and the committed capture assets.</div></article>
+<!-- CA:END:CON-03 -->
+
+<!-- CA:BEGIN:CON-04 -->
+<article class="record" id="CON-04" data-ca-symbol="CON-04" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-04">CON-04</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-09</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>Academy lesson text changes only through an arbiter-academy pull request that keeps its curriculum section contract; publication is a separate authorized step.</div></article>
+<!-- CA:END:CON-04 -->
+
+<!-- CA:BEGIN:CON-05 -->
+<article class="record" id="CON-05" data-ca-symbol="CON-05" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-05">CON-05</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-10</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Statement</span>The reader-layer rule stays: Get started pages carry no evidence-register phrasing outside the Limits and evidence disclosure.</div></article>
+<!-- CA:END:CON-05 -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2>
+<!-- CA:BEGIN:DEC-01 -->
+<article class="record" id="DEC-01" data-ca-symbol="DEC-01" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-01">DEC-01</a><h3>Which URL survives a merge</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Core and advanced commands: the command URL is canonical and the merged skill URL redirects to it. Alias commands: the skill page is the workflow page and the alias page stays a short pointer.</div><div class="field"><span class="label">Rationale</span>Readers type core and advanced commands; alias commands send readers elsewhere (pr --cleanup, status drift, init --brownfield, init --greenfield), so their procedure cannot live on a page the docs tell readers not to use. Redirects keep old URLs working.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-01 -->
+
+<!-- CA:BEGIN:DEC-02 -->
+<article class="record" id="DEC-02" data-ca-symbol="DEC-02" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-02">DEC-02</a><h3>Where pairs come from</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Derive pairs from the shipped command source naming its owning skill as its first heading; an ambiguous or unknown name fails generation.</div><div class="field"><span class="label">Rationale</span>All 13 pairs follow that convention today; a hand-kept list would be one more thing to drift.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-02 -->
+
+<!-- CA:BEGIN:DEC-03 -->
+<article class="record" id="DEC-03" data-ca-symbol="DEC-03" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-03">DEC-03</a><h3>How reader fields are stored</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Short reader fields (use, avoid, asks, produces, runs inside) in curated frontmatter, validated by load-curated; examples stay in the body under a required Example heading.</div><div class="field"><span class="label">Rationale</span>The loader already validates gates and related lists in frontmatter. 31 command files already have an Example section in the body, and moving code blocks into YAML would make them harder to edit.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-03 -->
+
+<!-- CA:BEGIN:DEC-04 -->
+<article class="record" id="DEC-04" data-ca-symbol="DEC-04" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-04">DEC-04</a><h3>How captures stay fresh</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Commit captures as assets with sha256 for the entry script and every in-repository module it loaded; npm run gen fails on a mismatch with the working tree; refresh with npm run capture. The landing hook proof keeps its existing binding.</div><div class="field"><span class="label">Rationale</span>Same shape as hook-proof.json with no new CI execution step. Hashing loaded modules, not just the entry script, keeps the load-bearing assumption true when a shared hook library changes.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-04 -->
+
+<!-- CA:BEGIN:DEC-05 -->
+<article class="record" id="DEC-05" data-ca-symbol="DEC-05" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-05">DEC-05</a><h3>Which examples are captured</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Only output of codeArbiter&#39;s deterministic tools (hooks, writers, scaffolder, release derivation, statusline); user requests and model narration stay labelled illustrative.</div><div class="field"><span class="label">Rationale</span>Model output is not reproducible; capturing it would claim proof the site cannot keep.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-05 -->
+
+<!-- CA:BEGIN:DEC-06 -->
+<article class="record" id="DEC-06" data-ca-symbol="DEC-06" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-06">DEC-06</a><h3>How the Academy stops duplicating guides</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Keep the curriculum&#39;s required Understand the mechanism section and shorten it to a summary plus a link to the canonical page, through an arbiter-academy pull request.</div><div class="field"><span class="label">Rationale</span>academy_engine/curriculum.py requires the section; removing it would break the Academy contract for no reader gain.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-06 -->
+</section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-01 -->
+<article class="record" id="AC-01" data-ca-symbol="AC-01" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-01">AC-01</a><h3>One reference page per paired workflow</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each of the 9 merged command pages contains exactly one ca-source embed.</li><li>No page is generated for the 9 skills merged into a command page.</li><li>The 4 alias pages carry no reader fields and link to their replacement and their skill page.</li><li>A command source naming an unknown or second skill fails generation.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The 13 paired commands and their skills are shipped.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-01 -->
+<article class="record" id="SCN-AC-01" data-ca-symbol="SCN-AC-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-01">SCN-AC-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The shipped plugin sources and the command catalog</div><div class="field"><span class="label">Then</span>9 merged command pages exist with one source embed each, no page exists for their 9 skills, and the 4 alias pages point to their replacement and skill page</div><div class="field"><span class="label">When</span>npm run gen runs</div></article>
+<!-- CA:END:SCN-AC-01 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>For each core or advanced command whose shipped source names an owning skill (adr, commit, debug, pr, reconcile, refactor, release, threat-model and tribunal), the build emits one page at the command&#39;s URL holding the reader fields, the reader text formerly split across both pages, and exactly one source embed. For each alias command whose source names an owning skill (cleanup, context-check, create-context and decompose), the skill page is the workflow page, and the alias page keeps its generated Compatibility section, a one-paragraph pointer to the replacement and the skill page, and its own source embed. Pairs are derived from the shipped command source and the command catalog, not from a hand-kept list.</div><div class="field"><span class="label">Trigger</span>Run npm run gen.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-01 -->
+<article class="record" id="VER-AC-01" data-ca-symbol="VER-AC-01" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-01">VER-AC-01</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Restoring the separate skill render produces 13 extra pages and a second embed; the test fails.</div><div class="field"><span class="label">Oracle</span>Generator test over the derived pair list: page count, one ca-source block per merged page, absent skill pages.</div><div class="field"><span class="label">Planned target</span>site/test/generator/merged-workflow-pages.test.ts</div></article>
+<!-- CA:END:VER-AC-01 -->
+</div></article>
+<!-- CA:END:AC-01 -->
+
+<!-- CA:BEGIN:AC-02 -->
+<article class="record" id="AC-02" data-ca-symbol="AC-02" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-02">AC-02</a><h3>Merged skill URLs keep working</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each of the 9 merged skill URLs redirects to its command page.</li><li>The -2 redirects of the four merged skills (debug, refactor, release, tribunal) point at their command pages directly, not through a second redirect; context-check-2 and decompose-2 keep pointing at their skill pages.</li><li>The link audit reports no link to a merged skill URL.</li><li>Alias-owning and internal-only skills keep their own pages and URLs.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>AC-01 holds.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-02 -->
+<article class="record" id="SCN-AC-02" data-ca-symbol="SCN-AC-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-02">SCN-AC-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A built site</div><div class="field"><span class="label">Then</span>They land on /reference/commands/commit/</div><div class="field"><span class="label">When</span>A reader opens /reference/skills/commit-gate/</div></article>
+<!-- CA:END:SCN-AC-02 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Every /reference/skills/&lt;name&gt;/ URL of the 9 merged skills, and every existing redirect that targeted one, resolves to the command page in one hop. No in-site link targets a merged skill URL.</div><div class="field"><span class="label">Trigger</span>Build the site and run the link audit.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-02 -->
+<article class="record" id="VER-AC-02" data-ca-symbol="VER-AC-02" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-02">VER-AC-02</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Dropping one redirect fails the config test; a leftover inbound link fails the link audit.</div><div class="field"><span class="label">Oracle</span>Config test that the redirect map covers exactly the derived pairs; link audit over the built site.</div><div class="field"><span class="label">Planned target</span>site/test/generator/merged-workflow-redirects.test.ts</div></article>
+<!-- CA:END:VER-AC-02 -->
+</div></article>
+<!-- CA:END:AC-02 -->
+
+<!-- CA:BEGIN:AC-03 -->
+<article class="record" id="AC-03" data-ca-symbol="AC-03" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-03">AC-03</a><h3>Every workflow page has the same reader shape</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>All 28 core, advanced and internal command pages and the 4 alias-owning skill pages render the four fields in order and contain an Example heading.</li><li>All 9 internal-only skill pages render their two fields.</li><li>The When to reach for it sections are replaced by the use field, not kept beside it.</li><li>A missing field or Example heading fails generation with the file and field named.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Curated files carry the reader fields in frontmatter.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-03 -->
+<article class="record" id="SCN-AC-03" data-ca-symbol="SCN-AC-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-03">SCN-AC-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A curated command file without an example</div><div class="field"><span class="label">Then</span>Generation fails and names that file and the missing example field</div><div class="field"><span class="label">When</span>npm run gen runs</div></article>
+<!-- CA:END:SCN-AC-03 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Every core, advanced or internal command page and every skill page that owns an alias route renders, in this order: Use it when, Don&#39;t use it for, What it asks you, What it produces, then the body, which must contain an Example heading. Every internal-only skill page renders Runs inside and What it produces. Alias pages need none of these. Generation fails, naming the file and field, when a required field or the Example heading is missing or empty.</div><div class="field"><span class="label">Trigger</span>Run npm run gen.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-03 -->
+<article class="record" id="VER-AC-03" data-ca-symbol="VER-AC-03" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-03">VER-AC-03</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Making the loader treat the fields as optional lets the fixture pass; the test fails.</div><div class="field"><span class="label">Oracle</span>Loader and renderer tests over real curated files plus a fixture missing one field.</div><div class="field"><span class="label">Planned target</span>site/test/generator/reader-fields.test.ts</div></article>
+<!-- CA:END:VER-AC-03 -->
+</div></article>
+<!-- CA:END:AC-03 -->
+
+<!-- CA:BEGIN:AC-04 -->
+<article class="record" id="AC-04" data-ca-symbol="AC-04" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-04">AC-04</a><h3>Hand-written reference text cannot name what the source dropped</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Every attributed --flag appears in its command&#39;s shipped source.</li><li>Every /ca:&lt;name&gt; resolves in the catalog.</li><li>Flags of non-codeArbiter tools are ignored.</li><li>All misses are reported together.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-03">SCOPE-03</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Curated reference files exist for the entity.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-04 -->
+<article class="record" id="SCN-AC-04" data-ca-symbol="SCN-AC-04" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-04">SCN-AC-04</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A curated file that names a flag the source no longer has</div><div class="field"><span class="label">Then</span>Generation fails and lists the file and the flag</div><div class="field"><span class="label">When</span>npm run gen runs</div></article>
+<!-- CA:END:SCN-AC-04 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Generation fails when curated text names a codeArbiter flag that its command&#39;s shipped source does not contain, or a /ca: command absent from the command catalog. A flag belongs to the nearest preceding /ca:&lt;name&gt; on the same line or in the same code block, or to the page&#39;s own command inside its Usage block; flags of other tools such as git or npm are not checked. The failure lists every miss, not just the first.</div><div class="field"><span class="label">Trigger</span>Run npm run gen.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-04 -->
+<article class="record" id="VER-AC-04" data-ca-symbol="VER-AC-04" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-04">VER-AC-04</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Injecting a removed flag into a curated fixture passes when the check is disabled; the test fails.</div><div class="field"><span class="label">Oracle</span>Drift-check unit tests with fixture sources, plus a run over the real curated set.</div><div class="field"><span class="label">Planned target</span>site/test/generator/curated-drift.test.ts</div></article>
+<!-- CA:END:VER-AC-04 -->
+</div></article>
+<!-- CA:END:AC-04 -->
+
+<!-- CA:BEGIN:AC-05 -->
+<article class="record" id="AC-05" data-ca-symbol="AC-05" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-05">AC-05</a><h3>Captured runs are reproducible</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each capture file records argv, normalized output and hashes for the entry script and every in-repository module it loaded.</li><li>Normalized output contains no temporary path, raw SHA or timestamp.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The capture harness and its fixture exist.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-05 -->
+<article class="record" id="SCN-AC-05" data-ca-symbol="SCN-AC-05" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-05">SCN-AC-05</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Raw output with a Windows temp path, a SHA and CRLF line endings, and the same output from Linux</div><div class="field"><span class="label">Then</span>Both normalize to the same bytes</div><div class="field"><span class="label">When</span>Both pass through the normalizer</div></article>
+<!-- CA:END:SCN-AC-05 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Each captured run records its argv, its normalized output and the sha256 of every repository source it executed: the entry script plus every module it imported from inside the repository, read from the interpreter&#39;s loaded modules. Normalization replaces temporary paths, commit SHAs, timestamps and line endings, so a capture made on Windows and one made on Linux are byte-identical.</div><div class="field"><span class="label">Trigger</span>Run npm run capture.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-05 -->
+<article class="record" id="VER-AC-05" data-ca-symbol="VER-AC-05" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-05">VER-AC-05</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Removing the path rule leaves the Windows sample different; the test fails.</div><div class="field"><span class="label">Oracle</span>Normalizer unit tests with Windows and Linux raw samples; a harness test that captures one target twice and compares.</div><div class="field"><span class="label">Planned target</span>site/test/capture/capture-harness.test.ts</div></article>
+<!-- CA:END:VER-AC-05 -->
+</div></article>
+<!-- CA:END:AC-05 -->
+
+<!-- CA:BEGIN:AC-06 -->
+<article class="record" id="AC-06" data-ca-symbol="AC-06" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-06">AC-06</a><h3>A stale capture fails the build</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Generation fails on a source-hash mismatch.</li><li>The message names the capture, the source and npm run capture.</li><li>A test fails if a captured source is outside the docs workflow&#39;s path filter.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>At least one capture exists.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-06 -->
+<article class="record" id="SCN-AC-06" data-ca-symbol="SCN-AC-06" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-06">SCN-AC-06</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A capture whose recorded source has since changed</div><div class="field"><span class="label">Then</span>Generation fails with the capture, source and refresh command named</div><div class="field"><span class="label">When</span>npm run gen runs</div></article>
+<!-- CA:END:SCN-AC-06 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>npm run gen fails when any recorded source hash differs from the current working-tree file, naming the capture, the changed source and the refresh command. Every captured source lies under a path that triggers the docs workflow, so a change to it cannot merge without this check running. The landing hook proof keeps its existing current-and-published applicability statement.</div><div class="field"><span class="label">Trigger</span>Run npm run gen after a captured source changes.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-06 -->
+<article class="record" id="VER-AC-06" data-ca-symbol="VER-AC-06" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-06">VER-AC-06</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Skipping the hash comparison lets the stale fixture pass; the test fails.</div><div class="field"><span class="label">Oracle</span>Generator test with a capture fixture whose source hash is wrong.</div><div class="field"><span class="label">Planned target</span>site/test/capture/stale-capture.test.ts</div></article>
+<!-- CA:END:VER-AC-06 -->
+</div></article>
+<!-- CA:END:AC-06 -->
+
+<!-- CA:BEGIN:AC-07 -->
+<article class="record" id="AC-07" data-ca-symbol="AC-07" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-07">AC-07</a><h3>Every guide example is captured or labelled</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>No unlabelled hand-written output block remains in guides.</li><li>Every capturable block in the inventory renders from a capture.</li><li>Every guide block is in the inventory as capturable, illustrative or input, and an input block has an input form.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The plan&#39;s inventory is complete.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-07 -->
+<article class="record" id="SCN-AC-07" data-ca-symbol="SCN-AC-07" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-07">SCN-AC-07</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A guide with a new unlabelled output block</div><div class="field"><span class="label">Then</span>The test fails and names the page and block</div><div class="field"><span class="label">When</span>The content tests run</div></article>
+<!-- CA:END:SCN-AC-07 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Every output example in the guides either renders from a capture or carries the illustrative label. Each block the inventory classifies as capturable renders from a capture. Blocks the reader types or edits (slash commands, shell commands, file text) are classified as input; they claim no run, and the test checks that each one has an input form, with a stated reason for file text.</div><div class="field"><span class="label">Trigger</span>Run the content tests.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-07 -->
+<article class="record" id="VER-AC-07" data-ca-symbol="VER-AC-07" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-07">VER-AC-07</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Removing a capture and leaving its block hand-written fails the test.</div><div class="field"><span class="label">Oracle</span>Content test over guides that classifies each fenced text/console block, plus a check of the inventory&#39;s capturable list.</div><div class="field"><span class="label">Planned target</span>site/test/content/guide-examples.test.ts</div></article>
+<!-- CA:END:VER-AC-07 -->
+</div></article>
+<!-- CA:END:AC-07 -->
+
+<!-- CA:BEGIN:AC-08 -->
+<article class="record" id="AC-08" data-ca-symbol="AC-08" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-08">AC-08</a><h3>Guides and Academy lessons point to each other</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Every Academy lesson maps to at least one guide or concept page.</li><li>Mapped guides and lessons render the links.</li><li>An unknown slug or lesson ID fails generation.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-05">SCOPE-05</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Academy lessons are generated from the pinned submodule.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-08 -->
+<article class="record" id="SCN-AC-08" data-ca-symbol="SCN-AC-08" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-08">SCN-AC-08</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A topic map naming a lesson ID that does not exist</div><div class="field"><span class="label">Then</span>Generation fails and names the entry</div><div class="field"><span class="label">When</span>npm run gen runs</div></article>
+<!-- CA:END:SCN-AC-08 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>A topic map in site/ links each guide to the Academy lessons that practice it. Each mapped guide shows a practice link and each lesson page shows a link to its guide. Generation fails when the map names a missing guide or lesson, or when a lesson maps to nothing.</div><div class="field"><span class="label">Trigger</span>Run npm run gen.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-08 -->
+<article class="record" id="VER-AC-08" data-ca-symbol="VER-AC-08" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-08">VER-AC-08</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Removing the existence check lets the bad fixture pass; the test fails.</div><div class="field"><span class="label">Oracle</span>Generator tests over the real map and the built pages, plus a fixture with a bad ID.</div><div class="field"><span class="label">Planned target</span>site/test/generator/topic-map.test.ts</div></article>
+<!-- CA:END:VER-AC-08 -->
+</div></article>
+<!-- CA:END:AC-08 -->
+
+<!-- CA:BEGIN:AC-09 -->
+<article class="record" id="AC-09" data-ca-symbol="AC-09" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-09">AC-09</a><h3>Academy lessons stop re-teaching the guides</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-04">CON-04</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Every lesson keeps the section the curriculum contract requires.</li><li>Each section is at most 80 words and links to its canonical page.</li><li>python -m unittest discover passes in the Academy repository.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-06">SCOPE-06</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The pull request carrying AC-08&#39;s topic map is merged to main.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-09 -->
+<article class="record" id="SCN-AC-09" data-ca-symbol="SCN-AC-09" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-09">SCN-AC-09</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The Academy branch</div><div class="field"><span class="label">Then</span>Both pass</div><div class="field"><span class="label">When</span>The curriculum tests and a word-count check run</div></article>
+<!-- CA:END:SCN-AC-09 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>In an arbiter-academy pull request, each lesson&#39;s Understand the mechanism section is a summary of at most 80 words that links to the canonical guide or concept page from the topic map. The Academy&#39;s own curriculum tests pass.</div><div class="field"><span class="label">Trigger</span>Open the arbiter-academy pull request.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-09 -->
+<article class="record" id="VER-AC-09" data-ca-symbol="VER-AC-09" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-09">VER-AC-09</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Restoring one long section fails the word-count check.</div><div class="field"><span class="label">Oracle</span>Academy unittest suite plus a word-count and link check added to its tests.</div><div class="field"><span class="label">Planned target</span>academy-source/tests/test_mechanism_links.py</div></article>
+<!-- CA:END:VER-AC-09 -->
+</div></article>
+<!-- CA:END:AC-09 -->
+
+<!-- CA:BEGIN:AC-10 -->
+<article class="record" id="AC-10" data-ca-symbol="AC-10" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-10">AC-10</a><h3>Existing contracts hold</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every site build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-05">CON-05</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>npm test, typecheck and link-audit pass.</li><li>check_site_voice.py, test_public_codex_docs.py and test_public_pi_docs.py pass.</li><li>Every command URL from before the sprint still resolves.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li><li><a href="#SCOPE-02">SCOPE-02</a></li><li><a href="#SCOPE-03">SCOPE-03</a></li><li><a href="#SCOPE-04">SCOPE-04</a></li><li><a href="#SCOPE-05">SCOPE-05</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Each workstream&#39;s changes are in place.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-10 -->
+<article class="record" id="SCN-AC-10" data-ca-symbol="SCN-AC-10" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-10">SCN-AC-10</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Each workstream branch</div><div class="field"><span class="label">Then</span>All pass</div><div class="field"><span class="label">When</span>The verification set runs</div></article>
+<!-- CA:END:SCN-AC-10 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Command URLs, names and sidebar visibility groups are unchanged; every reference page keeps its source-visible layer; the full site suite, link audit, voice check and public host-doc checks pass.</div><div class="field"><span class="label">Trigger</span>Run the full verification set before each pull request.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-10 -->
+<article class="record" id="VER-AC-10" data-ca-symbol="VER-AC-10" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-10">VER-AC-10</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Renaming a command slug fails the URL comparison.</div><div class="field"><span class="label">Oracle</span>The existing suites plus a URL snapshot comparison of command pages before and after.</div><div class="field"><span class="label">Planned target</span>site/test/generator/command-url-stability.test.ts</div></article>
+<!-- CA:END:VER-AC-10 -->
+</div></article>
+<!-- CA:END:AC-10 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-SMARTS -->
+<article class="record" id="SEC-SMARTS" data-ca-symbol="SEC-SMARTS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-SMARTS">SEC-SMARTS</a><h3>SMARTS design rationale</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Merge direction (DEC-01). Alternatives: A, command URL canonical with skill redirects; B, skill URL canonical; C, keep both pages and cross-link. Maintainable favours A and B over C, which keeps two hand-written texts per workflow. Available favours A: readers type the command. Testable is equal; redirects are checked by a config test and the link audit. A chosen.</p></div><div class="block"><p>Capture freshness (DEC-04). Alternatives: A, hash-bound committed captures with a gen-time check; B, regenerate captures in CI and diff. Reliable and Testable lean to B, which also catches output changes with unchanged sources; A catches source changes only. Securable and Available favour A: B adds a CI step that executes hooks in the docs job and lengthens it. Load-bearing assumption for A: captured output depends only on the hashed sources and the fixture. A chosen; B stays a follow-up if a capture ever drifts without a source change.</p></div><div class="block"><p>Academy duplication (DEC-06). Alternatives: A, shorten the mechanism section to a summary and link; B, delete the section; C, leave lessons and only add links. B breaks the curriculum contract; C leaves the duplicated teaching. A chosen.</p></div></div></article>
+<!-- CA:END:SEC-SMARTS -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-01 -->
+<article class="record" id="SRC-01" data-ca-symbol="SRC-01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-01">SRC-01</a><h3>Command page renderer</h3></div><div class="field"><span class="label">Locator</span>site/scripts/generator/render-command-page.ts</div><div class="field"><span class="label">Note</span>Curated body, gates, related links, then the verbatim source embed.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/scripts/generator/render-command-page.ts</div></article>
+<!-- CA:END:SRC-01 -->
+
+<!-- CA:BEGIN:SRC-02 -->
+<article class="record" id="SRC-02" data-ca-symbol="SRC-02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-02">SRC-02</a><h3>Source embed</h3></div><div class="field"><span class="label">Locator</span>site/scripts/generator/render-source-embed.ts</div><div class="field"><span class="label">Note</span>Collapsed details with data-pagefind-ignore; embedded on both pages of each pair today.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/scripts/generator/render-source-embed.ts</div></article>
+<!-- CA:END:SRC-02 -->
+
+<!-- CA:BEGIN:SRC-03 -->
+<article class="record" id="SRC-03" data-ca-symbol="SRC-03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-03">SRC-03</a><h3>Hook proof capture</h3></div><div class="field"><span class="label">Locator</span>site/scripts/capture-hook-proof.ts</div><div class="field"><span class="label">Note</span>Runs pre-bash.py against a temporary fixture and records sourceSha256; the pattern to generalize.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/scripts/capture-hook-proof.ts</div></article>
+<!-- CA:END:SRC-03 -->
+
+<!-- CA:BEGIN:SRC-04 -->
+<article class="record" id="SRC-04" data-ca-symbol="SRC-04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-04">SRC-04</a><h3>Academy curriculum contract</h3></div><div class="field"><span class="label">Locator</span>academy-source/academy_engine/curriculum.py</div><div class="field"><span class="label">Note</span>Requires the Understand the mechanism section in every lesson.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/arbiter-academy/blob/preview-0.32/academy_engine/curriculum.py</div></article>
+<!-- CA:END:SRC-04 -->
+
+<!-- CA:BEGIN:SRC-05 -->
+<article class="record" id="SRC-05" data-ca-symbol="SRC-05" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-05">SRC-05</a><h3>Command visibility navigation spec</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/specs/site-command-visibility-navigation.md</div><div class="field"><span class="label">Note</span>Fixes command URLs and sidebar visibility groups.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/.codearbiter/specs/site-command-visibility-navigation.md</div></article>
+<!-- CA:END:SRC-05 -->
+
+<!-- CA:BEGIN:SRC-06 -->
+<article class="record" id="SRC-06" data-ca-symbol="SRC-06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-06">SRC-06</a><h3>Docs site overhaul spec</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/specs/docs-site-overhaul.md</div><div class="field"><span class="label">Note</span>Requires a source-visible layer on every reference page.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/.codearbiter/specs/docs-site-overhaul.md</div></article>
+<!-- CA:END:SRC-06 -->
+
+<!-- CA:BEGIN:SRC-07 -->
+<article class="record" id="SRC-07" data-ca-symbol="SRC-07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-07">SRC-07</a><h3>Docs overhaul moves</h3></div><div class="field"><span class="label">Locator</span>site/DOCS-OVERHAUL.md</div><div class="field"><span class="label">Note</span>M1 reader-layer rule.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/DOCS-OVERHAUL.md</div></article>
+<!-- CA:END:SRC-07 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Observed date</span>2026-11-01</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>site/scripts/generator/**</li><li>site/scripts/capture/**</li><li>site/scripts/capture-hook-proof.ts</li><li>site/src/curated/**</li><li>site/src/content/docs/guides/**</li><li>site/src/components/**</li><li>site/astro.config.mjs</li><li>site/test/**</li><li>academy-source/academy/tracks/**</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401<br>Model SHA-256: d730b5b34c1f5f40ea330f4ef541b7dceb0ac5e8efec7e52bcefe3e2df0198dc</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-SITE-STRUCTURAL-IMPROVEMENTS",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "d730b5b34c1f5f40ea330f4ef541b7dceb0ac5e8efec7e52bcefe3e2df0198dc",
+    "normative_sha256": "bf07df06e6ae25b51a4e9b47d73b9c93ec9d6192cc3477dfe3847b649e44f401",
+    "symbol_count": 62
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [
+        "DEC-01",
+        "DEC-02",
+        "DEC-03",
+        "DEC-04",
+        "DEC-05",
+        "DEC-06"
+      ],
+      "choice": "Extend the existing generator, curated-file loader and hook-proof capture pattern rather than adding new systems: derive the pairs from shipped sources, validate reader fields in the loader, hash-bind captures like hook-proof.json, and render cross-links from one topic map.",
+      "id": "APPROACH-01",
+      "tradeoff": "Curated files grow structured frontmatter and 13 pairs need one editorial merge, in exchange for one page per workflow and build failures where today prose drifts silently."
+    },
+    "baseline": {
+      "commit": null,
+      "observed_date": "2026-11-01",
+      "repository": null
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "AC-01",
+          "AC-02",
+          "AC-10"
+        ],
+        "id": "CON-01",
+        "source_refs": [
+          "SRC-05"
+        ],
+        "statement": "Command URLs, names and sidebar visibility groups stay as site-command-visibility-navigation defines them."
+      },
+      {
+        "applies_to": [
+          "AC-01",
+          "AC-10"
+        ],
+        "id": "CON-02",
+        "source_refs": [
+          "SRC-06",
+          "SRC-02"
+        ],
+        "statement": "Every reference page keeps the collapsed, search-excluded verbatim source layer the docs-site-overhaul spec requires."
+      },
+      {
+        "applies_to": [
+          "AC-05",
+          "AC-07"
+        ],
+        "id": "CON-03",
+        "source_refs": [
+          "SRC-03"
+        ],
+        "statement": "Captures run only codeArbiter's own deterministic tools against a temporary fixture: no model call, no network, no write outside the temporary directory and the committed capture assets."
+      },
+      {
+        "applies_to": [
+          "AC-09"
+        ],
+        "id": "CON-04",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "statement": "Academy lesson text changes only through an arbiter-academy pull request that keeps its curriculum section contract; publication is a separate authorized step."
+      },
+      {
+        "applies_to": [
+          "AC-10"
+        ],
+        "id": "CON-05",
+        "source_refs": [
+          "SRC-07"
+        ],
+        "statement": "The reader-layer rule stays: Get started pages carry no evidence-register phrasing outside the Limits and evidence disclosure."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02"
+        ],
+        "guarantees": [
+          "Each of the 9 merged command pages contains exactly one ca-source embed.",
+          "No page is generated for the 9 skills merged into a command page.",
+          "The 4 alias pages carry no reader fields and link to their replacement and their skill page.",
+          "A command source naming an unknown or second skill fails generation."
+        ],
+        "id": "AC-01",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The 13 paired commands and their skills are shipped."
+        ],
+        "scenarios": [
+          {
+            "given": "The shipped plugin sources and the command catalog",
+            "id": "SCN-AC-01",
+            "then": "9 merged command pages exist with one source embed each, no page exists for their 9 skills, and the 4 alias pages point to their replacement and skill page",
+            "when": "npm run gen runs"
+          }
+        ],
+        "source_refs": [],
+        "statement": "For each core or advanced command whose shipped source names an owning skill (adr, commit, debug, pr, reconcile, refactor, release, threat-model and tribunal), the build emits one page at the command's URL holding the reader fields, the reader text formerly split across both pages, and exactly one source embed. For each alias command whose source names an owning skill (cleanup, context-check, create-context and decompose), the skill page is the workflow page, and the alias page keeps its generated Compatibility section, a one-paragraph pointer to the replacement and the skill page, and its own source embed. Pairs are derived from the shipped command source and the command catalog, not from a hand-kept list.",
+        "title": "One reference page per paired workflow",
+        "trigger": "Run npm run gen.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-01",
+          "method": "automated",
+          "negative_control": "Restoring the separate skill render produces 13 extra pages and a second embed; the test fails.",
+          "oracle": "Generator test over the derived pair list: page count, one ca-source block per merged page, absent skill pages.",
+          "planned_target": "site/test/generator/merged-workflow-pages.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [
+          "CON-01"
+        ],
+        "guarantees": [
+          "Each of the 9 merged skill URLs redirects to its command page.",
+          "The -2 redirects of the four merged skills (debug, refactor, release, tribunal) point at their command pages directly, not through a second redirect; context-check-2 and decompose-2 keep pointing at their skill pages.",
+          "The link audit reports no link to a merged skill URL.",
+          "Alias-owning and internal-only skills keep their own pages and URLs."
+        ],
+        "id": "AC-02",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "AC-01 holds."
+        ],
+        "scenarios": [
+          {
+            "given": "A built site",
+            "id": "SCN-AC-02",
+            "then": "They land on /reference/commands/commit/",
+            "when": "A reader opens /reference/skills/commit-gate/"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Every /reference/skills/\u003cname\u003e/ URL of the 9 merged skills, and every existing redirect that targeted one, resolves to the command page in one hop. No in-site link targets a merged skill URL.",
+        "title": "Merged skill URLs keep working",
+        "trigger": "Build the site and run the link audit.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-02",
+          "method": "automated",
+          "negative_control": "Dropping one redirect fails the config test; a leftover inbound link fails the link audit.",
+          "oracle": "Config test that the redirect map covers exactly the derived pairs; link audit over the built site.",
+          "planned_target": "site/test/generator/merged-workflow-redirects.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "All 28 core, advanced and internal command pages and the 4 alias-owning skill pages render the four fields in order and contain an Example heading.",
+          "All 9 internal-only skill pages render their two fields.",
+          "The When to reach for it sections are replaced by the use field, not kept beside it.",
+          "A missing field or Example heading fails generation with the file and field named."
+        ],
+        "id": "AC-03",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Curated files carry the reader fields in frontmatter."
+        ],
+        "scenarios": [
+          {
+            "given": "A curated command file without an example",
+            "id": "SCN-AC-03",
+            "then": "Generation fails and names that file and the missing example field",
+            "when": "npm run gen runs"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Every core, advanced or internal command page and every skill page that owns an alias route renders, in this order: Use it when, Don't use it for, What it asks you, What it produces, then the body, which must contain an Example heading. Every internal-only skill page renders Runs inside and What it produces. Alias pages need none of these. Generation fails, naming the file and field, when a required field or the Example heading is missing or empty.",
+        "title": "Every workflow page has the same reader shape",
+        "trigger": "Run npm run gen.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-03",
+          "method": "automated",
+          "negative_control": "Making the loader treat the fields as optional lets the fixture pass; the test fails.",
+          "oracle": "Loader and renderer tests over real curated files plus a fixture missing one field.",
+          "planned_target": "site/test/generator/reader-fields.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "Every attributed --flag appears in its command's shipped source.",
+          "Every /ca:\u003cname\u003e resolves in the catalog.",
+          "Flags of non-codeArbiter tools are ignored.",
+          "All misses are reported together."
+        ],
+        "id": "AC-04",
+        "intent_refs": [
+          "SCOPE-03"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "Curated reference files exist for the entity."
+        ],
+        "scenarios": [
+          {
+            "given": "A curated file that names a flag the source no longer has",
+            "id": "SCN-AC-04",
+            "then": "Generation fails and lists the file and the flag",
+            "when": "npm run gen runs"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Generation fails when curated text names a codeArbiter flag that its command's shipped source does not contain, or a /ca: command absent from the command catalog. A flag belongs to the nearest preceding /ca:\u003cname\u003e on the same line or in the same code block, or to the page's own command inside its Usage block; flags of other tools such as git or npm are not checked. The failure lists every miss, not just the first.",
+        "title": "Hand-written reference text cannot name what the source dropped",
+        "trigger": "Run npm run gen.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-04",
+          "method": "automated",
+          "negative_control": "Injecting a removed flag into a curated fixture passes when the check is disabled; the test fails.",
+          "oracle": "Drift-check unit tests with fixture sources, plus a run over the real curated set.",
+          "planned_target": "site/test/generator/curated-drift.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [
+          "CON-03"
+        ],
+        "guarantees": [
+          "Each capture file records argv, normalized output and hashes for the entry script and every in-repository module it loaded.",
+          "Normalized output contains no temporary path, raw SHA or timestamp."
+        ],
+        "id": "AC-05",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The capture harness and its fixture exist."
+        ],
+        "scenarios": [
+          {
+            "given": "Raw output with a Windows temp path, a SHA and CRLF line endings, and the same output from Linux",
+            "id": "SCN-AC-05",
+            "then": "Both normalize to the same bytes",
+            "when": "Both pass through the normalizer"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Each captured run records its argv, its normalized output and the sha256 of every repository source it executed: the entry script plus every module it imported from inside the repository, read from the interpreter's loaded modules. Normalization replaces temporary paths, commit SHAs, timestamps and line endings, so a capture made on Windows and one made on Linux are byte-identical.",
+        "title": "Captured runs are reproducible",
+        "trigger": "Run npm run capture.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-05",
+          "method": "automated",
+          "negative_control": "Removing the path rule leaves the Windows sample different; the test fails.",
+          "oracle": "Normalizer unit tests with Windows and Linux raw samples; a harness test that captures one target twice and compares.",
+          "planned_target": "site/test/capture/capture-harness.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "Generation fails on a source-hash mismatch.",
+          "The message names the capture, the source and npm run capture.",
+          "A test fails if a captured source is outside the docs workflow's path filter."
+        ],
+        "id": "AC-06",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "At least one capture exists."
+        ],
+        "scenarios": [
+          {
+            "given": "A capture whose recorded source has since changed",
+            "id": "SCN-AC-06",
+            "then": "Generation fails with the capture, source and refresh command named",
+            "when": "npm run gen runs"
+          }
+        ],
+        "source_refs": [],
+        "statement": "npm run gen fails when any recorded source hash differs from the current working-tree file, naming the capture, the changed source and the refresh command. Every captured source lies under a path that triggers the docs workflow, so a change to it cannot merge without this check running. The landing hook proof keeps its existing current-and-published applicability statement.",
+        "title": "A stale capture fails the build",
+        "trigger": "Run npm run gen after a captured source changes.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-06",
+          "method": "automated",
+          "negative_control": "Skipping the hash comparison lets the stale fixture pass; the test fails.",
+          "oracle": "Generator test with a capture fixture whose source hash is wrong.",
+          "planned_target": "site/test/capture/stale-capture.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [
+          "CON-03"
+        ],
+        "guarantees": [
+          "No unlabelled hand-written output block remains in guides.",
+          "Every capturable block in the inventory renders from a capture.",
+          "Every guide block is in the inventory as capturable, illustrative or input, and an input block has an input form."
+        ],
+        "id": "AC-07",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "The plan's inventory is complete."
+        ],
+        "scenarios": [
+          {
+            "given": "A guide with a new unlabelled output block",
+            "id": "SCN-AC-07",
+            "then": "The test fails and names the page and block",
+            "when": "The content tests run"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Every output example in the guides either renders from a capture or carries the illustrative label. Each block the inventory classifies as capturable renders from a capture. Blocks the reader types or edits (slash commands, shell commands, file text) are classified as input; they claim no run, and the test checks that each one has an input form, with a stated reason for file text.",
+        "title": "Every guide example is captured or labelled",
+        "trigger": "Run the content tests.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-07",
+          "method": "automated",
+          "negative_control": "Removing a capture and leaving its block hand-written fails the test.",
+          "oracle": "Content test over guides that classifies each fenced text/console block, plus a check of the inventory's capturable list.",
+          "planned_target": "site/test/content/guide-examples.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "Every Academy lesson maps to at least one guide or concept page.",
+          "Mapped guides and lessons render the links.",
+          "An unknown slug or lesson ID fails generation."
+        ],
+        "id": "AC-08",
+        "intent_refs": [
+          "SCOPE-05"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Academy lessons are generated from the pinned submodule."
+        ],
+        "scenarios": [
+          {
+            "given": "A topic map naming a lesson ID that does not exist",
+            "id": "SCN-AC-08",
+            "then": "Generation fails and names the entry",
+            "when": "npm run gen runs"
+          }
+        ],
+        "source_refs": [],
+        "statement": "A topic map in site/ links each guide to the Academy lessons that practice it. Each mapped guide shows a practice link and each lesson page shows a link to its guide. Generation fails when the map names a missing guide or lesson, or when a lesson maps to nothing.",
+        "title": "Guides and Academy lessons point to each other",
+        "trigger": "Run npm run gen.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-08",
+          "method": "automated",
+          "negative_control": "Removing the existence check lets the bad fixture pass; the test fails.",
+          "oracle": "Generator tests over the real map and the built pages, plus a fixture with a bad ID.",
+          "planned_target": "site/test/generator/topic-map.test.ts"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [
+          "CON-04"
+        ],
+        "guarantees": [
+          "Every lesson keeps the section the curriculum contract requires.",
+          "Each section is at most 80 words and links to its canonical page.",
+          "python -m unittest discover passes in the Academy repository."
+        ],
+        "id": "AC-09",
+        "intent_refs": [
+          "SCOPE-06"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The pull request carrying AC-08's topic map is merged to main."
+        ],
+        "scenarios": [
+          {
+            "given": "The Academy branch",
+            "id": "SCN-AC-09",
+            "then": "Both pass",
+            "when": "The curriculum tests and a word-count check run"
+          }
+        ],
+        "source_refs": [],
+        "statement": "In an arbiter-academy pull request, each lesson's Understand the mechanism section is a summary of at most 80 words that links to the canonical guide or concept page from the topic map. The Academy's own curriculum tests pass.",
+        "title": "Academy lessons stop re-teaching the guides",
+        "trigger": "Open the arbiter-academy pull request.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-09",
+          "method": "automated",
+          "negative_control": "Restoring one long section fails the word-count check.",
+          "oracle": "Academy unittest suite plus a word-count and link check added to its tests.",
+          "planned_target": "academy-source/tests/test_mechanism_links.py"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every site build."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-05"
+        ],
+        "guarantees": [
+          "npm test, typecheck and link-audit pass.",
+          "check_site_voice.py, test_public_codex_docs.py and test_public_pi_docs.py pass.",
+          "Every command URL from before the sprint still resolves."
+        ],
+        "id": "AC-10",
+        "intent_refs": [
+          "SCOPE-01",
+          "SCOPE-02",
+          "SCOPE-03",
+          "SCOPE-04",
+          "SCOPE-05"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Each workstream's changes are in place."
+        ],
+        "scenarios": [
+          {
+            "given": "Each workstream branch",
+            "id": "SCN-AC-10",
+            "then": "All pass",
+            "when": "The verification set runs"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Command URLs, names and sidebar visibility groups are unchanged; every reference page keeps its source-visible layer; the full site suite, link audit, voice check and public host-doc checks pass.",
+        "title": "Existing contracts hold",
+        "trigger": "Run the full verification set before each pull request.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-10",
+          "method": "automated",
+          "negative_control": "Renaming a command slug fails the URL comparison.",
+          "oracle": "The existing suites plus a URL snapshot comparison of command pages before and after.",
+          "planned_target": "site/test/generator/command-url-stability.test.ts"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "authority": "proposed",
+        "choice": "Core and advanced commands: the command URL is canonical and the merged skill URL redirects to it. Alias commands: the skill page is the workflow page and the alias page stays a short pointer.",
+        "id": "DEC-01",
+        "rationale": "Readers type core and advanced commands; alias commands send readers elsewhere (pr --cleanup, status drift, init --brownfield, init --greenfield), so their procedure cannot live on a page the docs tell readers not to use. Redirects keep old URLs working.",
+        "source_ref": null,
+        "topic": "Which URL survives a merge"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Derive pairs from the shipped command source naming its owning skill as its first heading; an ambiguous or unknown name fails generation.",
+        "id": "DEC-02",
+        "rationale": "All 13 pairs follow that convention today; a hand-kept list would be one more thing to drift.",
+        "source_ref": null,
+        "topic": "Where pairs come from"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Short reader fields (use, avoid, asks, produces, runs inside) in curated frontmatter, validated by load-curated; examples stay in the body under a required Example heading.",
+        "id": "DEC-03",
+        "rationale": "The loader already validates gates and related lists in frontmatter. 31 command files already have an Example section in the body, and moving code blocks into YAML would make them harder to edit.",
+        "source_ref": null,
+        "topic": "How reader fields are stored"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Commit captures as assets with sha256 for the entry script and every in-repository module it loaded; npm run gen fails on a mismatch with the working tree; refresh with npm run capture. The landing hook proof keeps its existing binding.",
+        "id": "DEC-04",
+        "rationale": "Same shape as hook-proof.json with no new CI execution step. Hashing loaded modules, not just the entry script, keeps the load-bearing assumption true when a shared hook library changes.",
+        "source_ref": null,
+        "topic": "How captures stay fresh"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Only output of codeArbiter's deterministic tools (hooks, writers, scaffolder, release derivation, statusline); user requests and model narration stay labelled illustrative.",
+        "id": "DEC-05",
+        "rationale": "Model output is not reproducible; capturing it would claim proof the site cannot keep.",
+        "source_ref": null,
+        "topic": "Which examples are captured"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Keep the curriculum's required Understand the mechanism section and shorten it to a summary plus a link to the canonical page, through an arbiter-academy pull request.",
+        "id": "DEC-06",
+        "rationale": "academy_engine/curriculum.py requires the section; removing it would break the Academy contract for no reader gain.",
+        "source_ref": null,
+        "topic": "How the Academy stops duplicating guides"
+      }
+    ],
+    "governs": [
+      "site/scripts/generator/**",
+      "site/scripts/capture/**",
+      "site/scripts/capture-hook-proof.ts",
+      "site/src/curated/**",
+      "site/src/content/docs/guides/**",
+      "site/src/components/**",
+      "site/astro.config.mjs",
+      "site/test/**",
+      "academy-source/academy/tracks/**"
+    ],
+    "intent": {
+      "caller": "A codeArbiter documentation reader choosing, running or learning a workflow, and the maintainer who keeps the docs true.",
+      "id": "INTENT-01",
+      "outcome": "Each workflow has one reference page with the same reader shape and a build-time drift check. Guide examples of deterministic tool output render from captures bound to their source. Each task is explained once in the guides, and guides and lessons link to each other.",
+      "problem": "Thirteen commands each have a separate skill page with separately written text, so a reader needs two pages for one workflow and they can disagree. Skill pages have no examples, and nothing checks hand-written reference text against the source it describes. Guides show system behaviour only in hand-written examples; the one captured run is the landing hook replay. Guides and Academy lessons cover the same tasks with no links between them, and lessons re-explain what the guides explain.",
+      "source_refs": []
+    },
+    "non_goals": [
+      {
+        "id": "NON-GOAL-01",
+        "statement": "Changing command names, routes, visibility groups or the reference sidebar taxonomy."
+      },
+      {
+        "id": "NON-GOAL-02",
+        "statement": "Removing or hiding the source-visible layer on any reference page."
+      },
+      {
+        "id": "NON-GOAL-03",
+        "statement": "Presenting user requests or model narration as captured; they stay labelled illustrative."
+      },
+      {
+        "id": "NON-GOAL-04",
+        "statement": "Tagging an Academy preview or bumping the academy-source submodule without separate explicit authorization."
+      },
+      {
+        "id": "NON-GOAL-05",
+        "statement": "Removing the 9 internal-only skill pages."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "Merge the 9 command/skill reference pairs whose command is core or advanced (adr, commit, debug, pr, reconcile, refactor, release, threat-model and tribunal) into one page at the command URL, with redirects from the skill URLs. The 4 pairs whose command is a compatibility alias (cleanup, context-check, create-context and decompose) keep the skill page as the workflow page and shorten the alias page to a pointer."
+      },
+      {
+        "id": "SCOPE-02",
+        "statement": "Reader fields in curated frontmatter, rendered in a fixed order on every workflow page, and a required Example heading in the body of every workflow page."
+      },
+      {
+        "id": "SCOPE-03",
+        "statement": "A generation-time drift check of flags and commands named in curated reference text."
+      },
+      {
+        "id": "SCOPE-04",
+        "statement": "A capture harness, a stale-capture build check, and captured runs for every guide example that shows deterministic tool output."
+      },
+      {
+        "id": "SCOPE-05",
+        "statement": "A topic map in site/ that renders guide-to-lesson and lesson-to-guide links."
+      },
+      {
+        "id": "SCOPE-06",
+        "statement": "An arbiter-academy pull request that shortens each lesson's mechanism section to a summary and a link."
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Merge direction (DEC-01). Alternatives: A, command URL canonical with skill redirects; B, skill URL canonical; C, keep both pages and cross-link. Maintainable favours A and B over C, which keeps two hand-written texts per workflow. Available favours A: readers type the command. Testable is equal; redirects are checked by a config test and the link audit. A chosen.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Capture freshness (DEC-04). Alternatives: A, hash-bound committed captures with a gen-time check; B, regenerate captures in CI and diff. Reliable and Testable lean to B, which also catches output changes with unchanged sources; A catches source changes only. Securable and Available favour A: B adds a CI step that executes hooks in the docs job and lengthens it. Load-bearing assumption for A: captured output depends only on the hashed sources and the fixture. A chosen; B stays a follow-up if a capture ever drifts without a source change.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Academy duplication (DEC-06). Alternatives: A, shorten the mechanism section to a summary and link; B, delete the section; C, leave lessons and only add links. B breaks the curriculum contract; C leaves the duplicated teaching. A chosen.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-SMARTS",
+        "title": "SMARTS design rationale"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": "site/scripts/generator/render-command-page.ts",
+        "note": "Curated body, gates, related links, then the verbatim source embed.",
+        "title": "Command page renderer",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/scripts/generator/render-command-page.ts"
+      },
+      {
+        "id": "SRC-02",
+        "locator": "site/scripts/generator/render-source-embed.ts",
+        "note": "Collapsed details with data-pagefind-ignore; embedded on both pages of each pair today.",
+        "title": "Source embed",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/scripts/generator/render-source-embed.ts"
+      },
+      {
+        "id": "SRC-03",
+        "locator": "site/scripts/capture-hook-proof.ts",
+        "note": "Runs pre-bash.py against a temporary fixture and records sourceSha256; the pattern to generalize.",
+        "title": "Hook proof capture",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/scripts/capture-hook-proof.ts"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "academy-source/academy_engine/curriculum.py",
+        "note": "Requires the Understand the mechanism section in every lesson.",
+        "title": "Academy curriculum contract",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/arbiter-academy/blob/preview-0.32/academy_engine/curriculum.py"
+      },
+      {
+        "id": "SRC-05",
+        "locator": ".codearbiter/specs/site-command-visibility-navigation.md",
+        "note": "Fixes command URLs and sidebar visibility groups.",
+        "title": "Command visibility navigation spec",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/.codearbiter/specs/site-command-visibility-navigation.md"
+      },
+      {
+        "id": "SRC-06",
+        "locator": ".codearbiter/specs/docs-site-overhaul.md",
+        "note": "Requires a source-visible layer on every reference page.",
+        "title": "Docs site overhaul spec",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/.codearbiter/specs/docs-site-overhaul.md"
+      },
+      {
+        "id": "SRC-07",
+        "locator": "site/DOCS-OVERHAUL.md",
+        "note": "M1 reader-layer rule.",
+        "title": "Docs overhaul moves",
+        "type": "local_document",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/e484ec4d/site/DOCS-OVERHAUL.md"
+      }
+    ],
+    "summary": "Readers get one reference page per workflow with a fixed shape and a drift check, guide examples captured from real deterministic tool runs, and guides and Academy lessons that link to each other instead of teaching twice.",
+    "title": "Site structural improvements: one page per workflow, captured examples, one teaching layer"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/site-structural-improvements.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 4,
+  "schema_version": "0.3.2",
+  "slug": "site-structural-improvements"
+}
+</script>
+</body></html>

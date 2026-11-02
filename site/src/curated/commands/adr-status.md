@@ -1,6 +1,10 @@
 ---
 entity: commands/adr-status
 related: [adr, reconcile, skills/decision-lifecycle]
+use_when: "You want a quick health check across every recorded ADR: ages, unchallenged proposals, supersession candidates and unresolved `[CONFIRM-NN]` placeholders."
+avoid_when: "Recording a new decision, which is `/ca:adr`, or challenging and reconciling a specific decision in depth, which is `/ca:reconcile`."
+asks: "Nothing. It only reads, and `--adr N` is optional if you want to look at one ADR."
+produces: "A report in the conversation listing each ADR's title, governance status, delivery state and date, plus what needs attention. It changes no files."
 ---
 
 ## What it does
@@ -45,8 +49,3 @@ None
 ### Unresolved CONFIRM-NN
 - ADR-0007-use-postgresql — [CONFIRM-08]: connection-pool sizing not yet decided
 ```
-
-## When to reach for it
-
-A quick health check across all ADRs. To record a new decision, use `/ca:adr`; to challenge or
-reconcile a specific ADR in depth, use `/ca:reconcile`.

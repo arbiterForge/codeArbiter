@@ -1,6 +1,10 @@
 ---
 entity: commands/chore
 related: [feature, add-dep, skills/commit-gate]
+use_when: "The change has no behavior to test: a docs-only edit, a version bump of a dependency you already use, or reverting a named commit."
+avoid_when: "Any new or changed behavior, which is `/ca:feature` or `/ca:fix`; a brand-new dependency, which is `/ca:add-dep`; or restructuring code, which is `/ca:refactor`."
+asks: "The type (`docs`, `deps` or `revert`) and a description or the commit SHA. It stops and redirects you if the change turns out to alter behavior."
+produces: "A checked docs, dependency-bump or revert change that exits through the commit check, with a revert made by `git revert` and a message that names the reverted commit."
 gates:
   - gate: type classification
     when: before any gate runs
@@ -44,9 +48,3 @@ Running affected dependency and contract tests... 42 passed, 0 failed.
 Exhaustive exact-head GitHub Actions checks remain required before merge.
 Routing to commit-gate (classification: chore)...
 ```
-
-## When to reach for it
-
-Reach for `/ca:chore` for docs-only edits, an existing dependency's version bump, or reverting a
-named commit. A brand-new dependency goes through `/ca:add-dep` first; any behavioral change goes
-through `/ca:feature` or `/ca:fix`.

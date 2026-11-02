@@ -1,19 +1,14 @@
 ---
 entity: commands/release
 related: [commit, pr, skills/release]
+use_when: "A declared release target's branch is clean, its suite is green, and you are ready to cut a version."
+avoid_when: "Work still in progress, which lands through `/ca:feature` or `/ca:fix` first, because a release only aggregates what has already passed."
+asks: "Which target to release when more than one is declared, and your confirmation of a proposed target declaration if none exists yet. It never accepts a version number from you, and publishing waits for your explicit go-ahead."
+produces: "A release pull request with the derived version, the rolled-up changelog and updated manifests; `--dry-run` previews it with nothing written. Nothing is published without your authorization."
 gates:
-  - gate: target resolution
-    when: before anything is read or written
-    effect: the target is looked up in the project's declared release-targets file; an unrecognised or ambiguous name stops rather than being resolved to a guess
-  - gate: version derivation
-    when: before a tag is composed
-    effect: the bump under the declared version policy is computed mechanically from Conventional Commits in the target's own payload — there is no way to supply a version by hand
   - gate: changelog completeness
     when: same phase as version derivation
     effect: every bumping commit in the release window must carry its own changelog note; a missing one blocks rather than being auto-filled
-  - gate: publish authorization
-    when: after the qualifying hosted tag report or its narrowly authorized release-PR handoff
-    effect: the tag and the GitHub Release publish together, and only once you explicitly say to
 ---
 
 ## What it does
@@ -68,11 +63,5 @@ Asset names and hosted qualification path: reported.
 Next: release PR, owner decision, exact merged-head CI.
 No interactive tag composition or publication occurred.
 ```
-
-## When to reach for it
-
-Reach for `/ca:release` once the target's branch is clean and its suite is green and you're ready to
-cut a version. Work still in progress lands through `/ca:feature` or `/ca:fix` first — a release
-aggregates what already passed, it doesn't chase down anything new.
 
 The [workflow comparison](/concepts/workflow-routes/) distinguishes this publication route from feature delivery and initialization.

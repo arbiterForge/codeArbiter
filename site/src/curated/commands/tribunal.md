@@ -1,13 +1,10 @@
 ---
 entity: commands/tribunal
 related: [checkpoint, audit, skills/tribunal]
-gates:
-  - gate: cost acknowledgement
-    when: before Phase 0 finishes, every run
-    effect: the selected evidence and review settings are sized, an estimated token-cost band is shown, and reviewers start only after you acknowledge the estimate and confirm the settings
-  - gate: approval before filing
-    when: after the report is generated
-    effect: findings become GitHub issues only on your explicit selection, silence or "looks good" files nothing
+use_when: "You want a rare, deliberate, whole-codebase audit by thirteen specialist lenses and accept its time and token cost."
+avoid_when: "The routine sweep, which is `/ca:checkpoint`, or a review of the current diff, which is `/ca:review`. Never wire it into a hot loop or a schedule."
+asks: "An optional scope path. Before any reviewer starts you see an estimated token cost and the model settings and must acknowledge them. Filing issues and optional telemetry each need your separate approval."
+produces: "A durable report under `.codearbiter/reports/<run-id>/` with verified defects, items needing verification and design decisions. GitHub issues are filed only for the findings you select."
 ---
 
 ## What it does
@@ -103,7 +100,24 @@ applicable lenses run; launched and skipped lenses are recorded. `--tag <label>`
 a freeform label, not permission to send telemetry. Requesting the deep audit in ordinary
 language selects the same procedure; cost acknowledgment still precedes dispatch.
 
-## When to reach for it
+## Example
 
-Rare, deliberate, whole-codebase depth, not the routine sweep (`/ca:checkpoint`), not a diff review
-(`/ca:review`), and never wired into a hot loop or schedule.
+Illustrative output, not captured execution:
+
+```text
+> /ca:tribunal "src/billing"
+
+Source bound to the current HEAD and working tree. Inventory collected without running project code.
+Applicable lenses: 9 of 13. Skipped, each with its reason recorded: migration (no migrations in
+scope), infra, and two others.
+Estimated cost: a token range with an uncertainty band, at up to 5 lenses in flight.
+Acknowledge the estimate and confirm the model settings to start.
+> Acknowledged. Go ahead.
+
+Reviewing in waves. Findings are saved under .codearbiter/reports/<run-id>/ as they appear.
+Report written: 2 verified defects, 3 items needing verification, 1 design decision.
+File the verified defects as GitHub issues? Select which ones, or skip.
+> File the first one only.
+Optional telemetry is off. Skipped.
+Run completed. Nothing in the project was edited.
+```

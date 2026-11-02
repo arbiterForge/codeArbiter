@@ -318,7 +318,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "commit-gate"
               ],
               "title": "commit-gate",
-              "href": "/reference/skills/commit-gate/",
+              "href": "/reference/commands/commit/",
               "source": "sprintExit",
               "detail": "When a commit is authorized, retain staged-diff inspection, secrets checks and applicable tests through commit-gate. Artifact progress does not create commit, merge or publication authority.",
               "output": "The gated commit and its actual evidence."
@@ -330,7 +330,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "Finish branch"
               ],
               "title": "finishing-a-development-branch",
-              "href": "/reference/skills/finishing-a-development-branch/",
+              "href": "/reference/commands/pr/",
               "source": "sprintExit",
               "detail": "Sprint defaults to Open a PR. An earlier same-scope merge grant selects Merge via PR after exact-head checks and review. Discard still needs named-branch confirmation.",
               "output": "An open PR by default; an authorized exact-head merge only when previously granted."
@@ -667,7 +667,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "Index + author"
               ],
               "title": "decision-lifecycle: index and author",
-              "href": "/reference/skills/decision-lifecycle/",
+              "href": "/reference/commands/adr/",
               "source": "adrWrite",
               "detail": "Use the next unused number and full filename stem, gather rationale and governed paths, and write the current template with status proposed.",
               "output": "A dated, attributed Proposed record."
@@ -679,7 +679,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "Append the log"
               ],
               "title": "decision-lifecycle: decision log",
-              "href": "/reference/skills/decision-lifecycle/",
+              "href": "/reference/commands/adr/",
               "source": "adrWrite",
               "detail": "Append the matching user-attributed decision-log entry. A replacement names the full predecessor stem; it does not rewrite the earlier decision.",
               "output": "The decision and its append-only log entry."
@@ -692,7 +692,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "acceptance"
               ],
               "title": "decision-lifecycle: accept on instruction",
-              "href": "/reference/skills/decision-lifecycle/",
+              "href": "/reference/commands/adr/",
               "source": "adrAccept",
               "detail": "Only explicit user acceptance advances status. Derive stable obligations and independently review the completeness of the sealed set before recording the binding.",
               "output": "Accepted/Planned content and reviewed obligations."
@@ -738,7 +738,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "commit-gate"
               ],
               "title": "commit-gate: accepted record",
-              "href": "/reference/skills/commit-gate/",
+              "href": "/reference/commands/commit/",
               "source": "adrCommit",
               "detail": "Commit the accepted ADR and decision-log append through the normal gate. The acceptance binding is deliberately not added to this commit.",
               "output": "An existing source commit whose bytes can now be hashed."
@@ -751,7 +751,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "content"
               ],
               "title": "decision-lifecycle: append acceptance",
-              "href": "/reference/skills/decision-lifecycle/",
+              "href": "/reference/commands/adr/",
               "source": "adrAccept",
               "detail": "From the exact source commit, bind the blob, immutable record and sealed obligations in the append-only lifecycle ledger. A second binding for the same stem is invalid.",
               "output": "An acceptance event with a real source identity."
@@ -764,7 +764,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "binding"
               ],
               "title": "decision-lifecycle: subsequent commit",
-              "href": "/reference/skills/decision-lifecycle/",
+              "href": "/reference/commands/adr/",
               "source": "adrAccept",
               "detail": "Persist the binding in a subsequent commit. Later PR delivery must preserve the required source ancestry; an unqualified squash cannot stand in for it.",
               "output": "The retained record and acceptance binding, not implementation evidence."
@@ -903,7 +903,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "pre-flight"
               ],
               "title": "release: pre-flight and target resolution",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseSkill",
               "detail": "Resolve project and shell context, the declared row, clean non-default branch, current verification and relevant questions. A missing declaration uses confirmed back-fill, not a guessed row.",
               "output": "A target with its preconditions and verification scope."
@@ -915,7 +915,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "Derive version"
               ],
               "title": "release: version derivation",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseVersion",
               "detail": "Classify only the target’s payload window. Derive through its declared policy using compatible tags and manifests; required changelog notes come from actual commit evidence.",
               "output": "The derived version, rationale and target-scoped notes."
@@ -954,7 +954,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "surfaces"
               ],
               "title": "release: declared manifests and changelog",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "release",
               "detail": "Update only declared surfaces and run the post-bump pre-tag checks. Report exact asset names and the hosted qualification path without executing release-build locally.",
               "output": "The intended diff and declaration, not a local publication payload."
@@ -966,7 +966,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "commit-gate"
               ],
               "title": "commit-gate: release changes",
-              "href": "/reference/skills/commit-gate/",
+              "href": "/reference/commands/commit/",
               "source": "releasePR",
               "detail": "Commit the release edits through the existing permission, selected-file and evidence gate. A tag names a commit, never outstanding working-tree changes.",
               "output": "Committed release changes and current gate results."
@@ -1039,7 +1039,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "candidate"
               ],
               "title": "release: bind the hosted candidate",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseHosted",
               "detail": "After the release PR merges, a fresh hosted checkout must equal the fetched default branch and satisfy exact-head checks. Bind the current release section and every declared manifest.",
               "output": "The merged candidate identity, not the earlier PR head."
@@ -1051,7 +1051,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "Qualify assets"
               ],
               "title": "release: exact hosted inventory",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseAssets",
               "detail": "The reviewed publisher either builds the declared assets or verifies a retained exact-head CI cohort. Local scratch files do not cross the PR boundary as publication input.",
               "output": "The declared inventory and candidate-bound evidence, when assets are declared."
@@ -1063,7 +1063,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "Compose tag"
               ],
               "title": "release: hosted annotated tag",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseHosted",
               "detail": "Classify the observed tag/release state, compose only when appropriate, and verify the stored tag message. An already-published identity is not replaced.",
               "output": "An annotated tag in the isolated hosted checkout and a report; nothing yet pushed."
@@ -1102,7 +1102,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "publication"
               ],
               "title": "release: consume explicit authorization",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseAuth",
               "detail": "Only the declared publisher consumes the applicable one-cohort permission. An explicit merge instruction after the release-PR report can supply it for that protected publisher; CI success alone cannot.",
               "output": "An authorized push and release creation for the identified cohort."
@@ -1115,7 +1115,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "publication"
               ],
               "title": "release: inspect remote identities and assets",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseReceipt",
               "detail": "Read back the annotated tag, dereferenced commit, non-draft release and exact asset names. Preserve partial failure evidence instead of recreating published identities.",
               "output": "The observed publication result, not merely an upload attempt."
@@ -1128,7 +1128,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "closeout"
               ],
               "title": "release: retain the original receipt",
-              "href": "/reference/skills/release/",
+              "href": "/reference/commands/release/",
               "source": "releaseReceipt",
               "detail": "If declared, capture the original remote provenance and hand off a non-default-branch receipt PR. Closeout remains pending until that PR merges. With no declared manifest, say explicitly that this step is skipped.",
               "output": "Published release plus an explicit completed or pending provenance boundary."
@@ -1274,7 +1274,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "/ca:decompose"
               ],
               "title": "/ca:decompose: selected strategy",
-              "href": "/reference/commands/decompose/",
+              "href": "/reference/skills/decompose/",
               "source": "init",
               "detail": "Automatic detection or --greenfield chooses the decomposition workflow. Source-shape mismatches remain stops rather than forced population.",
               "output": "The explicitly selected greenfield route."
@@ -1539,7 +1539,7 @@ export const workflows: readonly WorkflowDefinition[] = [
                 "context"
               ],
               "title": "/ca:create-context: selected strategy",
-              "href": "/reference/commands/create-context/",
+              "href": "/reference/skills/context-creation/",
               "source": "init",
               "detail": "Automatic detection or --brownfield selects this existing workflow. A completed initialization marker or wrong source shape retains the route’s stop.",
               "output": "A valid existing-code extraction request."

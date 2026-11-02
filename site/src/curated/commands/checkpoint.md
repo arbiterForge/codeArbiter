@@ -1,6 +1,10 @@
 ---
 entity: commands/checkpoint
 related: [tribunal, audit, status]
+use_when: "You want the routine whole-codebase review sweep, with a triaged report of findings by severity."
+avoid_when: "Reviewing only the current change, which is `/ca:review`; a rare deep audit, which is `/ca:tribunal`; or ADR health alone, which is `/ca:adr-status`."
+asks: "Nothing. It takes no arguments and sweeps the whole codebase every time."
+produces: "A dated report under `.codearbiter/checkpoints/` with findings by severity, and an updated `.codearbiter/last-checkpoint` baseline. No code is changed."
 gates:
   - gate: reviewer fleet, funneled
     when: every invocation
@@ -59,8 +63,3 @@ Selected report: .codearbiter/checkpoints/2026-09-24-2.md
 last-checkpoint: 12 (override-count baseline)
 No code repair or delivery sign-off performed.
 ```
-
-## When to reach for it
-
-The routine whole-codebase sweep — not the current diff (`/ca:review`), not the rare
-deep audit (`/ca:tribunal`), and not ADR health alone (`/ca:adr-status`).

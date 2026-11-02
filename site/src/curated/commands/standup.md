@@ -1,6 +1,10 @@
 ---
 entity: commands/standup
 related: [status, task]
+use_when: "You want the daily cleanup pass: fast-forward the current branch when it is clean and behind its upstream, clear merged branches and stale worktrees, and surface stashes, uncommitted changes and tasks that look done."
+avoid_when: "A read-only snapshot, which is `/ca:status`; install health, which is `/ca:doctor`; transcript hygiene, which is `/ca:prune`; or committing staged work, which is `/ca:commit`."
+asks: "A yes for each merged branch to delete, a yes for the stale worktrees (as one named group or one by one), and a named subset of long-done tasks to archive (all, some or none). Nothing is removed or archived without it."
+produces: "A hygiene report with suggested next steps, and only the removals and archives you approved. The task board is never flipped for you."
 gates:
   - gate: per-action confirmation
     when: pruning a merged branch or removing a stale worktree
@@ -8,20 +12,22 @@ gates:
   - gate: fast-forward-only pull
     when: the working tree is clean and the branch is behind upstream
     effect: a --ff-only pull is offered; a dirty tree withholds the pull and reports the dirty state instead, and a diverged branch is refused rather than merged
-  - gate: one confirmation per archived task
+  - gate: one named subset per archive sweep
     when: sweeping long-done tasks off the board
-    effect: each aged item is proposed on its own and archived only on its own yes — never a batched "archive all 12?", and an undated item is never proposed at all because it cannot be aged
+    effect: the aged tasks are listed with their dates and you are asked once which ones to archive, and you may name all, some or none; only the IDs you name are archived, silence is never read as a yes, and an undated task is left out unless you ask for its exact ID
 ---
 
 ## What it does
 
-The daily hygiene checklist, made routine and gated: fetch and offer a fast-forward pull, list
+The daily hygiene checklist, made routine and gated: fetch and offer a fast-forward pull of the
+current branch, list
 locally-merged branches for individual confirm-and-delete, list stale worktrees for either
 confirm-and-delete as one named group or individually, surface stashes, uncommitted changes, and
 un-pushed commits with a suggested next step, run a read-only advisory board-drift sweep comparing
-recent merge history against `open-tasks.md`, and offer to archive long-done tasks one at a time.
-Nothing destructive happens without an explicit yes, and the task board is never auto-flipped — a
-drifted task is resolved only through `/ca:task done <id>`.
+recent merge history against `open-tasks.md`, and offer to archive long-done tasks as one named
+subset that you choose. Nothing destructive happens without an explicit yes, and the task board is
+never auto-flipped. On a legacy board, a drifted task is resolved only through `/ca:task done <id>`.
+With native work the sweep reports that drift is not assessed.
 
 A locally-merged branch that was squash-merged (its upstream already pruned to `: gone]`) will
 typically refuse a plain `git branch -d`. When that happens, `standup` checks the merged PR record
@@ -35,12 +41,18 @@ identical yes prompts. Declining the group falls back to confirming each worktre
 either way, the main worktree is never touched and nothing is removed without a yes.
 
 The archival sweep exists because long-done tasks accumulate until the in-flight count stops
-meaning anything. Each aged item is proposed separately and moved by its own helper call: the
+meaning anything. The sweep lists every aged task with its date and asks once for a named subset to
+archive. You can pick all, some or none, and that one answer authorizes only the IDs you named.
+Each task is then re-checked and moved by its own helper call, one at a time. On a legacy board the
 record is appended to `done-tasks.md` *before* it is removed from `open-tasks.md`, so an
-interrupted sweep leaves a duplicate the next run absorbs rather than a lost record. That ordering
-is why the confirmations aren't batched — one yes, one move. An item marked `[x]` with no
-`(done YYYY-MM-DD)` stamp can't be aged and is never proposed; it can only be archived deliberately
-on request. Declining costs nothing: an unarchived task stays exactly where it is.
+interrupted sweep leaves a duplicate the next run absorbs rather than a lost record. A selection is
+one choice, not one atomic write: if a task is refused, or has changed since the list was shown,
+the sweep reports what was archived and what remains. The archive is written in a fresh worktree on
+its own branch, so it never mixes into your current work, and it goes through the normal PR path.
+
+An item marked `[x]` with no `(done YYYY-MM-DD)` stamp can't be aged and is left out of the list;
+it is archived only if you ask for its exact ID. Declining costs nothing: an unarchived task stays
+exactly where it is.
 
 ## Usage
 
@@ -53,6 +65,7 @@ Takes no arguments.
 ## Example
 
 ```text
+Illustrative exchange on a legacy board project, not captured execution:
 > /ca:standup
 
 Fetched. Branch is 2 commits behind origin/main, tree clean — fast-forward pull? (y/n)
@@ -68,15 +81,12 @@ Board-drift sweep: 1 DRIFTED task (poc.docs.0001 merged but not marked [x] in op
 Resolve with /ca:task done poc.docs.0001. The sweep never auto-flips tasks.
 
 Archival sweep: 3 done tasks older than the cutoff.
-  poc.api.0004 — "rate-limit the webhook" (done 2026-05-02) — archive? (y/n)
-> y
+  poc.api.0004  "rate-limit the webhook"  (done 2026-05-02)
+  poc.api.0007  "retry on 429"            (done 2026-05-11)
+  poc.api.0009  "log the retry count"     (done 2026-05-12)
+Which of these should be archived? Name any, all or none.
+> poc.api.0004 poc.api.0009
 Archived poc.api.0004 to done-tasks.md.
-  poc.api.0007 — "retry on 429" (done 2026-05-11) — archive? (y/n)
-> n
+Archived poc.api.0009 to done-tasks.md.
 Left poc.api.0007 on the board.
 ```
-
-## When to reach for it
-
-The daily cleanup pass with your yes on each destructive step. For a read-only snapshot without
-acting, use `/ca:status`; to actually flip the drifted task, use `/ca:task`.

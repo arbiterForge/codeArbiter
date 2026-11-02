@@ -1,6 +1,10 @@
 ---
 entity: commands/conflict
 related: [override, reconcile]
+use_when: "Two rules, documents or pieces of code contradict each other and you need work to stop until you decide. codeArbiter usually raises this on its own."
+avoid_when: "A gate you have decided to bypass rather than a contradiction to resolve, which is `/ca:override`."
+asks: "How to resolve it: update one source, update the other, or supersede one with an ADR. Work stays halted until you decide."
+produces: "A halt report quoting both passages, the nature of the conflict and its level in the conflict hierarchy. The only change afterward is a document update you authorized."
 gates:
   - gate: halt on detection
     when: the persona, a .codearbiter/ document, and code contradict each other — or two docs contradict each other
@@ -52,8 +56,3 @@ Update ADR-0004 to route through commit-gate, or supersede the hard rule via a n
 ---
 Work is halted. Resolve before the orchestrator proceeds.
 ```
-
-## When to reach for it
-
-You rarely invoke this directly — it's usually the orchestrator surfacing a contradiction it found.
-For a gate you've decided to bypass rather than a contradiction to resolve, that's `/ca:override`.

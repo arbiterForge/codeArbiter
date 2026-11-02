@@ -1,6 +1,10 @@
 ---
 entity: commands/doctor
 related: [statusline]
+use_when: "You want proof that the install is actually enforcing its checks and not just present, for example after an update or when something seems to have stopped firing."
+avoid_when: "Statusline wiring alone, which is `/ca:statusline status`; scaffold state alone, which is `/ca:init --check`; or project progress, which is `/ca:status`."
+asks: "Nothing. It takes no arguments and is read-only."
+produces: "A report with one OK, WARN or FAIL line per check, a harmless live probe of the hook layer, and an exact fix for every problem it finds."
 ---
 
 ## What it does
@@ -50,8 +54,3 @@ prohibited. Stage files explicitly (commit-gate skill).
 
 verdict: healthy — hooks firing
 ```
-
-## When to reach for it
-
-Statusline wiring only is a narrower question answered by `/ca:statusline status`; scaffold state
-alone by `/ca:init --check`; project progress (not install health) by `/ca:status`.

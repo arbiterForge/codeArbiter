@@ -137,6 +137,10 @@ describe("generate", () => {
   describe("curated merge", () => {
     const curatedOutDir = join(tmpdir(), "ca-gen-test-out-curated");
     const curatedDir = join(tmpdir(), "ca-gen-test-curated-src");
+    // `sample` is a core command in the fixture catalog, so its curated file must
+    // carry the reader fields and an Example heading (see load-curated.ts).
+    const readerFrontmatter = "use_when: u\navoid_when: a\nasks: q\nproduces: p\n";
+    const exampleSection = "\n## Example\n\n```text\n/ca:sample\n```\n";
 
     beforeEach(() => {
       rmSync(curatedOutDir, { recursive: true, force: true });
@@ -152,7 +156,7 @@ describe("generate", () => {
       mkdirSync(join(curatedDir, "commands"), { recursive: true });
       writeFileSync(
         join(curatedDir, "commands", "sample.md"),
-        `---\nentity: commands/sample\nrelated: [another]\ngates:\n  - gate: g1\n    when: w1\n    effect: e1\n---\n\nCurated prose for sample.\n`,
+        `---\nentity: commands/sample\nrelated: [another]\n${readerFrontmatter}gates:\n  - gate: g1\n    when: w1\n    effect: e1\n---\n\nCurated prose for sample.\n${exampleSection}`,
       );
       const result = generate(pluginDir, curatedOutDir, undefined, curatedDir);
       const samplePage = result.pages.find(
@@ -179,7 +183,7 @@ describe("generate", () => {
       mkdirSync(join(curatedDir, "commands"), { recursive: true });
       writeFileSync(
         join(curatedDir, "commands", "sample.md"),
-        `---\nentity: commands/sample\nrelated: [does-not-exist]\n---\n\nBody.\n`,
+        `---\nentity: commands/sample\nrelated: [does-not-exist]\n${readerFrontmatter}---\n\nBody.\n${exampleSection}`,
       );
       expect(() => generate(pluginDir, curatedOutDir, undefined, curatedDir)).toThrow(
         /unresolvable/,

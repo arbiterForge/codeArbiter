@@ -24,6 +24,12 @@
  * in production — this gate used to skip them as "out of scope" instead of
  * catching that. They are now recorded as failures alongside dangling links.
  *
+ * FAILED, not followed: a link that lands on a redirect page (an Astro
+ * `redirects` entry, which is a real file holding only a meta refresh). Such a
+ * link resolves, so the existence check alone accepts it, yet the reader takes a
+ * second hop and the retired URL stays in use. Redirects exist for visitors
+ * arriving from outside the site; links inside it name the final page.
+ *
  * Uses Node built-ins + a small regex HTML scan only — no added dependency.
  */
 import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
@@ -55,6 +61,12 @@ export function extractTargets(html: string): string[] {
   let m: RegExpExecArray | null;
   while ((m = re.exec(html)) !== null) targets.push(m[1]);
   return targets;
+}
+
+/** The destination of a redirect page (Astro's meta-refresh stub), or null for any other page. */
+export function redirectDestination(html: string): string | null {
+  const match = /<meta\s+http-equiv\s*=\s*"refresh"\s+content\s*=\s*"[^"]*?\burl=([^"]*)"/i.exec(html);
+  return match === null ? null : match[1];
 }
 
 /** True for targets we do not evaluate at all: empty, pure fragment,
@@ -146,6 +158,12 @@ export function auditDist(distRoot: string, base: string = BASE): AuditResult {
   const pages = htmlFiles(distRoot);
   const failures: AuditFailure[] = [];
   let checked = 0;
+  // Whether each linked-to page is a redirect page, read once per file.
+  const redirectOf = new Map<string, string | null>();
+  const redirectOfFile = (file: string): string | null => {
+    if (!redirectOf.has(file)) redirectOf.set(file, redirectDestination(readFileSync(file, "utf8")));
+    return redirectOf.get(file)!;
+  };
 
   if (pages.length === 0) {
     failures.push({
@@ -175,6 +193,14 @@ export function auditDist(distRoot: string, base: string = BASE): AuditResult {
       if (!existsSync(resolution.distFile)) {
         failures.push({
           message: `${relFromDist}  ->  ${target}  (missing ${relative(distRoot, resolution.distFile).split(sep).join("/")})`,
+        });
+        continue;
+      }
+
+      const destination = redirectOfFile(resolution.distFile);
+      if (destination !== null) {
+        failures.push({
+          message: `${relFromDist}  ->  ${target}  (redirect page: link to ${destination} instead)`,
         });
       }
     }

@@ -1,6 +1,8 @@
 ---
 entity: skills/secret-handling
 related: [crypto-compliance, commit-gate]
+runs_inside: "The commit check (`/ca:commit`), which routes any staged change that reads, writes or passes a secret through it."
+produces: "A pass or a block for the change. A clean pass is recorded so the commit check will accept a secret-touching change; an unapproved source, a prohibited destination or a secret that outlives its request blocks it."
 gates:
   - gate: approved source
     when: any secret-bearing value is introduced

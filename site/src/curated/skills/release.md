@@ -16,20 +16,11 @@ gates:
     effect: pushing the tag and creating the public release both wait for your explicit go-ahead — nothing about the tag composition authorizes publishing it
 ---
 
-## What it does
+## Where the version starts
 
-This is the only sanctioned path to a version tag, invoked by the release command on a
-non-default branch with a green suite. It carries no knowledge of any particular project: the tag
-prefix, the manifests, the changelog, the payload scope, and any pre-tag checks are all read from
-the project's declared `.codearbiter/release-targets.md`, so the same skill serves a
-single-artifact repository and a monorepo without a repo-local variant.
-
-It resolves the last tag *within the selected target's own series* rather than using a bare
-`git describe`, because in a multi-artifact repository the nearest tag may belong to a sibling. It
-then derives the version bump from the Conventional Commits history in that target's payload, rolls
-the qualifying commits into the declared changelog, prepares a reviewed release PR and stops. After merge and exact-head CI, the qualifying hosted
-publisher composes the tag in its isolated checkout and consumes explicit cohort-specific
-publication authority. No interactive local tag fallback is permitted.
+The skill resolves the last tag within the selected target's own series rather than using a bare
+`git describe`, because in a multi-artifact repository the nearest tag may belong to a sibling. No
+interactive local tag fallback is permitted.
 
 ## Phases
 
@@ -59,5 +50,3 @@ A project with no target file uses confirmed back-fill for a real run. A dry run
 proposal and locally evaluable derivation; it never fetches, executes declared checks, writes,
 commits, tags or publishes. See [the release guide](/guides/releasing-a-version/) and its
 [execution map](/guides/releasing-a-version/#execution-map) for the complete human handoff.
-
-The [workflow comparison](/concepts/workflow-routes/) distinguishes this publication route from feature delivery and initialization.

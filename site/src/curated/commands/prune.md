@@ -1,6 +1,10 @@
 ---
 entity: commands/prune
 related: [status]
+use_when: "A long session is using up its context window and you want to trim bulk such as tool-result sidecars and thinking blocks before compaction."
+avoid_when: "A session nowhere near compaction; install health, which is `/ca:doctor`; or project progress, which is `/ca:status`."
+asks: "A mode: `status`, `dry`, `run <path>`, `audit <path>`, `on` or `off`. With no argument it reports status, and `run` rejects a transcript that was touched recently."
+produces: "A reduction report, and with `run` a pruned transcript that takes effect at your next resume or compaction. `dry`, `audit` and `status` change nothing."
 gates:
   - gate: live-transcript refusal
     when: run <path> targets the current session's live transcript
@@ -53,10 +57,5 @@ oversize-clamp                31     301,440     288,110      13,330
 reasoning-fold                 9     288,110     279,900       8,210
 
 total: 403KB -> 273KB  (32% reduction)
-verdict: dry-run — gains land at next --resume or compaction
+verdict: dry-run — gains land at next resume or compaction
 ```
-
-## When to reach for it
-
-Skip it when the context bar is nowhere near compaction — the most recent turns are protected
-regardless. Install health is `/ca:doctor`'s job; project progress is `/ca:status`'s.

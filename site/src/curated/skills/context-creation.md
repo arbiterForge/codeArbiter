@@ -1,6 +1,10 @@
 ---
 entity: skills/context-creation
 related: [commands/create-context, decompose]
+use_when: "A repository has meaningful existing source but no project context yet, and you want it populated from what the code shows."
+avoid_when: "A new project with no source, which is `/ca:decompose`, or a repository that is already initialized, which takes a scoped or full refresh through `/ca:status drift`."
+asks: "Only the material decisions that the code and your existing instructions cannot settle. Everything else is recorded with its source or marked unknown."
+produces: "Five source-backed context documents (project context, tech stack, coding standards, security controls and code map) with provenance, and an initialization result that lists the remaining unknowns."
 gates:
   - gate: repository selection
     when: before population
@@ -19,6 +23,31 @@ Build source-backed project context from an existing repository through direct b
 inspection or optional scoped agents. It keeps actual host permissions and project-owned
 constraints in force without requiring a special scout profile or per-document approval receipt.
 A role label, matching source hash or successful write does not certify semantics or containment.
+
+In a new HTML-format repository the result is records in five knowledge documents, each with its
+basis, cited sources and the paths it governs; a Markdown-format repository gets five content
+documents and their source provenance. A package script is a declared command, not a passing
+test, and an observed convention is not a newly approved policy.
+
+## Usage
+
+```text
+/ca:create-context
+```
+
+Prefer `/ca:init --brownfield` for initial population; this compatibility route remains
+available. If context is already initialized, request a scoped or full refresh through the
+context-check owner instead, and do not erase the initialization marker or rerun the scaffolder.
+
+## Example
+
+```text
+Illustrative output shape, not a captured run:
+Existing source detected. Inspecting six logical categories within the selected repository.
+Five source-backed content documents prepared. One material deployment choice remains unresolved.
+Applying the selected supported previews; preserving task, question and audit history.
+Initialization result and remaining evidence limits reported from the committed state.
+```
 
 ## Phases
 

@@ -1,6 +1,8 @@
 ---
 entity: skills/executing-plans
 related: [commands/feature, subagent-driven-development, writing-plans]
+runs_inside: "`/ca:feature`, for a full plan that still has work remaining. It hands each batch of tasks to the implementation step."
+produces: "The current plan state, the verification actually observed and the remaining work after each batch, with `DONE` recorded as implementation progress only."
 gates:
   - gate: actual prerequisite
     when: selecting the next batch

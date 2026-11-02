@@ -1,13 +1,10 @@
 ---
 entity: commands/commit
 related: [sprint, pr, skills/commit-gate]
-gates:
-  - gate: verification
-    when: every invocation
-    effect: test, lint, and secret-scan results must all come back clean before anything else runs
-  - gate: behavioral proof + diff review
-    when: after verification passes
-    effect: the change must demonstrate the behavior it claims, and the diff is reviewed line by line before staging
+use_when: "Your selected work is ready to persist and you have authorized the commit."
+avoid_when: "Opening a pull request for a branch that is already committed, which is `/ca:pr`, or only explaining history or drafting a message."
+asks: "An explicit instruction to commit. It stops and names what to resolve if a check fails, and it does not run on a protected branch."
+produces: "One Conventional Commits commit containing exactly the files you intended, a report of what each check found, and a clean working tree afterward."
 ---
 
 ## What it does
@@ -53,10 +50,3 @@ Commit message drafted:
 
 Committed a1b2c3d. git status: clean.
 ```
-
-## When to reach for it
-
-Reach for `/ca:commit` once selected work is ready to persist and committing is authorized.
-Ordinary commits do not require artifact acceptance receipts. `/ca:pr` verifies an already
-committed branch against its base-to-HEAD diff and dispatches the required reviewers; it uses
-the commit owner when authorized uncommitted work still needs recording.

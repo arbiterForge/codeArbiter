@@ -1,6 +1,8 @@
 ---
 entity: skills/brainstorming
 related: [commands/feature, commands/sprint, writing-plans]
+runs_inside: "`/ca:feature` and `/ca:sprint`, as the step that turns your request into a specification. `/ca:spike` findings can seed it too."
+produces: "A saved specification with stable criterion IDs, observable acceptance criteria and any genuinely open decisions, returned to the planning step."
 gates:
   - gate: consequential choice
     when: the requested outcome conflicts with a requirement or leaves a material product decision unresolved
