@@ -1,0 +1,26 @@
+{
+  "guides/troubleshooting": ["F01-fork-clone-doctor"],
+  "guides/return-to-a-project": ["F02-orient-to-state", "F03-work-the-board", "U05-debug-spike-conflict"],
+  "guides/investigate-and-fix": ["F04-fix-with-evidence", "U05-debug-spike-conflict"],
+  "guides/feature-lane": ["P01-feature-through-plan", "U07-capstone"],
+  "guides/review-artifacts": ["P01-feature-through-plan"],
+  "guides/review-and-ship": [
+    "P02-commit-review-pr",
+    "P07-threat-model",
+    "P08-repository-hygiene",
+    "U06-preview-and-advanced-surfaces"
+  ],
+  "guides/recording-adrs": ["P03-record-an-adr"],
+  "guides/adding-a-dependency": ["P04-review-a-dependency"],
+  "guides/understand-an-existing-project": ["P06-context-drift-recovery", "U04-initialize-projects"],
+  "guides/plan-a-new-project": ["U04-initialize-projects"],
+  "guides/autonomous-sprints": ["U01-autonomous-sprint"],
+  "guides/overriding-a-gate": ["U02-override-audit-metrics"],
+  "guides/releasing-a-version": ["U03-refactor-chore-release"],
+  "concepts/gated-lanes": ["F03-work-the-board", "U03-refactor-chore-release"],
+  "concepts/test-first": ["F04-fix-with-evidence", "P05-checkpoint-remediation"],
+  "concepts/checkpoints": ["P05-checkpoint-remediation"],
+  "concepts/adrs": ["P03-record-an-adr"],
+  "concepts/provenance-drift": ["P06-context-drift-recovery"],
+  "concepts/auditability": ["U02-override-audit-metrics"]
+}

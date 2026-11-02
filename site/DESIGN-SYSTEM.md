@@ -87,8 +87,10 @@ The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
   eyebrow. Digests, tags and publication commits stay inside the replay's disclosure. The artifact
   workbench, trust row and curriculum live on the product tour, the first-feature guide and the
   Academy.
-- **Orientation strip.** `PageContext` renders one line (level, time, outcome). Prerequisites and
-  the completion check open from `.ca-page-context__more`.
+- **Orientation strip.** `PageContext` renders one line (level, time, outcome). A guide or concept
+  page that Academy lessons practice adds a second line, `.ca-page-context__practice`, linking those
+  lessons (`src/data/topic-map.json`). Prerequisites and the completion check open from
+  `.ca-page-context__more`.
 - **At a glance.** A command or skill reference page puts its reader fields (use it when, don't
   use it for, what it asks you, what it produces; internal-only skills: runs inside, what it
   produces) under one `## At a glance` heading as a `<dl class="ca-reader-fields">`, in a fixed
