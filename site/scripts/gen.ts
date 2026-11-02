@@ -10,6 +10,7 @@ import { renderChangelog } from "./generator/render-changelog";
 import { renderConfigurationReference } from "./generator/configuration-reference";
 import { loadAcademySource } from "./academy-source";
 import { generateAcademy } from "./generate-academy";
+import { loadTopicMap } from "./topic-map";
 import { generateReleaseApplicability } from "./release-applicability";
 import { assertCapturesFresh } from "./capture/verify";
 
@@ -108,10 +109,18 @@ if (existsSync(changelogSourcePath)) {
 const academySource = loadAcademySource(repoRoot);
 const academyDocsRoot = join(here, "..", "src", "content", "docs");
 const academyGeneratedRoot = join(here, "..", "src", "generated");
-const academyResult = generateAcademy(academySource, academyDocsRoot, academyGeneratedRoot);
+// The topic map is checked before generateAcademy clears the prior Academy routes, so a bad
+// entry fails the run with the entry named and leaves the last good output in place.
+const topicMap = loadTopicMap(
+  join(here, "..", "src", "data", "topic-map.json"),
+  academyDocsRoot,
+  academySource.lessons.map((lesson) => lesson.id),
+);
+const academyResult = generateAcademy(academySource, academyDocsRoot, academyGeneratedRoot, topicMap.lessons);
 console.log(
   `Generated Academy overview and ${academyResult.sidebarItems.length} public lesson routes ` +
-    `from ${academySource.release} (${academySource.commit})`,
+    `from ${academySource.release} (${academySource.commit}), ` +
+    `${Object.keys(topicMap.pages).length} guide and concept pages linked to their lessons`,
 );
 
 const releaseApplicability = generateReleaseApplicability(
