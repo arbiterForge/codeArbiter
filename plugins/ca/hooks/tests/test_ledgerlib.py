@@ -571,13 +571,12 @@ class TestPiUsageLedger(unittest.TestCase):
         self.assertEqual(result["today"]["inputTokens"], 20)
 
     def test_local_midnight_splits_today_from_whole_session(self):
-        zone = datetime.now().astimezone().tzinfo
         yesterday = datetime.combine(
-            self.local_day - timedelta(days=1), datetime_time(23, 59), tzinfo=zone
-        ).isoformat()
+            self.local_day - timedelta(days=1), datetime_time(23, 59)
+        ).astimezone().isoformat()
         today = datetime.combine(
-            self.local_day, datetime_time(0, 1), tzinfo=zone
-        ).isoformat()
+            self.local_day, datetime_time(0, 1)
+        ).astimezone().isoformat()
         result = self._update([
             self._fact(0, yesterday, inputTokens=100, costUsd=1.0),
             self._fact(1, today, inputTokens=7, costUsd=0.5),
