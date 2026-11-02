@@ -238,6 +238,20 @@ try {
   if (JSON.stringify(servedCapture) !== JSON.stringify(sourceCapture)) throw new Error("Context evidence endpoint differs from its capture");
   process.stdout.write("C03: all recorded context cases, full role map and exact JSON evidence remain beneath /docs/.\n");
 
+  // #1082: every redirect family must land beneath the base, not at the root.
+  for (const [stub, destination] of [
+    ["reference/skills/commit-gate", "/docs/reference/commands/commit"],
+    ["reference/skills/debug-2", "/docs/reference/commands/debug"],
+    ["reference/agents/tribunal-appsec-reviewer", "/docs/reference/tribunal-lenses/appsec"],
+  ]) {
+    const html = readFileSync(join(outputRoot, stub, "index.html"), "utf8");
+    const target = html.match(/content="0;url=([^"]+)"/)?.[1];
+    if (target !== destination) {
+      throw new Error(`Redirect ${stub} must go to ${destination} beneath the base, found ${target ?? "none"}`);
+    }
+  }
+  process.stdout.write("Redirects: merged-skill, legacy -2 and retired-agent stubs land beneath /docs/.\n");
+
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }
