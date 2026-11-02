@@ -30,6 +30,17 @@ const attemptedCommand = ["git", "add", "-A"].join(" ");
 // The audit sink the hook appends to inside the disposable fixture.
 const gateEventsPath = ".codearbiter/gate-events.log";
 
+/** Create a temporary directory, refusing one that resolves outside tmpdir() before anything can delete it. */
+function temporaryDirectory(prefix: string): string {
+  const path = mkdtempSync(join(tmpdir(), prefix));
+  const safeTempRoot = resolve(tmpdir()).toLowerCase();
+  const resolved = resolve(path).toLowerCase();
+  if (!resolved.startsWith(`${safeTempRoot}\\`) && !resolved.startsWith(`${safeTempRoot}/`)) {
+    throw new Error(`Refusing to use non-temporary capture path: ${path}`);
+  }
+  return path;
+}
+
 function run(command: string, args: string[], cwd: string) {
   return spawnSync(command, args, {
     cwd,
@@ -328,7 +339,7 @@ export async function captureHookProof(
         duration: 3,
       },
     ];
-    frameRoot = mkdtempSync(join(tmpdir(), "codearbiter-proof-frames-"));
+    frameRoot = temporaryDirectory("codearbiter-proof-frames-");
     await render(timeline.length ? frames : [], capturedAt.slice(0, 10), frameRoot, outDir);
     // Last, and only once the media exist: a record that already matches the hook
     // would make every later run report "unchanged" and never retry a failed render.
@@ -339,14 +350,11 @@ export async function captureHookProof(
       `Artifacts: ${relative(siteRoot, outDir)}\n`,
     );
   } finally {
-    fixture.dispose();
-    if (frameRoot) {
-      const safeTempRoot = resolve(tmpdir()).toLowerCase();
-      const resolved = resolve(frameRoot).toLowerCase();
-      if (!resolved.startsWith(`${safeTempRoot}\\`) && !resolved.startsWith(`${safeTempRoot}/`)) {
-        throw new Error(`Refusing to remove non-temporary capture path: ${frameRoot}`);
-      }
-      rmSync(frameRoot, { recursive: true, force: true });
+    // Nested so the frame directory is still removed when dispose() throws.
+    try {
+      fixture.dispose();
+    } finally {
+      if (frameRoot) rmSync(frameRoot, { recursive: true, force: true });
     }
   }
 }
