@@ -3,11 +3,12 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  rmdirSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, relative, resolve } from "node:path";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import sharp from "sharp";
@@ -33,9 +34,10 @@ const gateEventsPath = ".codearbiter/gate-events.log";
 /** Create a temporary directory, refusing one that resolves outside tmpdir() before anything can delete it. */
 function temporaryDirectory(prefix: string): string {
   const path = mkdtempSync(join(tmpdir(), prefix));
-  const safeTempRoot = resolve(tmpdir()).toLowerCase();
-  const resolved = resolve(path).toLowerCase();
-  if (!resolved.startsWith(`${safeTempRoot}\\`) && !resolved.startsWith(`${safeTempRoot}/`)) {
+  // relative() also handles a filesystem-root tmpdir (TMPDIR=/), where a separator suffix would not.
+  const inside = relative(resolve(tmpdir()).toLowerCase(), resolve(path).toLowerCase());
+  if (!inside || inside.startsWith("..") || isAbsolute(inside)) {
+    rmdirSync(path); // just created, so still empty; rmdirSync cannot remove anything else
     throw new Error(`Refusing to use non-temporary capture path: ${path}`);
   }
   return path;
