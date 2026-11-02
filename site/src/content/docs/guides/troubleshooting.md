@@ -63,12 +63,12 @@ Doctor reads `.codearbiter/CONTEXT.md` and checks three things:
 
 A repo without the file is dormant: the gates do not fire and no orchestrator persona is injected. An unclosed frontmatter block surfaces as a malformed-state error rather than silently treating the repo as disabled.
 
-**To fix:** confirm the first three lines of `.codearbiter/CONTEXT.md` read:
+**To fix:** confirm that `.codearbiter/CONTEXT.md` opens with a frontmatter block that starts on
+line 1, closes with a second `---` and contains `arbiter: enabled`. A fresh scaffold writes these
+first five lines; `arbiter: enabled` is the activation flag, and `stage` and `context-format` record the
+maturity stage and the context format:
 
-```text
----
-arbiter: enabled
----
+```text capture="context-scaffold-frontmatter"
 ```
 
 If the file is absent, run `/ca:init` to scaffold it.

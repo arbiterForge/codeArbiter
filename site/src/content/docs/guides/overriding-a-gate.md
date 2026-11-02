@@ -55,15 +55,15 @@ The reason must name the gate and justify the action. A vague reason such as "ju
 Codex uses `$ca-override "reason"`; Claude Code uses `/ca:override "reason"`; Pi uses
 `/ca-override "reason"`.
 
-The command and receipt below are one illustrative design-review exception, not a captured production override.
+The command above is one illustrative design-review exception, not a captured production override.
+The audit lines below are real output from the audit helper, run in a temporary repository whose Git identity is `you@example.com`, with the timestamp shown as `<timestamp>`.
 
 ## What Happens
 
 1. codeArbiter reads your identity from `git config user.email`. If that value is unset, it asks once. No second prompt.
 2. One line is appended to `.codearbiter/overrides.log`:
 
-   ```text
-   [2026-06-27T14:30:00Z] | BY: you@example.com | GATE: design review | REASON: retain the deprecated v2 compatibility selector until the documented v3 removal release; supported v2 clients still depend on it, this commit only
+   ```text capture="override-gate-row"
    ```
 
 3. The blocked action proceeds. The response confirms that the override is logged.
@@ -88,10 +88,10 @@ These require explicit per-finding acknowledgement and a heavier log entry. The 
 
 1. codeArbiter surfaces the specific finding verbatim: the exact primitive, secret, or operation, and the concrete risk. A generic "security override" is rejected.
 2. You acknowledge that specific finding in your own words. A bare "yes" or "go ahead" is declined, the same way `/ca:conflict` declines a bare confirmation on a contested decision.
-3. codeArbiter appends a `SECURITY-OVERRIDE` line:
+3. codeArbiter appends a `SECURITY-OVERRIDE` line that records the specific finding, not just a gate name.
+   This one is the helper's output for an invented finding in the same temporary repository:
 
-   ```text
-   [2026-06-27T14:30:00Z] | BY: you@example.com | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
+   ```text capture="override-security-row"
    ```
 
 4. Only after steps 1 through 3 does the bypass record. For H-09b / H-10b, recording the bypass means running `security-pass.py`, which writes a digest-bound gate-pass marker covering the specific sensitive lines approved. The commit gate then allows the commit for those exact lines.

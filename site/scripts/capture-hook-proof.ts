@@ -1,48 +1,55 @@
-import { createHash } from "node:crypto";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  rmdirSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import sharp from "sharp";
+import { createFixture } from "./capture/fixture";
+import { REPO_ROOT, runPythonEntry } from "./capture/harness";
+import { normalizeText, sha256Raw } from "./capture/normalize";
 
-const repoRoot = resolve(import.meta.dirname, "../..");
+// The hook runs through the shared capture harness (fixture and isolated
+// environment). The hook-proof.json it writes keeps its original schema and its
+// original sourceSha256 semantics: release applicability digests the raw hook
+// bytes, so this does too. The harness also reports the modules the hook run
+// loaded, but they are not persisted: the landing proof keeps its own
+// current-and-published applicability statement (AC-06), not a stale check.
+const repoRoot = REPO_ROOT;
 const siteRoot = resolve(import.meta.dirname, "..");
-const hookPath = join(repoRoot, "plugins", "ca", "hooks", "pre-bash.py");
+const hookTool = "plugins/ca/hooks/pre-bash.py";
+const hookPath = join(repoRoot, ...hookTool.split("/"));
 const outputDir = join(siteRoot, "src", "assets", "proof");
-const fixtureRoot = mkdtempSync(join(tmpdir(), "codearbiter-hook-proof-"));
-const frameRoot = mkdtempSync(join(tmpdir(), "codearbiter-proof-frames-"));
-const python = process.env.PYTHON || "python";
 const attemptedCommand = ["git", "add", "-A"].join(" ");
+// The audit sink the hook appends to inside the disposable fixture.
+const gateEventsPath = ".codearbiter/gate-events.log";
 
-function run(
-  command: string,
-  args: string[],
-  cwd: string,
-  options: { input?: string; env?: NodeJS.ProcessEnv } = {},
-) {
+/** Create a temporary directory, refusing one that resolves outside tmpdir() before anything can delete it. */
+function temporaryDirectory(prefix: string): string {
+  const path = mkdtempSync(join(tmpdir(), prefix));
+  // relative() also handles a filesystem-root tmpdir (TMPDIR=/), where a separator suffix would not.
+  const inside = relative(resolve(tmpdir()).toLowerCase(), resolve(path).toLowerCase());
+  if (!inside || inside.startsWith("..") || isAbsolute(inside)) {
+    rmdirSync(path); // just created, so still empty; rmdirSync cannot remove anything else
+    throw new Error(`Refusing to use non-temporary capture path: ${path}`);
+  }
+  return path;
+}
+
+function run(command: string, args: string[], cwd: string) {
   return spawnSync(command, args, {
     cwd,
-    input: options.input,
-    env: options.env ?? process.env,
+    env: process.env,
     encoding: "utf8",
     windowsHide: true,
   });
-}
-
-function mustRun(command: string, args: string[], cwd: string) {
-  const result = run(command, args, cwd);
-  if (result.status !== 0) {
-    throw new Error(
-      `${command} ${args.join(" ")} failed (${result.status}):\n${result.stderr || result.stdout}`,
-    );
-  }
-  return result;
 }
 
 function escapeXml(value: string): string {
@@ -114,7 +121,11 @@ function renderFrame(lines: TranscriptLine[], label: string): string {
 </svg>`;
 }
 
-async function makeVideo(frames: Array<{ lines: TranscriptLine[]; duration: number }>, label: string) {
+type Frames = Array<{ lines: TranscriptLine[]; duration: number }>;
+/** Renders the replay media (mp4, webm, poster) for `frames` into `outDir`. */
+type RenderMedia = (frames: Frames, label: string, frameRoot: string, outDir: string) => Promise<void>;
+
+const makeVideo: RenderMedia = async (frames, label, frameRoot, outDir) => {
   const concatLines: string[] = [];
   for (const [index, frame] of frames.entries()) {
     const framePath = join(frameRoot, `frame-${index.toString().padStart(2, "0")}.png`);
@@ -130,7 +141,7 @@ async function makeVideo(frames: Array<{ lines: TranscriptLine[]; duration: numb
   const shared = ["-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concatPath, "-vf", "fps=30,format=yuv420p"];
   const mp4 = run(
     "ffmpeg",
-    [...shared, "-c:v", "libx264", "-crf", "24", "-preset", "slow", "-movflags", "+faststart", "-y", join(outputDir, "hook-proof.mp4")],
+    [...shared, "-c:v", "libx264", "-crf", "24", "-preset", "slow", "-movflags", "+faststart", "-y", join(outDir, "hook-proof.mp4")],
     siteRoot,
   );
   if (mp4.status !== 0) {
@@ -138,159 +149,220 @@ async function makeVideo(frames: Array<{ lines: TranscriptLine[]; duration: numb
   }
   const webm = run(
     "ffmpeg",
-    [...shared, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "35", "-an", "-y", join(outputDir, "hook-proof.webm")],
+    [...shared, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "35", "-an", "-y", join(outDir, "hook-proof.webm")],
     siteRoot,
   );
   if (webm.status !== 0) {
     throw new Error(`ffmpeg WebM render failed (${webm.status}):\n${webm.stderr}`);
   }
-  await sharp(lastFrame).webp({ quality: 88 }).toFile(join(outputDir, "hook-proof-poster.webp"));
-}
+  await sharp(lastFrame).webp({ quality: 88 }).toFile(join(outDir, "hook-proof-poster.webp"));
+};
 
-async function main() {
-  mkdirSync(outputDir, { recursive: true });
-  mkdirSync(join(fixtureRoot, ".codearbiter"), { recursive: true });
-  writeFileSync(
-    join(fixtureRoot, ".codearbiter", "CONTEXT.md"),
-    "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\nDisposable documentation proof fixture.\n",
-    "utf8",
-  );
-  writeFileSync(join(fixtureRoot, ".codearbiter", "gate-events.log"), "", "utf8");
-  mustRun("git", ["init", "-q", "-b", "feat/proof"], fixtureRoot);
-  mustRun("git", ["config", "user.name", "codeArbiter proof"], fixtureRoot);
-  mustRun("git", ["config", "user.email", "proof@codearbiter.invalid"], fixtureRoot);
-  mustRun("git", ["add", ".codearbiter/CONTEXT.md", ".codearbiter/gate-events.log"], fixtureRoot);
-  mustRun("git", ["commit", "-q", "-m", "chore: initialize proof fixture"], fixtureRoot);
-  writeFileSync(join(fixtureRoot, "note.txt"), "This file must remain unstaged.\n", "utf8");
-
-  const statusBefore = mustRun("git", ["status", "--short"], fixtureRoot).stdout.trimEnd();
-  const stagedBefore = mustRun("git", ["diff", "--cached", "--name-only"], fixtureRoot).stdout.trimEnd();
-  const payload = JSON.stringify({
-    hook_event_name: "PreToolUse",
-    tool_name: "Bash",
-    cwd: fixtureRoot,
-    tool_input: { command: attemptedCommand },
-  });
-  const hook = run(python, [hookPath], fixtureRoot, {
-    input: payload,
-    env: { ...process.env, CLAUDE_PROJECT_DIR: fixtureRoot, CODEARBITER_HOST: "claude" },
-  });
-  const statusAfter = mustRun("git", ["status", "--short"], fixtureRoot).stdout.trimEnd();
-  const stagedAfter = mustRun("git", ["diff", "--cached", "--name-only"], fixtureRoot).stdout.trimEnd();
-  const stderr = hook.stderr.trim().replace(/\r\n/g, "\n");
-  const gateEvent = readFileSync(join(fixtureRoot, ".codearbiter", "gate-events.log"), "utf8").trim();
-
-  if (hook.status !== 2 || !stderr.includes("BLOCKED [H-03]")) {
-    throw new Error(`Expected a real H-03 exit-2 block; got exit=${hook.status} stderr=${stderr}`);
-  }
-  if (stagedAfter !== stagedBefore || !statusAfter.includes("?? note.txt")) {
-    throw new Error(
-      `The blocked call staged content or changed the intended file state:\n` +
-      `staged before=${stagedBefore}\nstaged after=${stagedAfter}\nstatus=${statusAfter}`,
-    );
-  }
-  if (!gateEvent.includes("BLOCK [H-03]")) {
-    throw new Error(`Expected H-03 to append a real gate event; got: ${gateEvent}`);
-  }
-
-  const capturedAt = new Date().toISOString();
-  const sourceSha256 = createHash("sha256").update(readFileSync(hookPath)).digest("hex");
-  const record = {
-    schema: 1,
-    evidenceKind: "direct-hook-invocation-rendered-replay",
-    hostDiscoveryProven: false,
-    capturedAt,
-    source: relative(repoRoot, hookPath).replaceAll("\\", "/"),
-    sourceSha256,
-    fixture: {
-      branch: "feat/proof",
-      activation: "arbiter: enabled",
-      untrackedBefore: statusBefore,
-      statusAfter,
-      stagedBefore,
-      stagedAfter,
-      gateEvent,
-    },
-    invocation: {
-      attemptedCommand,
-      hookEvent: "PreToolUse",
-      toolName: "Bash",
-      exitCode: hook.status,
-      stderr,
-      commandExecuted: false,
-    },
+/** The record release applicability reads. Its schema is fixed; see the header comment. */
+interface HookProofRecord {
+  schema: 1;
+  evidenceKind: "direct-hook-invocation-rendered-replay";
+  hostDiscoveryProven: false;
+  capturedAt: string;
+  source: string;
+  sourceSha256: string;
+  fixture: {
+    branch: string;
+    activation: string;
+    untrackedBefore: string;
+    statusAfter: string;
+    stagedBefore: string;
+    stagedAfter: string;
+    gateEvent: string;
   };
-  writeFileSync(join(outputDir, "hook-proof.json"), `${JSON.stringify(record, null, 2)}\n`, "utf8");
-
-  const blockLines = stderr.split("\n").flatMap((line) => wrapLine(line, 77));
-  const timeline: TranscriptLine[] = [
-    { text: "codeArbiter hook verification", tone: "muted" },
-    { text: "repo  feat/proof · arbiter: enabled", tone: "normal" },
-  ];
-  const frames: Array<{ lines: TranscriptLine[]; duration: number }> = [
-    { lines: [...timeline], duration: 1.2 },
-    {
-      lines: [...timeline, { text: "$ git status --short", tone: "command" }, { text: statusBefore, tone: "normal" }],
-      duration: 1.8,
-    },
-    {
-      lines: [
-        ...timeline,
-        { text: "$ git status --short", tone: "command" },
-        { text: statusBefore, tone: "normal" },
-        { text: `$ ${attemptedCommand}`, tone: "command" },
-        { text: "→ PreToolUse · plugins/ca/hooks/pre-bash.py", tone: "muted" },
-      ],
-      duration: 1.6,
-    },
-    {
-      lines: [
-        ...timeline,
-        { text: `$ ${attemptedCommand}`, tone: "command" },
-        { text: "→ PreToolUse · plugins/ca/hooks/pre-bash.py", tone: "muted" },
-        ...blockLines.map((text) => ({ text, tone: "blocked" as const })),
-      ],
-      duration: 3.2,
-    },
-    {
-      lines: [
-        ...timeline,
-        { text: `$ ${attemptedCommand}`, tone: "command" },
-        ...blockLines.map((text) => ({ text, tone: "blocked" as const })),
-        { text: "exit 2 · tool call denied · command not executed", tone: "blocked" },
-      ],
-      duration: 2.2,
-    },
-    {
-      lines: [
-        ...timeline,
-        { text: "$ git diff --cached --name-only", tone: "command" },
-        { text: stagedAfter || "(no staged files)", tone: "normal" },
-        { text: "$ git status --short", tone: "command" },
-        ...statusAfter.split("\n").map((text) => ({ text, tone: "normal" as const })),
-        { text: "✓ note.txt remained unstaged", tone: "success" },
-        { text: "✓ H-03 block appended to gate-events.log", tone: "success" },
-      ],
-      duration: 3,
-    },
-  ];
-  await makeVideo(timeline.length ? frames : [], capturedAt.slice(0, 10));
-  process.stdout.write(
-    `Captured direct H-03 hook invocation from ${record.source} at ${capturedAt}\n` +
-    `Source SHA-256: ${sourceSha256}\n` +
-    `Artifacts: ${relative(siteRoot, outputDir)}\n`,
-  );
+  invocation: {
+    attemptedCommand: string;
+    hookEvent: string;
+    toolName: string;
+    exitCode: number;
+    stderr: string;
+    commandExecuted: false;
+  };
 }
 
-try {
-  await main();
-} finally {
-  const safeTempRoot = resolve(tmpdir()).toLowerCase();
-  for (const target of [fixtureRoot, frameRoot]) {
-    const resolved = resolve(target).toLowerCase();
-    if (!resolved.startsWith(`${safeTempRoot}\\`) && !resolved.startsWith(`${safeTempRoot}/`)) {
-      throw new Error(`Refusing to remove non-temporary capture path: ${target}`);
+/** The record without the run's clock, with timestamps inside its text normalized, for comparing two runs. */
+function evidenceOf(record: HookProofRecord): string {
+  const { capturedAt: _capturedAt, ...evidence } = record;
+  return normalizeText(JSON.stringify(evidence));
+}
+
+/**
+ * Re-run the hook against a fresh fixture and refresh the landing proof.
+ *
+ * hook-proof.json carries a capture time and the media carry a rendered date,
+ * so rewriting them on every run would leave the working tree dirty for no new
+ * evidence. They are rewritten only when the recorded evidence differs (the
+ * hook changed, or its behavior did) or when `force` asks for a fresh render.
+ */
+export async function captureHookProof(
+  options: {
+    force?: boolean;
+    /** Where the proof record and media live. Defaults to the committed landing assets. */
+    outputDir?: string;
+    /** Renders the replay media. Defaults to ffmpeg and sharp; replaceable so a render failure can be tested. */
+    render?: RenderMedia;
+  } = {},
+): Promise<void> {
+  const outDir = options.outputDir ?? outputDir;
+  const render = options.render ?? makeVideo;
+  mkdirSync(outDir, { recursive: true });
+  const fixture = createFixture();
+  let frameRoot: string | undefined;
+  try {
+    fixture.write(
+      ".codearbiter/CONTEXT.md",
+      "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\nDisposable documentation proof fixture.\n",
+    );
+    fixture.write(gateEventsPath, "");
+    fixture.initGit({ branch: "feat/proof", email: "proof@codearbiter.invalid", name: "codeArbiter proof" });
+    fixture.git("add", ".codearbiter/CONTEXT.md", gateEventsPath);
+    fixture.git("commit", "-q", "-m", "chore: initialize proof fixture");
+    fixture.write("note.txt", "This file must remain unstaged.\n");
+
+    const statusBefore = fixture.git("status", "--short").trimEnd();
+    const stagedBefore = fixture.git("diff", "--cached", "--name-only").trimEnd();
+    const payload = JSON.stringify({
+      hook_event_name: "PreToolUse",
+      tool_name: "Bash",
+      cwd: fixture.project,
+      tool_input: { command: attemptedCommand },
+    });
+    const hook = runPythonEntry(fixture, hookTool, [], { stdin: payload });
+    const statusAfter = fixture.git("status", "--short").trimEnd();
+    const stagedAfter = fixture.git("diff", "--cached", "--name-only").trimEnd();
+    const stderr = hook.stderr.trim().replace(/\r\n/g, "\n");
+    const gateEvent = readFileSync(join(fixture.project, ...gateEventsPath.split("/")), "utf8").trim();
+
+    if (hook.status !== 2 || !stderr.includes("BLOCKED [H-03]")) {
+      throw new Error(`Expected a real H-03 exit-2 block; got exit=${hook.status} stderr=${stderr}`);
     }
-    rmSync(target, { recursive: true, force: true });
+    if (stagedAfter !== stagedBefore || !statusAfter.includes("?? note.txt")) {
+      throw new Error(
+        `The blocked call staged content or changed the intended file state:\n` +
+        `staged before=${stagedBefore}\nstaged after=${stagedAfter}\nstatus=${statusAfter}`,
+      );
+    }
+    if (!gateEvent.includes("BLOCK [H-03]")) {
+      throw new Error(`Expected H-03 to append a real gate event; got: ${gateEvent}`);
+    }
+
+    const capturedAt = new Date().toISOString();
+    const sourceSha256 = sha256Raw(readFileSync(hookPath));
+    const record: HookProofRecord = {
+      schema: 1,
+      evidenceKind: "direct-hook-invocation-rendered-replay",
+      hostDiscoveryProven: false,
+      capturedAt,
+      source: relative(repoRoot, hookPath).replaceAll("\\", "/"),
+      sourceSha256,
+      fixture: {
+        branch: "feat/proof",
+        activation: "arbiter: enabled",
+        untrackedBefore: statusBefore,
+        statusAfter,
+        stagedBefore,
+        stagedAfter,
+        gateEvent,
+      },
+      invocation: {
+        attemptedCommand,
+        hookEvent: "PreToolUse",
+        toolName: "Bash",
+        exitCode: hook.status,
+        stderr,
+        commandExecuted: false,
+      },
+    };
+
+    const proofPath = join(outDir, "hook-proof.json");
+    const previous = existsSync(proofPath) ? (JSON.parse(readFileSync(proofPath, "utf8")) as HookProofRecord) : undefined;
+    if (!options.force && previous && evidenceOf(previous) === evidenceOf(record)) {
+      process.stdout.write(
+        `Hook proof unchanged: ${record.source} still produces the recorded H-03 block (sha256 ${sourceSha256}).\n` +
+        `Run \`npm run capture:proof\` to force a fresh render of the landing replay.\n`,
+      );
+      return;
+    }
+
+    const blockLines = stderr.split("\n").flatMap((line) => wrapLine(line, 77));
+    const timeline: TranscriptLine[] = [
+      { text: "codeArbiter hook verification", tone: "muted" },
+      { text: "repo  feat/proof · arbiter: enabled", tone: "normal" },
+    ];
+    const frames: Array<{ lines: TranscriptLine[]; duration: number }> = [
+      { lines: [...timeline], duration: 1.2 },
+      {
+        lines: [...timeline, { text: "$ git status --short", tone: "command" }, { text: statusBefore, tone: "normal" }],
+        duration: 1.8,
+      },
+      {
+        lines: [
+          ...timeline,
+          { text: "$ git status --short", tone: "command" },
+          { text: statusBefore, tone: "normal" },
+          { text: `$ ${attemptedCommand}`, tone: "command" },
+          { text: "→ PreToolUse · plugins/ca/hooks/pre-bash.py", tone: "muted" },
+        ],
+        duration: 1.6,
+      },
+      {
+        lines: [
+          ...timeline,
+          { text: `$ ${attemptedCommand}`, tone: "command" },
+          { text: "→ PreToolUse · plugins/ca/hooks/pre-bash.py", tone: "muted" },
+          ...blockLines.map((text) => ({ text, tone: "blocked" as const })),
+        ],
+        duration: 3.2,
+      },
+      {
+        lines: [
+          ...timeline,
+          { text: `$ ${attemptedCommand}`, tone: "command" },
+          ...blockLines.map((text) => ({ text, tone: "blocked" as const })),
+          { text: "exit 2 · tool call denied · command not executed", tone: "blocked" },
+        ],
+        duration: 2.2,
+      },
+      {
+        lines: [
+          ...timeline,
+          { text: "$ git diff --cached --name-only", tone: "command" },
+          { text: stagedAfter || "(no staged files)", tone: "normal" },
+          { text: "$ git status --short", tone: "command" },
+          ...statusAfter.split("\n").map((text) => ({ text, tone: "normal" as const })),
+          { text: "✓ note.txt remained unstaged", tone: "success" },
+          { text: "✓ H-03 block appended to gate-events.log", tone: "success" },
+        ],
+        duration: 3,
+      },
+    ];
+    frameRoot = temporaryDirectory("codearbiter-proof-frames-");
+    await render(timeline.length ? frames : [], capturedAt.slice(0, 10), frameRoot, outDir);
+    // Last, and only once the media exist: a record that already matches the hook
+    // would make every later run report "unchanged" and never retry a failed render.
+    writeFileSync(proofPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");
+    process.stdout.write(
+      `Captured direct H-03 hook invocation from ${record.source} at ${capturedAt}\n` +
+      `Source SHA-256: ${sourceSha256}\n` +
+      `Artifacts: ${relative(siteRoot, outDir)}\n`,
+    );
+  } finally {
+    // Nested so the frame directory is still removed when dispose() throws.
+    try {
+      fixture.dispose();
+    } finally {
+      if (frameRoot) rmSync(frameRoot, { recursive: true, force: true });
+    }
   }
+}
+
+// `npm run capture:proof` runs this file directly and always re-renders;
+// `npm run capture` imports captureHookProof() and renders only on new evidence.
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  await captureHookProof({ force: true });
 }

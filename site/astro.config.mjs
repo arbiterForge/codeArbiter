@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
 import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
 import { remarkVersionFacts } from "./scripts/version-facts.ts";
+import { remarkCapturedRun } from "./scripts/capture/render.ts";
 import { buildJourneySidebar } from "./scripts/journey-navigation.ts";
 import { buildReferenceSidebar } from "./scripts/reference-sidebar.ts";
 import { loadWorkflowPairs } from "./scripts/generator/plugin-workflow-pairs.ts";
@@ -143,8 +144,13 @@ export default defineConfig({
   markdown: {
     // remarkVersionFacts resolves `%%fact=<name>%%` tokens from the source that
     // enforces each version (scripts/version-facts.ts); an unknown token fails the build.
+    // remarkCapturedRun fills an empty ```text capture="<id>"``` fence in a plain .md
+    // guide from the committed capture of the tool (scripts/capture/render.ts).
     processor: unified({
-      remarkPlugins: [remarkVersionFacts()],
+      remarkPlugins: [
+        remarkVersionFacts(),
+        remarkCapturedRun({ capturesDir: fileURLToPath(new URL("./src/assets/captures/", import.meta.url)) }),
+      ],
       rehypePlugins: [rehypeBaseLinks(BASE), rehypeTableShell()],
     }),
   },

@@ -9,6 +9,7 @@
     "gen:atlas": "tsx scripts/generate-atlas.ts",
     "gen:diagrams": "tsx scripts/generate-diagrams.ts",
     "gen:readme-hero": "tsx scripts/generate-readme-hero.ts",
+    "capture": "tsx scripts/capture/run.ts",
     "capture:proof": "tsx scripts/capture-hook-proof.ts",
     "predev": "npm run gen",
     "dev": "astro dev",

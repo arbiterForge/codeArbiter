@@ -50,9 +50,16 @@ describe("human-operable product window", () => {
     expect(guide).not.toContain("Invoke one of the four exact target names");
   });
 
-  it("matches the override request to its illustrative receipt", () => {
+  it("matches the override request to its captured receipt", () => {
+    // The receipt is no longer typed into the guide: it renders from a capture of the
+    // audit helper (scripts/capture), so the request's reason must be what that run recorded.
     const guide = read("src/content/docs/guides/overriding-a-gate.md");
-    expect(guide).toContain("GATE: design review");
+    const receipt = JSON.parse(read("src/assets/captures/override-gate-row.json")) as { output: string };
+    const request = /^\/ca:override "([^"]+)"$/m.exec(guide)?.[1];
+    expect(request).toBeTruthy();
+    expect(guide).toContain('capture="override-gate-row"');
+    expect(receipt.output).toContain(`REASON: ${request}`);
+    expect(receipt.output).toContain("GATE: design-review");
     expect(guide).not.toContain("GATE: H-03 wildcard staging");
   });
 

@@ -1,0 +1,345 @@
+{
+  "schema": 1,
+  "purpose": "Every fenced block in site/src/content/docs/guides, classified. test/content/guide-examples.test.ts reads this file.",
+  "classes": {
+    "capturable": "Output of a deterministic codeArbiter tool (hook, writer, scaffolder, release derivation, statusline). Must render from a capture in site/src/assets/captures; the guide holds only a capture reference, never typed output.",
+    "illustrative": "A user request, model narration, or an invented example. Must carry the illustrative label in the form stated by its label entry; it is never presented as captured.",
+    "input": "Text the reader types or writes: a slash command, a shell command, or a file they create or edit. It is not output and makes no claim that anything ran, so there is nothing to capture and no label to carry."
+  },
+  "matching": "A block is found by its page, its first non-blank line (or capture=<id> for a captured block) and its occurrence among identical first lines on that page. Line numbers are never used, so edits elsewhere on a page cannot orphan an entry.",
+  "blocks": [
+    {
+      "page": "adding-a-dependency.mdx",
+      "match": "Illustrative request, not a captured review:",
+      "class": "illustrative",
+      "label": {
+        "form": "in-block",
+        "text": "Illustrative request, not a captured review:"
+      }
+    },
+    {
+      "page": "adding-a-dependency.mdx",
+      "match": "Illustrative request, not an executed tool run:",
+      "class": "illustrative",
+      "label": {
+        "form": "in-block",
+        "text": "Illustrative request, not an executed tool run:"
+      }
+    },
+    {
+      "page": "autonomous-sprints.mdx",
+      "match": "/ca:sprint \"Add an export flow for saved searches, including empty-state behavior, audit records, and user documentation\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "autonomous-sprints.mdx",
+      "match": "/ca:sprint \"Normalize the public API error contract\" --farm",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "ca-sandbox.md",
+      "match": "/plugin marketplace add arbiterForge/codeArbiter",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "ca-sandbox.md",
+      "match": "/ca-sandbox:sandbox \"https://github.com/owner/repository\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "ca-sandbox.md",
+      "match": "/ca-sandbox:sandbox-shell \"<id>\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "ca-sandbox.md",
+      "match": "/ca-sandbox:sandbox-exec \"<id> -- sh -c 'ls /work/repo'\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "ca-sandbox.md",
+      "match": "/ca-sandbox:sandbox-cp \"<id>:/work/repo/report.json ./review/report.json\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "ca-sandbox.md",
+      "match": "/ca-sandbox:sandbox-destroy \"<id>\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "feature-lane.mdx",
+      "match": "/ca:feature \"add rate limiting to the public search endpoint\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "feature-lane.mdx",
+      "match": "/ca:commit",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "feature-lane.mdx",
+      "match": "/ca:pr",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "first-feature.mdx",
+      "match": "python -m unittest -v test_export_csv",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "investigate-and-fix.mdx",
+      "match": "Illustrative request, not a captured run:",
+      "class": "illustrative",
+      "label": {
+        "form": "in-block",
+        "text": "Illustrative request, not a captured run:"
+      }
+    },
+    {
+      "page": "opt-in-a-repo.mdx",
+      "match": "capture=context-scaffold-frontmatter",
+      "class": "capturable",
+      "capture": "context-scaffold-frontmatter",
+      "tool": "plugins/ca/hooks/init-codearbiter.py",
+      "fixture": "A temporary git repository with no .codearbiter directory; the scaffolder runs with no arguments and the first five lines of the CONTEXT.md it writes are shown."
+    },
+    {
+      "page": "overriding-a-gate.md",
+      "match": "/ca:override \"design review: retain the deprecated v2 compatibility selector until the documented v3 removal release; supported v2 clients still depend on it, this commit only\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "overriding-a-gate.md",
+      "match": "capture=override-gate-row",
+      "class": "capturable",
+      "capture": "override-gate-row",
+      "tool": "plugins/ca/hooks/append-override.py",
+      "fixture": "A temporary git repository whose user.email is you@example.com and whose .codearbiter/overrides.log is empty; the helper runs with --gate and --reason and the line it appended is shown."
+    },
+    {
+      "page": "overriding-a-gate.md",
+      "match": "capture=override-security-row",
+      "class": "capturable",
+      "capture": "override-security-row",
+      "tool": "plugins/ca/hooks/append-override.py",
+      "fixture": "The same temporary repository; the helper runs with --security-finding and --reason and the line it appended is shown."
+    },
+    {
+      "page": "recording-adrs.mdx",
+      "match": "/ca:adr \"Store durable workflow state in the repository\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "recording-adrs.mdx",
+      "match": ".codearbiter/decisions/0017-store-durable-workflow-state.md",
+      "class": "illustrative",
+      "label": {
+        "form": "lead-in",
+        "text": "the number and slug are illustrative, not a captured write"
+      }
+    },
+    {
+      "page": "recording-adrs.mdx",
+      "match": "---",
+      "class": "illustrative",
+      "label": {
+        "form": "lead-in",
+        "text": "This is an illustrative record, not a newly accepted decision or a receipt from your repository."
+      }
+    },
+    {
+      "page": "recording-adrs.mdx",
+      "match": "/ca:adr \"Move durable workflow state to a signed event store\"",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "recording-adrs.mdx",
+      "match": "/ca:adr-status --adr 17",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "releasing-a-version.mdx",
+      "match": "<!-- release-targets -->",
+      "class": "input",
+      "form": "file-text",
+      "reason": "A declaration the reader writes into their own repository, offered only when it describes that repository."
+    },
+    {
+      "page": "releasing-a-version.mdx",
+      "match": "/ca:release --dry-run app",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "releasing-a-version.mdx",
+      "match": "/ca:release app",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "review-and-ship.mdx",
+      "match": "git rev-parse --show-toplevel",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "review-and-ship.mdx",
+      "match": "Illustrative review excerpt, not captured execution:",
+      "class": "illustrative",
+      "label": {
+        "form": "in-block",
+        "text": "Illustrative review excerpt, not captured execution:"
+      }
+    },
+    {
+      "page": "the-statusline.md",
+      "match": "/ca:statusline",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "the-statusline.md",
+      "match": "CODEARBITER_THEME=blue claude",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "the-statusline.md",
+      "match": "$env:CODEARBITER_THEME = 'blue'",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "the-statusline.md",
+      "match": "{",
+      "class": "input",
+      "form": "file-text",
+      "reason": "The shape of a custom theme file the reader writes; the renderer reads it, nothing prints it."
+    },
+    {
+      "page": "the-statusline.md",
+      "match": "/ca:statusline uninstall",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "the-statusline.md",
+      "match": "capture=statusline-refusal",
+      "class": "capturable",
+      "capture": "statusline-refusal",
+      "tool": "plugins/ca/hooks/wire-statusline.py",
+      "fixture": "A temporary home directory whose .claude/settings.json holds half-written JSON; the wiring script runs its install action and its stderr is shown."
+    },
+    {
+      "page": "troubleshooting.md",
+      "match": "/ca:doctor",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "troubleshooting.md",
+      "match": "capture=context-scaffold-frontmatter",
+      "class": "capturable",
+      "capture": "context-scaffold-frontmatter",
+      "tool": "plugins/ca/hooks/init-codearbiter.py",
+      "fixture": "A temporary git repository with no .codearbiter directory; the scaffolder runs with no arguments and the first five lines of the CONTEXT.md it writes are shown."
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "---",
+      "class": "input",
+      "form": "file-text",
+      "reason": "A frontmatter line the reader edits by hand."
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "git ls-remote --tags --refs https://github.com/arbiterForge/codeArbiter.git \"ca-pi-v*\"",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "pi install npm:@arbiterforge/ca-pi",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<new-version>",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "pi remove npm:@arbiterforge/ca-pi",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "/ca:statusline uninstall",
+      "class": "input",
+      "form": "slash-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "python \"<installed-hooks-directory>/_githooks.py\" uninstall \"<repository-root>\"",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "claude plugin uninstall ca",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "codex plugin remove ca-codex@codearbiter",
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "pi remove npm:@arbiterforge/ca-pi",
+      "occurrence": 2,
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>",
+      "occurrence": 2,
+      "class": "input",
+      "form": "shell-command"
+    },
+    {
+      "page": "uninstalling.md",
+      "match": "rm -rf .codearbiter/",
+      "class": "input",
+      "form": "shell-command"
+    }
+  ]
+}
