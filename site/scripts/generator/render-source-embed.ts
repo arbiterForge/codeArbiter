@@ -54,3 +54,47 @@ ${fence}
 <a href="${repoUrl}">View in repo</a>
 </details>`;
 }
+
+/** One shipped file inside a combined workflow source embed. */
+export interface WorkflowSourceFile {
+  /** Verbatim raw contents of the shipped file. */
+  sourceRaw: string;
+  /** Repo-relative path, e.g. `plugins/ca/commands/adr.md`. */
+  sourceRelPath: string;
+}
+
+/**
+ * Render ONE source embed holding several shipped files, for a page that
+ * documents a command together with the skill that owns its procedure.
+ *
+ * Same wrapper as {@link renderSourceEmbed} (a single collapsed,
+ * search-excluded `<details class="ca-source">`), so the page still has exactly
+ * one source layer and every shipped source stays visible. Each file is
+ * labelled with its path, fenced on its own (see {@link chooseFence}) and given
+ * its own tag-pinned "View in repo" link, in the order given.
+ */
+export function renderWorkflowSourceEmbed(
+  files: readonly WorkflowSourceFile[],
+  pluginVersion: string,
+  sourceRef: string = repositorySourceRef(),
+): string {
+  const tag = `v${pluginVersion}`;
+  const paths = files.map((file) => `<code>${file.sourceRelPath}</code>`).join(" and ");
+  const blocks = files.map((file) => {
+    const fence = chooseFence(file.sourceRaw);
+    const repoUrl = `https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/${file.sourceRelPath}`;
+    return `<p class="ca-source__file"><code>${file.sourceRelPath}</code></p>
+
+${fence}md
+${file.sourceRaw}
+${fence}
+
+<a href="${repoUrl}" aria-label="View ${file.sourceRelPath} in repo">View in repo</a>`;
+  });
+
+  return `<details class="ca-source" data-pagefind-ignore>
+<summary>Source — ${paths} (${tag})</summary>
+
+${blocks.join("\n\n")}
+</details>`;
+}

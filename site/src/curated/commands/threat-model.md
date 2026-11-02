@@ -1,10 +1,10 @@
 ---
 entity: commands/threat-model
 related: [checkpoint, skills/security-architecture]
-gates:
-  - gate: critical-gap stop
-    when: a STRIDE category comes back GAP — exploitable now, high impact
-    effect: the pass halts with a stated verdict of STOP naming the specific unmitigated threat; a lesser gap is surfaced as a constraint, not a halt
+use_when: "You are about to build something sensitive, such as a new external endpoint, a secrets-handling path or an auth flow, and want threats found before code exists."
+avoid_when: "Ordinary changes, and code that is already written, which `/ca:review` or `/ca:checkpoint` cover instead."
+asks: "A scope description: the feature or component, how sensitive its data is and who can reach it."
+produces: "A STRIDE report with the attack surface, threats and their mitigations, recommended controls and a verdict of PROCEED, PROCEED-WITH-CONSTRAINTS or STOP. It changes no project files."
 ---
 
 ## What it does
@@ -51,8 +51,3 @@ Public webhook receiving partner payment notifications; no prior auth boundary h
 ## Verdict
 PROCEED-WITH-CONSTRAINTS: implement signature verification before exposing the endpoint.
 ```
-
-## When to reach for it
-
-Before writing a sensitive feature — new external endpoints, new secrets-handling paths, new
-auth/authz flows. Not a routine gate; skip it for ordinary changes.

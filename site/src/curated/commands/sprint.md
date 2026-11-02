@@ -1,6 +1,10 @@
 ---
 entity: commands/sprint
 related: [feature, commit, skills/subagent-driven-development]
+use_when: "You want autonomous work across a maintained plan, with progress reports and your explicit review pauses respected."
+avoid_when: "A single bounded capability, which is `/ca:feature`."
+asks: "Your goal and scope. It asks about consequential missing choices rather than approval of each artifact, and stops only for pauses you reserved or a real decision."
+produces: "A maintained spec and plan, the implemented and checked work, and a report of actual results and pending checks, ready for the commit and pull request handoff. It does not merge or publish."
 gates:
   - gate: working scope
     when: specifying or resuming the sprint
@@ -45,11 +49,5 @@ The inspected results remain current through commit and PR preparation.
 Five tasks implemented; checks and remaining limitations reported.
 Routing through the authorized commit and PR handoff. Merge remains a separate decision.
 ```
-
-## When to reach for it
-
-Reach for `/ca:sprint` for autonomous work across a maintained plan. Use `/ca:feature` for a
-single bounded capability. Both provide progress reports and respect explicit review pauses;
-neither requires another artifact approval to continue ordinary authorized work.
 
 For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/autonomous-sprints/) and [Compare workflow routes](/concepts/workflow-routes/).

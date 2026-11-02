@@ -62,7 +62,8 @@ describe('C04 cross-surface consistency', () => {
       const text = read(`src/curated/${kind}/release.md`);
       expect(text).toContain('release PR'); expect(text).toContain('hosted');
       expect(text).not.toContain('Composed annotated tag ca-codex-v0.3.0 locally');
-      expect(text).toContain('/concepts/workflow-routes/');
+      // The merged command page carries the workflow-comparison link once, from the command text.
+      if (kind === 'commands') expect(text).toContain('/concepts/workflow-routes/');
     }
   });
   it('keeps decision acceptance separate from derived delivery evidence', () => {
@@ -77,7 +78,6 @@ describe('C04 cross-surface consistency', () => {
       `${docs}guides/understand-an-existing-project.md`,
       `${docs}concepts/workflow-routes.mdx`,
       'src/curated/skills/context-creation.md',
-      'src/curated/commands/create-context.md',
       'src/curated/agents/scout.md',
     ]) {
       const text = read(path).replace(/\s+/g, ' ');
@@ -85,7 +85,7 @@ describe('C04 cross-surface consistency', () => {
       expect(text, path).toMatch(/direct|bounded inspection/);
       expect(text, path).not.toMatch(/six (parallel|isolated) scout|route stops before dispatch|always uses six/);
     }
-    const refresh = read('src/curated/commands/context-check.md');
+    const refresh = read('src/curated/skills/context-check.md');
     expect(refresh).toContain('already selects');
     expect(refresh).not.toContain('full brownfield re-scan from scratch is `/ca:create-context`');
     const compatibility = read(`${docs}getting-started/compatibility.mdx`) + read(`${docs}getting-started/compatibility/runtime.md`);

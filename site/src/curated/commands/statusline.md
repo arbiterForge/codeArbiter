@@ -1,6 +1,10 @@
 ---
 entity: commands/statusline
 related: [doctor]
+use_when: "You want codeArbiter's status line wired into your Claude Code settings, removed again, or checked."
+avoid_when: "Checking overall install health, which is `/ca:doctor`; this command covers only the status line wiring."
+asks: "Which action to run: `install` (the default), `uninstall` or `status`. Before installing, it shows the resolved command and the existing line it will back up, and waits for your confirmation."
+produces: "An edited `~/.claude/settings.json` with a backup of any existing `statusLine`, or the original restored on uninstall. `status` only reports."
 ---
 
 ## What it does
@@ -44,8 +48,3 @@ no prior statusLine existed; uninstall will simply remove ours.
 
 Takes effect on the next render (new prompt or session).
 ```
-
-## When to reach for it
-
-Confirming the wiring took effect, or diagnosing whether something else owns the statusline, is
-`/ca:doctor`'s broader install-health check as well as this command's own `status` action.

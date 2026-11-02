@@ -2,6 +2,7 @@ import type { PageInput } from "./types";
 import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed } from "./render-source-embed";
 import { renderGatesTable } from "./render-gates-table";
+import { renderReaderFields } from "./render-reader-fields";
 import { renderRelatedLinks } from "./render-related-links";
 import { publicReferenceDescription, renderReferenceLead } from "./render-reference-lead";
 
@@ -9,9 +10,10 @@ import { publicReferenceDescription, renderReferenceLead } from "./render-refere
  * Render a skill reference page as Starlight-compatible markdown.
  *
  * Anatomy, in order: frontmatter (`title` + quoted `description`) →
- * description paragraph → curated body (verbatim, when `curated` is
- * present) → gates table (when `curated.gates` is present) → `## Related`
- * (when `relatedLinks` is present) → `## Source` verbatim embed (always).
+ * description paragraph → `## At a glance` reader fields (when `readerShape` is set) → curated
+ * body (verbatim, when `curated` is present) → gates table (when
+ * `curated.gates` is present) → `## Related` (when `relatedLinks` is present)
+ * → `## Source` verbatim embed (always).
  *
  * Starlight renders the frontmatter `title` as the page's only H1, so the
  * body carries no `# <name>` heading.
@@ -27,6 +29,11 @@ export function renderSkillPage(input: PageInput): string {
   const sections: string[] = [
     renderReferenceLead("skill", input.name, description),
   ];
+
+  const readerFields = renderReaderFields(curated?.reader, input.readerShape);
+  if (readerFields) {
+    sections.push(readerFields);
+  }
 
   if (curated?.body) {
     sections.push(curated.body.trim());

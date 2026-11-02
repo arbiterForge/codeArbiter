@@ -2,7 +2,7 @@ import type { CommandHost, CommandHostAvailability } from "./host-command-catalo
 
 export type ReferenceKind = "command" | "skill" | "agent";
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")

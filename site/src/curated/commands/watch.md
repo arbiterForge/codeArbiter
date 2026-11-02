@@ -46,7 +46,7 @@ Ready to merge:
 Run it? (this command will not run it for you)
 ```
 
-## When to reach for it
+## When to use another command
 
 Open the PR first with `/ca:pr`; apply a fix for a diagnosed red with `/ca:fix` or `/ca:feature`;
 review a diff without watching CI with `/ca:review`.

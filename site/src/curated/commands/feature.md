@@ -1,6 +1,10 @@
 ---
 entity: commands/feature
 related: [fix, refactor, skills/brainstorming, skills/writing-plans, skills/tdd]
+use_when: "You want to build a bounded new capability and have codeArbiter turn it into testable criteria and a plan before implementing."
+avoid_when: "A known defect, which is `/ca:fix`; a restructure that keeps behavior the same, which is `/ca:refactor`; or a whole plan run autonomously, which is `/ca:sprint`."
+asks: "A short description of what you want built. It asks once about a consequential missing choice and pauses only where you asked for a review point."
+produces: "A specification and task plan (an inline mini-spec for a small change), the implemented and checked feature, and a completion report naming the checks and any remaining review or delivery work."
 gates:
   - gate: triage
     when: before any routing decision
@@ -56,12 +60,6 @@ Logged to triage.log. Selected verification: focused ordering and existing CSV r
 [exporter updated; ordering and round-trip tests pass]
 The completion report names the checks and any remaining review or delivery work.
 ```
-
-## When to reach for it
-
-Reach for `/ca:feature` for a bounded capability with useful progress reports. For autonomous
-execution across a whole plan, use `/ca:sprint`. Both preserve real user decisions and host
-permissions; neither requires repeated artifact approval to continue ordinary work.
 
 For the connected operating model, read [gated lanes](/concepts/gated-lanes/) and
 [test-first evidence](/concepts/test-first/). The map distinguishes a routed procedure

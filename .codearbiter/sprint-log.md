@@ -1616,3 +1616,27 @@ Options: (a) commit the 1,723-line month-old accumulation with the feature; (b) 
   Qualification starts at zero on this date; the June 2026 run earns no credit. Material farm or
   provider/model-set change before promotion invalidates affected evidence. Promotion is stable
   opt-in only and does not enable typed-HTML farm projection. Strength: strong.
+
+## SSI-SD-01 — merged pages keep both shipped sources in one embed · confidence: high · intent: per SPEC-SITE-STRUCTURAL-IMPROVEMENTS CON-02 and AC-01
+AC-01 requires exactly one source embed on each of the 9 merged pages; CON-02 requires every
+reference page to keep its verbatim source layer. One collapsed `ca-source` embed holds the command
+source then the skill source, each labelled with its path, so neither shipped file disappears.
+
+## SSI-SD-02 — plan correction: 13 skill pages, four `-2` redirects move · confidence: high · intent: per user sprint approval 2026-11-01
+22 skills ship; 9 merge, leaving 13 skill pages, not the 9 the plan said. Six `-2` redirects exist,
+not five; only debug, refactor, release and tribunal merge, so context-check-2 and decompose-2 keep
+pointing at their surviving skill pages. AC-02, T-01 and T-02 were corrected and the plan rebound.
+
+## SSI-SD-03 — capture source hashes use LF-normalized bytes · confidence: medium · intent: per DEC-04
+Captures are recorded on Windows and checked on Linux CI. Hashing LF-normalized content keeps the
+stale check from failing only in CI; hook-proof.json keeps its existing digest semantics. The first
+CI run of the captured-examples PR is the real proof.
+
+## SSI-SD-04 — spec and plan ride with the reference PR · confidence: medium · intent: silent
+The sprint spec and plan are committed on claude/site-structural-sprint with CP-01; CP-02 and CP-03
+branch from origin/main and cite the spec by path.
+
+## SSI-SD-05 — guide commands are input, not illustrative output · confidence: high · intent: per SPEC-SITE-STRUCTURAL-IMPROVEMENTS SCOPE-04
+39 guide blocks are commands or file text the reader types. Labelling them "illustrative" would add
+noise without changing what they claim, since they claim no run. AC-07 now covers output examples and
+classifies reader input separately; the content test checks each input block has an input form.

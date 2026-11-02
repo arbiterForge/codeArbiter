@@ -36,7 +36,7 @@ fail for the right reason before the minimum correction. An unknown cause starts
 **A behavior-preserving change belongs to refactor.** Its primary obligation is parity through
 preserved behavioral assertions from its measured baseline, including characterization backfill.
 Necessary import or symbol-reference changes retain the same oracle. Changing an expected result to accommodate new behavior
-is not evidence of preservation. The [refactor contract](/reference/skills/refactor/) governs that
+is not evidence of preservation. The [refactor contract](/reference/commands/refactor/) governs that
 route rather than the feature diagram below.
 
 **Maintenance uses the relevant maintenance contract.** Documentation, dependency changes and
@@ -74,7 +74,7 @@ lint and hands off evidence. Confirmed fixes require target RED/GREEN; features 
 checks and refactors preserve passing characterization baselines. The
 [test-first concept](/concepts/test-first/) explains what those observations prove.
 
-The [commit gate](/reference/skills/commit-gate/) has nine numbered phases covering permission,
+The [commit gate](/reference/commands/commit/) has nine numbered phases covering permission,
 branch, classification, verification, behavioral proof, diff review, selective staging, message and
 commit. Its conditional provenance auto-heal step is not a separate tenth ordinary phase. A prior
 passing result cannot certify a later staged diff merely because both used the same branch name.

@@ -312,3 +312,57 @@ describe("resolveToDistFile on an apex domain (base '')", () => {
     });
   });
 });
+
+describe("auditDist links to redirect pages", () => {
+  /** What Astro writes for a `redirects` entry: a real file that only forwards. */
+  const redirectPage = (destination: string) =>
+    `<!doctype html><title>Redirecting to: ${destination}</title>` +
+    `<meta http-equiv="refresh" content="0;url=${destination}">` +
+    `<meta name="robots" content="noindex"><link rel="canonical" href="${destination}">` +
+    `<body>\n\t<a href="${destination}">Redirecting from <code>/old</code> to <code>${destination}</code></a>\n</body>`;
+
+  const pages = (extra: Record<string, string>): Record<string, string> => ({
+    "reference/commands/commit/index.html": "<html><body>commit</body></html>",
+    "reference/skills/commit-gate/index.html": redirectPage("/codeArbiter/reference/commands/commit"),
+    ...extra,
+  });
+  const audit = (extra: Record<string, string>) => {
+    const dist = makeDist({ pages: pages(extra) });
+    try {
+      return auditDist(dist, TEST_BASE).failures.map((f) => f.message);
+    } finally {
+      rmSync(dist, { recursive: true, force: true });
+    }
+  };
+
+  it("passes a link to the command page and does not flag the redirect page for forwarding", () => {
+    expect(audit({ "guide/index.html": `<a href="/codeArbiter/reference/commands/commit/">commit</a>` })).toEqual([]);
+  });
+
+  it("fails a link that lands on a redirect page, naming the page it should link to", () => {
+    const messages = audit({
+      "guide/index.html": `<a href="/codeArbiter/reference/skills/commit-gate/">commit gate</a>`,
+    });
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toContain("guide/index.html");
+    expect(messages[0]).toContain("/codeArbiter/reference/skills/commit-gate/");
+    expect(messages[0]).toContain("redirect page");
+    expect(messages[0]).toContain("/codeArbiter/reference/commands/commit");
+  });
+
+  it("fails a page-relative link that lands on a redirect page", () => {
+    const messages = audit({
+      "guide/index.html": `<a href="../reference/skills/commit-gate/">commit gate</a>`,
+    });
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toContain("redirect page");
+  });
+
+  it("reports every link to a redirect page, one failure each", () => {
+    const messages = audit({
+      "guide/index.html": `<a href="/codeArbiter/reference/skills/commit-gate/">a</a>`,
+      "other/index.html": `<a href="/codeArbiter/reference/skills/commit-gate">b</a>`,
+    });
+    expect(messages).toHaveLength(2);
+  });
+});

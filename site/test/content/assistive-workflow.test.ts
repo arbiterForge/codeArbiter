@@ -4,22 +4,35 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { generate } from '../../scripts/generator/generate';
-import type { RenderedPage } from '../../scripts/generator/types';
+import type { RenderedPage, WorkflowPair } from '../../scripts/generator/types';
 
 const site = fileURLToPath(new URL('../..', import.meta.url));
 const read = (path: string) => readFileSync(join(site, path), 'utf8').replace(/\s+/g, ' ');
 let output: string;
 let pages: RenderedPage[];
+let workflowPairs: WorkflowPair[];
 beforeAll(() => {
   output = mkdtempSync(join(tmpdir(), 'ca-assistive-reference-'));
-  pages = generate(join(site, '../plugins/ca'), output, undefined, join(site, 'src/curated'), true).pages;
+  const result = generate(join(site, '../plugins/ca'), output, undefined, join(site, 'src/curated'), true);
+  pages = result.pages;
+  workflowPairs = result.workflowPairs;
 });
 afterAll(() => { if (output) rmSync(output, { recursive: true, force: true }); });
 const reference = (type: RenderedPage['type'], slug: string) => {
-  const page = pages.find(page => page.type === type && page.slug === slug)!;
+  // A skill merged into its command has no page of its own: its reader text is the
+  // command page's "How it runs" section onward, and its source sits in that page's one embed.
+  const merged = type === 'skill'
+    ? workflowPairs.find(pair => pair.skill === slug && pair.mode === 'merge')
+    : undefined;
+  const page = (merged
+    ? pages.find(page => page.type === 'command' && page.slug === merged.command)
+    : pages.find(page => page.type === type && page.slug === slug))!;
   expect(page, `${type}/${slug} must render`).toBeDefined();
-  const [guidance, source] = page.markdown.split('## Source\n\n');
+  const [pageGuidance, source] = page.markdown.split('## Source\n\n');
   expect(source, `${slug} must retain its source embed`).toBeTruthy();
+  const runsAt = pageGuidance.indexOf('## How it runs');
+  expect(!merged || runsAt >= 0, `${slug} must render its text under "How it runs"`).toBe(true);
+  const guidance = merged ? pageGuidance.slice(runsAt) : pageGuidance;
   return { guidance: guidance.replace(/\s+/g, ' '), source: source.replace(/\s+/g, ' ') };
 };
 
@@ -58,7 +71,8 @@ describe('composed assistive workflow references', () => {
       const { guidance, source } = reference(type, 'decompose');
       // Repositories that keep the Markdown format retain the paired-writer procedure.
       const legacy = read('../core/surface/skills/decompose/references/markdown-format.md');
-      for (const text of [guidance, legacy]) {
+      // The alias command page is a pointer; the workflow prose lives on the skill page.
+      for (const text of type === 'skill' ? [guidance, legacy] : [legacy]) {
         expect(text).toContain('.codearbiter/plans/decomposition/');
         expect(text).toContain('_session.md');
         expect(text).toContain('--context-finalize');

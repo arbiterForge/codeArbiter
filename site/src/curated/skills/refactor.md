@@ -13,15 +13,6 @@ gates:
     effect: baseline parity tests pass with preserved behavioral assertions; necessary mechanical import or symbol-reference updates retain the same oracle
 ---
 
-## What it does
-
-This skill owns the behavior-preserving restructure path for a rename, extract, inline, move,
-dedup, or equivalent internal-implementation swap. A direct intent route and the generated
-refactor command use this same procedure. It verifies through the measured
-post-backfill baseline that the code's externally observable behavior is identical
-before and after. Anything that turns out to add behavior gets redirected to the test-first gate
-as a feature or fix instead of proceeding as a refactor.
-
 ## Phases
 
 1. Inspect and name the exact files, symbols and signatures covered by the request. Present the

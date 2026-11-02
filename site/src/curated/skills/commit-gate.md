@@ -16,14 +16,7 @@ gates:
     effect: the full staged diff is read for stray files, secrets, incomplete work, and scope creep; any finding unstages the offending files and stops
 ---
 
-## What it does
-
-This is the only door into version control — nothing else in the project runs `git commit`.
-Invoking it (via the commit command) hands control to a sequence of checks that read the
-repository's actual state rather than taking your word for it: what's staged, what changed,
-whether the applicable local checks are green. It walks from confirming you actually asked for a
-commit through impact-bounded local verification, a behavioral proof, and a full diff review before
-anything lands. Exhaustive exact-head hosted CI remains mandatory before merge.
+## Plan tasks and receipts
 
 Unfinished plan tasks stay visible in the report without blocking an otherwise valid scoped
 commit. Read the selected typed plan through its engine and distinguish implementation progress

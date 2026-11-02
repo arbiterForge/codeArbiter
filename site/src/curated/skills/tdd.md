@@ -1,6 +1,8 @@
 ---
 entity: skills/tdd
 related: [commands/feature, commands/fix, commands/refactor, commit-gate]
+runs_inside: "`/ca:feature`, `/ca:fix` and `/ca:refactor`, and the implementation step that `/ca:sprint` drives. It chooses the verification approach that fits the work."
+produces: "The evidence for the change: the commands run, their results and any pending checks, handed to the commit check. Unexplained failures and untested requirements stay outstanding."
 gates:
   - gate: verification approach
     when: before changing code

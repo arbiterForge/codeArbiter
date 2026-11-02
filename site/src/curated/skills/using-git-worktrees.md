@@ -1,6 +1,8 @@
 ---
 entity: skills/using-git-worktrees
 related: [subagent-driven-development, dispatching-parallel-agents]
+runs_inside: "Parallel agent work, and only when `subagent-driven-development` or `dispatching-parallel-agents` explicitly opts in to per-task isolation."
+produces: "One consolidated working branch with every accepted unit folded back in, after all the temporary worktrees are removed."
 gates:
   - gate: provisioning
     when: setting up isolated units

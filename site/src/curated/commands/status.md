@@ -1,6 +1,10 @@
 ---
 entity: commands/status
 related: [audit, task]
+use_when: "You want a quick read-only glance at where the project stands right now."
+avoid_when: "A full cross-cutting review, which is `/ca:checkpoint`; for a specific question, ask it directly."
+asks: "Nothing. With no argument it shows the snapshot, and `/ca:status drift` routes to the context drift audit instead."
+produces: "A snapshot of maturity, pipeline progress, open tasks and questions, override count and Git branch. It changes no files."
 ---
 
 ## What it does
@@ -37,8 +41,3 @@ Open tasks:       2
 Open questions:   1 ([CONFIRM-11] unresolved)
 Overrides since last checkpoint: 2
 ```
-
-## When to reach for it
-
-A quick glance at where things stand right now. For a full cross-cutting review, use
-`/ca:checkpoint`; for a specific question about the project, ask it directly.

@@ -1,6 +1,10 @@
 ---
 entity: commands/init
 related: [create-context, decompose]
+use_when: "A repository has not opted into codeArbiter yet and you want its `.codearbiter/` state directory scaffolded."
+avoid_when: "A repository that already has `.codearbiter/`, where the scaffolder refuses: use `/ca:create-context` or `/ca:decompose` to populate it, `/ca:status` to see its state, or `/ca:init --check` to inspect without writing."
+asks: "Nothing for a plain scaffold. For an existing codebase it confirms the intended repository, its current state and the outcome you want before activating."
+produces: "A `.codearbiter/` directory with the activation flag, a stub `CONTEXT.md` and empty tracking files, then a handoff to populating the project context."
 gates:
   - gate: no overwrite
     when: every invocation
@@ -43,10 +47,5 @@ Created .codearbiter/CONTEXT.md (arbiter: enabled, stage: 1, context-format: htm
 Created open-tasks.md, done-tasks.md, open-questions.md, overrides.log, last-checkpoint, .gitattributes
 Source code detected in this repo — routing to /ca:create-context to populate the stub.
 ```
-
-## When to reach for it
-
-Reach for `/ca:init` exactly once, on a repository that hasn't opted in yet. If `.codearbiter/`
-already exists, this refuses and `/ca:status` shows the current state instead.
 
 For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/opt-in-a-repo/) and [Compare workflow routes](/concepts/workflow-routes/).

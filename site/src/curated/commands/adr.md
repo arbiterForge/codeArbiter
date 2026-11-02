@@ -1,6 +1,10 @@
 ---
 entity: commands/adr
 related: [adr-status, reconcile, skills/decision-lifecycle]
+use_when: "You have already made an architectural decision and want it recorded as a numbered, dated ADR."
+avoid_when: "Choosing between options, which is `/ca:reconcile`, or checking the health of existing ADRs, which is `/ca:adr-status`."
+asks: "The decision's context, alternatives and consequences. You confirm them before it writes, and anything unknown stays a `[CONFIRM-NN]` placeholder instead of a guess."
+produces: "A new ADR under `.codearbiter/decisions/` in `proposed` status and a matching decision-log entry with your attribution."
 gates:
   - gate: user attribution
     when: authoring the ADR content
@@ -45,10 +49,5 @@ Confirm before I write:
 Written: .codearbiter/decisions/0007-use-postgresql-as-the-primary-database.md (status: proposed)
 Decision log entry appended — Decided by: dev@example.com
 ```
-
-## When to reach for it
-
-Recording a decision you've already made. If the question is which option to pick, that's
-`/ca:reconcile`; if you just want to know an ADR's health, that's `/ca:adr-status`.
 
 For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/recording-adrs/) and [Compare workflow routes](/concepts/workflow-routes/).

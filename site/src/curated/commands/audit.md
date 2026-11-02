@@ -1,6 +1,10 @@
 ---
 entity: commands/audit
 related: [status, checkpoint]
+use_when: "You need one dated record of what happened over a window of commits or dates: overrides, decisions, sprint auto-decisions and open items."
+avoid_when: "A live snapshot of the project, which is `/ca:status`, or triggering a fresh review sweep, which is `/ca:checkpoint`."
+asks: "Nothing when a tag or checkpoint gives it a window. With no tag and no usable checkpoint, it asks you for an explicit range or date."
+produces: "An audit packet saved to `.codearbiter/audits/<YYYY-MM-DD>.md` with a short summary of commits, overrides and open items. An existing packet is never overwritten."
 ---
 
 ## What it does
@@ -48,9 +52,3 @@ Summary:
   Overrides: 2 (both routine, 0 SECURITY-OVERRIDE)
   Open items: 1 unresolved [CONFIRM-11], 3 checkpoint findings still open
 ```
-
-## When to reach for it
-
-You want an evidentiary packet for a range, not a live snapshot — for that, use `/ca:status`. This
-command only reports what reviews already found; to trigger a fresh review sweep, use
-`/ca:checkpoint`.

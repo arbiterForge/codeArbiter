@@ -10,12 +10,10 @@ gates:
     effect: the specific choice must come from you; an unchanged choice already supplied is not requested again
 ---
 
-## What it does
+## How the procedure loads
 
-Owns architectural reconciliation and read-only variance reporting. Its concise
-entry metadata routes to one procedure; the detailed analysis card has no discovery
-frontmatter and loads only for an actual pass. The card compares selected records
-with scaffold evidence, scores disagreements with SMARTS, and returns a report.
+Its concise entry metadata routes to one procedure; the detailed analysis card has no discovery
+frontmatter and loads only for an actual pass.
 
 ## Phases
 
@@ -33,9 +31,7 @@ with scaffold evidence, scores disagreements with SMARTS, and returns a report.
 ## Exits
 
 Ratification, supersession and explicit deferral retain their own log records.
-A stale source hash is never repaired in place: an authorized reaffirmation appends
-a new entry that references the prior decision. Resume rechecks current history
-and does not duplicate a choice whose append already succeeded.
+Resume rechecks current history and does not duplicate a choice whose append already succeeded.
 
 The owner never edits the artifacts, scaffold or code to fix a variance itself.
 Replacement ADRs use `decision-lifecycle` with the user's decision and attribution;
