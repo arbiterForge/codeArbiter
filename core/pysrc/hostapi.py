@@ -30,6 +30,7 @@
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 
@@ -42,6 +43,9 @@ class PluginRootError(RuntimeError):
 
 _VERSION_RE = re.compile(
     r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.-]*)?(?:\+[0-9A-Za-z][0-9A-Za-z.-]*)?$")
+_ARTIFACT_PROTOCOL_RE = re.compile(
+    r"^codearbiter\.artifact-api/\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.-]*)?"
+    r"(?:\+[0-9A-Za-z][0-9A-Za-z.-]*)?$")
 
 
 def _safe_relative_path(value, label):
@@ -61,6 +65,91 @@ def _inside(root, candidate):
         return os.path.commonpath((root, candidate)) == root
     except ValueError:  # distinct Windows volumes are never contained
         return False
+
+
+def _identity_manifest(root, relative, limit):
+    """Read one fixed, bounded manifest under the already executing root."""
+    if not root:
+        return None, "unknown"
+    try:
+        path = os.path.realpath(os.path.join(root, _safe_relative_path(relative, "manifest path")))
+        if not _inside(root, path):
+            return None, "outside_root"
+        if not stat.S_ISREG(os.lstat(path).st_mode):
+            return None, "invalid"
+        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NONBLOCK", 0)
+        flags |= getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(path, flags)
+        try:
+            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                return None, "invalid"
+            handle = os.fdopen(descriptor, "rb")
+            descriptor = -1
+            with handle:
+                raw = handle.read(limit + 1)
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
+        if len(raw) > limit:
+            return None, "oversize"
+        value = json.loads(raw.decode("utf-8", "strict"))
+        if not isinstance(value, dict):
+            return None, "invalid"
+        return value, "read"
+    except FileNotFoundError:
+        return None, "missing"
+    except (OSError, ValueError, UnicodeError, TypeError, RecursionError, PluginRootError):
+        return None, "invalid"
+
+
+def observe_payload_identity(host, executing_root):
+    """Describe fixed-path manifest claims from the executing adapter root.
+
+    This is a bounded diagnostic, not package authentication. It never scans
+    sibling caches, checks a release feed, hashes a binary or grants trust.
+    The caller must separately retain normal plugin-root admission.
+    """
+    try:
+        root = os.path.realpath(executing_root)
+        manifest_relpath = host.manifest_relpath()
+    except (OSError, TypeError, ValueError, AttributeError):
+        root, manifest_relpath = "", ""
+    adapter = getattr(host, "adapter_name", "unknown")
+    descriptor = getattr(host, "adapter_version", "unknown")
+    adapter_data, adapter_status = _identity_manifest(root, manifest_relpath, 16384)
+    version = "unknown"
+    if adapter_data is not None:
+        claimed = adapter_data.get("version")
+        if adapter_data.get("name") == adapter and isinstance(claimed, str) and _VERSION_RE.fullmatch(claimed):
+            version = claimed
+        else:
+            adapter_status = "invalid"
+    native_data, native_status = _identity_manifest(root, os.path.join("helpers", "artifacts", "release.json"), 65536)
+    native_version = native_protocol = native_schema = "unknown"
+    if native_data is not None:
+        claimed = (native_data.get("version"), native_data.get("protocol"), native_data.get("schema_version"))
+        if (native_data.get("format") == "codearbiter.artifact-release/0.1.0"
+                and isinstance(claimed[0], str) and _VERSION_RE.fullmatch(claimed[0])
+                and isinstance(claimed[1], str) and _ARTIFACT_PROTOCOL_RE.fullmatch(claimed[1])
+                and isinstance(claimed[2], str) and _VERSION_RE.fullmatch(claimed[2])):
+            native_version, native_protocol, native_schema = claimed
+            native_status = "declared"
+        else:
+            native_status = "invalid"
+    return {
+        "host": str(getattr(host, "name", "unknown"))[:40],
+        "adapter": str(adapter)[:40],
+        "executing_root": root,
+        "adapter_version": version,
+        "adapter_descriptor_version": str(descriptor)[:80],
+        "adapter_manifest_status": adapter_status,
+        "descriptor_matches_manifest": version != "unknown" and version == descriptor,
+        "native_version": native_version,
+        "native_protocol": native_protocol,
+        "native_schema_version": native_schema,
+        "native_manifest_status": native_status,
+        "native_integrity": "not_checked",
+    }
 
 
 def resolve_plugin_root(authority_file, *, adapter_name, adapter_version, manifest_relpath,
@@ -313,7 +402,7 @@ class Host:
 
     name = "claude"
     adapter_name = "ca"
-    adapter_version = "3.8.1"
+    adapter_version = "3.8.2"
 
     # Update-notifier descriptor. Each independently versioned host overrides
     # these three values in its per-plugin _host.py. Keeping the target,

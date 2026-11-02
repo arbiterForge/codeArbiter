@@ -113,6 +113,12 @@ applicability. `scoped_changed` means recheck affected work;
 full dependency graph or verified test. Unsafe or unknown file scope is
 `unassessed`. A presentation edit or new receipt identity alone does not
 require a reviewer rerun.
+Its bounded `check_summary` preserves applicable reported failures after
+unrelated passes. A later applicable pass for the same declared command may
+clear one; skip, unknown, and unrelated reports do not. Show ignored stale
+reports and unassessed trimmed history without treating caller reports as
+verified evidence. Inspect exact task history when the compact list omits
+reports.
 
 Use receipt-free `task-review` for implementation ready for review.
 Use `accept-scope` with a reason to record a completed implementation batch

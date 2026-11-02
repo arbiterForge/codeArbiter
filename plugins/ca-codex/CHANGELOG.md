@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.2] - 2026-11-01
+
+### Fixed
+
+- Use the active policy to classify approved runtime secret transport while preserving secret-sink restrictions.
+- Correct literal-data, read-only search, copy-source, and index-only restore guard verdicts; preserve protected-write checks.
+- Keep unrelated alphanumeric prose out of approval-code capture.
+- Show unresolved work failures and executing payload identity in existing diagnostics and views.
+- Preserve scoped authority and applicable review evidence across handoffs.
+
 ## [0.26.1] - 2026-11-01
 
 ### Added

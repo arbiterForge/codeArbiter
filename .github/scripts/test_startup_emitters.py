@@ -150,6 +150,7 @@ class TestPersonaRemovedFromSessionStart(unittest.TestCase):
         self.assertNotIn("ORCHESTRATOR", text)
         self.assertIn("=== codeArbiter startup state ===", text)
         self.assertIn("host: fakehost", text)
+        self.assertIn("codeArbiter: executing ca 3.8.2", text)
         self.assertIn("stage: 2", text)
 
 
@@ -301,6 +302,18 @@ class TestEmittersIndividuallyCallable(unittest.TestCase):
         self.assertEqual(
             self._lines(M.emit_banner, "codex", "dangerous"),
             ["host: codex", "mode: dangerous"],
+        )
+
+    def test_emit_payload_identity_is_one_bounded_diagnostic_line(self):
+        self.assertEqual(
+            self._lines(M.emit_payload_identity, {"adapter": "ca", "adapter_version": "3.7.0",
+                                                  "adapter_manifest_status": "read"}),
+            ["codeArbiter: executing ca 3.7.0 (observed hook manifest; native helper not checked)"],
+        )
+        self.assertEqual(
+            self._lines(M.emit_payload_identity, {"adapter": "ca-codex", "adapter_version": "unknown",
+                                                  "adapter_manifest_status": "invalid"}),
+            ["codeArbiter: executing ca-codex version unknown (invalid manifest; inspect installation)"],
         )
 
     def test_emit_stage_reads_only_ctx_text(self):

@@ -39,6 +39,12 @@ The orchestrator reads and presents:
    distinct labels. Show verification separately: pending, failed, unknown, or the recorded result
    and its applicability when available. Completion alone does not establish a passing check,
    current acceptance, review, or release. Report missing/unreadable state as unknown, not complete.
+   For a selected HTML plan task, include `task-context.check_summary` when the installed engine
+   supplies `task-context`: an unresolved applicable reported failure remains visible after
+   unrelated passes, while stale reports and trimmed history are disclosed separately. When the
+   compatibility path can only use symbol-scoped reads, report the check summary as unknown unless
+   those reads establish it; do not infer a clear summary from missing `task-context` support.
+   These caller reports are not verified evidence.
    A draft spec or plan is not awaiting permission. Show a genuine unresolved product decision,
    explicit user checkpoint, or `BLOCKED` stop with its actual reason; status never clears it.
    An interrupted pipeline is resumable via `{{CMD:feature}}` — say so on its line.

@@ -59,6 +59,11 @@ func (e *Engine) workView(r object) (any, error) {
 		data.PlanTask = &render.WorkViewTask{ID: model.S(selected["id"]), Title: model.S(selected["title"]),
 			State: model.S(selected["state"]), NextAction: model.S(selected["next_action"]),
 			BindingCurrent: selected["binding_current"] == true}
+		if summary := model.M(selected["check_summary"]); len(summary) != 0 {
+			data.PlanTask.UnresolvedCount = int64(len(model.A(summary["conflicting_check_reports"]))) + model.I(summary["conflicting_check_reports_omitted"])
+			data.PlanTask.HistoryUnassessed = summary["check_history_unassessed"] == true
+			data.PlanTask.IgnoredReports = model.I(summary["check_reports_ignored"])
+		}
 		if report := model.M(selected["last_reported_check"]); len(report) != 0 {
 			data.PlanTask.ReportedOutcome = model.S(report["reported_outcome"])
 			data.PlanTask.ReportedFreshness = model.S(report["worktree_freshness"])

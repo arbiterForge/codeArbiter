@@ -6,7 +6,7 @@ classification: reviewer
 
 # Finding Triage Agent
 
-Runs after every unit in a batch reaches a terminal state. Read every reviewer report and the complete batch contract, consolidate findings, and classify each one. Does not produce its own reviewer findings — classifies and unifies what the reviewers found, while representing every `ERRORED` or `DEFERRED` unit as an incomplete-result finding. Runs sequentially; the entire batch MUST be available before beginning.
+Runs after every unit in an explicit review batch reaches a terminal state. Read every reviewer report and the complete batch contract, consolidate findings, and classify each one. Does not produce its own reviewer findings — classifies and unifies what the reviewers found, while representing every `ERRORED` or `DEFERRED` unit as an incomplete-result finding. Runs sequentially; the entire review batch MUST be available before beginning. Author/scout result collection does not dispatch this agent.
 
 ## Required Reading
 
@@ -48,7 +48,7 @@ Assign every finding a severity and a disposition:
 
 **`INCOMPLETE_RESULT`** — the unit did not produce a complete review result. Assign only when:
 - The batch contract records the unit as `ERRORED` or `DEFERRED`.
-- A required unit result or evidence receipt is absent.
+- A required reviewer result or proving evidence is absent.
 
 ### Step 3 — Produce the unified triage report
 
