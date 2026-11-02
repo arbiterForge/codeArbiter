@@ -240,7 +240,7 @@ export const CORRECTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.free
   'core/surface/agents/INDEX.md':'4e03630fe467a40aa55063496a341f8900a958c7',
   'core/surface/commands/doctor.md':'af1eb7cbb7dda70519b1294c2538af26494fe61a',
   // #1081 states the --gate identifier format; the override route and its gates are unchanged.
-  'core/surface/commands/override.md':'2c8b29c1a4211b96bc78a54d22d1b349da68650e',
+  'core/surface/commands/override.md':'f7d94abe2b5e37ad2143429fdacfe015c890811d',
   'core/surface/commands/review.md':'2fadd4b755df269e8bd790b6106183da5ce8abc9',
   'core/surface/commands/status.md':'2eb8ef670b33986008d6207246d8e52957965af0',
   'core/surface/includes/artifacts.md':'e38db59be8bdd1cbbb798c63528d6e781ed1dc48',

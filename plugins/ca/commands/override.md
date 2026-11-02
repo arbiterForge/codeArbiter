@@ -15,10 +15,11 @@ logged, always visible, never silent. Single identity, single confirm.
 2. Detect the operator identity from `git config user.email` only. If it is unset, ask the user once
    to state their identity for the log. (No platform ladder, no second confirmation.)
 3. For an ordinary override, use the private locked audit helper from the repository root.
-   `--gate` takes a compact gate identifier, not a description: it starts with a letter or
-   digit and uses only letters, digits, `.`, `_`, `:` and `-`, with no spaces, up to 128
-   characters, for example `H-09b` or `lint:max-line-length`. The helper refuses anything
-   else. Put the human explanation in `--reason`.
+   `--gate` takes a compact gate identifier, not a description: it starts with an ASCII
+   letter or digit and uses only ASCII letters and digits, `.`, `_`, `:` and `-`, with no
+   spaces, up to 128 characters, for example `lint:max-line-length` or `coverage-threshold`.
+   The helper refuses anything else. Put the human explanation in `--reason`. A security
+   gate such as H-09b/H-10b never takes this path; see the security ceiling below.
 
    ```sh
    python3 "${CLAUDE_PLUGIN_ROOT}/hooks/append-override.py" --gate "<gate-id>" --reason "<specific reason>"
