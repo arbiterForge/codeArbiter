@@ -54,7 +54,7 @@
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "79074209309f3928a8fe3084a224c8befb6e1c0acf0fe6ec7b7d9b1d1f790514"
+      "sha256": "32610d4e416fdde212339e5171134043bcf55a6f2b68b2fba2419b3521609514"
     }
   ]
 }
