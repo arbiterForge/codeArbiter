@@ -112,6 +112,41 @@ class AdoptionInventoryTest(unittest.TestCase):
         self.assertEqual(preview["rows"][0]["work_id"], selected)
         self.assertNotEqual(preview["rows"][0]["origin"], "review:pr854-integration")
 
+    def test_rows_sharing_an_origin_adopt_as_distinct_items(self):
+        # #1084: a (from ...) origin is provenance that several older rows share.
+        self.board.write_text("- [ ] First follow-up (from spec:shared)\n"
+                              "- [ ] Second follow-up (from spec:shared)\n"
+                              "- [ ] Lone task (from spec:lone)\n", encoding="utf-8")
+        rows = _workadopt.preview(self.root)["rows"]
+        shared = [row for row in rows if row["legacy_origin"] == "spec:shared"]
+        self.assertEqual(len(shared), 2)
+        self.assertNotEqual(shared[0]["work_id"], shared[1]["work_id"])
+        self.assertNotEqual(shared[0]["origin"], shared[1]["origin"])
+        self.assertTrue(all(row["origin"].startswith("legacy:open#") for row in shared))
+        lone = next(row for row in rows if row["legacy_origin"] == "spec:lone")
+        # An unshared origin keeps its existing mapping and derived ID.
+        self.assertFalse(lone["origin"].startswith("legacy:open#"))
+        self.assertEqual(lone["work_id"], _worklib._id("spec:lone"))
+
+    def test_shared_origin_keeps_ids_the_legacy_listing_exposed(self):
+        explicit = "WORK-" + "F" * 32
+        self.board.write_text("- [ ] Original follow-up (from spec:shared)\n"
+                              "- [ ] Later follow-up (from spec:shared)\n"
+                              "  - Work origin: spec:shared\n"
+                              f"  - Work ID: {explicit}\n", encoding="utf-8")
+        listed = {entry["work_id"] for entry in
+                  _worklib.dispatch(str(self.root), "work-list", {"limit": 10})["entries"]}
+        rows = _workadopt.preview(self.root)["rows"]
+        self.assertEqual({row["work_id"] for row in rows}, listed)
+        self.assertEqual(len({row["origin"] for row in rows}), 2)
+
+    def test_identical_open_and_archive_copies_still_refuse(self):
+        row = "- [x] Finished follow-up (from spec:shared)\n"
+        self.board.write_text(row, encoding="utf-8")
+        (self.root / ".codearbiter" / "done-tasks.md").write_text(row, encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "duplicate legacy"):
+            _workadopt.preview(self.root)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

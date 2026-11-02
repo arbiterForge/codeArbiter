@@ -12,6 +12,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - Keep legacy board work readable when several rows share one `(from ...)` origin; shared-origin rows without an explicit Work ID are counted as unkeyed and origin lookups on them refuse as ambiguous.
 - State the compact `--gate` identifier format in `/ca:override` with examples; a descriptive gate name was refused by the audit helper and the override went unrecorded.
+- Adopt legacy board rows that share one `(from ...)` origin as distinct native work items, keeping the shared origin as provenance; adoption refused the whole board before.
 
 ## [0.26.2] - 2026-11-01
 

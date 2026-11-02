@@ -63,13 +63,14 @@ def _rows(text, location):
         legacy_origin = board.origin_for_task(lines, task)
         if metadata.get("Work origin") and metadata["Work origin"] != legacy_origin:
             raise ValueError("legacy origin metadata disagrees with the task row")
+        seed = f"{location}\0{task.lineno}\0{block}".encode("utf-8")
+        seeded_origin = "legacy:" + location + "#" + hashlib.sha256(seed).hexdigest()[:32]
         if legacy_origin and _ORIGIN.fullmatch(legacy_origin):
             origin = legacy_origin
         elif legacy_origin:
             origin = "legacy:origin#" + hashlib.sha256(legacy_origin.encode("utf-8")).hexdigest()[:32]
         else:
-            seed = f"{location}\0{task.lineno}\0{block}".encode("utf-8")
-            origin = "legacy:" + location + "#" + hashlib.sha256(seed).hexdigest()[:32]
+            origin = seeded_origin
         # Preserve IDs already exposed by the legacy adapter, even when the
         # historical source does not fit the native origin grammar.
         work_id = metadata.get("Work ID") or _worklib._id(legacy_origin or origin)
@@ -92,8 +93,36 @@ def _rows(text, location):
             "completed_at": task.done.isoformat() if task.done else None,
             "line": task.lineno, "block_sha256": hashlib.sha256(block.encode("utf-8")).hexdigest(),
             "spec_id": metadata.get("Spec ID"), "plan_id": metadata.get("Plan ID"),
+            "_explicit_id": "Work ID" in metadata, "_seeded_origin": seeded_origin,
         })
     return result
+
+
+def _separate_shared_origins(rows):
+    """Give rows that share a (from ...) origin their own native origin (#1084).
+
+    The origin is provenance, and several older rows can share one. Each such
+    row takes the position-seeded origin that rows without one already get and
+    keeps the shared value as legacy_origin. Work IDs the legacy listing already
+    exposes stay: an explicit Work ID, or the derived ID of the only origin-only
+    row in its group. Rows that look like an interrupted archive's identical
+    copy are left alone, so the duplicate checks below still refuse them.
+    """
+    groups = {}
+    for row in rows:
+        if row["legacy_origin"]:
+            groups.setdefault(row["legacy_origin"], []).append(row)
+    content = ("title", "intent", "work_type", "spec_id", "plan_id")
+    for group in groups.values():
+        if len(group) < 2 or len({tuple(row[key] for key in content) for row in group}) < len(group):
+            continue
+        derived = [row for row in group if not row["_explicit_id"]]
+        for row in group:
+            row["origin"] = row["_seeded_origin"]
+            if len(derived) > 1 and not row["_explicit_id"]:
+                row["work_id"] = _worklib._id(row["origin"])
+    for row in rows:
+        del row["_explicit_id"], row["_seeded_origin"]
 
 
 def _inventory(root, *, snapshot=False):
@@ -109,6 +138,7 @@ def _inventory(root, *, snapshot=False):
     rows = _rows(active[1], "open")
     if archive:
         rows.extend(_rows(archive[1], "archive"))
+    _separate_shared_origins(rows)
     if len(rows) > 507:
         raise ValueError("legacy board has too many rows for one native transaction")
     for key in ("work_id", "origin", "alias"):
