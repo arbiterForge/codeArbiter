@@ -34,6 +34,8 @@ TEST_COMMIT_LITERAL = re.compile(
     re.MULTILINE,
 )
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+RELEASES_PER_PAGE = 100
+MAX_RELEASE_PAGES = 10
 
 
 class PromotionError(ValueError):
@@ -144,6 +146,36 @@ def _api_path(path: str, *, query: dict[str, str] | None = None) -> str:
     return f"{url}?{urllib.parse.urlencode(query)}" if query else url
 
 
+def _latest_preview_release() -> dict:
+    candidate: tuple[tuple[int, int], dict] | None = None
+    for page in range(1, MAX_RELEASE_PAGES + 1):
+        value = _read_json(
+            _api_path(
+                "releases",
+                query={"per_page": str(RELEASES_PER_PAGE), "page": str(page)},
+            )
+        )
+        if not isinstance(value, list):
+            raise PromotionError("Academy Releases response must be an array")
+        for item in value:
+            release = _record(item, "Release list item")
+            if release.get("draft") is not False or release.get("prerelease") is not False:
+                continue
+            try:
+                version = parse_release(release.get("tag_name"))
+            except PromotionError:
+                continue
+            if candidate is None or version > candidate[0]:
+                candidate = version, release
+        if len(value) < RELEASES_PER_PAGE:
+            break
+    else:
+        raise PromotionError("Academy Release inventory exceeded the bounded page limit")
+    if candidate is None:
+        raise PromotionError("Academy repository has no published Preview Release")
+    return candidate[1]
+
+
 def resolve_candidate(
     requested: str | None,
     current_release: str,
@@ -154,9 +186,9 @@ def resolve_candidate(
     if requested:
         parse_release(requested)
         release_url = _api_path(f"releases/tags/{urllib.parse.quote(requested, safe='')}")
+        release = _record(_read_json(release_url), "Release")
     else:
-        release_url = _api_path("releases/latest")
-    release = _record(_read_json(release_url), "Release")
+        release = _latest_preview_release()
     candidate_release = release.get("tag_name")
     parse_release(candidate_release)
     encoded = urllib.parse.quote(candidate_release, safe="")

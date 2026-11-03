@@ -194,6 +194,101 @@ class CandidateIdentityTests(unittest.TestCase):
 
 
 class ResolverTransportTests(unittest.TestCase):
+    def test_unrequested_candidate_selects_highest_published_preview_release(self):
+        module = load_module()
+        release, ref, tag, manifest = candidate_documents()
+        content = {
+            "encoding": "base64",
+            "content": base64.b64encode(json.dumps(manifest).encode()).decode(),
+        }
+        releases = [
+            {"tag_name": "v3.8.3", "draft": False, "prerelease": False, "immutable": True},
+            {"tag_name": "preview-0.99", "draft": True, "prerelease": False, "immutable": True},
+            {"tag_name": "preview-0.98", "draft": False, "prerelease": True, "immutable": True},
+            {**release, "tag_name": "preview-0.32"},
+            release,
+        ]
+        urls: list[str] = []
+
+        def fetch(url: str):
+            urls.append(url)
+            if url == module._api_path("releases", query={"per_page": "100", "page": "1"}):
+                return releases
+            if "/git/ref/tags/" in url:
+                return ref
+            if "/git/tags/" in url:
+                return tag
+            if "/contents/academy/publication/" in url:
+                return content
+            raise AssertionError(f"unexpected URL: {url}")
+
+        with mock.patch.object(module, "_read_json", side_effect=fetch):
+            candidate = module.resolve_candidate(None, "preview-0.32")
+
+        self.assertEqual(candidate.release, "preview-0.33")
+        self.assertEqual(urls[0], module._api_path("releases", query={"per_page": "100", "page": "1"}))
+        self.assertNotIn(module._api_path("releases/latest"), urls)
+
+    def test_unrequested_candidate_fails_closed_on_malformed_or_truncated_inventory(self):
+        module = load_module()
+        with mock.patch.object(module, "_read_json", return_value={}):
+            with self.assertRaisesRegex(module.PromotionError, "must be an array"):
+                module.resolve_candidate(None, "preview-0.32")
+
+        with mock.patch.object(module, "_read_json", return_value=[]):
+            with self.assertRaisesRegex(module.PromotionError, "no published Preview Release"):
+                module.resolve_candidate(None, "preview-0.32")
+
+        full_non_preview_page = [
+            {"tag_name": f"v1.0.{index}", "draft": False, "prerelease": False}
+            for index in range(module.RELEASES_PER_PAGE)
+        ]
+        with mock.patch.object(module, "_read_json", return_value=full_non_preview_page) as read_json:
+            with self.assertRaisesRegex(module.PromotionError, "bounded page limit"):
+                module.resolve_candidate(None, "preview-0.32")
+        self.assertEqual(read_json.call_count, module.MAX_RELEASE_PAGES)
+
+    def test_unrequested_candidate_selects_the_highest_preview_across_pages(self):
+        module = load_module()
+        release, ref, tag, manifest = candidate_documents()
+        lower = {**release, "tag_name": "preview-0.9"}
+        higher = {**release, "tag_name": "preview-0.10"}
+        ref = {**ref, "ref": "refs/tags/preview-0.10"}
+        tag = {**tag, "tag": "preview-0.10"}
+        manifest = {**manifest, "release": "preview-0.10"}
+        first_page = [lower] + [
+            {"tag_name": f"v1.0.{index}", "draft": False, "prerelease": False}
+            for index in range(module.RELEASES_PER_PAGE - 1)
+        ]
+        second_page = [higher]
+        content = {
+            "encoding": "base64",
+            "content": base64.b64encode(json.dumps(manifest).encode()).decode(),
+        }
+        first_url = module._api_path("releases", query={"per_page": "100", "page": "1"})
+        second_url = module._api_path("releases", query={"per_page": "100", "page": "2"})
+        urls: list[str] = []
+
+        def fetch(url: str):
+            urls.append(url)
+            if url == first_url:
+                return first_page
+            if url == second_url:
+                return second_page
+            if "/git/ref/tags/" in url:
+                return ref
+            if "/git/tags/" in url:
+                return tag
+            if "/contents/academy/publication/" in url:
+                return content
+            raise AssertionError(f"unexpected URL: {url}")
+
+        with mock.patch.object(module, "_read_json", side_effect=fetch):
+            candidate = module.resolve_candidate(None, "preview-0.8")
+
+        self.assertEqual(candidate.release, "preview-0.10")
+        self.assertEqual(urls[:2], [first_url, second_url])
+
     def test_resolver_binds_manifest_read_to_the_peeled_commit(self):
         module = load_module()
         release, ref, tag, manifest = candidate_documents()
@@ -302,6 +397,15 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("github.event_name == 'schedule'", signal)
         self.assertIn("steps.candidate.outputs.up_to_date != 'true'", signal)
         self.assertIn("exit 1", signal)
+
+    def test_default_branch_value_is_data_not_shell_source(self):
+        workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+        trusted_branch = workflow.split("- name: Require trusted default-branch workflow code", 1)[1].split(
+            "      - ", 1
+        )[0]
+        self.assertIn("DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}", trusted_branch)
+        self.assertIn('run: test "${GITHUB_REF}" = "refs/heads/${DEFAULT_BRANCH}"', trusted_branch)
+        self.assertNotIn("${{ github.event.repository.default_branch }}", trusted_branch.split("run:", 1)[1])
 
     def test_ci_runs_the_workflow_contract_for_workflow_only_changes(self):
         ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")

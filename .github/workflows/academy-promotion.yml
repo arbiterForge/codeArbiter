@@ -40,7 +40,9 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - name: Require trusted default-branch workflow code
         shell: bash
-        run: test "${GITHUB_REF}" = "refs/heads/${{ github.event.repository.default_branch }}"
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: test "${GITHUB_REF}" = "refs/heads/${DEFAULT_BRANCH}"
       - id: candidate
         name: Resolve immutable Academy release identity
         shell: bash

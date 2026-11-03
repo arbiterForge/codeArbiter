@@ -5,6 +5,14 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Repair Academy promotion review findings  (from github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03)  (done 2026-11-03)
+  - Work origin: github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03
+  - Desc: Scheduled Academy promotion must select the highest valid published Preview release, pass repository metadata through workflow environment data rather than shell source, and keep governed rollback paths complete.
+  - Work type: fix
+  - Work ID: WORK-C4D455F8D35ABBF5C8FD6EEDB5771D3F
+  - Work operation ID: work-d3ecacbb0049854388e141a09756136b7fff3662
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
 - [x] Refresh CI context provenance  (from github-actions-job:126085163582)  (done 2026-11-03)
   - Work origin: github-actions-job:126085163582
   - Desc: Repair the exact-head hosted CI provenance failure by refreshing the selected tech-stack evidence identity for the changed CI workflow through the native context writer.
