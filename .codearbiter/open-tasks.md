@@ -5,6 +5,14 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Refresh CI context provenance  (from github-actions-job:126085163582)  (done 2026-11-03)
+  - Work origin: github-actions-job:126085163582
+  - Desc: Repair the exact-head hosted CI provenance failure by refreshing the selected tech-stack evidence identity for the changed CI workflow through the native context writer.
+  - Work type: fix
+  - Work ID: WORK-BA72104129A66BFFE9AD344BB90A736A
+  - Work operation ID: work-930696a07b5ea4fc11be16bf296ac4a181be09d4
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
 - [x] Repair Academy hook inventory binding  (from github-actions-job:126081282872)  (done 2026-11-03)
   - Work origin: github-actions-job:126081282872
   - Desc: The macOS hook partition contract rejects the new Academy promotion command because the reviewed command digest is stale; update the binding so every hook cell accepts and executes the reviewed inventory.
