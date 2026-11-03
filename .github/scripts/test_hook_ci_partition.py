@@ -23,7 +23,7 @@ GUARD = 'python .github/scripts/test_hook_ci_partition.py'
 # The guard matrix, ca-codex adapter and dual-host store suites have no direct
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
-COMMANDS_SHA256 = 'db88d9bc33461f365c462e865f275e47be74926c12255c298d7c66a10e2ca22f'
+COMMANDS_SHA256 = 'ddc7755d8e2bdf8cb6265abc6acec91c0260bbb50703999c238087ba593db21d'
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:

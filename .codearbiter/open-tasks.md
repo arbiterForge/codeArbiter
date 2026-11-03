@@ -5,6 +5,14 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Repair Academy hook inventory binding  (from github-actions-job:126081282872)  (done 2026-11-03)
+  - Work origin: github-actions-job:126081282872
+  - Desc: The macOS hook partition contract rejects the new Academy promotion command because the reviewed command digest is stale; update the binding so every hook cell accepts and executes the reviewed inventory.
+  - Work type: fix
+  - Work ID: WORK-B929FE9C961EE05F42D726CC733A3D00
+  - Work operation ID: work-799a72913fbad68a7a3bce73faa5944bec113e96
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
 - [x] Promote Academy releases into codearbiter.dev  (from feature-spec#SPEC-ACADEMY-PROMOTION)  (done 2026-11-03)
   - Work origin: feature-spec#SPEC-ACADEMY-PROMOTION
   - Desc: Validate immutable Academy Preview releases and promote exact source pins through reviewed codeArbiter PRs, beginning with Preview 0.33.
