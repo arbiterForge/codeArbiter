@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Governed Academy promotion implementation · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-ACADEMY-PROMOTION</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/academy-release-promotion.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Governed Academy promotion implementation</h1><p class="deck">Implement immutable candidate validation, a read-only release watcher, and Preview 0.33 site consumption.</p><div class="meta"><span>PLAN-ACADEMY-PROMOTION</span><span>Revision 34 · schema 0.3.2</span><span>5 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-ACADEMY-PROMOTION</div><div class="field"><span class="label">Binding mode</span>draft_preview</div><div class="field"><span class="label">Normative sha256</span>8be8eec1e345da5e5ff89738196ff542ae0e3bf45931a8ebed24a45dc192d06b</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-001 -->
+<article class="record" id="T-001" data-ca-symbol="T-001" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-001">T-001</a><h3>Implement candidate resolver</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/academy-release-promotion.html#AC-001">SPEC-ACADEMY-PROMOTION#AC-001</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Planned checks pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>.github/scripts/academy_promotion.py</code></td></tr><tr><td>create</td><td><code>.github/scripts/test_academy_promotion.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task paths together.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Test negative identities.</li><li>Implement bounded GitHub API validation and deterministic apply.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_academy_promotion.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Command exits zero.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Candidate resolver is implemented against immutable public release identity and supports current-release watcher checks. Fresh verification and independent review are pending.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_academy_promotion.py&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T16:54:19Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>54d1e76ce651d4152a15edea534e6968b736db0984ccbc4f947023e2ef5d714f</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>All five candidate identity and deterministic apply tests passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_academy_promotion.py&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T17:17:14Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>dc851319cd649e59caa209db662e891425697a9aa512bef65124ae9b24fa9f4e</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>All 15 immutable candidate, current-source, apply, transport, and workflow authority tests passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-001 -->
+
+<!-- CA:BEGIN:T-002 -->
+<article class="record" id="T-002" data-ca-symbol="T-002" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-002">T-002</a><h3>Add read-only governed promotion watcher</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/academy-release-promotion.html#AC-002">SPEC-ACADEMY-PROMOTION#AC-002</a></li><li><a href="../specs/academy-release-promotion.html#AC-003">SPEC-ACADEMY-PROMOTION#AC-003</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-001">T-001</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Planned checks pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>.github/workflows/academy-promotion.yml</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_academy_promotion.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_hook_ci_partition.py</code></td></tr><tr><td>modify</td><td><code>.github/workflows/ci.yml</code></td></tr><tr><td>modify</td><td><code>.codearbiter/.provenance/tech-stack.json</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task paths together.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add scheduled and manual candidate validation.</li><li>Signal a newer validated scheduled candidate without granting repository write authority.</li><li>Bind the added Academy command into the reviewed hook-job inventory.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_academy_promotion.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Command exits zero.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>Read-only candidate resolver and watcher replace the rejected ordinary-token PR writer; repository changes remain in the normal governed feature and PR path. Fresh verification and independent review are pending.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_academy_promotion.py&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T16:56:24Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>78936ac72af0d2e5e132d7801b4bef8110a0e183994721381dcead47ae2b6a0a</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>All nine candidate and workflow authority contract tests passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_academy_promotion.py&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T17:17:14Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>e2aab096f27d109b0864bc09f7647feceff5dea4d39e70f469ba728183c12a7a</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>All 15 resolver and read-only workflow contract tests passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_hook_ci_partition.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T17:22:03Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>32d4446f61d41464bd0a9668d408cd9825329adad530b8cbcac7383d6cf0e97b</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local command output after hosted macOS failure reproduction.</div><div class="field"><span class="label">Summary</span>All 19 partition unit tests passed and the reviewed 64-contract command inventory matched.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_provenance_wiring.py&#34;]</code></pre></div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>false</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T17:40:30Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>a249d52dadb5626d426e17d5da701fb8ad7e5f9a958e9154d55aa58daebc5f80</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>All 11 context and provenance wiring checks passed, including checkout-byte preservation.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-002 -->
+
+<!-- CA:BEGIN:T-003 -->
+<article class="record" id="T-003" data-ca-symbol="T-003" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-003">T-003</a><h3>Promote Preview 0.33</h3><span class="badge">REVIEW</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/academy-release-promotion.html#AC-004">SPEC-ACADEMY-PROMOTION#AC-004</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-001">T-001</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Planned checks pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>academy-source</code></td></tr><tr><td>modify</td><td><code>site/scripts/academy-source.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/academy-source.test.ts</code></td></tr><tr><td>modify</td><td><code>site/scripts/generate-academy.test.ts</code></td></tr><tr><td>modify</td><td><code>site/audit-exceptions.json</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task paths together.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Move exact gitlink and release literal.</li><li>Remove the expired production-audit exception after the advisory no longer appears.</li><li>Run source and site checks.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;test:academy-source&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The exact Preview 0.33 release and commit test passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>loads the current immutable Preview 0.33 consumer pin</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Command exits zero.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;build&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Command exits zero.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Command exits zero.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>The codearbiter.dev consumer is pinned to Academy Preview 0.33 and its exact peeled commit. Fresh verification and independent review are pending.</div><div class="field"><span class="label">State</span>REVIEW</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;test:academy-source&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T16:58:35Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>source_scope_unassessed</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>36 exact-source tests passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T16:58:36Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>source_scope_unassessed</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>TypeScript typecheck passed after generation.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;build&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>2</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T16:58:36Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>source_scope_unassessed</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>Astro built 164 pages from Preview 0.33.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>3</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T16:58:37Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>source_scope_unassessed</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>31,029 internal links across 194 pages resolved.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;test:academy-source&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T17:17:15Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>source_scope_unassessed</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>All 36 Academy exact-source contract tests passed for Preview 0.33.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-11-03T17:17:15Z</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>attempted_unassessed</div><div class="field"><span class="label">Scope reason</span>source_scope_unassessed</div><div class="field"><span class="label">Source</span>Observed local command output.</div><div class="field"><span class="label">Summary</span>Site TypeScript typecheck passed.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-003 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>Candidate proposal path</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>Identity and authority contracts pass.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-001">T-001</a></li><li><a href="#T-002">T-002</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Preview 0.33 site promotion</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li></ul></div><div class="field"><span class="label">Exit</span>Exact pin and site checks pass.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-003">T-003</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2><span class="missing">None recorded</span></section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>27e6cb12eb0195bc89b4e91ee7d8d8093ac490fa</div><div class="field"><span class="label">Observed date</span>2026-11-03</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 74016ddd5b38ccbb6bf0c7ee511a74772bdbc54a11c1f0715e51e5121b444809<br>Model SHA-256: dfb46f2f7f31add4745ac8869a718f8a4a4c582ae7eca07dc093c31808a33270</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-ACADEMY-PROMOTION",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "task_check_observations": {
+      "T-001": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_academy_promotion.py"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "009e22edc7ed05aa2a6eab10173fa05b59f52241964e353bed8fb32e20359ea1",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T16:54:19Z",
+          "recording_operation_id": "academy-task1-check-001",
+          "scoped_inputs_sha256": "54d1e76ce651d4152a15edea534e6968b736db0984ccbc4f947023e2ef5d714f",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "363ba2549f5812a4b802dc529cbabdb1a40802558033356fb289cd257f7d5ec4",
+          "summary": "All five candidate identity and deterministic apply tests passed.",
+          "task_subject_sha256": "7c680e9471e1d469c3fc80430ab4bda72079e95d61045e71e35ecb2061372cdc"
+        },
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_academy_promotion.py"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "009e22edc7ed05aa2a6eab10173fa05b59f52241964e353bed8fb32e20359ea1",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T17:17:14Z",
+          "recording_operation_id": "academy_t001_check_final_20261103",
+          "scoped_inputs_sha256": "dc851319cd649e59caa209db662e891425697a9aa512bef65124ae9b24fa9f4e",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "e2cc1b6d83991886bfdcfe65dbaca8fbaf3d4115676cd838f86d8bd1b73a1e5a",
+          "summary": "All 15 immutable candidate, current-source, apply, transport, and workflow authority tests passed.",
+          "task_subject_sha256": "7c680e9471e1d469c3fc80430ab4bda72079e95d61045e71e35ecb2061372cdc"
+        }
+      ],
+      "T-002": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_academy_promotion.py"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "d15d274b2e45ba4f806efc2dcff8f6d8543a68f8886b13cdcd0df3f1e0cced3b",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T16:56:24Z",
+          "recording_operation_id": "academy-task2-check-001",
+          "scoped_inputs_sha256": "78936ac72af0d2e5e132d7801b4bef8110a0e183994721381dcead47ae2b6a0a",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "363ba2549f5812a4b802dc529cbabdb1a40802558033356fb289cd257f7d5ec4",
+          "summary": "All nine candidate and workflow authority contract tests passed.",
+          "task_subject_sha256": "4879a3afd47dee557ed0ac3656933cea9276347c32b0d4b29757b6c79f055589"
+        },
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_academy_promotion.py"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "83f628e5a90cfea9e6cbe38811344fc9d9d98131f0c9a6302ebfbb9c6201a10c",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T17:17:14Z",
+          "recording_operation_id": "academy_t002_check_final_20261103",
+          "scoped_inputs_sha256": "e2aab096f27d109b0864bc09f7647feceff5dea4d39e70f469ba728183c12a7a",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "e2cc1b6d83991886bfdcfe65dbaca8fbaf3d4115676cd838f86d8bd1b73a1e5a",
+          "summary": "All 15 resolver and read-only workflow contract tests passed.",
+          "task_subject_sha256": "4879a3afd47dee557ed0ac3656933cea9276347c32b0d4b29757b6c79f055589"
+        },
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_hook_ci_partition.py"
+          ],
+          "criterion_subject_sha256": "83f628e5a90cfea9e6cbe38811344fc9d9d98131f0c9a6302ebfbb9c6201a10c",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T17:22:03Z",
+          "recording_operation_id": "academy_hook_partition_check_20261103",
+          "scoped_inputs_sha256": "32d4446f61d41464bd0a9668d408cd9825329adad530b8cbcac7383d6cf0e97b",
+          "source": "Observed local command output after hosted macOS failure reproduction.",
+          "source_normative_sha256": "e2cc1b6d83991886bfdcfe65dbaca8fbaf3d4115676cd838f86d8bd1b73a1e5a",
+          "summary": "All 19 partition unit tests passed and the reviewed 64-contract command inventory matched.",
+          "task_subject_sha256": "262f1e0e5132190f7f69b06253cf24261f21de4e36ae372cb0aa2ab4d9ba9ca7"
+        },
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_provenance_wiring.py"
+          ],
+          "criterion_subject_sha256": "83f628e5a90cfea9e6cbe38811344fc9d9d98131f0c9a6302ebfbb9c6201a10c",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T17:40:30Z",
+          "recording_operation_id": "academy-t002-provenance-check-20261103",
+          "scoped_inputs_sha256": "a249d52dadb5626d426e17d5da701fb8ad7e5f9a958e9154d55aa58daebc5f80",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "e2cc1b6d83991886bfdcfe65dbaca8fbaf3d4115676cd838f86d8bd1b73a1e5a",
+          "summary": "All 11 context and provenance wiring checks passed, including checkout-byte preservation.",
+          "task_subject_sha256": "0cd2389370fdc69ade1cfb95e6f6f0243fb92057f7d102ffedfe644907802a15"
+        }
+      ],
+      "T-003": [
+        {
+          "argv": [
+            "npm",
+            "run",
+            "test:academy-source"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "d2019f34d6e4be23a3eb55f18e667565e23015aa448df4b16b3a4e57f76e2278",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T16:58:35Z",
+          "recording_operation_id": "academy-task3-check-001",
+          "scope_unassessed_reason": "source_scope_unassessed",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "363ba2549f5812a4b802dc529cbabdb1a40802558033356fb289cd257f7d5ec4",
+          "summary": "36 exact-source tests passed.",
+          "task_subject_sha256": "f8ecd01da2295b9f1289072440022a795d59affe2b56ff05c70f268d8ce2b036"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "typecheck"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "d2019f34d6e4be23a3eb55f18e667565e23015aa448df4b16b3a4e57f76e2278",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T16:58:36Z",
+          "recording_operation_id": "academy-task3-check-002",
+          "scope_unassessed_reason": "source_scope_unassessed",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "363ba2549f5812a4b802dc529cbabdb1a40802558033356fb289cd257f7d5ec4",
+          "summary": "TypeScript typecheck passed after generation.",
+          "task_subject_sha256": "f8ecd01da2295b9f1289072440022a795d59affe2b56ff05c70f268d8ce2b036"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "build"
+          ],
+          "command_index": 2,
+          "criterion_subject_sha256": "d2019f34d6e4be23a3eb55f18e667565e23015aa448df4b16b3a4e57f76e2278",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T16:58:36Z",
+          "recording_operation_id": "academy-task3-check-003",
+          "scope_unassessed_reason": "source_scope_unassessed",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "363ba2549f5812a4b802dc529cbabdb1a40802558033356fb289cd257f7d5ec4",
+          "summary": "Astro built 164 pages from Preview 0.33.",
+          "task_subject_sha256": "f8ecd01da2295b9f1289072440022a795d59affe2b56ff05c70f268d8ce2b036"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "link-audit"
+          ],
+          "command_index": 3,
+          "criterion_subject_sha256": "d2019f34d6e4be23a3eb55f18e667565e23015aa448df4b16b3a4e57f76e2278",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T16:58:37Z",
+          "recording_operation_id": "academy-task3-check-004",
+          "scope_unassessed_reason": "source_scope_unassessed",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "363ba2549f5812a4b802dc529cbabdb1a40802558033356fb289cd257f7d5ec4",
+          "summary": "31,029 internal links across 194 pages resolved.",
+          "task_subject_sha256": "f8ecd01da2295b9f1289072440022a795d59affe2b56ff05c70f268d8ce2b036"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "test:academy-source"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "d2019f34d6e4be23a3eb55f18e667565e23015aa448df4b16b3a4e57f76e2278",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T17:17:15Z",
+          "recording_operation_id": "academy_t003_source_check_20261103",
+          "scope_unassessed_reason": "source_scope_unassessed",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "e2cc1b6d83991886bfdcfe65dbaca8fbaf3d4115676cd838f86d8bd1b73a1e5a",
+          "summary": "All 36 Academy exact-source contract tests passed for Preview 0.33.",
+          "task_subject_sha256": "400466dcad6364fea8159af2bc44cc3245c0842252aa7d09d5ba664153b1f9af"
+        },
+        {
+          "argv": [
+            "npm",
+            "run",
+            "typecheck"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "d2019f34d6e4be23a3eb55f18e667565e23015aa448df4b16b3a4e57f76e2278",
+          "cwd": "site",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-11-03T17:17:15Z",
+          "recording_operation_id": "academy_t003_typecheck_20261103",
+          "scope_unassessed_reason": "source_scope_unassessed",
+          "source": "Observed local command output.",
+          "source_normative_sha256": "e2cc1b6d83991886bfdcfe65dbaca8fbaf3d4115676cd838f86d8bd1b73a1e5a",
+          "summary": "Site TypeScript typecheck passed.",
+          "task_subject_sha256": "400466dcad6364fea8159af2bc44cc3245c0842252aa7d09d5ba664153b1f9af"
+        }
+      ]
+    },
+    "tasks": {
+      "T-001": {
+        "evidence_refs": [],
+        "reason": "Candidate resolver is implemented against immutable public release identity and supports current-release watcher checks. Fresh verification and independent review are pending.",
+        "state": "REVIEW"
+      },
+      "T-002": {
+        "evidence_refs": [],
+        "reason": "Read-only candidate resolver and watcher replace the rejected ordinary-token PR writer; repository changes remain in the normal governed feature and PR path. Fresh verification and independent review are pending.",
+        "state": "REVIEW"
+      },
+      "T-003": {
+        "evidence_refs": [],
+        "reason": "The codearbiter.dev consumer is pinned to Academy Preview 0.33 and its exact peeled commit. Fresh verification and independent review are pending.",
+        "state": "REVIEW"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "dfb46f2f7f31add4745ac8869a718f8a4a4c582ae7eca07dc093c31808a33270",
+    "normative_sha256": "74016ddd5b38ccbb6bf0c7ee511a74772bdbc54a11c1f0715e51e5121b444809",
+    "symbol_count": 5
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "27e6cb12eb0195bc89b4e91ee7d8d8093ac490fa",
+      "observed_date": "2026-11-03",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "Identity and authority contracts pass.",
+        "id": "CP-01",
+        "tasks": [
+          "T-001",
+          "T-002"
+        ],
+        "title": "Candidate proposal path"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "Exact pin and site checks pass.",
+        "id": "CP-02",
+        "tasks": [
+          "T-003"
+        ],
+        "title": "Preview 0.33 site promotion"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [],
+    "spec_ref": {
+      "artifact_id": "SPEC-ACADEMY-PROMOTION",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "8be8eec1e345da5e5ff89738196ff542ae0e3bf45931a8ebed24a45dc192d06b"
+    },
+    "summary": "Implement immutable candidate validation, a read-only release watcher, and Preview 0.33 site consumption.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-ACADEMY-PROMOTION#AC-001"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Planned checks pass."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-001",
+        "paths": [
+          {
+            "action": "create",
+            "path": ".github/scripts/academy_promotion.py"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_academy_promotion.py"
+          }
+        ],
+        "rollback": "Revert the task paths together.",
+        "source_refs": [],
+        "steps": [
+          "Test negative identities.",
+          "Implement bounded GitHub API validation and deterministic apply."
+        ],
+        "title": "Implement candidate resolver",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_academy_promotion.py"
+            ],
+            "assertion": "Command exits zero.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-ACADEMY-PROMOTION#AC-002",
+          "SPEC-ACADEMY-PROMOTION#AC-003"
+        ],
+        "depends_on": [
+          "T-001"
+        ],
+        "done_when": [
+          "Planned checks pass."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-002",
+        "paths": [
+          {
+            "action": "create",
+            "path": ".github/workflows/academy-promotion.yml"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_academy_promotion.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_hook_ci_partition.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/workflows/ci.yml"
+          },
+          {
+            "action": "modify",
+            "path": ".codearbiter/.provenance/tech-stack.json"
+          }
+        ],
+        "rollback": "Revert the task paths together.",
+        "source_refs": [],
+        "steps": [
+          "Add scheduled and manual candidate validation.",
+          "Signal a newer validated scheduled candidate without granting repository write authority.",
+          "Bind the added Academy command into the reviewed hook-job inventory."
+        ],
+        "title": "Add read-only governed promotion watcher",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_academy_promotion.py"
+            ],
+            "assertion": "Command exits zero.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-ACADEMY-PROMOTION#AC-004"
+        ],
+        "depends_on": [
+          "T-001"
+        ],
+        "done_when": [
+          "Planned checks pass."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-003",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "academy-source"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/academy-source.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/academy-source.test.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/scripts/generate-academy.test.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/audit-exceptions.json"
+          }
+        ],
+        "rollback": "Revert the task paths together.",
+        "source_refs": [],
+        "steps": [
+          "Move exact gitlink and release literal.",
+          "Remove the expired production-audit exception after the advisory no longer appears.",
+          "Run source and site checks."
+        ],
+        "title": "Promote Preview 0.33",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "test:academy-source"
+            ],
+            "assertion": "The exact Preview 0.33 release and commit test passes.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "loads the current immutable Preview 0.33 consumer pin"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "typecheck"
+            ],
+            "assertion": "Command exits zero.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "build"
+            ],
+            "assertion": "Command exits zero.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "Command exits zero.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "Governed Academy promotion implementation"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/academy-release-promotion.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 34,
+  "schema_version": "0.3.2",
+  "slug": "academy-release-promotion"
+}
+</script>
+</body></html>

@@ -5,6 +5,38 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Repair Academy promotion review findings  (from github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03)  (done 2026-11-03)
+  - Work origin: github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03
+  - Desc: Scheduled Academy promotion must select the highest valid published Preview release, pass repository metadata through workflow environment data rather than shell source, and keep governed rollback paths complete.
+  - Work type: fix
+  - Work ID: WORK-C4D455F8D35ABBF5C8FD6EEDB5771D3F
+  - Work operation ID: work-d3ecacbb0049854388e141a09756136b7fff3662
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
+- [x] Refresh CI context provenance  (from github-actions-job:126085163582)  (done 2026-11-03)
+  - Work origin: github-actions-job:126085163582
+  - Desc: Repair the exact-head hosted CI provenance failure by refreshing the selected tech-stack evidence identity for the changed CI workflow through the native context writer.
+  - Work type: fix
+  - Work ID: WORK-BA72104129A66BFFE9AD344BB90A736A
+  - Work operation ID: work-930696a07b5ea4fc11be16bf296ac4a181be09d4
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
+- [x] Repair Academy hook inventory binding  (from github-actions-job:126081282872)  (done 2026-11-03)
+  - Work origin: github-actions-job:126081282872
+  - Desc: The macOS hook partition contract rejects the new Academy promotion command because the reviewed command digest is stale; update the binding so every hook cell accepts and executes the reviewed inventory.
+  - Work type: fix
+  - Work ID: WORK-B929FE9C961EE05F42D726CC733A3D00
+  - Work operation ID: work-799a72913fbad68a7a3bce73faa5944bec113e96
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
+- [x] Promote Academy releases into codearbiter.dev  (from feature-spec#SPEC-ACADEMY-PROMOTION)  (done 2026-11-03)
+  - Work origin: feature-spec#SPEC-ACADEMY-PROMOTION
+  - Desc: Validate immutable Academy Preview releases and promote exact source pins through reviewed codeArbiter PRs, beginning with Preview 0.33.
+  - Work type: feature
+  - Work ID: WORK-EA1F7D3404A8D6A41388D6308194CB0B
+  - Work operation ID: academy-promotion-work-create-001
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
 - [x] context.refresh.0001 - Re-scout the pre-existing release-target and code-map provenance drift, including farm.js and the absent tests/test_p05_fixture.py reference; verify each backing claim and retire obsolete references before rebaselining. Preserve historical evidence and distinguish this cleanup from native campaign acceptance.  (from review:pr854-integration-20260926)  (done 2026-10-16)
 - [x] artifacts.docs.0001 - Make the documented verify command and agent-directory limits match the wrapper selector  (from security-review:claude-artifact-authority fix pass F-3/F-4)  (done 2026-10-16)
   - Desc: The includes show verify commands built from the unexpanded plugin-root variables, which the wrapper selector refuses as compound; have arm return the exact verify command line (or require literal absolute paths), consider a safe-character allowlist, confirm whether the Codex exec shell sets PLUGIN_ROOT, and document that linked agent subdirectories block Claude reviews.

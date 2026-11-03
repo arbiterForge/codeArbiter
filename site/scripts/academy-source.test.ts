@@ -8,6 +8,7 @@ import { loadAcademySource } from "./academy-source";
 
 const fixtureRoots: string[] = [];
 const fixtureLessonIds = ["F01-fork-clone-doctor", "P01-practice", "U01-operate"] as const;
+const fixtureRelease = "preview-0.33";
 const fixtureInstallers = {
   "install.ps1": "Write-Output 'reviewed installer fixture'\n",
   "install.sh": "#!/bin/sh\nprintf '%s\\n' 'reviewed installer fixture'\n",
@@ -42,9 +43,9 @@ function createFixture(
   }
 
   writeFileSync(
-    join(academyRoot, "publication", "preview-0.32.json"),
+    join(academyRoot, "publication", `${fixtureRelease}.json`),
     JSON.stringify({
-      release: "preview-0.32",
+      release: fixtureRelease,
       available_labs: manifestLessons,
       runnable_labs: manifestLessons,
       guided_labs: manifestLessons,
@@ -288,11 +289,11 @@ describe("loadAcademySource", () => {
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/unresolved installer token/);
   });
 
-  it("loads the current immutable Preview 0.32 consumer pin", () => {
+  it("loads the current immutable Preview 0.33 consumer pin", () => {
     const source = loadAcademySource(resolve(import.meta.dirname, "../.."));
 
-    expect(source.release).toBe("preview-0.32");
-    expect(source.commit).toBe("dcdc1b0ab023cd8f346e89d41a1bcb6f8a027acf");
+    expect(source.release).toBe("preview-0.33");
+    expect(source.commit).toBe("54e8a42874664ee2f484dee433024f80b0aa128b");
   });
 
   it("loads only the pinned manifest public inventory in its declared order", () => {
@@ -440,12 +441,12 @@ describe("loadAcademySource", () => {
       "academy-source",
       "academy",
       "publication",
-      "preview-0.32.json",
+      `${fixtureRelease}.json`,
     );
     writeFileSync(
       manifestPath,
       JSON.stringify({
-        release: "preview-0.32",
+        release: fixtureRelease,
         available_labs: ["F01-fork-clone-doctor"],
         runnable_labs: [],
         guided_labs: ["F01-fork-clone-doctor"],

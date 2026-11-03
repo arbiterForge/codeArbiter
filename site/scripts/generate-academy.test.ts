@@ -285,6 +285,7 @@ describe("generateAcademy", () => {
     "executes harmless %s installer fixtures only after the rendered digest check passes",
     (os) => {
       const command = renderedInstallerCommands(integrationAcademyHtml)[["windows", "macos", "linux"].indexOf(os)];
+      const expectedDigestFailure = command.match(/installer digest did not match Preview [0-9.]+/)?.[0];
       const windows = os === "windows";
       const name = windows ? "install.ps1" : "install.sh";
       expect(command).toContain(reviewedInstallerDigest(name));
@@ -329,7 +330,8 @@ describe("generateAcademy", () => {
       const mismatching = run("0".repeat(64));
       expect(mismatching.error).toBeUndefined();
       expect(mismatching.status).toBe(1);
-      expect(mismatching.stderr).toContain("installer digest did not match Preview 0.32");
+      expect(expectedDigestFailure).toBeDefined();
+      expect(mismatching.stderr).toContain(expectedDigestFailure);
       expect(existsSync(sentinel)).toBe(false);
     },
     // Two bounded Windows launches may each use 30s under runner contention.

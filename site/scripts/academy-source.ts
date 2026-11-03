@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 
-const RELEASE = "preview-0.32";
+const RELEASE = "preview-0.33";
 const LESSON_ID = /^(F|P|U)\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const HOME_SETUP_ANCHOR = "complete-these-five-setup-steps-before-f01";
 const HOME_SETUP_HEADING = "Complete these five setup steps before F01";
