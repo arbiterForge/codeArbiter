@@ -5,6 +5,14 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Promote Academy releases into codearbiter.dev  (from feature-spec#SPEC-ACADEMY-PROMOTION)  (done 2026-11-03)
+  - Work origin: feature-spec#SPEC-ACADEMY-PROMOTION
+  - Desc: Validate immutable Academy Preview releases and promote exact source pins through reviewed codeArbiter PRs, beginning with Preview 0.33.
+  - Work type: feature
+  - Work ID: WORK-EA1F7D3404A8D6A41388D6308194CB0B
+  - Work operation ID: academy-promotion-work-create-001
+  - Spec ID: SPEC-ACADEMY-PROMOTION
+  - Plan ID: PLAN-ACADEMY-PROMOTION
 - [x] context.refresh.0001 - Re-scout the pre-existing release-target and code-map provenance drift, including farm.js and the absent tests/test_p05_fixture.py reference; verify each backing claim and retire obsolete references before rebaselining. Preserve historical evidence and distinguish this cleanup from native campaign acceptance.  (from review:pr854-integration-20260926)  (done 2026-10-16)
 - [x] artifacts.docs.0001 - Make the documented verify command and agent-directory limits match the wrapper selector  (from security-review:claude-artifact-authority fix pass F-3/F-4)  (done 2026-10-16)
   - Desc: The includes show verify commands built from the unexpanded plugin-root variables, which the wrapper selector refuses as compound; have arm return the exact verify command line (or require literal absolute paths), consider a safe-character allowlist, confirm whether the Codex exec shell sets PLUGIN_ROOT, and document that linked agent subdirectories block Claude reviews.

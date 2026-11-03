@@ -1,0 +1,106 @@
+name: Academy promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: Exact Academy Preview tag; empty resolves the latest Release.
+        required: false
+        type: string
+  schedule:
+    - cron: "23 5 * * 2"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: academy-promotion-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: "[WATCH] | [ACADEMY] | Validate immutable candidate"
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      release: ${{ steps.candidate.outputs.release }}
+      current_release: ${{ steps.candidate.outputs.current_release }}
+      tag_object: ${{ steps.candidate.outputs.tag_object }}
+      commit: ${{ steps.candidate.outputs.commit }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.23.4
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Require trusted default-branch workflow code
+        shell: bash
+        run: test "${GITHUB_REF}" = "refs/heads/${{ github.event.repository.default_branch }}"
+      - id: candidate
+        name: Resolve immutable Academy release identity
+        shell: bash
+        env:
+          REQUESTED_CANDIDATE: ${{ inputs.candidate }}
+        run: |
+          args=()
+          if [ -n "$REQUESTED_CANDIDATE" ]; then
+            args+=(--candidate "$REQUESTED_CANDIDATE")
+          fi
+          python .github/scripts/academy_promotion.py resolve "${args[@]}" --output "$GITHUB_OUTPUT"
+      - name: Check out the exact peeled Academy commit
+        if: steps.candidate.outputs.up_to_date != 'true'
+        shell: bash
+        env:
+          ACADEMY_RELEASE: ${{ steps.candidate.outputs.release }}
+          ACADEMY_TAG_OBJECT: ${{ steps.candidate.outputs.tag_object }}
+          ACADEMY_COMMIT: ${{ steps.candidate.outputs.commit }}
+        run: |
+          git -C academy-source fetch --force --no-tags origin "refs/tags/$ACADEMY_RELEASE:refs/tags/$ACADEMY_RELEASE"
+          test "$(git -C academy-source rev-parse "$ACADEMY_RELEASE^{tag}")" = "$ACADEMY_TAG_OBJECT"
+          test "$(git -C academy-source rev-parse "$ACADEMY_RELEASE^{commit}")" = "$ACADEMY_COMMIT"
+          git -C academy-source checkout --detach "$ACADEMY_COMMIT"
+      - name: Apply the candidate in the disposable checkout
+        if: steps.candidate.outputs.up_to_date != 'true'
+        shell: bash
+        run: |
+          python .github/scripts/academy_promotion.py apply \
+            --release '${{ steps.candidate.outputs.release }}' \
+            --expected-current '${{ steps.candidate.outputs.current_release }}' \
+            --tag-object '${{ steps.candidate.outputs.tag_object }}' \
+            --commit '${{ steps.candidate.outputs.commit }}'
+          git diff --check
+      - name: Install reviewed site toolchain
+        if: steps.candidate.outputs.up_to_date != 'true'
+        working-directory: site
+        run: npm ci --ignore-scripts
+      - name: Generate promoted site inputs
+        if: steps.candidate.outputs.up_to_date != 'true'
+        working-directory: site
+        run: npm run gen
+      - name: Validate the promoted source contract
+        if: steps.candidate.outputs.up_to_date != 'true'
+        working-directory: site
+        run: npm run test:academy-source
+      - name: Typecheck the promoted site consumer
+        if: steps.candidate.outputs.up_to_date != 'true'
+        working-directory: site
+        run: npm run typecheck
+      - name: Record candidate status
+        shell: bash
+        run: |
+          if [ '${{ steps.candidate.outputs.up_to_date }}' = 'true' ]; then
+            echo "Academy consumer is current at ${{ steps.candidate.outputs.release }}." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Validated Academy promotion candidate ${{ steps.candidate.outputs.release }} at ${{ steps.candidate.outputs.commit }}. Apply it through the normal governed feature and PR path." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Signal a scheduled promotion is pending
+        if: github.event_name == 'schedule' && steps.candidate.outputs.up_to_date != 'true'
+        shell: bash
+        run: |
+          echo "A validated Academy promotion is pending owner-run review." >&2
+          exit 1
