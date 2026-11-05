@@ -403,7 +403,15 @@ class CryptoContextHookTest(unittest.TestCase):
         self._assert_new_import_approval("staged")
 
     def test_untracked_import_retains_context_approval(self):
-        self._assert_new_import_approval("untracked")
+        # #1037: untracked context was not in the staged review candidate and
+        # must not be absorbed by the producer.
+        rel = "new_untracked.py"
+        source = "from Crypto.Cipher import (\n    DES,\n)\n"
+        self._write(rel, source)
+        marker = self._record_context_pass()
+        self.assertFalse(any(line.startswith("ctx-v1:") for line in marker.splitlines()), marker)
+        self._git("add", rel)
+        self._assert_admission(True)
 
     def test_unborn_import_retains_context_approval(self):
         self._assert_new_import_approval("unborn")

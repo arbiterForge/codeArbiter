@@ -82,13 +82,24 @@ Heavier path (all required, in order):
    ```
    [ISO-8601] | BY: <email> | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
    ```
-4. **Only then** record the bypass. For the crypto/secret commit gate, that means resolving the
+4. **Only then** record the bypass. For a reviewable-text crypto/secret commit gate, that means resolving the
    interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577), and running
    `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"`,
    which writes `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` bound to the
    sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
    steps 1–3, never to skip the gate proper.
+
+   If the gate explicitly reports a genuine binary whose text context is unavailable, use the
+   same acknowledged finding and reason in the combined audited producer below instead of running
+   the step-3 append helper separately. It appends the mandatory `SECURITY-OVERRIDE` row first and
+   only then writes a distinct exact-candidate binary override marker; it never represents the
+   bypass as an independent-review PASS:
+
+   ```sh
+   PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python
+   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py" --root "${CLAUDE_PROJECT_DIR}" --binary-override --security-finding "<specific finding>" --reason "<reason>"
+   ```
 
 Under `/ca:sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
 **never** auto-decided, even in autonomous mode (`SPRINT.md` hard gates).

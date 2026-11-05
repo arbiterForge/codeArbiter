@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # codeArbiter - the H-09b/H-10b sensitive-line scan: crypto/TLS and secret
 # detection, the pinned security diff argv, the path-aware diff walk, and the
-# digests that bind a recorded gate pass to the exact lines it reviewed.
+# identities that bind a recorded gate pass to the complete staged candidate.
 #
 # Extracted from _hooklib (issue #321, architecture-002) as the first slice.
 # Chosen first because it was the cleanest seam in the module, measured rather
@@ -18,7 +18,7 @@
 # WHY THESE BELONG TOGETHER: they are one concern with one failure mode. The
 # regexes decide what counts as sensitive, the pinned argv decides what the
 # diff even looks like, the walk decides which FILE a line belongs to, and the
-# digests decide what a pass covered. #279 showed they fail as a unit: a
+# candidate and diagnostic digests decide what a pass covered. #279 showed they fail as a unit: a
 # greedy header parse in the walk un-exempted an unrelated file, and an
 # unpinned prefix config silently re-opened it. Splitting them across modules
 # would let one move without the others.
@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import os
 import re
 import tokenize
 from bisect import bisect_right
@@ -144,7 +145,8 @@ def is_sensitive_scan_exempt(rel):
 # forget to pin it (that was exactly how this hole would keep reopening).
 SECURITY_DIFF_GIT_ARGS = (
     "-c", "diff.mnemonicPrefix=false", "-c", "diff.noprefix=false",
-    "diff", "--no-ext-diff", "--no-textconv", "--no-color",
+    "diff", "--no-ext-diff", "--no-textconv", "--no-color", "--no-renames",
+    "--full-index",
     "--src-prefix=a/", "--dst-prefix=b/", "--unified=2147483647",
 )
 
@@ -165,6 +167,107 @@ _PLUS_B_PREFIX = "+++ b/"
 _PLUS_DEV_NULL = "+++ /dev/null"
 
 
+
+
+_HUNK_DESTINATION_RE = re.compile(r"@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@(?: .*)?")
+
+
+_GIT_C_ESCAPES = {
+    "a": 7, "b": 8, "t": 9, "n": 10, "v": 11, "f": 12, "r": 13,
+    "\\": 92, '"': 34,
+}
+
+
+def _git_destination_path(line):
+    """Decode the destination path from Git's pinned unified-diff header.
+
+    Git C-quotes paths containing control characters, quotes, backslashes, or
+    non-ASCII bytes when ``core.quotePath`` is enabled.  Decode that bounded
+    grammar here so attribution never falls back to a line-only identity.
+    Malformed quoting returns ``None`` and therefore fails toward scanning,
+    never toward an exemption.
+    """
+    if line.startswith(_PLUS_B_PREFIX):
+        return line[len(_PLUS_B_PREFIX):]
+    if line == _PLUS_DEV_NULL:
+        return None
+    if not (line.startswith('+++ "') and line.endswith('"')):
+        return None
+    quoted = line[5:-1]
+    raw = bytearray()
+    index = 0
+    try:
+        while index < len(quoted):
+            char = quoted[index]
+            if char != "\\":
+                raw.extend(char.encode("utf-8"))
+                index += 1
+                continue
+            index += 1
+            if index >= len(quoted):
+                return None
+            escape = quoted[index]
+            if escape in _GIT_C_ESCAPES:
+                raw.append(_GIT_C_ESCAPES[escape])
+                index += 1
+                continue
+            if escape not in "01234567":
+                return None
+            digits = escape
+            index += 1
+            while index < len(quoted) and len(digits) < 3 and quoted[index] in "01234567":
+                digits += quoted[index]
+                index += 1
+            value = int(digits, 8)
+            if value > 255:
+                return None
+            raw.append(value)
+        decoded = raw.decode("utf-8", "strict")
+    except (UnicodeError, ValueError):
+        return None
+    return decoded[2:] if decoded.startswith("b/") else None
+
+
+def diff_added_rows(diff_text):
+    """Path, one-based destination row, and content for each added line."""
+    path = None
+    in_hunk = False
+    seen_section = False
+    destination_row = None
+    out = []
+    for line in diff_text.splitlines():
+        if line.startswith("diff "):
+            path = None
+            in_hunk = False
+            destination_row = None
+            seen_section = True
+            continue
+        if line.startswith("@@"):
+            header = _HUNK_DESTINATION_RE.fullmatch(line)
+            destination_row = int(header.group(1)) if header else None
+            in_hunk = True
+            continue
+        if not in_hunk:
+            if not seen_section:
+                if line.startswith("+"):
+                    out.append((None, None, line[1:]))
+                continue
+            if line.startswith("+++ "):
+                path = _git_destination_path(line)
+            continue
+        if line.startswith("+"):
+            out.append((path, destination_row, line[1:]))
+            if destination_row is not None:
+                destination_row += 1
+        elif line.startswith(" "):
+            if destination_row is not None:
+                destination_row += 1
+        elif line.startswith(("-", "\\")):
+            pass
+        else:
+            in_hunk = False
+            destination_row = None
+    return out
 
 
 def diff_added_lines(diff_text):
@@ -225,45 +328,7 @@ def diff_added_lines(diff_text):
     between the three independent line-collectors that used to each do their
     own flat `[ln[1:] for ln in text.splitlines() if ln.startswith("+") ...]`
     walk with no path information (and no forgery-resistance) at all."""
-    path = None
-    in_hunk = False
-    seen_section = False  # True once the first `diff ` section header is seen
-    out = []
-    for line in diff_text.splitlines():
-        if line.startswith("diff "):
-            path = None
-            in_hunk = False
-            seen_section = True
-            continue
-        if line.startswith("@@"):
-            in_hunk = True
-            continue
-        if not in_hunk:
-            if not seen_section:
-                # No `diff ` section header seen yet at all: not producible
-                # by real `git diff` output. Fail SAFE (see docstring) rather
-                # than silently dropping a line that cannot be confidently
-                # classed as header noise either.
-                if line.startswith("+"):
-                    out.append((None, line[1:]))
-                continue
-            # Section preamble: only a genuine `+++ b/<path>` (or `+++
-            # /dev/null`) line here can set `path` — see point 2 above.
-            if line.startswith(_PLUS_B_PREFIX):
-                path = line[len(_PLUS_B_PREFIX):]
-            elif line == _PLUS_DEV_NULL:
-                path = None
-            continue
-        if line.startswith("+"):
-            out.append((path, line[1:]))
-        elif line.startswith(("-", " ", "\\")):
-            pass  # removed / context / "\ No newline at end of file"
-        else:
-            # Not producible by well-formed `git diff` output (a hunk body
-            # line is always one of the four prefixes above); treat it as the
-            # hunk having ended rather than guessing.
-            in_hunk = False
-    return out
+    return [(path, line) for path, _row, line in diff_added_rows(diff_text)]
 
 
 def sensitive_scan_added_lines(diff_text):
@@ -276,6 +341,12 @@ def sensitive_scan_added_lines(diff_text):
             if not (path and is_sensitive_scan_exempt(path))]
 
 
+def sensitive_scan_added_rows(diff_text):
+    """The sensitive candidate rows with safe path/row attribution retained."""
+    return [(path, row, line) for path, row, line in diff_added_rows(diff_text)
+            if not (path and is_sensitive_scan_exempt(path))]
+
+
 # H-09b contextual additions (#678): raw line bindings stay compatible. Only
 # bare short-name import items require lexical destination context. Context
 # bindings use a separate marker namespace; a user-authored source string or
@@ -283,8 +354,67 @@ def sensitive_scan_added_lines(diff_text):
 # SecurityScan(crypto, digests): classification and exact approval identities.
 # security_scan_lines(lines, path=None) -> SecurityScan|None: line-bound scan or refusal.
 # security_scan_source(path, source, added_rows) -> SecurityScan|None.
-# security_scan_diff(text) -> SecurityScan|None: None means untrusted context.
-SecurityScan = namedtuple("SecurityScan", "crypto digests")
+# security_scan_diff(text) -> SecurityScan|BinarySecurityContext|None.
+SecurityFinding = namedtuple("SecurityFinding", "category path line digest")
+SecurityScan = namedtuple(
+    "SecurityScan", "crypto digests findings candidate", defaults=((), None))
+BinarySecurityContext = namedtuple(
+    "BinarySecurityContext", "candidate crypto digests findings")
+BINARY_SECURITY_CONTEXT = BinarySecurityContext
+
+
+def staged_candidate_binding(diff_text):
+    """Bind one PASS to the exact staged diff independently reviewed."""
+    return "candidate-v1:" + hashlib.sha256(
+        diff_text.encode("utf-8", "surrogatepass")
+    ).hexdigest()
+
+
+def binary_override_binding(candidate):
+    """Distinct marker identity for an audited exact-candidate binary bypass."""
+    prefix = "binary-candidate-v1:"
+    if not isinstance(candidate, str) or not candidate.startswith(prefix):
+        return None
+    return "binary-override-v1:" + candidate[len(prefix):]
+
+
+def migration_candidate_binding(entries):
+    """Bind a PASS to exact paths, statuses, preimages, and staged bytes."""
+    candidate = sorted((path, status, preimage,
+                        None if text is None else hashlib.sha256(
+                            text.encode("utf-8", "strict")
+                        ).hexdigest())
+                       for path, status, text, preimage in entries)
+    return "migration-candidate-v2:" + hashlib.sha256(json.dumps(
+        candidate, ensure_ascii=False, separators=(",", ":")
+    ).encode("utf-8", "surrogatepass")).hexdigest()
+
+
+def worktree_marker_binding(root):
+    """Stable cooperative binding for the checkout whose candidate was reviewed.
+
+    Gate markers are intentionally shared through the main checkout for linked
+    worktrees, so their content must identify the worktree scanned by the
+    producer.  This is integrity within ADR-0010's same-user trust model, not a
+    secret or a reviewer signature.
+    """
+    canonical = os.path.realpath(os.path.abspath(root)).replace("\\", "/")
+    drive = re.fullmatch(r"([A-Za-z]):(?:/(.*))?", canonical)
+    git_bash = re.fullmatch(r"/([A-Za-z])(?:/(.*))?", canonical)
+    wsl = re.fullmatch(r"/mnt/([A-Za-z])(?:/(.*))?", canonical)
+    # Only a Windows Python process may treat /c/... as Git-Bash/MSYS drive
+    # syntax. On POSIX, /c and /C are ordinary, case-sensitive directories;
+    # folding them would let distinct worktrees share one cooperative marker.
+    # WSL therefore receives its own safe binding and must produce a fresh PASS
+    # rather than reusing one written by a Windows process.
+    match = (drive or git_bash or wsl) if os.name == "nt" else None
+    if match:
+        canonical = f"{match.group(1).lower()}:/{match.group(2) or ''}".lower()
+    else:
+        canonical = os.path.normcase(canonical)
+    return "root-v1:" + hashlib.sha256(
+        canonical.encode("utf-8", "surrogatepass")
+    ).hexdigest()
 _SHORT_CRYPTO_TOKEN_RE = re.compile(rf"\b{_SHORT_CRYPTO_NAME}\b", re.I)
 _IMPORT_ITEM = r"[^\W\d]\w*(?:[ \t]+as[ \t]+[^\W\d]\w*)?"
 _IMPORT_ITEM_LINE_RE = re.compile(
@@ -320,23 +450,38 @@ def _cross_line_crypto_spans(lines):
     return spans
 
 
-def _scan_bound_lines(lines, contextual_bindings, path=None):
+def _scan_bound_lines(lines, contextual_bindings, path=None, rows=None):
     """Each cross-line match needs its own recognized contextual identity."""
     spans = _cross_line_crypto_spans(lines)
     if not spans <= contextual_bindings.keys():
         return None
-    return SecurityScan(bool(spans) or any(CRYPTO_RE.search(line) for line in lines), {
-        line_digest(line, path) for line in lines
-        if CRYPTO_RE.search(line) or SECRET_RE.search(line)
-    } | set(contextual_bindings.values()))
+    if rows is None:
+        rows = [None] * len(lines)
+    findings = []
+    for index, line in enumerate(lines):
+        digest = line_digest(line, path)
+        if CRYPTO_RE.search(line):
+            findings.append(SecurityFinding("crypto", path, rows[index], digest))
+        if SECRET_RE.search(line):
+            findings.append(SecurityFinding("secret", path, rows[index], digest))
+    for first, _start, last, _end in spans:
+        digest = contextual_bindings[(first, _start, last, _end)]
+        findings.append(SecurityFinding(
+            "crypto", path, rows[last] if last < len(rows) else None, digest))
+    return SecurityScan(
+        bool(spans) or any(CRYPTO_RE.search(line) for line in lines),
+        {finding.digest for finding in findings} | set(contextual_bindings.values()),
+        tuple(findings),
+        None,
+    )
 
 
-def security_scan_lines(lines, path=None):
+def security_scan_lines(lines, path=None, rows=None):
     """Preserve same-line bindings; refuse crypto spanning unbound lines.
 
     `path` binds each approval to the file the line lives in, so a reviewed
     line cannot be admitted again after moving to a different file."""
-    return _scan_bound_lines(lines, {}, path)
+    return _scan_bound_lines(lines, {}, path, rows)
 
 
 def security_scan_source(path, source, added_rows):
@@ -348,10 +493,11 @@ def security_scan_source(path, source, added_rows):
     unavailable required context returns None, never an ordinary exemption.
     """
     lines = source.splitlines()
+    added_rows = list(added_rows)
     if any(row < 1 or row > len(lines) for row in added_rows):
         return None
     added = [lines[row - 1] for row in added_rows]
-    result = security_scan_lines(added, path)
+    result = security_scan_lines(added, path, list(added_rows))
     candidates = {row for row in added_rows
                   if _is_context_item_line(lines[row - 1])}
     if not candidates:
@@ -408,10 +554,11 @@ def security_scan_source(path, source, added_rows):
     bindings = {(positions[first[0]], first[1], positions[last[0]], last[1]): contexts[last[0]]
                 for first, last in import_spans
                 if first[0] in positions and last[0] in positions}
-    result = _scan_bound_lines(added, bindings, path)
+    result = _scan_bound_lines(added, bindings, path, list(added_rows))
     if result is None:
         return None
-    return SecurityScan(result.crypto or bool(contexts), result.digests | set(contexts.values()))
+    return SecurityScan(result.crypto or bool(contexts),
+                        result.digests | set(contexts.values()), result.findings, None)
 
 
 def _full_destination(section):
@@ -419,8 +566,8 @@ def _full_destination(section):
     path = None
     hunk = None
     for index, line in enumerate(section):
-        if line.startswith(_PLUS_B_PREFIX):
-            path = line[len(_PLUS_B_PREFIX):]
+        if line.startswith("+++ "):
+            path = _git_destination_path(line)
         if line.startswith("@@"):
             hunk = index
             break
@@ -467,29 +614,47 @@ def security_scan_diff(diff_text):
     section with an ambiguous bare added item pays the full-context/token cost.
     Missing attribution, incomplete hunks and unsupported context fail closed.
     """
-    # A flattened match may not borrow approval from a different file section.
-    cross_spans = _cross_line_crypto_spans(sensitive_scan_added_lines(diff_text))
-    covered_spans = set()
-    added_offset = 0
-    result = SecurityScan(False, set())
     sections = []
     for line in diff_text.splitlines():
         if line.startswith("diff ") or not sections:
             sections.append([])
         sections[-1].append(line)
+    # A repository-controlled attribute can classify ordinary source as
+    # binary, causing Git to omit every added row. Recognize that only inside
+    # an attributed Git file section; a bare marker is malformed input, not
+    # evidence that Git actually withheld binary context.
+    def _is_binary_marker(line):
+        return (line == "GIT binary patch"
+                or line.startswith("Binary files ") and line.endswith(" differ"))
+
+    has_binary = any(section and section[0].startswith("diff --git ")
+                     and any(_is_binary_marker(line) for line in section[1:])
+                     for section in sections)
+    if (any(_is_binary_marker(line) for line in diff_text.splitlines())
+            and not has_binary):
+        return None
+    # A flattened match may not borrow approval from a different file section.
+    cross_spans = _cross_line_crypto_spans(sensitive_scan_added_lines(diff_text))
+    covered_spans = set()
+    added_offset = 0
+    result = SecurityScan(False, set(), (), staged_candidate_binding(diff_text))
     for section in sections:
-        attributed = diff_added_lines("\n".join(section))
+        section_text = "\n".join(section)
+        attributed = diff_added_lines(section_text)
+        attributed_rows = sensitive_scan_added_rows(section_text)
         if attributed and all(path and is_sensitive_scan_exempt(path)
                               for path, _ in attributed):
             continue
-        added = sensitive_scan_added_lines("\n".join(section))
+        added = [line for _path, _row, line in attributed_rows]
         # A damaged hunk header must not make an apparent added item disappear
         # in the legacy permissive walker before context validation even runs.
         if not any(line.startswith("+") and _is_context_item_line(line[1:])
                    for line in section):
             # One file per section: bind its approvals to that file's path.
             paths = {path for path, _ in attributed if path}
-            contextual = security_scan_lines(added, paths.pop() if len(paths) == 1 else None)
+            selected_path = paths.pop() if len(paths) == 1 else None
+            contextual = security_scan_lines(
+                added, selected_path, [row for _path, row, _line in attributed_rows])
         else:
             if not section[0].startswith("diff --git "):
                 return None
@@ -507,9 +672,14 @@ def security_scan_diff(diff_text):
                              for first, col, last, end in _cross_line_crypto_spans(added))
         added_offset += len(added)
         result = SecurityScan(result.crypto or contextual.crypto,
-                              result.digests | contextual.digests)
+                              result.digests | contextual.digests,
+                              result.findings + contextual.findings,
+                              result.candidate)
     if not cross_spans <= covered_spans:
         return None
+    if has_binary:
+        return BinarySecurityContext(
+            result.candidate, result.crypto, result.digests, result.findings)
     return result
 
 

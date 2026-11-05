@@ -38,12 +38,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
-    MARKER_FRESHNESS_MINUTES, arbiter_active, block, classify_protected,
-    frontmatter_enabled_text, get_host, is_tail_append, marker_fresh,
+    MARKER_FRESHNESS_MINUTES, arbiter_active, audit_append_guidance, block,
+    classify_protected,
+    frontmatter_enabled_text, gate_marker_producer_guidance, get_host,
+    is_tail_append, marker_fresh,
     project_root, read_input, set_host, utf8_stdio,
 )
 from _protectedstatelib import (  # noqa: E402
-    ProtectedPolicy, marker_gated_write_admitted, resolve_registered_path,
+    ProtectedPolicy, marker_gated_write_admitted, protected_state_recovery,
+    resolve_registered_path,
 )
 
 
@@ -109,7 +112,10 @@ def _run(root):
     # (ORCHESTRATOR §2), mirroring pre-write.py's opaque handling.
     if any(op.get("kind") == "opaque" for op in ops):
         block("H-21", "This edit could not be decomposed into per-file operations, so its "
-                      "targets cannot be guarded. Failing closed. Retry, or report it.")
+                      "targets cannot be guarded. Failing closed. Re-issue it as a plain "
+                      "patch in the documented apply_patch grammar, or split it into "
+                      "smaller single-file edits; report it only if neither shape is "
+                      "available.")
 
     # A "notebook" op (NotebookEdit): its target has no append/frontmatter
     # semantics to reason about — refuse any protected target outright with a
@@ -126,9 +132,11 @@ def _run(root):
     # H-19: markers are never edited via the Edit tools (#160) — the sanctioned
     # producers write them; an Edit is tampering. Block outright.
     if "marker" in classes:
+        guidance = gate_marker_producer_guidance(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), root)
         block("H-19", "The .codearbiter/.markers/ gate tokens are not editable via the Edit "
                       "tools (#160) — editing one forges or tampers with a security/migration/ADR "
-                      "gate pass. Markers are recorded only by the sanctioned gate producers.")
+                      f"gate pass. {guidance}")
 
     # H-18: an edit to CONTEXT.md may not drop `arbiter: enabled` or corrupt the
     # frontmatter (#159) — replay every op against the file in order (a
@@ -156,7 +164,7 @@ def _run(root):
         if any(op.get("batched") for op in ops):
             block("H-05", "MultiEdit cannot guarantee a pure append to an append-only "
                           ".codearbiter audit log (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) "
-                          "(ORCHESTRATOR §7). Append with a single Edit or '>>'.")
+                          "(ORCHESTRATOR §7). " + audit_append_guidance())
         # Exactly one non-batched op reaches this point (Edit).
         op = ops[0]
         # reliability-003 (#172): replace_all can never be a verifiable append —
@@ -168,9 +176,8 @@ def _run(root):
             block("H-05", "An Edit with replace_all=true on an append-only .codearbiter "
                           "audit log (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) cannot be a "
                           "verifiable pure append (ORCHESTRATOR §7) — replace_all rewrites "
-                          "every matching occurrence, not just the file's tail. Append with "
-                          "'>>', or a single non-replace_all Edit whose old_string is the "
-                          "file's current trailing content.")
+                          "every matching occurrence, not just the file's tail. "
+                          + audit_append_guidance())
         old = op.get("old_string", "") or ""
         new = op.get("added_text", "") or ""
         # migration-003: `new.startswith("")` is ALWAYS True, so an empty
@@ -182,8 +189,7 @@ def _run(root):
             block("H-05", "An Edit with an empty old_string on an append-only .codearbiter "
                           "audit log (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) cannot be a "
                           "verifiable pure append (ORCHESTRATOR §7) — every string starts with "
-                          "the empty string. Append with '>>', or a single Edit whose old_string "
-                          "is the file's current trailing content.")
+                          "the empty string. " + audit_append_guidance())
         if not new.startswith(old):
             block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, "
                           "sprint-log.md) are append-only (ORCHESTRATOR §7). This Edit alters "
@@ -201,8 +207,7 @@ def _run(root):
                           "sprint-log.md) are append-only (ORCHESTRATOR §7). This Edit's "
                           "old_string is not the file's current TRAILING content — a mid-file "
                           "insertion reorders the audit record even though new_string extends "
-                          "old_string. Append with '>>', or a single Edit whose old_string is "
-                          "exactly the file's current tail.")
+                          "old_string. " + audit_append_guidance())
 
     # H-11: ADRs may only be edited via /adr — any .md anywhere under decisions/
     # (a non-numbered draft or a nested path is still an immutable decision).
@@ -229,14 +234,21 @@ def _run(root):
         rel, policy = resolve_registered_path(fpath, root)
         if policy == ProtectedPolicy.MARKER_GATED:
             if not marker_gated_write_admitted(rel, root):
+                recovery = protected_state_recovery(
+                    rel, policy, root,
+                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    get_host().cmd_ref)
                 block("H-22", f"'{rel}' is marker-gated protected project state (#564) — an "
-                              f"Edit is admitted only under a fresh authoring marker. Run the "
-                              f"sanctioned authoring lane, or "
-                              + get_host().cmd_ref("override") + ".")
+                              f"Edit is admitted only under a fresh authoring marker. "
+                              f"{recovery}")
         else:
+            recovery = protected_state_recovery(
+                rel, policy, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-22", f"'{rel}' is protected project state (#564) — the Edit tools may "
-                          f"never target it; there is no marker path for this policy. Use "
-                          f"the sanctioned helper.")
+                          f"never target it; there is no marker path for this policy. "
+                          f"{recovery}")
 
     sys.exit(0)
 

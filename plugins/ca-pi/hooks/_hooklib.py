@@ -205,20 +205,170 @@ from _protectedlib import (  # noqa: F401
     is_tail_append,
 )
 from _sensitivelib import (  # noqa: F401
+    BINARY_SECURITY_CONTEXT,
+    BinarySecurityContext,
     CRYPTO_RE,
     SECRET_RE,
     SECURITY_DIFF_GIT_ARGS,
     SENSITIVE_SCAN_EXEMPT_RELPATHS,
+    binary_override_binding,
     content_digest,
+    diff_added_rows,
     diff_added_lines,
     is_sensitive_scan_exempt,
     line_digest,
+    migration_candidate_binding,
     sensitive_scan_added_lines,
+    sensitive_scan_added_rows,
+    SecurityFinding,
     SecurityScan,
+    staged_candidate_binding,
     security_scan_diff,
     security_scan_lines,
     security_scan_source,
+    worktree_marker_binding,
 )
+
+
+def binary_security_recovery():
+    """Precise continuation when Git withholds text rows as binary."""
+    return (
+        "Git classified staged content as binary, so the crypto/secret text review "
+        "cannot inspect it. If this is source or other text, remove or correct the "
+        "responsible .gitattributes rule, stage the exact intended files again, and "
+        "retry the ordinary review. If this is a genuine binary that must be committed, "
+        f"run {get_host().cmd_ref('override')} and name the binary path plus the reason "
+        "for explicitly skipping "
+        "the text review; the PASS producer cannot approve unavailable text context."
+    )
+
+
+def mixed_binary_security_recovery():
+    """Executable continuation when binary and reviewable findings are mixed."""
+    return (
+        "The staged candidate also contains reviewable crypto or secret text, so a "
+        "binary override cannot cover it. First unstage the binary changes, run the "
+        "ordinary independent security review and commit the text candidate. Then "
+        "stage the intended binary changes separately, run "
+        f"{get_host().cmd_ref('override')}, and retry the binary-only commit."
+    )
+
+
+def _message_command(script, root):
+    """Display one bounded process invocation without shell interpolation."""
+    invocation = {"argv": [sys.executable, script, "--root", root],
+                  "environment": {}}
+    for name in ("GIT_INDEX_FILE", "CODEARBITER_GIT_EXECUTABLE"):
+        value = os.environ.get(name)
+        if value:
+            invocation["environment"][name] = value
+    return json.dumps(invocation, ensure_ascii=False, separators=(",", ":"))
+
+
+def security_finding_summary(findings, *, crypto_fallback=False):
+    """Count candidate rows, not the multiple bindings one row may require."""
+    identities = {"crypto": set(), "secret": set()}
+    locations = set()
+    for finding in findings:
+        key = ((finding.path, finding.line) if finding.line is not None else
+               (finding.path, finding.digest))
+        if finding.category in identities:
+            identities[finding.category].add(key)
+        locations.add(
+            f"{finding.path}:{finding.line}" if finding.path and finding.line else
+            (finding.path or "<unattributed>"))
+    crypto_count = len(identities["crypto"])
+    if crypto_fallback and not crypto_count:
+        crypto_count = 1
+    return crypto_count, len(identities["secret"]), sorted(locations)
+
+
+def security_gate_recovery(plugin_root, root, crypto_count, secret_count, locations,
+                           *, requires_staging=False):
+    """Non-authorizing recovery text shared by both security backstops."""
+    kinds = []
+    reviewers = []
+    if crypto_count:
+        kinds.append(f"crypto/TLS={crypto_count}")
+        reviewers.append("dispatch independent auth-crypto-reviewer")
+    if secret_count:
+        kinds.append(f"secret={secret_count}")
+        reviewers.append("run the secret-handling review")
+    shown = locations[:20]
+    omitted = len(locations) - len(shown)
+    location_text = ", ".join(
+        json.dumps(value, ensure_ascii=False) for value in shown
+    ) or json.dumps("<unattributed>")
+    if omitted:
+        location_text += f" (+{omitted} more location(s) omitted)"
+    script = os.path.join(plugin_root, "hooks", "security-pass.py")
+    command = _message_command(script, root)
+    staging = (
+        "First stage the exact intended files explicitly, then use a plain git commit "
+        "without -a, a commit pathspec, or an in-command git add. "
+        if requires_staging else "")
+    return (
+        f"Candidate categories: {', '.join(kinds)}. Safe locations: {location_text}. "
+        f"Sanctioned continuation: {staging}{' and '.join(reviewers)} on the exact staged diff "
+        f"in {json.dumps(root, ensure_ascii=False)}; the change author must not "
+        f"self-approve. On genuine PASS only, "
+        f"run this as its own process with the exact invocation JSON (argv plus any required "
+        f"environment) from that reviewed checkout: {command}. Verify "
+        f"the producer reports the bound sensitive-row count, then retry the commit. "
+        f"Recording a genuine PASS is the intended route, not a bypass; "
+        f"{get_host().cmd_ref('override')} is "
+        f"only for explicitly skipping the review."
+    )
+
+
+def migration_gate_recovery(plugin_root, root, locations, *, requires_staging=False):
+    """Non-authorizing H-14 PASS-to-record recovery shared by both backstops."""
+    script = os.path.join(plugin_root, "hooks", "migration-pass.py")
+    command = _message_command(script, root)
+    shown = locations[:20]
+    omitted = len(locations) - len(shown)
+    location_text = ", ".join(
+        json.dumps(value, ensure_ascii=False) for value in shown
+    ) or json.dumps("<unattributed>")
+    if omitted:
+        location_text += f" (+{omitted} more location(s) omitted)"
+    staging = (
+        "first stage the exact intended files explicitly, then use a plain git commit "
+        "without -a, a commit pathspec, or an in-command git add; "
+        if requires_staging else "")
+    return (
+        f"Affected migrations: {location_text}. Sanctioned continuation: {staging}dispatch "
+        f"independent migration-reviewer on the exact staged files in "
+        f"{json.dumps(root, ensure_ascii=False)}. On "
+        f"genuine PASS only, run this as its own process with the exact invocation JSON (argv plus "
+        f"any required environment) from that reviewed checkout: "
+        f"{command}. Verify the bound migration count, then retry the commit. Recording "
+        f"a genuine PASS is not a bypass; {get_host().cmd_ref('override')} is only for explicitly skipping "
+        f"the review."
+    )
+
+
+def gate_marker_producer_guidance(plugin_root, root):
+    """Explain H-19's legitimate producers without authorizing either."""
+    security = _message_command(os.path.join(plugin_root, "hooks", "security-pass.py"), root)
+    migration = _message_command(os.path.join(plugin_root, "hooks", "migration-pass.py"), root)
+    return (
+        "Never write a marker directly. After an independent auth-crypto-reviewer or "
+        "secret-handling PASS on the exact staged diff, run the standalone sanctioned "
+        f"producer {security}. After an independent migration-reviewer PASS, run "
+        f"{migration}. A BLOCK or unreadable candidate remains blocked."
+    )
+
+
+def audit_append_guidance():
+    """Cross-shell UTF-8 append continuation for H-05 diagnostics."""
+    return (
+        "Use one tail-anchored Edit whose old_string is the exact current tail and whose "
+        "new_string extends it. If a shell is required: PowerShell 5.1 "
+        "[IO.File]::AppendAllText(<path>, <line>, (New-Object "
+        "Text.UTF8Encoding($false))); PowerShell 7 Add-Content -LiteralPath <path> "
+        "-Value <line> -Encoding utf8NoBOM; Git Bash printf '%s\\n' <line> >> <path>."
+    )
 
 
 # Serialize same-process writers before taking the bounded cross-process lock.

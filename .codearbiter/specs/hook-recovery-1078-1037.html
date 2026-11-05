@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Recover safely from codeArbiter hook refusals · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-HOOK-RECOVERY-1078-1037</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/hook-recovery-1078-1037.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Recover safely from codeArbiter hook refusals</h1><p class="deck">Bind reviews to exact candidate sets and make legitimate refusals lead to sanctioned continuations.</p><div class="meta"><span>SPEC-HOOK-RECOVERY-1078-1037</span><span>Revision 3 · schema 0.3.2</span><span>46 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>An agent or human performing an already-authorized repository change</div><div class="field"><span class="label">Outcome</span>Security-complete review binding and an executable continuation for recoverable refusals.</div><div class="field"><span class="label">Problem</span>Hook refusals can dead-end legitimate work while review markers can omit candidates.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-REQUEST">SRC-REQUEST</a></li><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-01 -->
+<article class="record" id="SCOPE-01" data-ca-symbol="SCOPE-01" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-01">SCOPE-01</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Issues 1078 and 1037 across review integrity, refusal recovery, generated parity, and installed Claude qualification.</div></article>
+<!-- CA:END:SCOPE-01 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NON-GOAL-01 -->
+<article class="record" id="NON-GOAL-01" data-ca-symbol="NON-GOAL-01" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-01">NON-GOAL-01</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Changing the cooperative trust model or adding signed reviewer authority.</div></article>
+<!-- CA:END:NON-GOAL-01 -->
+
+<!-- CA:BEGIN:NON-GOAL-02 -->
+<article class="record" id="NON-GOAL-02" data-ca-symbol="NON-GOAL-02" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-02">NON-GOAL-02</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Weakening H-01, H-03, H-19, malformed-input, or unreadable-state enforcement.</div></article>
+<!-- CA:END:NON-GOAL-02 -->
+
+<!-- CA:BEGIN:NON-GOAL-03 -->
+<article class="record" id="NON-GOAL-03" data-ca-symbol="NON-GOAL-03" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-03">NON-GOAL-03</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Merging, releasing, updating plugins, or restarting host sessions.</div></article>
+<!-- CA:END:NON-GOAL-03 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><ul class="items"><li><a href="#DEC-01">DEC-01</a></li><li><a href="#DEC-02">DEC-02</a></li></ul></div><div class="field"><span class="label">Choice</span>Fix reviewed-set completeness, then add structured owner-specific recovery, regenerate hosts, and qualify the installed flow.</div><div class="field"><span class="label">Tradeoff</span>Diagnostics and tests expand while cooperative trust and fail-closed decisions remain unchanged.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CON-01 -->
+<article class="record" id="CON-01" data-ca-symbol="CON-01" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-01">CON-01</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>SCOPE-01</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-REQUEST">SRC-REQUEST</a></li><li><a href="#SRC-ADR-0010">SRC-ADR-0010</a></li><li><a href="#SRC-ADR-0043">SRC-ADR-0043</a></li></ul></div><div class="field"><span class="label">Statement</span>Do not add a permission, reviewer-authority, or secondary approval system.</div></article>
+<!-- CA:END:CON-01 -->
+
+<!-- CA:BEGIN:CON-02 -->
+<article class="record" id="CON-02" data-ca-symbol="CON-02" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-02">CON-02</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>SCOPE-01</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Malformed, unreadable, stale, wrong-worktree, and changed-after-review security inputs remain fail closed.</div></article>
+<!-- CA:END:CON-02 -->
+
+<!-- CA:BEGIN:CON-03 -->
+<article class="record" id="CON-03" data-ca-symbol="CON-03" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-03">CON-03</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>SCOPE-01</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-REQUEST">SRC-REQUEST</a></li><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Recovery uses the owning sanctioned producer or updater; overrides are not normal recovery.</div></article>
+<!-- CA:END:CON-03 -->
+
+<!-- CA:BEGIN:CON-04 -->
+<article class="record" id="CON-04" data-ca-symbol="CON-04" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-04">CON-04</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>SCOPE-01</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Author canonical shared Python first and regenerate every shipped host copy.</div></article>
+<!-- CA:END:CON-04 -->
+
+<!-- CA:BEGIN:CON-05 -->
+<article class="record" id="CON-05" data-ca-symbol="CON-05" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-05">CON-05</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>SCOPE-01</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-REQUEST">SRC-REQUEST</a></li></ul></div><div class="field"><span class="label">Statement</span>Do not merge or publish without separate owner authorization.</div></article>
+<!-- CA:END:CON-05 -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2>
+<!-- CA:BEGIN:DEC-01 -->
+<article class="record" id="DEC-01" data-ca-symbol="DEC-01" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-01">DEC-01</a><h3>Recovery authority</h3></div><div class="field"><span class="label">Authority</span>inherited</div><div class="field"><span class="label">Choice</span>Return the exact existing sanctioned producer or updater where recovery exists.</div><div class="field"><span class="label">Rationale</span>This removes dead ends without creating new authority.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-REQUEST">SRC-REQUEST</a></div></article>
+<!-- CA:END:DEC-01 -->
+
+<!-- CA:BEGIN:DEC-02 -->
+<article class="record" id="DEC-02" data-ca-symbol="DEC-02" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-02">DEC-02</a><h3>Review binding</h3></div><div class="field"><span class="label">Authority</span>inherited</div><div class="field"><span class="label">Choice</span>Bind review records to the exact staged candidate set and worktree identity.</div><div class="field"><span class="label">Rationale</span>A record that absorbs rows outside the reviewer-visible staged diff is not evidence that those rows were reviewed.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-1037">SRC-1037</a></div></article>
+<!-- CA:END:DEC-02 -->
+</section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-001 -->
+<article class="record" id="AC-001" data-ca-symbol="AC-001" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-001">AC-001</a><h3>Complete sensitive reviewed set</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Every staged candidate is represented exactly as reviewed.</li><li>Unstaged and untracked rows are never silently absorbed into a PASS; if later staged, they require a new review.</li><li>Omitted, added, unreadable, stale, wrong-root, or changed staged candidates block.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A guarded operation includes sensitive candidates.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-001 -->
+<article class="record" id="SCN-AC-001" data-ca-symbol="SCN-AC-001" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-001">SCN-AC-001</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A PASS exists for the exact staged sensitive diff while another sensitive row remains unstaged or untracked.</div><div class="field"><span class="label">Then</span>The original staged candidate may proceed, but the newly staged row is uncovered and blocks until independently reviewed and recorded.</div><div class="field"><span class="label">When</span>The current staged commit is validated, and later the additional row is staged.</div></article>
+<!-- CA:END:SCN-AC-001 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>A sensitive pass is valid only for the exact staged candidate reviewed in the bound worktree.</div><div class="field"><span class="label">Trigger</span>Validate the review before permitting the operation.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-001 -->
+<article class="record" id="VER-AC-001" data-ca-symbol="VER-AC-001" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-001">VER-AC-001</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>An unstaged or untracked row must not be silently recorded by a PASS for the staged candidate.</div><div class="field"><span class="label">Oracle</span>Only exact staged rows in the bound worktree are recorded; later staged rows block as uncovered.</div><div class="field"><span class="label">Planned target</span>test_hook_guards reviewed-set regressions</div></article>
+<!-- CA:END:VER-AC-001 -->
+</div></article>
+<!-- CA:END:AC-001 -->
+
+<!-- CA:BEGIN:AC-002 -->
+<article class="record" id="AC-002" data-ca-symbol="AC-002" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-002">AC-002</a><h3>Complete migration reviewed set</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>All staged migration candidates are bound.</li><li>Omitted or changed migration candidates block.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A migration-shape commit is attempted.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-002 -->
+<article class="record" id="SCN-AC-002" data-ca-symbol="SCN-AC-002" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-002">SCN-AC-002</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Two migration files are staged and the record names one.</div><div class="field"><span class="label">Then</span>Commit is blocked with a precise continuation.</div><div class="field"><span class="label">When</span>The backstop runs.</div></article>
+<!-- CA:END:SCN-AC-002 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>Migration review binds the complete staged migration set and rejects omissions or post-review changes.</div><div class="field"><span class="label">Trigger</span>Validate the migration review before commit.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-002 -->
+<article class="record" id="VER-AC-002" data-ca-symbol="VER-AC-002" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-002">VER-AC-002</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A one-of-two-file pass must not permit commit.</div><div class="field"><span class="label">Oracle</span>Partial or stale migration reviews block.</div><div class="field"><span class="label">Planned target</span>test_migration_backstop reviewed-set regressions</div></article>
+<!-- CA:END:VER-AC-002 -->
+</div></article>
+<!-- CA:END:AC-002 -->
+
+<!-- CA:BEGIN:AC-003 -->
+<article class="record" id="AC-003" data-ca-symbol="AC-003" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-003">AC-003</a><h3>Actionable sensitive refusal taxonomy</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The cause, safe paths, and sanctioned command are explicit.</li><li>Mixed findings remain separated by category.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A sensitive scan or review cannot permit an operation.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-003 -->
+<article class="record" id="SCN-AC-003" data-ca-symbol="SCN-AC-003" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-003">SCN-AC-003</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Crypto and secret findings occur in different files.</div><div class="field"><span class="label">Then</span>Both categories and owner continuations are reported.</div><div class="field"><span class="label">When</span>The guard blocks.</div></article>
+<!-- CA:END:SCN-AC-003 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>H-09b and H-10b distinguish cryptography, secrets, mixed categories, safe paths, unreadable inputs, and root mismatch.</div><div class="field"><span class="label">Trigger</span>Render the refusal.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-003 -->
+<article class="record" id="VER-AC-003" data-ca-symbol="VER-AC-003" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-003">VER-AC-003</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Unreadable or outside-root input must not be called safely recoverable.</div><div class="field"><span class="label">Oracle</span>Codes, category counts, paths, and commands are asserted.</div><div class="field"><span class="label">Planned target</span>test_hook_guards actionable diagnostics</div></article>
+<!-- CA:END:VER-AC-003 -->
+</div></article>
+<!-- CA:END:AC-003 -->
+
+<!-- CA:BEGIN:AC-004 -->
+<article class="record" id="AC-004" data-ca-symbol="AC-004" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-004">AC-004</a><h3>Actionable commit backstop</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The refusal includes an executable review-to-record continuation and original reason.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A valid current review is absent.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-004 -->
+<article class="record" id="SCN-AC-004" data-ca-symbol="SCN-AC-004" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-004">SCN-AC-004</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>No valid marker exists.</div><div class="field"><span class="label">Then</span>It blocks and names the genuine review-and-record route.</div><div class="field"><span class="label">When</span>A guarded commit is attempted.</div></article>
+<!-- CA:END:SCN-AC-004 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>H-14 explains how to run the owning review producer and record the exact candidate before retrying.</div><div class="field"><span class="label">Trigger</span>Block commit.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-004 -->
+<article class="record" id="VER-AC-004" data-ca-symbol="VER-AC-004" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-004">VER-AC-004</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>The message must not mint or imply a pass.</div><div class="field"><span class="label">Oracle</span>The continuation is present and commit remains blocked.</div><div class="field"><span class="label">Planned target</span>test_hook_guards commit-backstop diagnostics</div></article>
+<!-- CA:END:VER-AC-004 -->
+</div></article>
+<!-- CA:END:AC-004 -->
+
+<!-- CA:BEGIN:AC-005 -->
+<article class="record" id="AC-005" data-ca-symbol="AC-005" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-005">AC-005</a><h3>Owner-specific protected-state recovery</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The refusal identifies the sanctioned owner and preserves H-19 anti-forgery.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A governed path is changed through the wrong surface.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-005 -->
+<article class="record" id="SCN-AC-005" data-ca-symbol="SCN-AC-005" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-005">SCN-AC-005</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>open-tasks.md is raw-edited.</div><div class="field"><span class="label">Then</span>It blocks and identifies taskwrite.py or ca-task.</div><div class="field"><span class="label">When</span>The protected-state hook runs.</div></article>
+<!-- CA:END:SCN-AC-005 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>H-22, H-18, and H-21 name owning helpers without raw edits or routine overrides.</div><div class="field"><span class="label">Trigger</span>Block the unsafe operation.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-005 -->
+<article class="record" id="VER-AC-005" data-ca-symbol="VER-AC-005" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-005">VER-AC-005</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A generic override must not be the normal continuation.</div><div class="field"><span class="label">Oracle</span>Each protected class maps to its owner and blocks raw edits.</div><div class="field"><span class="label">Planned target</span>test_hook_guards owner recovery</div></article>
+<!-- CA:END:VER-AC-005 -->
+</div></article>
+<!-- CA:END:AC-005 -->
+
+<!-- CA:BEGIN:AC-006 -->
+<article class="record" id="AC-006" data-ca-symbol="AC-006" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-006">AC-006</a><h3>Cross-shell append recovery</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each supported shell receives a byte-safe append route.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>An append-only log needs a legitimate tail append.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-006 -->
+<article class="record" id="SCN-AC-006" data-ca-symbol="SCN-AC-006" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-006">SCN-AC-006</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A UTF-8 line contains non-ASCII text.</div><div class="field"><span class="label">Then</span>Prior bytes remain intact and the line is UTF-8.</div><div class="field"><span class="label">When</span>PowerShell 5.1 appends it.</div></article>
+<!-- CA:END:SCN-AC-006 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>H-05 append recovery is UTF-8 safe in PowerShell 5.1, PowerShell 7, and Git Bash.</div><div class="field"><span class="label">Trigger</span>Render recovery instructions.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-006 -->
+<article class="record" id="VER-AC-006" data-ca-symbol="VER-AC-006" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-006">VER-AC-006</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Rewrite, truncation, and UTF-16 append remain rejected.</div><div class="field"><span class="label">Oracle</span>Shell fixtures preserve UTF-8 bytes and append shape.</div><div class="field"><span class="label">Planned target</span>hook guard and cold-install shell regressions</div></article>
+<!-- CA:END:VER-AC-006 -->
+</div></article>
+<!-- CA:END:AC-006 -->
+
+<!-- CA:BEGIN:AC-007 -->
+<article class="record" id="AC-007" data-ca-symbol="AC-007" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-007">AC-007</a><h3>Read-only installed identity diagnosis</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Source, generated, registry, and live identities are distinguished.</li><li>No host mutation occurs.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Installed behavior differs from source expectations.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-007 -->
+<article class="record" id="SCN-AC-007" data-ca-symbol="SCN-AC-007" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-007">SCN-AC-007</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The registered hook points to an older package.</div><div class="field"><span class="label">Then</span>It reports stale identity and the update path without applying it.</div><div class="field"><span class="label">When</span>The diagnostic runs.</div></article>
+<!-- CA:END:SCN-AC-007 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>A read-only diagnostic identifies live hook source, selected enforcers, installed versions, and stale control-plane state.</div><div class="field"><span class="label">Trigger</span>Run the sanctioned diagnostic.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-007 -->
+<article class="record" id="VER-AC-007" data-ca-symbol="VER-AC-007" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-007">VER-AC-007</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Inventory alone must not be called live proof.</div><div class="field"><span class="label">Oracle</span>Fixture mismatches are classified precisely.</div><div class="field"><span class="label">Planned target</span>doctor and installed-host regressions</div></article>
+<!-- CA:END:VER-AC-007 -->
+</div></article>
+<!-- CA:END:AC-007 -->
+
+<!-- CA:BEGIN:AC-008 -->
+<article class="record" id="AC-008" data-ca-symbol="AC-008" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-008">AC-008</a><h3>Generated-host parity</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Generated copies and packages enforce the same verdicts and continuations.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Canonical hook behavior changes.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-008 -->
+<article class="record" id="SCN-AC-008" data-ca-symbol="SCN-AC-008" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-008">SCN-AC-008</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Canonical recovery changes.</div><div class="field"><span class="label">Then</span>Every shipped host agrees or the check fails.</div><div class="field"><span class="label">When</span>Parity checks run.</div></article>
+<!-- CA:END:SCN-AC-008 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>Canonical changes regenerate and pass parity for Claude, Codex, Pi, packages, and registry fixtures.</div><div class="field"><span class="label">Trigger</span>Run sync, package generation, and cold-install checks.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-008 -->
+<article class="record" id="VER-AC-008" data-ca-symbol="VER-AC-008" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-008">VER-AC-008</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A stale generated copy must fail parity.</div><div class="field"><span class="label">Oracle</span>All parity commands pass from the exact branch head.</div><div class="field"><span class="label">Planned target</span>sync-core, build-surface, package, and cold-install checks</div></article>
+<!-- CA:END:VER-AC-008 -->
+</div></article>
+<!-- CA:END:AC-008 -->
+
+<!-- CA:BEGIN:AC-009 -->
+<article class="record" id="AC-009" data-ca-symbol="AC-009" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-009">AC-009</a><h3>Installed Claude Auto-mode qualification</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>The affected hook path is installed and enabled.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CON-01">CON-01</a></li><li><a href="#CON-02">CON-02</a></li><li><a href="#CON-03">CON-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The candidate succeeds only after genuine review recording.</li><li>Unavailable capability remains an explicit gap.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A compatible installed host is available without update or restart.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-009 -->
+<article class="record" id="SCN-AC-009" data-ca-symbol="SCN-AC-009" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-009">SCN-AC-009</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A sensitive fixture is initially blocked.</div><div class="field"><span class="label">Then</span>The same candidate succeeds with its bound record.</div><div class="field"><span class="label">When</span>Auto mode runs sanctioned review and retries.</div></article>
+<!-- CA:END:SCN-AC-009 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li><li><a href="#SRC-1078">SRC-1078</a></li><li><a href="#SRC-1037">SRC-1037</a></li></ul></div><div class="field"><span class="label">Statement</span>The actual installed Claude flow reviews, records, and retries the exact candidate, or reports the unavailable boundary precisely.</div><div class="field"><span class="label">Trigger</span>Exercise the isolated fixture flow.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-009 -->
+<article class="record" id="VER-AC-009" data-ca-symbol="VER-AC-009" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-009">VER-AC-009</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Static package tests must not be called live proof.</div><div class="field"><span class="label">Oracle</span>Installed identity, actions, and verdict are observed.</div><div class="field"><span class="label">Planned target</span>real installed Claude fixture qualification</div></article>
+<!-- CA:END:VER-AC-009 -->
+</div></article>
+<!-- CA:END:AC-009 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-REQUEST -->
+<article class="record" id="SRC-REQUEST" data-ca-symbol="SRC-REQUEST" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-REQUEST">SRC-REQUEST</a><h3>Owner remediation assignment</h3></div><div class="field"><span class="label">Locator</span>conversation request 2026-11-01</div><div class="field"><span class="label">Note</span>Implement one PR for issues 1078 and 1037; do not merge or publish.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-REQUEST -->
+
+<!-- CA:BEGIN:SRC-HANDOFF -->
+<article class="record" id="SRC-HANDOFF" data-ca-symbol="SRC-HANDOFF" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-HANDOFF">SRC-HANDOFF</a><h3>Hook recovery corrective implementation packet</h3></div><div class="field"><span class="label">Locator</span>C:\Users\brenn\Documents\ArbiterForge-Handoffs\hook-recovery-2026-11-01\arbiterforge-hook-recovery-audit-2026-11-01.md</div><div class="field"><span class="label">Note</span>Ordered findings, regression matrix, parity, Auto-mode, and rollback requirements.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-HANDOFF -->
+
+<!-- CA:BEGIN:SRC-1078 -->
+<article class="record" id="SRC-1078" data-ca-symbol="SRC-1078" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-1078">SRC-1078</a><h3>Issue 1078 hook recovery dead ends</h3></div><div class="field"><span class="label">Locator</span>GitHub issue 1078</div><div class="field"><span class="label">Note</span>Current upstream issue and maintainer discussion.</div><div class="field"><span class="label">Type</span>primary_documentation</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/issues/1078</div></article>
+<!-- CA:END:SRC-1078 -->
+
+<!-- CA:BEGIN:SRC-1037 -->
+<article class="record" id="SRC-1037" data-ca-symbol="SRC-1037" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-1037">SRC-1037</a><h3>Issue 1037 reviewed-set integrity</h3></div><div class="field"><span class="label">Locator</span>GitHub issue 1037</div><div class="field"><span class="label">Note</span>Current upstream security finding and expected reviewed-set behavior.</div><div class="field"><span class="label">Type</span>primary_documentation</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/issues/1037</div></article>
+<!-- CA:END:SRC-1037 -->
+
+<!-- CA:BEGIN:SRC-ADR-0010 -->
+<article class="record" id="SRC-ADR-0010" data-ca-symbol="SRC-ADR-0010" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-ADR-0010">SRC-ADR-0010</a><h3>ADR-0010 cooperative attestation boundary</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/decisions/0010-security-gate-pass-cooperative-attestation.md</div><div class="field"><span class="label">Note</span>Local cooperative controls are not a reviewer authority system.</div><div class="field"><span class="label">Type</span>decision_record</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-ADR-0010 -->
+
+<!-- CA:BEGIN:SRC-ADR-0043 -->
+<article class="record" id="SRC-ADR-0043" data-ca-symbol="SRC-ADR-0043" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-ADR-0043">SRC-ADR-0043</a><h3>ADR-0043 assistive engine</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/decisions/0043-assistive-state-engine.md</div><div class="field"><span class="label">Note</span>Authorized implementation does not gain a duplicate permission layer.</div><div class="field"><span class="label">Type</span>decision_record</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-ADR-0043 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>27016cca0dd393f9a1bd9f3fa49af010ee785d29</div><div class="field"><span class="label">Observed date</span>2026-11-01</div><div class="field"><span class="label">Repository</span>arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>core/pysrc/*.py</li><li>plugins/ca/hooks/tests/*.py</li><li>.github/scripts/test_hook_guards.py</li><li>.github/scripts/test_migration_backstop.py</li><li>tools/sync-core.py</li><li>tools/build-host-packages.py</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: d1eb9231c80ea63674cfcf16362450400e7a7ee687816e8d864249488943f6cb<br>Model SHA-256: 75874c5471cd1f8cb069f45aec47b6ee35dbf0153f6a17bcc0f7ca8c774b5fed</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-HOOK-RECOVERY-1078-1037",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "75874c5471cd1f8cb069f45aec47b6ee35dbf0153f6a17bcc0f7ca8c774b5fed",
+    "normative_sha256": "d1eb9231c80ea63674cfcf16362450400e7a7ee687816e8d864249488943f6cb",
+    "symbol_count": 46
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [
+        "DEC-01",
+        "DEC-02"
+      ],
+      "choice": "Fix reviewed-set completeness, then add structured owner-specific recovery, regenerate hosts, and qualify the installed flow.",
+      "id": "APPROACH-01",
+      "tradeoff": "Diagnostics and tests expand while cooperative trust and fail-closed decisions remain unchanged."
+    },
+    "baseline": {
+      "commit": "27016cca0dd393f9a1bd9f3fa49af010ee785d29",
+      "observed_date": "2026-11-01",
+      "repository": "arbiterForge/codeArbiter"
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "SCOPE-01"
+        ],
+        "id": "CON-01",
+        "source_refs": [
+          "SRC-REQUEST",
+          "SRC-ADR-0010",
+          "SRC-ADR-0043"
+        ],
+        "statement": "Do not add a permission, reviewer-authority, or secondary approval system."
+      },
+      {
+        "applies_to": [
+          "SCOPE-01"
+        ],
+        "id": "CON-02",
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Malformed, unreadable, stale, wrong-worktree, and changed-after-review security inputs remain fail closed."
+      },
+      {
+        "applies_to": [
+          "SCOPE-01"
+        ],
+        "id": "CON-03",
+        "source_refs": [
+          "SRC-REQUEST",
+          "SRC-HANDOFF"
+        ],
+        "statement": "Recovery uses the owning sanctioned producer or updater; overrides are not normal recovery."
+      },
+      {
+        "applies_to": [
+          "SCOPE-01"
+        ],
+        "id": "CON-04",
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Author canonical shared Python first and regenerate every shipped host copy."
+      },
+      {
+        "applies_to": [
+          "SCOPE-01"
+        ],
+        "id": "CON-05",
+        "source_refs": [
+          "SRC-REQUEST"
+        ],
+        "statement": "Do not merge or publish without separate owner authorization."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "Every staged candidate is represented exactly as reviewed.",
+          "Unstaged and untracked rows are never silently absorbed into a PASS; if later staged, they require a new review.",
+          "Omitted, added, unreadable, stale, wrong-root, or changed staged candidates block."
+        ],
+        "id": "AC-001",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A guarded operation includes sensitive candidates."
+        ],
+        "scenarios": [
+          {
+            "given": "A PASS exists for the exact staged sensitive diff while another sensitive row remains unstaged or untracked.",
+            "id": "SCN-AC-001",
+            "then": "The original staged candidate may proceed, but the newly staged row is uncovered and blocks until independently reviewed and recorded.",
+            "when": "The current staged commit is validated, and later the additional row is staged."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "A sensitive pass is valid only for the exact staged candidate reviewed in the bound worktree.",
+        "title": "Complete sensitive reviewed set",
+        "trigger": "Validate the review before permitting the operation.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-001",
+          "method": "automated",
+          "negative_control": "An unstaged or untracked row must not be silently recorded by a PASS for the staged candidate.",
+          "oracle": "Only exact staged rows in the bound worktree are recorded; later staged rows block as uncovered.",
+          "planned_target": "test_hook_guards reviewed-set regressions"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "All staged migration candidates are bound.",
+          "Omitted or changed migration candidates block."
+        ],
+        "id": "AC-002",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A migration-shape commit is attempted."
+        ],
+        "scenarios": [
+          {
+            "given": "Two migration files are staged and the record names one.",
+            "id": "SCN-AC-002",
+            "then": "Commit is blocked with a precise continuation.",
+            "when": "The backstop runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "Migration review binds the complete staged migration set and rejects omissions or post-review changes.",
+        "title": "Complete migration reviewed set",
+        "trigger": "Validate the migration review before commit.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-002",
+          "method": "automated",
+          "negative_control": "A one-of-two-file pass must not permit commit.",
+          "oracle": "Partial or stale migration reviews block.",
+          "planned_target": "test_migration_backstop reviewed-set regressions"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "The cause, safe paths, and sanctioned command are explicit.",
+          "Mixed findings remain separated by category."
+        ],
+        "id": "AC-003",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A sensitive scan or review cannot permit an operation."
+        ],
+        "scenarios": [
+          {
+            "given": "Crypto and secret findings occur in different files.",
+            "id": "SCN-AC-003",
+            "then": "Both categories and owner continuations are reported.",
+            "when": "The guard blocks."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "H-09b and H-10b distinguish cryptography, secrets, mixed categories, safe paths, unreadable inputs, and root mismatch.",
+        "title": "Actionable sensitive refusal taxonomy",
+        "trigger": "Render the refusal.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-003",
+          "method": "automated",
+          "negative_control": "Unreadable or outside-root input must not be called safely recoverable.",
+          "oracle": "Codes, category counts, paths, and commands are asserted.",
+          "planned_target": "test_hook_guards actionable diagnostics"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "The refusal includes an executable review-to-record continuation and original reason."
+        ],
+        "id": "AC-004",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A valid current review is absent."
+        ],
+        "scenarios": [
+          {
+            "given": "No valid marker exists.",
+            "id": "SCN-AC-004",
+            "then": "It blocks and names the genuine review-and-record route.",
+            "when": "A guarded commit is attempted."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "H-14 explains how to run the owning review producer and record the exact candidate before retrying.",
+        "title": "Actionable commit backstop",
+        "trigger": "Block commit.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-004",
+          "method": "automated",
+          "negative_control": "The message must not mint or imply a pass.",
+          "oracle": "The continuation is present and commit remains blocked.",
+          "planned_target": "test_hook_guards commit-backstop diagnostics"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "The refusal identifies the sanctioned owner and preserves H-19 anti-forgery."
+        ],
+        "id": "AC-005",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A governed path is changed through the wrong surface."
+        ],
+        "scenarios": [
+          {
+            "given": "open-tasks.md is raw-edited.",
+            "id": "SCN-AC-005",
+            "then": "It blocks and identifies taskwrite.py or ca-task.",
+            "when": "The protected-state hook runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "H-22, H-18, and H-21 name owning helpers without raw edits or routine overrides.",
+        "title": "Owner-specific protected-state recovery",
+        "trigger": "Block the unsafe operation.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-005",
+          "method": "automated",
+          "negative_control": "A generic override must not be the normal continuation.",
+          "oracle": "Each protected class maps to its owner and blocks raw edits.",
+          "planned_target": "test_hook_guards owner recovery"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "Each supported shell receives a byte-safe append route."
+        ],
+        "id": "AC-006",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "An append-only log needs a legitimate tail append."
+        ],
+        "scenarios": [
+          {
+            "given": "A UTF-8 line contains non-ASCII text.",
+            "id": "SCN-AC-006",
+            "then": "Prior bytes remain intact and the line is UTF-8.",
+            "when": "PowerShell 5.1 appends it."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "H-05 append recovery is UTF-8 safe in PowerShell 5.1, PowerShell 7, and Git Bash.",
+        "title": "Cross-shell append recovery",
+        "trigger": "Render recovery instructions.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-006",
+          "method": "automated",
+          "negative_control": "Rewrite, truncation, and UTF-16 append remain rejected.",
+          "oracle": "Shell fixtures preserve UTF-8 bytes and append shape.",
+          "planned_target": "hook guard and cold-install shell regressions"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "Source, generated, registry, and live identities are distinguished.",
+          "No host mutation occurs."
+        ],
+        "id": "AC-007",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Installed behavior differs from source expectations."
+        ],
+        "scenarios": [
+          {
+            "given": "The registered hook points to an older package.",
+            "id": "SCN-AC-007",
+            "then": "It reports stale identity and the update path without applying it.",
+            "when": "The diagnostic runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "A read-only diagnostic identifies live hook source, selected enforcers, installed versions, and stale control-plane state.",
+        "title": "Read-only installed identity diagnosis",
+        "trigger": "Run the sanctioned diagnostic.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-007",
+          "method": "automated",
+          "negative_control": "Inventory alone must not be called live proof.",
+          "oracle": "Fixture mismatches are classified precisely.",
+          "planned_target": "doctor and installed-host regressions"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "Generated copies and packages enforce the same verdicts and continuations."
+        ],
+        "id": "AC-008",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Canonical hook behavior changes."
+        ],
+        "scenarios": [
+          {
+            "given": "Canonical recovery changes.",
+            "id": "SCN-AC-008",
+            "then": "Every shipped host agrees or the check fails.",
+            "when": "Parity checks run."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "Canonical changes regenerate and pass parity for Claude, Codex, Pi, packages, and registry fixtures.",
+        "title": "Generated-host parity",
+        "trigger": "Run sync, package generation, and cold-install checks.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-008",
+          "method": "automated",
+          "negative_control": "A stale generated copy must fail parity.",
+          "oracle": "All parity commands pass from the exact branch head.",
+          "planned_target": "sync-core, build-surface, package, and cold-install checks"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "The affected hook path is installed and enabled."
+        },
+        "constraint_refs": [
+          "CON-01",
+          "CON-02",
+          "CON-03"
+        ],
+        "guarantees": [
+          "The candidate succeeds only after genuine review recording.",
+          "Unavailable capability remains an explicit gap."
+        ],
+        "id": "AC-009",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A compatible installed host is available without update or restart."
+        ],
+        "scenarios": [
+          {
+            "given": "A sensitive fixture is initially blocked.",
+            "id": "SCN-AC-009",
+            "then": "The same candidate succeeds with its bound record.",
+            "when": "Auto mode runs sanctioned review and retries."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF",
+          "SRC-1078",
+          "SRC-1037"
+        ],
+        "statement": "The actual installed Claude flow reviews, records, and retries the exact candidate, or reports the unavailable boundary precisely.",
+        "title": "Installed Claude Auto-mode qualification",
+        "trigger": "Exercise the isolated fixture flow.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-009",
+          "method": "automated",
+          "negative_control": "Static package tests must not be called live proof.",
+          "oracle": "Installed identity, actions, and verdict are observed.",
+          "planned_target": "real installed Claude fixture qualification"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "authority": "inherited",
+        "choice": "Return the exact existing sanctioned producer or updater where recovery exists.",
+        "id": "DEC-01",
+        "rationale": "This removes dead ends without creating new authority.",
+        "source_ref": "SRC-REQUEST",
+        "topic": "Recovery authority"
+      },
+      {
+        "authority": "inherited",
+        "choice": "Bind review records to the exact staged candidate set and worktree identity.",
+        "id": "DEC-02",
+        "rationale": "A record that absorbs rows outside the reviewer-visible staged diff is not evidence that those rows were reviewed.",
+        "source_ref": "SRC-1037",
+        "topic": "Review binding"
+      }
+    ],
+    "governs": [
+      "core/pysrc/*.py",
+      "plugins/ca/hooks/tests/*.py",
+      ".github/scripts/test_hook_guards.py",
+      ".github/scripts/test_migration_backstop.py",
+      "tools/sync-core.py",
+      "tools/build-host-packages.py"
+    ],
+    "intent": {
+      "caller": "An agent or human performing an already-authorized repository change",
+      "id": "INTENT-01",
+      "outcome": "Security-complete review binding and an executable continuation for recoverable refusals.",
+      "problem": "Hook refusals can dead-end legitimate work while review markers can omit candidates.",
+      "source_refs": [
+        "SRC-REQUEST",
+        "SRC-HANDOFF",
+        "SRC-1078",
+        "SRC-1037"
+      ]
+    },
+    "non_goals": [
+      {
+        "id": "NON-GOAL-01",
+        "statement": "Changing the cooperative trust model or adding signed reviewer authority."
+      },
+      {
+        "id": "NON-GOAL-02",
+        "statement": "Weakening H-01, H-03, H-19, malformed-input, or unreadable-state enforcement."
+      },
+      {
+        "id": "NON-GOAL-03",
+        "statement": "Merging, releasing, updating plugins, or restarting host sessions."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "Issues 1078 and 1037 across review integrity, refusal recovery, generated parity, and installed Claude qualification."
+      }
+    ],
+    "sections": [],
+    "sources": [
+      {
+        "id": "SRC-REQUEST",
+        "locator": "conversation request 2026-11-01",
+        "note": "Implement one PR for issues 1078 and 1037; do not merge or publish.",
+        "title": "Owner remediation assignment",
+        "type": "user_request",
+        "url": null
+      },
+      {
+        "id": "SRC-HANDOFF",
+        "locator": "C:\\Users\\brenn\\Documents\\ArbiterForge-Handoffs\\hook-recovery-2026-11-01\\arbiterforge-hook-recovery-audit-2026-11-01.md",
+        "note": "Ordered findings, regression matrix, parity, Auto-mode, and rollback requirements.",
+        "title": "Hook recovery corrective implementation packet",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-1078",
+        "locator": "GitHub issue 1078",
+        "note": "Current upstream issue and maintainer discussion.",
+        "title": "Issue 1078 hook recovery dead ends",
+        "type": "primary_documentation",
+        "url": "https://github.com/arbiterForge/codeArbiter/issues/1078"
+      },
+      {
+        "id": "SRC-1037",
+        "locator": "GitHub issue 1037",
+        "note": "Current upstream security finding and expected reviewed-set behavior.",
+        "title": "Issue 1037 reviewed-set integrity",
+        "type": "primary_documentation",
+        "url": "https://github.com/arbiterForge/codeArbiter/issues/1037"
+      },
+      {
+        "id": "SRC-ADR-0010",
+        "locator": ".codearbiter/decisions/0010-security-gate-pass-cooperative-attestation.md",
+        "note": "Local cooperative controls are not a reviewer authority system.",
+        "title": "ADR-0010 cooperative attestation boundary",
+        "type": "decision_record",
+        "url": null
+      },
+      {
+        "id": "SRC-ADR-0043",
+        "locator": ".codearbiter/decisions/0043-assistive-state-engine.md",
+        "note": "Authorized implementation does not gain a duplicate permission layer.",
+        "title": "ADR-0043 assistive engine",
+        "type": "decision_record",
+        "url": null
+      }
+    ],
+    "summary": "Bind reviews to exact candidate sets and make legitimate refusals lead to sanctioned continuations.",
+    "title": "Recover safely from codeArbiter hook refusals"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/hook-recovery-1078-1037.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 3,
+  "schema_version": "0.3.2",
+  "slug": "hook-recovery-1078-1037"
+}
+</script>
+</body></html>

@@ -121,8 +121,10 @@ from __future__ import annotations
 
 import os
 import posixpath
+import json
 import re
 import stat
+import sys
 from enum import Enum
 
 from _hooklib import MARKER_FRESHNESS_MINUTES, marker_fresh
@@ -441,6 +443,58 @@ def lookup_policy(rel_path, registry=None, *, root=None):
     if dynamic:
         return _context_policy(rel_path, root)
     return None
+
+
+def protected_state_recovery(rel_path, policy, root, plugin_root, command_ref):
+    """Describe the existing owner without changing protected-state policy."""
+    normalized = _canon(rel_path)
+    task_writer = os.path.join(plugin_root, "hooks", "taskwrite.py")
+    init_writer = os.path.join(plugin_root, "hooks", "init-codearbiter.py")
+    task_invocation = json.dumps(
+        {"argv": [sys.executable, task_writer], "environment": {}},
+        ensure_ascii=False, separators=(",", ":"))
+    if normalized == _canon(".codearbiter/open-tasks.md"):
+        return (f"Use {command_ref('task')} for add/start/complete work; it owns the "
+                f"board through the helper process prefix {task_invocation}. "
+                "Do not edit the Markdown.")
+    if normalized == _canon(".codearbiter/done-tasks.md"):
+        return (f"Use {command_ref('task')} to complete/archive work; its "
+                f"helper process prefix {task_invocation} with the archive operation "
+                "performs the append.")
+    if normalized == _canon(".codearbiter/release-targets.md"):
+        return (f"Use {command_ref('release')} for release-target row authoring; that "
+                f"lane owns the existing authoring marker.")
+    try:
+        import _artifactlib
+        document_id = next((document for document, target in _artifactlib._CONTEXT_TARGETS.items()
+                            if _canon(target) == normalized), None)
+    except (ImportError, AttributeError):
+        document_id = None
+    if document_id:
+        if document_id == "CONTEXT":
+            initialized = False
+            try:
+                with open(os.path.join(root, ".codearbiter", "CONTEXT.md"),
+                          encoding="utf-8") as stream:
+                    initialized = "<!--INITIALIZED-->" in stream.read(131072)
+            except OSError:
+                pass
+            if not initialized:
+                return (f"Use {command_ref('init')} to complete initialization; do not "
+                        "patch or delete the activation document directly.")
+        preview = json.dumps({"argv": [
+            sys.executable, init_writer, "--root", root, "--context-draft",
+            "<utf8-draft.md>", "--document", document_id, "--source",
+            "<repository-source>"], "environment": {}},
+            ensure_ascii=False, separators=(",", ":"))
+        return (
+            f"Use {command_ref('context-check')} for initialized-context maintenance. "
+            f"Preview with this exact invocation JSON: {preview}. Apply the returned preview "
+            "by replacing --context-draft and its value with --context-apply and the "
+            "preview path, then append --preview-sha256 and the returned digest."
+        )
+    return (f"No direct editor or shell continuation exists for policy={policy.value}; "
+            f"use the command that owns '{rel_path}', or report the missing owner.")
 
 
 def resolve_registered_path(fpath, root, registry=None):
