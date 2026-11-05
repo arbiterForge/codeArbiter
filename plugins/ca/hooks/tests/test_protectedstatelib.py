@@ -136,12 +136,33 @@ class TestRecoveryDescriptors(unittest.TestCase):
     def _assert_append_bytes(self, argv):
         with tempfile.TemporaryDirectory() as temporary:
             path = os.path.join(temporary, "audit.log")
+            home = os.path.join(temporary, "home")
+            appdata = os.path.join(home, "AppData", "Roaming")
+            local_appdata = os.path.join(home, "AppData", "Local")
+            xdg_config = os.path.join(home, ".config")
+            xdg_cache = os.path.join(home, ".cache")
+            xdg_data = os.path.join(home, ".local", "share")
+            for directory in (home, appdata, local_appdata, xdg_config, xdg_cache, xdg_data):
+                os.makedirs(directory, exist_ok=True)
+            environment = os.environ.copy()
+            environment.update({
+                "HOME": home,
+                "USERPROFILE": home,
+                "APPDATA": appdata,
+                "LOCALAPPDATA": local_appdata,
+                "XDG_CONFIG_HOME": xdg_config,
+                "XDG_CACHE_HOME": xdg_cache,
+                "XDG_DATA_HOME": xdg_data,
+                "PSModuleAnalysisCachePath": os.path.join(xdg_cache, "ModuleAnalysisCache"),
+                "POWERSHELL_TELEMETRY_OPTOUT": "1",
+                "POWERSHELL_UPDATECHECK": "Off",
+            })
             prefix = "existing café Ω\n".encode("utf-8")
             with open(path, "wb") as stream:
                 stream.write(prefix)
             result = subprocess.run(
                 [part.replace("{PATH}", path) for part in argv],
-                capture_output=True, timeout=30)
+                capture_output=True, timeout=30, env=environment)
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
             with open(path, "rb") as stream:
                 data = stream.read()
