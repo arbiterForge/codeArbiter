@@ -80,14 +80,28 @@ def repo_root():
     return os.getcwd()
 
 
-def _git(args, cwd):
+def _git_read(args, cwd):
     try:
         return subprocess.run(
             [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=10,
-        )
-    except Exception:  # noqa: BLE001
-        return None
+        ), None
+    except subprocess.TimeoutExpired:
+        return None, "timeout"
+    except PermissionError:
+        return None, "access"
+    except FileNotFoundError:
+        return None, "spawn"
+    except UnicodeError:
+        return None, "output"
+    except (OSError, subprocess.SubprocessError):
+        return None, "failure"
+    except Exception:  # noqa: BLE001 — fail closed with a sanitized recovery
+        return None, "failure"
+
+
+def _git(args, cwd):
+    return _git_read(args, cwd)[0]
 
 
 def block(tag, msg):
@@ -102,8 +116,8 @@ def block(tag, msg):
 _READ_ERRS = []
 
 
-def _note_read_err(argv, detail):
-    _READ_ERRS.append(git_read_error_summary(argv, detail))
+def _note_read_err(argv, failure_kind):
+    _READ_ERRS.append(git_read_error_summary(argv, failure_kind))
 
 
 def _read_err_hint():
@@ -121,9 +135,9 @@ def current_branch(cwd):
     of the prior `else ""`, which collapsed "unknown" and "detached, not on a
     protected tip" into the same value and let a commit through."""
     argv = ["branch", "--show-current"]
-    r = _git(argv, cwd)
+    r, failure_kind = _git_read(argv, cwd)
     if r is None or r.returncode != 0:
-        _note_read_err(["git"] + argv, (r.stderr if r else None) or "git spawn failed")
+        _note_read_err(["git"] + argv, failure_kind or "exit")
         return None
     return r.stdout.strip()
 
@@ -136,9 +150,9 @@ def head_on_protected_tip(cwd):
     so H-01 fails CLOSED on a git-read error rather than concluding "not on a
     protected tip" from a failed read."""
     argv = ["show-ref", "--head", "refs/heads/main", "refs/heads/master"]
-    r = _git(argv, cwd)
+    r, failure_kind = _git_read(argv, cwd)
     if r is None or r.returncode not in (0, 1):
-        _note_read_err(["git"] + argv, (r.stderr if r else None) or "git spawn failed")
+        _note_read_err(["git"] + argv, failure_kind or "exit")
         return None
     head_sha, protected = None, set()
     for ln in r.stdout.splitlines():

@@ -118,8 +118,21 @@ from _artifactlib import _CONTEXT_TARGETS  # inert candidate names; qualificatio
 _READ_ERRS = []
 
 
-def _note_read_err(argv, detail):
-    _READ_ERRS.append(git_read_error_summary(argv, detail))
+def _note_read_err(argv, failure_kind):
+    _READ_ERRS.append(git_read_error_summary(argv, failure_kind))
+
+
+def _exception_failure_kind(error):
+    """Classify an exception without copying its potentially sensitive text."""
+    if isinstance(error, subprocess.TimeoutExpired):
+        return "timeout"
+    if isinstance(error, PermissionError):
+        return "access"
+    if isinstance(error, FileNotFoundError):
+        return "spawn"
+    if isinstance(error, UnicodeError):
+        return "output"
+    return "failure"
 
 
 def _read_err_hint():
@@ -1876,11 +1889,11 @@ def current_branch(cwd):
             timeout=5,
         )
         if out.returncode != 0:
-            _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+            _note_read_err(argv, "exit")
             return None
         return out.stdout.strip()
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, repr(e))
+        _note_read_err(argv, _exception_failure_kind(e))
         return None
 
 
@@ -1915,10 +1928,10 @@ def head_on_protected_tip(cwd):
             errors="replace", timeout=5,
         )
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, repr(e))
+        _note_read_err(argv, _exception_failure_kind(e))
         return None
     if out.returncode not in (0, 1):
-        _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+        _note_read_err(argv, "exit")
         return None
     head_sha, protected = None, set()
     for ln in out.stdout.splitlines():
@@ -1960,14 +1973,14 @@ def added_lines(cwd, ref, paths=None):
             timeout=10,
         )
         if out.returncode != 0 or not isinstance(out.stdout, str):
-            _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+            _note_read_err(argv, "output" if out.returncode == 0 else "exit")
             return None
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, repr(e))
+        _note_read_err(argv, _exception_failure_kind(e))
         return None
     result = security_scan_diff(out.stdout)
     if result is None:
-        _note_read_err(argv, "malformed or incomplete crypto context")
+        _note_read_err(argv, "output")
     return result
 
 
@@ -1982,10 +1995,10 @@ def _names(cwd, args):
             encoding="utf-8", errors="replace", timeout=10,
         )
         if out.returncode != 0:
-            _note_read_err(["git"] + args, out.stderr or f"exit {out.returncode}")
+            _note_read_err(["git"] + args, "exit")
             return None
     except Exception as e:  # noqa: BLE001
-        _note_read_err(["git"] + args, repr(e))
+        _note_read_err(["git"] + args, _exception_failure_kind(e))
         return None
     return {p for p in out.stdout.splitlines() if p.strip()}
 

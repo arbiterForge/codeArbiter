@@ -73,10 +73,7 @@ class TestGitReadErrorRedaction(unittest.TestCase):
         for argv, expected_operation in cases:
             with self.subTest(argv=argv):
                 module._READ_ERRS.clear()
-                module._note_read_err(
-                    argv,
-                    f"fatal: unable to access 'https://reader:{secret}@example.invalid/repo'",
-                )
+                module._note_read_err(argv, "exit")
                 hint = module._read_err_hint()
                 self.assertNotIn(secret, hint)
                 self.assertIn(expected_operation, hint)
@@ -84,18 +81,48 @@ class TestGitReadErrorRedaction(unittest.TestCase):
         module._READ_ERRS.clear()
         module._note_read_err(
             ["git", "diff", "--cached"],
-            repr(subprocess.TimeoutExpired(["git", "diff", "--cached"], 10)),
+            "timeout",
         )
         self.assertIn("timed out", module._read_err_hint())
         module._READ_ERRS.clear()
-        module._note_read_err(["git", "cat-file"], "fatal: object not found")
+        module._note_read_err(["git", "cat-file"], "exit")
         self.assertIn("exited unsuccessfully", module._read_err_hint())
         module._READ_ERRS.clear()
-        module._note_read_err(["git", "status"], "git spawn failed")
+        module._note_read_err(["git", "status"], "spawn")
         spawn_hint = module._read_err_hint()
         self.assertIn("could not start", spawn_hint)
         self.assertLess(spawn_hint.index("Repair the Git executable"),
                         spawn_hint.index("git status --short"))
+
+        # Raw process stderr stops at the subprocess result. The diagnostic
+        # path receives only the fixed outcome class.
+        module._READ_ERRS.clear()
+        completed = subprocess.CompletedProcess(
+            ["git", "branch", "--show-current"], 128, "",
+            f"fatal: https://reader:{secret}@example.invalid/repo",
+        )
+        with mock.patch.object(module.subprocess, "run", return_value=completed):
+            self.assertIsNone(module.current_branch("."))
+        hint = module._read_err_hint()
+        self.assertNotIn(secret, hint)
+        self.assertIn("exited unsuccessfully", hint)
+
+        exception_cases = (
+            (subprocess.TimeoutExpired(["git", "branch"], 5), "timed out"),
+            (FileNotFoundError(secret), "could not start"),
+            (PermissionError(secret), "was denied filesystem access"),
+            (UnicodeDecodeError("utf-8", b"x", 0, 1, secret),
+             "returned unreadable output"),
+            (RuntimeError(secret), "failed"),
+        )
+        for error, expected_failure in exception_cases:
+            with self.subTest(error=type(error).__name__):
+                module._READ_ERRS.clear()
+                with mock.patch.object(module.subprocess, "run", side_effect=error):
+                    self.assertIsNone(module.current_branch("."))
+                hint = module._read_err_hint()
+                self.assertNotIn(secret, hint)
+                self.assertIn(expected_failure, hint)
 
     def test_pretool_git_read_hint_redacts_stderr(self):
         self._assert_redacted(_bashguardlib)

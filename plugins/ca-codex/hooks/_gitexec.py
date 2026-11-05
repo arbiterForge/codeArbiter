@@ -13,7 +13,7 @@
 #                                             None if unset
 #   git_executable() -> str                  trusted_git_executable() or the bare "git"
 #                                             fallback
-#   git_read_error_summary(argv, detail) -> str
+#   git_read_error_summary(argv, failure_kind) -> str
 #                                             credential-safe failure class and
 #                                             executable local continuation
 #   read_index_text(root, rel, max_bytes) -> str|None
@@ -121,37 +121,29 @@ def _git_read_operation(argv):
     return "operation"
 
 
-def git_read_error_summary(argv, detail):
-    """Return an actionable Git-read diagnostic without echoing raw stderr.
+def git_read_error_summary(argv, failure_kind):
+    """Return an actionable Git-read diagnostic from a fixed failure class.
 
     Git can include credential-bearing remote URLs and helper output in stderr.
-    Select the operation and failure class only from fixed literals; never
-    interpolate argv values or the detail text into a hook transcript or audit
-    log. The local status probe is a safe, executable first diagnostic before
-    retrying the refused operation.
+    Callers must classify the process outcome without passing stderr or an
+    exception message across this boundary. Select both output fields only from
+    fixed literals; never interpolate argv values into a hook transcript or
+    audit log. The local status probe is a safe, executable first diagnostic
+    before retrying the refused operation.
     """
     operation = _git_read_operation(argv)
-    detail_text = str(detail or "")
-    lowered = detail_text.casefold()
-    if ("timed out" in lowered or "timeouterror" in lowered
-            or "timeoutexpired" in lowered):
-        failure = "timed out"
-    elif (detail_text == "git spawn failed" or "filenotfounderror" in lowered
-          or "winerror 2" in lowered):
-        failure = "could not start"
-    elif "permissionerror" in lowered:
-        failure = "was denied filesystem access"
-    elif "unicode" in lowered or "decode" in lowered or "malformed" in lowered:
-        failure = "returned unreadable output"
-    elif "exit" in lowered or "fatal" in lowered or "error" in lowered:
-        failure = "exited unsuccessfully"
-    else:
-        failure = "failed"
-    if failure == "could not start":
+    failure = {
+        "timeout": "timed out",
+        "spawn": "could not start",
+        "access": "was denied filesystem access",
+        "output": "returned unreadable output",
+        "exit": "exited unsuccessfully",
+    }.get(failure_kind, "failed")
+    if failure_kind == "spawn":
         continuation = ("Repair the Git executable, PATH, or "
                         "CODEARBITER_GIT_EXECUTABLE, then run `git status --short` "
                         "and retry the same operation.")
-    elif failure == "was denied filesystem access":
+    elif failure_kind == "access":
         continuation = ("Repair filesystem access, then run `git status --short` "
                         "and retry the same operation.")
     else:
