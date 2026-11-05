@@ -13,7 +13,7 @@
 #                                             None if unset
 #   git_executable() -> str                  trusted_git_executable() or the bare "git"
 #                                             fallback
-#   git_read_error_summary(argv, failure_kind) -> str
+#   git_read_error_summary(operation, failure_kind) -> str
 #                                             credential-safe failure class and
 #                                             executable local continuation
 #   read_index_text(root, rel, max_bytes) -> str|None
@@ -92,46 +92,21 @@ _GIT_READ_OPERATIONS = (
     "branch", "show-ref", "diff", "rev-parse", "status", "ls-files",
     "ls-tree", "cat-file", "hash-object",
 )
-_GIT_GLOBAL_OPTIONS_WITH_VALUES = frozenset({
-    "-C", "-c", "--git-dir", "--work-tree", "--namespace",
-    "--super-prefix", "--config-env", "--exec-path",
-})
-
-
-def _git_read_operation(argv):
-    """Return a fixed-literal Git subcommand, never an option value/pathspec."""
-    arguments = tuple(str(value) for value in (argv or ()))
-    index = 0
-    if arguments and os.path.basename(arguments[0]).casefold() in ("git", "git.exe"):
-        index = 1
-    while index < len(arguments):
-        value = arguments[index]
-        if value == "--":
-            break
-        if value in _GIT_GLOBAL_OPTIONS_WITH_VALUES:
-            index += 2
-            continue
-        if value.startswith("-"):
-            index += 1
-            continue
-        for candidate in _GIT_READ_OPERATIONS:
-            if value == candidate:
-                return candidate
-        break
-    return "operation"
-
-
-def git_read_error_summary(argv, failure_kind):
+def git_read_error_summary(operation, failure_kind):
     """Return an actionable Git-read diagnostic from a fixed failure class.
 
     Git can include credential-bearing remote URLs and helper output in stderr.
     Callers must classify the process outcome without passing stderr or an
     exception message across this boundary. Select both output fields only from
-    fixed literals; never interpolate argv values into a hook transcript or
-    audit log. The local status probe is a safe, executable first diagnostic
-    before retrying the refused operation.
+    fixed literals. Callers already know which internal Git read they issued;
+    no argv or pathspec crosses this boundary. The local status probe is a safe,
+    executable first diagnostic before retrying the refused operation.
     """
-    operation = _git_read_operation(argv)
+    operation_label = "operation"
+    for candidate in _GIT_READ_OPERATIONS:
+        if operation == candidate:
+            operation_label = candidate
+            break
     failure = {
         "timeout": "timed out",
         "spawn": "could not start",
@@ -149,7 +124,7 @@ def git_read_error_summary(argv, failure_kind):
     else:
         continuation = ("Run `git status --short`, repair the Git access issue, "
                         "then retry the same operation.")
-    return (f"`git {operation}` {failure}; stderr withheld to prevent credential "
+    return (f"`git {operation_label}` {failure}; stderr withheld to prevent credential "
             f"disclosure. {continuation}")
 
 

@@ -66,29 +66,28 @@ class TestGitReadErrorRedaction(unittest.TestCase):
     def _assert_redacted(self, module):
         secret = "diagnostic-only-secret-value"
         module._READ_ERRS.clear()
-        cases = (
-            (["git", "diff", "--cached", "--", f"branch-{secret}"], "git diff"),
-            (["git", "-C", "branch", "ls-files", "--", "diff"], "git ls-files"),
-        )
-        for argv, expected_operation in cases:
-            with self.subTest(argv=argv):
+        cases = (("diff", "git diff"), ("ls-files", "git ls-files"))
+        for operation, expected_operation in cases:
+            with self.subTest(operation=operation):
                 module._READ_ERRS.clear()
-                module._note_read_err(argv, "exit")
+                module._note_read_err(operation, "exit")
                 hint = module._read_err_hint()
                 self.assertNotIn(secret, hint)
                 self.assertIn(expected_operation, hint)
                 self.assertIn("withheld", hint)
         module._READ_ERRS.clear()
-        module._note_read_err(
-            ["git", "diff", "--cached"],
-            "timeout",
-        )
+        module._note_read_err(f"unknown-{secret}", "exit")
+        unknown_hint = module._read_err_hint()
+        self.assertNotIn(secret, unknown_hint)
+        self.assertIn("git operation", unknown_hint)
+        module._READ_ERRS.clear()
+        module._note_read_err("diff", "timeout")
         self.assertIn("timed out", module._read_err_hint())
         module._READ_ERRS.clear()
-        module._note_read_err(["git", "cat-file"], "exit")
+        module._note_read_err("cat-file", "exit")
         self.assertIn("exited unsuccessfully", module._read_err_hint())
         module._READ_ERRS.clear()
-        module._note_read_err(["git", "status"], "spawn")
+        module._note_read_err("status", "spawn")
         spawn_hint = module._read_err_hint()
         self.assertIn("could not start", spawn_hint)
         self.assertLess(spawn_hint.index("Repair the Git executable"),
@@ -98,7 +97,7 @@ class TestGitReadErrorRedaction(unittest.TestCase):
         # path receives only the fixed outcome class.
         module._READ_ERRS.clear()
         completed = subprocess.CompletedProcess(
-            ["git", "branch", "--show-current"], 128, "",
+            ["git", "branch", "--show-current", secret], 128, "",
             f"fatal: https://reader:{secret}@example.invalid/repo",
         )
         with mock.patch.object(module.subprocess, "run", return_value=completed):

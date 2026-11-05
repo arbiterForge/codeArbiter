@@ -118,8 +118,8 @@ from _artifactlib import _CONTEXT_TARGETS  # inert candidate names; qualificatio
 _READ_ERRS = []
 
 
-def _note_read_err(argv, failure_kind):
-    _READ_ERRS.append(git_read_error_summary(argv, failure_kind))
+def _note_read_err(operation, failure_kind):
+    _READ_ERRS.append(git_read_error_summary(operation, failure_kind))
 
 
 def _exception_failure_kind(error):
@@ -1889,11 +1889,11 @@ def current_branch(cwd):
             timeout=5,
         )
         if out.returncode != 0:
-            _note_read_err(argv, "exit")
+            _note_read_err("branch", "exit")
             return None
         return out.stdout.strip()
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, _exception_failure_kind(e))
+        _note_read_err("branch", _exception_failure_kind(e))
         return None
 
 
@@ -1928,10 +1928,10 @@ def head_on_protected_tip(cwd):
             errors="replace", timeout=5,
         )
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, _exception_failure_kind(e))
+        _note_read_err("show-ref", _exception_failure_kind(e))
         return None
     if out.returncode not in (0, 1):
-        _note_read_err(argv, "exit")
+        _note_read_err("show-ref", "exit")
         return None
     head_sha, protected = None, set()
     for ln in out.stdout.splitlines():
@@ -1973,18 +1973,18 @@ def added_lines(cwd, ref, paths=None):
             timeout=10,
         )
         if out.returncode != 0 or not isinstance(out.stdout, str):
-            _note_read_err(argv, "output" if out.returncode == 0 else "exit")
+            _note_read_err("diff", "output" if out.returncode == 0 else "exit")
             return None
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, _exception_failure_kind(e))
+        _note_read_err("diff", _exception_failure_kind(e))
         return None
     result = security_scan_diff(out.stdout)
     if result is None:
-        _note_read_err(argv, "output")
+        _note_read_err("diff", "output")
     return result
 
 
-def _names(cwd, args):
+def _names(cwd, args, operation):
     """A set of repo-relative paths from a `git ... --name-only` style query, or
     None when git could not answer (nonzero / timeout / error). None (not an
     empty set) lets the H-14 migration scan fail CLOSED on a read error rather
@@ -1995,10 +1995,10 @@ def _names(cwd, args):
             encoding="utf-8", errors="replace", timeout=10,
         )
         if out.returncode != 0:
-            _note_read_err(["git"] + args, "exit")
+            _note_read_err(operation, "exit")
             return None
     except Exception as e:  # noqa: BLE001
-        _note_read_err(["git"] + args, _exception_failure_kind(e))
+        _note_read_err(operation, _exception_failure_kind(e))
         return None
     return {p for p in out.stdout.splitlines() if p.strip()}
 
@@ -2006,15 +2006,16 @@ def _names(cwd, args):
 def staged_paths(cwd):
     """Paths in the index — what a plain `git commit` would record. None on a
     git-read failure (caller fails closed)."""
-    return _names(cwd, ["diff", "--cached", "--name-only"])
+    return _names(cwd, ["diff", "--cached", "--name-only"], "diff")
 
 
 def worktree_paths(cwd):
     """Tracked worktree modifications (what `git commit -a` sweeps in) plus
     untracked files. None if either underlying query failed (caller fails
     closed)."""
-    tracked = _names(cwd, ["diff", "--name-only"])
-    untracked = _names(cwd, ["ls-files", "--others", "--exclude-standard"])
+    tracked = _names(cwd, ["diff", "--name-only"], "diff")
+    untracked = _names(cwd, ["ls-files", "--others", "--exclude-standard"],
+                       "ls-files")
     if tracked is None or untracked is None:
         return None
     return tracked | untracked
@@ -2705,7 +2706,8 @@ def _check_h14_migration(commit, add, cwd, root):
     else:
         pathspecs = commit_pathspecs(cargs)
         if pathspecs:
-            ps = _names(cwd, ["diff", "HEAD", "--name-only", "--", *pathspecs])
+            ps = _names(cwd, ["diff", "HEAD", "--name-only", "--", *pathspecs],
+                        "diff")
             failed = failed or ps is None
             extra = ps or set()
     if failed:

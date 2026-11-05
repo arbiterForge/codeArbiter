@@ -116,8 +116,8 @@ def block(tag, msg):
 _READ_ERRS = []
 
 
-def _note_read_err(argv, failure_kind):
-    _READ_ERRS.append(git_read_error_summary(argv, failure_kind))
+def _note_read_err(operation, failure_kind):
+    _READ_ERRS.append(git_read_error_summary(operation, failure_kind))
 
 
 def _read_err_hint():
@@ -137,7 +137,7 @@ def current_branch(cwd):
     argv = ["branch", "--show-current"]
     r, failure_kind = _git_read(argv, cwd)
     if r is None or r.returncode != 0:
-        _note_read_err(["git"] + argv, failure_kind or "exit")
+        _note_read_err("branch", failure_kind or "exit")
         return None
     return r.stdout.strip()
 
@@ -152,7 +152,7 @@ def head_on_protected_tip(cwd):
     argv = ["show-ref", "--head", "refs/heads/main", "refs/heads/master"]
     r, failure_kind = _git_read(argv, cwd)
     if r is None or r.returncode not in (0, 1):
-        _note_read_err(["git"] + argv, failure_kind or "exit")
+        _note_read_err("show-ref", failure_kind or "exit")
         return None
     head_sha, protected = None, set()
     for ln in r.stdout.splitlines():
