@@ -30,7 +30,7 @@
     },
     {
       "path": "plugins/ca/hooks/_gitexec.py",
-      "sha256": "51bcf4dcec9d493a8cef687c1380df6ae8be8f0dae8af92c993a0c94341f4d47"
+      "sha256": "9947e7e451e9d32259966c764eec9de93423da00ffec0281294476ce94832d45"
     },
     {
       "path": "plugins/ca/hooks/_githooks.py",

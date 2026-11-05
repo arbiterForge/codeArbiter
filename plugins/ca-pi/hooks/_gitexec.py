@@ -13,6 +13,9 @@
 #                                             None if unset
 #   git_executable() -> str                  trusted_git_executable() or the bare "git"
 #                                             fallback
+#   git_read_error_summary(argv, detail) -> str
+#                                             credential-safe failure class and
+#                                             executable local continuation
 #   read_index_text(root, rel, max_bytes) -> str|None
 #                                             exact stage-0 blob text, or None
 #   read_head_blob_digest(root, rel) -> str|None bounded HEAD blob SHA-256, or None
@@ -83,6 +86,79 @@ def trusted_python_executable():
 
 def git_executable():
     return trusted_git_executable() or "git"
+
+
+_GIT_READ_OPERATIONS = (
+    "branch", "show-ref", "diff", "rev-parse", "status", "ls-files",
+    "ls-tree", "cat-file", "hash-object",
+)
+_GIT_GLOBAL_OPTIONS_WITH_VALUES = frozenset({
+    "-C", "-c", "--git-dir", "--work-tree", "--namespace",
+    "--super-prefix", "--config-env", "--exec-path",
+})
+
+
+def _git_read_operation(argv):
+    """Return a fixed-literal Git subcommand, never an option value/pathspec."""
+    arguments = tuple(str(value) for value in (argv or ()))
+    index = 0
+    if arguments and os.path.basename(arguments[0]).casefold() in ("git", "git.exe"):
+        index = 1
+    while index < len(arguments):
+        value = arguments[index]
+        if value == "--":
+            break
+        if value in _GIT_GLOBAL_OPTIONS_WITH_VALUES:
+            index += 2
+            continue
+        if value.startswith("-"):
+            index += 1
+            continue
+        for candidate in _GIT_READ_OPERATIONS:
+            if value == candidate:
+                return candidate
+        break
+    return "operation"
+
+
+def git_read_error_summary(argv, detail):
+    """Return an actionable Git-read diagnostic without echoing raw stderr.
+
+    Git can include credential-bearing remote URLs and helper output in stderr.
+    Select the operation and failure class only from fixed literals; never
+    interpolate argv values or the detail text into a hook transcript or audit
+    log. The local status probe is a safe, executable first diagnostic before
+    retrying the refused operation.
+    """
+    operation = _git_read_operation(argv)
+    detail_text = str(detail or "")
+    lowered = detail_text.casefold()
+    if ("timed out" in lowered or "timeouterror" in lowered
+            or "timeoutexpired" in lowered):
+        failure = "timed out"
+    elif (detail_text == "git spawn failed" or "filenotfounderror" in lowered
+          or "winerror 2" in lowered):
+        failure = "could not start"
+    elif "permissionerror" in lowered:
+        failure = "was denied filesystem access"
+    elif "unicode" in lowered or "decode" in lowered or "malformed" in lowered:
+        failure = "returned unreadable output"
+    elif "exit" in lowered or "fatal" in lowered or "error" in lowered:
+        failure = "exited unsuccessfully"
+    else:
+        failure = "failed"
+    if failure == "could not start":
+        continuation = ("Repair the Git executable, PATH, or "
+                        "CODEARBITER_GIT_EXECUTABLE, then run `git status --short` "
+                        "and retry the same operation.")
+    elif failure == "was denied filesystem access":
+        continuation = ("Repair filesystem access, then run `git status --short` "
+                        "and retry the same operation.")
+    else:
+        continuation = ("Run `git status --short`, repair the Git access issue, "
+                        "then retry the same operation.")
+    return (f"`git {operation}` {failure}; stderr withheld to prevent credential "
+            f"disclosure. {continuation}")
 
 
 def _blob_sha256(root, oid, max_bytes, env):

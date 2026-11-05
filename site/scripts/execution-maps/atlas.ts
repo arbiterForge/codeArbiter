@@ -225,7 +225,7 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
 // commit owners keep their Atlas route and gate ownership; pin the reviewed
 // current blobs without rewriting the historical packet bindings below.
 export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_bashguardlib.py':'c2726178a6d8df46f2bb7fa8950b5f113f152ec5',
+  'core/pysrc/_bashguardlib.py':'b8325f58bed88ce5372cb6ff5f987c2c1f896aca',
   'core/surface/commands/override.md':'7842b2e8579be612d5966979020fabca4f973371',
   'core/surface/skills/commit-gate/SKILL.md':'d9effaf2d573301536d60fb0efd39ad2196f3f82',
 });

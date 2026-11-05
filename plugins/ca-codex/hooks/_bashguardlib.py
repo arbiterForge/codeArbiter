@@ -97,7 +97,7 @@ from _hooklib import (
     security_gate_recovery,
     worktree_marker_binding,
 )
-from _gitexec import git_executable
+from _gitexec import git_executable, git_read_error_summary
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
                 # gitdir: pointer) project_root() climb (#223)
 from hostapi import git_toplevel, git_worktree_main_root  # noqa: #604 marker-root escalation
@@ -119,7 +119,7 @@ _READ_ERRS = []
 
 
 def _note_read_err(argv, detail):
-    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+    _READ_ERRS.append(git_read_error_summary(argv, detail))
 
 
 def _read_err_hint():

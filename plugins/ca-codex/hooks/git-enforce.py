@@ -30,7 +30,7 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _gitexec import (  # noqa: E402
     binary_candidate_binding, git_executable, read_head_blob_digest,
-    read_index_text, root_bound_git_env,
+    git_read_error_summary, read_index_text, root_bound_git_env,
     staged_changes,
 )
 from _hooklib import (  # noqa: E402
@@ -103,7 +103,7 @@ _READ_ERRS = []
 
 
 def _note_read_err(argv, detail):
-    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+    _READ_ERRS.append(git_read_error_summary(argv, detail))
 
 
 def _read_err_hint():

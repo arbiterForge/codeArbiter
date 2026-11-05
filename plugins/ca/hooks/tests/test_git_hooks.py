@@ -33,6 +33,7 @@ ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
 import _hooklib  # noqa: E402
+import _bashguardlib  # noqa: E402
 from _helpers import durable_plugin_copy, gitbashify, wslify  # noqa: E402
 
 
@@ -57,6 +58,50 @@ def _git(args, cwd, check=True):
     if check and r.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr}")
     return r
+
+
+class TestGitReadErrorRedaction(unittest.TestCase):
+    """Git diagnostics stay actionable without echoing credential-bearing stderr."""
+
+    def _assert_redacted(self, module):
+        secret = "diagnostic-only-secret-value"
+        module._READ_ERRS.clear()
+        cases = (
+            (["git", "diff", "--cached", "--", f"branch-{secret}"], "git diff"),
+            (["git", "-C", "branch", "ls-files", "--", "diff"], "git ls-files"),
+        )
+        for argv, expected_operation in cases:
+            with self.subTest(argv=argv):
+                module._READ_ERRS.clear()
+                module._note_read_err(
+                    argv,
+                    f"fatal: unable to access 'https://reader:{secret}@example.invalid/repo'",
+                )
+                hint = module._read_err_hint()
+                self.assertNotIn(secret, hint)
+                self.assertIn(expected_operation, hint)
+                self.assertIn("withheld", hint)
+        module._READ_ERRS.clear()
+        module._note_read_err(
+            ["git", "diff", "--cached"],
+            repr(subprocess.TimeoutExpired(["git", "diff", "--cached"], 10)),
+        )
+        self.assertIn("timed out", module._read_err_hint())
+        module._READ_ERRS.clear()
+        module._note_read_err(["git", "cat-file"], "fatal: object not found")
+        self.assertIn("exited unsuccessfully", module._read_err_hint())
+        module._READ_ERRS.clear()
+        module._note_read_err(["git", "status"], "git spawn failed")
+        spawn_hint = module._read_err_hint()
+        self.assertIn("could not start", spawn_hint)
+        self.assertLess(spawn_hint.index("Repair the Git executable"),
+                        spawn_hint.index("git status --short"))
+
+    def test_pretool_git_read_hint_redacts_stderr(self):
+        self._assert_redacted(_bashguardlib)
+
+    def test_git_backstop_read_hint_redacts_stderr(self):
+        self._assert_redacted(_load_git_enforce())
 
 
 def _actual_hooks_dir(root):
