@@ -30,7 +30,7 @@
     },
     {
       "path": "plugins/ca/hooks/_gitexec.py",
-      "sha256": "6dc323512f8a50b2a82a8ff63cd5eb2d1e98aefb9dafcc802b8053a2bc838d68"
+      "sha256": "51bcf4dcec9d493a8cef687c1380df6ae8be8f0dae8af92c993a0c94341f4d47"
     },
     {
       "path": "plugins/ca/hooks/_githooks.py",
@@ -38,7 +38,7 @@
     },
     {
       "path": "plugins/ca/hooks/_hooklib.py",
-      "sha256": "966c876c032d026459dc4c0af2fffaa822a222426ca9150a7cb068456272dc5e"
+      "sha256": "957e39cf648ea8d2f7b10a6fceb133165b6665c1a794d29980e70ab885f42392"
     },
     {
       "path": "plugins/ca/hooks/_host.py",
@@ -58,7 +58,7 @@
     },
     {
       "path": "plugins/ca/hooks/_sensitivelib.py",
-      "sha256": "ccb2b1c7b6912aac52bf0aae5fbba8bd0a8e66e4c4fae5a28458ab4790d38c34"
+      "sha256": "42db725fdd78678b7cb47078b653244e06347cdfd14ecc9ed5e4d2405891948d"
     },
     {
       "path": "plugins/ca/hooks/_taskboardlib.py",
