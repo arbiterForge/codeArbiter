@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [~] Isolate external shell state in hook append tests  (from github-actions-run:41976210734:hook-contract-hermeticity)  (started 2026-11-05)
+  - Work origin: github-actions-run:41976210734:hook-contract-hermeticity
+  - Desc: The hook hermeticity suite shows test_protectedstatelib launches PowerShell with the suite-owned redirected user home, creating cache and profile directories on Ubuntu, macOS, and Windows. Redirect every external shell process to test-local home, profile, cache, config, and data paths while preserving the real UTF-8 append behavior checks.
+  - Work type: fix
+  - Work ID: WORK-4E35208AECCFB096BFD47B721D52BD8A
+  - Work operation ID: work-dcbdba2d1c5fe9a4b89b5ef11ce0f060aa23961d
 - [x] Repair Academy promotion review findings  (from github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03)  (done 2026-11-03)
   - Work origin: github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03
   - Desc: Scheduled Academy promotion must select the highest valid published Preview release, pass repository metadata through workflow environment data rather than shell source, and keep governed rollback paths complete.
