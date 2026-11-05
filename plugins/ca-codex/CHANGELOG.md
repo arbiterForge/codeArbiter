@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.4] - 2026-11-05
+
+### Fixed
+
+- Bind security and migration review markers to the exact worktree, index, staged paths, statuses, bytes, and required HEAD preimages so later changes cannot reuse an earlier approval.
+- Give legitimate hook refusals a precise sanctioned continuation while keeping genuine security blocks fail-closed, and report Git read failures without exposing command arguments, stderr, or exception details.
+- Harden audited binary overrides, append-only log publication, and protected-path parsing in the shared governance kernel.
+
 ## [0.26.3] - 2026-11-02
 
 ### Fixed

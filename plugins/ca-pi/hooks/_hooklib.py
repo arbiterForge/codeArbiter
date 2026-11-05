@@ -283,7 +283,7 @@ def security_finding_summary(findings, *, crypto_fallback=False):
     return crypto_count, len(identities["secret"]), sorted(locations)
 
 
-def security_gate_recovery(plugin_root, root, crypto_count, secret_count, locations,
+def security_gate_recovery(plugin_root, root, crypto_count, sensitive_match_count, locations,
                            *, requires_staging=False):
     """Non-authorizing recovery text shared by both security backstops."""
     kinds = []
@@ -291,8 +291,8 @@ def security_gate_recovery(plugin_root, root, crypto_count, secret_count, locati
     if crypto_count:
         kinds.append(f"crypto/TLS={crypto_count}")
         reviewers.append("dispatch independent auth-crypto-reviewer")
-    if secret_count:
-        kinds.append(f"secret={secret_count}")
+    if sensitive_match_count:
+        kinds.append(f"secret={sensitive_match_count}")
         reviewers.append("run the secret-handling review")
     shown = locations[:20]
     omitted = len(locations) - len(shown)

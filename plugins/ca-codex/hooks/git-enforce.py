@@ -261,12 +261,12 @@ def pre_commit(root):
     else:
         sensitive = added.digests
     if sensitive:
-        crypto_count, secret_count, locations = security_finding_summary(
+        crypto_count, sensitive_match_count, locations = security_finding_summary(
             added.findings, crypto_fallback=added.crypto)
         tag = "H-09b" if added.crypto else "H-10b"
         plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         recovery = security_gate_recovery(
-            plugin_root, root, crypto_count, secret_count, locations)
+            plugin_root, root, crypto_count, sensitive_match_count, locations)
         marker_root = _marker_root(root)
         marker = os.path.join(marker_root, ".codearbiter", ".markers", "security-gate-passed")
         if not os.path.isfile(marker):
@@ -282,11 +282,11 @@ def pre_commit(root):
         uncovered = sensitive - approved
         if uncovered:
             uncovered_findings = [f for f in added.findings if f.digest in uncovered]
-            crypto_count, secret_count, uncovered_locations = security_finding_summary(
+            crypto_count, sensitive_match_count, uncovered_locations = security_finding_summary(
                 uncovered_findings, crypto_fallback=added.crypto and bool(uncovered))
             block(tag, f"{len(uncovered)} sensitive binding(s) changed or were omitted "
                        f"after review (#161 git backstop). " + security_gate_recovery(
-                           plugin_root, root, crypto_count, secret_count,
+                           plugin_root, root, crypto_count, sensitive_match_count,
                            uncovered_locations))
 
     # H-14: a staged migration needs a content-bound migration-review pass.

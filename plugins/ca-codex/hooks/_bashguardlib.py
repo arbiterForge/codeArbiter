@@ -2633,13 +2633,13 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
     if sensitive:
         findings = tuple(finding for part in parts for finding in part.findings)
         touches_crypto = any(part.crypto for part in parts)
-        crypto_count, secret_count, locations = security_finding_summary(
+        crypto_count, sensitive_match_count, locations = security_finding_summary(
             findings, crypto_fallback=touches_crypto)
         tag = "H-09b" if touches_crypto else "H-10b"
         plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         requires_staging = len(parts) > 1
         recovery = security_gate_recovery(
-            plugin_root, candidate_root, crypto_count, secret_count, locations,
+            plugin_root, candidate_root, crypto_count, sensitive_match_count, locations,
             requires_staging=requires_staging)
         marker = os.path.join(_marker_root(candidate_root), ".codearbiter", ".markers", "security-gate-passed")
         if not os.path.isfile(marker):
@@ -2664,10 +2664,10 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         uncovered = sensitive - approved
         if uncovered:
             uncovered_findings = [finding for finding in findings if finding.digest in uncovered]
-            crypto_count, secret_count, uncovered_locations = security_finding_summary(
+            crypto_count, sensitive_match_count, uncovered_locations = security_finding_summary(
                 uncovered_findings, crypto_fallback=touches_crypto and bool(uncovered))
             recovery = security_gate_recovery(
-                plugin_root, candidate_root, crypto_count, secret_count,
+                plugin_root, candidate_root, crypto_count, sensitive_match_count,
                 uncovered_locations, requires_staging=requires_staging)
             block(tag, f"{len(uncovered)} sensitive binding(s) are not covered by the "
                        f"recorded PASS; the candidate changed or was omitted after review. "

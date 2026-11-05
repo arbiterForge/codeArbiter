@@ -7,6 +7,8 @@ When a developer or agent works in a linked git worktree, gate passes
 git-enforce.py must read gate markers from `_marker_root(root)` so that pre-commit
 validations in linked worktrees find the recorded gate passes.
 """
+import ast
+import inspect
 import os
 import contextlib
 import io
@@ -20,6 +22,7 @@ from unittest import mock
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HOOKS)
 import hostapi  # noqa: E402
+import _bashguardlib  # noqa: E402
 import _hooklib  # noqa: E402
 
 import importlib.util as _ilu
@@ -300,6 +303,22 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
                         os.path.join(HOOKS, "security-pass.py"), plain_root),
                     "exact invocation JSON", "not a bypass"):
                 self.assertIn(expected, message)
+
+    def test_sensitive_match_counts_are_not_named_as_secret_values(self):
+        """Keep numeric finding counts out of CodeQL's semantic secret sources."""
+        for module in (_hooklib, _bashguardlib, self.mod):
+            with self.subTest(module=module.__name__):
+                tree = ast.parse(inspect.getsource(module))
+                identifiers = {
+                    node.id for node in ast.walk(tree)
+                    if isinstance(node, ast.Name)
+                }
+                identifiers.update(
+                    node.arg for node in ast.walk(tree)
+                    if isinstance(node, ast.arg)
+                )
+                self.assertNotIn("secret_count", identifiers)
+                self.assertIn("sensitive_match_count", identifiers)
 
     def test_cross_host_worktree_spellings_share_one_binding(self):
         spellings = (r"C:\Repo\Work", "/c/Repo/Work", "/mnt/c/Repo/Work")

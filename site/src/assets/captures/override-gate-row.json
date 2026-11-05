@@ -26,7 +26,7 @@
     },
     {
       "path": "plugins/ca/hooks/_hooklib.py",
-      "sha256": "957e39cf648ea8d2f7b10a6fceb133165b6665c1a794d29980e70ab885f42392"
+      "sha256": "6cb23c6956320a02f8d7f7722a80bcb9915da01f3eb43b7d86389913ee6a0330"
     },
     {
       "path": "plugins/ca/hooks/_overrideappendlib.py",
@@ -54,7 +54,7 @@
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "039674814cfa37fc74085ac459171ef8a64162e33dcefce08b47f286e0a1a508"
+      "sha256": "7b9ef73742b525079c221483149472bb0fdb353202cf0b7249f95c1e77861af2"
     }
   ]
 }
