@@ -186,14 +186,19 @@ def cached_added_lines(cwd):
     try:
         r = subprocess.run(
             [git_executable(), *SECURITY_DIFF_GIT_ARGS, "--cached"], cwd=cwd,
-            capture_output=True, text=True, encoding="utf-8", errors="strict",
-            timeout=10, env=root_bound_git_env(preserve_index=True),
+            capture_output=True, timeout=10,
+            env=root_bound_git_env(preserve_index=True),
         )
-    except (OSError, subprocess.SubprocessError, UnicodeError):
+    except (OSError, subprocess.SubprocessError):
         return None
-    if r.returncode != 0 or not isinstance(r.stdout, str):
+    if r.returncode != 0 or not isinstance(r.stdout, bytes):
         return None
-    return security_scan_diff(r.stdout)
+    try:
+        stdout = r.stdout.decode("utf-8", errors="strict")
+    except UnicodeDecodeError:
+        _note_read_err("diff", "non-utf8")
+        return None
+    return security_scan_diff(stdout)
 
 
 def cached_names(cwd):
@@ -244,9 +249,10 @@ def pre_commit(root):
     # Reuses the exact _hooklib primitives.
     added = cached_added_lines(cwd)
     if added is None:
-        block("H-09b", "the staged diff for the crypto/secret scan could not be read — "
-                       "failing closed (ORCHESTRATOR §2). Repair Git readability and "
-                       "retry; a reviewer PASS cannot substitute for an unreadable diff.")
+        block("H-09b", "the staged diff for the crypto/secret scan could not be decoded "
+                       "or read — failing closed (ORCHESTRATOR §2). Repair the reported "
+                       "cause and retry; a reviewer PASS cannot substitute for an "
+                       "unreadable diff." + _read_err_hint())
     if isinstance(added, BinarySecurityContext):
         if added.digests:
             block("H-09b", mixed_binary_security_recovery())
@@ -266,7 +272,8 @@ def pre_commit(root):
         tag = "H-09b" if added.crypto else "H-10b"
         plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         recovery = security_gate_recovery(
-            plugin_root, root, crypto_count, sensitive_match_count, locations)
+            plugin_root, root, crypto_count, sensitive_match_count, locations,
+            requires_staging=True)
         marker_root = _marker_root(root)
         marker = os.path.join(marker_root, ".codearbiter", ".markers", "security-gate-passed")
         if not os.path.isfile(marker):
@@ -287,7 +294,7 @@ def pre_commit(root):
             block(tag, f"{len(uncovered)} sensitive binding(s) changed or were omitted "
                        f"after review (#161 git backstop). " + security_gate_recovery(
                            plugin_root, root, crypto_count, sensitive_match_count,
-                           uncovered_locations))
+                           uncovered_locations, requires_staging=True))
 
     # H-14: a staged migration needs a content-bound migration-review pass.
     names = cached_names(cwd)
@@ -302,7 +309,8 @@ def pre_commit(root):
         if worktree_marker_binding(root) not in approved:
             block("H-14", "The migration PASS is missing, unreadable, legacy, or bound "
                           "to a different worktree (#161 git backstop). " +
-                          migration_gate_recovery(plugin_root, root, migs))
+                          migration_gate_recovery(plugin_root, root, migs,
+                                                  requires_staging=True))
         uncovered = []
         reviewed = []
         for rel in migs:
@@ -317,11 +325,13 @@ def pre_commit(root):
         if uncovered:
             block("H-14", f"{len(uncovered)} staged migration file(s) changed or were "
                           f"omitted after review (#161 git backstop). " +
-                          migration_gate_recovery(plugin_root, root, uncovered))
+                          migration_gate_recovery(plugin_root, root, uncovered,
+                                                  requires_staging=True))
         if migration_candidate_binding(reviewed) not in approved:
             block("H-14", "The staged migration set differs from the complete candidate "
                           "independently reviewed and recorded (#161 git backstop). " +
-                          migration_gate_recovery(plugin_root, root, migs))
+                          migration_gate_recovery(plugin_root, root, migs,
+                                                  requires_staging=True))
 
 
 def pre_push(root):

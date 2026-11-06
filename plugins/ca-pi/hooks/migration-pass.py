@@ -22,7 +22,8 @@
 import json
 import os
 
-from _gitexec import read_head_blob_digest, read_index_text, staged_changes
+from _gitexec import (active_index_recovery, read_head_blob_digest,
+                      read_index_text, staged_changes)
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -66,6 +67,10 @@ def main(argv=None):
     if not os.path.isdir(os.path.join(root, ".codearbiter")):
         warn("no .codearbiter/ here — migration-pass.py records nothing outside "
              "an initialized repo")
+        sys.exit(1)
+    index_recovery = active_index_recovery(root)
+    if index_recovery:
+        warn("migration-gate pass refused: " + index_recovery)
         sys.exit(1)
     candidates = candidate_paths(root)
     if candidates is None:

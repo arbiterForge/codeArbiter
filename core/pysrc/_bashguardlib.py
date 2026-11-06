@@ -416,7 +416,14 @@ _READ_FILEACCESS_VALUE_RE = re.compile(
 )
 
 
-def _powershell_layout(text):
+def _powershell_comment_boundary(text, index, allow_scriptblock=False):
+    """Whether a PowerShell comment opener begins a new shell token."""
+    return (index == 0 or text[index - 1].isspace()
+            or text[index - 1] in ";|&(" or
+            allow_scriptblock and text[index - 1] == "{")
+
+
+def _powershell_layout(text, allow_scriptblock_comments=False):
     """Index PowerShell nesting, calls, commas, and command boundaries once."""
     stack = []
     pairs = {}
@@ -481,7 +488,9 @@ def _powershell_layout(text):
                 quote = None
             index += 1
             continue
-        if text.startswith("<#", index):
+        if (text.startswith("<#", index)
+                and _powershell_comment_boundary(
+                    text, index, allow_scriptblock_comments)):
             code[index] = False
             comments[index] = True
             block_depth = 1
@@ -491,7 +500,8 @@ def _powershell_layout(text):
                 depths[index + 1] = len(stack)
             index += 2
             continue
-        if char == "#":
+        if (char == "#" and _powershell_comment_boundary(
+                text, index, allow_scriptblock_comments)):
             code[index] = False
             comments[index] = True
             line_comment = True
@@ -532,9 +542,9 @@ def _powershell_layout(text):
             comments, strings)
 
 
-def _powershell_without_comments(text):
+def _powershell_without_comments(text, allow_scriptblock_comments=False):
     """Replace PowerShell comments with spaces while preserving all offsets."""
-    comments = _powershell_layout(text)[-2]
+    comments = _powershell_layout(text, allow_scriptblock_comments)[-2]
     return "".join(
         " " if comments[index] else char for index, char in enumerate(text))
 
@@ -587,10 +597,11 @@ def _powershell_subexpression_end(text, opening):
                 continue
             index += 1
             continue
-        if text.startswith("<#", index):
+        if (text.startswith("<#", index)
+                and _powershell_comment_boundary(text, index)):
             block_depth = 1
             index += 2
-        elif char == "#":
+        elif char == "#" and _powershell_comment_boundary(text, index):
             line_comment = True
             index += 1
         elif char in "'\"":
@@ -1953,10 +1964,10 @@ def added_lines(cwd, ref, paths=None):
     error rather than silently passing — an empty diff and an unreadable diff are
     NOT the same thing. `paths`, when given, scopes the diff to the pathspec(s) a
     `git commit <path>` names (whose worktree content the --cached scan misses).
-    Decoded as UTF-8 with replacement: `text=True` alone uses the locale code
-    page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
-    UnicodeDecodeError into the bare except below and the security gate
-    silently failed OPEN on exactly the platform this layer protects.
+    Decoded strictly as UTF-8. Non-UTF-8 text fails closed with a precise route:
+    convert it to UTF-8 or classify a genuinely binary file in `.gitattributes`
+    and use the audited binary override. This avoids locale decoding (cp1252 on
+    stock Windows) and never substitutes replacement text for security input.
 
     Excludes gate-events.log (#279): `sensitive_scan_added_lines` walks the
     diff path-aware, dropping lines that belong to the crypto/secret gate's
@@ -1967,18 +1978,19 @@ def added_lines(cwd, ref, paths=None):
     argv = [git_executable(), *SECURITY_DIFF_GIT_ARGS, ref] + (
         ["--", *paths] if paths else [])
     try:
-        out = subprocess.run(
-            argv, cwd=cwd,
-            capture_output=True, text=True, encoding="utf-8", errors="strict",
-            timeout=10,
-        )
-        if out.returncode != 0 or not isinstance(out.stdout, str):
+        out = subprocess.run(argv, cwd=cwd, capture_output=True, timeout=10)
+        if out.returncode != 0 or not isinstance(out.stdout, bytes):
             _note_read_err("diff", "output" if out.returncode == 0 else "exit")
+            return None
+        try:
+            stdout = out.stdout.decode("utf-8", errors="strict")
+        except UnicodeDecodeError:
+            _note_read_err("diff", "non-utf8")
             return None
     except Exception as e:  # noqa: BLE001
         _note_read_err("diff", _exception_failure_kind(e))
         return None
-    result = security_scan_diff(out.stdout)
+    result = security_scan_diff(stdout)
     if result is None:
         _note_read_err("diff", "output")
     return result
@@ -2341,7 +2353,7 @@ def _literal_copy_item_target(cmd, base):
     return target
 
 
-def _check_h05_audit_log(cmd):
+def _check_h05_audit_log(cmd, powershell_tool=False):
     """H-05: the audit trail is append-only — block truncation/removal of the
     audit logs via shell verbs (Write/Edit are guarded separately). The
     substring pre-filter is a cheap short-circuit before the two regexes
@@ -2357,7 +2369,8 @@ def _check_h05_audit_log(cmd):
     # script are visibly read-only is a read, as for H-11 and H-18 (#997).
     folded = cmd.casefold()
     powershell_dotnet = "new-object" in folded or "::" in cmd
-    lexical_cmd = (_powershell_without_comments(cmd)
+    lexical_cmd = (_powershell_without_comments(
+                       cmd, allow_scriptblock_comments=powershell_tool)
                    if powershell_dotnet else cmd)
     legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
     enrolled_name = (any(n in cmd for n in legacy_names) or
@@ -2365,7 +2378,7 @@ def _check_h05_audit_log(cmd):
     if enrolled_name and (
             LOG_TRUNC_RE.search(lexical_cmd)
             or _shell_write(lexical_cmd, LOG_DESTROY_RE)
-            or _dotnet_audit_rewrite(cmd)
+            or _dotnet_audit_rewrite(lexical_cmd)
             or LOG_GIT_RESTORE_RE.search(lexical_cmd)
             and not _index_only_restore(lexical_cmd)
             or _interp_protected_write(
@@ -2599,8 +2612,8 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
             parts.append(added_lines(cwd, "HEAD", pathspecs))
     if any(p is None for p in parts):
         block("H-09b", "the diff for the crypto/secret security scan could not be "
-                       "read (git unavailable or timed out) — failing closed "
-                       "(ORCHESTRATOR §2). Repair the reported Git read failure and "
+                       "decoded or read — failing closed (ORCHESTRATOR §2). Repair "
+                       "the reported cause and "
                        "retry the same scan; a reviewer PASS cannot substitute for "
                        "an unreadable candidate." + _read_err_hint())
     candidate_root = git_toplevel(cwd)
@@ -3038,7 +3051,8 @@ def run_guards(payload, root, ti):
         _check_h03_wildcard_add(staging, git_cwd(staging.group(0), exec_root))
     # Commit security/migration checks still see that the batch stages files.
     add = adds[0] if adds else None
-    _check_h05_audit_log(cmd)
+    _check_h05_audit_log(
+        cmd, powershell_tool=(payload.get("tool_name") == "PowerShell"))
     _check_h11_decisions(cmd)
     _check_h18_context_md(cmd, root)
     _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback, root)

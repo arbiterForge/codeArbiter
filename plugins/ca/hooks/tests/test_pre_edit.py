@@ -502,6 +502,34 @@ def _load_pre_edit():
     return mod
 
 
+class TestOpaqueRecoveryGuidance(unittest.TestCase):
+    def test_claude_opaque_edit_names_only_available_continuations(self):
+        mod = _load_pre_edit()
+
+        class OpaqueHost:
+            @staticmethod
+            def iter_file_ops(_payload):
+                return [{"file_path": "", "kind": "opaque"}]
+
+        class Blocked(Exception):
+            pass
+
+        observed = {}
+
+        def capture(tag, message):
+            observed.update(tag=tag, message=message)
+            raise Blocked
+
+        mod.read_input = lambda: {}
+        mod.get_host = lambda: OpaqueHost()
+        mod.block = capture
+        with self.assertRaises(Blocked):
+            mod._run(".")
+        self.assertEqual(observed["tag"], "H-21")
+        self.assertNotIn("apply_patch", observed["message"])
+        self.assertIn("single-file Edit", observed["message"])
+
+
 class TestH22ProtectedState(unittest.TestCase):
     """T-07 (#564): the SAME generic "state" branch pre-write.py carries.
     marker-gated admits only under a fresh authoring marker; helper-only/

@@ -66,9 +66,10 @@ def git(args, cwd):
     return r
 
 
-def run_hook(fixture, command):
+def run_hook(fixture, command, tool_name="Bash"):
     """pre-bash.py exactly as the hook layer sees it: hook JSON on stdin."""
-    payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": command}})
+    payload = json.dumps({"tool_name": tool_name,
+                          "tool_input": {"command": command}})
     return sh([sys.executable, PRE_BASH], fixture, input=payload)
 
 
@@ -623,6 +624,12 @@ def main():
                     "sed -i d .codearbiter/triage.log",
                     "rm .codearbiter/triage.log",
                     "Set-Content .codearbiter/overrides.log 'gone'",
+                    # A hash inside an ordinary POSIX-shell word is data, not
+                    # a comment delimiter.  PowerShell syntax elsewhere in the
+                    # command must not let comment stripping hide the later rm.
+                    "echo a::b#; rm .codearbiter/overrides.log",
+                    "echo a::b{#; rm .codearbiter/overrides.log",
+                    "echo a::b{<#hidden#>; rm .codearbiter/overrides.log",
                     # sprint-log.md is the /sprint decision record — append-only.
                     "echo x > .codearbiter/sprint-log.md",
                     "echo x >| .codearbiter/sprint-log.md",
@@ -663,6 +670,15 @@ def main():
                     # make an unrelated restore look destructive.
                     "git restore notes.txt; cat .codearbiter/overrides.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
+        for cmd in (
+                "& {# [IO.File]::Delete('.codearbiter/overrides.log')\n Write-Output OK }",
+                "& {<# [IO.File]::Delete('.codearbiter/overrides.log') #>\n Write-Output OK }",
+        ):
+            result = run_hook(fx, cmd, tool_name="PowerShell")
+            check(result.returncode == 0 and "BLOCKED" not in result.stderr,
+                  "H-05 PowerShell scriptblock comment allow",
+                  f"expected PowerShell ALLOW for: {cmd!r}; "
+                  f"exit={result.returncode} stderr={result.stderr[:300]!r}")
         # A sed that cannot write is a read, as H-11 and H-18 treat it (#997).
         for cmd in ("sed -n 1,20p .codearbiter/overrides.log",
                     'cd "repo dir" && sed -n 1,80p .codearbiter/gate-events.log',

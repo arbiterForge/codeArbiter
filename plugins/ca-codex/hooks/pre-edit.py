@@ -112,10 +112,8 @@ def _run(root):
     # (ORCHESTRATOR §2), mirroring pre-write.py's opaque handling.
     if any(op.get("kind") == "opaque" for op in ops):
         block("H-21", "This edit could not be decomposed into per-file operations, so its "
-                      "targets cannot be guarded. Failing closed. Re-issue it as a plain "
-                      "patch in the documented apply_patch grammar, or split it into "
-                      "smaller single-file edits; report it only if neither shape is "
-                      "available.")
+                      "targets cannot be guarded. Failing closed. Split it into separate "
+                      "single-file Edit calls; report it if that is not possible.")
 
     # A "notebook" op (NotebookEdit): its target has no append/frontmatter
     # semantics to reason about — refuse any protected target outright with a

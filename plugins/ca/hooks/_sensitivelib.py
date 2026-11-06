@@ -139,12 +139,15 @@ def is_sensitive_scan_exempt(rel):
 # exists to close. `-c` overrides win over any config file (including repo,
 # global, and system config), so pinning both flags to false here forces the
 # standard `a/`/`b/` prefixes regardless of the caller's environment.
+# `core.quotePath=true` also keeps arbitrary path bytes ASCII-escaped so strict
+# UTF-8 decoding applies to file content without misdiagnosing a pathname byte.
 # `--no-ext-diff` additionally blocks a configured `GIT_EXTERNAL_DIFF` /
 # `diff.external` from replacing git's own unified-diff output with something
 # this parser was never designed to read. Centralized so a call site cannot
 # forget to pin it (that was exactly how this hole would keep reopening).
 SECURITY_DIFF_GIT_ARGS = (
     "-c", "diff.mnemonicPrefix=false", "-c", "diff.noprefix=false",
+    "-c", "core.quotePath=true",
     "diff", "--no-ext-diff", "--no-textconv", "--no-color", "--no-renames",
     "--full-index",
     "--src-prefix=a/", "--dst-prefix=b/", "--unified=2147483647",

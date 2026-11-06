@@ -9,12 +9,13 @@ the exact checkout whose staged diff was reviewed. This is the sanctioned PASS-r
 not an override:
 
 ```bash
-python "{{PLUGIN_ROOT}}/hooks/security-pass.py" --root "{{PROJECT_DIR}}"
+python "{{PLUGIN_ROOT}}/hooks/security-pass.py"
 ```
 
 Use the host's known Python 3 launcher in place of `python` when it has a different literal name;
 do not combine launcher discovery and the producer in one chained shell expression. The producer
-ignores an inherited `CLAUDE_PROJECT_DIR`: `--root` is the reviewed source identity. It writes the
+ignores an inherited `CLAUDE_PROJECT_DIR`: its current working directory is the reviewed source
+identity. Do not run it from a launch-time main checkout when the review covered a linked worktree. It writes the
 shared `.codearbiter/.markers/security-gate-passed` containing that worktree binding plus a digest
 of the complete staged diff and diagnostic digests for its sensitive rows. Unstaged and untracked
 rows are not absorbed. The

@@ -22,7 +22,8 @@ import argparse
 import os
 import subprocess
 
-from _gitexec import binary_candidate_binding, git_executable, root_bound_git_env
+from _gitexec import (active_index_recovery, binary_candidate_binding,
+                      git_executable, root_bound_git_env)
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -38,10 +39,12 @@ from _hooklib import (  # noqa: E402
 
 def run_git(args, cwd):
     return subprocess.run(
-        [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
-        encoding="utf-8", errors="strict", timeout=30,
+        [git_executable()] + args, cwd=cwd, capture_output=True, timeout=30,
         env=root_bound_git_env(preserve_index=True),
     )
+
+
+NON_UTF8_SECURITY_CONTEXT = object()
 
 
 def candidate_scan(root):
@@ -53,9 +56,13 @@ def candidate_scan(root):
     be staged, reviewed, and recorded again rather than silently widened here.
     """
     staged = run_git([*SECURITY_DIFF_GIT_ARGS, "--cached"], root)
-    if staged.returncode != 0 or not isinstance(staged.stdout, str):
+    if staged.returncode != 0 or not isinstance(staged.stdout, bytes):
         return None
-    return security_scan_diff(staged.stdout)
+    try:
+        stdout = staged.stdout.decode("utf-8", errors="strict")
+    except UnicodeDecodeError:
+        return NON_UTF8_SECURITY_CONTEXT
+    return security_scan_diff(stdout)
 
 
 def reviewed_request(argv=None):
@@ -106,10 +113,19 @@ def main(argv=None):
         warn("no .codearbiter/ here — security-pass.py records nothing outside "
              "an initialized repo")
         sys.exit(1)
+    index_recovery = active_index_recovery(root)
+    if index_recovery:
+        warn("security-gate pass refused: " + index_recovery)
+        sys.exit(1)
     try:
         scan = candidate_scan(root)
     except (OSError, subprocess.SubprocessError, UnicodeError, ValueError):
         scan = None
+    if scan is NON_UTF8_SECURITY_CONTEXT:
+        warn("security-gate pass refused: staged diff contains non-UTF-8 text bytes; "
+             "convert the file to UTF-8, or, if it is genuinely binary, mark it "
+             "binary in .gitattributes and use the audited binary override")
+        sys.exit(1)
     if isinstance(scan, BinarySecurityContext):
         if scan.digests:
             warn("binary security override refused: " + mixed_binary_security_recovery())

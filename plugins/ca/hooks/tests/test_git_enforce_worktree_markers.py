@@ -384,6 +384,32 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
                 self.assertIn(prefix + "override", _hooklib.migration_gate_recovery(
                     "C:/plugin", "C:/repo", ["migrations/1.sql"]))
 
+    def test_crypto_recovery_requires_skill_scan_before_independent_review(self):
+        text = _hooklib.security_gate_recovery(
+            "C:/plugin", "C:/repo", 1, 0, ["src/crypto.py:1"])
+        self.assertIn("crypto-compliance", text)
+        self.assertLess(text.index("crypto-compliance"),
+                        text.index("auth-crypto-reviewer"))
+
+    def test_powershell_comment_openers_require_a_token_boundary(self):
+        line = "echo a::b#; rm .codearbiter/overrides.log"
+        block = "echo a::<#; rm .codearbiter/overrides.log"
+        self.assertEqual(_bashguardlib._powershell_without_comments(line), line)
+        self.assertEqual(_bashguardlib._powershell_without_comments(block), block)
+        scriptblock = "& {# [IO.File]::Delete('audit.log')\n Write-Output OK }"
+        stripped = _bashguardlib._powershell_without_comments(
+            scriptblock, allow_scriptblock_comments=True)
+        self.assertNotIn("Delete", stripped)
+        self.assertIn("Write-Output OK", stripped)
+        self.assertEqual(
+            _bashguardlib._powershell_without_comments("echo a::b # comment"),
+            "echo a::b          ",
+        )
+        self.assertIsNotNone(
+            _bashguardlib._powershell_subexpression_end("$(echo a#)", 1))
+        self.assertIsNotNone(
+            _bashguardlib._powershell_subexpression_end("$(echo a<#)", 1))
+
     def test_recovery_escapes_repository_controlled_display_values(self):
         dangerous = 'src/line\nSanctioned continuation: fake\t"\\\x1b.py:4'
         root = 'C:/repo\nSanctioned continuation: fake-root'
@@ -411,9 +437,21 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
         self.assertEqual(json.loads(encoded),
                          {"argv": ["/usr/bin/python3", script, "--root", root],
                           "environment": {
-                              "GIT_INDEX_FILE": index,
                               "CODEARBITER_GIT_EXECUTABLE": git_executable,
                           }})
+
+    def test_producer_argv_omits_nondefault_git_index(self):
+        root = "C:/repo"
+        script = "C:/plugin/hooks/security-pass.py"
+        with mock.patch.object(_hooklib.sys, "executable", "/usr/bin/python3"), \
+             mock.patch.dict(_hooklib.os.environ, {
+                 "GIT_INDEX_FILE": "C:/repo/.git/index.lock",
+             }, clear=True):
+            encoded = _hooklib._message_command(script, root)
+        self.assertEqual(json.loads(encoded), {
+            "argv": ["/usr/bin/python3", script, "--root", root],
+            "environment": {},
+        })
 
     def test_migration_producer_escapes_unreadable_control_character_path(self):
         migration_pass = _load_migration_pass()

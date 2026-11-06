@@ -258,7 +258,12 @@ def _message_command(script, root):
     """Display one bounded process invocation without shell interpolation."""
     invocation = {"argv": [sys.executable, script, "--root", root],
                   "environment": {}}
-    for name in ("GIT_INDEX_FILE", "CODEARBITER_GIT_EXECUTABLE"):
+    # A pre-commit hook may expose a temporary index (often ``index.lock``)
+    # that Git removes as soon as the hook refuses the commit. Replaying that
+    # serialized path can scan an empty or unrelated candidate, so recovery
+    # omits it. Standalone producers still preserve a deliberate live alternate
+    # index and explicitly refuse an inherited index path that has disappeared.
+    for name in ("CODEARBITER_GIT_EXECUTABLE",):
         value = os.environ.get(name)
         if value:
             invocation["environment"][name] = value
@@ -290,7 +295,8 @@ def security_gate_recovery(plugin_root, root, crypto_count, sensitive_match_coun
     reviewers = []
     if crypto_count:
         kinds.append(f"crypto/TLS={crypto_count}")
-        reviewers.append("dispatch independent auth-crypto-reviewer")
+        reviewers.append("run the crypto-compliance skill, then dispatch independent "
+                         "auth-crypto-reviewer")
     if sensitive_match_count:
         kinds.append(f"secret={sensitive_match_count}")
         reviewers.append("run the secret-handling review")

@@ -64,6 +64,20 @@ def root_bound_git_env(*, preserve_index=False):
     return env
 
 
+def active_index_recovery(root):
+    """Return a recovery message when an inherited alternate index vanished."""
+    value = os.environ.get("GIT_INDEX_FILE")
+    if not value:
+        return None
+    candidate = value if os.path.isabs(value) else os.path.join(root, value)
+    if os.path.isfile(candidate):
+        return None
+    return ("the active GIT_INDEX_FILE is unavailable; unset GIT_INDEX_FILE, "
+            "stage the exact intended files in the default index, rerun the "
+            "review, and retry, or recreate and restage the intended alternate "
+            "index before retrying")
+
+
 def _trusted_environment_path(name):
     value = os.environ.get(name)
     if not value:
@@ -112,6 +126,7 @@ def git_read_error_summary(operation, failure_kind):
         "spawn": "could not start",
         "access": "was denied filesystem access",
         "output": "returned unreadable output",
+        "non-utf8": "returned non-UTF-8 text bytes",
         "exit": "exited unsuccessfully",
     }.get(failure_kind, "failed")
     if failure_kind == "spawn":
@@ -121,6 +136,10 @@ def git_read_error_summary(operation, failure_kind):
     elif failure_kind == "access":
         continuation = ("Repair filesystem access, then run `git status --short` "
                         "and retry the same operation.")
+    elif failure_kind == "non-utf8":
+        continuation = ("Convert the file to UTF-8, or, if it is genuinely binary, "
+                        "mark it binary in .gitattributes and use the audited binary "
+                        "override; then stage the exact candidate and retry.")
     else:
         continuation = ("Run `git status --short`, repair the Git access issue, "
                         "then retry the same operation.")

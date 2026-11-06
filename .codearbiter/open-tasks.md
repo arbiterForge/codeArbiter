@@ -5,6 +5,36 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Require crypto-compliance scan in crypto recovery  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4477302070)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4477302070
+  - Desc: Crypto/TLS recovery must direct callers through the crypto-compliance skill before independent auth-crypto review and PASS recording.
+  - Work type: fix
+  - Work ID: WORK-26E795DC64628F81052DEC93FE4088E4
+  - Work operation ID: work-26d0950db0a4982f90f2af916417a533ca81a594
+- [x] Explain non-UTF-8 security-gate recovery accurately  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476447009)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476447009
+  - Desc: A staged non-UTF-8 text candidate must remain fail-closed while recovery identifies decoding as the cause and names UTF-8 conversion or genuine-binary .gitattributes plus audited override routes.
+  - Work type: fix
+  - Work ID: WORK-5C9671D34E4BAC0FF719B6C953CD24EC
+  - Work operation ID: work-63cc3ce7cb2c522f9ef69e802d2e0c2fbae45e57
+- [x] Make security-gate recovery discard transient Git indexes  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368097)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368097
+  - Desc: Recovery emitted from the Git pre-commit hook must not preserve a temporary or alternate GIT_INDEX_FILE that can disappear or point at a different candidate; require explicit default-index staging before retry.
+  - Work type: fix
+  - Work ID: WORK-CC66F71E2C0AC7D734C563986E092500
+  - Work operation ID: work-aac8a66660e37d13ad5f9647be51fa705bd2cae9
+- [x] Remove unavailable apply_patch recovery from Claude Edit guard  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368102)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368102
+  - Desc: When Claude's Edit hook cannot decompose a payload, H-21 must name only executable Claude continuations, including separate single-file Edit calls.
+  - Work type: fix
+  - Work ID: WORK-F83394C5C4564901797D517F4CF9C1A5
+  - Work operation ID: work-308d117bc35b1c59497ab7f52c470140730c2495
+- [x] Prevent PowerShell comment stripping from hiding executable H-05 destruction  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368087)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368087
+  - Desc: A hash or block-comment opener embedded inside an executable shell token must not hide a later audit-log destruction from H-05; preserve legitimate PowerShell comments.
+  - Work type: fix
+  - Work ID: WORK-86FB12D6FBB1434614952C33F128C1E8
+  - Work operation ID: work-6eb465600ce3671964e8377d51ad16f18d8200c7
 - [x] Isolate external shell state in hook append tests  (from github-actions-run:41976210734:hook-contract-hermeticity)  (done 2026-11-05)
   - Work origin: github-actions-run:41976210734:hook-contract-hermeticity
   - Desc: The hook hermeticity suite shows test_protectedstatelib launches PowerShell with the suite-owned redirected user home, creating cache and profile directories on Ubuntu, macOS, and Windows. Redirect every external shell process to test-local home, profile, cache, config, and data paths while preserving the real UTF-8 append behavior checks.
