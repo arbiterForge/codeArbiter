@@ -452,6 +452,28 @@ class TestH19MarkerEdit(_PreEditFixture):
         self._write(m, "olddigest\n")
         res = self.run_edit(m, old_string="olddigest\n", new_string="olddigest\nforged\n")
         self.assertBlocked(res, "H-19")
+        self.assertIn("security-pass.py", res.stderr)
+
+    def test_edit_adr_authoring_marker_points_to_adr_workflow(self):
+        m = self._set_marker()
+        res = self.run_edit(m, old_string="active\n", new_string="forged\n")
+        self.assertBlocked(res, "H-19")
+        self.assertIn("/ca:adr", res.stderr)
+        self.assertNotIn("security-pass.py", res.stderr)
+        self.assertNotIn("migration-pass.py", res.stderr)
+
+    def test_edit_symlink_alias_to_adr_marker_points_to_adr_workflow(self):
+        marker = self._set_marker()
+        alias = os.path.join(self.root, "adr-marker-alias")
+        try:
+            os.symlink(marker, alias)
+        except (OSError, NotImplementedError, AttributeError):
+            self.skipTest("symlink creation is unavailable on this host")
+        res = self.run_edit(alias, old_string="active\n", new_string="forged\n")
+        self.assertBlocked(res, "H-19")
+        self.assertIn("/ca:adr", res.stderr)
+        self.assertNotIn("security-pass.py", res.stderr)
+        self.assertNotIn("migration-pass.py", res.stderr)
 
     def test_multiedit_marker_is_blocked(self):
         m = os.path.join(self.markers, "migration-gate-passed")

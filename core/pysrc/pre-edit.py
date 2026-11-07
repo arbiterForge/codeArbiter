@@ -136,8 +136,17 @@ def _run(root):
     # H-19: markers are never edited via the Edit tools (#160) — the sanctioned
     # producers write them; an Edit is tampering. Block outright.
     if "marker" in classes:
-        guidance = gate_marker_producer_guidance(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), root)
+        marker_path = fpath if os.path.isabs(fpath) else os.path.join(root, fpath)
+        marker_name = (os.path.basename(os.path.realpath(marker_path))
+                       if os.path.lexists(marker_path)
+                       else fpath.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1])
+        if marker_name == "adr-authoring-active":
+            guidance = ("Never write this marker directly. Use "
+                        f"{get_host().cmd_ref('adr')} to author or update the ADR; "
+                        "that workflow creates the marker.")
+        else:
+            guidance = gate_marker_producer_guidance(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))), root)
         block("H-19", "The .codearbiter/.markers/ gate tokens are not editable via the Edit "
                       "tools (#160) — editing one forges or tampers with a security/migration/ADR "
                       f"gate pass. {guidance}")
