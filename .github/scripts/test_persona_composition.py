@@ -549,6 +549,51 @@ def test_decision_authority_negative_controls():
               "authority anchor accepted a weakened scope/confirmation boundary")
 
 
+# ---- ops-mode's arbiter quotations and its bare §6 ----------------------------------------
+# The ops composition is safety-core + ops-mode; arbiter.md is never loaded with it. So the
+# clauses ops-mode says it narrows exist for the model only as ops-mode quotes them, and a bare
+# "§6" there resolves to safety-core §6, the irreversible-action set.
+_OPS_NARROWING_PARAGRAPH = re.compile(r"This narrows §0 and §6 only(.*?)(?:\n\s*\n|\Z)", re.S)
+ANCHOR_OPS_S6_UNCHANGED = norm("Safety-core's §6 irreversible-action set is unchanged too.")
+
+
+def test_ops_mode_arbiter_quotes_resolve():
+    match = _OPS_NARROWING_PARAGRAPH.search(read(OPS))
+    check(match is not None, "ops-mode.md: the 'This narrows §0 and §6 only' paragraph is missing")
+    if match is None:
+        return
+    quotes = re.findall(r'"([^"]+)"', match.group(1))
+    check(len(quotes) > 0,
+          "ops-mode.md: the narrowing paragraph quotes no arbiter clause — test is vacuous")
+    arbiter = norm(read(ARBITER))
+    for quote in quotes:
+        check(norm(quote) in arbiter,
+              f"ops-mode.md quotes arbiter text that arbiter.md does not contain: {quote!r}")
+
+
+def test_ops_mode_keeps_safety_core_section_six():
+    check(ANCHOR_OPS_S6_UNCHANGED in norm(read(OPS)),
+          "ops-mode.md: must state that safety-core's §6 irreversible-action set is unchanged, "
+          "or its 'narrows §0 and §6' reads as narrowing that set in the ops composition")
+
+
+# ---- arbiter §3 must not order mode-transition logging ------------------------------------
+# `prompt-submit.py` intercepts the whole-prompt mode token before the model sees it, and
+# `_modelib.flip` writes the `MODE: <mode> enter|exit` row itself (#679). An instruction to log
+# the transition can never be acted on; obeying it would hand-append a duplicate row to an
+# append-only log.
+def test_arbiter_orders_no_mode_transition_logging():
+    log_rules = [line for line in read(ARBITER).splitlines() if "MUST log" in line]
+    check(len(log_rules) == 1, f"arbiter.md: expected one 'MUST log' rule, found {len(log_rules)}")
+    for line in log_rules:
+        check("mode" not in line.lower(),
+              "arbiter.md: the 'MUST log' rule orders mode-transition logging the hook already does")
+        check("/override" in line and "sprint decisions" in line,
+              "arbiter.md: the 'MUST log' rule must still cover /override and material sprint decisions")
+    check("every mode transition" not in norm(read(ARBITER)),
+          "arbiter.md: still instructs the model to log every mode transition")
+
+
 TESTS = [
     test_decision_authority_negative_controls,
     test_safety_core_anchors,
@@ -564,6 +609,9 @@ TESTS = [
     test_ops_mode_no_dispatch_surface_named,
     test_ops_token_bound_across_redirect_and_routing,
     test_no_mode_body_contradicts_safety_core,
+    test_ops_mode_arbiter_quotes_resolve,
+    test_ops_mode_keeps_safety_core_section_six,
+    test_arbiter_orders_no_mode_transition_logging,
 ]
 
 

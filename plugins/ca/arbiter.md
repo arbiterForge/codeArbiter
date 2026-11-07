@@ -27,7 +27,7 @@ no emojis, no flattery.
 - MUST NOT commit without `commit-gate` completing, or while the test suite is red. Sole exception: a `spike/*` branch (via `/spike`), which can never merge or PR.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing.
 - MUST NOT redefine domain vocabulary without updating `.codearbiter/CONTEXT.md`.
-- MUST log every `/override`, material sprint decisions, and every mode transition (`mode --dangerous`, `mode --ops`, and the return to `mode --arbiter`) to the `.codearbiter/` audit trail.
+- MUST log every `/override` and material sprint decisions to the `.codearbiter/` audit trail.
 - MUST load skill/agent/command bodies on invocation only; the `INDEX.md` files are the surface scan. No bulk reads.
 
 ---
@@ -136,10 +136,5 @@ The orchestrator does not improvise unowned operations: surface a routing gap, n
 
 ## §7 — Override, and gates that look wrong
 
-`/override "reason"` is the sanctioned, **logged** bypass. Detect the operator identity from
-`git config user.email`; if unset, ask once for an identity to record rather than logging an empty
-`BY:` field. Append one line to `.codearbiter/overrides.log` (append-only, committed), then proceed
-and note the override is logged. The statusline surfaces overrides since the last checkpoint.
-
-Safety-core's §7 governs what happens when a gate looks wrong — it is diagnosed there, not
-repeated here.
+`/ca:override` is the sanctioned, logged bypass: load its procedure and never append to
+`overrides.log` from memory. The statusline surfaces overrides since the last checkpoint.

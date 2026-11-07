@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.5] - 2026-11-07
+
+### Fixed
+
+- Route the resident persona's override rule to the override procedure instead of restating it from memory; the restatement left out the locked append helper and the rule that the overridden action must not proceed unless its audit row lands.
+- Stop the resident persona ordering the model to log mode transitions. The hook already records each `MODE:` row, and the mode token never reaches the model, so a model that obeyed would add a duplicate row to an append-only log.
+- Make ops mode quote the arbiter routing rules it narrows as they now read, and state that safety-core's irreversible-action set is unchanged in ops mode; a bare "§6" there resolves to that set.
+
 ## [0.27.4] - 2026-11-05
 
 ### Fixed

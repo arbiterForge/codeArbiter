@@ -684,6 +684,33 @@ class TestCallerAwareSpecAndCheckpointContract(unittest.TestCase):
                 self.assertIn('reasoned `task-reconcile`', text)
 
 
+class TestArbiterOverrideRoutesToItsProcedure(unittest.TestCase):
+    """arbiter §7 once restated /override from memory ("Append one line ... then proceed"),
+    leaving out the locked append helper and the rule that the overridden action must not
+    proceed unless the row lands. The resident persona routes to the procedure instead."""
+
+    RENDERED_REF = {
+        "core/surface": "{{CMD:override}}",
+        "plugins/ca": "/ca:override",
+        "plugins/ca-codex": "$ca-override",
+        "plugins/ca-pi": "/ca-override",
+    }
+
+    def test_section_seven_routes_to_the_procedure_without_restating_it(self):
+        for prefix, ref in self.RENDERED_REF.items():
+            rel = f"{prefix}/arbiter.md"
+            with self.subTest(rel=rel):
+                text = read(rel)
+                orchestrator_section_six(text)  # §6 stays bounded by the `## §7 ` heading
+                match = re.search(r"^## §7 .*?$(.*)", text, re.MULTILINE | re.DOTALL)
+                self.assertIsNotNone(match, f"{rel} has no `## §7 ` heading")
+                section = " ".join(match.group(1).split())
+                self.assertIn(ref, section)
+                self.assertIn("load its procedure", section)
+                self.assertIn("never append to `overrides.log` from memory", section)
+                for stale in ("git config user.email", "Append one line", "`BY:`"):
+                    self.assertNotIn(stale, section)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2 if "-v" in sys.argv else 1)

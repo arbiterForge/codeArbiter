@@ -24,10 +24,12 @@ POLICY_STARTUP_FIXTURES = (
 # context-coverage notices. PR983 aligns resident sprint guidance with assistive
 # execution. The 2026-10-23 command removal drops the /btw and /commands
 # references from both. The context-and-decomposition conversion gives HTML-knowledge
-# repositories a one-line pointer instead of a Markdown coverage count. Keep
-# current content pins separate from the historical pilot.
+# repositories a one-line pointer instead of a Markdown coverage count. The
+# persona routing fix routes arbiter §7 to the override procedure and drops the
+# hook-owned mode-transition logging order from §3. Keep current content pins
+# separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
-    "core/surface/arbiter.md": "955705504f53800cd5f6626abb2db5a94cbee88d679f1fb8ea4d599a09d699b0",
+    "core/surface/arbiter.md": "828b0c3d2b1df0d1c10ab69335499ef8b4dc2cf47f9fc8148d4c85d12e200c03",
     "core/pysrc/session-start.py": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
 }
 
