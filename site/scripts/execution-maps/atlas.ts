@@ -223,9 +223,11 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
 // #1078/#1037 bind sensitive reviews to the exact candidate and add structured
 // recovery plus the existing audited binary-override route. The override and
 // commit owners keep their Atlas route and gate ownership; pin the reviewed
-// current blobs without rewriting the historical packet bindings below.
+// current blobs without rewriting the historical packet bindings below. The
+// CI follow-up recognizes a PowerShell block comment immediately after an
+// argument comma; that closes an H-05 parsing gap without changing routes.
 export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_bashguardlib.py':'343548821bf820117cdca73382e6d9364d870f94',
+  'core/pysrc/_bashguardlib.py':'985031c559be89d9446e4fb3e96c40ecedebeddc',
   'core/surface/commands/override.md':'01a889f0e02941e0f393d1f32c903372a5b0f4ed',
   'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
 });
