@@ -246,7 +246,10 @@ class TestSecurityPassBranches(_Fixture):
         self.assertEqual(recorded.returncode, 0, recorded.stderr)
         self.assertIn("1 sensitive line", recorded.stdout)
 
-    @unittest.skipIf(os.name == "nt", "POSIX invalid-byte path required")
+    @unittest.skipIf(
+        os.name == "nt" or sys.platform == "darwin",
+        "host filesystem rejects invalid-byte path names",
+    )
     def test_security_diff_quotes_invalid_path_bytes(self):
         self._ca()
         _git(["config", "core.quotePath", "false"], self.root)
