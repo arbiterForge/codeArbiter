@@ -23,11 +23,11 @@
     },
     {
       "path": "plugins/ca/hooks/_gitexec.py",
-      "sha256": "52f47264a89b3d105c22e323f08592706a745e1e00376b1d07e70fa813becf00"
+      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
     },
     {
       "path": "plugins/ca/hooks/_hooklib.py",
-      "sha256": "6cb23c6956320a02f8d7f7722a80bcb9915da01f3eb43b7d86389913ee6a0330"
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
     },
     {
       "path": "plugins/ca/hooks/_host.py",
@@ -47,7 +47,7 @@
     },
     {
       "path": "plugins/ca/hooks/_sensitivelib.py",
-      "sha256": "42db725fdd78678b7cb47078b653244e06347cdfd14ecc9ed5e4d2405891948d"
+      "sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458"
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",

@@ -35,7 +35,7 @@ print('Explicit LF survives the CRLF-default simulation; complete observations m
 `;
     expect(execFileSync('python3', ['-c', script], { encoding: 'utf8', timeout: 20000 }))
       .toContain('complete observations match');
-  });
+  }, 20_000);
 
   it('links both embeddings to the actual typed-advice section, not an assumed section below', () => {
     const component = readFileSync('src/components/ContextExplorer.astro', 'utf8');

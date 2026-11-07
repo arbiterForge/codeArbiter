@@ -225,9 +225,9 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
 // commit owners keep their Atlas route and gate ownership; pin the reviewed
 // current blobs without rewriting the historical packet bindings below.
 export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_bashguardlib.py':'6a5db7fae19f2ff2ce7ade84377bf5b46b21f596',
-  'core/surface/commands/override.md':'7842b2e8579be612d5966979020fabca4f973371',
-  'core/surface/skills/commit-gate/SKILL.md':'d9effaf2d573301536d60fb0efd39ad2196f3f82',
+  'core/pysrc/_bashguardlib.py':'343548821bf820117cdca73382e6d9364d870f94',
+  'core/surface/commands/override.md':'01a889f0e02941e0f393d1f32c903372a5b0f4ed',
+  'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
 });
 // The corrective handoff changes guard classification, state diagnostics,
 // authority handoffs and payload identity reporting without adding routes or

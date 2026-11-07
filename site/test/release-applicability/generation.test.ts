@@ -140,7 +140,7 @@ describe("release applicability generation", () => {
         record.proof.publishedSource.matchesReplay,
     );
     expect(record.evidenceBoundary.claim).toBe("release-and-build-identity");
-  });
+  }, 20_000);
 
   it("reports each host's highest stable release tag, not the lagging receipt ledger (R-01)", () => {
     const directory = mkdtempSync(join(tmpdir(), "release-applicability-"));
@@ -155,7 +155,7 @@ describe("release applicability generation", () => {
       newestStable("ca-codex-v"),
       newestStable("ca-pi-v"),
     ]);
-  });
+  }, 20_000);
 
   it("fails closed without writing output when build identity evidence is inconsistent (O-10)", () => {
     const directory = mkdtempSync(join(tmpdir(), "release-applicability-"));

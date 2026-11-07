@@ -195,7 +195,7 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
     const site = callSites.find((c) => c.tag === "H-09b" && c.file === "_bashguardlib.py");
     expect(site).toBeDefined();
     expect(site!.message).toBe(
-      "the diff for the crypto/secret security scan could not be read (git unavailable or timed out) — failing closed (ORCHESTRATOR §2). Repair the reported Git read failure and retry the same scan; a reviewer PASS cannot substitute for an unreadable candidate.",
+      "the diff for the crypto/secret security scan could not be decoded or read — failing closed (ORCHESTRATOR §2). Repair the reported cause and retry the same scan; a reviewer PASS cannot substitute for an unreadable candidate.",
     );
   });
 });
