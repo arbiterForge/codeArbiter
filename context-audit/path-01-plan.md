@@ -1,7 +1,12 @@
 # Plan — Persona context trim (context audit, Path 1)
 
 Findings: [`path-01-persona.md`](path-01-persona.md). Baseline: `main` @ `94d90189`.
-Branch holding this plan: `docs/persona-context-trim-plan` (uncommitted).
+Delivered on branch `fix/persona-routing-correctness` as one PR (maintainer instruction, 2026-11-07).
+
+**Result (measured, `ceil(len/4)` proxy):** arbiter composition ~3,520 → ~2,738 tokens on Claude
+(−22%), ~3,625 → ~2,841 on Codex, ~3,596 → ~2,818 on Pi; dangerous −12%, ops −11% on every host.
+C3b was dropped during implementation: "compared item-for-item in CI" is the ADR-0026
+resident-copy pin in `TestDestructiveOperationRegistry`.
 
 ## Outcome
 
@@ -204,7 +209,7 @@ All in `core/surface/arbiter.md` unless noted. Each line keeps every test-pinned
 |---|---|---|---|
 | B4 | 120–122 | Delete "Choose among them within safety-core's decision-authority limits." and "Do not invent a product decision, resolve a `[CONFIRM-NN]`, or assume missing authorization." (safety-core §6). Keep both pinned sentences. | 40 |
 | B3 | 139 | Delete " — there the confirmation *is* the gate, not friction" (safety-core §6). Keep "separate axes". | 14 |
-| C3b | 139–141 | → "The routing table owns the authoritative registry:" (CI mechanics aren't instruction). | 25 |
+| ~~C3b~~ | 139–141 | **Dropped:** "compared item-for-item in CI" is ADR-0026's resident-copy pin (`TestDestructiveOperationRegistry`). | 0 |
 | C3c | 150–152 | → "Mode tokens are not in this set." (ADR history out). | 54 |
 - Heading and four bullets untouched; `check_destructive_registry.py` must stay green.
 - Can share T-06's PR.
@@ -246,18 +251,11 @@ All in `core/surface/arbiter.md` unless noted. Each line keeps every test-pinned
 
 ## Order and delivery
 
-```
-PR-1  fix:   T-01 T-02 T-03                     (no decisions needed)
-PR-2  perf:  T-04 T-05                          (DEC-2)
-PR-3  perf:  T-06 + T-07                        (after PR-1, independent of PR-2; T-09 optional)
-opt.  T-08                                      (after PR-3)
-each  T-10
-```
-
-Every PR regenerates the same `plugins/ca*` persona copies, so the later PR rebases and re-runs
-`build-surface.py` rather than hand-merging generated files. Source overlap: PR-3 edits arbiter
-§0/§3-adjacent lines that PR-1 also edits, and safety-core §3 (B9) beside PR-2's header change —
-land PR-1 first.
+One PR, per the maintainer: commits in order `fix` (T-01–T-03), `docs` (this plan and the
+findings report), then `perf` (T-04/T-05 and T-06/T-07). One version advance (`ca` 3.8.5,
+`ca-codex` 0.26.5, `ca-pi` 0.27.5) covers the whole PR. T-04 also needed the independent Pi
+rendering oracle in `test_host_descriptors.py` to apply the same header rule. T-08 and T-09 were
+not done (optional; DEC-3 = skip).
 
 ## Deliberately kept
 

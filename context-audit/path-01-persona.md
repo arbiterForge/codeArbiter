@@ -32,6 +32,10 @@ paragraph) is never loaded together; that is a maintenance cost only and is out 
 > item below is marked with its revised status; the correction plan is
 > [`path-01-plan.md`](path-01-plan.md).
 
+**Outcome (implemented, 2026-11-07):** arbiter composition ~3,520 → ~2,738 tokens on Claude
+(−22%), with Codex and Pi within a few tokens of that; dangerous −12%, ops −11%. See the plan for
+what shipped and what was dropped.
+
 **Estimated recoverable in the arbiter composition (revised): ~680 of ~3,520 tokens (~19%)**
 with no ADR question, ~815 (~23%) if DEC-1 resolves narrow. (First estimate was ~1,000 / ~28%.)
 
