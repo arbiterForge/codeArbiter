@@ -12,7 +12,7 @@ import stat
 import subprocess
 import sys
 
-from _gitexec import git_executable
+from _gitexec import git_executable, root_bound_git_env
 from _hooklib import acquire_lock, audit_lock_key, release_lock
 
 
@@ -28,7 +28,7 @@ def _git(cwd, *args):
     try:
         result = subprocess.run(
             [git_executable(), *args], cwd=cwd, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, check=False,
+            stderr=subprocess.PIPE, check=False, env=root_bound_git_env(),
         )
     except OSError as error:
         raise OverrideAppendError(f"git unavailable: {error}") from error
@@ -69,11 +69,15 @@ def _identity(root):
 
 def _validate_file_type(path):
     try:
-        mode = path.lstat().st_mode
+        info = path.lstat()
     except OSError as error:
         raise OverrideAppendError(f"cannot inspect overrides.log: {error}") from error
-    if not stat.S_ISREG(mode) or path.is_symlink():
-        raise OverrideAppendError("overrides.log is not a regular non-link file")
+    if (not stat.S_ISREG(info.st_mode) or path.is_symlink()
+            or getattr(info, "st_file_attributes", 0) & 0x400
+            or info.st_nlink != 1):
+        raise OverrideAppendError(
+            "overrides.log is not a single-link repository-local regular file")
+    return info
 
 
 def _validate_existing(path, raw):
@@ -114,12 +118,22 @@ def append_override(*, gate=None, security_finding=None, reason, cwd=None):
         raise OverrideAppendError("another writer holds the overrides.log audit path lock")
     fd = None
     try:
+        _validate_file_type(path)
         if path.read_bytes() != before:
             raise OverrideAppendError("overrides.log changed during validation; retry")
-        flags = os.O_APPEND | os.O_WRONLY
+        flags = os.O_APPEND | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
         if hasattr(os, "O_BINARY"):
             flags |= os.O_BINARY
         fd = os.open(path, flags)
+        opened = os.fstat(fd)
+        current = path.lstat()
+        if (not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(current.st_mode)
+                or opened.st_nlink != 1 or current.st_nlink != 1
+                or getattr(opened, "st_file_attributes", 0) & 0x400
+                or getattr(current, "st_file_attributes", 0) & 0x400
+                or (opened.st_dev, opened.st_ino) != (current.st_dev, current.st_ino)):
+            raise OverrideAppendError(
+                "overrides.log changed identity or became linked before append")
         offset = 0
         while offset < len(line):
             written = os.write(fd, line[offset:])

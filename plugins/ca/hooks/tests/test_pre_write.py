@@ -353,6 +353,24 @@ class TestH22ProtectedState(unittest.TestCase):
         self.assertBlockedH22(self._guard_delete(
             os.path.join(self.ca, "open-tasks.md")))
 
+    def test_context_delete_names_initialized_maintenance_route(self):
+        code, err = self._guard_delete(os.path.join(self.ca, "CONTEXT.md"))
+        self.assertEqual(code, 2, err)
+        self.assertIn("H-18", err)
+        self.assertIn("context-check", err)
+        self.assertIn("context-draft", err)
+        self.assertIn("context-apply", err)
+        self.assertNotIn("/ca:init ", err)
+
+    def test_context_delete_names_init_for_uninitialized_stub(self):
+        with open(os.path.join(self.ca, "CONTEXT.md"), "w", encoding="utf-8") as stream:
+            stream.write("---\narbiter: enabled\nstage: 2\n---\nsetup pending\n")
+        code, err = self._guard_delete(os.path.join(self.ca, "CONTEXT.md"))
+        self.assertEqual(code, 2, err)
+        self.assertIn("H-18", err)
+        self.assertIn("/ca:init", err)
+        self.assertNotIn("context-check", err)
+
     def test_marker_gated_write_with_stale_marker_is_blocked(self):
         self._set_registry({".codearbiter/release-targets.md":
                             self._protectedstatelib.ProtectedPolicy.MARKER_GATED})

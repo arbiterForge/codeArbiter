@@ -220,6 +220,19 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
   'core/surface/commands/task.md':'417e2944dbda8d3df35acb57a41cfbe63a0500f6',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'93ee13d53363db93970b6ea0c26245a333a908f7',
 });
+// #1078/#1037 bind sensitive reviews to the exact candidate and add structured
+// recovery plus the existing audited binary-override route. The override and
+// commit owners keep their Atlas route and gate ownership; pin the reviewed
+// current blobs without rewriting the historical packet bindings below. The
+// CI and review follow-ups keep comment parsing bound to the actual shell,
+// distinguish a broken host adapter from an opaque edit, and make both
+// security producers standalone commands. These change recovery text and
+// refusal classification without adding an owner, gate, or route.
+export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_bashguardlib.py':'0f899bc13543ac3832e8bc8e488e6a96391a8e24',
+  'core/surface/commands/override.md':'d5b32413bca07aa89b60a6027d533b8ae56d8ed4',
+  'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
+});
 // The corrective handoff changes guard classification, state diagnostics,
 // authority handoffs and payload identity reporting without adding routes or
 // approval owners. The review follow-up keeps the same route geometry while
@@ -395,7 +408,7 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
   ]);

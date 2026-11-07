@@ -33,6 +33,7 @@ ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
 import _hooklib  # noqa: E402
+import _bashguardlib  # noqa: E402
 from _helpers import durable_plugin_copy, gitbashify, wslify  # noqa: E402
 
 
@@ -57,6 +58,111 @@ def _git(args, cwd, check=True):
     if check and r.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr}")
     return r
+
+
+class TestGitReadErrorRedaction(unittest.TestCase):
+    """Git diagnostics stay actionable without echoing credential-bearing stderr."""
+
+    def _assert_redacted(self, module):
+        secret = "diagnostic-only-secret-value"
+        module._READ_ERRS.clear()
+        cases = (("diff", "git diff"), ("ls-files", "git ls-files"))
+        for operation, expected_operation in cases:
+            with self.subTest(operation=operation):
+                module._READ_ERRS.clear()
+                module._note_read_err(operation, "exit")
+                hint = module._read_err_hint()
+                self.assertNotIn(secret, hint)
+                self.assertIn(expected_operation, hint)
+                self.assertIn("withheld", hint)
+        module._READ_ERRS.clear()
+        module._note_read_err(f"unknown-{secret}", "exit")
+        unknown_hint = module._read_err_hint()
+        self.assertNotIn(secret, unknown_hint)
+        self.assertIn("git operation", unknown_hint)
+        module._READ_ERRS.clear()
+        module._note_read_err("diff", "timeout")
+        self.assertIn("timed out", module._read_err_hint())
+        module._READ_ERRS.clear()
+        module._note_read_err("cat-file", "exit")
+        self.assertIn("exited unsuccessfully", module._read_err_hint())
+        module._READ_ERRS.clear()
+        module._note_read_err("status", "spawn")
+        spawn_hint = module._read_err_hint()
+        self.assertIn("could not start", spawn_hint)
+        self.assertLess(spawn_hint.index("Repair the Git executable"),
+                        spawn_hint.index("git status --short"))
+
+        # Raw process stderr stops at the subprocess result. The diagnostic
+        # path receives only the fixed outcome class.
+        module._READ_ERRS.clear()
+        completed = subprocess.CompletedProcess(
+            ["git", "branch", "--show-current", secret], 128, "",
+            f"fatal: https://reader:{secret}@example.invalid/repo",
+        )
+        with mock.patch.object(module.subprocess, "run", return_value=completed):
+            self.assertIsNone(module.current_branch("."))
+        hint = module._read_err_hint()
+        self.assertNotIn(secret, hint)
+        self.assertIn("exited unsuccessfully", hint)
+
+        exception_cases = (
+            (subprocess.TimeoutExpired(["git", "branch"], 5), "timed out"),
+            (FileNotFoundError(secret), "could not start"),
+            (PermissionError(secret), "was denied filesystem access"),
+            (UnicodeDecodeError("utf-8", b"x", 0, 1, secret),
+             "returned unreadable output"),
+            (RuntimeError(secret), "failed"),
+        )
+        for error, expected_failure in exception_cases:
+            with self.subTest(error=type(error).__name__):
+                module._READ_ERRS.clear()
+                with mock.patch.object(module.subprocess, "run", side_effect=error):
+                    self.assertIsNone(module.current_branch("."))
+                hint = module._read_err_hint()
+                self.assertNotIn(secret, hint)
+                self.assertIn(expected_failure, hint)
+
+    def test_pretool_git_read_hint_redacts_stderr(self):
+        self._assert_redacted(_bashguardlib)
+
+    def test_git_backstop_read_hint_redacts_stderr(self):
+        self._assert_redacted(_load_git_enforce())
+
+    def test_git_backstop_cached_diff_failures_record_recovery_hint(self):
+        module = _load_git_enforce()
+        exception_cases = (
+            (subprocess.TimeoutExpired(["git", "diff"], 10), "timed out"),
+            (PermissionError("withheld"), "was denied filesystem access"),
+            (FileNotFoundError("withheld"), "could not start"),
+            (OSError("withheld"), "failed"),
+        )
+        for error, expected_failure in exception_cases:
+            with self.subTest(error=type(error).__name__):
+                module._READ_ERRS.clear()
+                with mock.patch.object(module.subprocess, "run", side_effect=error):
+                    self.assertIsNone(module.cached_added_lines("."))
+                self.assertIn(expected_failure, module._read_err_hint())
+
+        result_cases = (
+            (subprocess.CompletedProcess(["git", "diff"], 128, b"", b"withheld"),
+             "exited unsuccessfully"),
+            (subprocess.CompletedProcess(["git", "diff"], 0, "not-bytes", b""),
+             "returned unreadable output"),
+        )
+        for result, expected_failure in result_cases:
+            with self.subTest(returncode=result.returncode, stdout=type(result.stdout).__name__):
+                module._READ_ERRS.clear()
+                with mock.patch.object(module.subprocess, "run", return_value=result):
+                    self.assertIsNone(module.cached_added_lines("."))
+                self.assertIn(expected_failure, module._read_err_hint())
+
+        module._READ_ERRS.clear()
+        result = subprocess.CompletedProcess(["git", "diff"], 0, b"", b"")
+        with mock.patch.object(module.subprocess, "run", return_value=result), \
+                mock.patch.object(module, "security_scan_diff", return_value=None):
+            self.assertIsNone(module.cached_added_lines("."))
+        self.assertIn("returned unreadable output", module._read_err_hint())
 
 
 def _actual_hooks_dir(root):

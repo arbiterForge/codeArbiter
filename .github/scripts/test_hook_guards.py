@@ -66,9 +66,10 @@ def git(args, cwd):
     return r
 
 
-def run_hook(fixture, command):
+def run_hook(fixture, command, tool_name="Bash"):
     """pre-bash.py exactly as the hook layer sees it: hook JSON on stdin."""
-    payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": command}})
+    payload = json.dumps({"tool_name": tool_name,
+                          "tool_input": {"command": command}})
     return sh([sys.executable, PRE_BASH], fixture, input=payload)
 
 
@@ -623,6 +624,12 @@ def main():
                     "sed -i d .codearbiter/triage.log",
                     "rm .codearbiter/triage.log",
                     "Set-Content .codearbiter/overrides.log 'gone'",
+                    # A hash inside an ordinary POSIX-shell word is data, not
+                    # a comment delimiter.  PowerShell syntax elsewhere in the
+                    # command must not let comment stripping hide the later rm.
+                    "echo a::b#; rm .codearbiter/overrides.log",
+                    "echo a::b{#; rm .codearbiter/overrides.log",
+                    "echo a::b{<#hidden#>; rm .codearbiter/overrides.log",
                     # sprint-log.md is the /sprint decision record — append-only.
                     "echo x > .codearbiter/sprint-log.md",
                     "echo x >| .codearbiter/sprint-log.md",
@@ -663,6 +670,15 @@ def main():
                     # make an unrelated restore look destructive.
                     "git restore notes.txt; cat .codearbiter/overrides.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
+        for cmd in (
+                "& {# [IO.File]::Delete('.codearbiter/overrides.log')\n Write-Output OK }",
+                "& {<# [IO.File]::Delete('.codearbiter/overrides.log') #>\n Write-Output OK }",
+        ):
+            result = run_hook(fx, cmd, tool_name="PowerShell")
+            check(result.returncode == 0 and "BLOCKED" not in result.stderr,
+                  "H-05 PowerShell scriptblock comment allow",
+                  f"expected PowerShell ALLOW for: {cmd!r}; "
+                  f"exit={result.returncode} stderr={result.stderr[:300]!r}")
         # A sed that cannot write is a read, as H-11 and H-18 treat it (#997).
         for cmd in ("sed -n 1,20p .codearbiter/overrides.log",
                     'cd "repo dir" && sed -n 1,80p .codearbiter/gate-events.log',
@@ -857,6 +873,23 @@ def main():
                     # GNU sed accepts options after operands (review, #1008).
                     f"sed 's/a/b/' {context} -i", f"sed 's/a/b/' {context} --in-place"):
             expect_block(fx, cmd, "H-18", f"H-18 block (writing sed, #997): {cmd}")
+        initialized_recovery = run_hook(fx, f"rm {context}")
+        check(initialized_recovery.returncode == 2
+              and "context-check" in initialized_recovery.stderr
+              and "context-draft/context-apply" in initialized_recovery.stderr,
+              "H-18 initialized recovery",
+              f"missing initialized continuation: {initialized_recovery.stderr[:500]!r}")
+        uninitialized = make_fixture(base, "feat/uninitialized")
+        with open(os.path.join(uninitialized, ".codearbiter", "CONTEXT.md"),
+                  "w", encoding="utf-8") as stream:
+            stream.write("---\narbiter: enabled\nstage: 2\n---\nsetup pending\n")
+        uninitialized_recovery = run_hook(
+            uninitialized, "rm .codearbiter/CONTEXT.md")
+        check(uninitialized_recovery.returncode == 2
+              and "/ca:init" in uninitialized_recovery.stderr
+              and "context-check" not in uninitialized_recovery.stderr,
+              "H-18 uninitialized recovery",
+              f"missing init continuation: {uninitialized_recovery.stderr[:500]!r}")
         # Review (#1070): sed also writes through GNU long-option prefixes, a `w`
         # filename with no space, `w` after other s flags, -e scripts and the `e`
         # command, and -f hides its script. A sed is a read only when every
@@ -1026,6 +1059,15 @@ def main():
         for cmd in ('python -c "print(1)"', 'node -e "console.log(1)"',
                     'sh -c "echo hello"'):
             expect_allow(fx, cmd, f"H-19 allow (benign interpreter): {cmd}")
+        recovery = run_hook(
+            fx, 'python -c "open(\'.codearbiter/.markers/security-gate-passed\', '
+            '\'w\').write(\'deadbeef\')"')
+        check(recovery.returncode == 2
+              and "security-pass.py" in recovery.stderr
+              and "migration-pass.py" in recovery.stderr
+              and "Never write a marker directly" in recovery.stderr,
+              "H-19 sanctioned producer recovery",
+              f"missing actionable producer continuation: {recovery.stderr[:500]!r}")
 
         # ---- H-19 review finding: newline-crossing + heredoc/prose scoping ----
         # Defect 1: a MULTI-LINE `-c`/`-e` payload is completely ordinary
@@ -1166,26 +1208,35 @@ def main():
         expect_block(fx, "git commit-graphish --sneak", "H-09b",
                      "#485 block: an unknown commit-* verb is still gated")
 
-        # 6b. legacy empty marker (the old `touch`) -> binding block.
-        # An empty marker proves only that *something* passed recently; it
-        # covers no lines, so the diff-bound check must reject it.
+        # 6b. legacy empty marker (the old `touch`) -> worktree-binding block.
+        # An empty marker has no reviewed-root token, so it cannot prove that
+        # the pass belongs to this worktree or covers this staged candidate.
         markers = os.path.join(fx, ".codearbiter", ".markers")
         os.makedirs(markers, exist_ok=True)
         with open(os.path.join(markers, "security-gate-passed"), "w") as f:
             pass
         r = run_hook(fx, "git commit -m 'add hashing'")
-        check(r.returncode == 2 and "not covered" in r.stderr, "H-09b empty-marker",
+        check(r.returncode == 2 and "different or legacy worktree" in r.stderr,
+              "H-09b empty-marker",
               f"empty (legacy touch) marker must not admit a crypto commit\n"
               f"  exit={r.returncode} stderr={r.stderr.strip()[:300]!r}")
 
         # 6c. a genuine pass recorded by security-pass.py -> allow
-        r = sh([sys.executable, SECURITY_PASS], fx)
+        r = sh([sys.executable, SECURITY_PASS, "--root", fx], base)
         check(r.returncode == 0 and "1 sensitive line" in r.stdout, "security-pass",
               f"security-pass.py must record exactly the one sensitive line\n"
               f"  exit={r.returncode} out={r.stdout.strip()[:300]!r} "
               f"err={r.stderr.strip()[:300]!r}")
         expect_allow(fx, "git commit -m 'add hashing'",
                      "H-09b allow: pass covers the staged sensitive line")
+        expect_allow(fx, "git -C src commit -m 'add hashing'",
+                     "H-09b allow: git -C subdir resolves the reviewed repository root")
+        implicit = run_hook(fx, "git commit -am 'implicit staging'")
+        check(implicit.returncode == 2 and "stage the exact intended files explicitly" in implicit.stderr
+              and "plain git commit" in implicit.stderr,
+              "H-09b implicit-staging recovery",
+              f"commit -a must prescribe explicit staging + plain commit\n"
+              f"  exit={implicit.returncode} stderr={implicit.stderr.strip()[:500]!r}")
         # 6c-bis. A pass is bound to the exact lines it reviewed, not to a clock:
         # an old marker still admits precisely those lines (coverage, as H-14).
         aged = os.path.join(markers, "security-gate-passed")
@@ -1194,13 +1245,28 @@ def main():
         expect_allow(fx, "git commit -m 'add hashing'",
                      "H-09b allow: an aged pass still covers the lines it reviewed")
 
+        # Commit the reviewed candidate, then prove the same sensitive text at
+        # a later row in the SAME file cannot replay the old PASS.
+        git(["-c", "core.hooksPath=", "-c", "commit.gpgSign=false", "commit",
+             "-q", "-m", "reviewed hashing"], fx)
+        with open(crypto_file, "a", encoding="utf-8") as f:
+            f.write("const h = createHash('sha256');\n")
+        git(["add", "src/auth.js"], fx)
+        r = run_hook(fx, "git commit -m 'same line later'")
+        check(r.returncode == 2 and "exact diff independently reviewed" in r.stderr,
+              "H-09b same-file replay",
+              f"an old PASS must not admit identical text at a later row\n"
+              f"  exit={r.returncode} stderr={r.stderr.strip()[:500]!r}")
+        git(["restore", "--staged", "--worktree", "src/auth.js"], fx)
+
         # 6c-ter. With no time window, the binding is the file too: the very
         # same reviewed line staged in a DIFFERENT file is not covered.
         moved = os.path.join(fx, "src", "moved.js")
         shutil.copyfile(crypto_file, moved)  # byte-identical reviewed line
         git(["add", "src/moved.js"], fx)
         r = run_hook(fx, "git commit -m 'same line, other file'")
-        check(r.returncode == 2 and "not covered" in r.stderr, "H-09b moved-line",
+        check(r.returncode == 2 and "exact diff independently reviewed" in r.stderr,
+              "H-09b moved-line",
               f"a pass for src/auth.js must not admit the identical line in src/moved.js\n"
               f"  exit={r.returncode} stderr={r.stderr.strip()[:300]!r}")
         git(["rm", "--cached", "--quiet", "src/moved.js"], fx)
@@ -1212,7 +1278,8 @@ def main():
             f.write("const weak = createHash('md5');\n")
         git(["add", "src/auth.js"], fx)
         r = run_hook(fx, "git commit -m 'sneak in md5'")
-        check(r.returncode == 2 and "not covered" in r.stderr, "H-09b TOCTOU",
+        check(r.returncode == 2 and "exact diff independently reviewed" in r.stderr,
+              "H-09b TOCTOU",
               f"a fresh pass for one diff must not admit a different crypto diff\n"
               f"  exit={r.returncode} stderr={r.stderr.strip()[:300]!r}")
 

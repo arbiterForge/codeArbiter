@@ -452,6 +452,28 @@ class TestH19MarkerEdit(_PreEditFixture):
         self._write(m, "olddigest\n")
         res = self.run_edit(m, old_string="olddigest\n", new_string="olddigest\nforged\n")
         self.assertBlocked(res, "H-19")
+        self.assertIn("security-pass.py", res.stderr)
+
+    def test_edit_adr_authoring_marker_points_to_adr_workflow(self):
+        m = self._set_marker()
+        res = self.run_edit(m, old_string="active\n", new_string="forged\n")
+        self.assertBlocked(res, "H-19")
+        self.assertIn("/ca:adr", res.stderr)
+        self.assertNotIn("security-pass.py", res.stderr)
+        self.assertNotIn("migration-pass.py", res.stderr)
+
+    def test_edit_symlink_alias_to_adr_marker_points_to_adr_workflow(self):
+        marker = self._set_marker()
+        alias = os.path.join(self.root, "adr-marker-alias")
+        try:
+            os.symlink(marker, alias)
+        except (OSError, NotImplementedError, AttributeError):
+            self.skipTest("symlink creation is unavailable on this host")
+        res = self.run_edit(alias, old_string="active\n", new_string="forged\n")
+        self.assertBlocked(res, "H-19")
+        self.assertIn("/ca:adr", res.stderr)
+        self.assertNotIn("security-pass.py", res.stderr)
+        self.assertNotIn("migration-pass.py", res.stderr)
 
     def test_multiedit_marker_is_blocked(self):
         m = os.path.join(self.markers, "migration-gate-passed")
@@ -500,6 +522,56 @@ def _load_pre_edit():
     mod = _ilu.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+class TestOpaqueRecoveryGuidance(unittest.TestCase):
+    def test_claude_opaque_edit_names_only_available_continuations(self):
+        mod = _load_pre_edit()
+
+        class OpaqueHost:
+            @staticmethod
+            def iter_file_ops(_payload):
+                return [{"file_path": "", "kind": "opaque"}]
+
+        class Blocked(Exception):
+            pass
+
+        observed = {}
+
+        def capture(tag, message):
+            observed.update(tag=tag, message=message)
+            raise Blocked
+
+        mod.read_input = lambda: {}
+        mod.get_host = lambda: OpaqueHost()
+        mod.block = capture
+        with self.assertRaises(Blocked):
+            mod._run(".")
+        self.assertEqual(observed["tag"], "H-21")
+        self.assertNotIn("apply_patch", observed["message"])
+        self.assertIn("single-file Edit", observed["message"])
+
+    def test_failed_host_adapter_names_repair_instead_of_impossible_split(self):
+        mod = _load_pre_edit()
+
+        class Blocked(Exception):
+            pass
+
+        observed = {}
+
+        def capture(tag, message):
+            observed.update(tag=tag, message=message)
+            raise Blocked
+
+        mod.read_input = lambda: {}
+        mod.get_host = lambda: mod.hostapi.FailClosedHost()
+        mod.block = capture
+        with self.assertRaises(Blocked):
+            mod._run(".")
+        self.assertEqual(observed["tag"], "H-21")
+        self.assertIn("host adapter failed to load", observed["message"])
+        self.assertIn("Reinstall or repair", observed["message"])
+        self.assertNotIn("single-file Edit", observed["message"])
 
 
 class TestH22ProtectedState(unittest.TestCase):

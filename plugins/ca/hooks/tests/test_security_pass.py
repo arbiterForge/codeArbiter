@@ -2,15 +2,18 @@
 
 The guard-logic matrix (.github/scripts/test_hook_guards.py) exercises only the
 happy path (case 6c: one sensitive line, committed repo). This file covers the
-branches it doesn't: no-.codearbiter exit, empty-digest write, untracked-file
-inclusion, the MAX_UNTRACKED_BYTES skip, and the unborn-branch (no HEAD) path.
+branches it doesn't: no-.codearbiter exit, empty-digest write, reviewed staged
+scope, root binding, and the unborn-branch (no HEAD) path.
 
 Same subprocess style as the other guard tests: run security-pass.py via the
 current interpreter, cwd'd into a throwaway repo, and read the marker it writes.
 Stdlib only.
 """
-import os
+import json
+import hashlib
 import importlib.util
+import os
+import shutil
 import stat
 import subprocess
 import sys
@@ -19,7 +22,15 @@ import unittest
 from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, HOOKS)
+import _hooklib  # noqa: E402
+import _gitexec  # noqa: E402
+import _overrideappendlib  # noqa: E402
+
 SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
+MIGRATION_PASS = os.path.join(HOOKS, "migration-pass.py")
+GIT_ENFORCE = os.path.join(HOOKS, "git-enforce.py")
+PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
 CRYPTO_LINE = "const h = createHash('md5');\n"  # matches CRYPTO_RE
 
 
@@ -49,6 +60,9 @@ class _Fixture(unittest.TestCase):
 
     def _ca(self):
         os.makedirs(os.path.join(self.root, ".codearbiter"), exist_ok=True)
+        self._write(
+            ".codearbiter/CONTEXT.md",
+            "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
 
     def _write(self, rel, text):
         p = os.path.join(self.root, rel)
@@ -57,8 +71,10 @@ class _Fixture(unittest.TestCase):
             f.write(text)
         return p
 
-    def run_pass(self):
-        return _sh([sys.executable, SECURITY_PASS], self.root)
+    def run_pass(self, args=None, cwd=None, env=None):
+        argv = [sys.executable, SECURITY_PASS]
+        argv.extend(["--root", self.root] if args is None else args)
+        return _sh(argv, cwd or self.root, env=env)
 
     def marker(self):
         p = os.path.join(self.root, ".codearbiter", ".markers", "security-gate-passed")
@@ -67,14 +83,48 @@ class _Fixture(unittest.TestCase):
         with open(p, encoding="utf-8") as f:
             return f.read()
 
+    def run_commit_hook(self):
+        payload = json.dumps({
+            "tool_name": "Bash",
+            "tool_input": {"command": "git commit -m binary-fixture"},
+        })
+        return _sh([sys.executable, PRE_BASH], self.root, input=payload)
+
 
 class TestSecurityPassBranches(_Fixture):
-    def test_untracked_symlink_refuses_without_replacing_approval(self):
-        # CR758-03: reject the link itself; its target is not repository prose.
+    def test_binary_override_audit_failure_cannot_create_or_replace_marker(self):
         self._ca()
-        self._write("regular.js", CRYPTO_LINE)
-        self.assertEqual(self.run_pass().returncode, 0)
-        prior = self.marker()
+        marker = os.path.join(
+            self.root, ".codearbiter", ".markers", "security-gate-passed")
+        os.makedirs(os.path.dirname(marker), exist_ok=True)
+        with open(marker, "w", encoding="utf-8") as stream:
+            stream.write("existing-marker\n")
+        spec = importlib.util.spec_from_file_location(
+            "_security_pass_audit_order_test", SECURITY_PASS)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        binary = _hooklib.BinarySecurityContext(
+            "candidate-v1:test", False, (), ())
+        with (mock.patch.object(module, "candidate_scan", return_value=binary),
+              mock.patch.object(module, "binary_candidate_binding",
+                                return_value="binary-candidate-v1:" + "1" * 64),
+              mock.patch.object(module, "write_text_atomic") as write_marker,
+              mock.patch.object(
+                  _overrideappendlib, "append_override",
+                  side_effect=_overrideappendlib.OverrideAppendError("audit unavailable"))):
+            with self.assertRaises(SystemExit) as refused:
+                module.main([
+                    "--root", self.root, "--binary-override",
+                    "--security-finding", "opaque fixture",
+                    "--reason", "required release asset",
+                ])
+        self.assertEqual(refused.exception.code, 1)
+        write_marker.assert_not_called()
+        with open(marker, encoding="utf-8") as stream:
+            self.assertEqual(stream.read(), "existing-marker\n")
+
+    def test_untracked_symlink_is_outside_the_reviewed_staged_set(self):
+        self._ca()
         target = os.path.join(self._tmp.name, "outside.txt")
         with open(target, "w", encoding="utf-8") as stream:
             stream.write("finite ordinary target\n")
@@ -85,26 +135,11 @@ class TestSecurityPassBranches(_Fixture):
                 try:
                     self.assertTrue(stat.S_ISLNK(os.lstat(link).st_mode))
                     result = self.run_pass()
-                    self.assertEqual(result.returncode, 1, result.stderr)
-                    self.assertEqual(self.marker(), prior)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertRegex(self.marker(),
+                                     r"^root-v1:[0-9a-f]{64}\ncandidate-v1:[0-9a-f]{64}\n$")
                 finally:
                     os.unlink(link)
-
-    def test_nonregular_file_scan_refuses_before_open(self):
-        # All unsupported kinds are refused before the read can block or grow.
-        sys.path.insert(0, HOOKS)
-        self.addCleanup(sys.path.remove, HOOKS)
-        spec = importlib.util.spec_from_file_location("review_security_pass", SECURITY_PASS)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        for kind in (stat.S_IFLNK, stat.S_IFCHR, stat.S_IFBLK, stat.S_IFIFO, stat.S_IFSOCK):
-            with self.subTest(kind=kind):
-                metadata = os.stat_result((kind | 0o600, 0, 0, 1, 0, 0, 0, 0, 0, 0))
-                with mock.patch.object(module.os, "lstat", return_value=metadata), \
-                        mock.patch.object(module.os.path, "getsize", return_value=0), \
-                        mock.patch("builtins.open", mock.mock_open(read_data="ordinary\n")) as opened:
-                    self.assertIsNone(module.file_scan(self.root, "candidate"))
-                    opened.assert_not_called()
 
     def test_no_codearbiter_exits_1(self):
         # No .codearbiter/ dir -> refuse, exit 1, record nothing.
@@ -122,25 +157,418 @@ class TestSecurityPassBranches(_Fixture):
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
         self.assertIn("0 sensitive line", res.stdout)
-        self.assertEqual(self.marker(), "")  # empty digest set
+        self.assertRegex(self.marker(),
+                         r"^root-v1:[0-9a-f]{64}\ncandidate-v1:[0-9a-f]{64}\n$")
 
-    def test_untracked_sensitive_line_recorded(self):
-        # An untracked file's sensitive line is in scope (commit-gate will stage it).
+    def test_untracked_sensitive_line_is_not_silently_recorded(self):
+        # #1037: an untracked row was not in the staged diff reviewed by the
+        # independent reviewer, so the producer must not absorb it.
         self._ca()
         self._write("auth.js", CRYPTO_LINE)  # untracked, never added
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
-        self.assertIn("1 sensitive line", res.stdout)
-        self.assertTrue(self.marker().strip())
+        self.assertIn("0 sensitive line", res.stdout)
+        self.assertNotIn("path-v1:", self.marker())
 
-    def test_oversize_untracked_file_is_skipped(self):
-        # An untracked blob over MAX_UNTRACKED_BYTES is not reviewable prose -> skip.
+    def test_staged_sensitive_line_is_recorded_with_root_binding(self):
+        self._ca()
+        self._write("auth.js", CRYPTO_LINE)
+        _git(["add", "auth.js"], self.root)
+        res = self.run_pass()
+        self.assertEqual(res.returncode, 0, res.stderr)
+        records = self.marker().splitlines()
+        self.assertEqual(len(records), 3, records)
+        self.assertRegex(records[0], r"^root-v1:[0-9a-f]{64}$")
+        self.assertRegex(records[1], r"^candidate-v1:[0-9a-f]{64}$")
+        self.assertRegex(records[2], r"^path-v1:[0-9a-f]{64}$")
+
+    def test_recovery_omits_transient_index_and_refuses_when_it_disappears(self):
+        self._ca()
+        self._write("seed.txt", "seed\n")
+        _git(["add", "seed.txt", ".codearbiter/CONTEXT.md"], self.root)
+        _git(["commit", "-q", "-m", "seed"], self.root)
+        alternate = os.path.join(self.root, ".git", "alternate-index")
+        shutil.copyfile(os.path.join(self.root, ".git", "index"), alternate)
+        self._write("auth.js", CRYPTO_LINE)
+        env = {**os.environ, "GIT_INDEX_FILE": alternate}
+        staged = _sh(["git", "add", "auth.js"], self.root, env=env)
+        self.assertEqual(staged.returncode, 0, staged.stderr)
+        blocked = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root, env=env)
+        self.assertEqual(blocked.returncode, 1, blocked.stderr)
+        self.assertIn("[H-09b]", blocked.stderr)
+        encoded = blocked.stderr.split("reviewed checkout: ", 1)[1].split(
+            ". Verify", 1)[0]
+        invocation = json.loads(encoded)
+        self.assertEqual(invocation["environment"], {})
+        self.assertIn("First stage the exact intended files explicitly", blocked.stderr)
+        self.assertIn("plain git commit", blocked.stderr)
+
+        os.unlink(alternate)
+        refused = self.run_pass(env=env)
+        self.assertEqual(refused.returncode, 1, refused.stderr)
+        self.assertIn("active GIT_INDEX_FILE is unavailable", refused.stderr)
+        self.assertIn("unset GIT_INDEX_FILE", refused.stderr)
+        self.assertIsNone(self.marker())
+
+    def test_security_pass_and_precommit_share_existing_alternate_index(self):
+        self._ca()
+        self._write("seed.txt", "seed\n")
+        _git(["add", "seed.txt", ".codearbiter/CONTEXT.md"], self.root)
+        _git(["commit", "-q", "-m", "seed"], self.root)
+        alternate = os.path.join(self.root, ".git", "alternate-index")
+        shutil.copyfile(os.path.join(self.root, ".git", "index"), alternate)
+        self._write("auth.js", CRYPTO_LINE)
+        env = {**os.environ, "GIT_INDEX_FILE": alternate}
+        staged = _sh(["git", "add", "auth.js"], self.root, env=env)
+        self.assertEqual(staged.returncode, 0, staged.stderr)
+
+        recorded = self.run_pass(env=env)
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        self.assertIn("1 sensitive line", recorded.stdout)
+        allowed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"],
+                      self.root, env=env)
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+
+    def test_security_diff_pins_ascii_path_quoting(self):
+        self._ca()
+        _git(["config", "core.quotePath", "false"], self.root)
+        self._write("café.py", CRYPTO_LINE)
+        _git(["add", "café.py", ".codearbiter/CONTEXT.md"], self.root)
+
+        diff = subprocess.run(
+            ["git", *_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"],
+            cwd=self.root, capture_output=True, timeout=60,
+        )
+        self.assertEqual(diff.returncode, 0, diff.stderr)
+        rendered = diff.stdout.decode("ascii", errors="strict")
+        self.assertIn(r"caf\303\251.py", rendered)
+        recorded = self.run_pass()
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        self.assertIn("1 sensitive line", recorded.stdout)
+
+    @unittest.skipIf(
+        os.name == "nt" or sys.platform == "darwin",
+        "host filesystem rejects invalid-byte path names",
+    )
+    def test_security_diff_quotes_invalid_path_bytes(self):
+        self._ca()
+        _git(["config", "core.quotePath", "false"], self.root)
+        relative = os.fsdecode(b"invalid_\xff.py")
+        absolute = os.path.join(os.fsencode(self.root), b"invalid_\xff.py")
+        with open(absolute, "wb") as stream:
+            stream.write(CRYPTO_LINE.encode("utf-8"))
+        _git(["add", "--", relative, ".codearbiter/CONTEXT.md"], self.root)
+
+        diff = subprocess.run(
+            ["git", *_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"],
+            cwd=self.root, capture_output=True, timeout=60,
+        )
+        self.assertEqual(diff.returncode, 0, diff.stderr)
+        rendered = diff.stdout.decode("ascii", errors="strict")
+        self.assertIn(r"invalid_\377.py", rendered)
+        recorded = self.run_pass()
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        self.assertIn("1 sensitive line", recorded.stdout)
+
+    def test_migration_pass_refuses_missing_inherited_alternate_index(self):
+        self._ca()
+        self._write("seed.txt", "seed\n")
+        _git(["add", "seed.txt", ".codearbiter/CONTEXT.md"], self.root)
+        _git(["commit", "-q", "-m", "seed"], self.root)
+        alternate = os.path.join(self.root, ".git", "alternate-index")
+        shutil.copyfile(os.path.join(self.root, ".git", "index"), alternate)
+
+        self._write("migrations/alternate.sql",
+                    "CREATE TABLE alternate_candidate (id INT);\n")
+        env = {**os.environ, "GIT_INDEX_FILE": alternate}
+        staged = _sh(["git", "add", "migrations/alternate.sql"], self.root, env=env)
+        self.assertEqual(staged.returncode, 0, staged.stderr)
+        os.unlink(alternate)
+
+        refused = _sh([sys.executable, MIGRATION_PASS], self.root, env=env)
+        self.assertEqual(refused.returncode, 1, refused.stderr)
+        self.assertIn("active GIT_INDEX_FILE is unavailable", refused.stderr)
+        self.assertIn("unset GIT_INDEX_FILE", refused.stderr)
+        marker = os.path.join(
+            self.root, ".codearbiter", ".markers", "migration-gate-passed")
+        self.assertFalse(os.path.exists(marker))
+
+    def test_rename_only_sensitive_move_requires_a_fresh_review(self):
+        self._ca()
+        self._write("legacy/auth.js", CRYPTO_LINE)
+        _git(["add", "legacy/auth.js", ".codearbiter/CONTEXT.md"], self.root)
+        _git(["commit", "-q", "-m", "seed sensitive source"], self.root)
+        _git(["config", "diff.renames", "true"], self.root)
+        os.makedirs(os.path.join(self.root, "runtime"))
+        _git(["mv", "legacy/auth.js", "runtime/auth.js"], self.root)
+
+        blocked = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(blocked.returncode, 1, blocked.stderr)
+        self.assertIn("[H-09b]", blocked.stderr)
+        self.assertIn("runtime/auth.js", blocked.stderr)
+
+        recorded = self.run_pass()
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        allowed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+
+    def test_binary_attribute_cannot_hide_text_crypto_or_secret_rows(self):
+        self._ca()
+        self._write(".gitattributes", "*.js binary\n")
+        self._write("runtime/auth.js",
+                    "const h = createHash('md5');\napi_token = '<redacted>';\n")
+        _git(["add", ".gitattributes", "runtime/auth.js", ".codearbiter/CONTEXT.md"],
+             self.root)
+
+        blocked = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(blocked.returncode, 1, blocked.stderr)
+        self.assertIn("[H-09b]", blocked.stderr)
+        self.assertIn(".gitattributes", blocked.stderr)
+        self.assertIn("/ca:override", blocked.stderr)
+        refused = self.run_pass()
+        self.assertEqual(refused.returncode, 1, refused.stderr)
+        self.assertIn(".gitattributes", refused.stderr)
+        self.assertIn("/ca:override", refused.stderr)
+
+        # Removing the misleading attribute restores the ordinary review lane.
+        self._write(".gitattributes", "")
+        _git(["add", ".gitattributes"], self.root)
+        review_block = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(review_block.returncode, 1, review_block.stderr)
+        self.assertIn("crypto/TLS=1", review_block.stderr)
+        self.assertIn("secret=1", review_block.stderr)
+        recorded = self.run_pass()
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        allowed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+
+    def test_genuine_binary_refusal_names_the_explicit_audited_route(self):
+        self._ca()
+        path = os.path.join(self.root, "assets", "payload.bin")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as stream:
+            stream.write(b"\x00\xffbinary payload\x00")
+        _git(["add", "assets/payload.bin", ".codearbiter/CONTEXT.md"], self.root)
+
+        blocked = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(blocked.returncode, 1, blocked.stderr)
+        self.assertIn("genuine binary", blocked.stderr)
+        self.assertIn("/ca:override", blocked.stderr)
+        refused = self.run_pass()
+        self.assertEqual(refused.returncode, 1, refused.stderr)
+        self.assertIn("genuine binary", refused.stderr)
+        self.assertIn("/ca:override", refused.stderr)
+
+    def test_genuine_binary_override_is_audited_exact_and_executable(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        _git(["config", "core.abbrev", "4"], self.root)
+        path = os.path.join(self.root, "assets", "payload.bin")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as stream:
+            payload_v1 = b"\x00\xffbinary payload v1\x00"
+            stream.write(payload_v1)
+        _git(["add", "assets/payload.bin", ".codearbiter/CONTEXT.md"], self.root)
+        binary_diff = _sh(["git", *_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"], self.root)
+        self.assertEqual(binary_diff.returncode, 0, binary_diff.stderr)
+        self.assertNotIn("--binary", _hooklib.SECURITY_DIFF_GIT_ARGS)
+        self.assertNotIn("GIT binary patch", binary_diff.stdout)
+        self.assertRegex(binary_diff.stdout, r"(?m)^index [0-9a-f]{40,64}\.\.[0-9a-f]{40,64}")
+        _mode, staged_sha256 = _gitexec.read_index_blob_identity(
+            self.root, "assets/payload.bin", preserve_index=True)
+        self.assertEqual(staged_sha256, hashlib.sha256(payload_v1).hexdigest())
+        binary_candidate = _gitexec.binary_candidate_binding(
+            self.root, preserve_index=True)
+        self.assertRegex(binary_candidate, r"^binary-candidate-v1:[0-9a-f]{64}$")
+
+        overridden = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "genuine binary assets/payload.bin",
+            "--reason", "required opaque release fixture",
+        ])
+        self.assertEqual(overridden.returncode, 0, overridden.stderr)
+        self.assertIn("binary security override recorded", overridden.stdout)
+        with open(os.path.join(self.root, ".codearbiter", "overrides.log"),
+                  encoding="utf-8") as stream:
+            audit = stream.read()
+        self.assertEqual(audit.count("SECURITY-OVERRIDE"), 1)
+        self.assertIn("genuine binary assets/payload.bin", audit)
+        self.assertRegex(self.marker(),
+                         r"^root-v1:[0-9a-f]{64}\nbinary-override-v1:[0-9a-f]{64}\n$")
+        self.assertIn(_hooklib.binary_override_binding(binary_candidate), self.marker())
+        allowed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+        allowed_hook = self.run_commit_hook()
+        self.assertEqual(allowed_hook.returncode, 0, allowed_hook.stderr)
+
+        with open(path, "wb") as stream:
+            stream.write(b"\x00\xffbinary payload v2\x00")
+        _git(["add", "assets/payload.bin"], self.root)
+        changed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(changed.returncode, 1, changed.stderr)
+        self.assertIn("[H-09b]", changed.stderr)
+        changed_hook = self.run_commit_hook()
+        self.assertEqual(changed_hook.returncode, 2, changed_hook.stderr)
+        self.assertIn("[H-09b]", changed_hook.stderr)
+
+    def test_binary_override_binds_every_binary_in_one_candidate(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        paths = []
+        for name, payload in (("one.bin", b"\x00one-v1\xff"),
+                              ("two.bin", b"\x00two-v1\xff")):
+            path = os.path.join(self.root, "assets", name)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "wb") as stream:
+                stream.write(payload)
+            paths.append(path)
+        _git(["add", "assets/one.bin", "assets/two.bin",
+              ".codearbiter/CONTEXT.md"], self.root)
+        real_run = subprocess.run
+        with mock.patch.object(_gitexec.subprocess, "run", wraps=real_run) as run:
+            candidate = _gitexec.binary_candidate_binding(
+                self.root, preserve_index=True)
+        self.assertRegex(candidate, r"^binary-candidate-v1:[0-9a-f]{64}$")
+        self.assertLessEqual(run.call_count, 6, "binary hashing regressed to per-file Git calls")
+
+        def record(reason):
+            result = self.run_pass(args=[
+                "--root", self.root, "--binary-override",
+                "--security-finding", "two exact opaque fixtures",
+                "--reason", reason,
+            ])
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+        record("first exact two-file candidate")
+        self.assertEqual(_sh([sys.executable, GIT_ENFORCE, "pre-commit"],
+                             self.root).returncode, 0)
+        with open(paths[0], "wb") as stream:
+            stream.write(b"\x00one-v2\xff")
+        _git(["add", "assets/one.bin"], self.root)
+        self.assertEqual(_sh([sys.executable, GIT_ENFORCE, "pre-commit"],
+                             self.root).returncode, 1)
+
+        record("second exact two-file candidate")
+        self.assertEqual(_sh([sys.executable, GIT_ENFORCE, "pre-commit"],
+                             self.root).returncode, 0)
+        with open(paths[1], "wb") as stream:
+            stream.write(b"\x00two-v2\xff")
+        _git(["add", "assets/two.bin"], self.root)
+        self.assertEqual(_sh([sys.executable, GIT_ENFORCE, "pre-commit"],
+                             self.root).returncode, 1)
+        self.assertEqual(self.run_commit_hook().returncode, 2)
+
+    def test_binary_deletion_override_binds_committed_head_preimage(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        path = os.path.join(self.root, "assets", "delete.bin")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as stream:
+            stream.write(b"\x00head-v1\xff")
+        _git(["add", "assets/delete.bin", ".codearbiter/CONTEXT.md",
+              ".codearbiter/overrides.log"], self.root)
+        _git(["commit", "-q", "-m", "seed binary preimage"], self.root)
+        _git(["rm", "-q", "assets/delete.bin"], self.root)
+        recorded = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "delete exact opaque fixture",
+            "--reason", "remove obsolete fixture",
+        ])
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        self.assertEqual(_sh([sys.executable, GIT_ENFORCE, "pre-commit"],
+                             self.root).returncode, 0)
+
+        _git(["restore", "--staged", "assets/delete.bin"], self.root)
+        _git(["restore", "assets/delete.bin"], self.root)
+        with open(path, "wb") as stream:
+            stream.write(b"\x00head-v2\xff")
+        _git(["add", "assets/delete.bin"], self.root)
+        _git(["commit", "-q", "-m", "replace binary preimage",
+              "--", "assets/delete.bin"], self.root)
+        _git(["rm", "-q", "assets/delete.bin"], self.root)
+        stale = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(stale.returncode, 1, stale.stderr)
+        self.assertIn("[H-09b]", stale.stderr)
+        stale_hook = self.run_commit_hook()
+        self.assertEqual(stale_hook.returncode, 2, stale_hook.stderr)
+        self.assertIn("[H-09b]", stale_hook.stderr)
+
+    def test_binary_override_refuses_concurrent_reviewable_sensitive_text(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        path = os.path.join(self.root, "assets", "payload.bin")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as stream:
+            stream.write(b"\x00opaque payload\xff")
+        self._write("auth.js", "const h = createHash('md5');\napi_token = '<redacted>';\n")
+        _git(["add", "assets/payload.bin", "auth.js", ".codearbiter/CONTEXT.md"], self.root)
+
+        refused = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "genuine binary assets/payload.bin",
+            "--reason", "required opaque release fixture",
+        ])
+        self.assertEqual(refused.returncode, 1, refused.stderr)
+        self.assertIn("binary changes separately", refused.stderr)
+        with open(os.path.join(self.root, ".codearbiter", "overrides.log"),
+                  encoding="utf-8") as stream:
+            self.assertNotIn("SECURITY-OVERRIDE", stream.read())
+        backstop = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        hook = self.run_commit_hook()
+        self.assertEqual(backstop.returncode, 1, backstop.stderr)
+        self.assertEqual(hook.returncode, 2, hook.stderr)
+        self.assertIn("binary changes separately", backstop.stderr)
+        self.assertIn("binary changes separately", hook.stderr)
+
+    def test_binary_override_audit_ignores_hostile_repository_selectors(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# repo-a overrides\n")
+        path = os.path.join(self.root, "assets", "payload.bin")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as stream:
+            stream.write(b"\x00repo-a payload\xff")
+        _git(["add", "assets/payload.bin", ".codearbiter/CONTEXT.md"], self.root)
+
+        other = os.path.join(self._tmp.name, "repo-b")
+        os.makedirs(other)
+        _git(["init", "-q", "-b", "feat/other", other], self._tmp.name)
+        _git(["config", "user.email", "other@example.com"], other)
+        _git(["config", "user.name", "other"], other)
+        os.makedirs(os.path.join(other, ".codearbiter"))
+        with open(os.path.join(other, ".codearbiter", "overrides.log"),
+                  "w", encoding="utf-8") as stream:
+            stream.write("# repo-b overrides\n")
+        env = {**os.environ, "GIT_DIR": os.path.join(other, ".git"),
+               "GIT_WORK_TREE": other}
+        result = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "genuine binary assets/payload.bin",
+            "--reason", "required opaque release fixture",
+        ], env=env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        with open(os.path.join(self.root, ".codearbiter", "overrides.log"),
+                  encoding="utf-8") as stream:
+            self.assertIn("SECURITY-OVERRIDE", stream.read())
+        with open(os.path.join(other, ".codearbiter", "overrides.log"),
+                  encoding="utf-8") as stream:
+            self.assertEqual(stream.read(), "# repo-b overrides\n")
+
+    def test_unattributed_binary_markers_stay_on_malformed_context_route(self):
+        for malformed in (
+                "GIT binary patch\n",
+                "Binary files a/payload.bin and b/payload.bin differ\n"):
+            with self.subTest(malformed=malformed):
+                self.assertIsNone(_hooklib.security_scan_diff(malformed))
+
+    def test_large_untracked_file_is_outside_reviewed_staged_set(self):
+        # Size cannot pull an untracked file into the independently reviewed
+        # staged candidate.
         self._ca()
         big = ("x" * 1_000_001) + "\n" + CRYPTO_LINE
         self._write("blob.js", big)
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
-        self.assertIn("0 sensitive line", res.stdout)  # the md5 line was skipped with the blob
+        self.assertIn("0 sensitive line", res.stdout)
 
     def test_unborn_branch_records_staged_sensitive_line(self):
         # No commit yet (unborn HEAD): `git diff HEAD` fails, fall back to ls-files.
@@ -151,8 +579,8 @@ class TestSecurityPassBranches(_Fixture):
         self.assertEqual(res.returncode, 0)
         self.assertIn("1 sensitive line", res.stdout)
 
-    def test_diff_head_added_sensitive_line_recorded(self):
-        # Committed repo, a new sensitive line in the worktree diff -> recorded.
+    def test_unstaged_sensitive_line_is_not_silently_recorded(self):
+        # #1037: a worktree-only row is not in the staged review candidate.
         self._ca()
         self._write("auth.js", "const ok = 1;\n")
         _git(["add", "auth.js"], self.root)
@@ -160,7 +588,8 @@ class TestSecurityPassBranches(_Fixture):
         self._write("auth.js", "const ok = 1;\n" + CRYPTO_LINE)
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
-        self.assertIn("1 sensitive line", res.stdout)
+        self.assertIn("0 sensitive line", res.stdout)
+        self.assertNotIn("path-v1:", self.marker())
 
     def test_gate_events_log_untracked_contributes_no_digests(self):
         # #279: gate-events.log is the gate's own machine-written audit sink —
@@ -173,7 +602,8 @@ class TestSecurityPassBranches(_Fixture):
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
         self.assertIn("0 sensitive line", res.stdout)
-        self.assertEqual(self.marker(), "")
+        self.assertRegex(self.marker(),
+                         r"^root-v1:[0-9a-f]{64}\ncandidate-v1:[0-9a-f]{64}\n$")
 
     def test_gate_events_log_diff_contributes_no_digests(self):
         # #279: same exemption via the `git diff HEAD` branch — a COMMITTED
@@ -188,13 +618,77 @@ class TestSecurityPassBranches(_Fixture):
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
         self.assertIn("0 sensitive line", res.stdout)
-        self.assertEqual(self.marker(), "")
+        self.assertRegex(self.marker(),
+                         r"^root-v1:[0-9a-f]{64}\ncandidate-v1:[0-9a-f]{64}\n$")
+
+    def test_invalid_explicit_roots_preserve_prior_marker(self):
+        self._ca()
+        marker_dir = os.path.join(self.root, ".codearbiter", ".markers")
+        os.makedirs(marker_dir)
+        marker_path = os.path.join(marker_dir, "security-gate-passed")
+        with open(marker_path, "w", encoding="utf-8") as stream:
+            stream.write("prior-marker\n")
+        nested = os.path.join(self.root, "nested")
+        os.makedirs(nested)
+        cases = (
+            (["--root", nested], self.root),
+            (["--root", os.path.join(self.root, "missing")], self.root),
+            (["--wrong", self.root], self.root),
+            (["--root"], self.root),
+        )
+        for args, cwd in cases:
+            with self.subTest(args=args):
+                result = self.run_pass(args, cwd)
+                self.assertEqual(result.returncode, 1, result)
+                self.assertEqual(self.marker(), "prior-marker\n")
+
+    def test_explicit_root_is_used_from_another_cwd(self):
+        self._ca()
+        self._write("auth.js", CRYPTO_LINE)
+        _git(["add", "auth.js"], self.root)
+        result = self.run_pass(cwd=self._tmp.name)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("candidate-v1:", self.marker())
+
+    def test_implicit_root_uses_active_cwd_not_inherited_claude_root(self):
+        self._ca()
+        self._write("auth.js", CRYPTO_LINE)
+        _git(["add", "auth.js"], self.root)
+        env = {**os.environ, "CLAUDE_PROJECT_DIR": self._tmp.name}
+        result = self.run_pass(args=[], cwd=self.root, env=env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("candidate-v1:", self.marker())
+
+    def test_non_utf8_staged_candidate_is_unreadable_and_preserves_marker(self):
+        self._ca()
+        marker_dir = os.path.join(self.root, ".codearbiter", ".markers")
+        os.makedirs(marker_dir)
+        marker = os.path.join(marker_dir, "security-gate-passed")
+        with open(marker, "w", encoding="utf-8") as stream:
+            stream.write("prior-marker\n")
+        path = os.path.join(self.root, "auth.js")
+        with open(path, "wb") as stream:
+            stream.write(b'api_token = "\xff"\n')
+        _git(["add", "auth.js"], self.root)
+        blocked = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        self.assertEqual(blocked.returncode, 1, blocked)
+        self.assertIn("non-UTF-8", blocked.stderr)
+        self.assertIn(".gitattributes", blocked.stderr)
+        self.assertIn("audited binary override", blocked.stderr)
+        result = self.run_pass()
+        self.assertEqual(result.returncode, 1, result)
+        self.assertIn("non-UTF-8", result.stderr)
+        self.assertIn("convert", result.stderr)
+        self.assertIn(".gitattributes", result.stderr)
+        self.assertIn("binary override", result.stderr)
+        self.assertEqual(self.marker(), "prior-marker\n")
 
     def test_gate_events_log_exemption_is_narrow(self):
         # #279 non-weakening proof: the SAME sensitive line, in a DIFFERENT
         # file, must still be recorded — only gate-events.log is exempt.
         self._ca()
         self._write(".codearbiter/overrides.log", CRYPTO_LINE)
+        _git(["add", ".codearbiter/overrides.log"], self.root)
         res = self.run_pass()
         self.assertEqual(res.returncode, 0)
         self.assertIn("1 sensitive line", res.stdout)

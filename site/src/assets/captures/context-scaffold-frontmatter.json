@@ -30,7 +30,7 @@
     },
     {
       "path": "plugins/ca/hooks/_gitexec.py",
-      "sha256": "6dc323512f8a50b2a82a8ff63cd5eb2d1e98aefb9dafcc802b8053a2bc838d68"
+      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
     },
     {
       "path": "plugins/ca/hooks/_githooks.py",
@@ -38,11 +38,11 @@
     },
     {
       "path": "plugins/ca/hooks/_hooklib.py",
-      "sha256": "966c876c032d026459dc4c0af2fffaa822a222426ca9150a7cb068456272dc5e"
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
     },
     {
       "path": "plugins/ca/hooks/_host.py",
-      "sha256": "a453d71b55453173f2158e22a10b78f336c7f9004a7eeadece660dcad6a29e6d"
+      "sha256": "7c2854bcd4529ac5ad03a792b7d4cc8ec275d364083784730d857ba096b9646c"
     },
     {
       "path": "plugins/ca/hooks/_pathnorm.py",
@@ -58,7 +58,7 @@
     },
     {
       "path": "plugins/ca/hooks/_sensitivelib.py",
-      "sha256": "ccb2b1c7b6912aac52bf0aae5fbba8bd0a8e66e4c4fae5a28458ab4790d38c34"
+      "sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458"
     },
     {
       "path": "plugins/ca/hooks/_taskboardlib.py",
@@ -70,7 +70,7 @@
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "039674814cfa37fc74085ac459171ef8a64162e33dcefce08b47f286e0a1a508"
+      "sha256": "7b9ef73742b525079c221483149472bb0fdb353202cf0b7249f95c1e77861af2"
     },
     {
       "path": "plugins/ca/hooks/init-codearbiter.py",
