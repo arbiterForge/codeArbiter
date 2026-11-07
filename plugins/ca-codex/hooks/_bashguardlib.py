@@ -420,7 +420,7 @@ def _powershell_comment_boundary(text, index, allow_scriptblock=False):
     """Whether a PowerShell comment opener begins a new shell token."""
     return (index == 0 or text[index - 1].isspace()
             or text[index - 1] in ";|&,(" or
-            allow_scriptblock and text[index - 1] == "{")
+            (allow_scriptblock and text[index - 1] == "{"))
 
 
 def _powershell_layout(text, allow_scriptblock_comments=False):
@@ -2368,10 +2368,12 @@ def _check_h05_audit_log(cmd, powershell_tool=False):
     # at all, so this shape walked past both. A `sed` whose options and
     # script are visibly read-only is a read, as for H-11 and H-18 (#997).
     folded = cmd.casefold()
-    powershell_dotnet = "new-object" in folded or "::" in cmd
+    # PowerShell comments are shell grammar, not a generic property of .NET
+    # tokens. Bash treats `#` after punctuation such as `,` as ordinary text,
+    # so applying this lexer to a Bash payload can hide a destructive suffix.
     lexical_cmd = (_powershell_without_comments(
-                       cmd, allow_scriptblock_comments=powershell_tool)
-                   if powershell_dotnet else cmd)
+                       cmd, allow_scriptblock_comments=True)
+                   if powershell_tool else cmd)
     legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
     enrolled_name = (any(n in cmd for n in legacy_names) or
                      ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)

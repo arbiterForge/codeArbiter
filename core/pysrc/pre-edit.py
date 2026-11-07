@@ -94,7 +94,8 @@ def _run(root):
     # file per call. Codex does not register this entry at all — its edits
     # arrive as apply_patch and are guarded per-op by pre-write.py
     # (docs/parity.md).
-    ops = list(get_host().iter_file_ops(payload))
+    host = get_host()
+    ops = list(host.iter_file_ops(payload))
     if not ops:
         sys.exit(0)
 
@@ -111,6 +112,11 @@ def _run(root):
     # future host's unparseable envelope) — ambiguity resolves CLOSED
     # (ORCHESTRATOR §2), mirroring pre-write.py's opaque handling.
     if any(op.get("kind") == "opaque" for op in ops):
+        if isinstance(host, hostapi.FailClosedHost):
+            block("H-21", "The active host adapter failed to load, so this edit's "
+                          "targets cannot be guarded. Failing closed. Reinstall or repair "
+                          "the plugin's hooks/_host.py, then retry the same edit; splitting "
+                          "it cannot recover a broken adapter.")
         block("H-21", "This edit could not be decomposed into per-file operations, so its "
                       "targets cannot be guarded. Failing closed. Split it into separate "
                       "single-file Edit calls; report it if that is not possible.")

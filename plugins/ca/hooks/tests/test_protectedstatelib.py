@@ -196,7 +196,13 @@ class TestRecoveryDescriptors(unittest.TestCase):
         command = ("[IO.File]::Open('.codearbiter/gate-events.log','Open',"
                    "<# access #> 'Write')")
         with self.assertRaises(SystemExit):
-            _bashguardlib._check_h05_audit_log(command)
+            _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
+
+    def test_bash_punctuation_cannot_enable_powershell_comment_stripping(self):
+        command = ("echo a::b,# ordinary-bash-text; "
+                   "rm .codearbiter/overrides.log")
+        with self.assertRaises(SystemExit):
+            _bashguardlib._check_h05_audit_log(command, powershell_tool=False)
 
     def test_rewrite_truncate_and_utf16_shapes_remain_blocked(self):
         commands = (
@@ -424,14 +430,15 @@ class TestRecoveryDescriptors(unittest.TestCase):
         )
         for command in allowed:
             with self.subTest(length=len(command)):
-                _bashguardlib._check_h05_audit_log(command)
+                _bashguardlib._check_h05_audit_log(
+                    command, powershell_tool=True)
 
     def test_dotnet_nested_calls_are_bounded(self):
         command = ("[IO.FileInfo]::new(" * 6000
                    + "'.codearbiter/gate-events.log'"
                    + ")" * 6000)
         started = time.perf_counter()
-        _bashguardlib._check_h05_audit_log(command)
+        _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
         self.assertLess(time.perf_counter() - started, 4.0)
 
     def test_parenthesized_safe_arguments_are_bounded(self):
@@ -441,14 +448,14 @@ class TestRecoveryDescriptors(unittest.TestCase):
         command = ("[IO.File]::Open('.codearbiter/gate-events.log',"
                    f"{mode},{access})")
         started = time.perf_counter()
-        _bashguardlib._check_h05_audit_log(command)
+        _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
         self.assertLess(time.perf_counter() - started, 4.0)
 
     def test_repeated_new_object_tokens_are_bounded(self):
         command = (("New-Object PSObject -Property @{Name='safe'};" * 10000)
                    + "Get-Content '.codearbiter/gate-events.log'")
         started = time.perf_counter()
-        _bashguardlib._check_h05_audit_log(command)
+        _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
         self.assertLess(time.perf_counter() - started, 4.0)
 
     def test_nested_new_object_tokens_are_bounded(self):

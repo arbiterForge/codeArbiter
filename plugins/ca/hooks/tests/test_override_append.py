@@ -71,6 +71,19 @@ class LockedOverrideAppendTests(unittest.TestCase):
         self.assertIsNotNone(appender.GATE_RE.fullmatch(placeholder),
                              f"placeholder <{placeholder}> must read as an identifier")
 
+    def test_security_producers_are_documented_as_standalone_commands(self):
+        command = (HOOKS.parent / "commands" / "override.md").read_text(
+            encoding="utf-8")
+        self.assertNotIn("PY=python3", command)
+        producers = [line.strip() for line in command.splitlines()
+                     if "/hooks/security-pass.py" in line]
+        self.assertEqual(len(producers), 2, producers)
+        for producer in producers:
+            self.assertTrue(producer.startswith('python "'), producer)
+            self.assertNotIn("$PY", producer)
+        self.assertIn("--binary-override", producers[1])
+        self.assertIn("one standalone command", command)
+
     def test_lock_contention_refuses_without_mutation(self):
         before = self.log.read_bytes()
         holder = acquire_lock(audit_lock_key(self.root, self.log))

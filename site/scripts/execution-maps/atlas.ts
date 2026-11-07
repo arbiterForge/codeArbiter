@@ -224,11 +224,13 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
 // recovery plus the existing audited binary-override route. The override and
 // commit owners keep their Atlas route and gate ownership; pin the reviewed
 // current blobs without rewriting the historical packet bindings below. The
-// CI follow-up recognizes a PowerShell block comment immediately after an
-// argument comma; that closes an H-05 parsing gap without changing routes.
+// CI and review follow-ups keep comment parsing bound to the actual shell,
+// distinguish a broken host adapter from an opaque edit, and make both
+// security producers standalone commands. These change recovery text and
+// refusal classification without adding an owner, gate, or route.
 export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/_bashguardlib.py':'985031c559be89d9446e4fb3e96c40ecedebeddc',
-  'core/surface/commands/override.md':'01a889f0e02941e0f393d1f32c903372a5b0f4ed',
+  'core/pysrc/_bashguardlib.py':'0f899bc13543ac3832e8bc8e488e6a96391a8e24',
+  'core/surface/commands/override.md':'d5b32413bca07aa89b60a6027d533b8ae56d8ed4',
   'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
 });
 // The corrective handoff changes guard classification, state diagnostics,

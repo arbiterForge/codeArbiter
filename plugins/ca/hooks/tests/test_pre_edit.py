@@ -529,6 +529,28 @@ class TestOpaqueRecoveryGuidance(unittest.TestCase):
         self.assertNotIn("apply_patch", observed["message"])
         self.assertIn("single-file Edit", observed["message"])
 
+    def test_failed_host_adapter_names_repair_instead_of_impossible_split(self):
+        mod = _load_pre_edit()
+
+        class Blocked(Exception):
+            pass
+
+        observed = {}
+
+        def capture(tag, message):
+            observed.update(tag=tag, message=message)
+            raise Blocked
+
+        mod.read_input = lambda: {}
+        mod.get_host = lambda: mod.hostapi.FailClosedHost()
+        mod.block = capture
+        with self.assertRaises(Blocked):
+            mod._run(".")
+        self.assertEqual(observed["tag"], "H-21")
+        self.assertIn("host adapter failed to load", observed["message"])
+        self.assertIn("Reinstall or repair", observed["message"])
+        self.assertNotIn("single-file Edit", observed["message"])
+
 
 class TestH22ProtectedState(unittest.TestCase):
     """T-07 (#564): the SAME generic "state" branch pre-write.py carries.

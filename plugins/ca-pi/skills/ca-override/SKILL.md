@@ -86,11 +86,17 @@ Heavier path (all required, in order):
    If the gate explicitly reports a genuine binary whose text context is unavailable, skip this
    helper and use the combined producer in step 4; that producer writes this same row exactly once
    before it writes the distinct binary marker.
-4. **Only then** record the bypass. For a reviewable-text crypto/secret commit gate, that means resolving the
-   interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
-   — never `python3 X || python X`, which reruns X on any nonzero exit (#577), and running
-   `"$PY" "<plugin-root>/hooks/security-pass.py"`,
-   which writes `<project-root>/.codearbiter/.markers/security-gate-passed` bound to the
+4. **Only then** record the bypass. For a reviewable-text crypto/secret commit gate, use the
+   host's known Python 3 launcher in place of `python` when its literal name differs, then run
+   the producer as one standalone command from the exact reviewed checkout root:
+
+   ```sh
+   python "<plugin-root>/hooks/security-pass.py"
+   ```
+
+   Do not combine launcher discovery and the producer in one chained shell expression, and never
+   use `python3 X || python X`, which reruns X on any nonzero exit (#577). The producer
+   writes `<project-root>/.codearbiter/.markers/security-gate-passed` bound to the
    sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
    steps 1–3, never to skip the gate proper.
 
@@ -100,8 +106,7 @@ Heavier path (all required, in order):
    bypass as an independent-review PASS:
 
    ```sh
-   PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python
-   "$PY" "<plugin-root>/hooks/security-pass.py" --binary-override --security-finding "<specific finding>" --reason "<reason>"
+   python "<plugin-root>/hooks/security-pass.py" --binary-override --security-finding "<specific finding>" --reason "<reason>"
    ```
 
 Under `/ca-sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
