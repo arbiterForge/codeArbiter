@@ -129,6 +129,41 @@ class TestGitReadErrorRedaction(unittest.TestCase):
     def test_git_backstop_read_hint_redacts_stderr(self):
         self._assert_redacted(_load_git_enforce())
 
+    def test_git_backstop_cached_diff_failures_record_recovery_hint(self):
+        module = _load_git_enforce()
+        exception_cases = (
+            (subprocess.TimeoutExpired(["git", "diff"], 10), "timed out"),
+            (PermissionError("withheld"), "was denied filesystem access"),
+            (FileNotFoundError("withheld"), "could not start"),
+            (OSError("withheld"), "failed"),
+        )
+        for error, expected_failure in exception_cases:
+            with self.subTest(error=type(error).__name__):
+                module._READ_ERRS.clear()
+                with mock.patch.object(module.subprocess, "run", side_effect=error):
+                    self.assertIsNone(module.cached_added_lines("."))
+                self.assertIn(expected_failure, module._read_err_hint())
+
+        result_cases = (
+            (subprocess.CompletedProcess(["git", "diff"], 128, b"", b"withheld"),
+             "exited unsuccessfully"),
+            (subprocess.CompletedProcess(["git", "diff"], 0, "not-bytes", b""),
+             "returned unreadable output"),
+        )
+        for result, expected_failure in result_cases:
+            with self.subTest(returncode=result.returncode, stdout=type(result.stdout).__name__):
+                module._READ_ERRS.clear()
+                with mock.patch.object(module.subprocess, "run", return_value=result):
+                    self.assertIsNone(module.cached_added_lines("."))
+                self.assertIn(expected_failure, module._read_err_hint())
+
+        module._READ_ERRS.clear()
+        result = subprocess.CompletedProcess(["git", "diff"], 0, b"", b"")
+        with mock.patch.object(module.subprocess, "run", return_value=result), \
+                mock.patch.object(module, "security_scan_diff", return_value=None):
+            self.assertIsNone(module.cached_added_lines("."))
+        self.assertIn("returned unreadable output", module._read_err_hint())
+
 
 def _actual_hooks_dir(root):
     """Absolute directory the selected real Git binary says it will use."""

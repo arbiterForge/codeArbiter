@@ -120,6 +120,19 @@ def _note_read_err(operation, failure_kind):
     _READ_ERRS.append(git_read_error_summary(operation, failure_kind))
 
 
+def _exception_failure_kind(error):
+    """Classify an exception without copying its potentially sensitive text."""
+    if isinstance(error, subprocess.TimeoutExpired):
+        return "timeout"
+    if isinstance(error, PermissionError):
+        return "access"
+    if isinstance(error, FileNotFoundError):
+        return "spawn"
+    if isinstance(error, UnicodeError):
+        return "output"
+    return "failure"
+
+
 def _read_err_hint():
     return f" Underlying git error: {_READ_ERRS[-1]}" if _READ_ERRS else ""
 
@@ -189,16 +202,21 @@ def cached_added_lines(cwd):
             capture_output=True, timeout=10,
             env=root_bound_git_env(preserve_index=True),
         )
-    except (OSError, subprocess.SubprocessError):
+    except Exception as e:  # noqa: BLE001 — fail closed with a sanitized recovery
+        _note_read_err("diff", _exception_failure_kind(e))
         return None
     if r.returncode != 0 or not isinstance(r.stdout, bytes):
+        _note_read_err("diff", "exit" if r.returncode != 0 else "output")
         return None
     try:
         stdout = r.stdout.decode("utf-8", errors="strict")
     except UnicodeDecodeError:
         _note_read_err("diff", "non-utf8")
         return None
-    return security_scan_diff(stdout)
+    result = security_scan_diff(stdout)
+    if result is None:
+        _note_read_err("diff", "output")
+    return result
 
 
 def cached_names(cwd):
