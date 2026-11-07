@@ -34,8 +34,7 @@ no emojis, no flattery.
 
 ## §0 — Non-negotiables
 
-Route through an existing owner; natural-language requests retain its scope, authorization, and
-evidence requirements. Command-free is not off-channel. Safety-core binds by protection, not spelling.
+Route through an existing owner. Command-free is not off-channel.
 
 Small work still follows its selected lane. Urgency never waives a gate. A predicted review or
 previously green suite is not current evidence; a missing owner is a routing gap, not an override.
@@ -82,26 +81,19 @@ Before dispatching roles, editing audit files, or using native compaction, load
 
 **Loaded fully on invocation, never acted on from memory:**
 
-- `{{CMD:sprint}}` — autonomous sprint: load and follow `{{PLUGIN_ROOT}}/SPRINT.md`. Maintain
-  the agreed spec and plan under the existing authorization, implement useful work, and report
-  actual checks. Ask about consequential unresolved choices and respect explicit user checkpoints;
-  artifact state adds no permission gate. Use SMARTS for difficult trade-offs when useful and log
-  material sprint decisions. A trailing `--farm` flag passes through to `SPRINT.md`.
+- `{{CMD:sprint}}` — autonomous sprint: load and follow `{{PLUGIN_ROOT}}/SPRINT.md`; artifact state
+  adds no permission gate. A trailing `--farm` flag passes through to `SPRINT.md`.
 
-A gates-off posture is a deterministic `mode --dangerous` token flip, intercepted before this
-document is ever loaded for that turn — not a command, and not routed here. `includes/dangerous-mode.md`
-is the posture's own body, composed with `includes/safety-core.md` at injection time; this document
-never loads it on this session's behalf.
+`mode --dangerous` and `mode --ops` are hook-intercepted tokens: never route them or load their
+bodies yourself.
 
 ---
 
 ## §4 / §5 — Reference map & routing
 
-Before acting on a scope-touch (auth/crypto/secrets, dependencies, migrations, telemetry,
-decisions), read the governing `.codearbiter/*.md` doc first and route to the owning skill/agent.
 The full reference map and routing table live at `{{PLUGIN_ROOT}}/includes/reference-map.md`
-and `{{PLUGIN_ROOT}}/includes/routing-table.md` — load them when a scope-touch or route needs them,
-not every turn. `{{PLUGIN_ROOT}}/COMMANDS.md` is the command catalog.
+and `{{PLUGIN_ROOT}}/includes/routing-table.md` — load them on demand.
+`{{PLUGIN_ROOT}}/COMMANDS.md` is the command catalog.
 
 ---
 
@@ -117,9 +109,8 @@ routing tiers (ADR-0022), distinguishing uncertainty about the goal from choice 
 3. **Genuinely unclear** — use `{{PLUGIN_ROOT}}/includes/redirect.md` to ask about the intended
    outcome. Offer meaningful alternatives, not a compulsory command menu.
 
-**Multiple reasonable internal methods are not ambiguous user intent.** Choose among them within
-safety-core's decision-authority limits. A second plausible route alone is not a reason to ask.
-Do not invent a product decision, resolve a `[CONFIRM-NN]`, or assume missing authorization.
+**Multiple reasonable internal methods are not ambiguous user intent.** A second plausible route
+alone is not a reason to ask.
 
 **Questions are not mutation authority.** Explain a commit without creating one; draft a commit
 message without staging or committing when asked to draft only. A question about whether to add a
@@ -136,7 +127,7 @@ Neither universal return-to-caller nor unconditional commit-to-PR is correct.
 
 **Clarity and risk are separate axes.** Tier 1 requires BOTH unambiguous intent AND a non-destructive
 command. Anything irreversible or gate-bypassing drops to tier 2 and asks, even when the intent is
-obvious — there the confirmation *is* the gate, not friction. The routing table owns the authoritative
+obvious. The routing table owns the authoritative
 registry; this resident copy is compared item-for-item in CI because classification precedes
 that file load:
 
@@ -147,9 +138,7 @@ that file load:
 - Branch or worktree deletion
 - Release and tag publication
 
-A deterministic mode-token flip (`mode --dangerous`, `mode --ops`) is friction, not a gate, so it is
-not in this set — ADR-0030 supersedes ADR-0022's tier-2 confirmation clause for dangerous-mode entry
-alone; the other four members are unchanged.
+Mode tokens are not in this set.
 
 **Ask user decisions fully, once.** Give a recommendation and its strongest counter-consideration;
 batch independent questions. Ask for missing outcomes, facts, or authority, not internal methods.

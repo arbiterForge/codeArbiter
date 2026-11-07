@@ -1,11 +1,3 @@
-<!-- codeArbiter — the `ops` mode body. Composed as `safety-core.md` + this file
-whenever the mode plane is flipped to `ops` (token: `mode --ops`). Ops ships
-advisory-only (user ruling, ADR-0030 position 7): a scoped persona carve-out
-for reversible local runtime work, never a process supervisor — no owned
-PIDs, no readiness probes, no scoped stop, no cross-session recovery. No
-enforcement hook becomes mode-aware; every gate fires identically in every
-mode, in `ops` exactly as in `arbiter` and `dangerous`. -->
-
 # ops — advisory runtime carve-out
 
 `ops` narrows the persona only, for one purpose: running, watching, or exercising

@@ -1,8 +1,3 @@
-<!-- codeArbiter — the `dangerous` mode body. Composed as `safety-core.md` + this file
-whenever the mode plane is flipped to `dangerous` (token: `mode --dangerous`). This is a
-general gates-off posture for whatever project the repo holds — it is not scoped to
-codeArbiter's own maintenance and carries no host-specific env-gate. -->
-
 # dangerous — gates-off posture
 
 `dangerous` suspends orchestration for local, exploratory work on this repo — any repo, not a

@@ -577,6 +577,81 @@ def test_ops_mode_keeps_safety_core_section_six():
           "or its 'narrows §0 and §6' reads as narrowing that set in the ops composition")
 
 
+# ---- the section-numbering note is a maintainer note, not resident instruction ------------
+# Hook block messages cite safety-core §N, so renumbering is a defect — but that invariant is
+# enforced mechanically (test_section_citations_resolve here; test_mode_surface's hook-citation
+# check). The note lives in the source's header comment, which the build strips from host copies.
+_LEADING_COMMENT = re.compile(r"\A<!--(.*?)-->", re.S)
+
+
+def test_section_numbering_note_is_in_the_maintainer_header():
+    raw = read(SAFETY_CORE)
+    header = _LEADING_COMMENT.match(raw)
+    check(header is not None, "safety-core.md: missing its leading maintainer header comment")
+    if header is None:
+        return
+    body = raw[header.end():]
+    check("public interface" not in body,
+          "safety-core.md: the section-numbering note is still in the resident body")
+    note = norm(header.group(1))
+    check("§N" in note and "test_section_citations_resolve" in note and "test_mode_surface" in note,
+          "safety-core.md: the header must keep the section-numbering note and name its tests")
+
+
+# ---- no rule stated twice in one composition (context audit T-06/T-07) ---------------------
+# Each removed span restated a rule that the same composition already carries, or a procedure
+# the persona orders loaded. Restatements ADR-0030 requires (each mode body's non-suspendable
+# subset) and ADR-0026's resident destructive block are deliberately not listed here.
+PLUGIN_COPIES = tuple(ROOT / "plugins" / name for name in ("ca", "ca-codex", "ca-pi"))
+DUPLICATES_REMOVED = {
+    "arbiter.md": (
+        "Before acting on a scope-touch",                       # safety-core §5
+        "not every turn",                                       # arbiter §3 load-on-invocation
+        "natural-language requests retain its scope",           # intro line + safety-core Precedence
+        "Safety-core binds by protection, not spelling",        # safety-core closing sentence
+        "Maintain the agreed spec and plan",                    # SPRINT.md, which it orders loaded
+        "Use SMARTS for difficult trade-offs",                  # SPRINT.md
+        "intercepted before this document is ever loaded",      # mode tokens: one sentence suffices
+        "Choose among them within safety-core's decision-authority limits",  # safety-core §6
+        "Do not invent a product decision",                     # safety-core §6
+        "there the confirmation *is* the gate",                 # safety-core §6
+        "ADR-0030 supersedes ADR-0022",                         # ADR history
+    ),
+    "includes/safety-core.md": (
+        "The hook floor covers only commit time",               # mechanism, not instruction
+        "classifies by path, never content",
+    ),
+}
+STILL_RESIDENT = {
+    "arbiter.md": (
+        "Route through an existing owner",
+        "Command-free is not off-channel",
+        "artifact state adds no permission gate",
+        "flag passes through",
+        "hook-intercepted tokens",
+        "Mode tokens are not in this set",
+        "compared item-for-item in CI",
+    ),
+    "includes/safety-core.md": (
+        ANCHOR_SECRETS,
+        "only at commit",
+    ),
+}
+
+
+def test_in_composition_duplicates_are_removed():
+    for rel in DUPLICATES_REMOVED:
+        surfaces = [SURFACE / rel] + [copy / rel for copy in PLUGIN_COPIES]
+        for path in surfaces:
+            text = norm(read(path))
+            for phrase in DUPLICATES_REMOVED[rel]:
+                check(norm(phrase) not in text,
+                      f"{path.relative_to(ROOT)}: still restates {phrase!r}")
+            for phrase in STILL_RESIDENT[rel]:
+                check(norm(phrase) in text,
+                      f"{path.relative_to(ROOT)}: lost the resident phrase {phrase!r}")
+
+
 # ---- arbiter §3 must not order mode-transition logging ------------------------------------
 # `prompt-submit.py` intercepts the whole-prompt mode token before the model sees it, and
 # `_modelib.flip` writes the `MODE: <mode> enter|exit` row itself (#679). An instruction to log
@@ -612,6 +687,8 @@ TESTS = [
     test_ops_mode_arbiter_quotes_resolve,
     test_ops_mode_keeps_safety_core_section_six,
     test_arbiter_orders_no_mode_transition_logging,
+    test_section_numbering_note_is_in_the_maintainer_header,
+    test_in_composition_duplicates_are_removed,
 ]
 
 

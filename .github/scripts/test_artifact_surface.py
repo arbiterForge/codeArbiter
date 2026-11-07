@@ -26,10 +26,12 @@ POLICY_STARTUP_FIXTURES = (
 # references from both. The context-and-decomposition conversion gives HTML-knowledge
 # repositories a one-line pointer instead of a Markdown coverage count. The
 # persona routing fix routes arbiter §7 to the override procedure and drops the
-# hook-owned mode-transition logging order from §3. Keep current content pins
-# separate from the historical pilot.
+# hook-owned mode-transition logging order from §3. The persona context trim
+# removes rules restated from safety-core or SPRINT.md, keeping the sprint
+# bullet's "artifact state adds no permission gate" clause. Keep current
+# content pins separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
-    "core/surface/arbiter.md": "828b0c3d2b1df0d1c10ab69335499ef8b4dc2cf47f9fc8148d4c85d12e200c03",
+    "core/surface/arbiter.md": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
     "core/pysrc/session-start.py": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
 }
 
