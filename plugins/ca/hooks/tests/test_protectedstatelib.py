@@ -192,6 +192,12 @@ class TestRecoveryDescriptors(unittest.TestCase):
         script = 'target=$(cygpath -u "$1" 2>/dev/null || printf "%s" "$1"); printf "%s\\n" "appended Δ" >> "$target"'
         self._assert_append_bytes([bash, "-lc", script, "append-test", "{PATH}"])
 
+    def test_block_comment_after_comma_cannot_hide_write_access(self):
+        command = ("[IO.File]::Open('.codearbiter/gate-events.log','Open',"
+                   "<# access #> 'Write')")
+        with self.assertRaises(SystemExit):
+            _bashguardlib._check_h05_audit_log(command)
+
     def test_rewrite_truncate_and_utf16_shapes_remain_blocked(self):
         commands = (
             "Set-Content -LiteralPath .codearbiter/overrides.log -Value line -Encoding Unicode",

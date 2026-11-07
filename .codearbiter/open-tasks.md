@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Block commented PowerShell write access to audit logs  (from github:pr-1091:run-42338710237:job-128301567904)  (done 2026-11-06)
+  - Work origin: github:pr-1091:run-42338710237:job-128301567904
+  - Desc: Ensure an inline PowerShell block comment after an argument comma cannot hide FileAccess.Write from the H-05 append-only audit-log guard; preserve legitimate read and append forms.
+  - Work type: fix
+  - Work ID: WORK-25FFFAEB903DDA7249B4B8808FE58D83
+  - Work operation ID: pr1091-h05-powershell-comma-comment
 - [x] Require crypto-compliance scan in crypto recovery  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4477302070)  (done 2026-11-05)
   - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4477302070
   - Desc: Crypto/TLS recovery must direct callers through the crypto-compliance skill before independent auth-crypto review and PASS recording.

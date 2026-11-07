@@ -419,7 +419,7 @@ _READ_FILEACCESS_VALUE_RE = re.compile(
 def _powershell_comment_boundary(text, index, allow_scriptblock=False):
     """Whether a PowerShell comment opener begins a new shell token."""
     return (index == 0 or text[index - 1].isspace()
-            or text[index - 1] in ";|&(" or
+            or text[index - 1] in ";|&,(" or
             allow_scriptblock and text[index - 1] == "{")
 
 
