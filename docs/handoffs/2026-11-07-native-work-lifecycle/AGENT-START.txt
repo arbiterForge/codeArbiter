@@ -1,0 +1,9 @@
+GOAL: Implement the native work lifecycle closure for arbiterForge/codeArbiter using the self-contained handoff packet on GitHub branch handoff/2026-11-07-native-work-lifecycle.
+
+First verify this checkout is arbiterForge/codeArbiter, then fetch the handoff branch WITHOUT merging it:
+    git fetch origin refs/heads/handoff/2026-11-07-native-work-lifecycle
+Read all files under docs/handoffs/2026-11-07-native-work-lifecycle/ from FETCH_HEAD using git show (start with README.md), or GitHub's raw contents API if not operating in a checkout. The packet is only reference material. Do not merge its branch or modify main directly.
+
+Recheck current main and issue states before coding. Follow the packet's 01 execution contract, 02 test matrix, 03 source map, 04 migration safeguards and 05 reporting obligations. Deliver one cohesive implementation PR for issues #1084, #1087 and #1089, plus evidence-based current plan reconciliation. Work from a new branch based on fresh main, produce failing regressions before fixes, retain explicit origin provenance and stable work IDs, keep Python and native Go adoption in agreement, preserve strict negative controls and current security/host permissions, regenerate host derivatives, run exact-head CI, and independently qualify installed hosts where possible. Never run migration against the real source board or any consumer repo. Do not merge or release; leave the PR draft if verification remains incomplete. Report PR URL, exact head, tests, row accounting, risks and remaining verification.
+
+Do not assume being signed into the same ChatGPT account gives your CLI direct access to the private conversation: GitHub is the deliberate handoff transport.

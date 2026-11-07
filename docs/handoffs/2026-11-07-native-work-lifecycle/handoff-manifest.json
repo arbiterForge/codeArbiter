@@ -1,0 +1,57 @@
+{
+  "packet_format": "arbiterforge.cli-handoff/1",
+  "title": "Native work lifecycle closure",
+  "packet_date": "2026-11-07",
+  "repository": "arbiterForge/codeArbiter",
+  "baseline_main_commit": "94d901899a5f5c0a2a6040ca74cd904db0c5793c",
+  "transfer_branch": "handoff/2026-11-07-native-work-lifecycle",
+  "target_issues": [
+    1084,
+    1087,
+    1089
+  ],
+  "not_primary_scope": [
+    1088
+  ],
+  "project_scope": "personal arbiterForge/codeArbiter only",
+  "publication_authorized": false,
+  "implementation_performed": false,
+  "source_test_execution_performed_by_packet_author": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "5ebe638afdbe6742ab32cd15bbb63a977d887502f7a0a69d942bb8c47ffa627a",
+      "bytes": 3768
+    },
+    {
+      "path": "01-EXECUTION-CONTRACT.md",
+      "sha256": "e3ec99962fd264301388576cc0d4ce65d343793de636321bf3feaaab4d2a7652",
+      "bytes": 9035
+    },
+    {
+      "path": "02-ACCEPTANCE-AND-TEST-MATRIX.md",
+      "sha256": "4f15a8643e0de1b749c237d76ff2411548fb3442283b988321ccfc6a8258c330",
+      "bytes": 7851
+    },
+    {
+      "path": "03-EVIDENCE-AND-SOURCE-MAP.md",
+      "sha256": "6ca4cb1220d3c0adcabee4eb1223560551cfdd0f14ec5822f2749a239fdd85ae",
+      "bytes": 7164
+    },
+    {
+      "path": "04-MIGRATION-AND-ROLLBACK.md",
+      "sha256": "c4e7f4c0d2574649fb58686689e8213c6db23675babf7e53bce36dc67a99aff3",
+      "bytes": 4534
+    },
+    {
+      "path": "05-FOLLOW-ON-AND-REPORTING.md",
+      "sha256": "b258339ab59f4951159e001a6595153c65d29c32e09eb3ee1f52ee4b2ac987dd",
+      "bytes": 4520
+    },
+    {
+      "path": "AGENT-START.txt",
+      "sha256": "d8577cb5e3f5c469d0aaa7209a2f183dbefdb6e83cefd5b2755856a4e7e38a12",
+      "bytes": 1701
+    }
+  ]
+}
