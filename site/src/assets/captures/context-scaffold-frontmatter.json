@@ -42,7 +42,7 @@
     },
     {
       "path": "plugins/ca/hooks/_host.py",
-      "sha256": "7c2854bcd4529ac5ad03a792b7d4cc8ec275d364083784730d857ba096b9646c"
+      "sha256": "e7225f47e7bbc3626f6ae247d6776432dad6712f4249248d9a5d794555424ad1"
     },
     {
       "path": "plugins/ca/hooks/_pathnorm.py",
@@ -62,7 +62,7 @@
     },
     {
       "path": "plugins/ca/hooks/_taskboardlib.py",
-      "sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46"
+      "sha256": "deaf622bd20b6adaf1dbf08012bdd3ecd436ac8b984784e932a0e9f776446e8a"
     },
     {
       "path": "plugins/ca/hooks/_taskexcludelib.py",
@@ -70,7 +70,7 @@
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "7b9ef73742b525079c221483149472bb0fdb353202cf0b7249f95c1e77861af2"
+      "sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18"
     },
     {
       "path": "plugins/ca/hooks/init-codearbiter.py",

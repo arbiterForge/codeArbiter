@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.5] - 2026-11-07
+
+### Fixed
+
+- Adopt shared-origin and long-title legacy work deterministically while preserving source snapshots, transaction safety, and explicit work identities.
+- Accept only owner-produced one-item lifecycle compositions and reject ambiguous bindings, malformed stamps, and unrelated board edits.
+
 ## [3.8.4] - 2026-11-05
 
 ### Fixed

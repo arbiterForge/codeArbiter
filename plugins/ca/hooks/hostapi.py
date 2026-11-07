@@ -402,7 +402,7 @@ class Host:
 
     name = "claude"
     adapter_name = "ca"
-    adapter_version = "3.8.4"
+    adapter_version = "3.8.5"
 
     # Update-notifier descriptor. Each independently versioned host overrides
     # these three values in its per-plugin _host.py. Keeping the target,
