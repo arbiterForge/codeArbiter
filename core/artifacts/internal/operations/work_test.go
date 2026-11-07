@@ -114,6 +114,225 @@ func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
 	}
 }
 
+func TestWorkAdoptSharedOriginDistinctRows(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	ensureLegacyBoardFixtureDir(t, root)
+	blocks := []string{
+		"- [ ] demo.feat.0001 - First shared row (from DECOMP#SHARED)",
+		"- [ ] demo.feat.0002 - Second shared row (from DECOMP#SHARED)",
+	}
+	board := []byte(strings.Join(blocks, "\n") + "\n")
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	rows := make([]any, 0, len(blocks))
+	ids := make([]string, 0, len(blocks))
+	for index, block := range blocks {
+		line := int64(index + 1)
+		origin := "legacy:row#" + digestBytes([]byte(block))[:32]
+		id := "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00" + origin))[:32])
+		ids = append(ids, id)
+		rows = append(rows, object{"location": "open", "line": line, "block_sha256": digestBytes([]byte(block)),
+			"work_id": id, "origin": origin, "alias": fmt.Sprintf("demo.feat.%04d", index+1),
+			"title":  []string{"First shared row", "Second shared row"}[index],
+			"intent": []string{"First shared row", "Second shared row"}[index], "work_type": "unknown", "state": "queued",
+			"started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil})
+	}
+	request := object{"protocol": Protocol, "operation_id": "adopt-shared-origin-001",
+		"expected_board_sha256": digestBytes(board), "expected_archive_sha256": nil, "rows": rows}
+	if _, err := Run(root, "work-adopt", request); err != nil {
+		t.Fatalf("distinct rows sharing source provenance were refused: %v", err)
+	}
+	for _, id := range ids {
+		context, err := Run(root, "work-context", object{"protocol": Protocol, "work_id": id})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(model.S(model.M(context.(map[string]any)["legacy_detail"])["text"]), "(from DECOMP#SHARED)") {
+			t.Fatalf("shared source provenance is not inspectable for %s", id)
+		}
+	}
+}
+
+func TestWorkAdoptLongUnicodeTitle(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	ensureLegacyBoardFixtureDir(t, root)
+	fullTitle := strings.Repeat("é🙂", 300)
+	block := "- [ ] " + fullTitle + " (from DECOMP#LONG)"
+	board := []byte(block + "\n")
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	id := "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00DECOMP#LONG"))[:32])
+	runes := []rune(fullTitle)
+	request := object{"protocol": Protocol, "operation_id": "adopt-long-unicode-001",
+		"expected_board_sha256": digestBytes(board), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(block)),
+			"work_id": id, "origin": "DECOMP#LONG", "alias": nil, "title": string(runes[:240]), "intent": fullTitle,
+			"work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+	if _, err := Run(root, "work-adopt", request); err != nil {
+		t.Fatalf("representable long Unicode title was refused: %v", err)
+	}
+	selected, err := Run(root, "work-get", object{"protocol": Protocol, "work_id": id})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := selected.(map[string]any)
+	if got["title"] != string(runes[:240]) || got["intent"] != fullTitle {
+		t.Fatalf("long Unicode title was not preserved: %+v", got)
+	}
+}
+
+func TestWorkAdoptLongTitlePreservesDescriptionAndExplicitID(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	ensureLegacyBoardFixtureDir(t, root)
+	fullTitle := strings.Repeat("界", 300)
+	id := "WORK-0123456789ABCDEF0123456789ABCDEF"
+	block := "- [~] demo.fix.0001 - " + fullTitle + " (started 2026-11-01) (from DECOMP#DESCRIBED)\n" +
+		"  - Desc: Existing rationale stays authoritative\n" +
+		"  - Work type: fix\n" +
+		"  - Work ID: " + id
+	board := []byte(block + "\n")
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	runes := []rune(fullTitle)
+	request := object{"protocol": Protocol, "operation_id": "adopt-described-unicode-001",
+		"expected_board_sha256": digestBytes(board), "expected_archive_sha256": nil,
+		"rows": []any{object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(block)),
+			"work_id": id, "origin": "DECOMP#DESCRIBED", "alias": "demo.fix.0001", "title": string(runes[:240]),
+			"intent": "Existing rationale stays authoritative", "work_type": "fix", "state": "active",
+			"started_at": "2026-11-01", "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+	if _, err := Run(root, "work-adopt", request); err != nil {
+		t.Fatalf("long title with description and explicit ID was refused: %v", err)
+	}
+	selected, err := Run(root, "work-get", object{"protocol": Protocol, "work_id": id})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := selected.(map[string]any)
+	if got["work_id"] != id || got["title"] != string(runes[:240]) || got["intent"] != "Existing rationale stays authoritative" ||
+		got["work_type"] != "fix" || got["state"] != "active" || got["started_at"] != "2026-11-01" || got["origin"] != "DECOMP#DESCRIBED" {
+		t.Fatalf("normalized adoption fields diverged: %+v", got)
+	}
+}
+
+func TestWorkAdoptCoalescesExactArchiveCrashCopy(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	ensureLegacyBoardFixtureDir(t, root)
+	block := "- [x] Archived crash copy (done 2026-11-02) (from DECOMP#ARCHIVE)"
+	board := []byte(block + "\n")
+	archive := []byte(block + "\n")
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "done-tasks.md"), archive, 0644); err != nil {
+		t.Fatal(err)
+	}
+	id := "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00DECOMP#ARCHIVE"))[:32])
+	request := object{"protocol": Protocol, "operation_id": "adopt-archive-copy-001",
+		"expected_board_sha256": digestBytes(board), "expected_archive_sha256": digestBytes(archive),
+		"rows": []any{object{"location": "archive", "line": int64(1), "block_sha256": digestBytes([]byte(block)),
+			"work_id": id, "origin": "DECOMP#ARCHIVE", "alias": nil, "title": "Archived crash copy", "intent": "Archived crash copy",
+			"work_type": "unknown", "state": "archived", "started_at": nil, "completed_at": "2026-11-02", "spec_id": nil, "plan_id": nil}}}
+	result, err := Run(root, "work-adopt", request)
+	if err != nil {
+		t.Fatalf("exact archive crash copy was not coalesced: %v", err)
+	}
+	accounting := result.(map[string]any)
+	if accounting["source_row_count"] != int64(2) || accounting["adopted_count"] != int64(1) ||
+		accounting["crash_copy_coalesced_count"] != int64(1) || accounting["legacy_open_sha256"] != digestBytes(board) ||
+		accounting["legacy_archive_sha256"] != digestBytes(archive) {
+		t.Fatalf("migration accounting is incomplete: %+v", accounting)
+	}
+	for _, path := range []string{"open-tasks.md", "done-tasks.md"} {
+		got, err := os.ReadFile(filepath.Join(root, ".codearbiter", "legacy", path))
+		if err != nil || string(got) != string(board) {
+			t.Fatalf("historical %s snapshot was not retained: %v", path, err)
+		}
+	}
+}
+
+func TestWorkAdoptSharedOriginAcrossBoardsRemainsDistinct(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	ensureLegacyBoardFixtureDir(t, root)
+	openBlock := "- [ ] Active sibling (from DECOMP#CROSS)"
+	archiveBlock := "- [x] Archived sibling (done 2026-11-01) (from DECOMP#CROSS)"
+	board, archive := []byte(openBlock+"\n"), []byte(archiveBlock+"\n")
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), board, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, ".codearbiter", "done-tasks.md"), archive, 0644); err != nil {
+		t.Fatal(err)
+	}
+	rows := []any{}
+	for _, fixture := range []struct {
+		location, block, title, state string
+		completed                     any
+	}{{"open", openBlock, "Active sibling", "queued", nil}, {"archive", archiveBlock, "Archived sibling", "archived", "2026-11-01"}} {
+		origin := "legacy:row#" + digestBytes([]byte(fixture.block))[:32]
+		id := "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00" + origin))[:32])
+		rows = append(rows, object{"location": fixture.location, "line": int64(1), "block_sha256": digestBytes([]byte(fixture.block)),
+			"work_id": id, "origin": origin, "alias": nil, "title": fixture.title, "intent": fixture.title,
+			"work_type": "unknown", "state": fixture.state, "started_at": nil, "completed_at": fixture.completed, "spec_id": nil, "plan_id": nil})
+	}
+	request := object{"protocol": Protocol, "operation_id": "adopt-cross-board-shared-001", "expected_board_sha256": digestBytes(board),
+		"expected_archive_sha256": digestBytes(archive), "rows": rows}
+	if _, err := Run(root, "work-adopt", request); err != nil {
+		t.Fatalf("distinct cross-board rows sharing provenance were refused: %v", err)
+	}
+}
+
+func TestWorkAdoptSafetyRefusalsNameSource(t *testing.T) {
+	t.Run("exact duplicate block", func(t *testing.T) {
+		block := "- [ ] Exact originless duplicate"
+		_, err := adoptionBlocks([]byte(block + "\n" + block + "\n"))
+		if fault.Code(err) != "INVALID_LEGACY_BOARD" {
+			t.Fatalf("exact duplicate block was accepted: %v", err)
+		}
+	})
+	t.Run("oversized description", func(t *testing.T) {
+		root := testutil.Root(t)
+		if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+			t.Fatal(err)
+		}
+		ensureLegacyBoardFixtureDir(t, root)
+		block := "- [ ] Oversized description\n  - Desc: " + strings.Repeat("x", 4001)
+		board := []byte(block + "\n")
+		if err := os.WriteFile(filepath.Join(root, ".codearbiter", "open-tasks.md"), board, 0644); err != nil {
+			t.Fatal(err)
+		}
+		origin := "legacy:row#" + digestBytes([]byte(block))[:32]
+		id := "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00" + origin))[:32])
+		request := object{"protocol": Protocol, "operation_id": "adopt-oversized-description-001", "expected_board_sha256": digestBytes(board),
+			"expected_archive_sha256": nil, "rows": []any{object{"location": "open", "line": int64(1), "block_sha256": digestBytes([]byte(block)),
+				"work_id": id, "origin": origin, "alias": nil, "title": "Oversized description", "intent": "bounded wire value",
+				"work_type": "unknown", "state": "queued", "started_at": nil, "completed_at": nil, "spec_id": nil, "plan_id": nil}}}
+		_, err := Run(root, "work-adopt", request)
+		if fault.Code(err) != "INVALID_ADOPTION" || !strings.Contains(fault.Public(err).Field, ".codearbiter/open-tasks.md line 1") {
+			t.Fatalf("oversized description did not name its source: %v", err)
+		}
+		if _, statErr := os.Stat(filepath.Join(root, ".codearbiter", "work", "project.json")); !os.IsNotExist(statErr) {
+			t.Fatalf("refused adoption published native state: %v", statErr)
+		}
+	})
+}
+
 func TestWorkAdoptRefusesTamperedSourceMeaning(t *testing.T) {
 	blockText := "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)\n  - Desc: Parse safely\n  - Work origin: DECOMP#PARSER\n  - Work ID: WORK-0123456789ABCDEF0123456789ABCDEF"
 	board := []byte(blockText + "\n")
@@ -176,7 +395,7 @@ func TestWorkAdoptPreservesLegacyParserEdgeCases(t *testing.T) {
 		{"single digit date", "- [ ] demo.feat.0001 - Build parser (started 2026-1-2) (from DECOMP#PARSER)\n  - Work origin: DECOMP#PARSER\n",
 			object{"work_id": "WORK-729DA0937C368ABE6E3F1DC00CAE1323", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser", "intent": "Build parser", "started_at": "2026-01-02"}},
 		{"empty backref text", "- [ ] Build parser (from )\n",
-			object{"work_id": "WORK-7C6DD7AD5EBED8E35E14B787D46D15F9", "origin": "legacy:open#8739c345150d793740d390d3612f4f09", "alias": nil, "title": "Build parser", "intent": "Build parser", "started_at": nil}},
+			object{"work_id": "WORK-042818C3D6DD08843A920A5AF6331512", "origin": "legacy:row#f2e99dccf5e174eb3b06103843c5cdca", "alias": nil, "title": "Build parser", "intent": "Build parser", "started_at": nil}},
 		{"trailing whitespace after origin", "- [ ] demo.feat.0001 - Build parser (from DECOMP#PARSER)  \n  - Work origin: DECOMP#PARSER\n",
 			object{"work_id": "WORK-729DA0937C368ABE6E3F1DC00CAE1323", "origin": "DECOMP#PARSER", "alias": "demo.feat.0001", "title": "Build parser (from DECOMP#PARSER)", "intent": "Build parser (from DECOMP#PARSER)", "started_at": nil}},
 	}

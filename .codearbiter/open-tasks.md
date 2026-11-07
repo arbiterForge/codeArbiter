@@ -5,6 +5,14 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [~] Close native work adoption and legacy lifecycle commit gaps for issues #1084, #1087, and #1089  (from github:issues-1084-1087-1089:handoff-df95ea4e)  (started 2026-11-07)
+  - Work origin: github:issues-1084-1087-1089:handoff-df95ea4e
+  - Desc: Implement one compatible Python and Go adoption contract for shared legacy origins and long titles, accept only sanctioned one-item legacy lifecycle diffs, reconcile evidence-backed native work plans, regenerate host derivatives, verify migration safety, and deliver one unmerged PR.
+  - Work type: unknown
+  - Work ID: WORK-96BF5FB41E95EB05088F3B6565253E35
+  - Work operation ID: 8b8a6f0d-56be-49f5-9a44-108410871089
+  - Spec ID: SPEC-NATIVE-WORK-LIFECYCLE-CLOSURE
+  - Plan ID: PLAN-NATIVE-WORK-LIFECYCLE-CLOSURE
 - [x] Block commented PowerShell write access to audit logs  (from github:pr-1091:run-42338710237:job-128301567904)  (done 2026-11-06)
   - Work origin: github:pr-1091:run-42338710237:job-128301567904
   - Desc: Ensure an inline PowerShell block comment after an argument comma cannot hide FileAccess.Write from the H-05 append-only audit-log guard; preserve legitimate read and append forms.

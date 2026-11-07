@@ -505,7 +505,7 @@ def test_done_flip_retained():
             sys.path.remove(str(hooks))
 
     before = "# Open tasks\n\n## In-flight\n- [~] a.b.0001 - a task (started 2026-07-01)\n"
-    after = "# Open tasks\n\n## In-flight\n- [x] a.b.0001 - a task (started 2026-07-01) (done 2026-07-02)\n"
+    after = "# Open tasks\n\n## In-flight\n- [x] a.b.0001 - a task  (done 2026-07-02)\n"
     check(tb.classify_board_diff(before, after) is True,
           "a clean done-flip must classify RETAINED, or commit-gate reads "
           "the board edit as scope creep and refuses the work commit")

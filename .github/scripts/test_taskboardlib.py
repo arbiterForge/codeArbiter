@@ -623,6 +623,252 @@ class ClassifyBoardDiffTest(unittest.TestCase):
         new = tb.add_entry(old, desc="Implement caching", section="## In-flight")
         self.assertTrue(tb.classify_board_diff(old, new))
 
+    def _owner_work_board(self):
+        origin = "github:issue-1089"
+        before = self._BASE
+        created = tb.add_entry(
+            before,
+            desc="Ship selected work",
+            origin=origin,
+            work_type="feature",
+            work_id="WORK-0123456789ABCDEF0123456789ABCDEF",
+            work_operation_id="issue-1089-create-001",
+        )
+        return origin, before, created
+
+    def test_attach_existing_selected_work_is_clean_transition(self):
+        """#1089 G04: owner-emitted spec/plan attachment changes one task block."""
+        origin, _before, created = self._owner_work_board()
+        attached = tb.edit_work_entry(
+            created,
+            origin,
+            "attach",
+            spec_id="SPEC-ISSUE-1089",
+            plan_id="PLAN-ISSUE-1089",
+        )
+        self.assertTrue(tb.classify_board_diff(created, attached))
+
+    def test_start_then_attach_same_work_is_clean_transition(self):
+        """#1089 G05: one selected row may start and gain its own bindings."""
+        origin, _before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        attached = tb.edit_work_entry(
+            started,
+            origin,
+            "attach",
+            spec_id="SPEC-ISSUE-1089",
+            plan_id="PLAN-ISSUE-1089",
+        )
+        self.assertTrue(tb.classify_board_diff(created, attached))
+
+    def test_create_then_start_same_work_is_clean_transition(self):
+        """#1089 G06: a new owner-emitted block may be active in the staged result."""
+        origin, before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        self.assertTrue(tb.classify_board_diff(before, started))
+
+    def test_start_then_complete_same_work_is_clean_transition(self):
+        """#1089 G07: queued work may start and complete within one staged diff."""
+        origin, _before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        completed = tb.set_state(
+            started, origin, "done", datetime.date(2026, 11, 7), origin=origin
+        )
+        self.assertTrue(tb.classify_board_diff(created, completed))
+
+    def test_simple_start_rejects_non_owner_stamp_shapes(self):
+        """#1089 G12: start has exactly one valid started suffix and no other stamp."""
+        origin, _before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        cases = {
+            "extra": started.replace(
+                "  (started 2026-11-07)",
+                "  (started 2026-11-07)  (started 2026-11-07)",
+            ),
+            "opposite": started.replace("started 2026-11-07", "done 2026-11-07"),
+            "both": started.replace(
+                "  (started 2026-11-07)",
+                "  (started 2026-11-07)  (done 2026-11-07)",
+            ),
+            "mid-title": started.replace(
+                "Ship selected work  (from github:issue-1089)  (started 2026-11-07)",
+                "Ship  (started 2026-11-07) selected work  (from github:issue-1089)",
+            ),
+        }
+        for name, mutant in cases.items():
+            with self.subTest(name=name):
+                self.assertFalse(tb.classify_board_diff(created, mutant))
+
+    def test_create_then_start_rejects_non_owner_stamp_shapes(self):
+        """#1089 G12: an inserted active block uses the same exact started suffix."""
+        origin, before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        cases = {
+            "extra": started.replace(
+                "  (started 2026-11-07)",
+                "  (started 2026-11-07)  (started 2026-11-07)",
+            ),
+            "opposite": started.replace("started 2026-11-07", "done 2026-11-07"),
+            "both": started.replace(
+                "  (started 2026-11-07)",
+                "  (started 2026-11-07)  (done 2026-11-07)",
+            ),
+            "mid-title": started.replace(
+                "Ship selected work  (from github:issue-1089)  (started 2026-11-07)",
+                "Ship  (started 2026-11-07) selected work  (from github:issue-1089)",
+            ),
+        }
+        for name, mutant in cases.items():
+            with self.subTest(name=name):
+                self.assertFalse(tb.classify_board_diff(before, mutant))
+
+    def test_start_then_complete_rejects_non_owner_stamp_shapes(self):
+        """#1089 G12: collapsed completion has one valid done suffix only."""
+        origin, _before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        completed = tb.set_state(
+            started, origin, "done", datetime.date(2026, 11, 7), origin=origin
+        )
+        cases = {
+            "extra": completed.replace(
+                "  (done 2026-11-07)",
+                "  (done 2026-11-07)  (done 2026-11-07)",
+            ),
+            "opposite": completed.replace("done 2026-11-07", "started 2026-11-07"),
+            "both": completed.replace(
+                "  (done 2026-11-07)",
+                "  (started 2026-11-07)  (done 2026-11-07)",
+            ),
+            "mid-title": completed.replace(
+                "Ship selected work  (from github:issue-1089)  (done 2026-11-07)",
+                "Ship  (done 2026-11-07) selected work  (from github:issue-1089)",
+            ),
+        }
+        for name, mutant in cases.items():
+            with self.subTest(name=name):
+                self.assertFalse(tb.classify_board_diff(created, mutant))
+
+    def test_attachment_requires_one_selected_origin(self):
+        """#1089 G12: binding edits cannot target an unselected or ambiguous row."""
+        unselected = self._BASE
+        unselected_attached = unselected.replace(
+            "- [ ] a.b.0002 - Rate-limit endpoint",
+            "- [ ] a.b.0002 - Rate-limit endpoint\n  - Spec ID: SPEC-FORGED",
+        )
+        duplicate = (
+            "# Open tasks\n\n## In-flight\n"
+            "- [ ] First  (from SRC#ONE)\n"
+            "- [ ] Second  (from SRC#ONE)\n"
+        )
+        duplicate_attached = duplicate.replace(
+            "- [ ] First  (from SRC#ONE)",
+            "- [ ] First  (from SRC#ONE)\n  - Spec ID: SPEC-FORGED",
+        )
+        mismatch = (
+            "# Open tasks\n\n## In-flight\n"
+            "- [ ] Selected  (from SRC#ONE)\n"
+            "  - Work origin: SRC#TWO\n"
+        )
+        mismatch_attached = mismatch + "  - Spec ID: SPEC-FORGED\n"
+        for name, old, new in (
+            ("unselected", unselected, unselected_attached),
+            ("duplicate origin", duplicate, duplicate_attached),
+            ("metadata mismatch", mismatch, mismatch_attached),
+        ):
+            with self.subTest(name=name):
+                self.assertFalse(tb.classify_board_diff(old, new))
+
+    def test_attachment_accepts_historical_single_space_origin_marker(self):
+        """#1089 G12: actual attachment output preserves valid historical spacing."""
+        old = (
+            "# Open tasks\n\n## In-flight\n"
+            "- [ ] legacy (from SRC#ONE)\n"
+        )
+        attached = tb.edit_work_entry(
+            old, "SRC#ONE", "attach", spec_id="SPEC-HISTORICAL"
+        )
+        self.assertNotEqual(attached, old)
+        self.assertTrue(tb.classify_board_diff(old, attached))
+
+    def test_selected_work_mutants_remain_rejected(self):
+        """#1089 G08-G13: the block exception never admits unrelated text."""
+        origin, _before, created = self._owner_work_board()
+        attached = tb.edit_work_entry(
+            created, origin, "attach", spec_id="SPEC-ISSUE-1089"
+        )
+        mutants = (
+            attached.replace(
+                "  - Spec ID: SPEC-ISSUE-1089",
+                "  - Spec ID: SPEC-ISSUE-1089\n  - Unknown key: arbitrary",
+            ),
+            attached.replace("Ship selected work", "Reworded selected work"),
+            attached.replace("## In-flight", "## In-flight changed"),
+            attached + "- [ ] unrelated second task\n",
+            attached.replace("  - Work operation ID: issue-1089-create-001\n", ""),
+            attached.replace("SPEC-ISSUE-1089", "PLAN-WRONG-PREFIX"),
+        )
+        for mutant in mutants:
+            with self.subTest(mutant=mutant):
+                self.assertFalse(tb.classify_board_diff(created, mutant))
+
+    def test_selected_work_mixed_and_history_mutants_remain_rejected(self):
+        """#1089 G08-G13: an accepted delta cannot hide a second board edit."""
+        origin, _before, created = self._owner_work_board()
+        started = tb.set_state(
+            created, origin, "in_progress", datetime.date(2026, 11, 7), origin=origin
+        )
+        completed = tb.set_state(
+            started, origin, "done", datetime.date(2026, 11, 7), origin=origin
+        )
+        attached = tb.edit_work_entry(
+            created, origin, "attach", spec_id="SPEC-ISSUE-1089"
+        )
+        unknown = created.replace(
+            "  - Work operation ID: issue-1089-create-001",
+            "  - Work operation ID: issue-1089-create-001\n  - Unknown key: retained",
+        )
+        cases = {
+            "second row": (created, attached.replace(
+                "Rate-limit endpoint", "Rate-limit every endpoint"
+            )),
+            "heading": (created, attached.replace("## Done", "## Historical work")),
+            "prose": (created, attached + "unrelated prose\n"),
+            "table": (created, attached + "| scope | changed |\n| --- | --- |\n"),
+            "scope": (created, attached.replace(
+                "  - Spec ID: SPEC-ISSUE-1089",
+                "  - Spec ID: SPEC-ISSUE-1089\n  - Boundaries: secrets",
+            )),
+            "unknown metadata": (unknown, tb.edit_work_entry(
+                unknown, origin, "attach", spec_id="SPEC-ISSUE-1089"
+            )),
+            "removal": (attached, created),
+            "forged date": (created, completed.replace("2026-11-07", "2026-02-30")),
+            "history": (created, attached.replace(
+                "## Done", "## Done\n- legacy history note"
+            )),
+        }
+        for name, (old, mutant) in cases.items():
+            with self.subTest(name=name):
+                self.assertFalse(tb.classify_board_diff(old, mutant))
+
+    def test_new_work_with_unknown_metadata_is_not_clean_transition(self):
+        """#1089 G09: a new row cannot smuggle an unowned metadata key."""
+        old = self._BASE
+        new = old.rstrip("\n") + "\n- [ ] selected work\n  - Unknown key: arbitrary\n"
+        self.assertFalse(tb.classify_board_diff(old, new))
+
     def test_new_section_without_queued_entry_is_not_transition(self):
         old = self._BASE
         new = old + "## Follow-up\n"
@@ -631,6 +877,13 @@ class ClassifyBoardDiffTest(unittest.TestCase):
     def test_new_section_add_with_extra_content_is_not_transition(self):
         old = self._BASE
         new = old + "## Follow-up\n- [ ] Review caching\narbitrary prose\n"
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    def test_new_section_add_must_be_appended_by_the_owner(self):
+        old = self._BASE
+        new = old.replace(
+            "## Done", "## Follow-up\n- [ ] Review caching\n\n## Done"
+        )
         self.assertFalse(tb.classify_board_diff(old, new))
 
     def test_existing_section_header_edit_is_not_transition(self):

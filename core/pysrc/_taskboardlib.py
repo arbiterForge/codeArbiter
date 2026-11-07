@@ -137,9 +137,14 @@ _FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 # classify_board_diff helpers — strip markers/stamps for content-equality comparison.
 _STAMP_FULL_RE = re.compile(r'\s*\((?:started|done)\s+\d{4}-\d{2}-\d{2}\)')
+_LIFECYCLE_STAMP_RE = re.compile(r'\((started|done)\s+[^)]*\)')
 _STATE_MARK_RE = re.compile(r'^- \[([ xX~])\]\s*')
-_QUEUED_TOP_RE = re.compile(r'^- \[ \] .+')
 _INDENTED_BULLET_RE = re.compile(r'^\s+- ')
+_OWNED_DETAIL_RE = re.compile(r'^  - ([^:]+): (\S.*)$')
+_OWNED_DETAIL_KEYS = (
+    "Work origin", "Desc", "Work type", "Work ID", "Work operation ID",
+    "Spec ID", "Plan ID", "Boundaries",
+)
 _LINE_BREAK_RE = re.compile(r'[\n\r\v\f\x1c-\x1e\x85\u2028\u2029]')
 _ORIGIN_REF_RE = re.compile(r'\(from ([^()\r\n]+)\)')
 # extract_task_ids search pattern — non-anchored; two-part negative lookahead so
@@ -441,6 +446,23 @@ def _strip_stamps_and_marker(line):
     return line.rstrip()
 
 
+def _has_exact_owner_stamp(line, kind):
+    """True iff ``line`` has one real owner-emitted lifecycle suffix stamp."""
+    stamps = list(_LIFECYCLE_STAMP_RE.finditer(line))
+    expected = re.search(
+        r"(?<!\s)  \(" + re.escape(kind) + r" (\d{4}-\d{2}-\d{2})\)\Z",
+        line,
+    )
+    if len(stamps) != 1 or expected is None:
+        return False
+    if stamps[0].start() != expected.start() + 2 or stamps[0].end() != expected.end():
+        return False
+    try:
+        return datetime.date.fromisoformat(expected.group(1)).isoformat() == expected.group(1)
+    except ValueError:
+        return False
+
+
 def _is_valid_state_flip(old_line, new_line):
     """True iff old_line → new_line is a valid done-flip ([~]→[x]+done) or
     start-flip ([ ]→[~]+started), with all other content unchanged. A start may
@@ -454,12 +476,12 @@ def _is_valid_state_flip(old_line, new_line):
     new_mark = new_m.group(1).lower()
     # done-flip: [~] → [x], new line must carry (done YYYY-MM-DD)
     if old_mark == '~' and new_mark == 'x':
-        if _extract_date(new_line, 'done') is None:
+        if not _has_exact_owner_stamp(new_line, 'done'):
             return False
         return _strip_stamps_and_marker(old_line) == _strip_stamps_and_marker(new_line)
     # start-flip: [ ] → [~], new line must carry (started YYYY-MM-DD)
     if old_mark == ' ' and new_mark == '~':
-        if _extract_date(new_line, 'started') is None:
+        if not _has_exact_owner_stamp(new_line, 'started'):
             return False
         old_content = _strip_stamps_and_marker(old_line)
         new_content = _strip_stamps_and_marker(new_line)
@@ -475,45 +497,262 @@ def _is_valid_state_flip(old_line, new_line):
     return False
 
 
-def _is_valid_queued_block(lines):
-    """True iff `lines` form a single valid queued entry: one `- [ ] desc` top-level
-    line (non-empty) optionally followed by indented sub-bullets only (e.g. Boundaries)."""
-    if not lines or not _QUEUED_TOP_RE.match(lines[0]):
+def _valid_owned_detail(key, value):
+    """Return whether one detail is in the exact grammar ``add_entry`` emits."""
+    if key == "Work origin":
+        return len(value) <= 256 and not any(char in value for char in "()")
+    if key == "Work type":
+        return value in ("feature", "fix", "chore", "spike", "unknown")
+    if key == "Work ID":
+        return re.fullmatch(r"WORK-[A-F0-9]{32}", value) is not None
+    if key == "Work operation ID":
+        return len(value) <= 256
+    if key in ("Spec ID", "Plan ID"):
+        return re.fullmatch(r"[A-Z][A-Z0-9-]{1,127}", value) is not None
+    # ``Desc`` and ``Boundaries`` have already passed the nonblank one-line
+    # physical-row grammar in _OWNED_DETAIL_RE.
+    return key in ("Desc", "Boundaries")
+
+
+def _owned_new_details(lines):
+    """Parse a new block's details, refusing unknown, duplicate or reordered keys."""
+    details = {}
+    order = []
+    for line in lines:
+        match = _OWNED_DETAIL_RE.fullmatch(line)
+        if match is None:
+            return None
+        key, value = match.groups()
+        if key not in _OWNED_DETAIL_KEYS or key in details:
+            return None
+        if not _valid_owned_detail(key, value):
+            return None
+        details[key] = value
+        order.append(_OWNED_DETAIL_KEYS.index(key))
+    if order != sorted(order):
+        return None
+    return details
+
+
+def _valid_created_block(lines, *, states=("queued",)):
+    """True only for one block that can be the final shape of an owner add."""
+    if not lines or _CANON_TASK_RE.match(lines[0]) is None:
         return False
-    return all(_INDENTED_BULLET_RE.match(ln) for ln in lines[1:])
+    parsed = parse_board(lines[0])
+    if len(parsed) != 1 or parsed[0].state not in states:
+        return False
+    task = parsed[0]
+    if task.id is not None and not validate_id(task.id):
+        return False
+    if task.state == "queued" and (task.started is not None or task.done is not None):
+        return False
+    if task.state == "in_progress" and not _has_exact_owner_stamp(lines[0], "started"):
+        return False
+    details = _owned_new_details(lines[1:])
+    if details is None:
+        return False
+    origins = _ORIGIN_REF_RE.findall(lines[0])
+    if len(origins) > 1:
+        return False
+    # Historical clean adds could carry only the top-line back-reference.
+    # New owner rows additionally repeat it in ``Work origin``; if that field
+    # exists it must agree exactly with the top line.
+    if "Work origin" in details:
+        if len(origins) != 1 or details["Work origin"] != origins[0]:
+            return False
+    return True
 
 
-def _is_valid_new_section_add(lines):
-    """True iff ``lines`` are one new level-two section plus one queued entry.
+def _is_valid_queued_block(lines):
+    """True iff ``lines`` are one exact queued block emitted by the owner."""
+    return _valid_created_block(lines, states=("queued",))
 
-    This is the exact shape ``add_entry`` emits when its requested section does
-    not yet exist. The queued entry may carry its normal indented metadata, but
-    no free-form content or second entry is accepted.
-    """
-    return (len(lines) >= 2
-            and re.match(r"^##\s+\S.*$", lines[0]) is not None
-            and _is_valid_queued_block(lines[1:]))
+
+def _board_units(lines):
+    """Group each canonical lifecycle row with its immediately owned details."""
+    units = []
+    index = 0
+    while index < len(lines):
+        if _CANON_TASK_RE.match(lines[index]) is None:
+            units.append((lines[index],))
+            index += 1
+            continue
+        end = index + 1
+        while end < len(lines) and _INDENTED_BULLET_RE.match(lines[end]):
+            end += 1
+        units.append(tuple(lines[index:end]))
+        index = end
+    return units
+
+
+def _changed_units(old_units, new_units):
+    """Return the exact middle spans after stripping common unit prefix/suffix."""
+    prefix = 0
+    while (prefix < len(old_units) and prefix < len(new_units)
+           and old_units[prefix] == new_units[prefix]):
+        prefix += 1
+    suffix = 0
+    while (suffix < len(old_units) - prefix
+           and suffix < len(new_units) - prefix
+           and old_units[len(old_units) - suffix - 1]
+           == new_units[len(new_units) - suffix - 1]):
+        suffix += 1
+    old_end = len(old_units) - suffix if suffix else len(old_units)
+    new_end = len(new_units) - suffix if suffix else len(new_units)
+    return old_units[prefix:old_end], new_units[prefix:new_end]
+
+
+def _binding_delta(old_details, new_details):
+    """True iff only owner ``Spec ID``/``Plan ID`` rows were added or replaced."""
+    bindings = ("Spec ID", "Plan ID")
+
+    def split(lines):
+        stable = []
+        values = {}
+        seen = set()
+        for line in lines:
+            match = _OWNED_DETAIL_RE.fullmatch(line)
+            if match is None:
+                return None, None
+            key, value = match.groups()
+            if (key not in _OWNED_DETAIL_KEYS or key in seen
+                    or not _valid_owned_detail(key, value)):
+                return None, None
+            seen.add(key)
+            if key in bindings:
+                values[key] = value
+            else:
+                stable.append(line)
+        return stable, values
+
+    old_stable, old_values = split(old_details)
+    new_stable, new_values = split(new_details)
+    if old_stable is None or new_stable is None or old_stable != new_stable:
+        return False
+    if not set(old_values).issubset(new_values):
+        return False
+    for key, value in new_values.items():
+        if old_values.get(key) != value:
+            prefix = "SPEC-" if key == "Spec ID" else "PLAN-"
+            if re.fullmatch(re.escape(prefix) + r"[A-Z0-9-]{1,74}", value) is None:
+                return False
+    return old_values != new_values
+
+
+def _is_valid_start_complete(old_line, new_line):
+    """Accept the final queued -> done row produced by start then complete."""
+    old_match = _STATE_MARK_RE.match(old_line)
+    new_match = _STATE_MARK_RE.match(new_line)
+    if (old_match is None or new_match is None
+            or old_match.group(1) != " " or new_match.group(1).lower() != "x"
+            or not _has_exact_owner_stamp(new_line, "done")):
+        return False
+    old_content = _strip_stamps_and_marker(old_line)
+    new_content = _strip_stamps_and_marker(new_line)
+    if old_content == new_content:
+        return True
+    old_tasks = parse_board(old_line)
+    new_tasks = parse_board(new_line)
+    if len(old_tasks) != 1 or len(new_tasks) != 1:
+        return False
+    if old_tasks[0].id is not None or not validate_id(new_tasks[0].id):
+        return False
+    minted_prefix = f"{new_tasks[0].id} - "
+    return (new_content.startswith(minted_prefix)
+            and new_content[len(minted_prefix):] == old_content)
+
+
+def _has_unique_selected_origin(old_block, old_text):
+    """Prove an attachment targets the one row selectable by taskwrite."""
+    refs = _ORIGIN_REF_RE.findall(old_block[0])
+    if len(refs) != 1:
+        return False
+    origin = refs[0]
+    metadata = [
+        line[len("  - Work origin: "):]
+        for line in old_block[1:]
+        if line.startswith("  - Work origin: ")
+    ]
+    if len(metadata) > 1 or (metadata and metadata[0] != origin):
+        return False
+
+    task = parse_board(old_block[0])
+    if len(task) != 1:
+        return False
+    top_without_state_stamp = old_block[0]
+    if task[0].state == "in_progress":
+        if not _has_exact_owner_stamp(old_block[0], "started"):
+            return False
+        top_without_state_stamp = _STAMP_FULL_RE.sub("", old_block[0]).rstrip()
+    elif task[0].state == "done":
+        if not _has_exact_owner_stamp(old_block[0], "done"):
+            return False
+        top_without_state_stamp = _STAMP_FULL_RE.sub("", old_block[0]).rstrip()
+    final_origin = re.search(r"[ \t]+\(from ([^()\r\n]+)\)\Z",
+                             top_without_state_stamp)
+    if final_origin is None or final_origin.group(1) != origin:
+        return False
+
+    lines = old_text.splitlines()
+    matches = 0
+    for candidate in parse_board(old_text):
+        try:
+            source = origin_for_task(lines, candidate)
+        except ValueError:
+            return False
+        if source == origin:
+            matches += 1
+    return matches == 1
+
+
+def _is_valid_block_mutation(old_block, new_block, old_text):
+    """Admit one selected block's lifecycle/binding delta, and nothing else."""
+    if not old_block or not new_block:
+        return False
+    old_line, new_line = old_block[0], new_block[0]
+    old_details, new_details = old_block[1:], new_block[1:]
+
+    if old_line == new_line:
+        return (_binding_delta(old_details, new_details)
+                and _has_unique_selected_origin(old_block, old_text))
+    if _is_valid_start_complete(old_line, new_line):
+        return old_details == new_details
+    if not _is_valid_state_flip(old_line, new_line):
+        return False
+    if old_details == new_details:
+        return True
+    # Of the owner command compositions, only start+attach changes both the
+    # lifecycle line and bindings. A complete+attach expansion is not owned.
+    old_mark = _STATE_MARK_RE.match(old_line)
+    new_mark = _STATE_MARK_RE.match(new_line)
+    return (old_mark is not None and new_mark is not None
+            and old_mark.group(1) == " " and new_mark.group(1) == "~"
+            and _binding_delta(old_details, new_details)
+            and _has_unique_selected_origin(old_block, old_text))
 
 
 def classify_board_diff(old_text, new_text):
     """True iff the change from old_text to new_text is a clean task-board transition.
 
     A clean transition is EXACTLY ONE of:
-    - done-flip: one task's marker changes [~] → [x], a (done YYYY-MM-DD) stamp is
-      added, and no other content changes (a prior (started ...) stamp is allowed to
-      drop; nothing else may change);
-    - start-flip: one task's marker changes [ ] → [~], a (started YYYY-MM-DD) stamp
-      is added, and no other content changes except an ID-less task may gain the
-      single valid dotted ID minted by the writer's pick-up path;
-    - add: exactly one new queued top-level entry `- [ ] desc` (optionally with a
-      dotted id, a (from <origin>) back-ref, and/or an indented `- Boundaries:`
-      sub-bullet) is inserted or appended, and no existing line is changed. If
-      its requested section is absent, the writer's one new level-two heading
-      immediately followed by that entry may be appended with it.
+    - one existing task block performs a valid start, complete, attachment, or
+      start+attachment transition; start+complete may collapse from queued to
+      done in the final diff, and no non-binding detail may change;
+    - one new owner-shaped task block is inserted, either queued or already
+      started; its indented rows use only add_entry's ordered metadata keys;
+    - a missing level-two section and one queued owner-shaped block are appended.
 
-    Returns False for anything else: reworded description, deleted entry, marker
-    change without the required date stamp, multiple simultaneous transitions, an
-    edit to an unrelated line, or any content change beyond those above.
+    The accepted block is the whole selected unit: one canonical lifecycle row
+    and its immediately following detail bullets. Spec ID and Plan ID are the
+    only editable detail rows. A start may also mint the one dotted ID emitted
+    by set_state's pick-up path. Every state date must parse as a real date and
+    be the block's single lifecycle stamp in the exact owner-emitted suffix.
+    Binding edits additionally require one globally unique, internally
+    consistent legacy origin selection in the old board.
+
+    Returns False for anything else, including a second task, unknown/reordered
+    metadata, title/rationale/boundary edits, deleted history, free prose/table
+    content, forged dates, or an accepted transition mixed with unrelated edits.
 
     Never raises — empty, None, or garbled input degrades to False (same crash-safe
     invariant as all other _taskboardlib pure functions).
@@ -523,32 +762,25 @@ def classify_board_diff(old_text, new_text):
             return False
         old_lines = old_text.splitlines()
         new_lines = new_text.splitlines()
+        old_units = _board_units(old_lines)
+        new_units = _board_units(new_lines)
+        old_changed, new_changed = _changed_units(old_units, new_units)
 
-        # ── state-flip branch: same line count, exactly one line changed ──────
-        if len(old_lines) == len(new_lines):
-            changed = [(old_lines[i], new_lines[i])
-                       for i in range(len(old_lines))
-                       if old_lines[i] != new_lines[i]]
-            return len(changed) == 1 and _is_valid_state_flip(*changed[0])
+        if len(old_changed) == 1 and len(new_changed) == 1:
+            return _is_valid_block_mutation(old_changed[0], new_changed[0], old_text)
 
-        # ── add branch: new has more lines; all old lines intact, extra is one ─
-        if len(new_lines) > len(old_lines):
-            n_extra = len(new_lines) - len(old_lines)
-            # find how many leading lines are already identical (the common prefix)
-            k = 0
-            while k < len(old_lines) and old_lines[k] == new_lines[k]:
-                k += 1
-            extra = new_lines[k:k + n_extra]
-            # the lines after the inserted block must equal the old suffix
-            if new_lines[k + n_extra:] != old_lines[k:]:
-                return False
-            if _is_valid_queued_block(extra):
-                return True
-            return (k == len(old_lines)
-                    and _is_valid_new_section_add(extra)
-                    and all(line.strip() != extra[0].strip() for line in old_lines))
+        if not old_changed and len(new_changed) == 1:
+            return _valid_created_block(
+                new_changed[0], states=("queued", "in_progress")
+            )
 
-        # new has fewer lines than old — a deletion, never a clean transition
+        if (not old_changed and len(new_changed) == 2
+                and new_changed == new_units[-2:]
+                and len(new_changed[0]) == 1
+                and re.match(r"^##\s+\S.*$", new_changed[0][0]) is not None
+                and _is_valid_queued_block(new_changed[1])):
+            heading = new_changed[0][0].strip()
+            return all(line.strip() != heading for line in old_lines)
         return False
     except Exception:
         return False

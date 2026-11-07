@@ -426,6 +426,71 @@ class TaskwriteCliTest(unittest.TestCase):
         with open(p, encoding="utf-8") as f:
             done = f.read()
         self.assertTrue(tb.classify_board_diff(started, done))
+        self.assertTrue(tb.classify_board_diff(queued, done))
+
+    def test_selected_work_compositions_use_real_taskwrite_output_shapes(self):
+        """#1089 G14: classify fixtures written through the selected owner seam."""
+        from unittest import mock
+        import taskwrite
+
+        d, p = self._board()
+        origin = "github:issue-1089"
+        work_id = "WORK-0123456789ABCDEF0123456789ABCDEF"
+        revision = "a" * 64
+        with open(p, encoding="utf-8") as f:
+            before = f.read()
+        self.assertEqual(taskwrite.main([
+            "add", "Ship selected work", "--from", origin,
+            "--work-type", "feature", "--work-id", work_id,
+            "--work-operation-id", "issue-1089-create-001",
+        ], root=d), 0)
+        with open(p, encoding="utf-8") as f:
+            created = f.read()
+
+        selected = {
+            "work_id": work_id, "origin": origin, "board_sha256": revision,
+        }
+
+        def write_board(text):
+            with open(p, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(text)
+
+        def attach(source):
+            write_board(source)
+            with mock.patch("_worklib.dispatch", return_value=selected):
+                self.assertEqual(taskwrite.main([
+                    "attach", work_id, "--from", origin,
+                    "--spec-id", "SPEC-ISSUE-1089",
+                    "--plan-id", "PLAN-ISSUE-1089",
+                ], root=d, expected_work_id=work_id,
+                    expected_board_sha256=revision), 0)
+            with open(p, encoding="utf-8") as handle:
+                return handle.read()
+
+        def start(source):
+            write_board(source)
+            self.assertEqual(taskwrite.main([
+                "start", work_id, "--from", origin, "--date", "2026-11-07",
+            ], root=d), 0)
+            with open(p, encoding="utf-8") as handle:
+                return handle.read()
+
+        def complete(source):
+            write_board(source)
+            self.assertEqual(taskwrite.main([
+                "done", work_id, "--from", origin, "--date", "2026-11-07",
+            ], root=d), 0)
+            with open(p, encoding="utf-8") as handle:
+                return handle.read()
+
+        attached = attach(created)
+        started = start(created)
+        started_attached = attach(started)
+        completed = complete(started)
+        self.assertTrue(tb.classify_board_diff(created, attached))
+        self.assertTrue(tb.classify_board_diff(created, started_attached))
+        self.assertTrue(tb.classify_board_diff(before, started))
+        self.assertTrue(tb.classify_board_diff(created, completed))
 
     def test_start_rejects_invalid_assign_namespace_before_write(self):
         import contextlib
