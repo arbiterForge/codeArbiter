@@ -31,6 +31,12 @@ _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
 _PI_ONLY_AGENT_FRONTMATTER = re.compile(
     r"^(?:classification|pi-skills):[^\n]*\n", re.MULTILINE
 )
+_PERSONA_SOURCES_INDEPENDENTLY = frozenset({
+    "arbiter.md",
+    "includes/safety-core.md",
+    "includes/dangerous-mode.md",
+    "includes/ops-mode.md",
+})
 
 # Exact non-policy artifact classes admitted at the Task 1 boundary. Built
 # extension artifacts are intentionally empty until a later task defines and
@@ -425,6 +431,9 @@ def _independent_expected_surfaces(descriptor, descriptors):
         text = _resolve_conditionals_independently(
             source_text, descriptor.name, host_names, where
         )
+        if rel in _PERSONA_SOURCES_INDEPENDENTLY:
+            # Persona maintainer headers stay in core/surface only.
+            text = re.sub(r"\A<!--.*?-->[ \t]*\n(?:[ \t]*\n)*", "", text, count=1, flags=re.S)
         if rel.startswith("agents/") and descriptor.name != "pi":
             text = _PI_ONLY_AGENT_FRONTMATTER.sub("", text)
 

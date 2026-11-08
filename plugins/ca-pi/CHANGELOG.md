@@ -4,6 +4,18 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.5] - 2026-11-07
+
+### Fixed
+
+- Route the resident persona's override rule to the override procedure instead of restating it from memory; the restatement left out the locked append helper and the rule that the overridden action must not proceed unless its audit row lands.
+- Stop the resident persona ordering the model to log mode transitions. Mode changes are recorded by the host that switches modes; Pi reports the mode read-only and never asks the model to log it.
+- Make ops mode quote the arbiter routing rules it narrows as they now read, and state that safety-core's irreversible-action set is unchanged in ops mode; a bare "§6" there resolves to that set.
+
+### Changed
+
+- Cut the resident persona by about a fifth (arbiter mode, ~3,500 to ~2,700 estimated tokens on Claude Code; dangerous and ops modes by about an eighth). Host copies drop the persona files' maintainer header comments, and the arbiter body no longer restates rules that safety-core or `SPRINT.md` already carry in the same session. Every rule still applies; the ADR-required restatements and the resident destructive-operations list are unchanged.
+
 ## [0.27.4] - 2026-11-05
 
 ### Fixed

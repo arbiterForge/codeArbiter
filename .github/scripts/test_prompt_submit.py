@@ -495,6 +495,20 @@ class TestCodexContextLimit(unittest.TestCase):
         self.assertFalse(truncated2, "the explicit limit must comfortably fit today's "
                                       "real arbiter persona")
 
+    def test_real_composed_personas_carry_no_maintainer_comment(self):
+        # Header comments are maintainer notes, stripped at build time; the only
+        # HTML comment a composed persona may carry is the prune sentinel.
+        for plugin in ("ca", "ca-codex", "ca-pi"):
+            root = os.path.join(REPO, "plugins", plugin)
+            for mode in ("arbiter", "dangerous", "ops"):
+                with self.subTest(plugin=plugin, mode=mode):
+                    safety, body = ps._persona_for_mode(root, mode)
+                    if not (safety and body):
+                        self.skipTest(f"generated persona for {plugin}/{mode} not present")
+                    composed, _ = ps._compose_persona(safety, body)
+                    self.assertEqual(composed.count("<!--"), 1, composed[:120])
+                    self.assertTrue(composed.rstrip().endswith(_modelib.PERSONA_SENTINEL))
+
 
 # --------------------------------------------------------------------- T-37 (doctor.py)
 

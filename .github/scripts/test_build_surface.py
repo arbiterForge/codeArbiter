@@ -2797,5 +2797,67 @@ class LanguageCoveragePolicyTest(unittest.TestCase):
         self.assertIn('critical-path', coverage)
 
 
+# The four persona sources are composed into resident model context on every host
+# (prompt-submit.py on Claude/Codex, loadPersonaFrom on Pi). Their leading HTML
+# comment is a maintainer note, so host copies drop it while core/surface keeps it.
+PERSONA_OUTPUTS = (
+    "arbiter.md",
+    "includes/safety-core.md",
+    "includes/dangerous-mode.md",
+    "includes/ops-mode.md",
+)
+
+
+class PersonaHeaderCommentTest(_RepoCase):
+    HEADER = ("<!-- maintainer note {{IF:claude}}claude{{ELSE}}other{{END}}\n"
+              "spanning lines, path {{PLUGIN_ROOT}}/x -->\n\n")
+
+    def test_persona_sources_render_without_their_leading_comment_on_every_host(self):
+        for rel in PERSONA_OUTPUTS:
+            _write(self.repo, f"core/surface/{rel}",
+                   self.HEADER + f"# {rel}\n\nBody for {{{{CMD:init}}}}.\n")
+        for host in ("claude", "codex", "pi"):
+            out = self.render(host)
+            for rel in PERSONA_OUTPUTS:
+                with self.subTest(host=host, rel=rel):
+                    text = out[rel].decode()
+                    self.assertTrue(text.startswith(f"# {rel}\n"), text[:80])
+                    self.assertNotIn("maintainer note", text)
+        for rel in PERSONA_OUTPUTS:
+            source = (Path(self.repo) / "core" / "surface" / rel).read_text(encoding="utf-8")
+            self.assertTrue(source.startswith("<!-- maintainer note"), rel)
+
+    def test_later_comments_in_a_persona_body_survive(self):
+        _write(self.repo, "core/surface/arbiter.md",
+               self.HEADER + "# Persona\n\n<!-- keep-me -->\n"
+               "<!-- command-visibility-summary -->\nTail.\n")
+        text = self.render("claude")["arbiter.md"].decode()
+        self.assertEqual(text, "# Persona\n\n<!-- keep-me -->\n"
+                               "<!-- command-visibility-summary -->\nTail.\n")
+
+    def test_persona_without_a_leading_comment_is_unchanged(self):
+        text = self.render("claude")["arbiter.md"].decode()
+        self.assertTrue(text.startswith("Persona. Invoke /ca:init. Paths: "), text)
+        self.assertTrue(text.endswith("/skills/.\n"), text)
+
+    def test_non_persona_files_keep_a_leading_comment(self):
+        _write(self.repo, "core/surface/includes/notes.md",
+               "<!-- not a persona -->\n\nShared include.\n")
+        text = self.render("claude")["includes/notes.md"].decode()
+        self.assertEqual(text, "<!-- not a persona -->\n\nShared include.\n")
+
+
+class RealPersonaCopiesTest(unittest.TestCase):
+    def test_generated_persona_copies_carry_no_header_comment(self):
+        for rel in PERSONA_OUTPUTS:
+            source = (REPO_ROOT / "core" / "surface" / rel).read_text(encoding="utf-8")
+            self.assertTrue(source.startswith("<!--"), f"core/surface/{rel} lost its maintainer header")
+            for plugin in ("plugins/ca", "plugins/ca-codex", "plugins/ca-pi"):
+                with self.subTest(plugin=plugin, rel=rel):
+                    text = (REPO_ROOT / plugin / rel).read_text(encoding="utf-8")
+                    self.assertFalse(text.lstrip().startswith("<!--"), f"{plugin}/{rel}")
+                    self.assertTrue(text.startswith("# "), f"{plugin}/{rel}: {text[:60]!r}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

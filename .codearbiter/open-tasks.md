@@ -5,6 +5,24 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Remove duplicated rules from the resident persona  (from context-audit:path-01-plan:T-06-T-07)  (done 2026-11-07)
+  - Work origin: context-audit:path-01-plan:T-06-T-07
+  - Desc: Arbiter and safety-core stop restating each other within one composition (plan T-06/T-07, ADR-0036 freeze read narrowly); every test-pinned phrase and the ADR-0026 destructive bullets stay intact.
+  - Work type: feature
+  - Work ID: WORK-21869F99872EE7DCFECD663B454E1889
+  - Work operation ID: work-28faa522eae7b3f900851edb2d1e2036c33258fa
+- [x] Keep persona maintainer comments out of resident context  (from context-audit:path-01-plan:T-04-T-05)  (done 2026-11-07)
+  - Work origin: context-audit:path-01-plan:T-04-T-05
+  - Desc: Host copies of the four persona sources drop their leading maintainer HTML comment at build time, keeping it in core/surface; functional markers and non-persona files are untouched; safety-core's section-numbering note moves into that header.
+  - Work type: feature
+  - Work ID: WORK-DA45D9068AC8C69D4FDA38CF92D37385
+  - Work operation ID: work-b7ffa3b788d00bf6e46530cadb9f4a57132c9b22
+- [x] Persona routing correctness: ops-mode quotes, arbiter override and mode-logging rules  (from context-audit:path-01-plan:PR-1)  (done 2026-11-07)
+  - Work origin: context-audit:path-01-plan:PR-1
+  - Desc: Observed: ops-mode.md quotes two arbiter clauses that no longer exist and its bare §6 resolves to safety-core's irreversible-action set in the ops composition; arbiter §7 restates /override from memory without the locked helper or fail-closed rule; arbiter §3 orders mode-transition logging the hook already performs on a prompt the model never sees. Expected: ops-mode quotes resolve and safety-core §6 is stated unchanged; §7 routes to the override procedure; §3 orders no mode-transition logging.
+  - Work type: fix
+  - Work ID: WORK-FE066C3F4CF52C6182FB2CCC16014CCE
+  - Work operation ID: work-e586dfa05b9b343d0f57b6817ac975e55b817f88
 - [x] Block commented PowerShell write access to audit logs  (from github:pr-1091:run-42338710237:job-128301567904)  (done 2026-11-06)
   - Work origin: github:pr-1091:run-42338710237:job-128301567904
   - Desc: Ensure an inline PowerShell block comment after an argument comma cannot hide FileAccess.Write from the H-05 append-only audit-log guard; preserve legitimate read and append forms.
