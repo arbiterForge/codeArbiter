@@ -55,6 +55,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/test/package.test.ts",
     "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
     "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+    "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts",
 })
 # Issue #388. The receipt's whole value is telling an operator - or an agent
 # reading the artifact after the job logs expire - WHICH contract rejected the

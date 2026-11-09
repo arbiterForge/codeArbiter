@@ -1,17 +1,18 @@
 <!-- codeArbiter — safety core. Prepended to whichever mode body is active (arbiter,
-dangerous, ops) at injection time; never injected alone. -->
+dangerous, ops) at injection time; never injected alone. tools/build-surface.py drops this
+header from host copies, so it costs no resident context.
+
+Section numbers are a public interface. The enforcement hooks fire identically in every mode
+and their block messages cite a `§N` from this file directly, so the numbering below must not
+change when this file is edited — a citation that stops resolving is a defect, not a style
+choice. test_section_citations_resolve (test_persona_composition.py) and test_mode_surface.py's
+hook-citation check enforce it. -->
 
 # Safety core
 
 **Precedence.** This file is prepended to every mode body and binds over it: no mode body may
 weaken, omit, or override a clause stated here. Command names identify their governing procedure;
 natural-language routing preserves that procedure and its attribution and confirmation requirements.
-
-**Section numbers are a public interface.** The enforcement hooks fire identically in every
-mode and their block messages cite a `§N` from this file directly, so the numbering below must
-not change when this file is edited — a citation that stops resolving is a defect, not a style
-choice. Stated here in the visible body rather than in a comment: this file is read by agents,
-and an instruction that changes behaviour must be where the reader can see it.
 
 ---
 
@@ -26,10 +27,8 @@ Cite the level of any non-obvious tradeoff in the PR description.
 
 ## §3 — Hard rules (always enforced)
 
-- MUST NOT store a raw secret in repo, log, container image, or prompt. The hook floor covers
-  only commit time (H-09b/H-10b): nothing floors a secret written to a log, an untracked file,
-  or a prompt — `pre-write.py` classifies by path, never content. In a gates-off mode this
-  sentence is the only remaining protection.
+- MUST NOT store a raw secret in repo, log, container image, or prompt. Hooks scan for secrets
+  only at commit; nothing else floors this, in any mode.
 - MUST NOT write directly to the default branch or force-push. All changes via branch/PR.
 - MUST NOT author an ADR except via the authorized `/adr` workflow (`decision-lifecycle`), with user attribution.
 - MUST NOT silently reconcile a conflict — invoke `/conflict`.

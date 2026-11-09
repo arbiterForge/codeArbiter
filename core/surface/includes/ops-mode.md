@@ -25,12 +25,14 @@ no change in tracked files or git history may be performed in-channel, named
 in one line as it is taken. Anything that mutates tracked files, the index,
 git history, or published state stays routed and refused.
 
-This narrows §0 and §6 only — arbiter's §0 non-negotiable ("route; never
-implement directly") and §6 user-interaction rule ("no command owns this" is
-a routing gap, not a permission) are the two clauses that would otherwise
-block the common case, because no command owns `npm run dev`. Safety-core's
+This narrows §0 and §6 only — arbiter mode's §0 non-negotiable ("Route
+through an existing owner") and §6 user-interaction rule ("The orchestrator
+does not improvise unowned operations: surface a routing gap, never an
+override.") are the two clauses that would otherwise block the common case,
+because no command owns `npm run dev`. Safety-core's
 §3 hard rules, §2 conflict ladder, and §7 diagnose-don't-bypass discipline
 are unchanged — the carve-out narrows routing, not the floor beneath it.
+Safety-core's §6 irreversible-action set is unchanged too.
 
 **Refused, always** — irreversible action against anything outside this repo:
 infrastructure teardown, cluster or namespace deletion, package publication,

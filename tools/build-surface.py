@@ -70,6 +70,17 @@ _AGENT_FRONTMATTER_STRIPPERS = {
     "host-native": _CLAUDE_ONLY_AGENT_FRONTMATTER,
     "relative": _CODEX_ONLY_AGENT_FRONTMATTER,
 }
+# The four persona sources are composed into resident model context on every
+# host (prompt-submit.py on Claude/Codex, loadPersonaFrom on Pi). Their leading
+# HTML comment is a maintainer note: core/surface keeps it, host copies drop it.
+# Only that first comment goes; later comments can be functional markers.
+PERSONA_SOURCES = frozenset({
+    "core/surface/arbiter.md",
+    "core/surface/includes/safety-core.md",
+    "core/surface/includes/dangerous-mode.md",
+    "core/surface/includes/ops-mode.md",
+})
+_LEADING_HTML_COMMENT = re.compile(r"\A<!--.*?-->[ \t]*\n(?:[ \t]*\n)*", re.DOTALL)
 _PI_ROLE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
 _MODE_NAME = re.compile(r"^(?:--)?[a-z][a-z0-9-]*$")
 _SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
@@ -234,6 +245,8 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
     if descriptor is None:
         raise SurfaceError(f"{where}: unknown render host {host!r}")
     text = resolve_conditionals(text, host, where, host_names=host_names)
+    if where in PERSONA_SOURCES:
+        text = _LEADING_HTML_COMMENT.sub("", text, count=1)
     if where.startswith("core/surface/agents/"):
         stripper = _AGENT_FRONTMATTER_STRIPPERS.get(
             descriptor.root_contract.ordinary_markdown

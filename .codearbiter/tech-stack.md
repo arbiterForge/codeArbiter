@@ -37,7 +37,7 @@ Claude, Codex and Pi projections differ according to `core/hosts.json`, with
 adapter payloads at `plugins/ca/`, `plugins/ca-codex/` and `plugins/ca-pi/`.
 Codex resource charters support host dispatch; they are not native plugin-agent
 registrations. The external Pi runtime is a test/install input, never a
-checked-in or runtime dependency of this package. The supported promotion version is exact Pi 1.1.0.
+checked-in or runtime dependency of this package. The supported promotion version is exact Pi 1.5.0.
 The accepted Pi support record and promotion targets own that version;
 `core/hosts.json` binds its skill-expansion fingerprint. Upgrading it requires
 the owning promotion checks. The `latest` compatibility probe is nonblocking;
@@ -212,7 +212,7 @@ python .github/scripts/test_public_pi_docs.py
 python .github/scripts/test_pi_platform_contract.py --fixtures-only
 ```
 
-A supported-version aggregate adds `--pi-version 1.1.0` after installing that
+A supported-version aggregate adds `--pi-version 1.5.0` after installing that
 exact external Pi version from its reviewed host lock with scripts disabled.
 CI owns the supported Windows/macOS/Linux matrix. Fixture-only success does not
 establish a live runtime or another platform; report unavailable cells as such.

@@ -12,12 +12,24 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [3.8.5] - 2026-11-07
+## [3.8.6] - 2026-11-09
 
 ### Fixed
 
 - Adopt shared-origin and long-title legacy work deterministically while preserving source snapshots, transaction safety, and explicit work identities.
 - Accept only owner-produced one-item lifecycle compositions and reject ambiguous bindings, malformed stamps, and unrelated board edits.
+
+## [3.8.5] - 2026-11-07
+
+### Fixed
+
+- Route the resident persona's override rule to the override procedure instead of restating it from memory; the restatement left out the locked append helper and the rule that the overridden action must not proceed unless its audit row lands.
+- Stop the resident persona ordering the model to log mode transitions. The hook already records each `MODE:` row, and the mode token never reaches the model, so a model that obeyed would add a duplicate row to an append-only log.
+- Make ops mode quote the arbiter routing rules it narrows as they now read, and state that safety-core's irreversible-action set is unchanged in ops mode; a bare "§6" there resolves to that set.
+
+### Changed
+
+- Cut the resident persona by about a fifth (arbiter mode, ~3,500 to ~2,700 estimated tokens on Claude Code; dangerous and ops modes by about an eighth). Host copies drop the persona files' maintainer header comments, and the arbiter body no longer restates rules that safety-core or `SPRINT.md` already carry in the same session. Every rule still applies; the ADR-required restatements and the resident destructive-operations list are unchanged.
 
 ## [3.8.4] - 2026-11-05
 
