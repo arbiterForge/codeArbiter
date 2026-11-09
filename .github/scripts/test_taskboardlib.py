@@ -648,6 +648,36 @@ class ClassifyBoardDiffTest(unittest.TestCase):
         )
         self.assertTrue(tb.classify_board_diff(created, attached))
 
+    def test_attachment_rejects_binding_reorder_hidden_by_value_change(self):
+        """#1089 G12: replacements stay at the exact owner-emitted row position."""
+        origin, _before, created = self._owner_work_board()
+        attached = tb.edit_work_entry(
+            created,
+            origin,
+            "attach",
+            spec_id="SPEC-ONE",
+            plan_id="PLAN-ONE",
+        )
+        lines = attached.splitlines()
+        spec_index = lines.index("  - Spec ID: SPEC-ONE")
+        work_id_index = next(
+            index for index, line in enumerate(lines)
+            if line.startswith("  - Work ID: ")
+        )
+        moved = list(lines)
+        moved.pop(spec_index)
+        moved.insert(work_id_index, "  - Spec ID: SPEC-TWO")
+        swapped = attached.replace(
+            "  - Spec ID: SPEC-ONE\n  - Plan ID: PLAN-ONE",
+            "  - Plan ID: PLAN-ONE\n  - Spec ID: SPEC-TWO",
+        )
+        for name, mutant in (
+            ("moved before stable metadata", "\n".join(moved) + "\n"),
+            ("swapped with plan", swapped),
+        ):
+            with self.subTest(name=name):
+                self.assertFalse(tb.classify_board_diff(attached, mutant))
+
     def test_start_then_attach_same_work_is_clean_transition(self):
         """#1089 G05: one selected row may start and gain its own bindings."""
         origin, _before, created = self._owner_work_board()

@@ -413,6 +413,23 @@ describe("Task 6 exact Pi child launch", () => {
     ]) {
       expect(parseChildJsonLine(JSON.stringify(widened))).toEqual(widened);
     }
+    // Pi 1.5.0 marks whether the provider supplied the total cost and retains a
+    // bounded parse error on malformed tool arguments. Both additions remain
+    // optional, typed, and fail closed for every other widened shape.
+    const pi15Assistant = {
+      ...assistantMessage,
+      usage: {
+        ...assistantMessage.usage,
+        cost: { ...assistantMessage.usage.cost, totalFromProvider: false },
+      },
+      content: [{
+        type: "toolCall", id: "call-invalid", name: "bash", arguments: {},
+        argumentsError: "Expected a JSON object",
+      }],
+      stopReason: "toolUse",
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "message_end", message: pi15Assistant })))
+      .toMatchObject({ type: "message_end" });
     for (const widenedInvalid of [
       { id: "prompt-1", type: "response", command: "prompt", success: true, data: {} },
       { id: "prompt-1", type: "response", command: "prompt", success: true, data: { disposition: 1 } },
@@ -425,6 +442,8 @@ describe("Task 6 exact Pi child launch", () => {
       { type: "message_end", message: { ...widenedAssistant, providerThinkingLevel: 1 } },
       { type: "message_end", message: { ...widenedAssistant, endTurn: "yes" } },
       { type: "message_end", message: { ...widenedAssistant, content: [{ type: "toolCall", id: "c", name: "n", arguments: {}, namespace: 5 }] } },
+      { type: "message_end", message: { ...pi15Assistant, usage: { ...pi15Assistant.usage, cost: { ...pi15Assistant.usage.cost, totalFromProvider: "no" } } } },
+      { type: "message_end", message: { ...pi15Assistant, content: [{ ...pi15Assistant.content[0], argumentsError: 7 }] } },
       { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [], complete: "yes" } }] },
       { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [{ id: "n", name: "r", status: "maybe" }], complete: true } }] },
       { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [{ id: "n", name: "r", status: "ok", extra: 1 }], complete: true } }] },

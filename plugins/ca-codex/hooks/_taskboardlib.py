@@ -603,7 +603,7 @@ def _changed_units(old_units, new_units):
 
 
 def _binding_delta(old_details, new_details):
-    """True iff only owner ``Spec ID``/``Plan ID`` rows were added or replaced."""
+    """True iff the owner added/replaced binding rows in its exact order."""
     bindings = ("Spec ID", "Plan ID")
 
     def split(lines):
@@ -636,7 +636,27 @@ def _binding_delta(old_details, new_details):
             prefix = "SPEC-" if key == "Spec ID" else "PLAN-"
             if re.fullmatch(re.escape(prefix) + r"[A-Z0-9-]{1,74}", value) is None:
                 return False
-    return old_values != new_values
+    if old_values == new_values:
+        return False
+
+    # edit_work_entry replaces an existing binding in place and appends a
+    # missing Spec row, then a missing Plan row, at the end of the selected
+    # block. Reconstruct that exact output so a value change cannot conceal a
+    # row move, a Spec/Plan swap, or any other ordering shape the owner never
+    # emits.
+    expected = list(old_details)
+    for key in bindings:
+        if key not in new_values:
+            continue
+        line = f"  - {key}: {new_values[key]}"
+        if key in old_values:
+            prefix = f"  - {key}: "
+            index = next(i for i, old_line in enumerate(expected)
+                         if old_line.startswith(prefix))
+            expected[index] = line
+        else:
+            expected.append(line)
+    return expected == list(new_details)
 
 
 def _is_valid_start_complete(old_line, new_line):

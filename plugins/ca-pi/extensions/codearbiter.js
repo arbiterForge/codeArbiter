@@ -8308,7 +8308,7 @@ function validContentBlock(value, kind) {
     case "thinking":
       return kind === "assistant" && exactKeys4(value, ["type", "thinking", "thinkingSignature", "redacted"], ["type", "thinking"]) && boundedString2(value.thinking) && (value.thinkingSignature === void 0 || boundedString2(value.thinkingSignature)) && (value.redacted === void 0 || typeof value.redacted === "boolean");
     case "toolCall":
-      return kind === "assistant" && exactKeys4(value, ["type", "id", "name", "arguments", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"]) && boundedString2(value.id) && boundedString2(value.name) && validOpaqueJson(value.arguments) && (value.thoughtSignature === void 0 || boundedString2(value.thoughtSignature)) && (value.namespace === void 0 || boundedString2(value.namespace));
+      return kind === "assistant" && exactKeys4(value, ["type", "id", "name", "arguments", "argumentsError", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"]) && boundedString2(value.id) && boundedString2(value.name) && validOpaqueJson(value.arguments) && (value.argumentsError === void 0 || boundedString2(value.argumentsError)) && (value.thoughtSignature === void 0 || boundedString2(value.thoughtSignature)) && (value.namespace === void 0 || boundedString2(value.namespace));
     default:
       return false;
   }
@@ -8327,7 +8327,11 @@ function validUsage(value) {
   if (value.cacheWrite1h !== void 0 && (typeof value.cacheWrite1h !== "number" || !Number.isFinite(value.cacheWrite1h))) return false;
   if (value.reasoning !== void 0 && (typeof value.reasoning !== "number" || !Number.isFinite(value.reasoning))) return false;
   const cost = value.cost;
-  return isRecord(cost) && exactKeys4(cost, ["input", "output", "cacheRead", "cacheWrite", "total"]) && ["input", "output", "cacheRead", "cacheWrite", "total"].every((key) => typeof cost[key] === "number" && Number.isFinite(cost[key]));
+  return isRecord(cost) && exactKeys4(
+    cost,
+    ["input", "output", "cacheRead", "cacheWrite", "total", "totalFromProvider"],
+    ["input", "output", "cacheRead", "cacheWrite", "total"]
+  ) && ["input", "output", "cacheRead", "cacheWrite", "total"].every((key) => typeof cost[key] === "number" && Number.isFinite(cost[key])) && (cost.totalFromProvider === void 0 || typeof cost.totalFromProvider === "boolean");
 }
 function validDiagnostic(value) {
   if (!isRecord(value) || !exactKeys4(value, ["type", "timestamp", "error", "details"], ["type", "timestamp"]) || !boundedString2(value.type) || typeof value.timestamp !== "number" || !Number.isFinite(value.timestamp)) return false;
