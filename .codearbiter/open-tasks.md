@@ -5,7 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
-- [~] Close native work adoption and legacy lifecycle commit gaps for issues #1084, #1087, and #1089  (from github:issues-1084-1087-1089:handoff-df95ea4e)  (started 2026-11-07)
+- [x] Close native work adoption and legacy lifecycle commit gaps for issues #1084, #1087, and #1089  (from github:issues-1084-1087-1089:handoff-df95ea4e)  (done 2026-11-09)
   - Work origin: github:issues-1084-1087-1089:handoff-df95ea4e
   - Desc: Implement one compatible Python and Go adoption contract for shared legacy origins and long titles, accept only sanctioned one-item legacy lifecycle diffs, reconcile evidence-backed native work plans, regenerate host derivatives, verify migration safety, and deliver one unmerged PR.
   - Work type: unknown

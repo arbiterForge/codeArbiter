@@ -658,6 +658,14 @@ class ClassifyBoardDiffTest(unittest.TestCase):
             spec_id="SPEC-ONE",
             plan_id="PLAN-ONE",
         )
+        replaced = tb.edit_work_entry(
+            attached,
+            origin,
+            "attach",
+            spec_id="SPEC-TWO",
+            plan_id="PLAN-TWO",
+        )
+        self.assertTrue(tb.classify_board_diff(attached, replaced))
         lines = attached.splitlines()
         spec_index = lines.index("  - Spec ID: SPEC-ONE")
         work_id_index = next(
