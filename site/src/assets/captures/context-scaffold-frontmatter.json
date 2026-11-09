@@ -62,7 +62,7 @@
     },
     {
       "path": "plugins/ca/hooks/_taskboardlib.py",
-      "sha256": "deaf622bd20b6adaf1dbf08012bdd3ecd436ac8b984784e932a0e9f776446e8a"
+      "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
     },
     {
       "path": "plugins/ca/hooks/_taskexcludelib.py",
