@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Refresh Atlas lifecycle guidance binding  (from https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104
+  - Desc: The exact-head docs generator refuses the intentionally changed commit-gate source; add a distinct reviewed source binding so Atlas keeps historical provenance while accepting the reviewed lifecycle-guidance bytes.
+  - Work type: fix
+  - Work ID: WORK-7ACF52486C24C15CB7C26C86C93DFB3D
+  - Work operation ID: work-638b54b1e987fcd1362b9144b9fcb27162590ca4
 - [x] Align commit-gate lifecycle transition guidance  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582)  (done 2026-11-10)
   - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582
   - Desc: Commit-gate Phase 6 names only the original three board transitions; it should describe every transition classify_board_diff currently accepts so valid lifecycle edits are not misclassified as scope creep.

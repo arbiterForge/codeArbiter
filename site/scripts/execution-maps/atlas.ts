@@ -247,10 +247,12 @@ export const PERSONA_CONTEXT_SOURCE_BLOBS:Readonly<Record<string,string>>=Object
 // distinguish a broken host adapter from an opaque edit, and make both
 // security producers standalone commands. These change recovery text and
 // refusal classification without adding an owner, gate, or route.
+// PR1094's review follow-up only aligns the enumerated board-transition
+// guidance with the existing classifier; route and gate ownership stay fixed.
 export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/pysrc/_bashguardlib.py':'0f899bc13543ac3832e8bc8e488e6a96391a8e24',
   'core/surface/commands/override.md':'d5b32413bca07aa89b60a6027d533b8ae56d8ed4',
-  'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
+  'core/surface/skills/commit-gate/SKILL.md':'79ae22722040e774a769047fde17427398eb0073',
 });
 // The corrective handoff changes guard classification, state diagnostics,
 // authority handoffs and payload identity reporting without adding routes or
