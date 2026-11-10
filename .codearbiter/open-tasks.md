@@ -5,7 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
-- [~] Allow greenfield init with session runtime markers  (from work-op:greenfield-marker-init-20261110)  (started 2026-11-10)
+- [x] Allow greenfield init with session runtime markers  (from work-op:greenfield-marker-init-20261110)  (done 2026-11-10)
   - Work origin: work-op:greenfield-marker-init-20261110
   - Desc: A fresh repository can contain only host-owned session-start marker files before codeArbiter initialization. Initialization must accept that exact safe runtime state, preserve marker bytes, and continue refusing unknown or unsafe pre-existing state.
   - Work type: fix
