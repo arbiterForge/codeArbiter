@@ -74,7 +74,7 @@
     },
     {
       "path": "plugins/ca/hooks/init-codearbiter.py",
-      "sha256": "faaeaf09ccfcaa893ec6d2b9f966a86e58aea8a5eb8daec4f4760c0587cddc0b"
+      "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3"
     }
   ]
 }
