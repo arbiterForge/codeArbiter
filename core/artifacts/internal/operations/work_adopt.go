@@ -74,6 +74,14 @@ type legacyAdoptionBlock struct {
 }
 
 func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
+	return parseAdoptionBlocks(raw, false)
+}
+
+func strictAdoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
+	return parseAdoptionBlocks(raw, true)
+}
+
+func parseAdoptionBlocks(raw []byte, refuseDuplicates bool) (map[int64]legacyAdoptionBlock, error) {
 	if !utf8.Valid(raw) || strings.Contains(strings.ReplaceAll(string(raw), "\r\n", ""), "\r") {
 		return nil, fault.New("INVALID_LEGACY_BOARD", "legacy board is not canonical UTF-8 line text")
 	}
@@ -142,7 +150,7 @@ func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
 			end--
 		}
 		text := strings.Join(lines[i:end], "\n")
-		if seenBlocks[text] {
+		if refuseDuplicates && seenBlocks[text] {
 			return nil, fault.New("INVALID_LEGACY_BOARD", fmt.Sprintf("legacy board line %d duplicates an exact task block", i+1))
 		}
 		seenBlocks[text] = true
@@ -443,13 +451,13 @@ func (e *Engine) workAdopt(r object) (any, error) {
 		(archive != nil && digestBytes(archive) != model.S(r["expected_archive_sha256"])) {
 		return nil, fault.New("REVISION_CONFLICT", "legacy board changed after the adoption inventory")
 	}
-	openBlocks, err := adoptionBlocks(board)
+	openBlocks, err := strictAdoptionBlocks(board)
 	if err != nil {
 		return nil, err
 	}
 	archiveBlocks := map[int64]legacyAdoptionBlock{}
 	if archive != nil {
-		archiveBlocks, err = adoptionBlocks(archive)
+		archiveBlocks, err = strictAdoptionBlocks(archive)
 		if err != nil {
 			return nil, err
 		}

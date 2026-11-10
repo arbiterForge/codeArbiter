@@ -5,6 +5,18 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Align commit-gate lifecycle transition guidance  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582
+  - Desc: Commit-gate Phase 6 names only the original three board transitions; it should describe every transition classify_board_diff currently accepts so valid lifecycle edits are not misclassified as scope creep.
+  - Work type: fix
+  - Work ID: WORK-0EC14A47CA71E9C9D8230BAE2F807CEA
+  - Work operation ID: work-b65a265edf4c56b49229c24e20511dae873bb81e
+- [x] Keep duplicate legacy snapshots readable  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072568)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072568
+  - Desc: Historical duplicate task blocks currently make work-context fail with STALE_LEGACY_SOURCE; immutable snapshots should remain readable while new adoption continues to refuse duplicates.
+  - Work type: fix
+  - Work ID: WORK-0AE9D92DCB45BF4F502A40FB83F56631
+  - Work operation ID: work-82fb41242bac818b5474f81b3a744178ca796620
 - [x] Close native work adoption and legacy lifecycle commit gaps for issues #1084, #1087, and #1089  (from github:issues-1084-1087-1089:handoff-df95ea4e)  (done 2026-11-09)
   - Work origin: github:issues-1084-1087-1089:handoff-df95ea4e
   - Desc: Implement one compatible Python and Go adoption contract for shared legacy origins and long titles, accept only sanctioned one-item legacy lifecycle diffs, reconcile evidence-backed native work plans, regenerate host derivatives, verify migration safety, and deliver one unmerged PR.

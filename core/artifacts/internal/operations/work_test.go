@@ -301,7 +301,7 @@ func TestWorkAdoptSharedOriginAcrossBoardsRemainsDistinct(t *testing.T) {
 func TestWorkAdoptSafetyRefusalsNameSource(t *testing.T) {
 	t.Run("exact duplicate block", func(t *testing.T) {
 		block := "- [ ] Exact originless duplicate"
-		_, err := adoptionBlocks([]byte(block + "\n" + block + "\n"))
+		_, err := strictAdoptionBlocks([]byte(block + "\n" + block + "\n"))
 		if fault.Code(err) != "INVALID_LEGACY_BOARD" {
 			t.Fatalf("exact duplicate block was accepted: %v", err)
 		}
@@ -331,6 +331,35 @@ func TestWorkAdoptSafetyRefusalsNameSource(t *testing.T) {
 			t.Fatalf("refused adoption published native state: %v", statErr)
 		}
 	})
+}
+
+func TestLegacyDetailPageReadsDuplicateHistoricalBlocks(t *testing.T) {
+	root := testutil.Root(t)
+	if _, err := Run(root, "init-store", object{"protocol": Protocol}); err != nil {
+		t.Fatal(err)
+	}
+	legacyDir := filepath.Join(root, ".codearbiter", "legacy")
+	if err := os.MkdirAll(legacyDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	block := "- [ ] Exact historical duplicate"
+	if err := os.WriteFile(filepath.Join(legacyDir, "open-tasks.md"), []byte(block+"\n"+block+"\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	fs, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fs.Close()
+	page, err := (&Engine{FS: fs}).legacyDetailPage(object{
+		"location": "open", "line": int64(2), "block_sha256": digestBytes([]byte(block)),
+	}, 0, 4096)
+	if err != nil {
+		t.Fatalf("immutable historical duplicate became unreadable: %v", err)
+	}
+	if page["text"] != block {
+		t.Fatalf("historical detail changed: %+v", page)
+	}
 }
 
 func TestWorkAdoptRefusesTamperedSourceMeaning(t *testing.T) {
