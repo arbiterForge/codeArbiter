@@ -96,6 +96,19 @@ export const MARKER_PREFLIGHT_BLOB='3bd569c1cbc9be1d25da7bff51429c0cd60793af';
 // validation. Rendered artifact semantics and the reviewed map stay the same.
 export const SCHEMA_CACHE_RENDER_BLOB='916287678b836f1bf9a98782dc8e7d0bb58d6986';
 
+// The Pi 1.5.0 promotion changes the supported host fingerprint and its owned
+// compatibility guidance, not the historical atlas geometry. Bind those exact
+// reviewed bytes without relabelling the older repository-wide revalidation.
+export const PI_SUPPORT_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/hosts.json':'2fc53a8b7ca7b0e5a656f5640d9662d798af8856',
+  'core/surface/commands/doctor.md':'1c912de8eea432af5aec35d84294bae28a7b339a',
+  'core/surface/includes/ops-mode.md':'cb1b2fef89a60711ca6a038b0e18b22dea9e07c8',
+  'core/surface/includes/pi-host-notes.md':'3df45a408ecb79c772f188d4151449d85fab1492',
+  'core/surface/includes/safety-core.md':'2c42c9a4765accd00a21e13ba753a722f99f15bb',
+  'docs/parity.md':'17d824a7ddc47662daa9d4069ac5afd453e033ac',
+});
+export const PI_HOST_DESCRIPTOR_BLOB=PI_SUPPORT_SOURCE_BLOBS['core/hosts.json'];
+
 // PR1029 adds an operator-confirmed, exact-digest recovery for one stranded
 // Tribunal write lock. S29's resume/history/continue path still requires the
 // same source binding and preserves historical files; S30 now guards active
@@ -234,10 +247,12 @@ export const PERSONA_CONTEXT_SOURCE_BLOBS:Readonly<Record<string,string>>=Object
 // distinguish a broken host adapter from an opaque edit, and make both
 // security producers standalone commands. These change recovery text and
 // refusal classification without adding an owner, gate, or route.
+// PR1094's review follow-up only aligns the enumerated board-transition
+// guidance with the existing classifier; route and gate ownership stay fixed.
 export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/pysrc/_bashguardlib.py':'0f899bc13543ac3832e8bc8e488e6a96391a8e24',
   'core/surface/commands/override.md':'d5b32413bca07aa89b60a6027d533b8ae56d8ed4',
-  'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
+  'core/surface/skills/commit-gate/SKILL.md':'79ae22722040e774a769047fde17427398eb0073',
 });
 // The corrective handoff changes guard classification, state diagnostics,
 // authority handoffs and payload identity reporting without adding routes or
@@ -414,9 +429,9 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??PI_SUPPORT_SOURCE_BLOBS[path]??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
-    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
+    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',PI_HOST_DESCRIPTOR_BLOB],
   ]);
   for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
     ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)

@@ -43,6 +43,26 @@ var legacyScaffoldNotes = map[string]bool{
 
 func digestBytes(b []byte) string { return fmt.Sprintf("%x", sha256.Sum256(b)) }
 
+func legacyRowOrigin(block legacyAdoptionBlock) string {
+	return "legacy:row#" + block.digest[:32]
+}
+
+func legacyAdoptionSource(location string, line int64) string {
+	path := legacyBoardPath
+	if location == "archive" {
+		path = legacyArchivePath
+	}
+	return fmt.Sprintf("%s line %d", path, line)
+}
+
+func truncateRunes(value string, limit int) string {
+	runes := []rune(value)
+	if len(runes) <= limit {
+		return value
+	}
+	return string(runes[:limit])
+}
+
 // One cutover reserves five edits for the project, board snapshots and board removal.
 const maxAdoptionRows = 507
 
@@ -54,6 +74,14 @@ type legacyAdoptionBlock struct {
 }
 
 func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
+	return parseAdoptionBlocks(raw, false)
+}
+
+func strictAdoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
+	return parseAdoptionBlocks(raw, true)
+}
+
+func parseAdoptionBlocks(raw []byte, refuseDuplicates bool) (map[int64]legacyAdoptionBlock, error) {
 	if !utf8.Valid(raw) || strings.Contains(strings.ReplaceAll(string(raw), "\r\n", ""), "\r") {
 		return nil, fault.New("INVALID_LEGACY_BOARD", "legacy board is not canonical UTF-8 line text")
 	}
@@ -96,6 +124,7 @@ func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
 		return nil, fault.New("INVALID_LEGACY_BOARD", "unterminated Markdown fence in legacy board")
 	}
 	blocks := map[int64]legacyAdoptionBlock{}
+	seenBlocks := map[string]bool{}
 	for i, line := range lines {
 		if skipped[i] {
 			continue
@@ -121,6 +150,10 @@ func adoptionBlocks(raw []byte) (map[int64]legacyAdoptionBlock, error) {
 			end--
 		}
 		text := strings.Join(lines[i:end], "\n")
+		if refuseDuplicates && seenBlocks[text] {
+			return nil, fault.New("INVALID_LEGACY_BOARD", fmt.Sprintf("legacy board line %d duplicates an exact task block", i+1))
+		}
+		seenBlocks[text] = true
 		blocks[int64(i+1)] = legacyAdoptionBlock{digest: digestBytes([]byte(text)), text: text}
 	}
 	return blocks, nil
@@ -244,10 +277,10 @@ func canonicalAdoptionRow(block legacyAdoptionBlock, location string, line int64
 		origin = "legacy:origin#" + digestBytes([]byte(origin))[:32]
 	}
 	if origin == "" {
-		seed := fmt.Sprintf("%s\x00%d\x00%s", location, line, block.text)
-		origin = "legacy:" + location + "#" + digestBytes([]byte(seed))[:32]
+		origin = legacyRowOrigin(block)
 	}
 	id := metadata["Work ID"]
+	explicitID := id != ""
 	if id == "" {
 		source := origin
 		if legacyOrigin != "" {
@@ -278,9 +311,17 @@ func canonicalAdoptionRow(block legacyAdoptionBlock, location string, line int64
 	if title == "" {
 		return nil, fault.New("INVALID_ADOPTION", "legacy task title is empty")
 	}
+	fullTitle := title
+	title = truncateRunes(title, 240)
 	intent := desc
 	if intent == "" {
 		intent = title
+		if utf8.RuneCountInString(fullTitle) > 240 {
+			intent = fullTitle
+		}
+	}
+	if utf8.RuneCountInString(intent) > 4000 {
+		return nil, fault.At("INVALID_ADOPTION", "", legacyAdoptionSource(location, line), "legacy title or description exceeds the native 4,000 character summary limit")
 	}
 	workType := metadata["Work type"]
 	if workType == "" {
@@ -306,7 +347,72 @@ func canonicalAdoptionRow(block legacyAdoptionBlock, location string, line int64
 	return object{"work_id": id, "origin": origin, "alias": alias, "title": title,
 		"intent": intent, "work_type": workType, "state": state,
 		"started_at": started, "completed_at": completed,
-		"spec_id": metadata["Spec ID"], "plan_id": metadata["Plan ID"]}, nil
+		"spec_id": metadata["Spec ID"], "plan_id": metadata["Plan ID"],
+		"legacy_origin": legacyOrigin, "explicit_work_id": explicitID}, nil
+}
+
+type legacyAdoptionSourceBlock struct {
+	location  string
+	line      int64
+	block     legacyAdoptionBlock
+	canonical object
+}
+
+func logicalAdoptionBlocks(openBlocks, archiveBlocks map[int64]legacyAdoptionBlock) ([]legacyAdoptionSourceBlock, int, error) {
+	sources := make([]legacyAdoptionSourceBlock, 0, len(openBlocks)+len(archiveBlocks))
+	coalesced := 0
+	for line, block := range openBlocks {
+		canonical, err := canonicalAdoptionRow(block, "open", line)
+		if err != nil {
+			return nil, 0, err
+		}
+		sources = append(sources, legacyAdoptionSourceBlock{"open", line, block, canonical})
+	}
+	for line, block := range archiveBlocks {
+		canonical, err := canonicalAdoptionRow(block, "archive", line)
+		if err != nil {
+			return nil, 0, err
+		}
+		copyIndex := -1
+		for index, source := range sources {
+			if source.location == "open" && source.block.text == block.text && model.S(source.canonical["state"]) == "complete" {
+				copyIndex = index
+				break
+			}
+		}
+		archiveSource := legacyAdoptionSourceBlock{"archive", line, block, canonical}
+		if copyIndex >= 0 {
+			sources[copyIndex] = archiveSource
+			coalesced++
+		} else {
+			sources = append(sources, archiveSource)
+		}
+	}
+	return sources, coalesced, nil
+}
+
+func normalizeAdoptionIdentities(sources []legacyAdoptionSourceBlock) map[string]object {
+	counts := map[string]int{}
+	for _, source := range sources {
+		legacyOrigin := model.S(source.canonical["legacy_origin"])
+		if legacyOrigin != "" {
+			counts[legacyOrigin]++
+		}
+	}
+	rows := map[string]object{}
+	for index := range sources {
+		source := &sources[index]
+		legacyOrigin := model.S(source.canonical["legacy_origin"])
+		if legacyOrigin != "" && counts[legacyOrigin] > 1 {
+			origin := legacyRowOrigin(source.block)
+			source.canonical["origin"] = origin
+			if explicit, _ := source.canonical["explicit_work_id"].(bool); !explicit {
+				source.canonical["work_id"] = "WORK-" + strings.ToUpper(digestBytes([]byte("codearbiter-legacy-work-v1\x00" + origin))[:32])
+			}
+		}
+		rows[fmt.Sprintf("%s:%d", source.location, source.line)] = source.canonical
+	}
+	return rows
 }
 
 func (e *Engine) workAdopt(r object) (any, error) {
@@ -345,19 +451,24 @@ func (e *Engine) workAdopt(r object) (any, error) {
 		(archive != nil && digestBytes(archive) != model.S(r["expected_archive_sha256"])) {
 		return nil, fault.New("REVISION_CONFLICT", "legacy board changed after the adoption inventory")
 	}
-	openBlocks, err := adoptionBlocks(board)
+	openBlocks, err := strictAdoptionBlocks(board)
 	if err != nil {
 		return nil, err
 	}
 	archiveBlocks := map[int64]legacyAdoptionBlock{}
 	if archive != nil {
-		archiveBlocks, err = adoptionBlocks(archive)
+		archiveBlocks, err = strictAdoptionBlocks(archive)
 		if err != nil {
 			return nil, err
 		}
 	}
+	logicalBlocks, coalesced, err := logicalAdoptionBlocks(openBlocks, archiveBlocks)
+	if err != nil {
+		return nil, err
+	}
+	canonicalRows := normalizeAdoptionIdentities(logicalBlocks)
 	rows := model.A(r["rows"])
-	if len(rows) != len(openBlocks)+len(archiveBlocks) {
+	if len(rows) != len(logicalBlocks) {
 		return nil, fault.New("INCOMPLETE_ADOPTION", "every legacy task row needs one native work item")
 	}
 	// A process may die while staging before the journal is published. Repeating
@@ -382,12 +493,12 @@ func (e *Engine) workAdopt(r object) (any, error) {
 			blocks = archiveBlocks
 		}
 		block, found := blocks[line]
+		canonical, logical := canonicalRows[key]
 		if !workIDPattern.MatchString(id) || seenIDs[id] || seenOrigins[origin] || (alias != "" && (seenAliases[alias] || !legacyAliasPattern.MatchString(alias))) || seenLines[key] || !found || block.digest != model.S(row["block_sha256"]) {
 			return nil, fault.New("INVALID_ADOPTION", "legacy row identity, alias or block digest is invalid")
 		}
-		canonical, err := canonicalAdoptionRow(block, location, line)
-		if err != nil {
-			return nil, err
+		if !logical {
+			return nil, fault.New("INVALID_ADOPTION", "legacy row is not the canonical source for its logical work item")
 		}
 		for _, field := range []string{"work_id", "origin", "alias", "title", "intent", "work_type", "state", "started_at", "completed_at", "spec_id", "plan_id"} {
 			if model.S(canonical[field]) != model.S(row[field]) {
@@ -454,7 +565,9 @@ func (e *Engine) workAdopt(r object) (any, error) {
 	if archive != nil {
 		edits = append(edits, store.Edit{Path: ".codearbiter/legacy/done-tasks.md", Before: nil, After: archive}, store.Edit{Path: legacyArchivePath, Before: archive, After: nil})
 	}
-	result := object{"project_id": projectID, "adopted_count": int64(len(rows)), "legacy_open_sha256": digestBytes(board), "legacy_archive_sha256": r["expected_archive_sha256"], "owner": "native"}
+	result := object{"project_id": projectID, "adopted_count": int64(len(rows)),
+		"source_row_count": int64(len(openBlocks) + len(archiveBlocks)), "crash_copy_coalesced_count": int64(coalesced),
+		"legacy_open_sha256": digestBytes(board), "legacy_archive_sha256": r["expected_archive_sha256"], "owner": "native"}
 	outcome, err := e.FS.Commit(model.S(r["operation_id"]), e.RequestHash, edits, result)
 	if err != nil {
 		return nil, err

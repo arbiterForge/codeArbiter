@@ -36,7 +36,10 @@ class AdoptionInventoryTest(unittest.TestCase):
         self.assertEqual(result["rows"][0]["alias"], "demo.feat.0001")
         self.assertEqual(result["rows"][0]["origin"], "spec:parser#T-1")
         self.assertEqual(result["rows"][0]["title"], "Build parser")
-        self.assertTrue(result["rows"][1]["origin"].startswith("legacy:open#"))
+        block = "- [ ] Follow up on UI"
+        origin = "legacy:row#" + hashlib.sha256(block.encode("utf-8")).hexdigest()[:32]
+        self.assertEqual(result["rows"][1]["origin"], origin)
+        self.assertEqual(result["rows"][1]["work_id"], _worklib._id(origin))
         self.assertNotEqual(result["rows"][0]["work_id"], result["rows"][1]["work_id"])
 
     def test_scaffold_instructions_and_fenced_example_are_not_adopted(self):

@@ -328,9 +328,10 @@ function validContentBlock(value: unknown, kind: ContentKind): boolean {
         && (value.redacted === undefined || typeof value.redacted === "boolean");
     case "toolCall":
       return kind === "assistant"
-        && exactKeys(value, ["type", "id", "name", "arguments", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"])
+        && exactKeys(value, ["type", "id", "name", "arguments", "argumentsError", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"])
         && boundedString(value.id) && boundedString(value.name)
         && validOpaqueJson(value.arguments)
+        && (value.argumentsError === undefined || boundedString(value.argumentsError))
         && (value.thoughtSignature === undefined || boundedString(value.thoughtSignature))
         && (value.namespace === undefined || boundedString(value.namespace));
     default:
@@ -354,8 +355,10 @@ function validUsage(value: unknown): boolean {
   if (value.reasoning !== undefined && (typeof value.reasoning !== "number" || !Number.isFinite(value.reasoning))) return false;
   const cost = value.cost;
   return isRecord(cost)
-    && exactKeys(cost, ["input", "output", "cacheRead", "cacheWrite", "total"])
-    && ["input", "output", "cacheRead", "cacheWrite", "total"].every((key) => typeof cost[key] === "number" && Number.isFinite(cost[key]));
+    && exactKeys(cost, ["input", "output", "cacheRead", "cacheWrite", "total", "totalFromProvider"],
+      ["input", "output", "cacheRead", "cacheWrite", "total"])
+    && ["input", "output", "cacheRead", "cacheWrite", "total"].every((key) => typeof cost[key] === "number" && Number.isFinite(cost[key]))
+    && (cost.totalFromProvider === undefined || typeof cost.totalFromProvider === "boolean");
 }
 
 function validDiagnostic(value: unknown): boolean {

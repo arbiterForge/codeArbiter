@@ -1640,3 +1640,6 @@ branch from origin/main and cite the spec by path.
 39 guide blocks are commands or file text the reader types. Labelling them "illustrative" would add
 noise without changing what they claim, since they claim no run. AC-07 now covers output examples and
 classifies reader input separately; the content test checks each input block has an input form.
+
+## NWL-SD-01 — one coupled adoption contract and one lifecycle PR · confidence: high · intent: ADR-0043, ADR-0008, issues #1084/#1087/#1089 and pinned handoff df95ea4e
+Implement Python preview and native Go adoption as one source-coupled contract, retaining shared legacy provenance while deriving deterministic row-specific native correlation identities. Keep the schema unchanged when the existing immutable legacy_source pointer proves sufficient; add a minimal typed field only if current source/tests show that provenance is not directly retrievable. Deliver the adoption repair, narrow one-item legacy classifier, evidence-based plan reconciliation and generated host derivatives in one branch/PR from 94d901899a5f5c0a2a6040ca74cd904db0c5793c. The handoff branch remains read-only; no real board migration, tracker mutation, merge or publication is authorized.

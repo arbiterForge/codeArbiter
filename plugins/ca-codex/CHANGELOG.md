@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.6] - 2026-11-09
+
+### Fixed
+
+- Adopt shared-origin and long-title legacy work deterministically while preserving source snapshots, transaction safety, and explicit work identities.
+- Accept only owner-produced one-item lifecycle compositions and reject ambiguous bindings, malformed stamps, and unrelated board edits.
+
 ## [0.26.5] - 2026-11-07
 
 ### Fixed

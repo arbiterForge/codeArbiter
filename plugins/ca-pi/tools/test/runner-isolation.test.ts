@@ -138,18 +138,18 @@ async function materializedRequest(task = "task-secret-sentinel") {
   await mkdir(request.cwd, { recursive: true });
   await mkdir(dirname(request.piCliPath), { recursive: true });
   await writeFile(request.piCliPath, "// Task 6 Pi CLI fixture\n", "utf8");
-  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"1.1.0","bin":{"pi":"dist/cli.js"}}\n', "utf8");
+  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"1.5.0","bin":{"pi":"dist/cli.js"}}\n', "utf8");
   runnerMocks.resolveRuntimeIdentity.mockImplementation(async (candidate: string) => ({
     cliEntry: candidate,
     packageRoot: resolve(dirname(candidate), ".."),
-    version: "1.1.0",
+    version: "1.5.0",
   }));
   testValidation.set(request, {
     activeNodePath: process.execPath,
     packageRoot,
     resolveRuntimeIdentity: async (candidate: string) => {
       if (candidate !== request.piCliPath) throw new Error("counterfeit Pi CLI");
-      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "1.1.0" };
+      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "1.5.0" };
     },
   });
   return request;
@@ -413,6 +413,23 @@ describe("Task 6 exact Pi child launch", () => {
     ]) {
       expect(parseChildJsonLine(JSON.stringify(widened))).toEqual(widened);
     }
+    // Pi 1.5.0 marks whether the provider supplied the total cost and retains a
+    // bounded parse error on malformed tool arguments. Both additions remain
+    // optional, typed, and fail closed for every other widened shape.
+    const pi15Assistant = {
+      ...assistantMessage,
+      usage: {
+        ...assistantMessage.usage,
+        cost: { ...assistantMessage.usage.cost, totalFromProvider: false },
+      },
+      content: [{
+        type: "toolCall", id: "call-invalid", name: "bash", arguments: {},
+        argumentsError: "Expected a JSON object",
+      }],
+      stopReason: "toolUse",
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "message_end", message: pi15Assistant })))
+      .toMatchObject({ type: "message_end" });
     for (const widenedInvalid of [
       { id: "prompt-1", type: "response", command: "prompt", success: true, data: {} },
       { id: "prompt-1", type: "response", command: "prompt", success: true, data: { disposition: 1 } },
@@ -425,6 +442,8 @@ describe("Task 6 exact Pi child launch", () => {
       { type: "message_end", message: { ...widenedAssistant, providerThinkingLevel: 1 } },
       { type: "message_end", message: { ...widenedAssistant, endTurn: "yes" } },
       { type: "message_end", message: { ...widenedAssistant, content: [{ type: "toolCall", id: "c", name: "n", arguments: {}, namespace: 5 }] } },
+      { type: "message_end", message: { ...pi15Assistant, usage: { ...pi15Assistant.usage, cost: { ...pi15Assistant.usage.cost, totalFromProvider: "no" } } } },
+      { type: "message_end", message: { ...pi15Assistant, content: [{ ...pi15Assistant.content[0], argumentsError: 7 }] } },
       { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [], complete: "yes" } }] },
       { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [{ id: "n", name: "r", status: "maybe" }], complete: true } }] },
       { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [{ id: "n", name: "r", status: "ok", extra: 1 }], complete: true } }] },
@@ -1272,7 +1291,7 @@ describe("Task 6 exact Pi child launch", () => {
     const request = await materializedRequest();
     runnerMocks.resolveRuntimeIdentity.mockImplementationOnce(async (candidate: string) => {
       controller.abort();
-      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "1.1.0" };
+      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "1.5.0" };
     });
     expect(await runPiChild(request as never, controller.signal)).toEqual({
       terminal: "degraded",

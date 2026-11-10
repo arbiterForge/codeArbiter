@@ -5,6 +5,32 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Refresh Atlas lifecycle guidance binding  (from https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104
+  - Desc: The exact-head docs generator refuses the intentionally changed commit-gate source; add a distinct reviewed source binding so Atlas keeps historical provenance while accepting the reviewed lifecycle-guidance bytes.
+  - Work type: fix
+  - Work ID: WORK-7ACF52486C24C15CB7C26C86C93DFB3D
+  - Work operation ID: work-638b54b1e987fcd1362b9144b9fcb27162590ca4
+- [x] Align commit-gate lifecycle transition guidance  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582
+  - Desc: Commit-gate Phase 6 names only the original three board transitions; it should describe every transition classify_board_diff currently accepts so valid lifecycle edits are not misclassified as scope creep.
+  - Work type: fix
+  - Work ID: WORK-0EC14A47CA71E9C9D8230BAE2F807CEA
+  - Work operation ID: work-b65a265edf4c56b49229c24e20511dae873bb81e
+- [x] Keep duplicate legacy snapshots readable  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072568)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072568
+  - Desc: Historical duplicate task blocks currently make work-context fail with STALE_LEGACY_SOURCE; immutable snapshots should remain readable while new adoption continues to refuse duplicates.
+  - Work type: fix
+  - Work ID: WORK-0AE9D92DCB45BF4F502A40FB83F56631
+  - Work operation ID: work-82fb41242bac818b5474f81b3a744178ca796620
+- [x] Close native work adoption and legacy lifecycle commit gaps for issues #1084, #1087, and #1089  (from github:issues-1084-1087-1089:handoff-df95ea4e)  (done 2026-11-09)
+  - Work origin: github:issues-1084-1087-1089:handoff-df95ea4e
+  - Desc: Implement one compatible Python and Go adoption contract for shared legacy origins and long titles, accept only sanctioned one-item legacy lifecycle diffs, reconcile evidence-backed native work plans, regenerate host derivatives, verify migration safety, and deliver one unmerged PR.
+  - Work type: unknown
+  - Work ID: WORK-96BF5FB41E95EB05088F3B6565253E35
+  - Work operation ID: 8b8a6f0d-56be-49f5-9a44-108410871089
+  - Spec ID: SPEC-NATIVE-WORK-LIFECYCLE-CLOSURE
+  - Plan ID: PLAN-NATIVE-WORK-LIFECYCLE-CLOSURE
 - [x] Remove duplicated rules from the resident persona  (from context-audit:path-01-plan:T-06-T-07)  (done 2026-11-07)
   - Work origin: context-audit:path-01-plan:T-06-T-07
   - Desc: Arbiter and safety-core stop restating each other within one composition (plan T-06/T-07, ADR-0036 freeze read narrowly); every test-pinned phrase and the ADR-0026 destructive bullets stay intact.
