@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.7] - 2026-11-10
+
+### Fixed
+
+- Allow fresh initialization to preserve session-start markers instead of refusing an otherwise empty repository, while retaining fail-closed handling for unknown or unstable marker state.
+
 ## [0.26.6] - 2026-11-09
 
 ### Fixed

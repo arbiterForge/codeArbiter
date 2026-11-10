@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.7] - 2026-11-10
+
+### Fixed
+
+- Allow fresh initialization to preserve session-start markers instead of refusing an otherwise empty repository, while retaining fail-closed handling for unknown or unstable marker state.
+
 ## [0.27.6] - 2026-11-09
 
 ### Changed
