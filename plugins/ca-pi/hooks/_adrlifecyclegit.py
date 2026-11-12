@@ -118,7 +118,7 @@ def read_committed_evidence(root, current_ref):
     committed = _ledger_at(root, current_ref)
     if committed is None:
         raise ValueError("current ref has no lifecycle ledger")
-    events = [json.loads(line) for line in committed.decode("utf-8").splitlines()
+    events = [json.loads(line) for line in committed.decode("utf-8").split("\n")
               if line.strip()]
     tree = _git(root, "ls-tree", "-r", "--name-only", "-z",
                 current_ref, ".codearbiter/decisions/")
@@ -182,7 +182,7 @@ def merge_method(root, base_ref, current_ref):
     try:
         events, blobs, committed = read_committed_evidence(root, head)
         base_bytes = _ledger_at(root, base)
-        base_events = [json.loads(line) for line in (base_bytes or b"").decode("utf-8").splitlines()
+        base_events = [json.loads(line) for line in (base_bytes or b"").decode("utf-8").split("\n")
                        if line.strip()]
         errors.extend(al.validate_events(events, blobs))
         bindings = {event.get("adr") for event in events if isinstance(event, dict)

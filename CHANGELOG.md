@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.9] - 2026-11-12
+
+### Fixed
+
+- Read ADR lifecycle JSONL using LF record boundaries so Unicode line separators in reviewer names survive later appends and verification.
+
 ## [3.8.8] - 2026-11-12
 
 ### Fixed

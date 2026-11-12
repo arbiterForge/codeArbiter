@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.9] - 2026-11-12
+
+### Fixed
+
+- Preserve Unicode line separators inside ADR lifecycle JSONL values during later writes and merge verification.
+
 ## [0.27.8] - 2026-11-12
 
 ### Fixed
