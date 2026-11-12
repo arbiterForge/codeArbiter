@@ -53,7 +53,7 @@ def _events(raw):
         raise ValueError("lifecycle ledger does not end with LF")
     if raw.startswith(b"\xef\xbb\xbf") or b"\x00" in raw:
         raise ValueError("lifecycle ledger is not canonical UTF-8 text")
-    return [json.loads(line) for line in raw.decode("utf-8").splitlines()
+    return [json.loads(line) for line in raw.decode("utf-8").split("\n")
             if line.strip()]
 
 

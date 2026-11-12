@@ -273,7 +273,6 @@ class LifecycleContractTest(unittest.TestCase):
                     cwd=tmp, capture_output=True, text=True, check=False)
                 self.assertEqual(proof.returncode, 0, proof.stderr)
                 self.assertEqual(proof.stdout, "squash\n")
-
     def test_writer_repairs_two_bad_bindings_in_one_append_only_pass(self):
         repo = os.path.dirname(os.path.dirname(HERE))
         with tempfile.TemporaryDirectory() as tmp:
@@ -330,9 +329,10 @@ class LifecycleContractTest(unittest.TestCase):
                 Path(obligations).write_text(json.dumps([{
                     "id": stem + ".o1", "section": "Decision", "text": "D",
                 }]), encoding="utf-8")
+                reviewer = "Alice\u2028Bob" if stem == "0001-test" else "independent reviewer"
                 command = [sys.executable, "-E", writer, "--root", root, "--adr", stem,
                            "--source-commit", commit, "--obligations-json", obligations,
-                           "--reviewed-by", "independent reviewer", "--correct",
+                           "--reviewed-by", reviewer, "--correct",
                            "--reason", "Repair malformed acceptance"]
                 if stem == "0002-test":
                     valid_prefix = Path(ledger).read_bytes()
@@ -348,6 +348,10 @@ class LifecycleContractTest(unittest.TestCase):
                     cwd=tmp, capture_output=True, text=True, check=False)
                 self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue(Path(ledger).read_bytes().startswith(original_bytes))
+            with open(ledger, encoding="utf-8") as handle:
+                events = [json.loads(line) for line in handle if line.strip()]
+            self.assertEqual(events[2]["reviewed_by"], "Alice\u2028Bob")
+            self.assertEqual(len(events), 4)
             self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
             self._git(root, "commit", "-m", "append both corrected bindings")
             head = self._git(root, "rev-parse", "HEAD")
@@ -591,18 +595,19 @@ class LifecycleContractTest(unittest.TestCase):
                 with open(obligations, "w", encoding="utf-8") as handle:
                     json.dump([{"id": "0001-test.o1", "section": "Decision", "text": "D"}],
                               handle)
+                reviewer = "Alice\u2028Bob"
                 result = subprocess.run(
                     [sys.executable, "-E", writer, "--root", root,
                      "--adr", "0001-test", "--source-commit", source,
                      "--obligations-json", obligations,
-                     "--reviewed-by", "independent test reviewer"],
+                     "--reviewed-by", reviewer],
                     cwd=tmp, capture_output=True, text=True, check=False)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 with open(ledger, encoding="utf-8") as handle:
                     events = [json.loads(line) for line in handle if line.strip()]
                 self.assertEqual(al.validate_events(events, {"0001-test": ADR}), [])
                 self.assertEqual(events[0]["obligations"], acceptance["obligations"])
-                self.assertEqual(events[0]["reviewed_by"], "independent test reviewer")
+                self.assertEqual(events[0]["reviewed_by"], reviewer)
                 original_bytes = Path(ledger).read_bytes()
                 nested = subprocess.run(
                     [sys.executable, "-E", writer, "--root", root,
@@ -617,12 +622,22 @@ class LifecycleContractTest(unittest.TestCase):
                     [sys.executable, "-E", writer, "--root", root,
                      "--adr", "0001-test", "--source-commit", source,
                      "--obligations-json", obligations,
-                     "--reviewed-by", "independent test reviewer"],
+                     "--reviewed-by", reviewer],
                     cwd=tmp, capture_output=True, text=True, check=False)
                 self.assertNotEqual(repeated.returncode, 0)
                 self.assertEqual(Path(ledger).read_bytes(), original_bytes)
                 self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
                 self._git(root, "commit", "-m", "bind accepted ADR")
+                repeated = subprocess.run(
+                    [sys.executable, "-E", writer, "--root", root,
+                     "--adr", "0001-test", "--source-commit", source,
+                     "--obligations-json", obligations,
+                     "--reviewed-by", reviewer],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertNotEqual(repeated.returncode, 0)
+                self.assertIn("ADR already has an acceptance or baseline binding",
+                              repeated.stderr)
+                self.assertEqual(Path(ledger).read_bytes(), original_bytes)
                 head = self._git(root, "rev-parse", "HEAD")
                 proof = subprocess.run(
                     [sys.executable, "-E", os.path.join(installed, "adr-merge-method.py"),
@@ -631,6 +646,16 @@ class LifecycleContractTest(unittest.TestCase):
                     cwd=tmp, capture_output=True, text=True, check=False)
                 self.assertEqual(proof.returncode, 0, proof.stderr)
                 self.assertEqual(proof.stdout, "squash\n")
+
+                self._git(root, "commit", "--allow-empty", "-m", "follow accepted ADR")
+                later = self._git(root, "rev-parse", "HEAD")
+                retained = subprocess.run(
+                    [sys.executable, "-E", os.path.join(installed, "adr-merge-method.py"),
+                     "--root", root, "--base-ref", head,
+                     "--current-ref", later, "--merge-method"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertEqual(retained.returncode, 0, retained.stderr)
+                self.assertEqual(retained.stdout, "squash\n")
 
     def test_installed_merge_verifier_does_not_admit_new_baselines(self):
         # PORT-5: a consumer's existing baseline is not a migration authorization.

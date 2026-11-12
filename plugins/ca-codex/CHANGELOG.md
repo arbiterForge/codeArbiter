@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.9] - 2026-11-12
+
+### Fixed
+
+- Preserve Unicode line separators inside ADR lifecycle JSONL values during later writes and merge verification.
+
 ## [0.26.8] - 2026-11-12
 
 ### Fixed
