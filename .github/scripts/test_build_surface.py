@@ -2136,7 +2136,7 @@ class AdrModeOwnershipTest(unittest.TestCase):
         self.assertIn('### Accepted/Planned binding', author)
         self.assertIn('## Hard rules', author)
         binding = author[author.index('### Accepted/Planned binding'):author.index('## Hard rules')]
-        self.assertEqual(hashlib.sha256(binding.encode()).hexdigest(), '22f3395979eec539d938762659eb831f442c891a811e9a77b7a34ac8207fb0d8')
+        self.assertEqual(hashlib.sha256(binding.encode()).hexdigest(), '1ec797c38a6402935ffb90d1982349e9320b2790d0c1df2f4e03fcca80101c0e')
         template = self.text('core/surface/skills/decision-lifecycle/references/adr-template.md')
         self.assertEqual(hashlib.sha256(template.encode()).hexdigest(), '73135c60393f2c15b92370efeabaf2c376c36ea60bd2fba024dd1141f5d5cdf2')
 

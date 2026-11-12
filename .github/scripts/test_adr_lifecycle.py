@@ -133,6 +133,232 @@ class LifecycleContractTest(unittest.TestCase):
             "obligations_sealed": True,
         }
 
+    def test_append_only_correction_recovers_a_malformed_acceptance(self):
+        # A historical bad entry stays in the ledger, but its replacement is
+        # checked against the same committed ADR and source identity.
+        accepted = self._acceptance()
+        malformed = dict(accepted)
+        malformed["body_sha256"] = "0" * 64
+        malformed["obligations"] = [{"id": "0001-test#OBL-1", "text": "D"}]
+        malformed["obligations_sha256"] = al.obligation_set_digest(
+            malformed["obligations"])
+        correction = {
+            "schema": "adr-lifecycle/v1", "event": "acceptance-correction",
+            "adr": "0001-test", "recorded_at": "2026-09-03T12:00:00Z",
+            "corrects_sha256": _sha(json.dumps(malformed, sort_keys=True,
+                                              separators=(",", ":"),
+                                              ensure_ascii=False).encode("utf-8")),
+            "replacement": accepted, "reviewed_by": "independent reviewer",
+            "reason": "Repair malformed writer output without rewriting history",
+        }
+        self.assertEqual(al.validate_events([malformed, correction],
+                                            {"0001-test": ADR}), [])
+        self.assertEqual(al.validate_source_blobs(
+            [malformed, correction], {("a" * 40, "0001-test"): ADR}), [])
+        for changed, diagnostic in (
+                (dict(correction, corrects_sha256="0" * 64), "does not bind"),
+                (dict(correction, replacement=dict(accepted,
+                    source_commit="b" * 40)), "does not bind"),
+                (dict(correction, replacement=dict(accepted,
+                    blob_sha256="0" * 64)), "does not bind")):
+            with self.subTest(diagnostic=diagnostic):
+                errors = al.validate_events([malformed, changed], {"0001-test": ADR})
+                self.assertTrue(any(diagnostic in error for error in errors), errors)
+        valid_target_correction = dict(correction, corrects_sha256=al.event_digest(accepted))
+        errors = al.validate_events([accepted, valid_target_correction], {"0001-test": ADR})
+        self.assertTrue(any("cannot replace a valid binding" in error for error in errors), errors)
+        errors = al.validate_events([malformed, correction, correction], {"0001-test": ADR})
+        self.assertTrue(any("does not bind" in error for error in errors), errors)
+
+    def test_correction_accepts_later_delivery_but_rejects_earlier_delivery(self):
+        accepted = self._acceptance()
+        malformed = dict(accepted, body_sha256="0" * 64,
+                         obligations=[{"id": "0001-test#OBL-1", "text": "D"}])
+        malformed["obligations_sha256"] = al.obligation_set_digest(malformed["obligations"])
+        correction = {
+            "schema": "adr-lifecycle/v1", "event": "acceptance-correction",
+            "adr": "0001-test", "recorded_at": "2026-09-03T12:00:00Z",
+            "corrects_sha256": al.event_digest(malformed),
+            "replacement": accepted, "reviewed_by": "independent reviewer",
+            "reason": "Repair malformed acceptance",
+        }
+        implementation = {
+            "schema": "adr-lifecycle/v1", "event": "implemented", "event_id": "impl-1",
+            "adr": "0001-test", "obligation": "0001-test.o1",
+            "source_commit": "a" * 40, "input_digests": {"src/x.py": "0" * 64},
+            "evidence": "synthetic implementation",
+        }
+        self.assertEqual(al.validate_events([malformed, correction, implementation],
+                                            {"0001-test": ADR}), [])
+        self.assertTrue(any("cannot remap obligations" in error for error in
+                            al.validate_events([malformed, implementation, correction],
+                                               {"0001-test": ADR})))
+
+    def test_null_lifecycle_entry_is_not_erased_by_correction_resolution(self):
+        self.assertTrue(any("invalid lifecycle event" in error for error in
+                            al.validate_events([None], {})))
+
+    def test_correction_covers_unsealed_and_wrong_source_blob_digest(self):
+        accepted = self._acceptance()
+        for field, bad_value in (("obligations_sealed", False),
+                                 ("blob_sha256", "0" * 64),
+                                 ("obligations", [])):
+            with self.subTest(field=field):
+                original = dict(accepted, **{field: bad_value})
+                if field == "obligations":
+                    original["obligations_sha256"] = al.obligation_set_digest([])
+                correction = {
+                    "schema": "adr-lifecycle/v1", "event": "acceptance-correction",
+                    "adr": "0001-test", "recorded_at": "2026-09-03T12:00:00Z",
+                    "corrects_sha256": al.event_digest(original),
+                    "replacement": accepted, "reviewed_by": "independent reviewer",
+                    "reason": "Repair malformed acceptance",
+                }
+                events = [original, correction]
+                self.assertEqual(al.validate_events(events, {"0001-test": ADR}), [])
+                self.assertEqual(al.validate_source_blobs(
+                    events, {("a" * 40, "0001-test"): ADR}), [])
+
+    def test_accepted_binding_records_reviewer_identity(self):
+        event = al.acceptance_event("0001-test", ADR, "a" * 40,
+                                    [{"id": "0001-test.o1", "section": "Decision",
+                                      "text": "D"}], "2026-09-02T12:00:00Z",
+                                    reviewed_by="independent reviewer")
+        self.assertEqual(event["reviewed_by"], "independent reviewer")
+        self.assertEqual(al.validate_events([event], {"0001-test": ADR}), [])
+        self.assertTrue(al.validate_events([dict(event, reviewed_by="")],
+                                           {"0001-test": ADR}))
+
+    def test_installed_writer_repairs_a_committed_bad_binding(self):
+        repo = os.path.dirname(os.path.dirname(HERE))
+        for host in ("ca", "ca-codex", "ca-pi"):
+            with self.subTest(host=host), tempfile.TemporaryDirectory() as tmp:
+                installed = os.path.join(tmp, "installed", "hooks")
+                shutil.copytree(os.path.join(repo, "plugins", host, "hooks"), installed,
+                                ignore=shutil.ignore_patterns("__pycache__", "tests"))
+                root = os.path.join(tmp, "consumer")
+                os.mkdir(root)
+                acceptance, _implementation, _verification = self._committed_evidence_repo(root)
+                source = acceptance["source_commit"]
+                malformed = dict(acceptance, body_sha256="0" * 64)
+                malformed["obligations"] = [{"id": "0001-test#OBL-1", "text": "D"}]
+                malformed["obligations_sha256"] = al.obligation_set_digest(
+                    malformed["obligations"])
+                self._write_ledger(root, [malformed])
+                ledger = os.path.join(root, ".codearbiter", "decisions",
+                                      "adr-lifecycle.jsonl")
+                original_bytes = Path(ledger).read_bytes()
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "bad historical acceptance")
+                base = self._git(root, "rev-parse", "HEAD")
+                obligations = os.path.join(tmp, "reviewed-obligations.json")
+                with open(obligations, "w", encoding="utf-8") as handle:
+                    json.dump([{"id": "0001-test.o1", "section": "Decision", "text": "D"}],
+                              handle)
+                result = subprocess.run(
+                    [sys.executable, "-E", os.path.join(installed, "adr-acceptance.py"),
+                     "--root", root, "--adr", "0001-test", "--source-commit", source,
+                     "--obligations-json", obligations, "--reviewed-by", "test reviewer",
+                     "--correct", "--reason", "bad historical binding"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertTrue(Path(ledger).read_bytes().startswith(original_bytes))
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "append corrected acceptance")
+                head = self._git(root, "rev-parse", "HEAD")
+                proof = subprocess.run(
+                    [sys.executable, "-E", os.path.join(installed, "adr-merge-method.py"),
+                     "--root", root, "--base-ref", base,
+                     "--current-ref", head, "--merge-method"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertEqual(proof.returncode, 0, proof.stderr)
+                self.assertEqual(proof.stdout, "squash\n")
+
+    def test_writer_repairs_two_bad_bindings_in_one_append_only_pass(self):
+        repo = os.path.dirname(os.path.dirname(HERE))
+        with tempfile.TemporaryDirectory() as tmp:
+            root = os.path.join(tmp, "consumer")
+            os.mkdir(root)
+            first, _, _ = self._committed_evidence_repo(root)
+            second_blob = ADR.replace(b"ADR-0001", b"ADR-0002")
+            second_path = os.path.join(root, ".codearbiter", "decisions", "0002-test.md")
+            Path(second_path).write_bytes(second_blob)
+            self._git(root, "add", ".codearbiter/decisions/0002-test.md")
+            self._git(root, "commit", "-m", "add second accepted ADR")
+            source = self._git(root, "rev-parse", "HEAD")
+            first["obligations_sealed"] = False
+            second = al.acceptance_event(
+                "0002-test", second_blob, source,
+                [{"id": "0002-test.o1", "section": "Decision", "text": "D"}],
+                "2026-09-02T12:00:00Z")
+            second["blob_sha256"] = "0" * 64
+            self._write_ledger(root, [first, second])
+            ledger = os.path.join(root, ".codearbiter", "decisions",
+                                  "adr-lifecycle.jsonl")
+            original_bytes = Path(ledger).read_bytes()
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "two malformed historical bindings")
+            base = self._git(root, "rev-parse", "HEAD")
+            writer = os.path.join(repo, "plugins", "ca-codex", "hooks",
+                                  "adr-acceptance.py")
+            no_op = {
+                "schema": "adr-lifecycle/v1", "event": "acceptance-correction",
+                "adr": "0001-test", "recorded_at": "2026-09-03T12:00:00Z",
+                "corrects_sha256": al.event_digest(first), "replacement": first,
+                "reviewed_by": "independent reviewer", "reason": "Invalid no-op correction",
+            }
+            poisoned = original_bytes + (json.dumps(no_op, sort_keys=True,
+                separators=(",", ":")) + "\n").encode("utf-8")
+            Path(ledger).write_bytes(poisoned)
+            second_obligations = os.path.join(tmp, "second.json")
+            Path(second_obligations).write_text(json.dumps([{
+                "id": "0002-test.o1", "section": "Decision", "text": "D",
+            }]), encoding="utf-8")
+            refused = subprocess.run(
+                [sys.executable, "-E", writer, "--root", root, "--adr", "0002-test",
+                 "--source-commit", source, "--obligations-json", second_obligations,
+                 "--reviewed-by", "independent reviewer", "--correct",
+                 "--reason", "Repair malformed acceptance"],
+                cwd=tmp, capture_output=True, text=True, check=False)
+            self.assertNotEqual(refused.returncode, 0,
+                                "writer admitted a no-op correction suffix")
+            self.assertEqual(Path(ledger).read_bytes(), poisoned)
+            Path(ledger).write_bytes(original_bytes)
+            for stem, commit in (("0001-test", first["source_commit"]),
+                                 ("0002-test", source)):
+                obligations = os.path.join(tmp, stem + ".json")
+                Path(obligations).write_text(json.dumps([{
+                    "id": stem + ".o1", "section": "Decision", "text": "D",
+                }]), encoding="utf-8")
+                command = [sys.executable, "-E", writer, "--root", root, "--adr", stem,
+                           "--source-commit", commit, "--obligations-json", obligations,
+                           "--reviewed-by", "independent reviewer", "--correct",
+                           "--reason", "Repair malformed acceptance"]
+                if stem == "0002-test":
+                    valid_prefix = Path(ledger).read_bytes()
+                    Path(ledger).write_bytes(valid_prefix + b"null\n")
+                    refused = subprocess.run(command, cwd=tmp, capture_output=True,
+                                             text=True, check=False)
+                    self.assertNotEqual(refused.returncode, 0,
+                                        "writer admitted an invalid uncommitted suffix")
+                    self.assertEqual(Path(ledger).read_bytes(), valid_prefix + b"null\n")
+                    Path(ledger).write_bytes(valid_prefix)
+                result = subprocess.run(
+                    command,
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(Path(ledger).read_bytes().startswith(original_bytes))
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "append both corrected bindings")
+            head = self._git(root, "rev-parse", "HEAD")
+            proof = subprocess.run(
+                [sys.executable, "-E", os.path.join(repo, "plugins", "ca-codex",
+                                                  "hooks", "adr-merge-method.py"),
+                 "--root", root, "--base-ref", base, "--current-ref", head,
+                 "--merge-method"], cwd=tmp, capture_output=True, text=True, check=False)
+            self.assertEqual(proof.returncode, 0, proof.stderr)
+            self.assertEqual(proof.stdout, "squash\n")
+
     def test_merge_instruction_is_portable_to_consumer_installs(self):
         # PORT-1: the actual sanctioned instruction, not a synthetic safe example.
         import check_skill_portability as portability
@@ -143,6 +369,28 @@ class LifecycleContractTest(unittest.TestCase):
                          "consumer merge preflight executes a repository-only path")
         with open(path, encoding="utf-8") as handle:
             self.assertIn('{{PLUGIN_ROOT}}/hooks/adr-merge-method.py', handle.read())
+
+    def test_every_host_instruction_names_only_shipped_hook_helpers(self):
+        # Catch the explicit-path twin of the missing ADR writer across all
+        # generated host instructions, including includes and references.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        pattern = re.compile(r"hooks/([A-Za-z0-9_.-]+\.(?:py|js|mjs|sh))")
+        for host in ("ca", "ca-codex", "ca-pi"):
+            with self.subTest(host=host):
+                plugin = os.path.join(repo, "plugins", host)
+                missing = []
+                for directory, _dirs, names in os.walk(plugin):
+                    for name in names:
+                        if not name.endswith(".md"):
+                            continue
+                        path = os.path.join(directory, name)
+                        with open(path, encoding="utf-8") as handle:
+                            for helper in pattern.findall(handle.read()):
+                                if not os.path.isfile(os.path.join(plugin, "hooks", helper)):
+                                    missing.append((os.path.relpath(path, plugin), helper))
+                self.assertEqual(missing, [])
+        self.assertEqual(pattern.findall("hooks/missing-helper.py"),
+                         ["missing-helper.py"])
 
     def test_lifecycle_git_prerequisite_is_actionable_at_both_entry_points(self):
         # GIT-1/2: simulate an older Git rejecting the global safety flag, not a bad ref.
@@ -313,6 +561,76 @@ class LifecycleContractTest(unittest.TestCase):
                 self._git(root, "commit", "-m", "malformed lifecycle ledger")
                 run(source, self._git(root, "rev-parse", "HEAD"),
                     diagnostic="could not validate committed lifecycle evidence")
+
+    def test_installed_consumer_writer_produces_a_verifiable_acceptance(self):
+        # A consumer install must have the same accepted-binding contract as
+        # the repository-only producer and the portable merge verifier.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        for host in ("ca", "ca-codex", "ca-pi"):
+            with self.subTest(host=host), tempfile.TemporaryDirectory() as tmp:
+                installed = os.path.join(tmp, "installed", "hooks")
+                shutil.copytree(os.path.join(repo, "plugins", host, "hooks"), installed,
+                                ignore=shutil.ignore_patterns("__pycache__", "tests"))
+                writer = os.path.join(installed, "adr-acceptance.py")
+                root = os.path.join(tmp, "consumer")
+                os.mkdir(root)
+                acceptance, _implementation, _verification = self._committed_evidence_repo(root)
+                source = acceptance["source_commit"]
+                obligations = os.path.join(tmp, "obligations.json")
+                ledger = os.path.join(root, ".codearbiter", "decisions", "adr-lifecycle.jsonl")
+                with open(obligations, "w", encoding="utf-8") as handle:
+                    json.dump([{"id": "0001-test#OBL-1", "text": "D"}], handle)
+                bad = subprocess.run(
+                    [sys.executable, "-E", writer, "--root", root,
+                     "--adr", "0001-test", "--source-commit", source,
+                     "--obligations-json", obligations,
+                     "--reviewed-by", "independent test reviewer"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertNotEqual(bad.returncode, 0)
+                self.assertFalse(os.path.exists(ledger))
+                with open(obligations, "w", encoding="utf-8") as handle:
+                    json.dump([{"id": "0001-test.o1", "section": "Decision", "text": "D"}],
+                              handle)
+                result = subprocess.run(
+                    [sys.executable, "-E", writer, "--root", root,
+                     "--adr", "0001-test", "--source-commit", source,
+                     "--obligations-json", obligations,
+                     "--reviewed-by", "independent test reviewer"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                with open(ledger, encoding="utf-8") as handle:
+                    events = [json.loads(line) for line in handle if line.strip()]
+                self.assertEqual(al.validate_events(events, {"0001-test": ADR}), [])
+                self.assertEqual(events[0]["obligations"], acceptance["obligations"])
+                self.assertEqual(events[0]["reviewed_by"], "independent test reviewer")
+                original_bytes = Path(ledger).read_bytes()
+                nested = subprocess.run(
+                    [sys.executable, "-E", writer, "--root", root,
+                     "--adr", "0001-test/nested", "--source-commit", source,
+                     "--obligations-json", obligations,
+                     "--reviewed-by", "independent test reviewer"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertNotEqual(nested.returncode, 0)
+                self.assertIn("invalid ADR stem", nested.stderr)
+                self.assertEqual(Path(ledger).read_bytes(), original_bytes)
+                repeated = subprocess.run(
+                    [sys.executable, "-E", writer, "--root", root,
+                     "--adr", "0001-test", "--source-commit", source,
+                     "--obligations-json", obligations,
+                     "--reviewed-by", "independent test reviewer"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertNotEqual(repeated.returncode, 0)
+                self.assertEqual(Path(ledger).read_bytes(), original_bytes)
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "bind accepted ADR")
+                head = self._git(root, "rev-parse", "HEAD")
+                proof = subprocess.run(
+                    [sys.executable, "-E", os.path.join(installed, "adr-merge-method.py"),
+                     "--root", root, "--base-ref", source,
+                     "--current-ref", head, "--merge-method"],
+                    cwd=tmp, capture_output=True, text=True, check=False)
+                self.assertEqual(proof.returncode, 0, proof.stderr)
+                self.assertEqual(proof.stdout, "squash\n")
 
     def test_installed_merge_verifier_does_not_admit_new_baselines(self):
         # PORT-5: a consumer's existing baseline is not a migration authorization.
@@ -1560,6 +1878,48 @@ class LifecycleContractTest(unittest.TestCase):
             self.assertEqual(errors, ["invalid lifecycle event: " + events[0]["_error"]])
             self.assertIn("line 2:", errors[0])
 
+    def test_pending_packet_persists_canonical_sealed_obligations(self):
+        proposed = ADR.replace(b"status: accepted", b"status: proposed").replace(
+            b"## Status\nAccepted", b"## Status\nProposed")
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            adr_path = os.path.join(decisions, "0001-test.md")
+            Path(adr_path).write_bytes(proposed)
+            Path(os.path.join(decisions, "adr-lifecycle.jsonl")).write_bytes(b"")
+            log_path = os.path.join(decisions, "decision-log.md")
+            Path(log_path).write_text("# Decision log\n" + _decision_entry(1, 9999),
+                                      encoding="utf-8")
+            self._git(root, "add", ".codearbiter/decisions")
+            self._git(root, "commit", "-m", "seed proposed ADR")
+            Path(adr_path).write_bytes(ADR)
+            with open(log_path, "a", encoding="utf-8", newline="\n") as handle:
+                handle.write(_decision_entry(2, 1))
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md",
+                      ".codearbiter/decisions/decision-log.md")
+            reviewed_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(minutes=1)
+            obligations = [{"id": "0001-test.o1", "section": "Decision", "text": "D"}]
+            paa.write_packet(root, "0001-test", obligations,
+                             ["independent-reviewer:test"], reviewed_at.isoformat(),
+                             (reviewed_at + dt.timedelta(hours=1)).isoformat())
+            packet = paa.read_packet(root)
+            self.assertEqual(packet["obligations"][0]["text_sha256"], _sha(b"D"))
+            self.assertEqual(packet["obligations_sha256"],
+                             al.obligation_set_digest(packet["obligations"]))
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 0, stderr)
+
+            self._git(root, "commit", "-m", "accept ADR")
+            source = self._git(root, "rev-parse", "HEAD")
+            event = al.acceptance_event(
+                "0001-test", ADR, source, packet["obligations"],
+                dt.datetime.now(dt.timezone.utc).isoformat())
+            self._write_ledger(root, [event])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 0, stderr)
+
     def test_local_checker_requires_a_bound_packet_for_the_first_acceptance_leg(self):
         self.assertIsNotNone(paa, "pending-acceptance packet helper is missing")
         proposed = ADR.replace(b"status: accepted", b"status: proposed").replace(
@@ -2156,6 +2516,9 @@ class LifecycleContractTest(unittest.TestCase):
             r"(?s)commit the accepted ADR.*append.*acceptance binding.*subsequent commit",
         )
         self.assertIn("adr-lifecycle.jsonl", skill)
+        self.assertIn("{{PLUGIN_ROOT}}/hooks/adr-acceptance.py", skill)
+        self.assertIn("--correct --reason", skill)
+        self.assertIn("Do not hand-calculate hashes or hand-append", skill)
         self.assertIn("sealed obligation", skill)
         self.assertIn("only the recognized status value", skill)
         self.assertIn("approval attribution", skill)

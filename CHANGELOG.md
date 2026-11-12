@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.8] - 2026-11-12
+
+### Fixed
+
+- Ship a verifier-compatible ADR acceptance writer and append-only correction path for malformed historical bindings.
+- Preserve canonical obligations in pending acceptance packets and validate correction replay without hiding malformed ledger entries.
+
 ## [3.8.7] - 2026-11-10
 
 ### Fixed
