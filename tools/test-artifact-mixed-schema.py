@@ -58,15 +58,20 @@ def identity(binary: Path, root: Path, artifact: str) -> dict:
     return ok(binary, root, "identity", {"artifact_id": artifact})
 
 
-def exercise(old: Path, current: Path) -> dict:
+def exercise(old: Path, current: Path, old_schema: str = "0.3.1",
+             candidate_schema: str = "0.3.2") -> dict:
+    # The probe proves an *upgrade* boundary. Equal versions cannot exercise
+    # old-client refusal, so they are a usage error, never a pass.
+    if old_schema == candidate_schema:
+        raise SystemExit("mixed-schema probe needs two different schema versions")
     with tempfile.TemporaryDirectory(prefix="ca-artifact-mixed-schema-") as tmp:
         root = Path(tmp)
         for binary in (old, current):
             assert binary.is_file()
         old_caps = ok(old, root, "capabilities", {})
         new_caps = ok(current, root, "capabilities", {})
-        assert old_caps["schema_version"] == "0.3.1", old_caps
-        assert new_caps["schema_version"] == "0.3.2", new_caps
+        assert old_caps["schema_version"] == old_schema, old_caps
+        assert new_caps["schema_version"] == candidate_schema, new_caps
         spec = spec_normative()
         old_spec = ok(old, root, "create", {
             "operation_id": "mixed-spec-0001", "artifact_id": "SPEC-FLOW",
@@ -102,7 +107,7 @@ def exercise(old: Path, current: Path) -> dict:
         shutil.copytree(root / ".codearbiter", backup)
         assert identity(current, root, "PLAN-FLOW")["model_sha256"] == before["model_sha256"]
         assert plan_file.read_bytes() == before_bytes, "current reader silently rewrote old bytes"
-        assert re.search(rb'"schema_version"\s*:\s*"0\.3\.1"', before_bytes)
+        assert re.search(rb'"schema_version"\s*:\s*"' + re.escape(old_schema).encode() + rb'"', before_bytes)
 
         reported_check = {
             "artifact_id": "PLAN-FLOW", "operation_id": "mixed-check-0001",
@@ -129,7 +134,8 @@ def exercise(old: Path, current: Path) -> dict:
         assert entries[0]["before_sha256"] == hashlib.sha256(before_bytes).hexdigest()
         assert (root / entries[0]["backup"]).read_bytes() == before_bytes
         assert plan_file.read_bytes() == upgraded
-        assert upgraded != before_bytes and re.search(rb'"schema_version"\s*:\s*"0\.3\.2"', upgraded)
+        assert upgraded != before_bytes and re.search(
+            rb'"schema_version"\s*:\s*"' + re.escape(candidate_schema).encode() + rb'"', upgraded)
 
         # Real post-upgrade edit: a second reported note, separately journaled.
         # An older before-image is now *not* a safe downgrade candidate:
@@ -151,7 +157,7 @@ def exercise(old: Path, current: Path) -> dict:
         }
         ok(current, root, "task-check", later_check)
         after_later_edit = plan_file.read_bytes()
-        assert after_later_edit != upgraded, "a later 0.3.2 edit made no new state"
+        assert after_later_edit != upgraded, "a later candidate-schema edit made no new state"
         later_journal = json.loads(
             (root / ".codearbiter/.artifacts/transactions/mixed-check-0002.json").read_text(encoding="utf-8")
         )
@@ -234,6 +240,8 @@ def exercise(old: Path, current: Path) -> dict:
         assert plan_file.read_bytes() == after_later_edit, "restore discarded newer work"
 
         return {
+            "old_sha256": hashlib.sha256(old.read_bytes()).hexdigest(),
+            "candidate_sha256": hashlib.sha256(current.read_bytes()).hexdigest(),
             "old_schema": old_caps["schema_version"],
             "candidate_schema": new_caps["schema_version"],
             "historical_read_preserved_bytes": True,
@@ -257,8 +265,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--old", type=Path, required=True)
     parser.add_argument("--candidate", type=Path, required=True)
+    # Defaults keep the fixed 0.3.1 -> 0.3.2 compatibility fixture unchanged. A
+    # later schema bump adds a second invocation with its own exact pair.
+    parser.add_argument("--old-schema", default="0.3.1")
+    parser.add_argument("--candidate-schema", default="0.3.2")
     args = parser.parse_args()
-    outcome = exercise(args.old.resolve(strict=True), args.candidate.resolve(strict=True))
+    outcome = exercise(args.old.resolve(strict=True), args.candidate.resolve(strict=True),
+                       args.old_schema, args.candidate_schema)
     print(json.dumps(outcome, sort_keys=True))
     return 0
 

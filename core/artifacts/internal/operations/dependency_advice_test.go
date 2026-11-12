@@ -99,6 +99,9 @@ func TestDependencyInvalidationPreservesIndependentStops(t *testing.T) {
 	if !equalValue(state(after, "T-002"), stop) {
 		t.Errorf("dependency invalidation replaced an independent stop: %v", state(after, "T-002"))
 	}
+	// INTENTIONAL CHANGE (NT-09, D-PROGRESS = B): this STALE assertion encodes
+	// propagation the program deliberately replaces with derived readiness. The
+	// stop-preservation assertions around it are preservation contracts.
 	if state(after, "T-003")["state"] != "STALE" {
 		t.Fatal("preserving a stop prevented traversal to its affected dependents")
 	}
