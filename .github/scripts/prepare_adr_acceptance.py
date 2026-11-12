@@ -129,18 +129,8 @@ def write_packet(root, adr, obligations, reviewed_by, reviewed_at, valid_until):
     if base_log is None:
         raise ValueError("HEAD decision log is unavailable")
 
-    synthetic = {
-        "schema": "adr-lifecycle/v1", "event": "acceptance", "adr": adr,
-        "recorded_at": reviewed_at, "source_commit": "0" * 40,
-        "blob_sha256": _sha(adr_blob),
-        "body_sha256": _sha(al.immutable_body(adr_blob)),
-        "obligations": obligations,
-        "obligations_sha256": al.obligation_set_digest(obligations),
-        "obligations_sealed": True,
-    }
-    errors = al.validate_events([synthetic], {adr: adr_blob})
-    if errors:
-        raise ValueError("invalid sealed obligations: %s" % "; ".join(errors))
+    synthetic = al.acceptance_event(adr, adr_blob, "0" * 40,
+                                    obligations, reviewed_at)
 
     packet = {
         "schema": SCHEMA,

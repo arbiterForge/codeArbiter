@@ -116,6 +116,130 @@ def obligation_set_digest(obligations):
     return _sha(encoded)
 
 
+def event_digest(event):
+    """Bind a correction to one exact semantic JSON event, not its formatting."""
+    encoded = json.dumps(event, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False).encode("utf-8")
+    return _sha(encoded)
+
+
+def acceptance_event(adr, blob, source_commit, obligations, recorded_at,
+                     reviewed_by=None):
+    """Construct the one binding shape consumed by lifecycle validation."""
+    parsed = parse_adr(blob)
+    if parsed["status"] != "accepted":
+        raise ValueError("source ADR is not accepted")
+    if not isinstance(adr, str) or not ADR_RE.fullmatch(adr + ".md"):
+        raise ValueError("invalid ADR stem")
+    if not HEX40.fullmatch(str(source_commit)):
+        raise ValueError("source_commit must be a 40-character Git id")
+    if not isinstance(obligations, list):
+        raise ValueError("obligations must be a list")
+    sealed = []
+    for item in obligations:
+        if (not isinstance(item, dict) or
+                set(item) not in ({"id", "section", "text"},
+                                  {"id", "section", "text", "text_sha256"})):
+            raise ValueError("each obligation needs id, section and text")
+        text = item["text"]
+        if not isinstance(text, str):
+            raise ValueError("obligation text must be a string")
+        digest = _sha(text.encode("utf-8"))
+        if "text_sha256" in item and item["text_sha256"] != digest:
+            raise ValueError("obligation text digest does not match")
+        sealed.append(dict(item, text_sha256=digest))
+    event = {
+        "schema": "adr-lifecycle/v1", "event": "acceptance", "adr": adr,
+        "recorded_at": recorded_at, "source_commit": source_commit,
+        "blob_sha256": _sha(blob), "body_sha256": _sha(parsed["immutable"]),
+        "obligations": sealed, "obligations_sha256": obligation_set_digest(sealed),
+        "obligations_sealed": True,
+    }
+    if reviewed_by is not None:
+        if not isinstance(reviewed_by, str) or not reviewed_by.strip():
+            raise ValueError("independent obligation reviewer must be named")
+        event["reviewed_by"] = reviewed_by
+    errors = validate_events([event], {adr: blob})
+    if errors:
+        raise ValueError("invalid acceptance binding: " + "; ".join(errors))
+    return event
+
+
+def resolve_corrections(events, adr_blobs=None):
+    """Apply only reviewed append-only repairs to malformed acceptance bindings."""
+    effective = list(events)
+    errors = []
+    bindings = {}
+    corrected = set()
+    for index, event in enumerate(events, 1):
+        if not isinstance(event, dict):
+            continue
+        kind = event.get("event")
+        adr = event.get("adr")
+        if kind in ("acceptance", "baseline") and isinstance(adr, str):
+            bindings.setdefault(adr, index - 1)
+            continue
+        if kind != "acceptance-correction":
+            continue
+        prefix = "line %d: acceptance correction" % index
+        expected = {"schema", "event", "adr", "recorded_at", "corrects_sha256",
+                    "replacement", "reviewed_by", "reason"}
+        original_index = bindings.get(adr) if isinstance(adr, str) else None
+        original = events[original_index] if original_index is not None else None
+        replacement = event.get("replacement")
+        try:
+            original_digest = event_digest(original) if isinstance(original, dict) else None
+        except (TypeError, UnicodeError, ValueError):
+            original_digest = None
+        if (set(event) != expected or event.get("schema") != "adr-lifecycle/v1" or
+                original_index is None or adr in corrected or
+                not isinstance(original, dict) or original.get("event") != "acceptance" or
+                not isinstance(replacement, dict) or
+                set(replacement) not in (
+                    {"schema", "event", "adr", "recorded_at", "source_commit",
+                     "blob_sha256", "body_sha256", "obligations",
+                     "obligations_sha256", "obligations_sealed"},
+                    {"schema", "event", "adr", "recorded_at", "source_commit",
+                     "blob_sha256", "body_sha256", "obligations",
+                     "obligations_sha256", "obligations_sealed", "reviewed_by"}) or
+                replacement.get("schema") != "adr-lifecycle/v1" or
+                replacement.get("event") != "acceptance" or
+                replacement.get("adr") != adr or
+                any(replacement.get(field) != original.get(field) for field in
+                    ("adr", "source_commit", "recorded_at")) or
+                event.get("corrects_sha256") != original_digest or
+                not isinstance(event.get("reviewed_by"), str) or
+                not event["reviewed_by"].strip() or
+                not isinstance(event.get("reason"), str) or not event["reason"].strip()):
+            errors.append(prefix + " is malformed or does not bind its original")
+            continue
+        try:
+            if _parse_time(event["recorded_at"]) < _parse_time(original["recorded_at"]):
+                raise ValueError("correction predates original")
+        except (TypeError, ValueError):
+            errors.append(prefix + " has invalid chronology")
+            continue
+        blob = adr_blobs.get(adr) if isinstance(adr_blobs, dict) else None
+        if (blob is not None and original.get("blob_sha256") == _sha(blob) and
+                replacement.get("blob_sha256") != original.get("blob_sha256")):
+            errors.append(prefix + " does not bind its original source blob")
+            continue
+        if (blob is not None and not _acceptance_binding_errors(original, blob) and
+                (original.get("blob_sha256") == replacement.get("blob_sha256") or
+                 original.get("blob_sha256") == _sha(blob))):
+            errors.append(prefix + " cannot replace a valid binding")
+            continue
+        if (replacement.get("obligations") != original.get("obligations") and
+                any(isinstance(item, dict) and item.get("adr") == adr and
+                    item.get("event") in ("implemented", "verified") for item in events)):
+            errors.append(prefix + " cannot remap obligations with delivery evidence")
+            continue
+        corrected.add(adr)
+        effective[original_index] = replacement
+        effective[index - 1] = None
+    return [event for event in effective if event is not None], errors
+
+
 def read_jsonl(path):
     events = []
     with open(path, encoding="utf-8") as handle:
@@ -214,9 +338,30 @@ def _binding_errors(event, blob):
     return errors
 
 
+def _acceptance_binding_errors(event, blob):
+    """All local acceptance checks, including rules beyond field digests."""
+    errors = _binding_errors(event, blob)
+    adr = event.get("adr", "<missing>")
+    if event.get("schema") != "adr-lifecycle/v1":
+        errors.append("%s: unsupported acceptance schema" % adr)
+    if event.get("obligations_sealed") is not True:
+        errors.append("%s: acceptance obligation set is not sealed" % adr)
+    if not isinstance(event.get("obligations"), list) or not event["obligations"]:
+        errors.append("%s: sealed acceptance obligation set is empty" % adr)
+    if not HEX40.fullmatch(str(event.get("source_commit", ""))):
+        errors.append("%s: acceptance source_commit is malformed" % adr)
+    if "observed_commit" in event:
+        errors.append("%s: acceptance uses observed_commit" % adr)
+    if ("reviewed_by" in event and
+            (not isinstance(event["reviewed_by"], str) or
+             not event["reviewed_by"].strip())):
+        errors.append("%s: acceptance reviewer identity is malformed" % adr)
+    return errors
+
+
 def validate_source_blobs(events, source_blobs):
     """Validate acceptance and migration bindings against committed Git bytes."""
-    errors = []
+    events, errors = resolve_corrections(events)
     for event in events:
         if not isinstance(event, dict) or event.get("event") not in ("acceptance", "baseline"):
             continue
@@ -282,7 +427,7 @@ def _evidence_errors(event, index):
 
 
 def validate_events(events, adr_blobs, require_all_accepted=False):
-    errors = []
+    events, errors = resolve_corrections(events, adr_blobs)
     bindings = {}
     obligations = {}
     event_ids = {}
@@ -310,7 +455,8 @@ def validate_events(events, adr_blobs, require_all_accepted=False):
                 errors.append("%s: binding names no valid ADR" % adr)
                 continue
             bindings[adr] = event
-            errors.extend(_binding_errors(event, blob))
+            errors.extend(_acceptance_binding_errors(event, blob) if kind == "acceptance"
+                          else _binding_errors(event, blob))
             sealed = event.get("obligations_sealed") is True
             if kind == "acceptance":
                 if not sealed:
@@ -426,6 +572,7 @@ def verified_export(events, adr_blobs, current_blobs, now):
     errors = validate_events(events, adr_blobs)
     if errors:
         return [], errors
+    events, _ = resolve_corrections(events, adr_blobs)
     try:
         moment = _parse_time(now)
     except (TypeError, ValueError) as exc:
