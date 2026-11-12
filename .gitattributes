@@ -141,3 +141,8 @@ plugins/**/*.json text eol=lf
 site/**/*.ts      text eol=lf
 site/**/*.json    text eol=lf
 .claude-plugin/*.json text eol=lf
+
+# Major state-contract program intake corpus (docs/state-contracts-major/). Its
+# MANIFEST.json binds 105 files by SHA-256; never normalize these bytes. The
+# live execution/ records beside the intake are ordinary branch bookkeeping.
+/docs/state-contracts-major/** -text

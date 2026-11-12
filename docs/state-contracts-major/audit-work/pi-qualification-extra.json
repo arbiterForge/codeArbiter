@@ -1,0 +1,240 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "Only the three requested Pi test/qualification helpers; none executed",
+  "machines": [
+    {
+      "id": "pi-qualification:runtime-discovery",
+      "name": "Test-only installed Pi runtime and CLI discovery",
+      "kind": "implemented",
+      "scope": "qualification/test helper only; not installed product behavior",
+      "state_storage": "In-process PATH cursor, selected executable, ancestor/adjacent package scan and manifest bin field; read-only filesystem observations",
+      "states": [
+        "unsearched",
+        "executable-candidate",
+        "ancestor-package-found",
+        "adjacent-package-found",
+        "not-found",
+        "CLI-resolved",
+        "read-failed"
+      ],
+      "sources": [
+        {
+          "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+          "symbol": "findPiPackageRoot / findPiCliEntry",
+          "lines": "22-76",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "unsearched",
+          "event": "findPiPackageRoot",
+          "guard": "nonempty PATH entries; platform native names pi.cmd/pi.exe/pi.ps1/pi on Windows, pi elsewhere",
+          "to": "executable-candidate",
+          "effects": "Try X_OK for each spelling until first accessible executable in an entry.",
+          "failure_retry": "Access failure tries next spelling/entry; no npm command, config lookup or named override is used.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+            "symbol": "findPiPackageRoot / findPiCliEntry",
+            "lines": "22-76",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+          }
+        },
+        {
+          "from": "executable-candidate",
+          "event": "realpath and ancestor scan",
+          "guard": "at most8 ancestor directories; first package.json whose name is @earendil-works/pi-coding-agent",
+          "to": "ancestor-package-found",
+          "effects": "Return package directory associated with resolved executable ancestry.",
+          "failure_retry": "realpath/read/JSON failure propagates; an existing malformed manifest does not simply count as not found. No version/hash check in this helper.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+            "symbol": "findPiPackageRoot / findPiCliEntry",
+            "lines": "22-76",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+          }
+        },
+        {
+          "from": "executable-candidate with no ancestor match",
+          "event": "adjacent scan",
+          "guard": "entry/node_modules package or node_modules/.bin sibling; dist/index.js and matching-name package.json exist",
+          "to": "adjacent-package-found",
+          "effects": "Return realpath of matching adjacent package.",
+          "failure_retry": "No matching package proceeds to next PATH entry; exhausted search throws explicit not-discoverable error.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+            "symbol": "findPiPackageRoot / findPiCliEntry",
+            "lines": "22-76",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+          }
+        },
+        {
+          "from": "supplied package root",
+          "event": "findPiCliEntry",
+          "guard": "manifest bin is string or object.pi is string",
+          "to": "CLI-resolved",
+          "effects": "Return realpath(resolve(packageRoot, declared bin)); no host process is launched.",
+          "failure_retry": "Absent bin throws; read/parse/realpath error propagates. This helper does not separately check version/hash, executable permission or containment of declared bin; caller qualification is distinct.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+            "symbol": "findPiPackageRoot / findPiCliEntry",
+            "lines": "22-76",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+          }
+        }
+      ],
+      "overlap": "Release-ci C26/C27/C36 covers higher-level Pi promotion/evidence/benchmark admission; surfaces runtime resolver covers product runtime selection. This PATH package/CLI fixture discovery seam was not separately enumerated in those ledgers."
+    },
+    {
+      "id": "pi-qualification:disposable-home",
+      "name": "Test-only disposable home setup and process-exit cleanup",
+      "kind": "implemented",
+      "scope": "qualification/test helper only; not installed product behavior",
+      "state_storage": "New OS temp directory with .pi/agent/auth.json; current test process environment; process exit listener",
+      "states": [
+        "module-uninitialized",
+        "temp-home-created",
+        "dummy-auth-seeded",
+        "environment-redirected",
+        "cleanup-attempted",
+        "removed",
+        "residue-possible",
+        "setup-failed"
+      ],
+      "sources": [
+        {
+          "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+          "symbol": "top-level disposable-home setup and exit handler",
+          "lines": "35-60",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "module-uninitialized",
+          "event": "module top-level evaluation",
+          "guard": "mkdtempSync succeeds under tmpdir",
+          "to": "temp-home-created",
+          "effects": "Create fresh ca-pi-operator-home-* directory and .pi/agent recursively.",
+          "failure_retry": "Synchronous create failure throws; no exit cleanup listener exists yet.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        },
+        {
+          "from": "temp-home-created",
+          "event": "seed dummy credential fixture",
+          "guard": "writeFileSync succeeds",
+          "to": "dummy-auth-seeded",
+          "effects": "Write valid JSON with explicit dummy-disposable-home-not-a-credential API-key fixture.",
+          "failure_retry": "Write failure throws and may leave partial temp directory; this helper does not read operator auth.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        },
+        {
+          "from": "dummy-auth-seeded",
+          "event": "redirect environment",
+          "guard": "successful prior setup",
+          "to": "environment-redirected",
+          "effects": "Set test-process HOME and USERPROFILE to disposable root, delete HOMEDRIVE/HOMEPATH, set PI_CODING_AGENT_DIR and CODEARBITER_TEST_DISPOSABLE_HOME; register exit listener.",
+          "failure_retry": "No environment restoration is implemented; intended lifetime is this test process. Source alone does not prove every test imports/preloads the helper.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        },
+        {
+          "from": "environment-redirected",
+          "event": "process exit callback",
+          "guard": "listener runs",
+          "to": "removed / residue-possible",
+          "effects": "Attempt rmSync of exact newly created root recursively with force.",
+          "failure_retry": "Cleanup exceptions swallowed; no retry or cleanup receipt. Abrupt termination that skips exit callback can leave temp residue.",
+          "source": {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        }
+      ],
+      "overlap": "Existing ledgers describe disposable homes for qualification generally, but this Pi test-process environment redirection/seed/cleanup sequence is additional. It must not be merged into production installation/uninstall state."
+    }
+  ],
+  "findings": [],
+  "classification": [
+    {
+      "path": "plugins/ca-pi/tools/test/benchmark-boundary.ts",
+      "classification": "Already-covered benchmark protocol producer; no new state family",
+      "covered_by": [
+        "release-ci:C36"
+      ],
+      "observed": "Rejects samples other than integer100. Imports production wrapBuiltins but supplies fake native factories, allow-only BridgePort, always-true trust/audit/confirm and fixed benchmark session. Registers wrappers, emits ready with count/time, runs105 sequential calls over read/bash/write corpus, discards first5 timing values, emits complete with100 timings and bridge/native call counts.",
+      "boundary": "This measures the real TypeScript wrapper with stub bridge/native tool work, not actual Python spawn, filesystem mutation, Git execution or live host behavior. Imported product guard behavior belongs to surfaces ledger. No extra failure handler or timeout is defined in this helper; parent benchmark owns timeout/result validation.",
+      "sources": [
+        {
+          "path": "plugins/ca-pi/tools/test/benchmark-boundary.ts",
+          "symbol": "benchmark main protocol",
+          "lines": "12-82",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/benchmark-boundary.ts"
+        }
+      ]
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+      "classification": "Additional test-only discovery seam",
+      "covered_by": [
+        "pi-qualification:runtime-discovery"
+      ]
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+      "classification": "Additional test-only setup/cleanup seam",
+      "covered_by": [
+        "pi-qualification:disposable-home"
+      ]
+    }
+  ],
+  "coverage": {
+    "files": [
+      {
+        "path": "plugins/ca-pi/tools/test/benchmark-boundary.ts",
+        "read": "complete raw source including comments/literals",
+        "lines": 82,
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab"
+      },
+      {
+        "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+        "read": "complete raw source including comments/literals",
+        "lines": 76,
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b"
+      },
+      {
+        "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+        "read": "complete raw source including comments/literals",
+        "lines": 60,
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+      }
+    ],
+    "complete_files": 3,
+    "physical_lines": 218,
+    "tests_run": [],
+    "browser_or_live_host_actions": false,
+    "product_files_changed": false
+  },
+  "boundaries": [
+    "All new transitions are qualification/test tooling, not installed product runtime behavior.",
+    "C36 already accounts for the benchmark ready/complete and100-measured+5-warmup protocol; no duplicate benchmark family added.",
+    "No new defect claim: package identity/hash/version and preload guarantees must be assessed at callers; this supplemental audit does not infer them from comments."
+  ]
+}

@@ -1,0 +1,1773 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machines": [
+    {
+      "id": "SX01",
+      "name": "Direct hook proof capture and media settlement",
+      "kind": "implemented",
+      "state_storage": "Temporary fixture files and imported-code side record; committed proof JSON/media; per-run in-memory observations",
+      "sources": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture/fixture.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture/py-runner.py",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture/normalize.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "No fixture",
+        "Isolated fixture",
+        "Fixture prepared",
+        "Observed replay",
+        "Valid capture / exception",
+        "Valid capture",
+        "No-op",
+        "Changed capture / force",
+        "Media produced / failure",
+        "Media produced",
+        "Proof record committed",
+        "Any created fixture",
+        "Disposed"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "No fixture",
+          "event": "Capture requested",
+          "guard": "Capture-owned temporary root",
+          "to": "Isolated fixture",
+          "effects": "Create temporary project/home/tmp and allowlisted environment; initialize Git and fixed fixture identity.",
+          "failure_retry": "Cleanup validates owned root prefix/parent; no current user project is exercised.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Fixture prepared",
+          "event": "Invoke pre-bash entry",
+          "guard": "Synthetic PreToolUse payload for git add -A",
+          "to": "Observed replay",
+          "effects": "Run actual Python entry; record status, stderr, index/worktree observations and gate log.",
+          "failure_retry": "The requested git add command itself is never executed; direct replay cannot prove host discovery.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Observed replay",
+          "event": "Check expected behavior",
+          "guard": "Exit2 with H-03, unchanged staged list, note remains untracked and actual block event",
+          "to": "Valid capture / exception",
+          "effects": "Build record with actual entry-source raw SHA256 and hostDiscoveryProven=false.",
+          "failure_retry": "Any failed behavioral assertion stops capture; captured imports are known by harness but are not all persisted in this proof schema.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Valid capture",
+          "event": "Compare previous evidence",
+          "guard": "Normalize timestamps/paths and omit capturedAt; same evidence and no force",
+          "to": "No-op",
+          "effects": "Keep prior JSON/media and report unchanged.",
+          "failure_retry": "A matching record alone does not read back each media asset; force requests fresh rendering.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Changed capture / force",
+          "event": "Render media",
+          "guard": "Validated replay and owned frame root",
+          "to": "Media produced / failure",
+          "effects": "Write frames, MP4, WebM and poster.",
+          "failure_retry": "Renderer failure leaves the prior proof JSON in place; a later run can retry because new record has not been committed.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Media produced",
+          "event": "Write record",
+          "guard": "All requested media rendering returned",
+          "to": "Proof record committed",
+          "effects": "Write hook-proof.json last and report exact capture identity.",
+          "failure_retry": "This is ordered multi-file output, not one atomic media-plus-record transaction.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Any created fixture",
+          "event": "finally cleanup",
+          "guard": "Owned temporary scope",
+          "to": "Disposed",
+          "effects": "Dispose fixture, then remove frame directory even if fixture disposal throws.",
+          "failure_retry": "Cleanup failure is not reclassified as successful fixture destruction.",
+          "source": [
+            {
+              "path": "site/scripts/capture-hook-proof.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/fixture.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/py-runner.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/normalize.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SX02",
+      "name": "Documentation examples: capture, pin, validate and render",
+      "kind": "implemented",
+      "state_storage": "Pinned example files, per-run fixtures, immutable in-memory projection and generated Markdown AST",
+      "sources": [
+        {
+          "path": "site/scripts/capture-context-examples.py",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture-statusline-themes.py",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/generate-product-example.py",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/product-example.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture/render.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture/label.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/capture/targets.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "Context capture requested",
+        "Current observations",
+        "Compared / stored / printed",
+        "Theme capture requested",
+        "Eligible renderer / refusal",
+        "Eligible renderer",
+        "Theme records stored",
+        "Native example requested",
+        "Unapproved native example",
+        "Unapproved example",
+        "Captured example",
+        "Renderable teaching projection",
+        "Markdown capture fence",
+        "Filled code fence"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "Context capture requested",
+          "event": "Run disposable helper scenarios",
+          "guard": "Actual helper modules and local Git fixture",
+          "to": "Current observations",
+          "effects": "Observe initial/repeated injection, source change, unmapped/self-read and budget behavior; record actual file hashes.",
+          "failure_retry": "Historical SOURCE_REVISION is separately labeled; no live host or approval claim.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Current observations",
+          "event": "--check / --write / default",
+          "guard": "Explicit selected capture mode",
+          "to": "Compared / stored / printed",
+          "effects": "Check exact JSON equality, intentionally replace teaching capture, or print it.",
+          "failure_retry": "Mismatch exits1; an older observation is not silently called current.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Theme capture requested",
+          "event": "Verify renderer and imported dependencies",
+          "guard": "Every dependency byte equals pinned historical Git source",
+          "to": "Eligible renderer / refusal",
+          "effects": "Hash actual entry before execution and imported files afterward; use isolated home and mocked project/usage inputs.",
+          "failure_retry": "No account, billing or installed-host evidence follows from this renderer fixture.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Eligible renderer",
+          "event": "Render each declared theme",
+          "guard": "Deterministic input, no fixture ledger writes",
+          "to": "Theme records stored",
+          "effects": "Require expected segments, hash ANSI output and write exact theme inventory.",
+          "failure_retry": "Missing pin/object, changed dependency or failed assertion stops generation.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Native example requested",
+          "event": "Resolve engine",
+          "guard": "Exact reviewed engine digest",
+          "to": "Unapproved native example",
+          "effects": "Create draft spec/plan in temporary repo; require structural/ready success, approval refusal and dispatch refusal.",
+          "failure_retry": "No approval is manufactured. Failure stops before a complete provenance record is emitted.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Unapproved example",
+          "event": "Run fixed RED and GREEN tests",
+          "guard": "Correct exit codes, test count, no ERROR",
+          "to": "Captured example",
+          "effects": "Write observed test results and copy fixed sources; write file inventory/provenance last.",
+          "failure_retry": "An interruption can leave partial output; build-time consumer must verify full pinned membership/digests.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Captured example",
+          "event": "Build-time load",
+          "guard": "Exact file inventory/hashes, inert model tag, draft/no approvals/PENDING tasks, bound native results and expected RED/GREEN",
+          "to": "Renderable teaching projection",
+          "effects": "Project criteria/tasks/results without executing HTML.",
+          "failure_retry": "Malformed evidence fails build; validation is a fixed fixture contract, not general native validation.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Markdown capture fence",
+          "event": "Render capture",
+          "guard": "Safe id, existing matching record, authored fence empty",
+          "to": "Filled code fence",
+          "effects": "Inject captured output and entry-hash label.",
+          "failure_retry": "Unknown capture, wrong id or prefilled fence fails build instead of merging invented output.",
+          "source": [
+            {
+              "path": "site/scripts/capture-context-examples.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture-statusline-themes.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-product-example.py",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/product-example.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/label.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/capture/targets.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SX03",
+      "name": "Documentation release and proof applicability derivation",
+      "kind": "implemented",
+      "state_storage": "Build-time tag inventory, original receipt ledger, historical source snapshots and generated site JSON",
+      "sources": [
+        {
+          "path": "site/scripts/release-applicability.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/src/release-applicability-presentation.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/src/pages/release-applicability.json.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "Release declarations and ledger",
+        "Valid release inputs / rejection",
+        "Valid release inputs",
+        "Selected tag rows",
+        "Version-bound rows / rejection",
+        "Build identity requested",
+        "Build identity",
+        "Replay source evidence",
+        "applicable / mismatch",
+        "Derived record",
+        "Generated JSON and presentation"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "Release declarations and ledger",
+          "event": "Parse",
+          "guard": "Bounded target block; required targets/manifests; exact duplicate-free ledger schema",
+          "to": "Valid release inputs / rejection",
+          "effects": "Collect per-target tag prefixes and original-publication receipts.",
+          "failure_retry": "Malformed target/version/SHA/receipt refuses build.",
+          "source": [
+            {
+              "path": "site/scripts/release-applicability.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/release-applicability-presentation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/pages/release-applicability.json.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Valid release inputs",
+          "event": "Select current governance releases",
+          "guard": "Highest stable SemVer tag in local inventory for each target",
+          "to": "Selected tag rows",
+          "effects": "Name selected commit publicationCommit; mark original receipt recorded/not-recorded independently.",
+          "failure_retry": "There is no GitHub Release status input. Tag-only and draft-release tags are not distinguished from published releases here.",
+          "source": [
+            {
+              "path": "site/scripts/release-applicability.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/release-applicability-presentation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/pages/release-applicability.json.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Selected tag rows",
+          "event": "Read historical manifests and Pi contract",
+          "guard": "Exact selected commit; manifest versions equal tag; exact AST Set declaration",
+          "to": "Version-bound rows / rejection",
+          "effects": "Read historical payload manifests and supported Pi versions at the selected tag.",
+          "failure_retry": "Historical reads cannot by themselves establish that a GitHub Release or package was distributed.",
+          "source": [
+            {
+              "path": "site/scripts/release-applicability.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/release-applicability-presentation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/pages/release-applicability.json.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Build identity requested",
+          "event": "Resolve HEAD/environment",
+          "guard": "Exact HEAD; Actions SHA equals HEAD when GITHUB_ACTIONS=true",
+          "to": "Build identity",
+          "effects": "Local mode observes dirty worktree; Actions mode returns dirty=false after SHA check.",
+          "failure_retry": "Actions branch does not independently call isDirty; equality of HEAD and GITHUB_SHA alone does not attest a clean working tree.",
+          "source": [
+            {
+              "path": "site/scripts/release-applicability.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/release-applicability-presentation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/pages/release-applicability.json.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Replay source evidence",
+          "event": "Compare digests",
+          "guard": "Exact pre-bash source path, direct replay type and hostDiscoveryProven=false",
+          "to": "applicable / mismatch",
+          "effects": "Compare only the replay entry-file raw digest with current and selected-tag entry bytes.",
+          "failure_retry": "This is entry-source applicability, not imported-dependency equivalence or host registration proof.",
+          "source": [
+            {
+              "path": "site/scripts/release-applicability.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/release-applicability-presentation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/pages/release-applicability.json.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Derived record",
+          "event": "Publish generated site data",
+          "guard": "Complete identity and applicability object",
+          "to": "Generated JSON and presentation",
+          "effects": "Write record; static endpoint serializes it; display checks applicable equals both match flags.",
+          "failure_retry": "Inconsistent display input throws. A successful JSON projection does not add publication evidence absent from its inputs.",
+          "source": [
+            {
+              "path": "site/scripts/release-applicability.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/release-applicability-presentation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/pages/release-applicability.json.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SX04",
+      "name": "Version-fact extraction, process cache and token resolution",
+      "kind": "implemented",
+      "state_storage": "One module-level VersionFacts cache plus build-time content AST",
+      "sources": [
+        {
+          "path": "site/scripts/version-facts.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/src/content.config.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "Facts uncached",
+        "Facts loading",
+        "Partial fact map / failure",
+        "Facts loaded",
+        "Cached",
+        "Content contains fact token",
+        "Substituted content / build error"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "Facts uncached",
+          "event": "First request",
+          "guard": "Repository root found by required sentinels",
+          "to": "Facts loading",
+          "effects": "Read owner sources/manifests and require exactly one matching declaration; compare Node declared/enforced floor and Codex minimum/CI floor.",
+          "failure_retry": "Ambiguous, malformed or disagreeing declarations throw; no remembered version fallback.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Facts loading",
+          "event": "Read release-applicability record",
+          "guard": "Missing file ENOENT versus another failure",
+          "to": "Partial fact map / failure",
+          "effects": "If absent, leave release/pi-supported facts unknown; if present parse required host rows and supported versions.",
+          "failure_retry": "Unreadable or malformed present record is not treated as absent.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Facts loaded",
+          "event": "Cache process result",
+          "guard": "Successful complete load",
+          "to": "Cached",
+          "effects": "Reuse one fact map for subsequent calls in the process.",
+          "failure_retry": "A later file change is not observed until a new process or uncached owner path; cache lifetime is part of the build contract.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Content contains fact token",
+          "event": "Resolve",
+          "guard": "Own property exists and token grammar complete",
+          "to": "Substituted content / build error",
+          "effects": "Replace tokens in prose, code, HTML and selected frontmatter fields.",
+          "failure_retry": "Unknown token or malformed residue fails instead of publishing a literal or guessed version.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SX05",
+      "name": "Historical atlas source binding and generated projection",
+      "kind": "implemented",
+      "state_storage": "Exact source pins, fresh per-call read cache, static graph clone, CSS token resolver stack and generated files",
+      "sources": [
+        {
+          "path": "site/scripts/execution-maps/atlas.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-model.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-command.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-theme.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/generate-atlas.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "Atlas requested",
+        "Historical atlas",
+        "Bound current source view / rejection",
+        "Bound source view",
+        "Canonical description",
+        "Current labels on historical geometry",
+        "Validated atlas",
+        "Renderable atlas",
+        "Generated files"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "Atlas requested",
+          "event": "Load historical graph",
+          "guard": "Declared repository/revision and complete internally consistent references/geometry",
+          "to": "Historical atlas",
+          "effects": "Clone saved graph, validate IDs, sources, command routes, edges, layouts and source update membership.",
+          "failure_retry": "The graph describes routes; geometry and gate labels are not executable authorization.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Historical atlas",
+          "event": "Revalidate source inventory",
+          "guard": "Exact selected blob or pinned historical commit; safe real source paths",
+          "to": "Bound current source view / rejection",
+          "effects": "Batch-read offline Git objects with environment repository selectors removed; compare current normalized bytes with reviewed bytes.",
+          "failure_retry": "Missing objects or drift stops build. Only root changelog may gain notes above intact reviewed history under its explicit rule.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Bound source view",
+          "event": "Resolve command owner",
+          "guard": "Literal whole-file SKILL_ENTRY may redirect once",
+          "to": "Canonical description",
+          "effects": "Read description from exact command/skill source; project host exclusions and form.",
+          "failure_retry": "No recursive template/filename guessing; malformed or multiline unsupported description rejects.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Bound source view",
+          "event": "Reconcile roster and retired routes",
+          "guard": "Registry plus explicitly retired routes equals historical catalog; lens roster unchanged",
+          "to": "Current labels on historical geometry",
+          "effects": "Hide invocations for retired routes, use pinned historical metadata for them; project selected-work labels and attach source-update boundary.",
+          "failure_retry": "An unchanged shape is not proof of current release/host behavior; retired commands remain historical boxes.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Validated atlas",
+          "event": "Resolve theme",
+          "guard": "Safe noncyclic named site design tokens",
+          "to": "Renderable atlas",
+          "effects": "Resolve one CSS token source; escape authored labels and generate SVG/HTML/reading views.",
+          "failure_retry": "Missing/cyclic or unsafe token values throw.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Renderable atlas",
+          "event": "Generate portable edition",
+          "guard": "Browser transpilation succeeds",
+          "to": "Generated files",
+          "effects": "Write interactive HTML, script-free reading guide, each view SVG and source ledger beneath atlas commit directory.",
+          "failure_retry": "Outputs are sequential writes; interrupted export can be partial and needs regeneration/read-back.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SX06",
+      "name": "Site metadata, graph and link build gates",
+      "kind": "implemented",
+      "state_storage": "Build-local sets, counters, link/redirect cache, recursive AST and generated assets; no product execution state",
+      "sources": [
+        {
+          "path": "site/scripts/academy-wayfinding.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/concept-directory.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/guide-directory.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/journey-navigation.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/reference-sidebar.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/topic-map.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/link-audit.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/link-audit/lib.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/rehype-base-links.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/rehype-table-shell.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/diagram-audit.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/generate-diagrams.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/execution-maps/render.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/execution-maps/locations.ts",
+          "symbol": "Complete module"
+        },
+        {
+          "path": "site/scripts/decision-evidence.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "Authored metadata",
+        "Ordered navigation / failure",
+        "Topic map",
+        "Resolved topic graph / failure",
+        "Content AST",
+        "Projected AST",
+        "Reviewed diagram model",
+        "Generated diagrams",
+        "Diagram files",
+        "Pass / violations",
+        "Built dist",
+        "Pass / link failures",
+        "Pure teaching cases",
+        "Valid data / errors"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "Authored metadata",
+          "event": "Resolve navigation",
+          "guard": "Unique known entries, complete metadata, valid tracks and explicit next lesson",
+          "to": "Ordered navigation / failure",
+          "effects": "Build guide/concept/Academy/reference projections; keep reading position separate from completion.",
+          "failure_retry": "Missing prerequisites can be external labels; missing next lesson is not inferred. Unknown inventory or duplicate membership fails the relevant owner.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Topic map",
+          "event": "Validate closure",
+          "guard": "Known pages/lessons, nonempty nonduplicate lists, every lesson mapped",
+          "to": "Resolved topic graph / failure",
+          "effects": "Join real page titles and lesson references; return per-lesson pages.",
+          "failure_retry": "Unknown/unmapped membership throws with explicit problems.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Content AST",
+          "event": "Transform links/tables",
+          "guard": "Root-absolute unprefixed local links; unwrapped eligible table",
+          "to": "Projected AST",
+          "effects": "Prefix base idempotently; wrap tables and add row labels only to unambiguous authored-guide tables.",
+          "failure_retry": "Complex tables retain scrolling form; no invented column association.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Reviewed diagram model",
+          "event": "Render SVG",
+          "guard": "Validated graph and safe labels/namespaces",
+          "to": "Generated diagrams",
+          "effects": "Render the explicit teaching graph, then sequentially write declared assets.",
+          "failure_retry": "Illustrative/historical diagrams do not execute workflow transitions; interrupted generation can leave a mixed output set.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Diagram files",
+          "event": "Audit style/geometry",
+          "guard": "Required root marker/title/description, font/color inventory and measured label bounds",
+          "to": "Pass / violations",
+          "effects": "Report violations and exit1 for CLI failure.",
+          "failure_retry": "This checks the declared visual grammar, not semantic truth of the workflow diagram.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Built dist",
+          "event": "Audit internal targets",
+          "guard": "Nonempty HTML inventory and required assets",
+          "to": "Pass / link failures",
+          "effects": "Classify external/fragment skip, contained resolution, outside-base, missing and redirect target; cache redirect observations per file.",
+          "failure_retry": "Zero pages fails. The regex scan checks double-quoted href/src targets; it is not a full browser navigation proof.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Pure teaching cases",
+          "event": "Validate teaching data",
+          "guard": "Correct identity, known sources, local continuation links and complete cases",
+          "to": "Valid data / errors",
+          "effects": "Check structural teaching invariants.",
+          "failure_retry": "Pinned quotes and tests are drift alerts; they do not authenticate choices or prove implementation.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SX07",
+      "name": "Captured terminal style decoder",
+      "kind": "implemented",
+      "state_storage": "Per-string style fields, offset and emitted token list",
+      "sources": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "symbol": "Complete module"
+        }
+      ],
+      "states": [
+        "Initial style",
+        "Text token",
+        "Current style",
+        "Updated style",
+        "Theme capture file",
+        "Tokenized theme capture"
+      ],
+      "state_notation": "Analytical phases of a build-time state owner or parser, not execution authority and not installed-host qualification.",
+      "transitions": [
+        {
+          "from": "Initial style",
+          "event": "Read plain segment",
+          "guard": "Input<=100000 characters and no unsupported control bytes",
+          "to": "Text token",
+          "effects": "Emit literal text with current foreground/background/bold attributes.",
+          "failure_retry": "Never emit capture bytes as HTML; unsupported terminal controls throw.",
+          "source": [
+            {
+              "path": "site/scripts/statusline-capture.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Current style",
+          "event": "Read SGR",
+          "guard": "Recognized reset/bold/default color/RGB sequence",
+          "to": "Updated style",
+          "effects": "Change only recognized style state; dim/italic codes intentionally do not change emitted text.",
+          "failure_retry": "Invalid RGB or unsupported SGR rejects instead of interpreting arbitrary terminal control.",
+          "source": [
+            {
+              "path": "site/scripts/statusline-capture.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        },
+        {
+          "from": "Theme capture file",
+          "event": "Validate inventory and per-output digest",
+          "guard": "Exact declared theme order and matching ANSI SHA256",
+          "to": "Tokenized theme capture",
+          "effects": "Apply decoder to each matching captured output.",
+          "failure_retry": "Digest proves captured bytes, not renderer freshness or live account/host state.",
+          "source": [
+            {
+              "path": "site/scripts/statusline-capture.ts",
+              "symbol": "Complete module"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "SX-F01",
+      "severity": "medium",
+      "status": "source-confirmed and pure source-function probe; no actual unpublished production tag alleged",
+      "title": "Documentation derives published-release state from tag presence alone",
+      "detail": "selectCurrentGovernanceReleases chooses the highest stable local tag, accepts an empty original-publication receipt ledger, and labels its commit publicationCommit. Historical manifest equality and Pi-source parsing validate content identity but do not observe GitHub Release draft/published status. The publication workflow can create a tag before publishing. Therefore tag-only/draft and published states collapse at this site boundary.",
+      "sources": [
+        {
+          "path": "site/scripts/release-applicability.ts",
+          "symbol": "selectCurrentGovernanceReleases, deriveVerifiedGovernanceReleases, createReleaseApplicabilityRecord"
+        },
+        {
+          "path": "site/src/release-applicability-presentation.ts",
+          "symbol": "presentProofApplicability"
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "tag, draft and publication stages"
+        }
+      ],
+      "probe": "probe-site-publication-result.json: synthetic stable tags and zero receipts are selected; no GitHub/network operation was performed.",
+      "recommendation": "Feed a durable observed non-draft publication record into site selection, keyed to immutable tag and payload identity. If that observation is unavailable, label a tag as a tag and leave publication unknown. Do not restore a stale receipt ledger as a blanket new-release gate."
+    }
+  ]
+}

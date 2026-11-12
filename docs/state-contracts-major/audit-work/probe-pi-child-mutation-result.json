@@ -1,0 +1,27 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "runtime": "v24.22.1",
+  "results": [
+    {
+      "tool": "read",
+      "result": {
+        "content": []
+      }
+    },
+    {
+      "tool": "write",
+      "error": "Pi confirmation UI is unavailable; mutation blocked."
+    },
+    {
+      "tool": "edit",
+      "error": "Pi confirmation UI is unavailable; mutation blocked."
+    },
+    {
+      "tool": "bash",
+      "error": "Pi confirmation UI is unavailable; mutation blocked."
+    }
+  ],
+  "executions": [
+    "read"
+  ]
+}

@@ -1,0 +1,152 @@
+[
+  {
+    "path": "site/src/components/AcademyLesson.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/AcademyTrack.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/AcademyWayfinding.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ArbiterIcon.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ArtifactWorkbench.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/CaTocList.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/CapturedRun.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/CheckpointMap.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ConceptNavigator.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/DecisionRoutes.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/DeliveryStory.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/Head.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/Header.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/HookProof.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/HostViews.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/LimitsAndEvidence.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/PageContext.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/PageTitle.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ProjectBlueprint.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ReaderJourney.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/RecoveryExplorer.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ReleaseApplicability.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/Sidebar.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/SidebarSublist.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/SmartsComparison.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/StatuslineGallery.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/ThemeSelect.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/TrustRow.astro",
+    "read_level": "FULL",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/WorkflowDirectory.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  },
+  {
+    "path": "site/src/components/WorkflowMap.astro",
+    "read_level": "CODE_AND_MARKUP",
+    "classification": "Render-only or delegates state to already inventoried components/native browser/framework; no new custom script controller in this file."
+  }
+]

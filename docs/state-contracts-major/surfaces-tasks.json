@@ -1,0 +1,2613 @@
+{
+  "schema": "codearbiter-handoff-surface-tasks-v1",
+  "repository": "arbiterForge/codeArbiter",
+  "source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "source_branch": "main at audit/revalidated handoff observation; not released-behavior proof",
+  "implementation_status": "Design and tasks only. No repository edits, tests or remote mutations executed for this handoff.",
+  "integration_contract": {
+    "branch": "Separate program integration branch chosen by receiving agent; keep away from main until whole program complete and tested.",
+    "release": "Final major release after full-program migration, exact-artifact qualification and publication/recovery gates; no new version selected here.",
+    "user_decisions": [
+      "Functional scoped Pi child authorship must be implemented; read-only is transitional degradation only.",
+      "Conflicts affect dependent work only, except genuine shared authority loss.",
+      "Corrected debug/reviewer resubmission is permitted after fresh validation.",
+      "Durable interruption recovery must not block unrelated ordinary progress.",
+      "SMARTS progress/evidence semantics are deferred to B and receiving agent.",
+      "Include ADR proposals without treating accepted ADRs as implementation/release evidence."
+    ]
+  },
+  "minimum_pi_profile": {
+    "name": "proposed host-trusted exact-operation delegation",
+    "guarantee": "Parent admits exact tool/action/command requests and owns execution, consent, durable outcome and revocation under existing host trust.",
+    "non_guarantee": "No transitive OS filesystem or network confinement for arbitrary shell/test code.",
+    "stronger_profile": "If advertised, must use a separately qualified backend with no silent weaker fallback. No universal Docker dependency is required for the minimum profile.",
+    "api_boundary": "New internal Arbiter protocol; local ExtensionAPI structural declarations expose no upstream delegation API."
+  },
+  "design_document": "handoff-work/pi-delegation-design.md",
+  "tasks": [
+    {
+      "id": "PI-D01",
+      "title": "Freeze the parent delegation, effect observation and trust-profile contracts",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "id": "NT-02",
+          "kind": "conditional-contract-integration",
+          "use": "Register and validate a closed namespace only if storage uses the reserved artifact root; otherwise retain agreed host bookkeeping owner."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/contracts.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/runner.ts",
+        "plugins/ca-pi/tools/src/pi-api.d.ts",
+        "plugins/ca-pi/tools/src/policy.ts",
+        "plugins/ca-pi/tools/src/path-boundary.ts",
+        "core/hosts.json"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/pi-api.d.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/path-boundary.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/hosts.json"
+      ],
+      "proposed_paths": [
+        "plugins/ca-pi/tools/src/delegation-contract.ts"
+      ],
+      "behavior_change": "Add a versioned internal parent-issued run grant plus per-operation admission and outcome contract. The minimum profile is exact tool/action/command admission under existing host trust, with no implied OS filesystem or network confinement.",
+      "implementation_steps": [
+        "Record an ADR proposal with the user-selected functional author acceptance criterion and the explicit trusted-host versus confined execution profiles.",
+        "Define bounded closed grant, operation, response, record and fd3-envelope decoders; parent-generated caller/run/child/generation bindings; role ceiling; exact request digest; expiry and revocation; resource-precondition and observation fields.",
+        "Separate admission, execution, observation, containment and recovery dimensions; keep model judgment distinct from parent-observed effects.",
+        "Specify strict repository/worktree identity and admitted direct request targets; do not use canonicalPath lexical fallback as proof of strict target authority.",
+        "Choose one agreed host bookkeeping owner and agree NT-10 record/file-effect limits. Git-common bookkeeping may remain outside the artifact store; register a closed namespace with NT-02 only if using the reserved artifact root. Do not assume current CAS APIs can execute arbitrary source files.",
+        "Preserve callers omitting optional scope proposals: proposals are untrusted requests, never tokens or executable paths. No hidden grant derived from task prose.",
+        "Define initial exact-operation consent; finite preapproved batches are an optional later optimization and cannot become wildcard commands."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing one author maximum per dispatch, role catalog tool ceilings, depth/concurrency/output limits, no recursive orchestration, child untrusted-project setting, and separate internal compaction with no tools.",
+        "Current plan-mode planning-write exception remains separately bounded; a child does not acquire it merely by choosing a path.",
+        "No universal Docker/sandbox dependency for ordinary delegation."
+      ],
+      "tests": {
+        "acceptance": [
+          "Contract tests admit a legitimate author grant proposal after parent narrowing and retain legacy reviewer dispatch shape.",
+          "All operation outcomes round-trip without collapsing unknown into failure/no-effect or containment into exit code.",
+          "Every public claim names its execution profile and evidence level."
+        ],
+        "rejection_and_failure": [
+          "Unknown fields, version, tool/action class, oversized record, invalid target, duplicate identity with changed digest, and model-supplied authority fields are rejected.",
+          "Read-only or handshake-only author behavior cannot satisfy the completion contract."
+        ],
+        "concurrency_and_interruption": [
+          "Two grants bind distinct parent run/generation identities even when role/task text matches.",
+          "Grant lifetime cannot increase after wall-clock changes or parent restart."
+        ]
+      },
+      "completion_evidence": [
+        "Reviewed contract/ADR diff with exact existing versus proposed APIs and a machine-readable decoder fixture set.",
+        "Native/hook/root owners agree namespace, recovery notification seam and no cycle in implementation dependencies."
+      ],
+      "rollback": [
+        "Before release, revert contract consumers together or leave the new author capability disabled; do not parse a new format with old permissive decoders.",
+        "Retain unknown-version records read-only and do not resurrect old authority."
+      ],
+      "claim_delta": [
+        "Parent delegation remains planned until implementation and exact-artifact qualification.",
+        "Exact operation admission does not imply arbitrary command confinement."
+      ],
+      "adr_actions": [
+        "Propose scoped Pi parent delegation ADR; amend only conflicting child/permission passages while retaining isolation and final-argument requirements."
+      ]
+    },
+    {
+      "id": "PI-D02",
+      "title": "Plumb parent authority and reuse the final operation permission gate",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D01"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts",
+        "plugins/ca-pi/tools/src/policy.ts",
+        "plugins/ca-pi/tools/src/contracts.ts",
+        "plugins/ca-pi/tools/src/plan-mode.ts",
+        "plugins/ca-pi/tools/test/tool-guard.test.ts",
+        "plugins/ca-pi/tools/test/dispatch.test.ts",
+        "plugins/ca-pi/tools/test/final-arguments-live.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/tool-guard.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/dispatch.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/final-arguments-live.test.ts"
+      ],
+      "proposed_paths": [
+        "plugins/ca-pi/tools/src/operation-gate.ts"
+      ],
+      "behavior_change": "Make child effects cross the same final-argument bridge, descriptor policy, live trust, mode, source ownership and parent consent boundary as parent operations.",
+      "implementation_steps": [
+        "Pass parent current mode, immutable caller correlation, lifecycle authorization, trusted cwd, registry/source identity and parent UI context through an internal dispatch admission port.",
+        "Extract/reuse the existing gate sequence rather than copying a weaker child policy. Freeze final parameters; call bridge; preserve hard-block versus advisory-warning distinctions; evaluate policy; confirm exact operation when required.",
+        "Use the actual host tool-call ID for parent correlation instead of ignoring it. Keep random activity IDs informational.",
+        "Recheck trust, generation, mode, raw/canonical parameters, registry ownership, original executor identity, target observations and abort after every relevant await.",
+        "Record consent source honestly: parent human confirmation, admitted finite batch or policy allow. Configuration handshake attestation never supplies consent.",
+        "Keep headless authors unavailable unless a concrete supported explicit host-authority route is separately implemented; do not forge TUI context or mutate project trust."
+      ],
+      "existing_behavior_to_preserve": [
+        "Bootstrap/final source guard; current hard rules; plan source/config/shell denies; read/inspection behavior and bounded native plan-write exception.",
+        "Existing direct parent operations retain permission behavior and final argument binding.",
+        "Permission refusal does not permanently bar corrected debug/reviewer submissions."
+      ],
+      "tests": {
+        "acceptance": [
+          "Parent TUI approval of a frozen admitted write/edit/command reaches exactly one effect executor.",
+          "Bridge warning remains advisory through permission; hard block bypasses UI and execution.",
+          "Legacy parent tool tests and installed-host final-argument ordering cells remain green with their evidence substitutions stated."
+        ],
+        "rejection_and_failure": [
+          "Missing/throwing trust, plan mode, no UI, declined/timed-out UI, foreign wrapper, unsupported descriptor, changed command/args, changed native function and audit admission failure execute nothing.",
+          "An ambient child marker or successful handshake cannot bypass permission."
+        ],
+        "concurrency_and_interruption": [
+          "Mutate arguments, mode, trust, owner, executor and lifecycle during bridge/UI/journal awaits; stale operations never execute.",
+          "A valid new lifecycle remains operational after an old approval becomes stale."
+        ]
+      },
+      "completion_evidence": [
+        "Exact test output showing no direct-parent regression and final-argument identity before real effect invocation.",
+        "Review of the dispatch registration path demonstrates mode/authority are actually plumbed, not inferred from task text."
+      ],
+      "rollback": [
+        "Disable new delegated admission and revoke live grants before reverting; retain existing parent gate unchanged.",
+        "Preserve denied/unknown operation records for later inspection."
+      ],
+      "claim_delta": [
+        "Parent source ownership is a prerequisite, not proof of task permission."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-D03",
+      "title": "Implement authenticated child proxies and parent-owned effect execution",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D01",
+        "PI-D02"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/runner.ts",
+        "plugins/ca-pi/tools/src/process-tree.ts",
+        "plugins/ca-pi/tools/src/windows-supervisor.ts",
+        "plugins/ca-pi/tools/src/child-env.ts",
+        "plugins/ca-pi/tools/src/inference-broker.ts",
+        "plugins/ca-pi/tools/src/background-jobs.ts",
+        "plugins/ca-pi/tools/src/runtime-resolver.ts",
+        "plugins/ca-pi/tools/build.mjs",
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "plugins/ca-pi/tools/test/windows-supervisor.test.ts",
+        "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runtime-resolver.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/build.mjs",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/windows-supervisor.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts"
+      ],
+      "proposed_paths": [
+        "plugins/ca-pi/tools/src/delegation-channel.ts",
+        "plugins/ca-pi/tools/src/delegated-executor.ts"
+      ],
+      "behavior_change": "Child write/edit/bash tools become explicit bounded proxies to a parent-owned executor; successful admission no longer depends on a child TUI or child self-grant.",
+      "implementation_steps": [
+        "Create a purpose-separated local operation transport with per-child token and parent registry binding; do not reuse inference-broker tokens or general RPC confirmation messages.",
+        "Replace the 32-byte-only fd3 format with the agreed bounded versioned envelope for matching new bundles; keep strict old/new refusal and one-shot nonce semantics. Test raw Windows fd3 forwarding without repurposing supervisor fd4–fd7.",
+        "Keep the existing child final guard and source owner, but route the delegated branch to proxy execution instead of local mutation factories.",
+        "Parent executes admitted effects, owns deadlines/output limits/managed process trees, and returns observed results. A boolean approval followed by child-local mutation is not sufficient.",
+        "For shell execution verify the exact supported Pi options before use. Do not invent an environment option on the generic createBashToolDefinition record. Reuse/extract internal piShellLaunch/process-tree behavior or an owned helper with qualified tool-result adaptation.",
+        "Use a bounded credential-blind command environment/private home and operator setting projection; never inherit full parent process.env or expose inference/operation tokens to project commands.",
+        "Keep inference endpoint/credential authority separate, close/revoke both channels on child retirement, and choose one owner for correlated post-write bridge effects."
+      ],
+      "existing_behavior_to_preserve": [
+        "Exact Node/Pi/package/charter/skills launch validation; no project extension/context loading; private environment; broker-supported provider restrictions; no recursive dispatch/farm in child.",
+        "Existing shell prefix/platform behavior must be preserved or explicitly rejected with a bounded diagnostic, never silently ignored.",
+        "No promise of transitive filesystem or network confinement in the trusted-host profile."
+      ],
+      "tests": {
+        "acceptance": [
+          "A packaged child sends a real write/edit/command request through the channel; parent performs it and child receives the corresponding bounded tool result.",
+          "Local transport and process supervision work on every declared supported OS/architecture; token is absent from logs, prompts and subprocess environments.",
+          "Read-only reviewers and compaction retain their separate capabilities."
+        ],
+        "rejection_and_failure": [
+          "Wrong child/run/token/purpose/version, nonlocal peer, invalid method/content type, oversize frame, excessive concurrent requests, malformed fd3, replayed bootstrap and unexpected RPC UI request execute nothing.",
+          "Unsupported upstream runtime or unavailable executor yields explicit degraded authorship, not unguarded native fallback.",
+          "Tests attempt to read known sentinel provider credentials/tokens through command environment and final output; no leak is accepted."
+        ],
+        "concurrency_and_interruption": [
+          "Child dies during bootstrap, request, result, or cleanup; parent revokes and closes listeners while preserving owned settlement.",
+          "Cancellation during Windows containment readiness never delivers mutation capability before readiness.",
+          "Parent/child mixed-version bundles fail before task effects."
+        ]
+      },
+      "completion_evidence": [
+        "Source and built-bundle protocol tests, exact managed process traces and credential-negative fixtures.",
+        "Artifact receipts distinguish fake provider/bridge pieces from real host/real executor routes."
+      ],
+      "rollback": [
+        "Revoke channel tokens, deny new requests, settle owned processes and retain effect journals before disabling the feature.",
+        "Old bundles must not adopt new records or bootstrap envelopes permissively."
+      ],
+      "claim_delta": [
+        "New delegation channel is an internal Arbiter protocol, not an upstream Pi API.",
+        "Host-trusted exact commands can run project code and use host resources under that profile."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-D04",
+      "title": "Add exclusive effect claims, durable outcomes and read-only reconciliation",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D03"
+      ],
+      "external_dependencies": [
+        {
+          "id": "NT-10",
+          "kind": "implementation-contract",
+          "use": "Bounded host delegation record/file-effect seam after PI-D01; current store is not a source executor."
+        },
+        {
+          "id": "NT-02",
+          "kind": "conditional-contract-integration",
+          "use": "Namespace registration only if journal uses artifact reserved root; separate host bookkeeping otherwise."
+        },
+        {
+          "id": "HW-14",
+          "kind": "downstream-integration-no-hard-cycle",
+          "use": "Shared notice consumes PI-D04 observations and PI-D05 revocation. Agree observation shape now; HW-14 implementation depends on Pi, not the reverse."
+        },
+        {
+          "id": "HW-11",
+          "kind": "contract-coordination",
+          "use": "Shared durable recovery ownership/storage conventions, no mandatory artifact journal."
+        },
+        {
+          "id": "HW-12",
+          "kind": "contract-coordination",
+          "use": "Selected-owner read-only reconciliation; preserve resource scope and no grant restoration."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/audit-sink.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/runner.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/test/audit-sink.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/audit-sink.test.ts"
+      ],
+      "proposed_paths": [
+        "plugins/ca-pi/tools/src/delegation-journal.ts"
+      ],
+      "behavior_change": "Persist operation identity before delegated mutations, deduplicate identical requests, retain uncertain outcomes and recover observations without replaying effects or restoring authority.",
+      "implementation_steps": [
+        "Implement bounded versioned records under one agreed host bookkeeping owner with exact owner/repository/worktree identity and exclusive operation IDs. Register with NT-02 only if using the artifact reserved root; do not require that root or a universal host-effect pending guard.",
+        "Use state transitions proposed→admitted→claimed→executing→observed/unknown; persist claim before execution and observed outcome before successful response.",
+        "Do not treat appendAuditLine false as proof no row exists: it can fail after append/sync. Operation journal writes need explicit durable/unknown semantics.",
+        "Same ID+digest returns or joins the stored outcome; same ID+different digest rejects. No second executor is created merely because a response or receipt is missing.",
+        "Track direct-file pre/post observations and command/process references separately. Desired bytes observed after a crash do not prove causal exactly-once execution; never roll back over user edits.",
+        "Implement bounded read-only reconciliation and shared startup/reentry notification. A restart retires grants; records cannot mint new live tokens.",
+        "Read-only/ordinary progress does not require closing every historical recovery item. Only dependent effects wait for relevant unresolved resources."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing permission audit failure policy; redaction; host state path ownership; unrelated workflow progress.",
+        "Native artifact journal/CAS is not automatically an arbitrary source-file executor. NT-10 may choose host-specific bounded storage.",
+        "No automatic replay for arbitrary shell or external effects.",
+        "If a shared store is chosen, its real pending-journal integrity dependency remains until reconciled; this does not turn semantic task/delegation conflicts into a global stop."
+      ],
+      "tests": {
+        "acceptance": [
+          "Exactly one persisted claim and one executor under duplicate requests; stable stored response after response loss.",
+          "Fresh parent reports recoverable old observations and issues one bounded notice without recreating authority.",
+          "A disjoint ordinary edit can proceed while an unrelated old effect remains unresolved."
+        ],
+        "rejection_and_failure": [
+          "Linked/junction/hardlinked/foreign-owner journal, corrupt/unknown version, quota overflow, failed durable claim, identity drift and changed request digest do not start new effects.",
+          "A source hash matching intended output after a crash is reported as observed state unless causal completion was independently recorded."
+        ],
+        "concurrency_and_interruption": [
+          "Crash/fault before claim, after claim, before/after effect, before/after outcome write, before response and during restart.",
+          "Concurrent duplicate and differing operations; user edits during recovery; process cleanup unknown; audit bytes written then return false.",
+          "Journal lock/version contention is scoped and bounded, with no global ordinary-work deadlock."
+        ]
+      },
+      "completion_evidence": [
+        "Crash matrix with recorded operation transitions, call counts, resource observations and replay refusal.",
+        "Storage confinement/platform tests for any new primitive and explicit evidence boundaries for non-atomic native file tools.",
+        "Hook owner confirms recovery notice consumes observations only."
+      ],
+      "rollback": [
+        "Retain journals and user files; revoke grants; use read-only downgrade reader or refuse unknown schema with actionable inspection.",
+        "Do not delete records to make rollback appear clean and do not compensate arbitrary commands automatically."
+      ],
+      "claim_delta": [
+        "Separate observed effect from model judgment and from desired-state coincidence."
+      ],
+      "adr_actions": [
+        "Propose durable effect observation/recovery decision with dependent-resource conflict scope."
+      ]
+    },
+    {
+      "id": "PI-D05",
+      "title": "Complete revocation, expiry, concurrency and settlement ownership",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D02",
+        "PI-D03",
+        "PI-D04"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/runner.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts",
+        "plugins/ca-pi/tools/src/process-tree.ts",
+        "plugins/ca-pi/tools/src/background-jobs.ts",
+        "plugins/ca-pi/tools/test/activation.test.ts",
+        "plugins/ca-pi/tools/test/tool-guard.test.ts",
+        "plugins/ca-pi/tools/test/process-tree.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/activation.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/tool-guard.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/process-tree.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Retire authority immediately on lifecycle changes while preserving cleanup/reconciliation, and confine conflicts to dependent resources.",
+      "implementation_steps": [
+        "Connect explicit task cancel, timeout, trust withdrawal, plan-mode transition, session switch/fork/reload/unload/shutdown and child close to grant retirement.",
+        "Use a separate settling owner for cleanup and read-only observation so generation invalidation does not abandon owned processes/resources.",
+        "Bound operation queue/concurrency and sequence numbers; retain one author maximum per dispatch. Serialize overlapping owned source effects and reject changed preconditions.",
+        "Require new admission for corrected operations after refusal; permit legitimate corrected debug/reviewer resubmission rather than permanent stale bans.",
+        "Keep global authority loss distinct from dependent-work conflict. Unknown unbounded shell effects need honest resource-scope limitations.",
+        "Make late rendering/activity failures informational and unable to grant, revoke or falsely complete operations."
+      ],
+      "existing_behavior_to_preserve": [
+        "Current cancellation limits and platform containment; native planning exception; same-generation direct parent behavior.",
+        "Unrelated tasks/read operations stay available for scoped conflicts.",
+        "Trust withdrawal still retires project-lifecycle mutation authority."
+      ],
+      "tests": {
+        "acceptance": [
+          "Task-specific cancel retires only its grant and settles its owned work.",
+          "New valid lifecycle works while old token and pending approval remain unusable.",
+          "Corrected request with new ID and current authority can proceed after a prior refusal."
+        ],
+        "rejection_and_failure": [
+          "Expired/revoked/sibling/stale-generation operations never execute, including after fresh reactivation.",
+          "Source owner/executable settings drift cannot spend prior consent."
+        ],
+        "concurrency_and_interruption": [
+          "Race mode/trust/session transition at each async boundary; old approval versus new session; late child response versus retirement.",
+          "Two calls on same resource serialize or conflict; identical calls deduplicate; disjoint reads continue.",
+          "Cancellation/output overflow with surviving descendant reports containment unverified and holds only affected dependencies."
+        ]
+      },
+      "completion_evidence": [
+        "Race/fault suite on supported platforms with independent admission and settlement assertions.",
+        "No orphan process/token/listener in retirement matrix; retained unknown records when proof is unavailable."
+      ],
+      "rollback": [
+        "Disable new admissions, drain/observe existing ownership and preserve unresolved records before reverting lifecycle wiring.",
+        "Never make cleanup disappear by applying stale-UI suppression to it."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-D06",
+      "title": "Project truthful delegation capability and evidence diagnostics",
+      "finding_ids": [
+        "SF01",
+        "SF12"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D01",
+        "PI-D04",
+        "PI-D05"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/status.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "core/surface/includes/pi-host-notes.md",
+        "core/hosts.json",
+        "core/surface/command-routes.json"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/pi-host-notes.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/hosts.json",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/command-routes.json"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Expose admitted/available/qualified/degraded author capability, recovery scope and evidence mode without claiming handshake or optional artifact approval proves authorship.",
+      "implementation_steps": [
+        "Generate or derive capability facts from actual runtime/permission contracts; distinguish reviewer read, author write/edit/command, optional artifact prompt and stronger isolation profiles.",
+        "Show fixed bounded reason codes for no parent UI, revoked grant, executor unavailable, journal unknown and unverified cleanup; preserve human detail privately where appropriate.",
+        "Keep current child judgment separately visible from parent effect/containment/recovery state.",
+        "Propagate one owning capability fact into help, doctor, role/host notes and public claims; handwritten adapters remain handwritten where appropriate.",
+        "Read-only fallback is marked transient degraded author capability and cannot satisfy the program completion check."
+      ],
+      "existing_behavior_to_preserve": [
+        "No secret-bearing prompts/paths/credentials in general audit output; no new routine attestation ceremony.",
+        "Host-specific capability differences and supported-runtime boundaries."
+      ],
+      "tests": {
+        "acceptance": [
+          "Diagnostic fixture matrix yields distinct and accurate capability/evidence states.",
+          "A mutating fixture produces parent-observed effects and current qualified package identity in its receipt."
+        ],
+        "rejection_and_failure": [
+          "Handshake-only, fake accepted child, synthetic artifact policy event and source-only probe cannot set author-qualified or released flags.",
+          "Degraded state cannot be cleared by unrelated bridge success if required author capability remains unavailable."
+        ],
+        "concurrency_and_interruption": [
+          "Late old-run activity/status cannot overwrite a new lifecycle capability or pending recovery observation."
+        ]
+      },
+      "completion_evidence": [
+        "Claim matrix linked to owning contracts and exact evidence records, with source/planned/qualified/released distinctions.",
+        "UX review of parent confirmation and recovery notice with no implementation jargon in ordinary flow."
+      ],
+      "rollback": [
+        "Restore previous honest capability labels while retaining records; never retain a qualified label after disabling the executor."
+      ],
+      "claim_delta": [
+        "Capability-specific matrix replaces broad Pi supported/unsupported claims."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-D07",
+      "title": "Qualify real packaged author behavior and regressions on supported hosts",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D03",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-L01",
+        "PI-L02",
+        "DIST-M01"
+      ],
+      "external_dependencies": [
+        {
+          "id": "Q-01",
+          "kind": "downstream-program-gate",
+          "use": "Full behavior/migration/installed-artifact matrix."
+        },
+        {
+          "id": "Q-02",
+          "kind": "downstream-program-gate",
+          "use": "Exact-candidate major-release readiness."
+        },
+        {
+          "id": "Q-03",
+          "kind": "downstream-program-gate",
+          "use": "Publish identical qualified bytes and verify distributions."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "plugins/ca-pi/tools/test/dispatch.test.ts",
+        "plugins/ca-pi/tools/test/final-arguments-live.test.ts",
+        "plugins/ca-pi/tools/test/package.test.ts",
+        "plugins/ca-pi/tools/test/windows-supervisor.test.ts",
+        "plugins/ca-pi/tools/src/compatibility.ts",
+        "tools/build-host-packages.py",
+        "plugins/ca-pi/tools/build.mjs"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/dispatch.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/final-arguments-live.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/package.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/windows-supervisor.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/build.mjs"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Make functional parent-mediated child write/edit/command and negative/recovery evidence against exact packaged bytes a major-release gate.",
+      "implementation_steps": [
+        "Build matching parent/child/helper bundles and candidate package only on the isolated integration branch; record complete loaded closure and artifact digests.",
+        "Install the exact candidate into disposable homes and use the actual admitted Pi runtime/extension loader/tool loop, real file effects and managed command execution.",
+        "Drive a write, edit and command fixture through real child proxies and parent confirmation; include visible parent TUI confirmation evidence, not only an injected true callback.",
+        "Retain installed-host final-argument fixture while labeling substituted bridge/factories; deterministic local provider is acceptable when declared and sufficient for the local effect claim.",
+        "Execute rejection/replay/interruption/race/platform matrix from the design. Add update/disable/uninstall and mixed-bundle refusal cells.",
+        "Only call functional authorship qualified when required cells pass for exact bytes. Publication must use identical bytes or requalify rebuilt artifacts."
+      ],
+      "existing_behavior_to_preserve": [
+        "No real secret disclosure, user repo mutation, paid provider requirement or inferred release from main.",
+        "Existing platform/runtime support decisions remain explicit; qualify each claimed cell rather than assume every version above a floor."
+      ],
+      "tests": {
+        "acceptance": [
+          "Actual resulting file bytes and command result match approved frozen requests; one executor per operation.",
+          "Reviewer chain can inspect effects; no-change task reports honest no-change outcome.",
+          "Exact artifact install/update/disable/uninstall succeeds under supported-host contracts."
+        ],
+        "rejection_and_failure": [
+          "A source module probe, fake runner success, handshake-only flow or permanently read-only author causes the new gate to fail.",
+          "Package digest/runtime mismatch, stale qualification or unsupported executor profile prevents qualification."
+        ],
+        "concurrency_and_interruption": [
+          "Run full kill-point and concurrency cases on POSIX and Windows where supported, including actual supervisor fd3 forwarding.",
+          "A killed parent cannot leave a usable token or silently replay an unknown effect on next startup."
+        ]
+      },
+      "completion_evidence": [
+        "Machine-readable exact-artifact receipts: package/bundle SHA-256, Pi identity, Node/Python, OS/architecture, policy/executor profile, test route, substitutions, outcomes and limitations.",
+        "Complete program gate reviewed before main integration and major publication."
+      ],
+      "rollback": [
+        "Keep feature degraded and program unreleased if any required cell fails; preserve evidence and fix the specific failing contract.",
+        "Distribution rollback points to last qualified artifact and retains recoverable records."
+      ],
+      "claim_delta": [
+        "Source admission of Pi 1.1.0/Node >=22.19.0/Python 3 is not all-platform qualification."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-L01",
+      "title": "Make persona readiness an independent prerequisite and retryable state",
+      "finding_ids": [
+        "SF02"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/status.ts",
+        "plugins/ca-pi/tools/test/activation.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/activation.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Prevent a ready/governed state from surviving missing persona content or being healed merely by unrelated bridge success.",
+      "implementation_steps": [
+        "Represent persona and bridge readiness independently with explicit load failure/retry transitions.",
+        "Choose the narrowest truthful readiness prerequisite: load required persona before full governed readiness, or expose a distinct unavailable capability that cannot appear fully ready.",
+        "A retry reloads persona content for the current generation; bridge refresh may clear only bridge degradation.",
+        "Use the same prerequisite vector for prompt construction, dispatch admission and status."
+      ],
+      "existing_behavior_to_preserve": [
+        "Dormant/untrusted host behavior, existing safe bootstrap guard and current persona ordering/content semantics.",
+        "Failure diagnostics remain bounded and do not accidentally make optional display work a governance prerequisite."
+      ],
+      "tests": {
+        "acceptance": [
+          "Persona failure followed by success of bridge alone remains persona-unavailable.",
+          "Explicit successful persona retry in current lifecycle produces correct prompt and readiness once."
+        ],
+        "rejection_and_failure": [
+          "Empty/missing/failed persona cannot mark full author readiness; late old persona cannot populate new session."
+        ],
+        "concurrency_and_interruption": [
+          "Session transition during persona read; retry races with bridge refresh; shutdown during load."
+        ]
+      },
+      "completion_evidence": [
+        "Activation tests asserting both authority readiness and actual prompt content after fault/retry.",
+        "Source path and generated bundle evidence match."
+      ],
+      "rollback": [
+        "Revoke current generation and restore prior complete adapter if needed; never roll back to a status that hides missing persona."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-L02",
+      "title": "Cancel pending sidebar installation across disposal",
+      "finding_ids": [
+        "SF03"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/sidebar-manager.ts",
+        "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+        "plugins/ca-pi/tools/src/footer.ts",
+        "plugins/ca-pi/tools/test/sidebar-manager.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/sidebar-manager.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "A disposed sidebar cannot acquire terminal width or renderer hooks when an earlier asynchronous metrics request finishes.",
+      "implementation_steps": [
+        "Reuse the footer generation/lease pattern for every sidebar install await and final compositor patch.",
+        "Dispose invalidates pending installs and restores only hooks owned by that connection/generation.",
+        "Keep late UI completion suppression separate from execution/resource cleanup ownership."
+      ],
+      "existing_behavior_to_preserve": [
+        "Native rendering fallback, runtime support probe, existing sidebar geometry rules and fail-soft display behavior."
+      ],
+      "tests": {
+        "acceptance": [
+          "Dispose-while-metrics-pending then resolve leaves installed=false, original columns and renderer unchanged.",
+          "A new valid session can install once after old install is invalidated."
+        ],
+        "rejection_and_failure": [
+          "Probe or metrics failure cannot leave half-installed hooks or falsely claim unavailable native rendering."
+        ],
+        "concurrency_and_interruption": [
+          "Old and new metrics promises resolve in both orders; repeated dispose; geometry change during install."
+        ]
+      },
+      "completion_evidence": [
+        "Regression of audit-work/probe-pi-sidebar-dispose.mjs promoted into maintained behavior test.",
+        "Supported live sidebar test where that private runtime hook is claimed."
+      ],
+      "rollback": [
+        "Disable sidebar capability and return native rendering; do not retain stale compositor hooks."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "DIST-M01",
+      "title": "Unify supported native release-manifest shape across consumers",
+      "finding_ids": [
+        "SF04"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "id": "HW-25",
+          "kind": "downstream-integration-no-hard-cycle",
+          "use": "Consumes DIST-M01 for Python optional context_qualification compatibility; original audit finding HOOK-B05."
+        },
+        {
+          "id": "R-06",
+          "kind": "contract-coordination",
+          "use": "Exact package qualification/evidence semantics."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "tools/build-host-packages.py",
+        "tools/install-artifact-payload.py",
+        "core/pysrc/_artifactlib.py",
+        ".github/scripts/_contextverificationlib.py",
+        ".github/scripts/_npm_publishlib.py",
+        "plugins/ca/tools/farm.unit.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/install-artifact-payload.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactlib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.unit.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Farm accepts and validates the supported context_qualification extension on production-qualified manifests without weakening binary identity and confinement checks.",
+      "implementation_steps": [
+        "Define one versioned manifest contract and derive/conformance-test parsers across TS/Python packaging, installation and verification.",
+        "Preserve exact required fields and supported optional-field validation; reject unknown versions/fields and malformed optional values according to the chosen schema.",
+        "Keep binary digests, platform entry, protocol/schema compatibility and path ownership checks; accepting a sixth field is not a reason to skip validation.",
+        "Create a final qualified package fixture with context_qualification and pass it through installed farm binary admission, not only candidate five-key construction.",
+        "Coordinate HOOK-B05 and hosted publish verifier parsing so source/enriched manifest phases remain distinct."
+      ],
+      "existing_behavior_to_preserve": [
+        "Five-key candidate manifests where valid; richer qualified production phase; exact artifact provenance and host differences."
+      ],
+      "tests": {
+        "acceptance": [
+          "Both valid candidate and qualified production shapes parse at their intended phases; final installed qualified package reaches the pinned engine."
+        ],
+        "rejection_and_failure": [
+          "Unknown field/version, malformed context entry, wrong platform/hash/path/protocol and stale qualification fail with precise stage reasons."
+        ],
+        "concurrency_and_interruption": [
+          "No shared mutable parser state; package replacement between observation and execution is detected by existing identity protections."
+        ]
+      },
+      "completion_evidence": [
+        "Cross-language schema fixtures plus exact qualified-artifact farm admission receipt.",
+        "No claim that an already published package failed unless its exact bytes were tested."
+      ],
+      "rollback": [
+        "Revert readers and producer schema together or keep old-format packaging on integration; never drop qualification metadata just to pass farm.",
+        "Retain old artifacts unchanged."
+      ],
+      "claim_delta": [
+        "Candidate versus qualified manifest is a versioned contract, not two unrelated key-set guesses."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "FARM-R01",
+      "title": "Separate farm effect recovery from receipt repair and author retry",
+      "finding_ids": [
+        "SF05"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "id": "HW-12",
+          "kind": "contract-coordination",
+          "use": "Selected-owner outcome reconciliation."
+        },
+        {
+          "id": "HW-13",
+          "kind": "contract-coordination",
+          "use": "Register durable harvest obligations at producer discovery."
+        },
+        {
+          "id": "T-01",
+          "kind": "claim-propagation",
+          "use": "Reporting-only farm diagnostics must not invent circuit-breaker cause or premium dispatch."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/farm.test.ts",
+        "plugins/ca/tools/farm-dist.test.ts",
+        "core/surface/includes/farm.md",
+        "tools/farm-first-pass.py",
+        "core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm-dist.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/farm-first-pass.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "A final report failure preserves completed commits/merges and offers read-only reconciliation/receipt repair; a new run cannot silently truncate or replace old run evidence.",
+      "implementation_steps": [
+        "Create run IDs exclusively; reject existing FARM_RUN_ID unless an explicit verified recovery mode is selected. Avoid recursive existing-directory adoption and stream truncation.",
+        "Persist bounded task/worktree/branch/base/integration commit and tree identities around owned effects; distinguish author outcome, merge outcome, cleanup and report publication.",
+        "Add recover-receipt path that re-observes refs and reconstructs only supportable reporting without scheduling authors, resetting integration or replacing task branches.",
+        "Require explicit new attempt identity and resource preconditions for author retry. Unknown branch observations remain unknown.",
+        "Correct installed farm guidance and diagnostic tools so report exit 3 does not instruct immediate redispatch or mislabel every abort as circuit breaker/premium reroute.",
+        "Scope conflict holds to dependent task/branch/integration resources; retain independent work."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing branch/worktree containment, task/quality/mutation outcomes and anti-gaming heuristic evidence limits.",
+        "A green task result is not a published-report receipt; a missing report is not evidence effects never happened."
+      ],
+      "tests": {
+        "acceptance": [
+          "Inject report failure after successful commits/merge and recover truthful receipt without invoking author or resetting refs.",
+          "Fresh run ID creates new evidence; existing run ID rejects without truncation."
+        ],
+        "rejection_and_failure": [
+          "Changed/missing/unreadable refs, reused identity, incompatible record schema or unverified cleanup cannot produce a false recovered-green receipt.",
+          "No recovery automatically force-resets a user/other-task branch."
+        ],
+        "concurrency_and_interruption": [
+          "Crash before/after commit/merge/report write; concurrent recoverers; same run ID race; branch advances between observation and action.",
+          "Dependent tasks pause while independent task evidence remains usable."
+        ]
+      },
+      "completion_evidence": [
+        "Real disposable Git integration tests with before/after ref digests, author call counts and preserved logs.",
+        "Updated agent instructions explicitly separate recover, inspect and new attempt."
+      ],
+      "rollback": [
+        "Keep new records and refs; disable mutating recovery mode if needed, retaining read-only diagnostics.",
+        "Do not roll back by deleting successful commits or rewriting old reports as never executed."
+      ],
+      "claim_delta": [
+        "Receipt repair is distinct from author redispatch; aborted cause and premium routing must be observed."
+      ],
+      "adr_actions": [
+        "Durable effect observation/recovery ADR covers farm-specific refs and report ownership."
+      ]
+    },
+    {
+      "id": "FARM-R02",
+      "title": "Preserve containment outcomes through quality gate retries",
+      "finding_ids": [
+        "SF06"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca/tools/exec.ts",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/mutation.ts",
+        "plugins/ca/tools/exec.test.ts",
+        "plugins/ca/tools/farm.unit.test.ts",
+        "plugins/ca/tools/farm.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/exec.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/mutation.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/exec.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.unit.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "A quality gate whose prior process tree is not verified stopped cannot be treated as an ordinary retryable test failure.",
+      "implementation_steps": [
+        "Return typed command outcome, interrupt reason and containment result from exec through runGate/runTask and reporting.",
+        "Reuse the mutation path policy that treats cleanupFailed as unsafe for subsequent reset/retry; preserve code 124 versus 125 information while migrating consumers.",
+        "Stop admission to affected worktree mutations until owned cleanup/re-observation verifies containment; retain reason and process references.",
+        "Use cancellation-independent bounded cleanup, and do not fabricate an output-overflow behavior that current farm exec does not implement."
+      ],
+      "existing_behavior_to_preserve": [
+        "Verified-clean timeout can follow the documented retry policy; ordinary nonzero quality failures remain distinct.",
+        "Scope holds to affected task/worktree/integration dependencies, not a blanket unrelated-project stop."
+      ],
+      "tests": {
+        "acceptance": [
+          "Gate timeout with verified cleanup can proceed according to policy; cleanupFailed reaches runTask and prevents reset/author retry.",
+          "After observed cleanup, explicit policy retry obtains a new attempt identity."
+        ],
+        "rejection_and_failure": [
+          "Unverified descendants, cleanup helper refusal and unknown state cannot become an ordinary gate failure or clean timeout."
+        ],
+        "concurrency_and_interruption": [
+          "A descendant writes after parent exit; verify retry/reset never races it.",
+          "Cancellation during cleanup keeps cleanup ownership live; parallel unrelated task can finish."
+        ]
+      },
+      "completion_evidence": [
+        "Maintained executor and farm integration tests asserting actual retry/reset call counts and process observations.",
+        "Typed report fields carry containment independently from gate status."
+      ],
+      "rollback": [
+        "Fail the affected task safely with retained process/ref evidence if new typed route must be disabled; never revert to blind retry."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "FARM-R03",
+      "title": "Treat failed Git observations as unknown drift state",
+      "finding_ids": [
+        "SF07"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/farm.unit.test.ts",
+        "plugins/ca/tools/farm.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.unit.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Git diff/ls-files failure cannot produce an observed-clean drift result.",
+      "implementation_steps": [
+        "Use observed-clean, observed-dirty and unavailable results with command/diagnostic codes bounded and redacted.",
+        "Allow bounded read-only observation retries for transient failures; preserve unknown after exhaustion.",
+        "Require relevant clean observation before dependent commits/merges/reset decisions, without asserting no changes when the probe failed."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing legitimate clean/dirty path calculations and protected-path checks.",
+        "Unrelated task progress remains available."
+      ],
+      "tests": {
+        "acceptance": [
+          "Successful empty observations are clean; successful paths are dirty; failed observations are unavailable."
+        ],
+        "rejection_and_failure": [
+          "Either or both Git probes fail, malformed output, timeout and revoked process access cannot be treated as empty path arrays."
+        ],
+        "concurrency_and_interruption": [
+          "Working tree changes between observations; final dependent action uses a current precondition.",
+          "Retry cancellation leaves no invented clean result."
+        ]
+      },
+      "completion_evidence": [
+        "Failure-injection tests for each observation edge and an integration case refusing a dependent mutation on unknown drift."
+      ],
+      "rollback": [
+        "Keep conservative unavailable state and expose inspect action; do not use empty-list fallback."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-C01",
+      "title": "Make sandbox image identity stable and provenance-aware",
+      "finding_ids": [
+        "SF08",
+        "SW-F06"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/create.ts",
+        "plugins/ca-sandbox/tools/build.ts",
+        "plugins/ca-sandbox/tools/dephash.ts",
+        "plugins/ca-sandbox/tools/build.test.ts",
+        "plugins/ca-sandbox/tools/dephash.test.ts",
+        "plugins/ca-sandbox/COMMANDS.md",
+        "plugins/ca-sandbox/README.md",
+        "plugins/ca-sandbox/commands/sandbox.md",
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/COMMANDS.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Equal dependency/build inputs from different random staging directories can identify the same reusable image, while changed platform/builder/toolchain inputs invalidate it.",
+      "implementation_steps": [
+        "Define cache-key version over dependency inputs, effective builder, actual toolchain/builder version, platform/architecture and material build options; keep repository basename cosmetic.",
+        "Supply actual observed Nixpacks version and define a deterministic fallback-builder identity/version.",
+        "Inspect required image provenance labels/digest before reuse; image existence or equal dephash alone is not a valid cache-hit proof.",
+        "Propagate the bounded reuse claim to all command/skill/README/glossary surfaces from one owning fact.",
+        "Choose non-destructive handling for old cache tags: miss/rebuild or explicit verified adoption, never unverified retagging."
+      ],
+      "existing_behavior_to_preserve": [
+        "Node/Python fallback where supported, offline runtime policy and source volume separation.",
+        "No automatic prune of other images merely because cache-key version changed."
+      ],
+      "tests": {
+        "acceptance": [
+          "Two complete creates with identical inputs but distinct temporary checkout basenames select one verified reusable image.",
+          "Changed manifest/platform/toolchain/fallback template selects a new identity; actual cache hit skips build only after provenance passes."
+        ],
+        "rejection_and_failure": [
+          "Malformed/unavailable version or missing/wrong provenance cannot masquerade as cache hit."
+        ],
+        "concurrency_and_interruption": [
+          "Concurrent same-key builds converge safely without adopting partial images; cancellation leaves honest build state."
+        ]
+      },
+      "completion_evidence": [
+        "Unit identity tests plus real Docker two-create cache/rebuild fixture for each supported builder path.",
+        "Docs distinguish equal key from observed reusable image."
+      ],
+      "rollback": [
+        "Old images remain intact; revert key use to cache-miss behavior if necessary, not unsafe reuse."
+      ],
+      "claim_delta": [
+        "Cross-create cache reuse depends on all declared material inputs and verified image provenance."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-C02",
+      "title": "Treat Docker output overflow as lost observation requiring containment",
+      "finding_ids": [
+        "SF09"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/docker.ts",
+        "plugins/ca-sandbox/tools/exec.ts",
+        "plugins/ca-sandbox/tools/exec.test.ts",
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Overflow is a distinct interrupted outcome; terminating Docker CLI observation cannot be reported as contained workload completion.",
+      "implementation_steps": [
+        "Carry overflow reason and observation state in the Docker client result rather than ordinary exit 1.",
+        "Apply the same owned target-aware stop/verify policy used for timeout/cancel whenever observation is lost.",
+        "Report command result and container containment separately, retaining target ID for reconciliation if stop cannot be proven.",
+        "Keep cleanup bounded and independent from the cancelled/overflowed client signal."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing explicit timeout and user-cancel behavior; named target scope; no global prune."
+      ],
+      "tests": {
+        "acceptance": [
+          "Overflowing real container command is stopped/verified, or reports containment unknown with its exact target retained.",
+          "Ordinary command exit 1 without observation loss remains an ordinary command failure."
+        ],
+        "rejection_and_failure": [
+          "Killed CLI alone, failed stop, failed relist and missing status cannot claim workload stopped."
+        ],
+        "concurrency_and_interruption": [
+          "Overflow races with exit/abort; stop runs once; descendant workload survives CLI kill until verified containment.",
+          "Unrelated concurrently created container is never selected for cleanup."
+        ]
+      },
+      "completion_evidence": [
+        "Maintained regression from probe-sandbox-lifecycle plus real Docker containment observation, not fake call count alone."
+      ],
+      "rollback": [
+        "Disable the affected exec path with honest unknown result if cleanup route fails; preserve resources and inspection IDs."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-C03",
+      "title": "Unify sandbox resource observations and truthful compensation",
+      "finding_ids": [
+        "SF10"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "SBX-C02"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/registry.ts",
+        "plugins/ca-sandbox/tools/destroy.ts",
+        "plugins/ca-sandbox/tools/create.ts",
+        "plugins/ca-sandbox/tools/claude-inside.ts",
+        "plugins/ca-sandbox/tools/docker.ts",
+        "plugins/ca-sandbox/tools/create.test.ts",
+        "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "plugins/ca-sandbox/tools/teardown.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/registry.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/teardown.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Failed resource discovery remains unavailable, and compensation claims destroyed only after target-aware absence is observed.",
+      "implementation_steps": [
+        "Reuse the explicit destroy/prune observed/unknown contract for registry listings, create compensation and Claude-inside firewall failure.",
+        "Use an un-aborted bounded cleanup context; inspect rm/stop results and re-observe target absence before claiming destruction.",
+        "Retain created container/volume/temp staging IDs until cleanup is confirmed; record partial cleanup without broadening selected targets.",
+        "Propagate cancellation through clone/build helper paths and bound helper cleanup.",
+        "Expose empty-known versus unavailable in CLI/UI output."
+      ],
+      "existing_behavior_to_preserve": [
+        "Explicit target set, no-ID prune semantics, keep-volume exception and unrelated/new sandbox preservation.",
+        "Runtime isolation guards and separate Claude-inside entrypoint."
+      ],
+      "tests": {
+        "acceptance": [
+          "Known zero resources displays empty; failed listing displays unavailable.",
+          "Firewall/create failure with successful verified compensation reports destroyed; failed compensation retains exact resource IDs."
+        ],
+        "rejection_and_failure": [
+          "Pre-aborted signal, denied Docker, nonzero rm, relist failure and temp removal failure never yield a false clean/destruction statement."
+        ],
+        "concurrency_and_interruption": [
+          "Container created during another target cleanup stays untouched; cancel during each create/build/firewall phase retains recoverable ownership.",
+          "Retry re-observes the original frozen target set."
+        ]
+      },
+      "completion_evidence": [
+        "Fault-injected unit cases and real Docker resource verification for compensation and partial cleanup.",
+        "No ignored cleanup return path remains in owned create/Claude compensation routes."
+      ],
+      "rollback": [
+        "Keep read-only registry/recovery available; never delete unselected resources to restore a clean label."
+      ],
+      "claim_delta": [
+        "Unknown discovery is distinct from no resources; cleanup action requested is distinct from absence observed."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "SITE-U01",
+      "title": "Add search query and expansion failure/retry state",
+      "finding_ids": [
+        "SF11"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "site/src/components/Search.astro",
+        "site/test/search/search-contract.test.ts",
+        "site/test/browser/search-bundle.spec.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/Search.astro",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/test/search/search-contract.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/test/browser/search-bundle.spec.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Search/result-data rejection shows a recoverable current-query error and cannot leave stale results looking current or the expansion button permanently disabled.",
+      "implementation_steps": [
+        "Add per-query and expansion error states under the existing query generation token.",
+        "Use try/catch/finally around Pagefind search and data expansion; retain input and mark retained results stale when appropriate.",
+        "Clear busy/disabled state only for the current generation; supply retry using the same user query.",
+        "Keep existing module-load retry and keyboard/navigation behavior."
+      ],
+      "existing_behavior_to_preserve": [
+        "Search ranking/filter semantics, accessibility focus management and bundled Pagefind import path."
+      ],
+      "tests": {
+        "acceptance": [
+          "Module success + query rejection, result-data rejection and expansion rejection all yield usable retry controls.",
+          "Retry success replaces stale state and restores enabled controls."
+        ],
+        "rejection_and_failure": [
+          "Old-query failures cannot overwrite a newer successful result set; rejected promise does not escape as unhandled UI failure."
+        ],
+        "concurrency_and_interruption": [
+          "Rapid query changes while data promises settle in different orders; close/reopen during search; repeated show-all click."
+        ]
+      },
+      "completion_evidence": [
+        "Browser tests against built search bundle with controlled rejection and keyboard/focus assertions."
+      ],
+      "rollback": [
+        "Keep input/retry and restore stable search behavior; do not ship an index/UI mismatch after rollback."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "SITE-U02",
+      "title": "Own all documentation-drawer listeners across reconnect",
+      "finding_ids": [
+        "SF16"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "site/src/components/SplashDocsRail.astro",
+        "site/test/browser/concepts-execution.spec.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/SplashDocsRail.astro",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/test/browser/concepts-execution.spec.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Disconnect/reconnect of one drawer element cannot accumulate opener, close, tray or document handlers.",
+      "implementation_steps": [
+        "Give each connection one AbortController for all owned listeners or implement an equivalent symmetric setup/cleanup contract.",
+        "Dispose the document Escape listener and local listeners together, resetting initialization only when reinstallation is safe.",
+        "Add one browser test that reconnects the same element; do not claim the old audit executed this behavior."
+      ],
+      "existing_behavior_to_preserve": [
+        "Open/close/focus/escape behavior, CSS presentation and progressive navigation."
+      ],
+      "tests": {
+        "acceptance": [
+          "One click after reconnect toggles once; Escape closes once; focus restoration remains correct."
+        ],
+        "rejection_and_failure": [
+          "Repeated setup/dispose cannot produce duplicate side effects or retained document listener."
+        ],
+        "concurrency_and_interruption": [
+          "Connect-disconnect-reconnect same node, repeated cycles and close during teardown."
+        ]
+      },
+      "completion_evidence": [
+        "Browser behavior receipt on actual supported page lifecycle; source-only theoretical risk remains labeled until executed."
+      ],
+      "rollback": [
+        "Restore a once-bound listener scheme with correct document reattachment; no broad event disabling."
+      ],
+      "claim_delta": [],
+      "adr_actions": []
+    },
+    {
+      "id": "BUILD-G01",
+      "title": "Stage and validate owned generated outputs before replacement",
+      "finding_ids": [
+        "SF13"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "owner": "root",
+          "use": "Publication candidate must consume only validated generation; source closure evidence and other generator findings."
+        }
+      ],
+      "source_paths": [
+        "tools/build-surface.py",
+        "tools/sync-core.py",
+        "site/scripts/generator/generate.ts",
+        "site/scripts/generate-academy.ts",
+        "site/scripts/pagefind-build.ts",
+        "site/scripts/pagefind-build.test.ts",
+        "site/scripts/generate-academy.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/sync-core.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-academy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/pagefind-build.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/pagefind-build.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-academy.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "A failed generation cannot silently leave a partial tree eligible for packaging; old complete output survives replacement where the owning filesystem layout supports it.",
+      "implementation_steps": [
+        "Inventory each generator owned output root and late validation boundary; distinguish whole-root generation from projections mixed with handwritten files.",
+        "Render into a fresh owned staging tree, validate complete content/schema/links there, and replace only owned outputs using the platform-appropriate safe promotion procedure.",
+        "For mixed/manual trees where one atomic rename is impractical, use explicit manifest/staging validation and failure-as-unusable gates without deleting handwritten files.",
+        "Fix Pagefind old-output removal before rename; retain prior complete index until promotion succeeds or expose failed output as unusable.",
+        "Ensure package/release consumers reject failed/incomplete generation rather than trusting leftover files; rerun deterministic canonical input safely."
+      ],
+      "existing_behavior_to_preserve": [
+        "Deterministic generated content, approved host differences, handwritten adapters and user-owned files.",
+        "Do not introduce a distributed saga for every reversible local generator."
+      ],
+      "tests": {
+        "acceptance": [
+          "Injected render/validate/rename failure preserves previous complete owned output or clearly blocks consumption of a partial projection.",
+          "A clean rerun converges to the same canonical output; successful package uses one complete generation."
+        ],
+        "rejection_and_failure": [
+          "Foreign/symlinked target root, mixed ownership, failed rename and incomplete output cannot be marked build-ready."
+        ],
+        "concurrency_and_interruption": [
+          "Two builders targeting same root serialize/refuse safely; consumer never observes an advertised ready mixture.",
+          "Interrupted staging cleanup affects only owned temporary paths."
+        ]
+      },
+      "completion_evidence": [
+        "Targeted generator fault tests and complete build/packaging verification for changed output owners.",
+        "Explicit manifest of handwritten versus generated surfaces."
+      ],
+      "rollback": [
+        "Restore previous complete output; keep canonical sources and owned staging for diagnosis when needed.",
+        "Never wipe a mixed output root to make rollback easy."
+      ],
+      "claim_delta": [
+        "Successful deterministic rendering is different from atomic multi-file publication."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "BUILD-G02",
+      "title": "Bind compatibility removal to release-history authority",
+      "finding_ids": [
+        "SF14"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "id": "HW-21",
+          "kind": "shared-implementation-owner",
+          "use": "One coordinated compatibility metadata/policy change; preserve public major/1.0 floor, named removal decision and historical exception. Do not duplicate implementation."
+        },
+        {
+          "id": "R-04",
+          "kind": "contract-coordination",
+          "use": "Observed published-release history is eligibility input, not removal permission."
+        }
+      ],
+      "source_paths": [
+        "tools/build-surface.py",
+        "core/surface/command-routes.json",
+        "plugins/ca-pi/includes/command-compatibility.md"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/command-routes.json",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/includes/command-compatibility.md"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Compatibility metadata and generated prose reflect the actual history-backed removal contract rather than treating a validated slogan as authorization.",
+      "implementation_steps": [
+        "Coordinate the root-owned compatibility floor/governed-removal rule and approved exceptions; preserve its actual policy rather than choosing a new floor here.",
+        "Define canonical removal eligibility facts from exact publication history, version floor and required notice/decision evidence.",
+        "Use build-surface for shape/projection validation and a separate authoritative removal gate for semantic eligibility.",
+        "Generate compatible wording and validate changed route removal against history; distinguish an unpublished tag/draft from a published release."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing approved compatibility exceptions, host-specific aliases and legitimate command differences.",
+        "An ADR or literal removalRequires value alone does not prove eligibility."
+      ],
+      "tests": {
+        "acceptance": [
+          "Eligible removal with complete published-history evidence passes; canonical docs reflect the same conditions."
+        ],
+        "rejection_and_failure": [
+          "Missing notice, unmet floor, draft/tag-only event, absent approval where required and malformed history cannot authorize removal."
+        ],
+        "concurrency_and_interruption": [
+          "History changes between check/candidate finalization require revalidation; independent generation does not silently advance eligibility."
+        ]
+      },
+      "completion_evidence": [
+        "Root-approved exact policy fixture matrix and regenerated compatibility surfaces.",
+        "Reference to governing decision and publication observations, not only JSON string equality."
+      ],
+      "rollback": [
+        "Retain the alias/route if eligibility is uncertain; restore generated docs without changing user command semantics prematurely."
+      ],
+      "claim_delta": [
+        "Taxonomy validation is not semantic removal authorization."
+      ],
+      "adr_actions": [
+        "Amend compatibility decision/prose only where it conflicts with the selected enforceable history contract."
+      ]
+    },
+    {
+      "id": "DIST-M02",
+      "title": "Preserve host promotion differences and recover uncertain pushes by observation",
+      "finding_ids": [
+        "SF15"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "id": "R-01",
+          "kind": "contract-coordination",
+          "use": "Shared publication completion/receipt-only recovery contract."
+        },
+        {
+          "id": "Q-03",
+          "kind": "downstream-program-gate",
+          "use": "Final observed distribution and exact publication bytes."
+        }
+      ],
+      "source_paths": [
+        "tools/promote-claude-marketplace.py",
+        "tools/promote-codex-marketplace.py",
+        ".github/actions/publish-target/action.yml"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-claude-marketplace.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Both promoters expose exact ref observations and uncertain outcomes; malformed current-channel version cannot silently skip a monotonicity rule.",
+      "implementation_steps": [
+        "Retain deterministic immutable distribution commits and same-version drift refusal.",
+        "Keep Codex preexisting immutable-tag requirement separate from Claude combined tag/channel flow; do not force identical sequencing.",
+        "Represent current channel version as known/absent/unreadable/malformed. If monotonicity is required, unknown is refusal rather than comparison skipped.",
+        "After any uncertain push, use fresh observations of remote tag/channel/ref identity before retry; same desired ref is observed success, conflicting ref requires scoped reconciliation.",
+        "Integrate root publication-receipt recovery so public effects and final receipt failure are not conflated."
+      ],
+      "existing_behavior_to_preserve": [
+        "Lease-protected channel updates, immutable tags, independent Claude/Codex distribution semantics and optional npm identity where applicable."
+      ],
+      "tests": {
+        "acceptance": [
+          "Idempotent rerun after successful but unacknowledged push reads desired exact refs and avoids duplicate publication.",
+          "Each host retains its intended prerequisite sequencing."
+        ],
+        "rejection_and_failure": [
+          "Same-version content drift, malformed current version, downgrade, stale lease, wrong immutable tag or unknown readback cannot claim promotion complete."
+        ],
+        "concurrency_and_interruption": [
+          "Remote channel advances between fetch and push; push succeeds then response/readback fails; two promoters contend for one channel."
+        ]
+      },
+      "completion_evidence": [
+        "Local disposable-remote tests with exact refs/commit IDs and uncertain-push scenarios; hosted candidate receipt links to final observed distribution.",
+        "No published-artifact behavior claim from source helper tests alone."
+      ],
+      "rollback": [
+        "Do not rewrite immutable tags or force-reset a competing channel as rollback; observe and use approved new promotion/reversion procedure.",
+        "Preserve successful remote effects and repair receipts separately."
+      ],
+      "claim_delta": [
+        "Unknown remote observation differs from failed publication; host-specific flow differences remain intentional."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "PI-C01",
+      "title": "Resolve private Pi approval runtime and evidence-mode mismatch",
+      "finding_ids": [
+        "SF12"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "PI-D01"
+      ],
+      "external_dependencies": [
+        {
+          "id": "R-06",
+          "kind": "contract-coordination",
+          "use": "Separate synthetic versus host-observed qualification and optional evidence status."
+        },
+        {
+          "id": "G-01",
+          "kind": "claim-propagation",
+          "use": "Artifact attestation docs and capability canon."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca-pi/tools/src/approval-entry.ts",
+        "plugins/ca-pi/tools/src/approval-dialog.ts",
+        "plugins/ca-pi/tools/src/compatibility.ts",
+        "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+        "tools/build-host-packages.py",
+        "core/surface/includes/artifacts-attestation.md"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/approval-dialog.test.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts-attestation.md"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Optional private artifact prompt support is versioned and qualified independently from ordinary parent tool consent and child authorship.",
+      "implementation_steps": [
+        "Read exact private entry admission and choose a concrete supported-runtime outcome: qualify/update it for admitted Pi or advertise it unavailable with accurate legacy/private evidence.",
+        "Preserve one-shot/private caller binding and refusal of ordinary agent-flow self-arm; do not turn artifact approval into a general child grant.",
+        "Record source/runtime-gated/synthetic-policy-event/host-observed evidence modes separately and correct stale broad Pi no-authority or all-installed-approval claims.",
+        "Leave ordinary progress and the functional parent delegation path independent of optional artifact attestation."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing artifact authority provenance/one-shot guards and host differences.",
+        "Exact current compatibility value is 1.1.0; old private 1.0.2 gate is not qualification proof."
+      ],
+      "tests": {
+        "acceptance": [
+          "Chosen optional capability is accurately admitted/denied on exact runtimes and public matrix matches actual entry behavior.",
+          "If support is claimed, exact installed artifact real prompt/one-shot flow is observed."
+        ],
+        "rejection_and_failure": [
+          "Ordinary child/agent cannot self-arm; mismatched runtime, caller binding, replay or synthetic-only evidence cannot claim host-observed approval."
+        ],
+        "concurrency_and_interruption": [
+          "Prompt cancellation/replay/session change retains one-shot/refusal semantics; stale UI cannot arm a new caller."
+        ]
+      },
+      "completion_evidence": [
+        "Exact optional capability receipt with evidence mode and runtime/artifact binding, or explicit supported-matrix unavailable claim.",
+        "No broad ordinary-permission claim derived from private prompt test."
+      ],
+      "rollback": [
+        "Disable only optional private approval capability and keep honest matrix; retain ordinary parent/author functions."
+      ],
+      "claim_delta": [
+        "Optional artifact prompt authority is separate from ordinary consent and author capability."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-D01",
+      "title": "Derive sandbox prerequisites from actual supported build capabilities",
+      "finding_ids": [
+        "SW-F01"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "SBX-C01"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox.md",
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/README.md",
+        "plugins/ca-sandbox/tools/build.ts",
+        "plugins/ca-sandbox/tools/build.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Installed instructions permit the existing supported Node/Python fallback when Nixpacks is absent and still refuse unsupported stacks.",
+      "implementation_steps": [
+        "Own a concise driver capability/prerequisite contract and project its effective preflight into command, skill and README.",
+        "Tie fallback eligibility to actual detected stack/builder behavior; no blanket Nixpacks STOP when a verified fallback is available.",
+        "Link build-cache version/provenance semantics from SBX-C01 rather than duplicate an optimistic reuse promise."
+      ],
+      "existing_behavior_to_preserve": [
+        "Hard failure for unsupported stack or required Docker/tool failure; no automatic unsupported dependency installation."
+      ],
+      "tests": {
+        "acceptance": [
+          "Nixpacks absent + supported Node/Python fallback proceeds to the same driver path described in docs.",
+          "Nixpacks present path remains supported."
+        ],
+        "rejection_and_failure": [
+          "Unsupported stack without builder remains a clear preflight refusal."
+        ],
+        "concurrency_and_interruption": [
+          "Capability observations are revalidated before build when tool availability changes; no additional global lock required."
+        ]
+      },
+      "completion_evidence": [
+        "Driver fixture matrix plus generated/checked command-skill-README assertions against capability owner."
+      ],
+      "rollback": [
+        "Restore bounded accurate prerequisite text; do not reintroduce a false blanket dependency requirement."
+      ],
+      "claim_delta": [
+        "Fallback support is stack-specific and evidence-bound."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-D02",
+      "title": "Separate shell detach, named destruction and explicit broad prune",
+      "finding_ids": [
+        "SW-F02",
+        "SW-F03"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md",
+        "plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/tools/destroy.ts",
+        "plugins/ca-sandbox/tools/teardown.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/teardown.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Workflow instructions preserve persistent boxes after shell exit and verify only the frozen selected targets of a destroy operation.",
+      "implementation_steps": [
+        "Declare shell exit/detach and destruction as different events; remove contradictory automatic teardown instruction.",
+        "Named destroy affects and verifies only that instance and its selected owned resources; explicit prune/no-ID chooses the broader set.",
+        "Keep-volume exceptions and other/new boxes are reported separately; global-empty wording does not authorize deleting them.",
+        "Generate/check parallel command and lifecycle descriptions from one lifetime/target contract."
+      ],
+      "existing_behavior_to_preserve": [
+        "Current runtime persistent-box behavior, explicit destructive action scope, keep-volume option and target-aware cleanup."
+      ],
+      "tests": {
+        "acceptance": [
+          "Agent instruction fixture for shell exit leaves box running; named destroy preserves another active box.",
+          "Explicit prune selects the documented broad snapshot and reports its remaining targets."
+        ],
+        "rejection_and_failure": [
+          "No hidden auto-destroy on shell close and no global cleanup merely to satisfy a zero-resources phrase."
+        ],
+        "concurrency_and_interruption": [
+          "Box created after target snapshot is preserved; repeated targeted cleanup verifies only its retained target set."
+        ]
+      },
+      "completion_evidence": [
+        "Source driver and instruction behavior cases agree; real Docker targeted cleanup test where claimed."
+      ],
+      "rollback": [
+        "Preserve resources; rollback instructions to accurate persistent/explicit cleanup behavior."
+      ],
+      "claim_delta": [
+        "Session lifetime and resource lifetime are separate; label ownership is broader than operation target scope."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-D03",
+      "title": "Correct host staging and effective network-policy claims",
+      "finding_ids": [
+        "SW-F04",
+        "SW-F05"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [
+        "SBX-C03"
+      ],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox.md",
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/README.md",
+        "plugins/ca-sandbox/tools/create.ts",
+        "plugins/ca-sandbox/tools/run.ts",
+        "plugins/ca-sandbox/tools/network.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Docs state actual host temporary build staging and ordinary offline runtime behavior; standalone allowlist helper or Claude-inside firewall does not imply ordinary integration.",
+      "implementation_steps": [
+        "Describe temporary host checkout copy location/lifetime and observed cleanup separately from runtime no-host-bind/no-socket/no-privileged guards.",
+        "Expose requested versus effective network policy and current capability availability. Ordinary NETWORKED_POLICIES-empty path remains offline.",
+        "Mark unsupported ordinary allowlist selection unavailable instead of describing it as applied; retain the separate Claude-inside networking contract.",
+        "Any future ordinary network mode is a separately approved implementation/verification task, not an incidental documentation correction."
+      ],
+      "existing_behavior_to_preserve": [
+        "Current offline ordinary runtime, actual isolation flags, host staging cleanup owner and supported separate Claude-inside behavior."
+      ],
+      "tests": {
+        "acceptance": [
+          "Help/README/skill accurately show host staging and effective offline mode; cleanup unknown appears as unknown.",
+          "Driver invocation assertions confirm no host bind/socket/privileged expansion."
+        ],
+        "rejection_and_failure": [
+          "A helper function existing on disk cannot set ordinary allowlist-supported=true; no claim of zero host source bytes while staging occurs."
+        ],
+        "concurrency_and_interruption": [
+          "Cancelled build with incomplete temp cleanup retains accurate lifetime/unknown status; policy availability change cannot silently widen network."
+        ]
+      },
+      "completion_evidence": [
+        "Claim-to-owner matrix and driver fixtures for requested/effective policy; exact installed docs match candidate implementation."
+      ],
+      "rollback": [
+        "Preserve offline behavior; revert inaccurate new wording without enabling network or deleting user resources."
+      ],
+      "claim_delta": [
+        "Runtime mount isolation is separate from host build staging.",
+        "Effective offline behavior is separate from optional helper capability."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "SBX-D04",
+      "title": "Ship consumer prerequisites and distinguish guidance from enforced Claude-inside guards",
+      "finding_ids": [
+        "SW-F07",
+        "SW-F08"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+        "plugins/ca-sandbox/README.md",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.test.ts"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.test.ts"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Consumers use a packaged current capability contract instead of missing maintainer spike/ADR files, and phase enforcement claims match the actual CLI checks.",
+      "implementation_steps": [
+        "Replace mandatory consumer-root maintainer evidence paths with plugin-owned current prerequisites; keep historical spike/ADR references commit-bound provenance.",
+        "List actual machine-enforced guards (token argv/source volume/policy/isolation/runtime checks) separately from model-guided caller/store/image/phase review.",
+        "Retain separate supported entrypoint, but remove assertion that binary placement alone enforces five workflow phases.",
+        "Do not copy fake ADRs into user projects or introduce new mandatory proof/approval ceremony as a documentation fix."
+      ],
+      "existing_behavior_to_preserve": [
+        "Existing actual CLI guards, token handling, source-volume isolation and separate entrypoint.",
+        "Any new mechanical phase authority requires its own concrete approved design."
+      ],
+      "tests": {
+        "acceptance": [
+          "Clean consumer fixture without codeArbiter maintainer files can perform applicable preflight using packaged instructions.",
+          "Instruction assertions accurately map each enforced guard to executable rejection behavior."
+        ],
+        "rejection_and_failure": [
+          "Missing actual platform/token/policy prerequisite still refuses; no claim that caller/store/image review is mechanically enforced absent a consuming check."
+        ],
+        "concurrency_and_interruption": [
+          "Package update changes capability reference atomically with docs; old consumer working tree never needs manufactured maintainer evidence."
+        ]
+      },
+      "completion_evidence": [
+        "Exact package includes referenced prerequisites; CLI rejection fixtures and claim inventory identify guidance versus enforcement."
+      ],
+      "rollback": [
+        "Keep packaged accurate prerequisite text and actual guard behavior; do not resurrect consumer-path STOP prerequisites."
+      ],
+      "claim_delta": [
+        "Executable placement is not phase-completion proof.",
+        "Historical maintainer evidence is not a consumer runtime prerequisite."
+      ],
+      "adr_actions": []
+    },
+    {
+      "id": "HOST-D01",
+      "title": "Correct Claude dormant maintenance and write-scope claims",
+      "finding_ids": [
+        "SW-F09"
+      ],
+      "status": "planned-not-implemented",
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "id": "HW-16",
+          "kind": "shared-claim-owner",
+          "use": "Coordinate one source-consistent host maintenance/write-scope correction."
+        }
+      ],
+      "source_paths": [
+        "plugins/ca/README.md",
+        "core/pysrc/session-start.py",
+        "core/pysrc/_githooks.py",
+        "core/pysrc/_taskexcludelib.py"
+      ],
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_githooks.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_taskexcludelib.py"
+      ],
+      "proposed_paths": [],
+      "behavior_change": "Describe repository enforcement activation separately from host startup maintenance and opted-in Git metadata writes.",
+      "implementation_steps": [
+        "Document mode-marker cleanup/owned global statusline healing that occurs before dormant repository exit.",
+        "List opted-in Git hook and Git-common info/exclude/bookkeeping writes outside .codearbiter with their existing consent/ownership boundaries.",
+        "Cross-check hook owner implementation changes and generated host docs so corrections do not drift.",
+        "Treat this as claim correction, not removal of useful maintenance or broader write permission."
+      ],
+      "existing_behavior_to_preserve": [
+        "Useful owned host maintenance, existing init opt-in, shared Git-common path ownership and dormant repository enforcement behavior."
+      ],
+      "tests": {
+        "acceptance": [
+          "README claims map to actual startup order and opt-in paths; clean dormant repository still avoids governed repository enforcement."
+        ],
+        "rejection_and_failure": [
+          "No claim hooks always do nothing before active check; no blanket writes-only-.codearbiter statement."
+        ],
+        "concurrency_and_interruption": [
+          "Documentation update follows final hook behavior; no new runtime race or permission change introduced by this task."
+        ]
+      },
+      "completion_evidence": [
+        "Hook-owner reviewed source/claim diff and exact candidate installed README consistency."
+      ],
+      "rollback": [
+        "Revert only inaccurate claim changes; preserve runtime behavior and user-owned configuration."
+      ],
+      "claim_delta": [
+        "Host maintenance, repository enforcement and opted-in Git metadata writes have different scopes."
+      ],
+      "adr_actions": []
+    }
+  ],
+  "finding_coverage": {
+    "SF01": [
+      "PI-D01",
+      "PI-D02",
+      "PI-D03",
+      "PI-D04",
+      "PI-D05",
+      "PI-D06",
+      "PI-D07"
+    ],
+    "SF02": [
+      "PI-L01"
+    ],
+    "SF03": [
+      "PI-L02"
+    ],
+    "SF04": [
+      "DIST-M01"
+    ],
+    "SF05": [
+      "FARM-R01"
+    ],
+    "SF06": [
+      "FARM-R02"
+    ],
+    "SF07": [
+      "FARM-R03"
+    ],
+    "SF08": [
+      "SBX-C01"
+    ],
+    "SF09": [
+      "SBX-C02"
+    ],
+    "SF10": [
+      "SBX-C03"
+    ],
+    "SF11": [
+      "SITE-U01"
+    ],
+    "SF12": [
+      "PI-D06",
+      "PI-C01"
+    ],
+    "SF13": [
+      "BUILD-G01"
+    ],
+    "SF14": [
+      "BUILD-G02"
+    ],
+    "SF15": [
+      "DIST-M02"
+    ],
+    "SF16": [
+      "SITE-U02"
+    ],
+    "SW-F01": [
+      "SBX-D01"
+    ],
+    "SW-F02": [
+      "SBX-D02"
+    ],
+    "SW-F03": [
+      "SBX-D02"
+    ],
+    "SW-F04": [
+      "SBX-D03"
+    ],
+    "SW-F05": [
+      "SBX-D03"
+    ],
+    "SW-F06": [
+      "SBX-C01"
+    ],
+    "SW-F07": [
+      "SBX-D04"
+    ],
+    "SW-F08": [
+      "SBX-D04"
+    ],
+    "SW-F09": [
+      "HOST-D01"
+    ]
+  },
+  "original_findings": [
+    {
+      "id": "SF01",
+      "title": "Pi author child has no usable mutation authorization path",
+      "evidence": [
+        "plugins/ca-pi/tools/src/child-extension.ts:ensureBuiltins:65-77",
+        "plugins/ca-pi/tools/src/tool-guard.ts:confirmationUi:444-454",
+        "plugins/ca-pi/tools/src/policy.ts:execute permission policy",
+        "plugins/ca-pi/tools/src/runner.ts:RPC inert child launch"
+      ],
+      "implication": "The role advertises write/edit/bash but the default execute policy asks for every mutator and the child has RPC UI. The child also lacks the approved-permission audit callback. Successful handshake/read capability therefore does not imply author capability.",
+      "recommendation": "Keep final guard fail-closed; define a parent-issued task-scoped delegated capability with explicit paths/commands, expiry/session/generation, and parent-owned durable audit. Until that contract exists, advertise this child role as read-only/unavailable for authorship.",
+      "confidence": "source-confirmed and isolated source-module probe",
+      "probes": [
+        "probe-pi-child-mutation.mjs",
+        "probe-pi-child-mutation-result.json"
+      ]
+    },
+    {
+      "id": "SF02",
+      "title": "Pi ready state can outlive failed persona initialization",
+      "evidence": [
+        "plugins/ca-pi/tools/src/extension.ts:session_start markReady before loadPersona and combined catch"
+      ],
+      "implication": "A persona read failure is stored as bridge degradation after readiness. A later successful bridge refresh can clear that degraded state while persona remains empty, with no persona retry edge.",
+      "recommendation": "Make persona loading an explicit prerequisite or a durable independent unavailable capability. Ready/governed rendering must depend on the same actual prerequisite vector as prompt construction.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF03",
+      "title": "Sidebar installs after disposal when metrics promise resolves late",
+      "evidence": [
+        "plugins/ca-pi/tools/src/sidebar-manager.ts:autoInstall/dispose",
+        "plugins/ca-pi/tools/src/footer.ts:generation-protected installation"
+      ],
+      "implication": "A disposed session can reclaim terminal width and renderer hooks. The source-module probe disposed while metrics was pending, then observed installed=true and columns 140→99 after resolving metrics.",
+      "recommendation": "Apply the existing footer generation/lease pattern to sidebar installs, checking before and after await and before patching. Disposal invalidates every pending install.",
+      "confidence": "source-confirmed and isolated source-module probe",
+      "probes": [
+        "probe-pi-sidebar-dispose.mjs",
+        "probe-pi-sidebar-dispose-result.json"
+      ]
+    },
+    {
+      "id": "SF04",
+      "title": "Qualified production artifact manifests are rejected by farm parser",
+      "evidence": [
+        "plugins/ca/tools/farm.ts:installedArtifactBinary:270-276",
+        "tools/build-host-packages.py:stage_artifact_host_payloads:569-579",
+        "tools/build-host-packages.py:cold_execute_artifact_host_payload:1790-1792",
+        "tools/install-artifact-payload.py:load_payload:75-84"
+      ],
+      "implication": "Farm accepts exact top-level keys format/version/protocol/schema_version/binaries. Promotion adds context_qualification, and production cold execution requires the current platform in that field. Thus a production-qualified manifest shape fails farm admission before native binary execution. This is current-source incompatibility, not an assertion that a particular published release was observed failing.",
+      "recommendation": "Use one versioned release-manifest decoder/contract across farm, installers and verification; explicitly admit and validate the supported optional context field. Add an exact qualified-package farm admission test before loosening any trust checks.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF05",
+      "title": "Farm receipt failure is not a safe author-redispatch instruction",
+      "evidence": [
+        "plugins/ca/tools/farm.ts:run report finalization:3282-3697",
+        "plugins/ca/tools/farm.ts:prepareWorktree:1858-1880"
+      ],
+      "implication": "Exit 3 can follow successful task commits/merges and integration worktree cleanup. A new invocation force-resets integration to base and replaces same task branches/worktrees. Reused FARM_RUN_ID also opens an existing run directory and truncates stream evidence.",
+      "recommendation": "Split recover-receipt from retry-author. Persist an exclusive run identity and durable task/integration commit references, inspect existing refs on recovery, and reproduce missing receipts without scheduling authors. Reject run-ID reuse unless an explicit recovery contract verifies it.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF06",
+      "title": "Farm gate retry loses containment failure",
+      "evidence": [
+        "plugins/ca/tools/exec.ts:timeout results",
+        "plugins/ca/tools/farm.ts:runGate:688-703",
+        "plugins/ca/tools/farm.ts:runTask gate failure retry",
+        "plugins/ca/tools/mutation.ts:cleanupFailed handling"
+      ],
+      "implication": "The executor distinguishes timeout with verified cleanup (124) from unverified cleanup (125/cleanupFailed). runGate reduces all nonzero outcomes to ordinary gate failure, allowing outer author reset/retry; mutation path treats unverified containment as fatal.",
+      "recommendation": "Return operation result, cancellation reason and containment status as separate typed fields through every caller. Block mutation/reset/retry until prior containment is verified, reusing the mutation path policy where applicable.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF07",
+      "title": "Farm Git observation failure can appear as no drift",
+      "evidence": [
+        "plugins/ca/tools/farm.ts:checkDrift"
+      ],
+      "implication": "Failed diff/ls-files observations are replaced with empty arrays. Both failures can yield a clean-looking drift result.",
+      "recommendation": "Use observed-clean/observed-dirty/unavailable states; retry bounded read-only Git probes if appropriate, and stop effects when absence cannot be established.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF08",
+      "title": "Sandbox dependency cache identity is tied to random checkout basename",
+      "evidence": [
+        "plugins/ca-sandbox/tools/create.ts:defaultBuildImage",
+        "plugins/ca-sandbox/tools/build.ts:imageTag",
+        "plugins/ca-sandbox/tools/dephash.ts:computeDepHash"
+      ],
+      "implication": "Two creates with identical dependency files compute the same hash but random temporary checkout names produce different Docker tags, defeating intended cross-create cache reuse. Current caller also omits the available Nixpacks version component.",
+      "recommendation": "Build a stable cache key from dependency inputs, supported platform and actual builder/toolchain version. Keep repository name only as a cosmetic label; verify existing image provenance before reuse.",
+      "confidence": "source-confirmed and isolated source-module probe",
+      "probes": [
+        "probe-sandbox-lifecycle.mjs",
+        "probe-sandbox-lifecycle-result.json"
+      ]
+    },
+    {
+      "id": "SF09",
+      "title": "Sandbox output overflow kills observation client without stopping workload",
+      "evidence": [
+        "plugins/ca-sandbox/tools/docker.ts:overflow handling",
+        "plugins/ca-sandbox/tools/exec.ts:timeout/abort cleanup branch"
+      ],
+      "implication": "Overflow is returned as ordinary exit 1 rather than a distinct interrupted reason. exec stops container only for timeout/abort; probe observed no stop after overflow.",
+      "recommendation": "Carry overflow as explicit interrupted outcome and run the same verified containment policy as other lost-observation paths. Report stop outcome independently from command failure.",
+      "confidence": "source-confirmed and isolated source-module probe",
+      "probes": [
+        "probe-sandbox-lifecycle.mjs",
+        "probe-sandbox-lifecycle-result.json"
+      ]
+    },
+    {
+      "id": "SF10",
+      "title": "Sandbox cleanup and discovery sometimes claim more than observed",
+      "evidence": [
+        "plugins/ca-sandbox/tools/claude-inside.ts:firewall failure cleanup",
+        "plugins/ca-sandbox/tools/create.ts:compensation",
+        "plugins/ca-sandbox/tools/registry.ts:list helpers",
+        "plugins/ca-sandbox/tools/destroy.ts:verified destroy comparison"
+      ],
+      "implication": "Claude-inside error says destroyed after an ignored rm result that may be pre-aborted; create compensation ignores remove results; registry view returns [] when Docker listing fails. destroy/prune already contains a better explicit unknown/re-observe pattern.",
+      "recommendation": "Reuse destroy/prune observation contracts for create/Claude compensation and registry UI. Keep resource IDs and cleanup unknown until an un-aborted read confirms absence. Propagate cancellation through clone/build and bound helper cleanup.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF11",
+      "title": "Site search handles loader failure but not query/result-data failure",
+      "evidence": [
+        "site/src/components/Search.astro:perform search and show-all handlers"
+      ],
+      "implication": "Pagefind module import has retry state; search/data promises do not. Rejection can preserve stale current-looking results or disable show-all indefinitely.",
+      "recommendation": "Give query and expansion their own error/retry state and finally cleanup, bound to the existing query generation token; retain input and clearly mark old results stale.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF12",
+      "title": "Private Pi artifact prompt is not general installed Pi approval support",
+      "evidence": [
+        "plugins/ca-pi/tools/src/approval-entry.ts:39",
+        "plugins/ca-pi/tools/src/approval-dialog.ts:private one-shot guards",
+        "plugins/ca-pi/tools/src/compatibility.ts:supported 1.1.0 runtime",
+        "tools/build-host-packages.py:cold execution synthetic Pi approval evidence"
+      ],
+      "implication": "Private entry requires exact Pi 1.0.2 while supported runtime compatibility is 1.1.0. It rejects ordinary agent flows; cold-package workflow reports synthetic-policy-event evidence for Pi. This cannot support a broad claim that all installed Pi artifact approvals are host-observed.",
+      "recommendation": "Publish a host/capability/evidence-mode matrix from actual admission contracts. Version private approval separately and qualify it on supported Pi before describing it as usable authority; preserve ordinary progress independent of optional attestation.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF13",
+      "title": "Surface and release build helpers have recoverable partial-write states",
+      "evidence": [
+        "tools/build-surface.py:write_all",
+        "tools/sync-core.py:main",
+        "site/scripts/generator/generate.ts:generated tree replacement",
+        "site/scripts/generate-academy.ts:output root removal",
+        "site/scripts/pagefind-build.ts:remove then rename"
+      ],
+      "implication": "Canonical generation is deterministic but many multi-file writes are not atomic; some remove old output before late render/rename failures. This is acceptable only if callers treat failed builds as unusable and rerun from canonical input.",
+      "recommendation": "Build into a complete fresh staging tree, validate there, then swap an owned output root where practical. Do not expand ordinary file tools into a distributed saga; apply durable receipts primarily to irreversible/external effects.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF14",
+      "title": "Compatibility metadata validates a removal slogan, not release-history authorization",
+      "evidence": [
+        "tools/build-surface.py:_validate_compatibility_policy:423-439"
+      ],
+      "implication": "The literal removalRequires value is shape-checked during surface generation. It does not enforce elapsed releases, version floors, release publication status or actual command removal.",
+      "recommendation": "Keep provenance-aware removal gate separate and authoritative; generate compatibility prose from that enforceable contract instead of implying this registry literal proves removal eligibility.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF15",
+      "title": "Claude and Codex promotion intentionally differ but share unknown-outcome recovery",
+      "evidence": [
+        "tools/promote-claude-marketplace.py:promote",
+        "tools/promote-codex-marketplace.py:promote"
+      ],
+      "implication": "Both pin immutable distribution commits, refuse same-version drift, lease channel writes and read back. Codex requires prior immutable tag before channel advance and rejects malformed current version; Claude combines tag/channel flow and skips downgrade comparison if prior version cannot be read.",
+      "recommendation": "Preserve host distribution differences. Share verified-ref outcome types and explicitly reject unknown current-channel version if monotonicity is required; provide fresh-work re-observation after any uncertain push rather than blind retry.",
+      "confidence": "source-confirmed",
+      "probes": []
+    },
+    {
+      "id": "SF16",
+      "title": "Site drawer reconnect cleanup may duplicate local handlers",
+      "evidence": [
+        "site/src/components/SplashDocsRail.astro:setup/cleanup"
+      ],
+      "implication": "Cleanup removes document Escape handler and resets initialized marker but does not remove local opener/close/tray handlers; reconnecting the same element can bind duplicate toggles.",
+      "recommendation": "Own all listeners with one AbortController per connection, or retain the once-bound marker while reattaching document listeners. Add one connect-disconnect-reconnect behavior check only if this lifecycle is supported.",
+      "confidence": "source-confirmed; browser reconnect behavior not executed",
+      "probes": []
+    },
+    {
+      "id": "SW-F01",
+      "severity": "medium",
+      "status": "documentation conflict with audited implementation",
+      "title": "Sandbox preflight instructions refuse a dependency configuration that README and driver support",
+      "claim": "sandbox.md and lifecycle hard rules require nixpacks on PATH and STOP if absent. README explicitly allows Node/Python Dockerfile fallback, matching audited S49 fallback behavior. Following the installed workflow can unnecessarily block a supported create.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "preflight",
+          "lines": [
+            21,
+            24
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "nixpacks stop",
+          "lines": [
+            37,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "hard prerequisite",
+          "lines": [
+            87,
+            87
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "fallback support",
+          "lines": [
+            11,
+            24
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "symbol": "buildImage; audited S49",
+          "lines": [
+            1,
+            616
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts"
+        }
+      ],
+      "recommendation": "Derive host prerequisites and supported fallback coverage from one driver capability contract. Preserve a hard failure for unsupported stacks; do not require nixpacks when the selected stack has a verified fallback."
+    },
+    {
+      "id": "SW-F02",
+      "severity": "medium",
+      "status": "direct contradiction between fully read command and skill",
+      "title": "The same shell exit means persistent box in one owner and teardown in another",
+      "claim": "sandbox-shell explicitly leaves the box running after shell exit until sandbox-destroy. lifecycle Phase 5 and hard rules trigger teardown when the interactive session closes. An agent following both has no unambiguous next action and could delete work the shell command said would persist.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+          "symbol": "exit cleanly",
+          "lines": [
+            19,
+            22
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "teardown trigger",
+          "lines": [
+            65,
+            74
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "tear down on exit",
+          "lines": [
+            84,
+            84
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        }
+      ],
+      "recommendation": "Define shell detach versus sandbox destruction as separate events in one lifecycle owner. Preserve current runtime behavior until an intentional lifetime decision is approved; do not add automatic destructive teardown as a documentation cleanup."
+    },
+    {
+      "id": "SW-F03",
+      "severity": "medium",
+      "status": "instruction scope conflict with audited target-aware cleanup",
+      "title": "Single-box destroy prose drifts into a global prune and global-empty postcondition",
+      "claim": "The destroy command accepts an explicit box ID but its flow then says prune remaining labeled objects and its hard gate demands zero plugin-labeled containers/volumes. Audited S53 deliberately freezes selected targets and does not retroactively treat unrelated/new resources as failure. Label ownership is broader than the operation’s selected instance.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "destroy flow",
+          "lines": [
+            15,
+            29
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "global-empty wording",
+          "lines": [
+            40,
+            51
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "zero labeled objects",
+          "lines": [
+            74,
+            74
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/destroy.ts",
+          "symbol": "targeted destroy and explicit prune; S53",
+          "lines": [
+            1,
+            381
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts"
+        }
+      ],
+      "recommendation": "Specify a frozen operation target set. A named destroy verifies that instance; explicit prune/no-ID selects the broad labeled set. Report other active boxes separately and never broaden cleanup merely to satisfy global-empty wording."
+    },
+    {
+      "id": "SW-F04",
+      "severity": "medium",
+      "status": "public storage claim contradicted by audited host staging",
+      "title": "Sandbox docs omit the temporary host copy of cloned source",
+      "claim": "sandbox.md and lifecycle say cloned code is never on the host filesystem; README says the cloned repo lives inside the container. Audited S48 create copies the checkout from the source volume into a newly named host temp directory for build analysis, then removes it in finally. This contradicts storage-location wording; it does not by itself show that the runtime container has a host bind mount.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "source location claim",
+          "lines": [
+            8,
+            11
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "never host clone claim",
+          "lines": [
+            33,
+            39
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "repo location claim",
+          "lines": [
+            3,
+            6
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "symbol": "defaultBuildImage host temp copy; S48",
+          "lines": [
+            1,
+            480
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts"
+        }
+      ],
+      "recommendation": "State runtime mount isolation separately from host-side build staging, including temp location/lifetime/cleanup observations. Keep the no-bind/socket/privileged invariants; do not claim zero host source bytes while staging is implemented."
+    },
+    {
+      "id": "SW-F05",
+      "severity": "medium",
+      "status": "advertised transition unavailable in current ordinary runtime",
+      "title": "Ordinary sandbox allowlist selection is described as applied although its run path stays offline",
+      "claim": "Command/skill/README offer ordinary allowlist policy and lifecycle Phase 3 says richer policies are applied by network.ts. Audited S50 finds NETWORKED_POLICIES empty and all ordinary runtime containers use --network none. The standalone helper and separate Claude-inside firewall path do not establish ordinary CLI integration.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "ordinary policy selection",
+          "lines": [
+            26,
+            31
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "richer policy application",
+          "lines": [
+            50,
+            50
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "network policies",
+          "lines": [
+            58,
+            64
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/run.ts",
+          "symbol": "NETWORKED_POLICIES; S50",
+          "lines": [
+            1,
+            219
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts"
+        }
+      ],
+      "recommendation": "Expose effective policy and current availability in generated help/instructions. Preserve offline behavior; any new network capability requires its own concrete implementation/verification and policy review."
+    },
+    {
+      "id": "SW-F06",
+      "severity": "low",
+      "status": "additional affected documentation for existing runtime finding SF08",
+      "title": "Cache reuse promise is repeated across independent sandbox surfaces",
+      "claim": "COMMANDS glossary, README, create command and lifecycle all promise identical dependency inputs imply identical tag/cache hit. Existing SF08/S49 identifies random create checkout basenames in the actual tag, defeating that cross-create promise.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/COMMANDS.md",
+          "symbol": "dephash glossary",
+          "lines": [
+            35,
+            39
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/COMMANDS.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "image caching",
+          "lines": [
+            66,
+            71
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "cache flow",
+          "lines": [
+            24,
+            27
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "cache gate",
+          "lines": [
+            39,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        }
+      ],
+      "related_finding": "SF08; no additional runtime defect is asserted",
+      "recommendation": "Correct stable cache identity once in the driver, then derive the same bounded reuse claim for every surface. Keep cache-hit proof separate from hash equality."
+    },
+    {
+      "id": "SW-F07",
+      "severity": "medium",
+      "status": "source-confirmed model-guided admission limitation",
+      "title": "Claude-inside requires codeArbiter maintainer evidence under the consumer project root",
+      "claim": "Preflight says read or STOP for two specific sandbox spike documents and ADR 0007 at CLAUDE_PROJECT_DIR/.codearbiter. There is no packaged-reference fallback in the skill. Therefore a consumer project without those files is directed to stop even when driver/platform requirements are otherwise satisfied; the audit does not assume a particular user project’s files.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "mandatory consumer-project references",
+          "lines": [
+            16,
+            28
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "independent sibling plugin",
+          "lines": [
+            8,
+            9
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        }
+      ],
+      "recommendation": "Ship a concise current prerequisite/capability contract at a plugin-owned path and cite maintainer evidence as commit-bound provenance. Do not require consumers to manufacture/copy internal ADR or historical spike files."
+    },
+    {
+      "id": "SW-F08",
+      "severity": "medium",
+      "status": "prose enforcement claim exceeds executable admission",
+      "title": "Separate executable placement does not enforce five Claude-inside workflow phases",
+      "claim": "The skill says separate binary placement IS the gate and calls the five BLOCK phases enforced rather than advice. Fully read runClaudeInsideCli accepts image/home/policy, checks environment token presence, then calls runClaudeInside; it consumes no proof of caller identity, approved store, reviewed image or phase completion. Actual token-argv/source-volume/policy and runtime isolation guards remain real and should be credited individually.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "separation-is-gate assertion",
+          "lines": [
+            30,
+            45
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "symbol": "parseClaudeCli",
+          "lines": [
+            61,
+            111
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "symbol": "runClaudeInsideCli",
+          "lines": [
+            139,
+            181
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+        }
+      ],
+      "recommendation": "Label model-guided checks and mechanically enforced guards accurately. Keep the separate supported entrypoint and real isolation checks; introduce no new mandatory proof/approval mechanism unless a concrete authority design is intentionally approved."
+    },
+    {
+      "id": "SW-F09",
+      "severity": "medium",
+      "status": "README claims compared with fully audited hook owner evidence",
+      "title": "Claude README overstates dormant behavior and confines repository writes too narrowly",
+      "claim": "README says hooks immediately do nothing without .codearbiter and repository writes are .codearbiter only. The hook owner confirms session-start.main clears its mode marker and may heal globally owned statusline settings before the active-repository check. Opted-in initialization also installs Git hooks and writes selected Git-common info/exclude and hook bookkeeping outside .codearbiter. These are different scopes and should be stated separately.",
+      "sources": [
+        {
+          "path": "plugins/ca/README.md",
+          "symbol": "activation and write scope",
+          "lines": [
+            19,
+            29
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/README.md"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "symbol": "main startup before dormant exit",
+          "lines": [
+            1170,
+            1248
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install; hook-owner full read",
+          "lines": [
+            1070,
+            1241
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_githooks.py"
+        },
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "_ensure; hook-owner full read",
+          "lines": [
+            147,
+            214
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_taskexcludelib.py"
+        }
+      ],
+      "recommendation": "Document repository enforcement activation separately from host-wide startup maintenance. List Git metadata writes and existing opt-in boundaries. This requires claim correction, not removing useful maintenance or broadening authority."
+    }
+  ],
+  "prior_evidence": {
+    "audit_files": [
+      "audit-work/surfaces.json",
+      "audit-work/surfaces.md",
+      "audit-work/surfaces-read-files.txt",
+      "audit-work/sandbox-workflows.json",
+      "audit-work/sandbox-workflows.md"
+    ],
+    "probes": [
+      "audit-work/probe-pi-child-mutation.mjs",
+      "audit-work/probe-pi-child-mutation-result.json",
+      "audit-work/probe-pi-sidebar-dispose.mjs",
+      "audit-work/probe-pi-sidebar-dispose-result.json",
+      "audit-work/probe-sandbox-lifecycle.mjs",
+      "audit-work/probe-sandbox-lifecycle-result.json"
+    ],
+    "boundary": "Prior probes are source-module/fake-dependency diagnosis; not exact installed-host or Docker qualification. Original findings remain commit-bound and their recommendations yield to explicit current user decisions."
+  },
+  "review_coverage": {
+    "prior_runtime_reads": "Full/behavioral read levels are explicitly recorded in audit-work/surfaces-read-files.txt and sandbox-workflows-read-files.txt.",
+    "handoff_full_rereads": [
+      "plugins/ca-pi/tools/src/child-extension.ts",
+      "plugins/ca-pi/tools/src/contracts.ts",
+      "plugins/ca-pi/tools/src/pi-api.d.ts",
+      "plugins/ca-pi/tools/src/audit-sink.ts",
+      "plugins/ca-pi/tools/src/path-boundary.ts",
+      "plugins/ca-pi/tools/src/compatibility.ts",
+      "plugins/ca-pi/tools/test/final-arguments-live.test.ts"
+    ],
+    "handoff_targeted_rereads": [
+      "plugins/ca-pi/tools/src/extension.ts",
+      "plugins/ca-pi/tools/src/dispatch.ts",
+      "plugins/ca-pi/tools/src/runner.ts",
+      "plugins/ca-pi/tools/src/tool-guard.ts",
+      "plugins/ca-pi/tools/src/policy.ts",
+      "plugins/ca-pi/tools/src/background-jobs.ts",
+      "plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "plugins/ca-pi/tools/test/runner-isolation.test.ts:1480-1634",
+      "plugins/ca-pi/tools/test/tool-guard.test.ts:350-625,1630-1705",
+      "plugins/ca-pi/tools/test/dispatch.test.ts:1-210,487-550,652-817"
+    ],
+    "inventory_only_test_targets": "Other named test files are implementation targets located in the source tree; a filename is not a claim those tests currently cover the new behavior.",
+    "upstream_boundary": "No new external Pi API claimed. Receiving agent verifies exact supported Pi runtime source/API and built artifact behavior before implementation depends on it."
+  },
+  "validation": {
+    "finding_count": 25,
+    "task_count": 27,
+    "all_findings_mapped": true,
+    "local_dependency_graph": "acyclic",
+    "missing_existing_source_paths": [],
+    "new_tests_run": false
+  }
+}

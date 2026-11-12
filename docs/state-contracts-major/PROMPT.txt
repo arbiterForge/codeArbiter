@@ -1,0 +1,17 @@
+You are receiving the codeArbiter major state-contract implementation corpus.
+
+Read START-HERE.md, DECISIONS.md, PROGRAM.md and BRANCH-AND-RELEASE.md first. Then read the domain designs and exact task sources. Execute the complete accepted program only in arbiterForge/codeArbiter.
+
+Create or resume major/state-contracts in a clean inspected worktree. Keep all program work there until entirely implemented and tested. Child PRs target that integration branch. Do not merge partial program fixes into main. Final promotion is one integrated change followed by a new major product release through the sanctioned hosted workflow, with exact-artifact readiness established before publication.
+
+B has decided: conflicts pause only dependent work; corrected debug and reviewer submissions can be resubmitted with proper attempt identity; implement actual supported scoped parent delegation for Pi authors; add durable interruption recovery while ordinary work stays nonblocking; include and reconcile ADR successors. Do not ask B to approve those choices again.
+
+Discuss SMARTS-PROGRESS-EVIDENCE.md with B before choosing the progress/evidence migration. Also resolve the narrower HIGH severity/disposition and pre-tag enforcement contradictions. These choices block only dependent implementation; continue independent work.
+
+Preserve actual host/user authority, native CAS/journals/history, immutable request outcomes, operation replay, host exceptions and independent target publication recovery. No new universal permission layer. Read-only Pi authorship is not completion. Command admission is not an OS sandbox guarantee.
+
+Use contracts/tasks.json, contracts/finding-dispositions.json, contracts/machine-coverage.json and contracts/transition-coverage.json. Every one of the 70 audit records and all 287 families/1,748 baseline rows must have an evidenced disposition. Keep proposed, implemented, tested, installed-qualified and released statuses distinct. Revalidate changed source and exact artifacts. Do not guess file contents, accept comments as proof, or let an old ADR override the requested assistive direction without identifying the conflict.
+
+Start with P-00/P-01/P-02, including actual integration CI admission and preservation of main-only publishing. Coordinate one writer per canonical owner, use parallel independent tasks, and preserve the intake corpus, and update execution/progress.json and execution/CHECKPOINT.md after every slice. Record later decisions, added tasks/transitions and actual evidence there; historical PLANNED labels are not the live status. Run meaningful event-sequence, failure/retry, migration and installed-artifact tests. A green packet validator or a mock-only probe is not full product qualification.
+
+Persist until the complete program is finished. Report concrete blockers and continue independent work. Do not quietly defer required features, weaken tests, mark unavailable evidence as passed, move immutable tags, or publish early. When all acceptance evidence is complete, carry out the documented final promotion/release sequence and verify every distribution and receipt.

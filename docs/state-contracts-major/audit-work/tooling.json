@@ -1,0 +1,1941 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "Remaining 16 primary tools explicitly assigned by parent; full files read",
+  "machines": [
+    {
+      "id": "T01",
+      "name": "Shadow CI impact prediction and broad fallback",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Validated impact map/immutable host descriptors, changed-path inputs, JSON receipt and appended summary",
+      "states": [
+        "unchecked input",
+        "mapped prediction",
+        "broad fallback",
+        "receipt emitted"
+      ],
+      "sources": [
+        {
+          "path": "tools/ci-impact.py",
+          "symbol": "load_map",
+          "lines": [
+            162,
+            193
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+        },
+        {
+          "path": "tools/ci-impact.py",
+          "symbol": "evaluate",
+          "lines": [
+            196,
+            222
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+        },
+        {
+          "path": "tools/ci-impact.py",
+          "symbol": "main",
+          "lines": [
+            418,
+            454
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "unchecked input",
+          "from": "unchecked input",
+          "event": "load map and canonical host descriptors",
+          "guard": "known schema/lanes/scopes, unique check IDs and edge identities, nonempty edges and broad-lane declaration; only canonical core/hosts.json",
+          "to": "validated map",
+          "effects": "Construct immutable descriptors and mapping objects.",
+          "failure_retry": "Invalid map or descriptor load returns a broad fallback through CLI handling, not reduced coverage.",
+          "source": {
+            "path": "tools/ci-impact.py",
+            "symbol": "load_map",
+            "lines": [
+              162,
+              193
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+          }
+        },
+        {
+          "from_state": "validated map",
+          "from": "validated map",
+          "event": "evaluate paths",
+          "guard": "all relative POSIX paths match explicit or descriptor-derived edges with known host checks",
+          "to": "mapped prediction",
+          "effects": "Deduplicate selected checks; report predicted_not_selected and matched paths.",
+          "failure_retry": "Descriptor rules use first matching rule and exact excludes; unknown path/host mapping cannot silently suppress checks.",
+          "source": {
+            "path": "tools/ci-impact.py",
+            "symbol": "evaluate",
+            "lines": [
+              196,
+              222
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+          }
+        },
+        {
+          "from_state": "validated map",
+          "from": "validated map",
+          "event": "empty, invalid or unmapped changed path",
+          "guard": "at least one path cannot be classified",
+          "to": "broad fallback",
+          "effects": "Select broad-lane only and leave predicted_not_selected empty.",
+          "failure_retry": "Never infer irrelevance under fallback.",
+          "source": {
+            "path": "tools/ci-impact.py",
+            "symbol": "evaluate",
+            "lines": [
+              196,
+              222
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+          }
+        },
+        {
+          "from_state": "CLI input",
+          "from": "CLI input",
+          "event": "planner parsing/loading error",
+          "guard": "caught ImpactMapError/OSError/ValueError",
+          "to": "broad fallback",
+          "effects": "Create built-in broad validation check and include error reason.",
+          "failure_retry": "Receipt filesystem write failure can still propagate; successful planner exit is not proof a job ran.",
+          "source": {
+            "path": "tools/ci-impact.py",
+            "symbol": "main",
+            "lines": [
+              418,
+              454
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+          }
+        },
+        {
+          "from_state": "mapped prediction or broad fallback",
+          "from": "mapped prediction or broad fallback",
+          "event": "write receipt",
+          "guard": "output and summary paths writable",
+          "to": "receipt emitted",
+          "effects": "Overwrite requested JSON output and append Markdown summary; return zero.",
+          "failure_retry": "Shadow-mode planner does not change current job if conditions or skip any existing CI job.",
+          "source": {
+            "path": "tools/ci-impact.py",
+            "symbol": "main",
+            "lines": [
+              418,
+              454
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci-impact.py"
+          }
+        }
+      ],
+      "notes": "This is an existing example of the recommended shadow rollout: explicit predicted decisions and conservative unknown behavior without changing production admission."
+    },
+    {
+      "id": "T02",
+      "name": "Native statement coverage collection, publication and union verdict",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Exact module/source hashes, native platform/toolchain, new output directory, unit/integration profiles and final metadata",
+      "states": [
+        "uncollected",
+        "collecting",
+        "partial output",
+        "COLLECTED",
+        "PARTIAL",
+        "MISSING_INTEGRATION",
+        "BELOW_MINIMUM",
+        "COMPLETE",
+        "INVALID"
+      ],
+      "sources": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "symbol": "collect",
+          "lines": [
+            197,
+            240
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+        },
+        {
+          "path": "tools/artifact-coverage.py",
+          "symbol": "integration_metadata",
+          "lines": [
+            184,
+            194
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+        },
+        {
+          "path": "tools/artifact-coverage.py",
+          "symbol": "summarize",
+          "lines": [
+            250,
+            326
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "uncollected",
+          "from": "uncollected",
+          "event": "collect admission",
+          "guard": "supported native Go host equals target; expected platform agrees; output outside module and absent",
+          "to": "collecting",
+          "effects": "Hash every module input excluding .git; discover packages; create output directory and run offline atomic-coverage unit command.",
+          "failure_retry": "Linked/oversized input, cross target or existing output rejects.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "collect",
+            "lines": [
+              197,
+              240
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "collecting",
+          "from": "collecting",
+          "event": "unit command fails or timeout",
+          "guard": "nonzero/timeout before complete profile validation",
+          "to": "partial output / INVALID",
+          "effects": "Keep available unit log and partial owned output for diagnosis.",
+          "failure_retry": "No metadata.json is published; retry requires a fresh output directory.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "collect",
+            "lines": [
+              197,
+              240
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "collecting",
+          "from": "collecting",
+          "event": "validate unit and optional integration profiles",
+          "guard": "atomic mode, exact production-source bounds, profile/sidecar hashes and native source/toolchain identity; no source drift",
+          "to": "COLLECTED",
+          "effects": "Copy valid integration profiles and write exclusive metadata.json last.",
+          "failure_retry": "Malformed/foreign/stale profile or changed module fails without usable metadata.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "collect",
+            "lines": [
+              197,
+              240
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "instrumented CLI exercise completed",
+          "from": "instrumented CLI exercise completed",
+          "event": "integration_metadata",
+          "guard": "pre-build source identity equals current; native platform/toolchain and valid profile",
+          "to": "bound integration sidecar",
+          "effects": "Return source/platform/version/profile hash sidecar for producer to write.",
+          "failure_retry": "Unkeyed hashes detect inconsistency, not forged execution; caller owns real binary exercise.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "integration_metadata",
+            "lines": [
+              184,
+              194
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "collected inputs",
+          "from": "collected inputs",
+          "event": "summarize validation",
+          "guard": "unique expected supported platforms; all source/toolchain/package/command identities exact; hashes and shared instrumentation layouts agree",
+          "to": "validated union",
+          "effects": "Union covered statement blocks from unit and integration profiles.",
+          "failure_retry": "Duplicate/foreign/stale input, conflicting statement counts or changed source => INVALID.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "summarize",
+            "lines": [
+              250,
+              326
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "validated union",
+          "from": "validated union",
+          "event": "missing expected platform",
+          "guard": "seen platform set incomplete",
+          "to": "PARTIAL",
+          "effects": "Report exact present/missing platforms and statements; CLI nonzero.",
+          "failure_retry": "No absent host counted as zero-cost verified work.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "summarize",
+            "lines": [
+              250,
+              326
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "validated union",
+          "from": "validated union",
+          "event": "required integration missing",
+          "guard": "platform population complete but an executable package lacks a covered integration block",
+          "to": "MISSING_INTEGRATION",
+          "effects": "Report missing integration platforms; CLI nonzero.",
+          "failure_retry": "Unit coverage alone cannot fulfill require-integration.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "summarize",
+            "lines": [
+              250,
+              326
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "validated union",
+          "from": "validated union",
+          "event": "minimum comparison",
+          "guard": "all required populations complete; covered statements below caller-specified finite minimum",
+          "to": "BELOW_MINIMUM",
+          "effects": "Report numeric result and threshold; CLI nonzero.",
+          "failure_retry": "No built-in policy threshold; the workflow supplies 70 percent.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "summarize",
+            "lines": [
+              250,
+              326
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        },
+        {
+          "from_state": "validated union",
+          "from": "validated union",
+          "event": "all requested obligations met",
+          "guard": "no missing platform/integration; minimum absent or met",
+          "to": "COMPLETE",
+          "effects": "Report statement totals/coverage and explicit not_measured=[lines,branches]; CLI zero.",
+          "failure_retry": "This metric report is not itself a native qualification receipt.",
+          "source": {
+            "path": "tools/artifact-coverage.py",
+            "symbol": "summarize",
+            "lines": [
+              250,
+              326
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T03",
+      "name": "Go test population discovery, chunk execution and exact-result accounting",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Compiled temporary test binaries, actual listed Test/Example/Fuzz names, weighted chunks and terminal result map",
+      "states": [
+        "undiscovered",
+        "compiled",
+        "partitioned",
+        "running",
+        "pass/skip/fail/repeated/missing",
+        "group complete",
+        "group failed"
+      ],
+      "sources": [
+        {
+          "path": "tools/go_test_parallel.py",
+          "symbol": "run",
+          "lines": [
+            139,
+            205
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+        },
+        {
+          "path": "tools/go_test_parallel.py",
+          "symbol": "discover",
+          "lines": [
+            68,
+            72
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+        },
+        {
+          "path": "tools/go_test_parallel.py",
+          "symbol": "run_chunk",
+          "lines": [
+            93,
+            127
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "undiscovered",
+          "from": "undiscovered",
+          "event": "enumerate and compile packages",
+          "guard": "jobs 1..64; valid duration/hints; Go package enumeration succeeds",
+          "to": "compiled",
+          "effects": "Compile every package with test files once into temporary binary directory; 1800-second build bound.",
+          "failure_retry": "Invalid hints, package enumeration/compile failure or missing expected binary fails.",
+          "source": {
+            "path": "tools/go_test_parallel.py",
+            "symbol": "run",
+            "lines": [
+              139,
+              205
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+          }
+        },
+        {
+          "from_state": "compiled",
+          "from": "compiled",
+          "event": "discover and chunk",
+          "guard": "each binary lists actual Test/Example/Fuzz targets within 600-second bound",
+          "to": "partitioned",
+          "effects": "Build exact-name chunks; timing hints only order/balance, never remove membership.",
+          "failure_retry": "Listing failure rejects; unsupported duration is invalid.",
+          "source": {
+            "path": "tools/go_test_parallel.py",
+            "symbol": "discover",
+            "lines": [
+              68,
+              72
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+          }
+        },
+        {
+          "from_state": "partitioned",
+          "from": "partitioned",
+          "event": "run concurrent chunks",
+          "guard": "up to declared workers; exact anchored target pattern",
+          "to": "running",
+          "effects": "Run direct child binary once with Go test timeout plus 120-second outer margin; convert captured stream with test2json.",
+          "failure_retry": "Outer timeout terminates direct child, preserves partial output and marks code=-1.",
+          "source": {
+            "path": "tools/go_test_parallel.py",
+            "symbol": "run_chunk",
+            "lines": [
+              93,
+              127
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+          }
+        },
+        {
+          "from_state": "running",
+          "from": "running",
+          "event": "top-level terminal events",
+          "guard": "event is pass/fail/skip; no subtest slash",
+          "to": "pass/skip/fail/repeated",
+          "effects": "Store result; repeated terminal event for same test becomes repeated.",
+          "failure_retry": "Unknown/stray target or failed/repeated/missing selected outcome rejects chunk.",
+          "source": {
+            "path": "tools/go_test_parallel.py",
+            "symbol": "run_chunk",
+            "lines": [
+              93,
+              127
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+          }
+        },
+        {
+          "from_state": "all chunks settled",
+          "from": "all chunks settled",
+          "event": "global inventory join",
+          "guard": "each expected target observed; every chunk exit zero; outcomes pass or skip; no stray events",
+          "to": "group complete",
+          "effects": "Report counts of passed and skipped targets and exit zero.",
+          "failure_retry": "Skips are deliberately permitted; group complete is not a claim every listed target ran substantively.",
+          "source": {
+            "path": "tools/go_test_parallel.py",
+            "symbol": "run",
+            "lines": [
+              139,
+              205
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+          }
+        },
+        {
+          "from_state": "all chunks settled",
+          "from": "all chunks settled",
+          "event": "any failed/stray/missing result or process failure",
+          "guard": "acceptance predicate fails",
+          "to": "group failed",
+          "effects": "Print bounded failure output and missing-result list; exit one; remove temporary binaries.",
+          "failure_retry": "Rerun after cause corrected; no reuse of prior partial success as full result.",
+          "source": {
+            "path": "tools/go_test_parallel.py",
+            "symbol": "run",
+            "lines": [
+              139,
+              205
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T04",
+      "name": "CI20 historical run baseline, graph replay and source inventory",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Exact checked-out HEAD, completed GitHub run/job population, current workflow bytes/hash and create-only evidence output",
+      "states": [
+        "unbound checkout/run",
+        "completed run bound",
+        "complete jobs mapped",
+        "counterfactual replay",
+        "baseline written",
+        "inventory written",
+        "rejected"
+      ],
+      "sources": [
+        {
+          "path": "tools/ci20_baseline.py",
+          "symbol": "collect",
+          "lines": [
+            116,
+            188
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+        },
+        {
+          "path": "tools/ci20_baseline.py",
+          "symbol": "replay",
+          "lines": [
+            80,
+            113
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+        },
+        {
+          "path": "tools/ci20_baseline.py",
+          "symbol": "main",
+          "lines": [
+            191,
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+        },
+        {
+          "path": "tools/ci20_inventory.py",
+          "symbol": "main",
+          "lines": [
+            47,
+            106
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_inventory.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "unbound checkout/run",
+          "from": "unbound checkout/run",
+          "event": "collect historical run",
+          "guard": "checkout SHA valid; run.head_sha equals HEAD; run.status completed",
+          "to": "completed run bound",
+          "effects": "Read workflow bytes and live run metadata.",
+          "failure_retry": "Pending/in-progress run, wrong source or malformed workflow rejects.",
+          "source": {
+            "path": "tools/ci20_baseline.py",
+            "symbol": "collect",
+            "lines": [
+              116,
+              188
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+          }
+        },
+        {
+          "from_state": "completed run bound",
+          "from": "completed run bound",
+          "event": "collect paginated jobs",
+          "guard": "all pages account exactly for total_count, unique IDs, <=100 pages; each job maps to exactly one workflow group",
+          "to": "complete jobs mapped",
+          "effects": "Retain every observed conclusion, timings and steps, including skipped/unexpected outcomes.",
+          "failure_retry": "Missing/duplicate/ambiguous owner population rejects.",
+          "source": {
+            "path": "tools/ci20_baseline.py",
+            "symbol": "collect",
+            "lines": [
+              116,
+              188
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+          }
+        },
+        {
+          "from_state": "complete jobs mapped",
+          "from": "complete jobs mapped",
+          "event": "replay needs graph",
+          "guard": "exact owner/group population; dependencies valid and acyclic; ci-passed endpoint exists",
+          "to": "counterfactual replay",
+          "effects": "Compute zero-queue critical path using max child duration per group and every needs edge.",
+          "failure_retry": "Cycle/missing group rejects; replay is not an observed hosted speedup or capacity model.",
+          "source": {
+            "path": "tools/ci20_baseline.py",
+            "symbol": "replay",
+            "lines": [
+              80,
+              113
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+          }
+        },
+        {
+          "from_state": "counterfactual replay",
+          "from": "counterfactual replay",
+          "event": "write baseline",
+          "guard": "new output path",
+          "to": "baseline written",
+          "effects": "Exclusive-create JSON with actual trigger-to-last-job time, source/workflow hash and caveats.",
+          "failure_retry": "Existing file rejects; completed does not require successful run and all conclusions remain visible.",
+          "source": {
+            "path": "tools/ci20_baseline.py",
+            "symbol": "main",
+            "lines": [
+              191,
+              208
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+          }
+        },
+        {
+          "from_state": "baseline written",
+          "from": "baseline written",
+          "event": "create source/job inventory",
+          "guard": "checkout HEAD equals baseline source; live branch protection declares required merge-readiness context",
+          "to": "inventory written",
+          "effects": "Read current workflow job commands/actions and observed counts; hash workflow files and write source map.",
+          "failure_retry": "Missing/invalid required context rejects. Writes use exists check followed by write_text, not atomic exclusive create.",
+          "source": {
+            "path": "tools/ci20_inventory.py",
+            "symbol": "main",
+            "lines": [
+              47,
+              106
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_inventory.py"
+          }
+        },
+        {
+          "from_state": "same HEAD with modified working-tree workflow",
+          "from": "same HEAD with modified working-tree workflow",
+          "event": "collect/inventory",
+          "guard": "head identity still matches; no explicit clean-tree or git-blob equality guard",
+          "to": "working-tree bytes recorded",
+          "effects": "Hash and analyze the current file even if it differs from the workflow committed at named source.",
+          "failure_retry": "The recorded hash exposes bytes, but exact-commit attribution requires an additional check; no live instance asserted.",
+          "source": {
+            "path": "tools/ci20_baseline.py",
+            "symbol": "collect",
+            "lines": [
+              116,
+              188
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T05",
+      "name": "Codex/Claude parity fixture construction and manual handoff",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Absent target directory, seeded governed or bare files and local Git commit",
+      "states": [
+        "absent target",
+        "files created",
+        "Git initialized",
+        "seeded commit",
+        "failed partial",
+        "manual verification pending"
+      ],
+      "sources": [
+        {
+          "path": "tools/codex-parity-fixture.py",
+          "symbol": "main",
+          "lines": [
+            117,
+            177
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "absent target",
+          "from": "absent target",
+          "event": "create parity fixture",
+          "guard": "one target path and optional --bare; target does not exist",
+          "to": "files created",
+          "effects": "Bare mode creates ordinary baseline file only; governed mode creates enabled context, seed audit/ADR/security/tech files and markers directory.",
+          "failure_retry": "Existing path refuses clobber; I/O failure leaves partial target and returns failure.",
+          "source": {
+            "path": "tools/codex-parity-fixture.py",
+            "symbol": "main",
+            "lines": [
+              117,
+              177
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+          }
+        },
+        {
+          "from_state": "files created",
+          "from": "files created",
+          "event": "Git init/add/commit",
+          "guard": "each Git command succeeds",
+          "to": "seeded commit",
+          "effects": "Initialize repository and create fixture-authored initial commit.",
+          "failure_retry": "Nonzero init/add/commit returns failure; no automatic rollback of files/repository.",
+          "source": {
+            "path": "tools/codex-parity-fixture.py",
+            "symbol": "main",
+            "lines": [
+              117,
+              177
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+          }
+        },
+        {
+          "from_state": "seeded commit",
+          "from": "seeded commit",
+          "event": "print next steps",
+          "guard": "fixture mode known",
+          "to": "manual verification pending",
+          "effects": "Tell operator to open hosts and perform guided parity/onboarding checks.",
+          "failure_retry": "Creation does not prove enforcement or host parity. Governed-mode next step still says persona session-start injection; root audit covers documentation drift.",
+          "source": {
+            "path": "tools/codex-parity-fixture.py",
+            "symbol": "main",
+            "lines": [
+              117,
+              177
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T06",
+      "name": "Native draft artifact example generation",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "New/empty output root, real compiled binary, draft spec/plan identities and noncanonical generation report",
+      "states": [
+        "empty output",
+        "spec created",
+        "draft spec bound",
+        "plan created",
+        "readiness observed",
+        "report written",
+        "failed partial"
+      ],
+      "sources": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "symbol": "main",
+          "lines": [
+            16,
+            65
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/create-artifact-examples.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "empty output",
+          "from": "empty output",
+          "event": "start example generation",
+          "guard": "output absent or empty; binary resolves; reviewed reference JSON readable",
+          "to": "spec created",
+          "effects": "Invoke native create with deterministic spec operation ID and reference normative content.",
+          "failure_retry": "Existing nonempty output rejects; native command failure leaves partial output rather than overwriting a live store.",
+          "source": {
+            "path": "tools/create-artifact-examples.py",
+            "symbol": "main",
+            "lines": [
+              16,
+              65
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/create-artifact-examples.py"
+          }
+        },
+        {
+          "from_state": "spec created",
+          "from": "spec created",
+          "event": "identity read and plan binding",
+          "guard": "native identity succeeds",
+          "to": "draft spec bound",
+          "effects": "Set plan spec_ref to exact spec normative hash with binding_mode=draft_preview.",
+          "failure_retry": "No approval is issued by this binding.",
+          "source": {
+            "path": "tools/create-artifact-examples.py",
+            "symbol": "main",
+            "lines": [
+              16,
+              65
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/create-artifact-examples.py"
+          }
+        },
+        {
+          "from_state": "draft spec bound",
+          "from": "draft spec bound",
+          "event": "create plan and validate both",
+          "guard": "native operations succeed; validate exit 2 accepted only when ok=true and result.valid=false",
+          "to": "readiness observed",
+          "effects": "Create linked draft plan; read identities and genuine ready-gate diagnostics.",
+          "failure_retry": "Draft-not-ready result is retained, not treated as fatal or fabricated ready.",
+          "source": {
+            "path": "tools/create-artifact-examples.py",
+            "symbol": "main",
+            "lines": [
+              16,
+              65
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/create-artifact-examples.py"
+          }
+        },
+        {
+          "from_state": "readiness observed",
+          "from": "readiness observed",
+          "event": "write generation report",
+          "guard": "output writable",
+          "to": "report written",
+          "effects": "Write identities, validation, all_ready, approvals_issued=0 and accepted_tasks=0.",
+          "failure_retry": "Report is human-readable scratch output, not an approval/evidence receipt; failure leaves earlier native writes.",
+          "source": {
+            "path": "tools/create-artifact-examples.py",
+            "symbol": "main",
+            "lines": [
+              16,
+              65
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/create-artifact-examples.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T07",
+      "name": "Schema-derived Go view generation and drift check",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Packaged closed schemas, generated Go source and embedded schema copies",
+      "states": [
+        "schemas loaded",
+        "views rendered",
+        "current",
+        "stale",
+        "regenerated",
+        "partially written"
+      ],
+      "sources": [
+        {
+          "path": "tools/generate-artifact-types.py",
+          "symbol": "10",
+          "lines": [
+            10,
+            10
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+        },
+        {
+          "path": "tools/generate-artifact-types.py",
+          "symbol": "37",
+          "lines": [
+            37,
+            37
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+        },
+        {
+          "path": "tools/generate-artifact-types.py",
+          "symbol": "46",
+          "lines": [
+            46,
+            46
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "schemas loaded",
+          "from": "schemas loaded",
+          "event": "render Go views",
+          "guard": "common/spec/plan schema shapes and gofmt available",
+          "to": "views rendered",
+          "effects": "Map schema types/refs/nullability to Go fields and format generated source.",
+          "failure_retry": "Malformed unsupported structure or gofmt failure aborts before file writes.",
+          "source": {
+            "path": "tools/generate-artifact-types.py",
+            "symbol": "10",
+            "lines": [
+              10,
+              10
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+          }
+        },
+        {
+          "from_state": "views rendered",
+          "from": "views rendered",
+          "event": "--check",
+          "guard": "generated bytes equal target and each of seven packaged schema copies equal embedded copy",
+          "to": "current",
+          "effects": "Print matching status without writing.",
+          "failure_retry": "Any mismatch exits stale diagnostic; no automatic repair in check mode.",
+          "source": {
+            "path": "tools/generate-artifact-types.py",
+            "symbol": "37",
+            "lines": [
+              37,
+              37
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+          }
+        },
+        {
+          "from_state": "views rendered",
+          "from": "views rendered",
+          "event": "generation mode",
+          "guard": "target paths writable",
+          "to": "regenerated",
+          "effects": "Write Go target then seven embedded schema copies sequentially.",
+          "failure_retry": "Later write failure can leave partial generated tree; rerun regeneration/check, not claimed atomic commit.",
+          "source": {
+            "path": "tools/generate-artifact-types.py",
+            "symbol": "46",
+            "lines": [
+              46,
+              46
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T08",
+      "name": "Manual live SMARTS exercise and weak output oracle",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Selected installed/explicit plugin, temporary initialized Git fixtures, real Claude process result and emitted HTML spec",
+      "states": [
+        "unselected",
+        "fixture initialized",
+        "model running",
+        "material verdict",
+        "single verdict",
+        "retained/cleaned",
+        "aggregate pass/fail"
+      ],
+      "sources": [
+        {
+          "path": "tools/live-smarts-exercise.py",
+          "symbol": "plugin_root",
+          "lines": [
+            89,
+            96
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+        },
+        {
+          "path": "tools/live-smarts-exercise.py",
+          "symbol": "main",
+          "lines": [
+            154,
+            184
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+        },
+        {
+          "path": "tools/live-smarts-exercise.py",
+          "symbol": "judge",
+          "lines": [
+            133,
+            151
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "unselected",
+          "from": "unselected",
+          "event": "resolve plugin/cases",
+          "guard": "explicit --plugin-dir or first ca@codearbiter installed record; requested cases valid",
+          "to": "fixture initialized",
+          "effects": "Create throwaway repository and baseline app/tests; invoke plugin init helper.",
+          "failure_retry": "Missing install or init failure stops; no model called by audit itself.",
+          "source": {
+            "path": "tools/live-smarts-exercise.py",
+            "symbol": "plugin_root",
+            "lines": [
+              89,
+              96
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+          }
+        },
+        {
+          "from_state": "fixture initialized",
+          "from": "fixture initialized",
+          "event": "launch manual live exercise",
+          "guard": "selected case; real Claude available",
+          "to": "model running",
+          "effects": "Invoke claude -p feature full-lane prompt with acceptEdits and allowed tools; optional unreleased plugin disables installed ca for session; 3600-second timeout.",
+          "failure_retry": "Subprocess exceptions propagate; finally retains --keep fixture or removes it.",
+          "source": {
+            "path": "tools/live-smarts-exercise.py",
+            "symbol": "main",
+            "lines": [
+              154,
+              184
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+          }
+        },
+        {
+          "from_state": "model returned",
+          "from": "model returned",
+          "event": "judge material case",
+          "guard": "first HTML spec has SEC-SMARTS with any three literal lens names",
+          "to": "material verdict pass",
+          "effects": "Record pass even without alternatives, comparison table or full lens coverage.",
+          "failure_retry": "Claude return code is printed but does not participate in overall verdict; see reproduced T-F02.",
+          "source": {
+            "path": "tools/live-smarts-exercise.py",
+            "symbol": "judge",
+            "lines": [
+              133,
+              151
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+          }
+        },
+        {
+          "from_state": "model returned",
+          "from": "model returned",
+          "event": "judge single case",
+          "guard": "one block, serialized block text <600 characters, no table marker and <=1 lens name",
+          "to": "single verdict pass",
+          "effects": "Record structural single-case pass.",
+          "failure_retry": "Missing spec/section or failed shape returns false; semantic correctness is not established by this oracle.",
+          "source": {
+            "path": "tools/live-smarts-exercise.py",
+            "symbol": "judge",
+            "lines": [
+              133,
+              151
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+          }
+        },
+        {
+          "from_state": "each selected case settled",
+          "from": "each selected case settled",
+          "event": "aggregate and cleanup",
+          "guard": "all judge booleans true and result count equals selected count",
+          "to": "aggregate pass",
+          "effects": "Print session tail/details; return zero; cleanup fixtures unless --keep.",
+          "failure_retry": "Any judge false returns one. Session nonzero alone does not veto pass.",
+          "source": {
+            "path": "tools/live-smarts-exercise.py",
+            "symbol": "main",
+            "lines": [
+              154,
+              184
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T09",
+      "name": "Knowledge retrieval measurement fixture and cold/warm comparison",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Built native test installation, temporary governed corpus, legacy Markdown bytes and scoped helper outputs",
+      "states": [
+        "candidate unavailable",
+        "installation ready",
+        "corpus populated",
+        "measured cold",
+        "measured warm",
+        "report complete"
+      ],
+      "sources": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "symbol": "main",
+          "lines": [
+            129,
+            144
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+        },
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "symbol": "measure",
+          "lines": [
+            79,
+            126
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "candidate unavailable",
+          "from": "candidate unavailable",
+          "event": "measurement admission",
+          "guard": "ARTIFACT_TEST_INSTALLATION present and test installation builder succeeds",
+          "to": "installation ready",
+          "effects": "Load installed knowledge helper; reuse declared native candidate.",
+          "failure_retry": "No candidate is a hard stop; no runtime download fallback.",
+          "source": {
+            "path": "tools/measure-knowledge-retrieval.py",
+            "symbol": "main",
+            "lines": [
+              129,
+              144
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+          }
+        },
+        {
+          "from_state": "installation ready",
+          "from": "installation ready",
+          "event": "construct selected size fixture",
+          "guard": "temporary root; Git init, arbiter init and create-missing succeed",
+          "to": "corpus populated",
+          "effects": "Add synthetic scoped/global knowledge records in batches; create equivalent five legacy Markdown files.",
+          "failure_retry": "Any command nonzero fails; temporary directory is cleaned.",
+          "source": {
+            "path": "tools/measure-knowledge-retrieval.py",
+            "symbol": "measure",
+            "lines": [
+              79,
+              126
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+          }
+        },
+        {
+          "from_state": "corpus populated",
+          "from": "corpus populated",
+          "event": "read old documents then relevant helper twice",
+          "guard": "helper succeeds within 300 seconds",
+          "to": "measured cold then measured warm",
+          "effects": "Measure whole-document bytes/file reads and cold/warm scoped calls; inspect records returned, unmatched, budget-omitted and unreadable counts.",
+          "failure_retry": "Parsing/command failure aborts; identical output is reported as boolean, not forced.",
+          "source": {
+            "path": "tools/measure-knowledge-retrieval.py",
+            "symbol": "measure",
+            "lines": [
+              79,
+              126
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+          }
+        },
+        {
+          "from_state": "measured warm",
+          "from": "measured warm",
+          "event": "render measurement",
+          "guard": "all requested sizes complete",
+          "to": "report complete",
+          "effects": "Print bytes, estimated tokens and latency with no percentage threshold; clean builder owner when owned.",
+          "failure_retry": "Legacy token estimate uses UTF-8 bytes/4 while scoped estimate uses characters/4; these are estimates, not tokenizer counts.",
+          "source": {
+            "path": "tools/measure-knowledge-retrieval.py",
+            "symbol": "main",
+            "lines": [
+              129,
+              144
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T10",
+      "name": "Statusline benchmark phase progression and comparison verdict",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Temporary transcripts/ledger, child instrumentation counters, scenario/phase timing report and comparison inputs",
+      "states": [
+        "fixture",
+        "first render",
+        "warming",
+        "unchanged phase",
+        "host-only phase",
+        "incremental phase",
+        "report",
+        "compare pass/fail"
+      ],
+      "sources": [
+        {
+          "path": "tools/statusline-bench.py",
+          "symbol": "_render",
+          "lines": [
+            263,
+            274
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+        },
+        {
+          "path": "tools/statusline-bench.py",
+          "symbol": "run_scenario",
+          "lines": [
+            293,
+            353
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+        },
+        {
+          "path": "tools/statusline-bench.py",
+          "symbol": "cmd_run",
+          "lines": [
+            356,
+            375
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+        },
+        {
+          "path": "tools/statusline-bench.py",
+          "symbol": "cmd_compare",
+          "lines": [
+            407,
+            456
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "fixture",
+          "from": "fixture",
+          "event": "first statusline render",
+          "guard": "real checkout entry exists; synthetic transcripts and redirected home/ledger",
+          "to": "first render",
+          "effects": "Spawn fresh Python child instrumenting open/JSON decode/replace/directory calls; record stdout/counters/time.",
+          "failure_retry": "Nonzero or any stderr rejects render; subprocess has no timeout.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "_render",
+            "lines": [
+              263,
+              274
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "first render",
+          "from": "first render",
+          "event": "warmup",
+          "guard": "compare ledger file size/mtime population after each render",
+          "to": "warming then phase ready",
+          "effects": "Render until ledger metadata stops changing or MAX_WARMUP=80 reached.",
+          "failure_retry": "Reaching cap still proceeds without a stabilization-failed verdict.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "run_scenario",
+            "lines": [
+              293,
+              353
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "phase ready",
+          "from": "phase ready",
+          "event": "15 identical renders",
+          "guard": "fixture unchanged",
+          "to": "unchanged phase",
+          "effects": "Collect no_change counters/timings.",
+          "failure_retry": "Failure aborts scenario and finally cleans fixture.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "run_scenario",
+            "lines": [
+              293,
+              353
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "unchanged phase",
+          "from": "unchanged phase",
+          "event": "five host-estimate-only changes",
+          "guard": "only cost.total_cost_usd changed",
+          "to": "host-only phase",
+          "effects": "Collect counters/timings for host-only updates.",
+          "failure_retry": "Does not append transcript data in this phase.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "run_scenario",
+            "lines": [
+              293,
+              353
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "host-only phase",
+          "from": "host-only phase",
+          "event": "40 append-and-render iterations",
+          "guard": "each appends three parent requests and every second iteration two child requests when children exist",
+          "to": "incremental phase",
+          "effects": "Collect source/new-ID counts, writes/evictions and cold-partition population.",
+          "failure_retry": "All temporary fixtures cleaned in finally.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "run_scenario",
+            "lines": [
+              293,
+              353
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "scenario results",
+          "from": "scenario results",
+          "event": "run report write",
+          "guard": "selected scenario names match declared names, or none match",
+          "to": "report",
+          "effects": "Write requested report with checkout HEAD string, Python/platform and results; unknown scenario names can yield empty scenarios.",
+          "failure_retry": "Report overwrite is allowed; no nonempty-population guard or source-cleanliness binding.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "cmd_run",
+            "lines": [
+              356,
+              375
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "base/head report",
+          "from": "base/head report",
+          "event": "compare declared base scenarios",
+          "guard": "matching render counts; structural totals within base plus explicit slack/formula; optional timing <=1.05 baseline",
+          "to": "compare pass",
+          "effects": "Print detailed counter comparisons and success.",
+          "failure_retry": "Missing head scenario or exceeded bound returns failure; metadata identity is not validated.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "cmd_compare",
+            "lines": [
+              407,
+              456
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        },
+        {
+          "from_state": "empty base scenarios",
+          "from": "empty base scenarios",
+          "event": "compare",
+          "guard": "loop has zero scenarios and no explicit population check",
+          "to": "compare pass with zero measurements",
+          "effects": "Print PASS and return zero; local pure probe reproduced this branch.",
+          "failure_retry": "Require nonempty/declared scenario coverage before treating verdict as performance evidence.",
+          "source": {
+            "path": "tools/statusline-bench.py",
+            "symbol": "cmd_compare",
+            "lines": [
+              407,
+              456
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T11",
+      "name": "Statusline screenshot generation and partial cleanup",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Temporary mock transcripts/ledger/HTML, real statusline stdout, Playwright browser and output PNG",
+      "states": [
+        "mock inputs",
+        "ledger seeded",
+        "ANSI captured",
+        "HTML rendered",
+        "PNG written",
+        "cleanup attempted"
+      ],
+      "sources": [
+        {
+          "path": "tools/statusline-screenshot.py",
+          "symbol": "83",
+          "lines": [
+            83,
+            83
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+        },
+        {
+          "path": "tools/statusline-screenshot.py",
+          "symbol": "line_html",
+          "lines": [
+            94,
+            133
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+        },
+        {
+          "path": "tools/statusline-screenshot.py",
+          "symbol": "146",
+          "lines": [
+            146,
+            146
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+        },
+        {
+          "path": "tools/statusline-screenshot.py",
+          "symbol": "158",
+          "lines": [
+            158,
+            158
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "mock inputs",
+          "from": "mock inputs",
+          "event": "seed earlier session then current render",
+          "guard": "statusline subprocess launched twice",
+          "to": "ANSI captured",
+          "effects": "Generate realistic mock transcript usage; run real statusline with isolated ledger and real repository/workspace state.",
+          "failure_retry": "Return codes and stderr are not checked; empty stdout can still advance to rendering.",
+          "source": {
+            "path": "tools/statusline-screenshot.py",
+            "symbol": "83",
+            "lines": [
+              83,
+              83
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+          }
+        },
+        {
+          "from_state": "ANSI captured",
+          "from": "ANSI captured",
+          "event": "convert to HTML",
+          "guard": "supported SGR parsing succeeds",
+          "to": "HTML rendered",
+          "effects": "Escape text into colored spans and write temporary screenshot HTML.",
+          "failure_retry": "Malformed color parameters can raise; no top-level finally cleanup.",
+          "source": {
+            "path": "tools/statusline-screenshot.py",
+            "symbol": "line_html",
+            "lines": [
+              94,
+              133
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+          }
+        },
+        {
+          "from_state": "HTML rendered",
+          "from": "HTML rendered",
+          "event": "Playwright screenshot",
+          "guard": "Chromium available; page and .wrap element created",
+          "to": "PNG written",
+          "effects": "Launch browser, wait 250 ms, screenshot element to default or SHOT_OUT, close browser.",
+          "failure_retry": "Browser/write errors propagate; directory creation is for default output parent even when SHOT_OUT names another parent.",
+          "source": {
+            "path": "tools/statusline-screenshot.py",
+            "symbol": "146",
+            "lines": [
+              146,
+              146
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+          }
+        },
+        {
+          "from_state": "PNG written",
+          "from": "PNG written",
+          "event": "cleanup and success report",
+          "guard": "normal completion reaches tail",
+          "to": "cleanup attempted",
+          "effects": "Remove current transcript, legacy ledger path and HTML, then attempt rmdir; print wrote.",
+          "failure_retry": "Earlier transcript and possible additional ledger files remain; remove/rmdir errors are ignored. Written PNG is a mock illustration, not live usage evidence.",
+          "source": {
+            "path": "tools/statusline-screenshot.py",
+            "symbol": "158",
+            "lines": [
+              158,
+              158
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+          }
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "T12",
+      "name": "Tribunal captured evidence, independent adjudication and critical-regression gate",
+      "kind": "implemented",
+      "explicitness": "implicit execution lifecycle plus explicit evidence/verdict labels",
+      "state_storage": "Frozen paired corpus, blind packet, captured/synthetic review, adjudication, exact-hash exceptions and exclusive output",
+      "states": [
+        "corpus unchecked",
+        "frozen corpus valid",
+        "blind packet",
+        "unverified findings",
+        "adjudicated",
+        "scored eligible/ineligible",
+        "comparison blocked/clear",
+        "proposal eligible"
+      ],
+      "sources": [
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "validate_corpus",
+          "lines": [
+            94,
+            140
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        },
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "public_packet",
+          "lines": [
+            147,
+            160
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        },
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "validate_run",
+          "lines": [
+            181,
+            217
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        },
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "validate_adjudication",
+          "lines": [
+            220,
+            250
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        },
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "score",
+          "lines": [
+            257,
+            338
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        },
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "compare",
+          "lines": [
+            341,
+            383
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        },
+        {
+          "path": "tools/tribunal-eval.py",
+          "symbol": "main",
+          "lines": [
+            386,
+            429
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        }
+      ],
+      "transitions": [
+        {
+          "from_state": "corpus unchecked",
+          "from": "corpus unchecked",
+          "event": "validate corpus",
+          "guard": "exact schema/hash, 40 opaque cases in 20 defect/clean pairs with matching neutral contracts and consistent private oracle",
+          "to": "frozen corpus valid",
+          "effects": "Validate inert source paths and expected required/forbidden contracts.",
+          "failure_retry": "Missing/extra/malformed case/family/hash rejects; source evidence is never executed.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "validate_corpus",
+            "lines": [
+              94,
+              140
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "frozen corpus valid",
+          "from": "frozen corpus valid",
+          "event": "export",
+          "guard": "whitelist-only public projection",
+          "to": "blind packet",
+          "effects": "Emit contracts/files/source hashes plus review instructions; private oracle/family/variant stays omitted.",
+          "failure_retry": "Output creation uses exclusive mode and refuses replacing a frozen packet.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "public_packet",
+            "lines": [
+              147,
+              160
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "blind packet",
+          "from": "blind packet",
+          "event": "validate captured review",
+          "guard": "complete case accounting, exact corpus/packet/source hashes, metadata shape, literal evidence matching source, verification_status=unverified",
+          "to": "unverified findings",
+          "effects": "Accept captured or explicitly allowed synthetic raw review.",
+          "failure_retry": "Self-verified finding, missing/foreign case, wrong quote or synthetic without flag rejects.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "validate_run",
+            "lines": [
+              181,
+              217
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "unverified findings",
+          "from": "unverified findings",
+          "event": "validate adjudication",
+          "guard": "exact run digest, separate verifier ID, fresh/limited independence, every finding and case accounted",
+          "to": "adjudicated",
+          "effects": "Accept confirmed/narrowed/refuted/inconclusive status and explicit matches_contract/compliance evidence.",
+          "failure_retry": "Missing adjudication, stale digest, self verifier, invalid quote or refuted+matches_contract rejects.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "validate_adjudication",
+            "lines": [
+              220,
+              250
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "adjudicated",
+          "from": "adjudicated",
+          "event": "score",
+          "guard": "review and adjudication valid",
+          "to": "scored eligible/ineligible",
+          "effects": "Compute preliminary recall separately from verified recall, false positives, survival, distinct oracle-root counts, compliance and optional cost.",
+          "failure_retry": "Synthetic or limited independence makes qualification_eligible false; missing tokens/duration stays unavailable, not zero.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "score",
+            "lines": [
+              257,
+              338
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "two scored runs",
+          "from": "two scored runs",
+          "event": "compare critical cases",
+          "guard": "same corpus; independently valid old/new evidence",
+          "to": "comparison blocked/clear",
+          "effects": "Detect lost hit/verified coverage, increased false positives or lost assignment compliance for critical cases.",
+          "failure_retry": "Noncritical improvement/cost does not erase a critical regression.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "compare",
+            "lines": [
+              341,
+              383
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "comparison has critical regression",
+          "from": "comparison has critical regression",
+          "event": "bind explicit external exception",
+          "guard": "exact corpus/run/adjudication digests; current regressed case; nonempty approval evidence; approver differs from both runs/verifiers",
+          "to": "approved exception or still blocked",
+          "effects": "Subtract only explicitly approved current regressions from blocked set.",
+          "failure_retry": "Stale, self-approved or unrelated exception rejects; stored approval strings are caller evidence, not cryptographic authentication.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "compare",
+            "lines": [
+              341,
+              383
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "comparison clear",
+          "from": "comparison clear",
+          "event": "promotion eligibility",
+          "guard": "no blocked cases and both scores captured with fresh independent verification",
+          "to": "proposal eligible",
+          "effects": "Return promotion_eligible true; no model/configuration published or recommended automatically.",
+          "failure_retry": "Clear synthetic/limited comparison returns promotion_eligible false even though CLI can exit zero; consumers must read the typed field.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "compare",
+            "lines": [
+              341,
+              383
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        },
+        {
+          "from_state": "comparison blocked or invalid",
+          "from": "comparison blocked or invalid",
+          "event": "CLI return/output",
+          "guard": "blocked cases or validation exception",
+          "to": "non-success verdict",
+          "effects": "Exit 3 for blocked comparison; exit 2 for invalid input; exclusive-create optional result file.",
+          "failure_retry": "A valid score/export otherwise exits zero. No inferred adjudication or model calls occur.",
+          "source": {
+            "path": "tools/tribunal-eval.py",
+            "symbol": "main",
+            "lines": [
+              386,
+              429
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+          }
+        }
+      ],
+      "notes": ""
+    }
+  ],
+  "findings": [
+    {
+      "id": "T-F01",
+      "severity": "medium",
+      "status": "pure local probe reproduced",
+      "title": "Statusline benchmark comparison can print PASS for zero measurements",
+      "claim": "cmd_compare iterates base.scenarios and accepts an empty object with no failures. cmd_run can naturally produce that empty object when every --scenario value is unknown, because it filters without validating the requested names.",
+      "evidence": [
+        {
+          "path": "tools/statusline-bench.py",
+          "symbol": "cmd_run",
+          "lines": [
+            356,
+            375
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+        },
+        {
+          "path": "tools/statusline-bench.py",
+          "symbol": "cmd_compare",
+          "lines": [
+            407,
+            456
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+        }
+      ],
+      "probe": "audit-work/probe_tool_verdicts.json: empty base/head scenarios -> exit 0 and PASS text; no renderer ran.",
+      "recommendation": "Require a nonempty declared scenario population and compatible harness/measurement identity before any success verdict. Keep explicitly selected subsets visible rather than claiming full benchmark coverage."
+    },
+    {
+      "id": "T-F02",
+      "severity": "medium",
+      "status": "pure local oracle probe reproduced; subprocess-result issue source-confirmed",
+      "title": "Live SMARTS exercise tests literal lens-name presence rather than its stated material-comparison contract",
+      "claim": "The material judge accepts any three lens-name substrings in SEC-SMARTS. One paragraph containing Scalable Maintainable Available passed with no alternatives or table. main records judge output regardless of Claude return code, so a failed session can still produce PASS if its remaining spec satisfies this weak shape.",
+      "evidence": [
+        {
+          "path": "tools/live-smarts-exercise.py",
+          "symbol": "judge",
+          "lines": [
+            133,
+            151
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+        },
+        {
+          "path": "tools/live-smarts-exercise.py",
+          "symbol": "main",
+          "lines": [
+            154,
+            184
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+        }
+      ],
+      "probe": "audit-work/probe_tool_verdicts.json: three lens names, one paragraph, table=false -> judge=true; no provider call ran.",
+      "recommendation": "Gate process completion separately from artifact validity, and validate explicit material alternatives/comparison semantics through native schema/contract checks plus bounded reviewed qualitative evidence. Do not equate substring count with a comparison."
+    },
+    {
+      "id": "T-F03",
+      "severity": "low",
+      "status": "source-confirmed; no live baseline mismatch asserted",
+      "title": "CI20 evidence binds HEAD and current workflow hash without ensuring workflow bytes belong to that HEAD",
+      "claim": "collect checks run.head_sha == checkout HEAD, then parses the working-tree workflow. Neither baseline nor inventory requires clean tracked bytes or equality to git show HEAD:.github/workflows/ci.yml. A modified checkout can therefore label its analysis with a matching source commit while analyzing different workflow bytes.",
+      "evidence": [
+        {
+          "path": "tools/ci20_baseline.py",
+          "symbol": "collect",
+          "lines": [
+            116,
+            188
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py"
+        },
+        {
+          "path": "tools/ci20_inventory.py",
+          "symbol": "main",
+          "lines": [
+            47,
+            106
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_inventory.py"
+        }
+      ],
+      "recommendation": "Read workflow bytes from the bound commit or require exact blob equality before mapping jobs/commands. Preserve the observed file hash, run identity and counterfactual-vs-live distinction."
+    },
+    {
+      "id": "T-F04",
+      "severity": "low",
+      "status": "source-confirmed diagnostic-tool behavior",
+      "title": "Statusline illustration can proceed after failed renders and leaves some temporary inputs behind",
+      "claim": "Both statusline subprocess results are accepted without return-code/stderr validation. Normal cleanup omits earlier.jsonl and only removes legacy ledger.json, so the final directory removal can fail and is ignored. No screenshot corruption was reproduced in this audit.",
+      "evidence": [
+        {
+          "path": "tools/statusline-screenshot.py",
+          "symbol": "83",
+          "lines": [
+            83,
+            83
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+        },
+        {
+          "path": "tools/statusline-screenshot.py",
+          "symbol": "158",
+          "lines": [
+            158,
+            158
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+        }
+      ],
+      "recommendation": "Require successful nonempty render output before screenshotting, wrap all temporary state/browser lifetime in cleanup, and retain the image\u2019s explicit mock-data provenance."
+    }
+  ],
+  "coverage": {
+    "fully_read_files": [
+      "tools/artifact-coverage.py",
+      "tools/ci-impact.py",
+      "tools/ci20_baseline.py",
+      "tools/ci20_inventory.py",
+      "tools/codex-parity-fixture.py",
+      "tools/create-artifact-examples.py",
+      "tools/farm-first-pass.py",
+      "tools/generate-artifact-types.py",
+      "tools/go_test_parallel.py",
+      "tools/host_descriptors.py",
+      "tools/live-smarts-exercise.py",
+      "tools/measure-knowledge-retrieval.py",
+      "tools/reviewer-yield.py",
+      "tools/statusline-bench.py",
+      "tools/statusline-screenshot.py",
+      "tools/tribunal-eval.py"
+    ],
+    "fully_read_file_count": 16,
+    "fully_read_line_count": 3781,
+    "unread_files_in_parent_requested_list": [],
+    "read_but_not_separate_machines": [
+      {
+        "path": "tools/host_descriptors.py",
+        "classification": "Strict canonical registry loader and deep immutable projection, no additional durable transition lifecycle. Root-contract exceptions for Claude/Codex/Pi, permission action mapping, unique names/roots and valid condition tags are fully read."
+      },
+      {
+        "path": "tools/farm-first-pass.py",
+        "classification": "Read-only report projection of farm terminal states; settled/green/escalated/blocked/first-vs-multi-attempt rates. Missing file fails. No worker dispatch or premium re-dispatch side effect in this script."
+      },
+      {
+        "path": "tools/reviewer-yield.py",
+        "classification": "Read-only historical finding-table projection. Not-run excluded from dispatch denominator, PASS zero findings counts, auth alias normalized, unreadable documents warn/skip. It measures persisted checkpoints, not all actual dispatches."
+      }
+    ],
+    "validation": "Two pure local decision probes only. No model session, GitHub read, native Go test, image/browser run, package publication or user workspace modification. Generated reports/probes are scratch audit artifacts."
+  },
+  "decision": "Treat evidence completeness and process success as separate typed predicates before a pass or promotion claim. Reuse existing explicit good patterns (coverage population/identity gates, Tribunal separate verified recall and synthetic ineligibility, impact shadow fallback) while preserving current product contracts."
+}

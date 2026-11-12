@@ -1,0 +1,69 @@
+{
+  "schema": "codearbiter-execution-state/1",
+  "program_id": "codearbiter-major-state-contracts",
+  "repository": "arbiterForge/codeArbiter",
+  "branch": "major/state-contracts",
+  "head": "SEE_GIT: the commit containing this record; read `git log -1 major/state-contracts`",
+  "base": {
+    "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
+    "commits_between": 15,
+    "drift_worklist": "execution/source-drift-33abc347.json"
+  },
+  "recorded_at": "2026-11-12",
+  "active_writer": {
+    "agent": "claude-code",
+    "since": "2026-11-12",
+    "in_flight_branches": ["major/state-contracts"],
+    "rule": "Repo state is the only lock between Claude Code and Codex sessions. Before writing, read this field and the newest CHECKPOINT; update it when you start or stop. One writer per canonical owner file."
+  },
+  "task_updates": [
+    {
+      "id": "P-00",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Origin verified as https://github.com/arbiterForge/codeArbiter.git (owner casing arbiterForge, repo codeArbiter).",
+        "major/state-contracts absent locally and on origin before creation; created from inspected origin/main 33abc347 in a new worktree (codeArbiter-worktrees/major-state-contracts). Primary worktree and its uncommitted gate-events.log / untracked .codex-remote-attachments untouched.",
+        "Intake corpus imported byte-for-byte under docs/state-contracts-major/ with a scoped -text .gitattributes rule; 105 MANIFEST sha256 entries match.",
+        "Source drift worklist generated (16 cited paths changed since audit; 14 tasks require source revalidation)."
+      ],
+      "tested": [
+        "tools/validate_packet.py --repo <worktree> --initial: PASSED (82 tasks, 70 findings, 287 machines, 1748 rows, 31 scenarios, 252 cited source paths exist, graph acyclic). Structure-only; not product qualification. Windows run needed a separator/encoding shim outside the corpus (see CHECKPOINT environment notes)."
+      ],
+      "remaining": [
+        "Verify committed-blob hashes (not just working copy) after first commit.",
+        "Disposable-clone exercise of bootstrap with pre-existing branch and dirty worktree cases."
+      ],
+      "evidence": []
+    },
+    {"id": "P-01", "status": "NEXT", "implemented": [], "tested": [], "evidence": []},
+    {"id": "P-02", "status": "NEXT", "implemented": [], "tested": [], "evidence": []}
+  ],
+  "later_decisions": [],
+  "pending_user_decisions": [
+    {"id": "D-PROGRESS", "state": "WORKSHOP_REQUIRED", "blocks": ["NT-09"], "source": "SMARTS-PROGRESS-EVIDENCE.md"},
+    {"id": "D-HIGH", "state": "TARGETED_DECISION_REQUIRED", "blocks": ["HW-09", "HW-20 (via HW-09)"]},
+    {"id": "D-GOV-PRETAG", "state": "TARGETED_DECISION_REQUIRED", "blocks": ["R-03"]},
+    {"id": "OBS-DELETE-BRANCH-ON-MERGE", "state": "NEEDS_USER_CHOICE_BEFORE_Q-03", "blocks": [], "detail": "Repository setting delete_branch_on_merge=true would delete major/state-contracts when the final promotion PR merges; BRANCH-AND-RELEASE requires keeping it through publication verification. Options: deletion-restricting ruleset on major/state-contracts, or toggle the setting at promotion. Settings changes are outward-facing and need B's yes."}
+  ],
+  "new_required_work": [],
+  "new_transition_rows": [],
+  "evidence_records": [],
+  "observations": [
+    {"what": "main branch protection", "observed": "required context '[GATE ] | [REPO] | Merge readiness', strict=true (ci.yml comment says strict:false - comment is stale), 0 required reviews, conversation resolution required, no force-push/deletion", "how": "gh api repos/arbiterForge/codeArbiter/branches/main/protection", "date": "2026-11-12"},
+    {"what": "rulesets", "observed": "tag immutability + distribution tag rulesets; branch rulesets only for refs/heads/ca-marketplace and refs/heads/ca-codex-marketplace (do not match major/*)", "date": "2026-11-12"},
+    {"what": "publication admission", "observed": "release.yml runs on workflow_run only when conclusion=success, event=push, head_branch=main, same repository, or workflow_dispatch on refs/heads/main; docs.yml deploy job requires github.ref == refs/heads/main", "date": "2026-11-12"},
+    {"what": "current targets", "observed": "ca 3.8.7 (v3.8.7 latest), ca-codex 0.26.7, ca-pi 0.27.7 published; ca-sandbox 0.1.10; ca-pi-v0.27.5 and ca-pi-v0.27.4 remain DRAFT (cause not established)", "date": "2026-11-12"},
+    {"what": "parallel main activity", "observed": "open PRs #1097 (codex/adr-lifecycle-contract), #1066 (receipt reconciliation, overlaps R-01 territory), dependabot #1092/#1093; main ships patch releases frequently, so candidate versions must not collide with main's patch stream", "date": "2026-11-12"}
+  ],
+  "scoped_blockers": [],
+  "unknown_outcomes": [],
+  "next_actions": [
+    "Commit P-00 bootstrap, push major/state-contracts (push CI does not yet admit the branch, so no new workflow exposure), open draft WIP PR to main marked do-not-merge.",
+    "P-01: add major/state-contracts to ci.yml pull_request + push admission, docs validation, codeql; implement integration candidate version rule in payload_version_gate.py and tools/build-host-packages.py --release-guard-base with fixtures; verify actual run logs for job selection.",
+    "Ask B the consolidated D-PROGRESS / D-HIGH / D-GOV-PRETAG question with options and recommendations."
+  ],
+  "delivery_state": "NOT_STARTED",
+  "trusted_readiness_reference": null,
+  "distribution_settlement_references": []
+}

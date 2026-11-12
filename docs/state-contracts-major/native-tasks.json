@@ -1,0 +1,2021 @@
+{
+  "schema": "codearbiter.audit-handoff.native-tasks/1 (handoff-only; not a repository runtime format)",
+  "source_repository": "arbiterForge/codeArbiter",
+  "source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "Current native implementation plus explicitly requested reviewer/recovery interfaces; no excluded/downstream context",
+  "implementation_status": "No repository code edited and no native tests executed during this handoff. These are instructions for the receiving CLI agent.",
+  "branch_policy": "Separate integration branch until the entire authorized implementation and tests are complete; then a new major release under release-owner gates.",
+  "user_decisions": [
+    "Only dependent work waits on unresolved semantic conflicts; independent authorized work continues.",
+    "Corrected debug/reviewer submissions are allowed as new linked attempts, preserving genuine denial and terminal history.",
+    "Pi child authors require actual supported scoped parent delegation.",
+    "Durable interruption recovery is required without ordinary-progress permission ceremony.",
+    "Progress/evidence representation remains pending B discussion."
+  ],
+  "preserved_invariants": [
+    "Typed closed schemas and immutable stable record IDs; no ID reuse or tombstone erasure.",
+    "Ordinary progress does not mint approval, verification, review, permission or release claims.",
+    "Historical evidence and negative results remain inspectable; stale/unknown is never relabeled current pass.",
+    "CAS expected revision/model hashes, anchored safe paths, bounded reads/writes and safe HTML rendering remain.",
+    "Same logical retry keeps operation ID/request hash; committed replay never overwrites later work.",
+    "Prepared multi-file transaction integrity guard is distinct from semantic task conflict; preserve until safe recovery/isolation.",
+    "No new database/daemon/dynamic plugin/rule interpreter or stored-command execution."
+  ],
+  "smarts_discussion": {
+    "packet": "native-smarts.md",
+    "status": "pending B",
+    "options": [
+      "A: compatibility overlay",
+      "B: independent progress with derived evidence assessment",
+      "C: independent progress with persisted assessment"
+    ],
+    "provisional_recommendation": "B",
+    "strength": "moderate",
+    "rationale": "Maintainable and Reliable favor one progress fact and immutable evidence; A retains a concrete old-client availability advantage. B needs explicit versioned migration without guessing legacy STALE.",
+    "unknowns": [
+      {
+        "lens": "Scalable",
+        "missing_observation": "Expected history volume and read frequency at the intended horizon",
+        "decision_critical": false,
+        "why_noncritical": "No workload/SLA has been supplied that selects a representation; all proposed designs remain bounded and file-backed. Reopen if representative measurements defeat bounded reads."
+      }
+    ],
+    "canon_files": [
+      "core/surface/includes/smarts/core.md",
+      "core/surface/includes/smarts/lenses.md",
+      "core/surface/includes/smarts/decision-log-format.md"
+    ],
+    "no_decision_record_created": true
+  },
+  "findings": [
+    {
+      "id": "N-F01",
+      "severity": "high",
+      "status": "source-confirmed; not runtime reproduced",
+      "title": "Ordinary context previews poison strict snapshot output recognition",
+      "detail": "contextOrdinaryPreview calls PutDerived(\"context-previews\"), but internalOutputsWith does not allow that reserved directory. Any successful preview therefore creates a directory that a subsequent strict Snapshot refuses as UNRECOGNIZED_OUTPUT. Completion normalized workspace scanning shares the same recognizer. Ordinary progress can still work; strict verification, review/quality/farm consumers can fail.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/context_assistive.go",
+          "symbol": "contextOrdinaryPreview",
+          "lines": [
+            40
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/context_assistive.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "symbol": "PutDerived",
+          "lines": [
+            168
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/infrastructure.go"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/snapshot.go",
+          "symbol": "internalOutputsWith",
+          "lines": [
+            88
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/snapshot.go"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/completion_workspace.go",
+          "symbol": "completionWorkspace",
+          "lines": [
+            452
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+        }
+      ],
+      "recommendation": "Add a closed validated context-preview output contract and exercise preview→snapshot→completion composition. Do not broadly ignore arbitrary .artifacts contents."
+    },
+    {
+      "id": "N-F02",
+      "severity": "medium",
+      "status": "source-confirmed",
+      "title": "Implemented repair-apply absent from capability operation list",
+      "detail": "protocol RequestSchema and JournaledMutation and Run support repair-apply; operations list returned by Names excludes it. Agent capability discovery cannot enumerate this implemented event.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "operations",
+          "lines": [
+            1
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "RequestSchema",
+          "lines": [
+            63
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "JournaledMutation",
+          "lines": [
+            56
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "repair",
+          "lines": [
+            562
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        }
+      ],
+      "recommendation": "Derive operation names, request dispatch coverage, side-effect class and lock policy from one repository-owned typed registry, with exhaustive coverage checks."
+    },
+    {
+      "id": "N-F03",
+      "severity": "medium",
+      "status": "source-confirmed semantics; intent requires product decision",
+      "title": "Ordinary reconciliation and blocking propagate different task-state invalidation",
+      "detail": "task-block calls invalidateDependents and writes STALE to every transitive dependent except PENDING/BLOCKED. Receipt-free task-reconcile changes selected state without invalidating dependents; receipted nonREVIEW reconciliation does invalidate. Stored STALE conflates progress and evidence/dependency assessment, despite ADR-0043 stating those are separate.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/assistive.go",
+          "symbol": "recordWork",
+          "lines": [
+            152
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "progress",
+          "lines": [
+            278
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "invalidateDependents",
+          "lines": [
+            252
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+          "symbol": "",
+          "lines": [
+            1
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0043-assistive-state-engine.md"
+        }
+      ],
+      "recommendation": "Specify existing branches explicitly; keep stored compatibility states for now, add orthogonal dependency/evidence assessments. Change propagation only through a versioned deliberate semantic migration with blocked-stop tests."
+    },
+    {
+      "id": "N-F04",
+      "severity": "medium",
+      "status": "source-confirmed",
+      "title": "Two kinds of review completion share REVIEW and accept-scope dispatch",
+      "detail": "Ordinary task-review means implementation reported ready, strict task-review means exact verification+review chain consumed; both store REVIEW. Ordinary accept-scope records DONE while strict path records ACCEPTED. The difference depends on request fields and available evidence, so event names alone are insufficient.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/assistive.go",
+          "symbol": "recordWork",
+          "lines": [
+            152
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "progress",
+          "lines": [
+            278
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/prerequisite_observation.go",
+          "symbol": "finishScope",
+          "lines": [
+            66
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/prerequisite_observation.go"
+        }
+      ],
+      "recommendation": "Expose effect/claim semantics and allowed next events in operation metadata/structured context; preserve legacy wire names and receipts."
+    },
+    {
+      "id": "N-F05",
+      "severity": "low",
+      "status": "source-confirmed",
+      "title": "Read-side effects depend on operation mode and platform",
+      "detail": "Contextual read writes content-addressed delivery tokens; exact read does not. Darwin shared nativeLock invokes lockFile which creates metadata if absent. Windows shared observations explicitly require existing metadata and never initialize; Linux locks repository directory. The initStore comment \"Reads never initialize\" is too broad for Darwin.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "symbol": "Page",
+          "lines": [
+            320
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_lock_darwin.go",
+          "symbol": "nativeLock",
+          "lines": [
+            12
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_lock_darwin.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "symbol": "lockFile",
+          "lines": [
+            624
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_lock_windows.go",
+          "symbol": "ObservationLock",
+          "lines": [
+            59
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_lock_windows.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "initStore",
+          "lines": [
+            57
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        }
+      ],
+      "recommendation": "Represent read-only/metadata-writing/external-effect traits explicitly and state native platform differences precisely; do not infer mutation class from command name."
+    },
+    {
+      "id": "N-F06",
+      "severity": "low",
+      "status": "source-confirmed",
+      "title": "Stored check-status vocabulary exceeds reachable public mutation behavior",
+      "detail": "Work schema and renderers permit/display unknown/passed/failed, but work create/adoption initialize unknown and all native implemented lifecycle updates leave check_status unchanged. This is schema capacity, not proof of an implemented passed/failed event.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/schema/work.schema.json",
+          "symbol": "",
+          "lines": [
+            1
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/schema/work.schema.json"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "symbol": "workCreate",
+          "lines": [
+            106
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "symbol": "workUpdate",
+          "lines": [
+            731
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_adopt.go",
+          "symbol": "workAdopt",
+          "lines": [
+            312
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_adopt.go"
+        }
+      ],
+      "recommendation": "Classify schema-only states as such in machine contract/capabilities; do not invent an event or migrate progress into proof."
+    },
+    {
+      "id": "N-F07",
+      "severity": "low",
+      "status": "source-confirmed comment contradiction",
+      "title": "Task context does inspect scoped source for recorded checks",
+      "detail": "taskContext comment says it does not inspect source files. It calls assessTaskChecks, which invokes scopedInputDigest and reads bounded declared paths, shared inputs and known build manifests.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/task_context.go",
+          "symbol": "taskContext",
+          "lines": [
+            13
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/task_context.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/task_check.go",
+          "symbol": "assessTaskChecks",
+          "lines": [
+            151
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/task_check.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/input_scope.go",
+          "symbol": "scopedInputDigest",
+          "lines": [
+            39
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/input_scope.go"
+        }
+      ],
+      "recommendation": "Correct the bounded-read claim; keep source-scope disclosure in context output and performance expectations."
+    },
+    {
+      "id": "N-F08",
+      "severity": "low",
+      "status": "source-confirmed stale diagnostic",
+      "title": "Unsupported-platform message still describes Windows/macOS as pending",
+      "detail": "fs_other.unsupported says repository operations require Linux and Windows/macOS promotion pending; supported Darwin/Windows build files enable NativeWrites with actual backends. This is stale diagnostic prose, not evidence those supported platforms are disabled.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/store/fs_other.go",
+          "symbol": "unsupported",
+          "lines": [
+            26
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_other.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "symbol": "NativeWrites",
+          "lines": [
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go"
+        }
+      ],
+      "recommendation": "Generate platform capability text from current backend declaration or restrict diagnostic to unsupported GOOS without making release claims."
+    },
+    {
+      "id": "N-F09",
+      "severity": "medium",
+      "status": "Producer output reproduced in Python; native rejection source-confirmed only",
+      "title": "Valid npm launch bindings exceed native completion consumer cap",
+      "detail": "commandBindingSchema accepts 37 launch files and validateQualifiedBinding accepts 32 workspace manifests. completionWorkspacesOnce rejects any launch_files length above32. Hooks agent exercised actual Python _bind_commands with real temporary Git/npm fixtures:31 workspace manifests produced33 launch files;32 produced34 on POSIX. Windows adapted npm source can produce37. Evidence stored in audit-work/probe_launch_binding_results.json; no native Go test executed.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/observation/contract.go",
+          "symbol": "commandBindingSchema",
+          "lines": [
+            118
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/contract.go"
+        },
+        {
+          "path": "core/artifacts/internal/observation/runner_contract.go",
+          "symbol": "validateQualifiedBinding",
+          "lines": [
+            36
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/runner_contract.go"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/completion_workspace.go",
+          "symbol": "completionWorkspacesOnce",
+          "lines": [
+            364
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+        }
+      ],
+      "recommendation": "Use one role-aware binding bound across producer, schema and consumer; add boundary fixtures at32/33/37 with actual npm layouts without executing stored commands."
+    },
+    {
+      "id": "N-F10",
+      "severity": "medium",
+      "status": "source-confirmed; not runtime reproduced",
+      "title": "Retirement with retained task checks or scope baselines is rejected as orphan state",
+      "detail": "syncExecution removes retired live task states but retains task_check_observations and existing scopes. Changes appends tombstones under retired_symbols. symbol.Build gives these tombstones Kind=retired_symbols; planStructure accepts historical checks for nonlive IDs only when Retired and Kind=tasks, impossible for the emitted tombstone. render.Prepare calls Structural, so task retirement after task-check fails ORPHAN_STATE. Removing a checkpoint with retained scope baseline similarly yields ORPHAN_STATE because syncExecution does not retire/remove scope entries.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "syncExecution",
+          "lines": [
+            90
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        },
+        {
+          "path": "core/artifacts/internal/symbol/index.go",
+          "symbol": "Build",
+          "lines": [
+            27
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/symbol/index.go"
+        },
+        {
+          "path": "core/artifacts/internal/validate/validate.go",
+          "symbol": "planStructure",
+          "lines": [
+            236
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "symbol": "Prepare",
+          "lines": [
+            50
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/render/render.go"
+        }
+      ],
+      "recommendation": "Define retired-state ownership explicitly: preserve original record kind or validate history against an explicit typed retirement record; archive/retire scope baselines consistently. Preserve original evidence and journal history; do not simply delete checks to make retirement pass."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "NT-01",
+      "title": "Pin old-reader fixtures and preservation contracts",
+      "finding_ids": [],
+      "classification": "test and contract baseline",
+      "owner": "Native model/schema/store maintainers; integration CLI",
+      "decision_status": "authorized preparation; no product semantic choice",
+      "hard_dependencies": [],
+      "verification_dependencies": [],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/go.mod",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/go.mod"
+        },
+        {
+          "path": "tools/test-artifact-mixed-schema.py",
+          "symbol": "exercise",
+          "lines": [
+            62
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/test-artifact-mixed-schema.py"
+        },
+        {
+          "path": "tools/test-artifact-work-old-client.py",
+          "symbol": "exercise",
+          "lines": [
+            46
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/test-artifact-work-old-client.py"
+        },
+        {
+          "path": "core/artifacts/internal/store/crash_test.go",
+          "symbol": "TestProcessDeathRecovery",
+          "lines": [
+            17
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/crash_test.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/assistive_test.go",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive_test.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/operations/assistive_test.go",
+        "core/artifacts/internal/operations/dependency_advice_test.go",
+        "core/artifacts/internal/store/crash_test.go",
+        "tools/test-artifact-mixed-schema.py",
+        "tools/test-artifact-work-old-client.py"
+      ],
+      "implementation_steps": [
+        "Record integration start commit, current source delta, exact built native binary SHA-256 and supported schema/protocol/profile versions before comparing behavior.",
+        "Retain existing fixed 0.3.1→0.3.2 compatibility fixture; add current inspected 0.3.2 baseline→new candidate fixture when a new version is chosen. Do not edit the old fixture into pretending its historical client understands new fields.",
+        "Build fixture states covering all seven current task labels; ordinary versus receipted REVIEW; DONE versus ACCEPTED; reported pass/fail/skip/unknown; scoped prerequisites; retired symbols; scope baselines; immutable evidence; prepared/committed/rolled-back journals.",
+        "Capture byte/hash expectations for stable identity, stopped work, actual negative outcomes, bounded current history plus journal history, CAS, operation-ID replay and no authority creation during ordinary progress.",
+        "Separate tests preserving required behavior from tests that encode deliberately changing semantics, notably task-block marking transitive work STALE. Such tests change only with NT-09's recorded decision."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Old reader and two later writes",
+          "steps": [
+            "Old client creates spec/plan and records explicit stop",
+            "Candidate reads without mutation",
+            "Candidate performs schema-changing write",
+            "Candidate performs a later independent write",
+            "Old client attempts read/write",
+            "Replay original and later candidate requests",
+            "Restore complete preupgrade store into a separate root"
+          ],
+          "expected": [
+            "Original IDs and stop survive; candidate reads do not rewrite; old client refuses unsupported state; replay preserves later bytes; separate restoration is readable without replacing the live store"
+          ],
+          "existing_owner_files": [
+            "tools/test-artifact-mixed-schema.py"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Baseline ordinary work",
+          "steps": [
+            "Create a draft plan without approval/context ticket",
+            "Start work, report implementation ready, record failed/unknown check",
+            "Read eligibility and context"
+          ],
+          "expected": [
+            "No fabricated authority files; ordinary progress remains available; reported failures and unassessed proof remain explicit"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/assistive_test.go",
+            "core/artifacts/internal/operations/task_check_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/model ./internal/schema ./internal/operations ./internal/store",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python tools/test-artifact-mixed-schema.py --old /absolute/old/ca-artifact --candidate /absolute/candidate/ca-artifact",
+          "cwd": ".",
+          "note": "Existing arguments; supply built exact-client paths and record their digests. Current script asserts 0.3.1→0.3.2; extend with an additional current-baseline case, do not claim it already covers future schema."
+        }
+      ],
+      "backward_read": "Preserve inspection of historical versions; never silently rewrite on read.",
+      "migration": "Fixtures run only in disposable repositories. Capture complete-store backup and binding facts before introducing any new-format writer.",
+      "rollback": "Test separate-root complete restoration and forward export with later writes retained; no universal downgrade claim.",
+      "completion_evidence": [
+        "Fixture source commits and binary digests",
+        "Observed exact old/new schema matrix",
+        "Existing invariant assertions plus identified intentional-change assertions"
+      ]
+    },
+    {
+      "id": "NT-02",
+      "title": "Close context-preview producer/output-consumer contract",
+      "finding_ids": [
+        "N-F01"
+      ],
+      "classification": "confirmed compatibility bug fix",
+      "owner": "Native operations, contextdocument, store and evidence owners",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/context_assistive.go",
+          "symbol": "contextOrdinaryPreview",
+          "lines": [
+            40
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/context_assistive.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "symbol": "PutDerived",
+          "lines": [
+            168
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/infrastructure.go"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/snapshot.go",
+          "symbol": "internalOutputsWith",
+          "lines": [
+            88
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/snapshot.go"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/completion_workspace.go",
+          "symbol": "completionWorkspace",
+          "lines": [
+            452
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/operations/context_assistive.go",
+        "core/artifacts/internal/store/infrastructure.go",
+        "core/artifacts/internal/evidence/snapshot.go",
+        "core/artifacts/internal/evidence/completion_workspace.go",
+        "core/artifacts/internal/contextdocument/contract.go"
+      ],
+      "implementation_steps": [
+        "Add context-previews to a closed typed internal-output contract consumed by PutDerived admission and evidence output recognition. Avoid a broad ignore rule or unvalidated 'known directory' shortcut.",
+        "Factor the existing codearbiter.context-preview/0.1.0 record contract into a dependency-safe owner; validate required/unknown fields, mode, bound document/target, hashes, bounded before-images and actual request semantics.",
+        "Distinguish stored-format validation from current applicability: old valid previews remain recognizable outputs after target bytes change, while context-apply retains exact preview/current-before-image checks.",
+        "Use the same validated output recognition for Snapshot and normalized completion closure; preserve bounded scans, anchored no-follow traversal, retained byte limits and arbitrary reserved-output rejection.",
+        "Keep existing ordinary preview/apply behavior, hashes, filenames, no-permission boundary and response omissions stable."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Composed ordinary preview and strict consumers",
+          "steps": [
+            "Create a valid ordinary context preview",
+            "Take strict Snapshot",
+            "Collect normalized completion workspace",
+            "Apply unchanged preview",
+            "Repeat original apply"
+          ],
+          "expected": [
+            "Preview no longer produces UNRECOGNIZED_OUTPUT; preview remains derived, not authority; actual context mutation keeps CAS and idempotent replay"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/context_assistive_test.go",
+            "core/artifacts/internal/evidence/snapshot_test.go",
+            "core/artifacts/internal/evidence/completion_workspace_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Historical valid and invalid output",
+          "steps": [
+            "Retain a valid preview then change its target",
+            "Read snapshot/completion",
+            "Try applying stale preview",
+            "Introduce malformed/digest-mismatched/nested/linked preview entries"
+          ],
+          "expected": [
+            "Valid historical preview is recognizable; stale application refuses; malformed/unsafe reserved contents still fail closed"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/context_assistive_test.go",
+            "core/artifacts/internal/evidence/snapshot_hardening_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/contextdocument ./internal/operations ./internal/evidence",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "Accept existing valid preview objects without changing their bytes or upgrading receipt authority.",
+      "migration": "No model migration required for valid 0.1.0 previews. Repair damaged previews only through an explicit, bounded owned repair; never delete history automatically.",
+      "rollback": "Reverting only the consumer fix restores the prior defect; keep reader support with any producer that can emit the namespace. Retain existing preview and journal bytes.",
+      "completion_evidence": [
+        "Positive preview→snapshot→completion run",
+        "Negative closed-format/path cases",
+        "Observed snapshot and completion closure parity"
+      ]
+    },
+    {
+      "id": "NT-03",
+      "title": "Unify operation discovery and finite effect traits",
+      "finding_ids": [
+        "N-F02"
+      ],
+      "classification": "compatibility fix plus behavior-preserving internal refactor",
+      "owner": "Native operations protocol/dispatch owner",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "operations",
+          "lines": [
+            1
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "RequestSchema",
+          "lines": [
+            63
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "JournaledMutation",
+          "lines": [
+            56
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "repair",
+          "lines": [
+            562
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/operations/protocol.go",
+        "core/artifacts/internal/operations/engine.go",
+        "core/artifacts/internal/operations/protocol_test.go",
+        "core/artifacts/internal/operations/capabilities_test.go"
+      ],
+      "implementation_steps": [
+        "Advertise repair-apply and define one compile-time repository-owned descriptor for every implemented operation.",
+        "Have Names, request contract mapping and finite operation traits derive from or be exhaustively checked against that descriptor set. Keep domain transition/guard code explicit in its owning package.",
+        "Describe actual operation mode: selected read/contextual read, journaled model mutation, immutable capture/derived metadata writes, lock policy and evidence-claim versus ordinary progress. JournaledMutation is not a permission or no-write classifier.",
+        "Add reverse dispatch coverage; iterating Names alone cannot detect omitted handlers. Verify unknown operations and unknown request keys remain rejected.",
+        "Expose descriptors through a versioned compatible capability/result shape only after checking current consumers; preserve existing operation names and protocol unless explicitly versioned."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Discover and execute repair",
+          "steps": [
+            "Query capabilities",
+            "Select repair-preview and repair-apply from advertised operations",
+            "Apply valid repair with CAS",
+            "Replay exact operation"
+          ],
+          "expected": [
+            "Both operations discoverable; correct side-effect/lock traits; original outcome replayed without repeated mutation"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/capabilities_test.go",
+            "core/artifacts/internal/operations/protocol_test.go",
+            "core/artifacts/internal/operations/engine_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Registry reverse closure",
+          "steps": [
+            "Enumerate handlers independently of Names",
+            "Compare schemas, descriptors and discoverable names",
+            "Submit unknown operation/key"
+          ],
+          "expected": [
+            "Omitted or extra operation fails test; invalid calls remain closed; no hidden dynamic registration"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/protocol_test.go",
+            "core/artifacts/internal/operations/protocol_boundary_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/operations -run 'TestAllOperationSchemasClosed|TestCapabilities|TestCaptureRequest|TestApplyRejects'",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python .github/scripts/test_artifact_surface.py",
+          "cwd": ".",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "Existing wire names and request grammar stay stable. Older capability consumers must tolerate the explicitly selected descriptor version or receive their supported projection.",
+      "migration": "None for existing artifact models; new capability metadata needs consumer-parity checks, not silent addition to a closed old schema.",
+      "rollback": "Keep compatibility list coverage while reverting implementation changes; never leave advertised operations without dispatch or dispatched mutations hidden.",
+      "completion_evidence": [
+        "Exact operation-set equality witnesses",
+        "Repair discovery/apply/replay result",
+        "Canonical and generated consumer parity"
+      ]
+    },
+    {
+      "id": "NT-04",
+      "title": "Align role-aware launch-file bounds across native and Python",
+      "finding_ids": [
+        "N-F09"
+      ],
+      "classification": "confirmed producer/consumer compatibility bug fix",
+      "owner": "Native observation/evidence owners with hook producer owner",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/observation/contract.go",
+          "symbol": "commandBindingSchema",
+          "lines": [
+            118
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/contract.go"
+        },
+        {
+          "path": "core/artifacts/internal/observation/runner_contract.go",
+          "symbol": "validateQualifiedBinding",
+          "lines": [
+            36
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/runner_contract.go"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/completion_workspace.go",
+          "symbol": "completionWorkspacesOnce",
+          "lines": [
+            364
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+        }
+      ],
+      "cross_owner_dependencies": [
+        "Hook producer integration task consumes NT-04; use actual _bind_commands fixtures"
+      ],
+      "files": [
+        "core/artifacts/internal/observation/contract.go",
+        "core/artifacts/internal/observation/runner_contract.go",
+        "core/artifacts/internal/evidence/completion_workspace.go",
+        "core/artifacts/internal/observation/runner_contract_test.go",
+        "core/artifacts/internal/evidence/completion_workspace_test.go"
+      ],
+      "implementation_steps": [
+        "Centralize native maximum launch-file and per-role limits; preserve 32 workspace-manifest roles and bounded total 37 for the actual admitted npm layout.",
+        "Use the same limits in schema, qualified role semantic validation and completion consumer. observation is already imported by evidence; prefer a small helper/constant over a new dependency cycle.",
+        "Retain unique paths, singleton non-workspace roles, role/path/argv agreement, manifest containment, executable/runtime identity, hashes and repeated read identity checks.",
+        "Check producer contract through shared versioned fixture data or generated metadata, including actual POSIX producer results; coordinate rather than duplicate Python business rules.",
+        "Keep historical declared-command profiles distinct. Do not reinterpret older unqualified evidence or execute stored command text while inspecting bindings."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Actual producer boundaries",
+          "steps": [
+            "Create real temporary npm/Git layouts with 30, 31 and 32 workspace manifests",
+            "Produce bindings through actual Python helper",
+            "Pass those exact binding bytes through native qualified contract and completion"
+          ],
+          "expected": [
+            "Total 32/33/34 accepted for valid POSIX cases; declared workspace role cap stays 32; no verifier command executes as a side effect of binding validation"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/observation/runner_contract_test.go",
+            "core/artifacts/internal/evidence/completion_workspace_test.go",
+            "audit-work/probe_launch_binding.py"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Windows and negative boundary",
+          "steps": [
+            "On native Windows construct supported wrapper/runtime/CLI/prefix+32 workspace layout",
+            "Validate 37 launch files",
+            "Try 38 total, 33 workspace roles, duplicate singleton/path, changed launch bytes or identity and relabeled profile"
+          ],
+          "expected": [
+            "Valid 37 accepted; each malformed/changed binding rejected; historical profiles retain prior semantics"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/observation/runner_contract_test.go",
+            "core/artifacts/internal/evidence/completion_identity_windows_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/observation ./internal/evidence",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "No format expansion beyond the existing admitted 37-file schema; preserve historical profile branches and strict identities.",
+      "migration": "None required for valid retained bindings. Existing failures retry with the same logical evidence/request only if their prior outcome is known; changed input needs a newly captured observation.",
+      "rollback": "Producer and consumer must remain compatible as a cohort. Do not ship the old 32-total consumer with a producer capable of valid larger output.",
+      "completion_evidence": [
+        "Exact cross-language fixture bytes/digests",
+        "Native POSIX and Windows boundary outputs",
+        "Malformed role/path/identity negative results"
+      ],
+      "evidence_status": "Python producer count reproduced during audit; native rejection source-confirmed only until these tests execute."
+    },
+    {
+      "id": "NT-05",
+      "title": "Preserve typed retirement and historical execution ownership",
+      "finding_ids": [
+        "N-F10"
+      ],
+      "classification": "bug fix requiring explicit versioned representation/migration",
+      "owner": "Native model/schema/symbol/operations/validation/render owners",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "syncExecution",
+          "lines": [
+            90
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        },
+        {
+          "path": "core/artifacts/internal/symbol/index.go",
+          "symbol": "Build",
+          "lines": [
+            27
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/symbol/index.go"
+        },
+        {
+          "path": "core/artifacts/internal/validate/validate.go",
+          "symbol": "planStructure",
+          "lines": [
+            236
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "symbol": "Prepare",
+          "lines": [
+            50
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/render/render.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/operations/mutations.go",
+        "core/artifacts/internal/symbol/index.go",
+        "core/artifacts/internal/validate/validate.go",
+        "core/artifacts/internal/schema/common.schema.json",
+        "core/artifacts/internal/schema/plan.schema.json",
+        "core/artifacts/internal/model/artifact.go",
+        "core/artifacts/internal/render/render.go"
+      ],
+      "implementation_steps": [
+        "Design a closed versioned retirement record that retains original kind, exact ID, retirement revision/reason/replacement and ownership of retained historical execution/checkpoint data.",
+        "Populate new original-kind information from the pre-mutation symbol index, including nested records; never from an ID-prefix guess.",
+        "Change syncExecution/structural validation together so checked tasks and scopes can retire without ORPHAN_STATE, and retained retired data cannot appear as live scheduling or proof.",
+        "Keep all reported checks, baseline hashes, evidence references, original reasons and transaction history. Do not delete data to pass validation.",
+        "Read legacy untyped tombstones conservatively. Resolve original kind only from verified preimages/exact historical models; otherwise preserve explicitly unclassified history and constrain only operations needing its ownership.",
+        "Preserve no-ID-reuse and immutable-tombstone rules; version old/new schemas and compatibility readers together.",
+        "Recompute canonical/model/normative hashes through the actual versioned codec. Keep old evidence bound to its original hashes as history; do not rewrite receipts or mark migrated evidence current merely because the structural repair succeeded."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Checked task retirement",
+          "steps": [
+            "Create task and record pass then fail",
+            "Retire task with reason and update current references",
+            "Read/render retained task history",
+            "Try adding a new task with retired ID"
+          ],
+          "expected": [
+            "Retirement succeeds; both outcomes retained; retired task absent from live scheduling; ID reuse rejected"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/migration_test.go",
+            "core/artifacts/internal/operations/task_check_test.go",
+            "core/artifacts/internal/validate/validate_test.go",
+            "core/artifacts/internal/symbol/index_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Checkpoint retirement and interruption",
+          "steps": [
+            "Create receipted scope baseline",
+            "Retire checkpoint and its current ownership according to valid plan partition",
+            "Interrupt journal stages/replace",
+            "Complete or rollback",
+            "Inspect history and retry"
+          ],
+          "expected": [
+            "No orphan baseline; exact scope history remains historical; no mixed/duplicate retirement; existing third-party edits never overwritten"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/migration_test.go",
+            "core/artifacts/internal/store/crash_test.go",
+            "core/artifacts/internal/render/render_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Unknown legacy kind",
+          "steps": [
+            "Read old tombstone without kind and without trustworthy preimage",
+            "Preview migration",
+            "Try task-proof inference from ID prefix",
+            "Continue unrelated valid work"
+          ],
+          "expected": [
+            "Ambiguity retained; unsupported inference rejected; no blanket semantic block"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/migration_test.go",
+            "core/artifacts/internal/validate/validate_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/operations ./internal/model ./internal/schema ./internal/symbol ./internal/validate ./internal/render ./internal/store",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "Old tombstones remain inspectable; old clients refuse unsupported new representation before mutation. Original typed evidence is never reinterpreted by name.",
+      "migration": "Explicit preview and CAS-bound versioned write; record source hashes and complete store. Can proceed independently of progress/evidence choice if its schema migration composes with the chosen final version.",
+      "rollback": "Existing prepared-transaction recovery only; after later edits preserve current store and forward recover/export. Restore complete old snapshot into a separate root.",
+      "completion_evidence": [
+        "Retirement sequences with checks and scope baselines",
+        "No-ID-reuse/immutable tombstone negatives",
+        "Legacy ambiguity and exact-client migration evidence"
+      ]
+    },
+    {
+      "id": "NT-06",
+      "title": "Declare actual read effects, platform locks and bounded task-context reads",
+      "finding_ids": [
+        "N-F05",
+        "N-F07"
+      ],
+      "classification": "behavior-preserving claim/contract correction",
+      "owner": "Native read/operations/store owners and generated documentation owner",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [
+        "NT-03"
+      ],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "symbol": "Page",
+          "lines": [
+            320
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_lock_darwin.go",
+          "symbol": "nativeLock",
+          "lines": [
+            12
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_lock_darwin.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "symbol": "lockFile",
+          "lines": [
+            624
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_lock_windows.go",
+          "symbol": "ObservationLock",
+          "lines": [
+            59
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_lock_windows.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "initStore",
+          "lines": [
+            57
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/task_context.go",
+          "symbol": "taskContext",
+          "lines": [
+            13
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/task_context.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/task_check.go",
+          "symbol": "assessTaskChecks",
+          "lines": [
+            151
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/task_check.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/input_scope.go",
+          "symbol": "scopedInputDigest",
+          "lines": [
+            39
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/input_scope.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/read/read.go",
+        "core/artifacts/internal/operations/task_context.go",
+        "core/artifacts/internal/operations/task_check.go",
+        "core/artifacts/internal/operations/input_scope.go",
+        "core/artifacts/internal/operations/engine.go",
+        "core/artifacts/internal/store/fs_lock_darwin.go",
+        "core/artifacts/internal/store/fs_lock_windows.go",
+        "core/artifacts/internal/store/fs_portable.go"
+      ],
+      "implementation_steps": [
+        "Replace overbroad no-write/no-source-read comments with actual operation/mode/platform effects.",
+        "Classify contextual token writes separately from exact read, and metadata initialization separately from user/canonical changes.",
+        "Document Darwin shared-lock metadata creation, Windows existing-only observation locking and Linux backend behavior without changing locking semantics to satisfy prose.",
+        "Retain bounded source applicability reads in taskContext through assessTaskChecks/scopedInputDigest and disclose the declared input scope and unknown/omitted portions.",
+        "Keep exact/batch reads from claiming current worktree applicability they did not assess; no expanded source scan or automatic command execution."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Read modes and metadata",
+          "steps": [
+            "Run exact and contextual reads with present/absent metadata on each native platform",
+            "Compare created files and lock access",
+            "Run Windows read-only existing metadata path"
+          ],
+          "expected": [
+            "Declared traits match actual effects; existing locking safeguards remain; unsupported/missing metadata is explicit"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/read/read_test.go",
+            "core/artifacts/internal/operations/read_only_windows_test.go",
+            "core/artifacts/internal/store/readonly_lock_windows_test.go",
+            "core/artifacts/internal/operations/concurrent_readers_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Bounded context applicability",
+          "steps": [
+            "Record a command check",
+            "Change declared task/shared source",
+            "Read task-context",
+            "Change unrelated source and exact-read same task"
+          ],
+          "expected": [
+            "Relevant change affects applicability; unrelated source does not trigger broader claims; no checks execute; exact read keeps currentness unassessed"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/input_scope_test.go",
+            "core/artifacts/internal/operations/task_context_test.go",
+            "core/artifacts/internal/operations/task_check_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/read ./internal/operations ./internal/store",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "No persisted model change; retain old read modes and locks. Additional diagnostics need existing response compatibility checks.",
+      "migration": "None; canonical/generator descriptions change as one source-owned correction.",
+      "rollback": "Revert only descriptors/docs if needed, preserving safe lock and source-read behavior.",
+      "completion_evidence": [
+        "Actual native-platform file-effect matrix",
+        "Scoped/unrelated-source sequence",
+        "Exact read no-current-proof assertion"
+      ]
+    },
+    {
+      "id": "NT-07",
+      "title": "Label schema-only work check statuses without inventing transitions",
+      "finding_ids": [
+        "N-F06"
+      ],
+      "classification": "behavior-preserving schema/capability claim correction",
+      "owner": "Native work/schema/render owners",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/schema/work.schema.json",
+          "symbol": "",
+          "lines": [
+            1
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/schema/work.schema.json"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "symbol": "workCreate",
+          "lines": [
+            106
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "symbol": "workUpdate",
+          "lines": [
+            731
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_adopt.go",
+          "symbol": "workAdopt",
+          "lines": [
+            312
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_adopt.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/schema/work.schema.json",
+        "core/artifacts/internal/operations/work.go",
+        "core/artifacts/internal/operations/work_adopt.go",
+        "core/artifacts/internal/render/work_view.go"
+      ],
+      "implementation_steps": [
+        "Document accepted stored vocabulary unknown/passed/failed separately from public native events that actually set it.",
+        "Keep create/adopt initialization and updates honest; do not infer passed/failed from progress, completion or self-report.",
+        "Preserve reading/rendering historical passed/failed fields without claiming the current engine produced a verification event.",
+        "If capability metadata lists state/event reachability, mark these schema-only values explicitly; no new mutator or proof producer is added by this task."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Work lifecycle does not fabricate proof",
+          "steps": [
+            "Create/adopt work",
+            "Apply implemented lifecycle transitions and mark implementation complete",
+            "Read/render check_status",
+            "Read valid stored passed/failed historical fixtures"
+          ],
+          "expected": [
+            "Native progress does not manufacture check success/failure; historical values remain readable with honest provenance"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/work_test.go",
+            "core/artifacts/internal/render/work_view_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/operations -run 'TestWork'",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "go test ./internal/render",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "All currently accepted check_status values remain accepted and preserved.",
+      "migration": "None; never rewrite historical passed/failed to unknown merely because no current public event creates it.",
+      "rollback": "No data rewrite; retain old serialized values.",
+      "completion_evidence": [
+        "Capability vocabulary versus reachable events",
+        "Lifecycle no-proof-minting fixtures"
+      ]
+    },
+    {
+      "id": "NT-08",
+      "title": "Fix unsupported-platform diagnostic without new support claims",
+      "finding_ids": [
+        "N-F08"
+      ],
+      "classification": "diagnostic bug fix",
+      "owner": "Native store/capabilities owner",
+      "decision_status": "authorized compatibility/preservation work",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/store/fs_other.go",
+          "symbol": "unsupported",
+          "lines": [
+            26
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_other.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "symbol": "NativeWrites",
+          "lines": [
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go"
+        }
+      ],
+      "files": [
+        "core/artifacts/internal/store/fs_other.go",
+        "core/artifacts/internal/store/fs_portable.go",
+        "core/artifacts/internal/operations/capabilities_test.go"
+      ],
+      "implementation_steps": [
+        "Replace Linux-only/pending-Windows-macOS prose with the actual unsupported GOOS/backend and bounded supported-backend diagnostic.",
+        "Use existing NativeWrites and Backend declarations rather than a new independent platform list where possible.",
+        "Keep source capability distinct from native-tested package or released qualification; do not enable a platform, fetch a binary or infer installed-host enforcement."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Supported and unsupported capabilities",
+          "steps": [
+            "Build/test supported backend capability paths",
+            "Compile unsupported backend/test diagnostic",
+            "Query capabilities"
+          ],
+          "expected": [
+            "Linux/Darwin/Windows source declarations remain accurate; unsupported GOOS remains unavailable with truthful message; no unsupported runtime success is claimed"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/capabilities_test.go",
+            "core/artifacts/internal/store/fs_other.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/operations -run '^TestCapabilitiesReportActualStorageBackend$'",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "No format or supported backend change.",
+      "migration": "None.",
+      "rollback": "Diagnostic-only rollback has no model migration; do not reintroduce inaccurate support claims.",
+      "completion_evidence": [
+        "Supported native capability results",
+        "Unsupported build/message evidence clearly distinct from native execution"
+      ]
+    },
+    {
+      "id": "NT-09",
+      "title": "Implement the chosen progress/evidence representation and projections",
+      "finding_ids": [
+        "N-F03",
+        "N-F04"
+      ],
+      "classification": "intentional semantic change; design decision still open",
+      "owner": "B + receiving CLI for decision; native lifecycle/schema/read/render owners for implementation",
+      "decision_status": "PENDING B: compare A compatibility overlay, B independent progress with derived assessment (provisional moderate recommendation), C independent progress with persisted assessments",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/operations/assistive.go",
+          "symbol": "recordWork",
+          "lines": [
+            152
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "progress",
+          "lines": [
+            278
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "invalidateDependents",
+          "lines": [
+            252
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+          "symbol": "",
+          "lines": [
+            1
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0043-assistive-state-engine.md"
+        },
+        {
+          "path": "core/artifacts/internal/operations/assistive.go",
+          "symbol": "recordWork",
+          "lines": [
+            152
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "progress",
+          "lines": [
+            278
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/prerequisite_observation.go",
+          "symbol": "finishScope",
+          "lines": [
+            66
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/prerequisite_observation.go"
+        }
+      ],
+      "execution_gate": "Do not choose a persisted representation or migrate overloaded legacy states until B decides. Current-behavior characterization and independent fixes proceed.",
+      "files": [
+        "core/artifacts/internal/operations/assistive.go",
+        "core/artifacts/internal/operations/lifecycle.go",
+        "core/artifacts/internal/operations/prerequisite_observation.go",
+        "core/artifacts/internal/operations/task_context.go",
+        "core/artifacts/internal/operations/task_check.go",
+        "core/artifacts/internal/schema/common.schema.json",
+        "core/artifacts/internal/schema/plan.schema.json",
+        "core/artifacts/internal/model/artifact.go",
+        "core/artifacts/internal/read/read.go",
+        "core/artifacts/internal/render/render.go"
+      ],
+      "implementation_steps": [
+        "Discuss native-smarts.md with B using the actual six canonical lenses; record only the actual resulting decision through the owning lifecycle. Do not mint a pending recommendation as a selected option or approval.",
+        "Characterize and expose current ordinary REVIEW versus receipt-bearing REVIEW, and DONE versus ACCEPTED, with honest basis/currentness. Never infer independent proof from a label or receipt presence alone.",
+        "Implement the selected representation in all mutators and consumers together; progress, dependency readiness and evidence assessment must remain separately explainable under the approved semantic rules.",
+        "Preserve user-decided dependent-only conflicts: unresolved prerequisites and consequential decisions identify affected task/claim paths; independent work proceeds. Clear a stop only through a real resolution, never an upstream success or corrected JSON.",
+        "Preserve actual observations and later failures, explicit unknown/truncated history, duplicate-start protection, schema closure, stable IDs, CAS and idempotent replay.",
+        "Classify ordinary no-receipt progress as ordinary; preserve optional strict consumers without requiring receipts, context tickets or reviewer restarts for normal work.",
+        "For option B, compute applicability in one domain owner and make caches disposable/input-keyed. For C, define every invalidation event and current-basis recheck. For A, preserve visible legacy ambiguity rather than fake recovered progress.",
+        "Update deliberate old STALE tests, canonical guides and generated host projections only after the decision. Compatibility projection/version must be explicit for old consumers."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Separate progress from adverse evidence",
+          "steps": [
+            "Report implementation complete",
+            "Record actual applicable failure after an earlier pass",
+            "Read UI/context/eligibility/strict verification",
+            "Correct work and record fresh actual pass"
+          ],
+          "expected": [
+            "Progress never manufactures proof; failure remains in history and affects only dependent claims; fresh actual result is distinct from mutation of old evidence"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/assistive_test.go",
+            "core/artifacts/internal/operations/task_check_test.go",
+            "core/artifacts/internal/operations/check_conflicts_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Transitive scope and independent stop",
+          "steps": [
+            "Create A→B→C plus independent X",
+            "Record B's user stop",
+            "Block A",
+            "Resolve A",
+            "Inspect B/C/X selection"
+          ],
+          "expected": [
+            "Only dependent work waits; B's independent denial/reason survives; unrelated X continues; no duplicate dispatch"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/dependency_advice_test.go",
+            "core/artifacts/internal/operations/prerequisite_observation_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Meaningful and irrelevant change",
+          "steps": [
+            "Capture explicit evidence for exact task/input",
+            "Change presentation or routine receipt bookkeeping",
+            "Change relevant requirement/source separately",
+            "Read assessment"
+          ],
+          "expected": [
+            "No automatic re-review for unchanged subject; affected evidence becomes inapplicable after real relevant change; progress/history retained"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/operations/completion_rerun_test.go",
+            "core/artifacts/internal/operations/task_check_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Legacy ambiguous state",
+          "steps": [
+            "Read historical STALE and mixed ordinary/strict REVIEW fixtures",
+            "Preview selected migration",
+            "Interrupt and resume cutover",
+            "Use old and new clients"
+          ],
+          "expected": [
+            "No guessed prior progress or proof; exact raw history preserved; old client safe refusal where needed; later edits survive retry"
+          ],
+          "existing_owner_files": [
+            "tools/test-artifact-mixed-schema.py",
+            "core/artifacts/internal/operations/migration_test.go"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/operations ./internal/model ./internal/schema ./internal/read ./internal/render ./internal/evidence",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python tools/test-artifact-mixed-schema.py --old /absolute/old/ca-artifact --candidate /absolute/candidate/ca-artifact",
+          "cwd": ".",
+          "note": "Extend with chosen new schema matrix; current test is not a generic future-schema proof."
+        }
+      ],
+      "backward_read": "Reader adapters preserve exact old bytes and basis. Legacy STALE cannot be mapped to done/in-progress/pending without trustworthy recorded history. Old clients reject unsupported writes.",
+      "migration": "Only approved chosen representation; explicit preview/CAS and complete-store history. No new schema for SMARTS rationale itself—the current spec approach/decisions/SEC-SMARTS convention remains.",
+      "rollback": "Retain new data and forward recover after later writes; compatible complete snapshot restoration into separate root only. Ordinary optional strict evidence must not be reinterpreted as a mandatory default during rollback.",
+      "completion_evidence": [
+        "B's actual decision and exact authored semantics",
+        "Versioned old/new projection matrix",
+        "All cross-axis sequences, negative claims and on-host consumer readbacks"
+      ]
+    },
+    {
+      "id": "NT-10",
+      "title": "Integrate durable Pi effect recovery with a bounded native persistence seam",
+      "finding_ids": [],
+      "classification": "new authorized host behavior; preserve existing native integrity kernel",
+      "owner": "Pi parent delegation owner with native storage owner",
+      "decision_status": "authorized direction; exact internal interface to be implemented, not an existing API",
+      "hard_dependencies": [
+        "PI-D01"
+      ],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/store/transaction.go",
+          "symbol": "Commit/Lookup/Recover",
+          "lines": [
+            183,
+            258,
+            414
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "Run",
+          "lines": [
+            76
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go"
+        },
+        {
+          "path": ".codearbiter/security-controls.md",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/security-controls.md"
+        }
+      ],
+      "downstream_consumers": [
+        "PI-D04"
+      ],
+      "files": [
+        "core/artifacts/internal/store/transaction.go",
+        "core/artifacts/internal/store/fs_portable.go",
+        "core/artifacts/internal/store/fs_linux.go",
+        "plugins/ca-pi/tools/src/ (exact new host-owned files chosen by PI-D01/PI-D04)"
+      ],
+      "implementation_steps": [
+        "Agree exact parent-owned delegation/effect record interface from PI-D01 before selecting storage reuse; PI-D04 consumes it, avoiding circular implementation dependencies.",
+        "Record exact repository/root identity, bounded path/action/request scope, before identity/hash, attempt/effect identity, phase and bounded outcome/uncertainty; no secrets and no claim that a digest grants host permission.",
+        "Keep host workflow progress records distinct from native multi-file transaction states and review evidence. Register a new artifact reserved namespace only if actually used there; Git-common local bookkeeping retains its own owner.",
+        "For the minimum trusted-host profile, implement bounded host claim/outcome persistence and parent-owned operations with strict static request/target admission, refusal of known stale preconditions, serialized Arbiter writes and observed pre/post state. Do not claim atomic CAS or race-free containment from Pi tool calls. If a stronger profile promises those guarantees, first implement and qualify a narrow safe primitive or confined executor. Never expose arbitrary source paths through an artifact API or mistake the append audit log for a replay journal.",
+        "Private intent/payload staging may precede a claim. Persist and confirm the durable exclusive claim before any visible source/command effect; persist durable outcome before acknowledgement. Reconcile uncertain effects before retry; do not blindly restore over observed user edits. Idempotency belongs to the actual effect, not a model report.",
+        "Preserve native CAS/journals/before-images/terminal replay and no-follow identity checks. Pending canonical transactions remain store-integrity dependencies until safely reconciled.",
+        "Handle revoked/expired permission, process-tree interruption and concurrent parent/child edits explicitly; completed effects are not undone by token revocation. Ordinary unrelated authorized work stays available."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Lost acknowledgement and resumed parent",
+          "steps": [
+            "Authorize exact supported child action",
+            "Durably claim",
+            "Perform source effect",
+            "Kill before outcome acknowledgement",
+            "Restart parent and reconcile exact effect identity",
+            "Retry same attempt"
+          ],
+          "expected": [
+            "One intended effect; outcome recovered or explicitly unknown; no duplicate execution; no new permission inferred; independent safe work remains available"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/store/crash_test.go",
+            "PI-D04 host effect-journal test owner"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Concurrent edit and cancellation",
+          "steps": [
+            "Freeze target before-hash",
+            "Apply independent parent edit or replace target/ancestor with link",
+            "Submit child effect",
+            "Revoke during/after an admitted effect"
+          ],
+          "expected": [
+            "Known stale or statically unsafe request is rejected without mutation; changes racing after admission are not claimed atomically excluded by the trusted-host profile. Detect/report actual observations and uncertainty; never perform blind recovery overwrite. A stronger advertised profile must additionally pass real race-free/CAS backend tests. Revocation affects matching scope and does not fabricate rollback of completed effects."
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/store/store_test.go",
+            "core/artifacts/internal/store/junction_windows_test.go",
+            "PI-D05 host conflict/revocation test owner"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Native pending integrity boundary",
+          "steps": [
+            "Interrupt a canonical multi-file write",
+            "Attempt dependent canonical read/write",
+            "Continue an independent safe host task",
+            "Complete/rollback through verified recovery"
+          ],
+          "expected": [
+            "Unsafe canonical store stays guarded; independent work does not require global semantic approval; recovery never overwrites third-party bytes"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/store/crash_test.go",
+            "core/artifacts/internal/store/store_test.go",
+            "PI-D04 host recovery test owner"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/store -run 'TestProcessDeathRecovery|TestJournalPublicationCrash|TestTransactionalCAS|TestRecoveryConflictPreservesExternalEdit'",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "go test ./internal/store ./cmd/ca-artifact",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "Existing journal versions and terminal outcomes remain readable. New Pi records must be versioned, bounded and owned by the parent; old hosts must refuse unsupported mutation contracts.",
+      "migration": "No automatic conversion of audit lines into durable replay claims. Existing ambiguous/unfinished child effects are observed and marked unknown; do not fabricate earlier admissions.",
+      "rollback": "Do not downgrade while new in-flight effects are unaccounted for. Quiesce/reconcile, preserve all records, then use compatible read-only inspection or explicit export. No pretending local rollback reverses completed external effects.",
+      "completion_evidence": [
+        "Agreed PI-D01↔NT-10↔PI-D04 interface",
+        "Actual supported-host replay/interruption/concurrency results",
+        "Existing native platform containment/CAS preservation results; evidence for any stronger new source-effect guarantee only if that profile is implemented and advertised.",
+        "No ordinary-progress attestation dependency"
+      ]
+    },
+    {
+      "id": "NT-11",
+      "title": "Support corrected reviewer attempts without reopening terminal evidence",
+      "finding_ids": [],
+      "classification": "user-authorized workflow semantics plus native compatibility validation",
+      "owner": "Host reviewer producer owner and native observation/authority owners",
+      "decision_status": "authorized corrected resubmission; never overrides real host/user denial",
+      "hard_dependencies": [],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": "core/artifacts/internal/observation/contract.go",
+          "symbol": "reviewDecisionSchema/reviewContractHash/validateReview",
+          "lines": [
+            165,
+            603,
+            611
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/contract.go"
+        },
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "symbol": "ReceiptSchema/EventSchema/Inspect",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/authority/receipt.go"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "progress/capture",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        },
+        {
+          "path": "core/surface/agents/authority-reviewer.md",
+          "symbol": "Output",
+          "lines": [
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/authority-reviewer.md"
+        }
+      ],
+      "cross_owner_dependencies": [
+        "Hook HW reviewer-attempt task owns parent request persistence/linkage and canonical charter changes; native acceptance stays coordinated"
+      ],
+      "files": [
+        "core/artifacts/internal/observation/contract.go",
+        "core/artifacts/internal/observation/contract_test.go",
+        "core/artifacts/internal/observation/native_v1_test.go",
+        "core/artifacts/internal/observation/native_v2_test.go",
+        "core/artifacts/internal/authority/receipt.go",
+        "core/artifacts/internal/authority/observed_event_test.go",
+        "core/artifacts/internal/operations/completion_rerun_test.go"
+      ],
+      "implementation_steps": [
+        "Preserve a rejected/malformed/changes_requested attempt as terminal history in the owning producer workflow. Corrected content opens a linked new request attempt, not an edit of old evidence.",
+        "Use fresh actual launch correlation and a currently frozen target/contract/context. Same subject can be re-reviewed; a changed subject must receive refreshed exact bindings.",
+        "Retain pass-only authority-bearing observation semantics, no BLOCK findings and all profile/launch/coverage/target checks. A rejection is not a passed receipt.",
+        "Keep same-request idempotent transport retry separate from new logical corrected submission. Fresh first_stop must be the first stop of that newly captured attempt; never relabel a later old-child stop.",
+        "Native has no global 'only one review ever' gate. Prefer existing formats where a fresh valid attempt fits. If new linkage must enter the content-addressed native record, introduce a closed version/profile and backward inspection; do not add keys to the old closed schema.",
+        "Preserve real user/host denial as a separate scoped stop; corrected serialization is not authority to clear it. Ordinary progress remains independent of optional review proof.",
+        "Coordinate debug resubmission only at its workflow owner; do not turn a debug retry into a native verification or approval event.",
+        "Rejected/malformed replies belong to bounded host attempt history; current native observation formats admit successful authority-bearing reviews only. Do not force a rejection into that success schema."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Rejected then corrected",
+          "steps": [
+            "Capture actual rejected/malformed first attempt",
+            "Create linked new request with current frozen bindings",
+            "Launch new reviewer attempt and submit a valid observed pass",
+            "Capture twice and consume receipt through exact mutation replay"
+          ],
+          "expected": [
+            "Prior rejection retained; new attempt can succeed; immutable capture/replay does not duplicate effect; no synthetic approval or reused denied request"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/observation/contract_test.go",
+            "core/artifacts/internal/authority/observed_event_test.go",
+            "core/artifacts/internal/operations/completion_rerun_test.go"
+          ],
+          "new_test_required": true
+        },
+        {
+          "name": "Do not launder a terminal record",
+          "steps": [
+            "Mutate a prior retained rejected-submission record or an immutable native observation",
+            "Reuse old request/launch identity for changed content",
+            "Relabel second stop as first or change target/contract/coverage/profile",
+            "Try corrected submission under actual scoped denial"
+          ],
+          "expected": [
+            "Tampering and mismatched evidence rejected; denial remains; independent work unaffected"
+          ],
+          "existing_owner_files": [
+            "core/artifacts/internal/observation/contract_test.go",
+            "core/artifacts/internal/observation/native_v1_test.go",
+            "core/artifacts/internal/observation/native_v2_test.go",
+            "Host reviewer-attempt tests"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "go test ./internal/observation ./internal/authority ./internal/operations",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "Old receipts/observations retain exact interpretation; historical inspection does not confer current authority. Old request terminal status is never reset.",
+      "migration": "No migration needed if only new host attempts use existing native formats. Any linkage format addition needs explicit version dispatch, old reader refusal, current-target tests and namespace closure if stored in reserved outputs.",
+      "rollback": "Retain rejected and corrected attempts and source bytes. Do not remove later successful evidence or reopen a rejected request to emulate old behavior.",
+      "completion_evidence": [
+        "Actual host rejected→new corrected attempt sequence",
+        "Native acceptance and mutated/stale/profile-negative controls",
+        "Existing immutable receipt inspection and replay preserved"
+      ]
+    },
+    {
+      "id": "NT-12",
+      "title": "Verify the integrated native cohort and migration before major release",
+      "finding_ids": [],
+      "classification": "integration verification gate; no new product semantics",
+      "owner": "Receiving CLI native integration owner with release/host owners",
+      "decision_status": "required before native completion; release owned by root handoff",
+      "hard_dependencies": [
+        "NT-01",
+        "NT-02",
+        "NT-03",
+        "NT-04",
+        "NT-05",
+        "NT-06",
+        "NT-07",
+        "NT-08",
+        "NT-09",
+        "NT-10",
+        "NT-11"
+      ],
+      "verification_dependencies": [
+        "NT-01"
+      ],
+      "independent_work_policy": "A task-specific unresolved decision or conflict blocks only its consumers; continue unrelated authorized work.",
+      "sources": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "symbol": "artifact native tests, race gate and mixed-schema fixture",
+          "lines": [
+            738,
+            763,
+            960,
+            981
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+        },
+        {
+          "path": "tools/go_test_parallel.py",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/go_test_parallel.py"
+        },
+        {
+          "path": "tools/generate-artifact-types.py",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/generate-artifact-types.py"
+        },
+        {
+          "path": "tools/test-artifact-mixed-schema.py",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/test-artifact-mixed-schema.py"
+        },
+        {
+          "path": "tools/test-artifact-work-old-client.py",
+          "symbol": "",
+          "lines": [],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/test-artifact-work-old-client.py"
+        }
+      ],
+      "files": [
+        "core/artifacts/**",
+        "tools/test-artifact-mixed-schema.py",
+        "tools/test-artifact-work-old-client.py",
+        "tools/generate-artifact-types.py",
+        ".github/workflows/ci.yml"
+      ],
+      "implementation_steps": [
+        "Run focused new and preservation sequences on the integration branch, then the existing complete population, race, type generation and public-surface checks for exact final source.",
+        "Run actual native Linux/Darwin/Windows persistence/path/lock and launch-binding tests. Distinguish cross-compiled output from executed platform tests.",
+        "Exercise old→candidate version matrix, ordinary work with failed/unknown checks, dependency-scoped conflicts, interrupted migration, lost acknowledgement, corrected reviewer attempt and supported Pi scoped mutation/recovery.",
+        "Prove canonical/generator/host adapters all agree on operations, output namespaces, role limits and progress/evidence semantics before calling native work complete.",
+        "Record exact commands/toolchain/platform/source/binary digests, successful and negative outcomes, and outstanding blockers. No source-only finding becomes runtime verified because the code was edited.",
+        "Keep branch isolated until the whole corpus is implemented/tested; root release owner then qualifies exact installed/distributed artifacts and new major release. No partial slice shipping."
+      ],
+      "acceptance_sequences": [
+        {
+          "name": "Whole native sequence",
+          "steps": [
+            "New/legacy repo ordinary context preview",
+            "Snapshot and completion",
+            "Start/report/record failure",
+            "Block only dependency chain",
+            "Correct reviewer attempt",
+            "Retire checked task/checkpoint",
+            "Interrupt and resume mutation",
+            "Run old client against migrated store",
+            "Preserve later writes and export/restore separate snapshot"
+          ],
+          "expected": [
+            "Every domain contract composes; no hidden output rejection, invented proof, orphaned history, duplicate effect, cleared stop or silent downgrade"
+          ],
+          "existing_owner_files": [
+            "Existing native operations/evidence/store/conformance suites",
+            "tools/test-artifact-mixed-schema.py",
+            "Installed-host qualification owners"
+          ],
+          "new_test_required": true
+        }
+      ],
+      "commands": [
+        {
+          "command": "python tools/go_test_parallel.py --module core/artifacts --build-flag=-race",
+          "cwd": ".",
+          "note": "Existing Linux CI race command; invoke with pinned Go 1.27.1 unless integration deliberately updates the toolchain through its owning gates."
+        },
+        {
+          "command": "go test ./...",
+          "cwd": "core/artifacts",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python tools/generate-artifact-types.py --check",
+          "cwd": ".",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python .github/scripts/test_artifact_surface.py",
+          "cwd": ".",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python tools/test-artifact-mixed-schema.py --old /absolute/old/ca-artifact --candidate /absolute/candidate/ca-artifact",
+          "cwd": ".",
+          "note": "Planned invocation; not executed in this handoff."
+        },
+        {
+          "command": "python tools/test-artifact-work-old-client.py --old /absolute/old/ca-artifact --candidate /absolute/candidate/ca-artifact",
+          "cwd": ".",
+          "note": "Planned invocation; not executed in this handoff."
+        }
+      ],
+      "backward_read": "All supported historical formats/profiles are exercised against exact clients; unsupported combinations refuse before destructive writes.",
+      "migration": "Actual complete-store, idempotent cutover and forward recovery evidence for final chosen schema—not a mock serializer demonstration.",
+      "rollback": "Publish a concrete retention/recovery playbook preserving later work; tested separate-root restoration. Keep compatibility reader available with new-format stores.",
+      "completion_evidence": [
+        "All native findings dispositioned and linked to passing meaningful sequences",
+        "All current user-directed native/host interfaces exercised",
+        "Platform and exact-client matrix",
+        "Branch commit and qualified candidate byte identities",
+        "Remaining limitations explicitly reported to release owner"
+      ]
+    }
+  ],
+  "adr_suggestions": [
+    {
+      "record": "ADR-0043",
+      "status": "proposal; progress/evidence representation pending B",
+      "change": "Record chosen representation and dependency/attempt/recovery semantics; retain ordinary autonomy and independent proof claims."
+    },
+    {
+      "record": "ADR-0037",
+      "status": "proposal",
+      "change": "Clarify compile-time operation/output contracts and bounded native/host recovery ownership; retain small file kernel and no generic state-rule runtime."
+    },
+    {
+      "record": "ADR-0004",
+      "status": "forward clarification proposal",
+      "change": "Historical no-schema/no-transaction statements no longer describe typed/journaled implementation; preserve database-free and Python stdlib constraints."
+    },
+    {
+      "record": "ADR-0025",
+      "status": "proposal",
+      "change": "Clarify dependent-only waiting under current user intent and pending discussions; preserve index-first/fail-soft/arbitration exemptions."
+    },
+    {
+      "record": "ADR-0033",
+      "status": "lifecycle coordination",
+      "change": "Record acceptance, implementation and verified obligations separately; do not rewrite sealed accepted history or invent evidence."
+    }
+  ],
+  "validation": {
+    "executed_in_this_handoff": [],
+    "toolchain_from_source": "Go 1.27.1",
+    "native_go_unavailable_during_original_audit": true,
+    "prior_runtime_evidence": "audit-work/probe_launch_binding_results.json contains actual Python producer counts; native consumer rejection remained source-only.",
+    "artifact_paths_are_command_placeholders": "/absolute/old/ca-artifact and /absolute/candidate/ca-artifact must be replaced by exact built binary paths and recorded digests.",
+    "new_tests_are_proposed": true,
+    "no_universal_safety_guarantee": "The criteria preserve explicit observed invariants and establish meaningful regressions; they cannot prove absence of every possible breakage."
+  }
+}
