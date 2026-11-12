@@ -743,5 +743,74 @@ class TestPersonaFollowsRealTransitions(_Fixture):
         self.assertIn("ARBITER-MODE-MARK", self._turn())
 
 
+
+# --------------------------------------------------------------------- HW-02 (HOOK-F02)
+
+class TestFlipMessagesReportTheActualOutcome(_Fixture):
+    """hooks:mode:03/05/06 — the user-visible line renders the real outcome,
+    never the blanket 'the session remains in its current mode'."""
+
+    def _flip_with_audit_failure(self, token, host=None):
+        original = _modelib._append_override_line
+        _modelib._append_override_line = lambda root, line: False
+        try:
+            return self.invoke(_ups(token), host=host)
+        finally:
+            _modelib._append_override_line = original
+
+    def test_marker_written_audit_owed_names_raw_effective_and_next_action(self):
+        rc, _out, err = self._flip_with_audit_failure("mode --ops")
+        self.assertEqual(rc, 2)
+        self.assertNotIn("remains in its current mode", err)
+        self.assertIn("marker now records ops", err)
+        self.assertIn("effective mode is arbiter", err)
+        self.assertIn("owed", err)
+        self.assertIn("mode --ops", err)
+
+    def test_codex_envelope_carries_the_same_truthful_partial(self):
+        rc, out, _err = self._flip_with_audit_failure("mode --ops", host=_CodexHost())
+        env = json.loads(out)
+        self.assertEqual(set(env), ps.CODEX_ENVELOPE_KEYS)
+        self.assertIn("marker now records ops", env["reason"])
+        self.assertIn("effective mode is arbiter", env["reason"])
+
+    def test_marker_write_failure_says_nothing_changed(self):
+        original = _modelib.write_mode
+        _modelib.write_mode = lambda *a, **k: False
+        try:
+            rc, _out, err = self.invoke(_ups("mode --ops"))
+        finally:
+            _modelib.write_mode = original
+        self.assertEqual(rc, 2)
+        self.assertIn("FAILED", err)
+        self.assertIn("marker unchanged", err)
+        self.assertIn("effective mode is arbiter", err)
+
+    def test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode(self):
+        self.invoke(_ups("mode --dangerous"))
+        rc, _out, err = self._flip_with_audit_failure("mode --arbiter")
+        self.assertEqual(rc, 2)
+        self.assertNotIn("remains in its current mode", err)
+        self.assertIn("effective mode is arbiter", err)
+        self.assertNotIn("effective mode is dangerous", err)
+
+    def test_bare_mode_reports_effective_and_the_unbacked_raw_marker(self):
+        self._flip_with_audit_failure("mode --ops")
+        rc, _out, err = self.invoke(_ups("mode"))
+        self.assertEqual(rc, 2)
+        self.assertIn("current mode is arbiter", err)
+        self.assertIn("marker records ops", err)
+        for m in _modelib.MODES:
+            self.assertIn(m, err)
+
+    def test_no_runtime_mode_message_claims_modes_switch_gates(self):
+        messages = []
+        for token in ("mode --dangerous", "mode --dangerous", "mode --ops", "mode"):
+            messages.append(self.invoke(_ups(token))[2])
+        messages.append(self._flip_with_audit_failure("mode --arbiter")[2])
+        for err in messages:
+            self.assertNotIn("gate", err.lower())
+
+
 if __name__ == "__main__":
     unittest.main()

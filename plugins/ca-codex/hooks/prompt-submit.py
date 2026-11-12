@@ -185,10 +185,7 @@ def _effective_mode(root, session_id, payload):
     `overrides.log` holds no matching `MODE: <mode> enter` row (or, for
     `dangerous`, a legacy `DEV: enter` row); it resolves `arbiter` instead and
     reports why. `diagnostic` is None on a clean resolution."""
-    mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-    if mode != _modelib.MODES[0] and not _modelib.ledger_backs(root, mode, session_id=session_id):
-        return _modelib.MODES[0], "mode-not-ledger-backed:" + mode
-    return mode, diag
+    return _modelib.effective_mode(session_id, root=root, payload=payload)
 
 
 # ---------------------------------------------------------------------------
@@ -339,20 +336,60 @@ def _bump_compaction_generation(root, session_id):
 # Claude stderr messages (AC-7/9/10)
 # ---------------------------------------------------------------------------
 
-def _flip_stderr_line(mode, result):
+def _flip_stderr_line(outcome):
+    """One user-visible line rendered from `_modelib.flip_outcome`'s ACTUAL
+    result (HW-02). The earlier blanket failure line ("the session remains in
+    its current mode") was false whenever the marker HAD changed and only its
+    audit row was owed — the raw value moved, the effective mode did or did
+    not, and the user was told neither. Each branch below states only what
+    was observed; no rollback is claimed because none is performed. Mode is a
+    persona posture: nothing here says a mode switches enforcement."""
+    mode = outcome["requested"]
+    result = outcome["result"]
+    effective = outcome["effective_after"]
     if result == _modelib.FLIP_FLIPPED:
         return "codeArbiter: mode flipped to {} (MODE: {} enter logged)".format(mode, mode)
     if result == _modelib.FLIP_NOOP:
         return "codeArbiter: mode already {}".format(mode)
-    return ("codeArbiter: mode flip to {} FAILED (marker write error) — "
-            "the session remains in its current mode".format(mode))
+    if outcome["audit"] == _modelib.AUDIT_OWED:
+        if outcome["raw_after"] == mode:
+            head = ("codeArbiter: mode flip to {m} INCOMPLETE — the session marker now "
+                    "records {m}, but its MODE: {m} enter audit row is not yet on the "
+                    "trail".format(m=mode))
+        else:
+            head = ("codeArbiter: mode flip to {m} INCOMPLETE — its MODE: {m} enter "
+                    "audit row is not yet on the trail".format(m=mode))
+        return "{}; effective mode is {} ({} audit row(s) owed). Next: {}".format(
+            head, effective, outcome["owed_rows"], outcome["next_action"])
+    if outcome["raw_changed"]:
+        state = "marker now records {}".format(outcome["raw_after"])
+    elif outcome["raw_diagnostic"] not in (None, _modelib.MODE_DIAG_ABSENT):
+        state = "marker could not be confirmed ({})".format(outcome["raw_diagnostic"])
+    else:
+        state = "marker unchanged"
+    return ("codeArbiter: mode flip to {} FAILED (marker write error) — {}; "
+            "effective mode is {}. Next: {}".format(
+                mode, state, effective, outcome["next_action"]))
 
 
-def _report_stderr_line(mode, diag):
+def _report_stderr_line(root, session_id, payload):
+    """Bare `mode` report: the EFFECTIVE mode, plus the raw marker and owed
+    audit debt whenever they differ (hooks:mode:06 used to report the raw
+    value, which named a mode no persona or ledger was honouring)."""
+    effective, diag = _modelib.effective_mode(session_id, root=root, payload=payload)
+    raw, raw_diag = _modelib.current_mode(session_id, root=root, payload=payload)
     line = "codeArbiter: current mode is {} — legal values: {}".format(
-        mode, ", ".join(_modelib.MODES))
-    if diag:
-        line += " ({})".format(diag)
+        effective, ", ".join(_modelib.MODES))
+    notes = []
+    if raw != effective:
+        notes.append("marker records {} without a backing MODE: {} enter row".format(raw, raw))
+    elif diag or raw_diag:
+        notes.append(diag or raw_diag)
+    owed = _modelib.owed_audit_rows(root)
+    if owed:
+        notes.append("{} audit row(s) owed".format(owed))
+    if notes:
+        line += " ({})".format("; ".join(notes))
     return line
 
 
@@ -452,13 +489,12 @@ def _inject_codex(payload, host, root, session_id, approval_context=""):
 
 def _handle_claude(payload, host, root, session_id, token, approval_context=""):
     if token == _modelib.MODE_TOKEN_REPORT:
-        mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-        sys.stderr.write(_report_stderr_line(mode, diag) + "\n")
+        sys.stderr.write(_report_stderr_line(root, session_id, payload) + "\n")
         return 2
     if token in _modelib.MODES:
-        result = _modelib.flip(session_id, token, root=root, payload=payload,
-                                host_name=host.name)
-        sys.stderr.write(_flip_stderr_line(token, result) + "\n")
+        outcome = _modelib.flip_outcome(session_id, token, root=root, payload=payload,
+                                        host_name=host.name)
+        sys.stderr.write(_flip_stderr_line(outcome) + "\n")
         return 2
     _inject_claude(payload, host, root, session_id, approval_context)
     return 0
@@ -466,14 +502,13 @@ def _handle_claude(payload, host, root, session_id, token, approval_context=""):
 
 def _handle_codex(payload, host, root, session_id, token, approval_context=""):
     if token == _modelib.MODE_TOKEN_REPORT:
-        mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-        msg = _report_stderr_line(mode, diag)
+        msg = _report_stderr_line(root, session_id, payload)
         print(json.dumps(_codex_block_envelope(msg, msg)))
         return 0
     if token in _modelib.MODES:
-        result = _modelib.flip(session_id, token, root=root, payload=payload,
-                                host_name=host.name)
-        msg = _flip_stderr_line(token, result)
+        outcome = _modelib.flip_outcome(session_id, token, root=root, payload=payload,
+                                        host_name=host.name)
+        msg = _flip_stderr_line(outcome)
         print(json.dumps(_codex_block_envelope(msg, msg)))
         return 0
     _inject_codex(payload, host, root, session_id, approval_context)
