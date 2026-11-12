@@ -63,6 +63,119 @@ class TestFreshScaffold(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self.cad, "open-tasks.md")))
         self.assertTrue(os.path.isfile(os.path.join(self.cad, "done-tasks.md")))
 
+    def test_runtime_markers_do_not_block_greenfield_init(self):
+        markers = os.path.join(self.cad, ".markers")
+        os.makedirs(markers)
+        expected = {
+            "dev-session-owner.json": b'{"session_id":"session-1","ts":1}\n',
+            "mode-session-seen.json": b'{"sessions":{"session-1":1}}\n',
+        }
+        for name, content in expected.items():
+            with open(os.path.join(markers, name), "wb") as handle:
+                handle.write(content)
+
+        ic.main(["--root", self.root])
+
+        self.assertTrue(os.path.isfile(os.path.join(self.cad, "CONTEXT.md")))
+        for name, content in expected.items():
+            with open(os.path.join(markers, name), "rb") as handle:
+                self.assertEqual(handle.read(), content)
+
+    def test_unknown_runtime_marker_still_blocks_greenfield_init(self):
+        markers = os.path.join(self.cad, ".markers")
+        os.makedirs(markers)
+        with open(os.path.join(markers, "unrecognized.json"), "w", encoding="utf-8") as handle:
+            handle.write("{}\n")
+
+        with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
+            ic.main(["--root", self.root])
+
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "CONTEXT.md")))
+
+    def test_non_file_runtime_marker_still_blocks_greenfield_init(self):
+        marker = os.path.join(self.cad, ".markers", "mode-session-seen.json")
+        os.makedirs(marker)
+
+        with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
+            ic.main(["--root", self.root])
+
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "CONTEXT.md")))
+
+    def test_linked_runtime_marker_directory_still_blocks_greenfield_init(self):
+        os.makedirs(self.cad)
+        marker_target = os.path.join(self.root, "marker-target")
+        os.makedirs(marker_target)
+        try:
+            os.symlink(marker_target, os.path.join(self.cad, ".markers"), target_is_directory=True)
+        except (OSError, NotImplementedError) as exc:
+            self.skipTest(f"directory symlinks unavailable: {exc}")
+
+        with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
+            ic.main(["--root", self.root])
+
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "CONTEXT.md")))
+
+    def test_runtime_marker_directory_swap_still_blocks_greenfield_init(self):
+        markers = os.path.join(self.cad, ".markers")
+        os.makedirs(markers)
+        marker_target = os.path.join(self.root, "marker-target")
+        os.makedirs(marker_target)
+        probe = os.path.join(self.root, "symlink-probe")
+        try:
+            os.symlink(marker_target, probe, target_is_directory=True)
+            os.unlink(probe)
+        except (OSError, NotImplementedError) as exc:
+            self.skipTest(f"directory symlinks unavailable: {exc}")
+        original = ic._runtime_marker_snapshot
+        calls = 0
+
+        def swap_after_snapshot(path):
+            nonlocal calls
+            snapshot = original(path)
+            calls += 1
+            if calls == 1:
+                os.rmdir(markers)
+                os.symlink(marker_target, markers, target_is_directory=True)
+            return snapshot
+
+        with mock.patch.object(ic, "_runtime_marker_snapshot", side_effect=swap_after_snapshot):
+            with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
+                ic.main(["--root", self.root])
+
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "CONTEXT.md")))
+
+    def test_runtime_marker_injection_after_snapshot_still_blocks_init(self):
+        markers = os.path.join(self.cad, ".markers")
+        os.makedirs(markers)
+        original = ic._runtime_marker_snapshot
+        calls = 0
+
+        def inject_after_snapshot(path):
+            nonlocal calls
+            snapshot = original(path)
+            calls += 1
+            if calls == 1:
+                injected = os.path.join(markers, "security-gate-passed")
+                with open(injected, "w", encoding="utf-8") as handle:
+                    handle.write("injected\n")
+            return snapshot
+
+        with mock.patch.object(ic, "_runtime_marker_snapshot", side_effect=inject_after_snapshot):
+            with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
+                ic.main(["--root", self.root])
+
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "CONTEXT.md")))
+
+    def test_unrelated_project_state_still_blocks_greenfield_init(self):
+        os.makedirs(self.cad)
+        with open(os.path.join(self.cad, "unrecognized.json"), "w", encoding="utf-8") as handle:
+            handle.write("{}\n")
+
+        with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
+            ic.main(["--root", self.root])
+
+        self.assertFalse(os.path.lexists(os.path.join(self.cad, "CONTEXT.md")))
+
     def test_partial_legacy_board_recovers_as_markdown_under_new_default(self):
         os.mkdir(self.cad)
         board = os.path.join(self.cad, "open-tasks.md")
@@ -86,9 +199,16 @@ class TestFreshScaffold(unittest.TestCase):
         with mock.patch.object(ic, "_create_scaffold_file", side_effect=interrupt):
             with self.assertRaises(OSError):
                 ic.main(["--root", self.root])
+        markers = os.path.join(self.cad, ".markers")
+        os.makedirs(markers)
+        marker = os.path.join(markers, "mode-session-seen.json")
+        with open(marker, "wb") as handle:
+            handle.write(b'{"sessions":{"session-1":1}}\n')
         ic.main(["--root", self.root])
         self.assertFalse(os.path.lexists(os.path.join(self.cad, "open-tasks.md")))
         self.assertFalse(os.path.lexists(os.path.join(self.cad, "done-tasks.md")))
+        with open(marker, "rb") as handle:
+            self.assertEqual(handle.read(), b'{"sessions":{"session-1":1}}\n')
 
     def test_context_md_has_arbiter_enabled(self):
         ic.main(["--root", self.root])

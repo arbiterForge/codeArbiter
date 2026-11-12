@@ -207,10 +207,12 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // Native-first enrollment changes the scaffold, selected Work instructions and
-// plan attachment text. The existing atlas routes and gate owners still apply;
-// bind the exact reviewed source bytes for the affected inputs.
+// plan attachment text. The greenfield marker repair retains those routes while
+// accepting only the bounded session-start marker-file set that can precede enrollment.
+// The existing atlas routes and gate owners still apply; bind the exact reviewed
+// source bytes for the affected inputs.
 export const NATIVE_FIRST_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/init-codearbiter.py':'40a841ce804efc29ace2abe75fe4c2989b9131b8',
+  'core/pysrc/init-codearbiter.py':'f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4',
   'core/surface/SPRINT.md':'f5eea338a7a053d6dbaff0f9332dcfe9bf5f82e7',
   'core/surface/commands/feature.md':'6a5fcbc7469ac82a2586ff3ae168d7c0fa5fd907',
   'core/surface/commands/fix.md':'e81d7a9190b160d248aa7ea322b272cb8fa5badc',

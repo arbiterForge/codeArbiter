@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Allow greenfield init with session runtime markers  (from work-op:greenfield-marker-init-20261110)  (done 2026-11-10)
+  - Work origin: work-op:greenfield-marker-init-20261110
+  - Desc: A fresh repository can contain only host-owned session-start marker files before codeArbiter initialization. Initialization must accept that exact safe runtime state, preserve marker bytes, and continue refusing unknown or unsafe pre-existing state.
+  - Work type: fix
+  - Work ID: WORK-11FAB01D2FDF8A55F7E5664F4815E119
+  - Work operation ID: greenfield-marker-init-20261110
 - [x] Refresh Atlas lifecycle guidance binding  (from https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104)  (done 2026-11-10)
   - Work origin: https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104
   - Desc: The exact-head docs generator refuses the intentionally changed commit-gate source; add a distinct reviewed source binding so Atlas keeps historical provenance while accepting the reviewed lifecycle-guidance bytes.

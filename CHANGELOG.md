@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.8.7] - 2026-11-10
+
+### Fixed
+
+- Allow fresh initialization to preserve session-start markers instead of refusing an otherwise empty repository, while retaining fail-closed handling for unknown or unstable marker state.
+
 ## [3.8.6] - 2026-11-09
 
 ### Fixed
