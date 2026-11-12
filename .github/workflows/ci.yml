@@ -85,6 +85,7 @@ on:
       - "tools/go_test_parallel.py"
       - "tools/go-test-timings.json"
       - "tools/test-artifact-mixed-schema.py"
+      - "tools/test-artifact-work-old-client.py"
       - "tools/artifact-coverage.py"
       - "tools/install-artifact-payload.py"
       - "tools/generate-artifact-types.py"
@@ -476,6 +477,7 @@ jobs:
               - 'tools/go_test_parallel.py'
               - 'tools/go-test-timings.json'
               - 'tools/test-artifact-mixed-schema.py'
+              - 'tools/test-artifact-work-old-client.py'
               - 'tools/artifact-coverage.py'
               - 'tools/build-host-packages.py'
               - 'tools/install-artifact-payload.py'
@@ -998,6 +1000,28 @@ jobs:
         run: >-
           python tools/test-artifact-mixed-schema.py
           --old "${{ runner.temp }}/artifact-legacy"
+          --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
+      - name: Check out the fixed pre-cycle work compatibility source
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: a89d42e67d4eb2e5253233fac85fd6453ccf4e46
+          path: .artifact-work-legacy
+          sparse-checkout: core/artifacts
+          persist-credentials: false
+      - name: Build the pre-cycle work compatibility client
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: .artifact-work-legacy/core/artifacts
+        env:
+          GOTOOLCHAIN: local
+          GOPROXY: "off"
+          GOSUMDB: "off"
+        run: go build -trimpath -buildvcs=false -o "${{ runner.temp }}/artifact-work-legacy" ./cmd/ca-artifact
+      - name: Verify old work client refuses upgraded work and keeps later edits
+        if: matrix.os == 'ubuntu-24.04'
+        run: >-
+          python tools/test-artifact-work-old-client.py
+          --old "${{ runner.temp }}/artifact-work-legacy"
           --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
       - name: Generate review examples with the native candidate
         run: >-
