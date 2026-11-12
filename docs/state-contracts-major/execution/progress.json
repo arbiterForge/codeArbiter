@@ -48,12 +48,14 @@
         "payload_version_gate.py: --integration-base-branch/--main-ref; gate_integration measures payload change from recorded main baseline, requires head == declared candidate, strict advance over baseline AND live main, unused tag, baseline ancestor of main and HEAD. Any other base keeps the strict immediate-base rule.",
         "tools/build-host-packages.py: pi_integration_guard + validate_pi_integration_candidate; Pi changelog-heading/root-metadata/advance judged against recorded baseline; live main must not reach the candidate or carry its heading; tag unused.",
         "ci.yml: pull_request + push admit major/state-contracts; program paths added to push filter; integration push forces every domain flag and the artifact cohort; version-bump lanes pass CI base branch + fetch main.",
-        "docs.yml: push/PR validation on major/state-contracts; deploy job unchanged (refs/heads/main only); workflow_run stays main-only. codeql.yml: push on major/state-contracts."
+        "docs.yml: push/PR validation on major/state-contracts; deploy job unchanged (refs/heads/main only); workflow_run stays main-only. codeql.yml: push on major/state-contracts.",
+        "Committed a586601c; pushed. First integration push runs: ci 43310142857, CodeQL 43310142682, Deploy docs 43310142730 (push); PR #1098 ci 43310159123 / docs 43310159210."
       ],
       "tested": [
         "test_integration_candidate.py: 38 tests OK (record parsing/selection, two successive same-candidate children pass only under the rule while strict gate refuses the second, wrong/unchanged/tagged/main-reached candidates fail, baseline-not-on-main/not-in-HEAD/unresolvable main fail closed, Pi same-candidate evolution + stale root/missing heading/heading-on-baseline/tagged/main-collision fail, workflow admission and main-only publication pins). Windows 11, Python 3.14.",
         "Mutants killed: skip candidate equality, skip main advance, skip tag check, select-any-branch, skip HEAD ancestry, Pi skip main heading, docs deploy guard widened.",
-        "test_payload_version_gate.py 34 OK; test_ci_impact.py OK (2 pins updated); test_pi_package.py: same 8 pre-existing real-RPC env failures as baseline, contract pin updated and passing; test_release_workflow.py: 1 pre-existing Windows bash-availability failure, unchanged."
+        "test_payload_version_gate.py 34 OK; test_ci_impact.py OK (2 pins updated); test_pi_package.py: same 8 pre-existing real-RPC env failures as baseline, contract pin updated and passing; test_release_workflow.py: 1 pre-existing Windows bash-availability failure, unchanged.",
+        "Independent ca:security-reviewer PASS on staged diff sha256 9a794130...: release/Pages/npm/marketplace unreachable from integration or fork events; workflow_run consumers main-only; record cannot weaken main/merge_group (select() returns strict before reading the record for main); env-quoted base names; Pi scope parity. 3 LOW (see new_required_work INT-PROT-01)."
       ],
       "evidence": [],
       "remaining": [
@@ -65,10 +67,20 @@
     },
     {
       "id": "P-02",
-      "status": "NEXT",
-      "implemented": [],
-      "tested": [],
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "execution/tools/coverage_ledger.py + execution/coverage-ledger.json: live per-finding/machine/row ledger (70/287/1748, all PLANNED, owners/treatments/tasks from intake). Status vocabulary PLANNED/IMPLEMENTED/TESTED/INSTALLED_QUALIFIED/RELEASED + PRESERVED/NOT_APPLICABLE; check refuses evidence-free, review-only TESTED, commit-less, contract-less N/A and non-installed INSTALLED claims; --require-complete is the promotion predicate (currently FAILS as expected).",
+        "Source revalidation of P-02 cited paths since audit: only core/hosts.json changed (Pi skill_expansion_fingerprints key 1.1.0 -> 1.5.0); no owner-contract impact."
+      ],
+      "tested": [
+        "execution/tools/test_coverage_ledger.py: 11 tests OK (Windows 11, Python 3.14)."
+      ],
+      "evidence": [],
+      "remaining": [
+        "Record compatibility baseline traces per owner (command grammar, exit codes, host exceptions, operation IDs/replay, output classes, authority provenance, remote-effect timing, unavailable states) before changing them - domain owners capture these at task start (NT-01 for native).",
+        "Shared outcome vocabulary declaration (progress/evidence/authority/delivery/containment/identity kept independent) - aligned to D-PROGRESS=B.",
+        "Wire coverage_ledger check into integration CI."
+      ]
     }
   ],
   "later_decisions": [
@@ -130,7 +142,15 @@
       ]
     }
   ],
-  "new_required_work": [],
+  "new_required_work": [
+    {
+      "id": "INT-PROT-01",
+      "source": "security-reviewer LOW (P-01 review, 2026-11-12)",
+      "detail": "major/state-contracts is now a qualification source whose own protection is unaudited (integration push runs branch-protection job with BRANCH_PROTECTION_AUDIT_TOKEN). Add a ruleset on major/state-contracts requiring PRs + CI and restricting deletion (also resolves delete_branch_on_merge risk at promotion); optionally extend check_branch_protection.py to cover it. Repository-settings change = outward-facing; needs B's yes.",
+      "owner": "release-and-integration",
+      "status": "NEEDS_USER_APPROVAL"
+    }
+  ],
   "new_transition_rows": [],
   "evidence_records": [],
   "observations": [
@@ -164,9 +184,10 @@
   "scoped_blockers": [],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push P-01; inspect integration push run logs for domain selection and absence of publication jobs.",
-    "Obtain zip override acknowledgement; commit zip; add validator CI step.",
-    "P-02 owner/disposition map; then dispatch independent tasks (decisions D-PROGRESS/D-HIGH/D-GOV-PRETAG now recorded)."
+    "Read integration push CI logs (job selection, version lanes skipped on push, no publication jobs).",
+    "Obtain zip override acknowledgement; commit zip; add packet validator + coverage ledger check to CI.",
+    "Ask B: ruleset on major/state-contracts (INT-PROT-01 + delete-on-merge).",
+    "P-02 remaining, then dispatch independent tasks per owner."
   ],
   "delivery_state": "NOT_STARTED",
   "trusted_readiness_reference": null,
