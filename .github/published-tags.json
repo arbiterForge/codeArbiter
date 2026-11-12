@@ -881,6 +881,86 @@
       "commit_sha": "929229354e3a15ae3002c82116b66c837ab43729",
       "object_sha": "c3a34e1ff51412fc39d4a2a20978efa471f49d1e",
       "object_type": "tag"
+    },
+    "v3.4.3": {
+      "commit_sha": "784149c280ed61b753af8b4f6b2b38b5206d27fd",
+      "object_sha": "41890e8187d2a4ff7262ba2e287f532dabf3fc0d",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.22.3": {
+      "object_sha": "ce68bfe357a246b685a55611bebd041ef5849ad7",
+      "commit_sha": "784149c280ed61b753af8b4f6b2b38b5206d27fd",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.23.3": {
+      "object_type": "tag",
+      "object_sha": "e16965065286d70bd75a158d1421961a9596d9c0",
+      "commit_sha": "784149c280ed61b753af8b4f6b2b38b5206d27fd"
+    },
+    "v3.4.4": {
+      "object_sha": "b220b5c2b09db4e65b80d43edcef2ddb8d729039",
+      "commit_sha": "2a850741e83c7e75f67eddbca1594abee5915570",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.22.4": {
+      "object_sha": "1a86fa8935a76cd1fb85b5464ebcddd34417dd0e",
+      "commit_sha": "2a850741e83c7e75f67eddbca1594abee5915570",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.23.4": {
+      "object_sha": "b999bb5c9fef53983880537982cddf93be31539b",
+      "commit_sha": "2a850741e83c7e75f67eddbca1594abee5915570",
+      "object_type": "tag"
+    },
+    "v3.4.5": {
+      "object_sha": "14ed3ed9f857fe35083c63e3ae656260b0548f43",
+      "commit_sha": "c04a1ad5d90b77c81bafc7448d47db7ffe6bda61",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.22.5": {
+      "object_sha": "b5f06ac6f8c4373c10fa1cde55b9470677381124",
+      "commit_sha": "c04a1ad5d90b77c81bafc7448d47db7ffe6bda61",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.23.5": {
+      "commit_sha": "c04a1ad5d90b77c81bafc7448d47db7ffe6bda61",
+      "object_type": "tag",
+      "object_sha": "5268c0a74d66c12db3a7651756a94abc5369f07f"
+    },
+    "ca-pi-v0.23.6": {
+      "commit_sha": "d7750f0a94be5f4fda30d73f72570cf8a0b6d5d0",
+      "object_sha": "94e925993fec01741d7ad9d8cb9d778b1702e5b7",
+      "object_type": "tag"
+    },
+    "v3.5.0": {
+      "commit_sha": "8231cccdc0462021c5ec62e118216a4b0ff171ef",
+      "object_type": "tag",
+      "object_sha": "fb055117095d9ff4d88941ace9cc02d99c26b366"
+    },
+    "ca-codex-v0.23.0": {
+      "object_sha": "fb7feec3fbfe35c3a3d82467982c5705c2b6ee4c",
+      "object_type": "tag",
+      "commit_sha": "8231cccdc0462021c5ec62e118216a4b0ff171ef"
+    },
+    "ca-pi-v0.24.0": {
+      "commit_sha": "8231cccdc0462021c5ec62e118216a4b0ff171ef",
+      "object_type": "tag",
+      "object_sha": "98c6e2f9c870f75a47482a8cc583d2a4c21de4a0"
+    },
+    "v3.6.0": {
+      "object_type": "tag",
+      "commit_sha": "9005fcad63c56c313964b99fb5e3a17f998fc1b1",
+      "object_sha": "c14ac727f3dd76a777b87d0558aba8ea3f6be436"
+    },
+    "ca-codex-v0.24.0": {
+      "object_sha": "1b1efd66dcb31476d60e6561f6e31d676ea16728",
+      "commit_sha": "9005fcad63c56c313964b99fb5e3a17f998fc1b1",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.25.0": {
+      "commit_sha": "9005fcad63c56c313964b99fb5e3a17f998fc1b1",
+      "object_type": "tag",
+      "object_sha": "6caf6d43890fe9a79ade8bbc8e81ca74aaa2009d"
     }
   }
 }
