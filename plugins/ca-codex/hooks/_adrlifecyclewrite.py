@@ -141,6 +141,11 @@ def append_acceptance(root, adr, source_commit, obligations, reviewed_by,
              (staged_ledger.returncode != 0 or staged_ledger.stdout != committed))):
         raise ValueError("staged lifecycle ledger differs from HEAD")
     existing = _events(before)
+    committed_events = _events(committed)
+    if correction_reason is not None and any(
+            not isinstance(item, dict) or item.get("event") != "acceptance-correction"
+            for item in existing[len(committed_events):]):
+        raise ValueError("uncommitted lifecycle suffix must contain only corrections")
     bound = [item for item in existing if isinstance(item, dict) and
              item.get("event") in ("acceptance", "baseline") and
              item.get("adr") == adr]
@@ -171,11 +176,24 @@ def append_acceptance(root, adr, source_commit, obligations, reviewed_by,
              isinstance(item.get("adr"), str)} | {adr}
     blobs = {stem: blob for stem in stems if (blob := lifecycle_git._git_blob(
         str(root), head, ".codearbiter/decisions/%s.md" % stem)) is not None}
+    if correction_reason is not None:
+        for prior_correction in existing[len(committed_events):]:
+            target = prior_correction.get("adr")
+            replacement = prior_correction.get("replacement")
+            if not isinstance(target, str) or not isinstance(replacement, dict):
+                raise ValueError("uncommitted correction has no valid replacement")
+            target_errors = al.validate_events([replacement],
+                                               {target: blobs[target]} if target in blobs else {})
+            target_errors.extend(lifecycle_git.validate_committed_sources(
+                str(root), [replacement]))
+            if target_errors:
+                raise ValueError("uncommitted correction retains invalid binding: " +
+                                 "; ".join(target_errors))
     errors = al.validate_events(combined, blobs)
     errors.extend(lifecycle_git.validate_committed_sources(str(root), combined))
     if correction_reason is not None:
-        prior = al.validate_events(existing, blobs)
-        prior.extend(lifecycle_git.validate_committed_sources(str(root), existing))
+        prior = al.validate_events(committed_events, blobs)
+        prior.extend(lifecycle_git.validate_committed_sources(str(root), committed_events))
         errors = list((Counter(errors) - Counter(prior)).elements())
     if errors:
         raise ValueError("lifecycle binding refused: " + "; ".join(errors))

@@ -142,7 +142,7 @@ def write_packet(root, adr, obligations, reviewed_by, reviewed_at, valid_until):
         "transition_body_sha256": _sha(transition_body(adr_blob)),
         "decision_log_base_sha256": _sha(base_log),
         "decision_log_index_sha256": _sha(log_blob),
-        "obligations": obligations,
+        "obligations": synthetic["obligations"],
         "obligations_sha256": synthetic["obligations_sha256"],
         "reviewed_by": reviewed_by,
         "reviewed_at": reviewed_at,

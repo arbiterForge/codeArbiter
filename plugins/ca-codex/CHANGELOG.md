@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.26.8] - 2026-11-12
+
+### Fixed
+
+- Ship the portable ADR acceptance writer and append-only correction path, with shared verifier-compatible bindings.
+- Preserve correction replay and reject malformed uncommitted ledger suffixes.
+
 ## [0.26.7] - 2026-11-10
 
 ### Fixed

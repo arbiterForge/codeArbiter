@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.8] - 2026-11-12
+
+### Fixed
+
+- Ship the portable ADR acceptance writer and append-only correction path, with shared verifier-compatible bindings.
+- Preserve correction replay and reject malformed uncommitted ledger suffixes.
+
 ## [0.27.7] - 2026-11-10
 
 ### Fixed

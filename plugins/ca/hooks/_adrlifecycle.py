@@ -168,6 +168,7 @@ def acceptance_event(adr, blob, source_commit, obligations, recorded_at,
 def resolve_corrections(events, adr_blobs=None):
     """Apply only reviewed append-only repairs to malformed acceptance bindings."""
     effective = list(events)
+    removed = object()
     errors = []
     bindings = {}
     corrected = set()
@@ -231,13 +232,14 @@ def resolve_corrections(events, adr_blobs=None):
             continue
         if (replacement.get("obligations") != original.get("obligations") and
                 any(isinstance(item, dict) and item.get("adr") == adr and
-                    item.get("event") in ("implemented", "verified") for item in events)):
+                    item.get("event") in ("implemented", "verified")
+                    for item in events[:index - 1])):
             errors.append(prefix + " cannot remap obligations with delivery evidence")
             continue
         corrected.add(adr)
         effective[original_index] = replacement
-        effective[index - 1] = None
-    return [event for event in effective if event is not None], errors
+        effective[index - 1] = removed
+    return [event for event in effective if event is not removed], errors
 
 
 def read_jsonl(path):
