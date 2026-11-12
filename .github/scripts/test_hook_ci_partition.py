@@ -23,7 +23,7 @@ GUARD = 'python .github/scripts/test_hook_ci_partition.py'
 # The guard matrix, ca-codex adapter and dual-host store suites have no direct
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
-COMMANDS_SHA256 = 'ddc7755d8e2bdf8cb6265abc6acec91c0260bbb50703999c238087ba593db21d'
+COMMANDS_SHA256 = '26760ef36d5a8790717877d50365b5f50442d931e9036ca60cb5a44385cfdf0e'
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:
@@ -79,7 +79,7 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':64,'isolation':1,'guard':1,'setup':2}
+        expected_counts={'contracts':65,'isolation':1,'guard':1,'setup':2}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
     require(pre.count(MATRIX)==1,'Expected exactly the reviewed four-cell matrix')

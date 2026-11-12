@@ -2614,6 +2614,13 @@ jobs:
         # additionalProperties:false with exactly seven keys - a shape borrowed
         # from any other event is rejected outright.
         run: python .github/scripts/test_prompt_submit.py
+      - name: Run durable workflow-recovery contract (HW-10)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # D-RECOVERY. The closed recovery contract and its generated runtime
+        # copy: only registered kinds and bounded fields are admitted, every
+        # transition is complete, no age/validation/CLI-success trigger can
+        # settle an obligation, and Git-common state is never verification input.
+        run: python .github/scripts/test_workflow_recovery_contract.py
       - name: Run startup-emitter contract (ADR-0030)
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. SessionStart no longer injects the persona, and the block is
