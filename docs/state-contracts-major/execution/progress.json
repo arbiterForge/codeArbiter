@@ -12,30 +12,91 @@
   },
   "recorded_at": "2026-11-12",
   "active_writer": {
-    "agent": "claude-code",
+    "agent": "claude-code (integrator) + 4 Claude subagent lanes",
     "since": "2026-11-12",
-    "in_flight_branches": [
-      "major/state-contracts"
+    "lanes": [
+      {
+        "branch": "program/native-nt01",
+        "owner": "native",
+        "tasks": [
+          "NT-01",
+          "NT-02",
+          "NT-03",
+          "NT-04",
+          "NT-05",
+          "NT-07",
+          "NT-08",
+          "NT-11",
+          "NT-06",
+          "NT-09"
+        ]
+      },
+      {
+        "branch": "program/release-r01",
+        "owner": "release-and-integration",
+        "tasks": [
+          "R-01",
+          "R-02",
+          "R-06",
+          "R-04",
+          "R-05",
+          "R-07",
+          "R-03",
+          "R-08",
+          "Q-02"
+        ]
+      },
+      {
+        "branch": "program/hooks-hw01",
+        "owner": "hooks-workflows",
+        "tasks": [
+          "HW-01",
+          "HW-02",
+          "HW-03",
+          "HW-05",
+          "HW-07",
+          "HW-09",
+          "HW-10",
+          "HW-11",
+          "HW-12",
+          "HW-16",
+          "HW-17",
+          "HW-18",
+          "HW-19",
+          "HW-20",
+          "HW-21",
+          "HW-22",
+          "HW-23",
+          "HW-24"
+        ]
+      },
+      {
+        "branch": "program/version-candidates",
+        "owner": "integrator",
+        "tasks": [
+          "version advance to integration candidates"
+        ]
+      }
     ],
-    "rule": "Repo state is the only lock between Claude Code and Codex sessions. Before writing, read this field and the newest CHECKPOINT; update it when you start or stop. One writer per canonical owner file."
+    "rule": "One writer per canonical owner. Codex: do not start work on a lane's tasks or files while it is listed here; pick unassigned owners (pi, farm, sandbox, site, packaging, measurement-tools) or coordinate via this record. Integrator alone edits execution/*, manifests/changelogs, integration-candidate.json, provenance refreshes after merges."
   },
   "task_updates": [
     {
       "id": "P-00",
-      "status": "IN_PROGRESS",
+      "status": "IMPLEMENTED_UNQUALIFIED",
       "implemented": [
         "Origin verified as https://github.com/arbiterForge/codeArbiter.git (owner casing arbiterForge, repo codeArbiter).",
         "major/state-contracts absent locally and on origin before creation; created from inspected origin/main 33abc347 in a new worktree (codeArbiter-worktrees/major-state-contracts). Primary worktree and its uncommitted gate-events.log / untracked .codex-remote-attachments untouched.",
         "Intake corpus imported byte-for-byte under docs/state-contracts-major/ with a scoped -text .gitattributes rule; 105 MANIFEST sha256 entries match.",
         "Source drift worklist generated (16 cited paths changed since audit; 14 tasks require source revalidation).",
         "Committed 59205432 (104/105 manifest files; committed-blob sha256 verified via git show HEAD:...); pushed origin/major/state-contracts; draft tracking PR #1098 (base main, DO NOT MERGE).",
-        "Independent auth-crypto-reviewer PASS (0 findings) on staged diff sha256 141f5ecc...; security-gate marker recorded."
+        "Independent auth-crypto-reviewer PASS (0 findings) on staged diff sha256 141f5ecc...; security-gate marker recorded.",
+        "Evidence zip committed 13b0943f under logged H-09b binary SECURITY-OVERRIDE (row e8b0a7a5) after B's own-words acknowledgement; 105/105 manifest files committed; full packet validator PASSED."
       ],
       "tested": [
         "tools/validate_packet.py --repo <worktree> --initial: PASSED (82 tasks, 70 findings, 287 machines, 1748 rows, 31 scenarios, 252 cited source paths exist, graph acyclic). Structure-only; not product qualification. Windows run needed a separator/encoding shim outside the corpus (see CHECKPOINT environment notes)."
       ],
       "remaining": [
-        "Commit audit evidence zip after security-ceiling override acknowledgement.",
         "Disposable-clone exercise of bootstrap with pre-existing branch and dirty worktree cases."
       ],
       "evidence": []
@@ -55,7 +116,8 @@
         "test_integration_candidate.py: 38 tests OK (record parsing/selection, two successive same-candidate children pass only under the rule while strict gate refuses the second, wrong/unchanged/tagged/main-reached candidates fail, baseline-not-on-main/not-in-HEAD/unresolvable main fail closed, Pi same-candidate evolution + stale root/missing heading/heading-on-baseline/tagged/main-collision fail, workflow admission and main-only publication pins). Windows 11, Python 3.14.",
         "Mutants killed: skip candidate equality, skip main advance, skip tag check, select-any-branch, skip HEAD ancestry, Pi skip main heading, docs deploy guard widened.",
         "test_payload_version_gate.py 34 OK; test_ci_impact.py OK (2 pins updated); test_pi_package.py: same 8 pre-existing real-RPC env failures as baseline, contract pin updated and passing; test_release_workflow.py: 1 pre-existing Windows bash-availability failure, unchanged.",
-        "Independent ca:security-reviewer PASS on staged diff sha256 9a794130...: release/Pages/npm/marketplace unreachable from integration or fork events; workflow_run consumers main-only; record cannot weaken main/merge_group (select() returns strict before reading the record for main); env-quoted base names; Pi scope parity. 3 LOW (see new_required_work INT-PROT-01)."
+        "Independent ca:security-reviewer PASS on staged diff sha256 9a794130...: release/Pages/npm/marketplace unreachable from integration or fork events; workflow_run consumers main-only; record cannot weaken main/merge_group (select() returns strict before reading the record for main); env-quoted base names; Pi scope parity. 3 LOW (see new_required_work INT-PROT-01).",
+        "First integration push CI 43311804480 (e42bd23b): Hook contract failed on ubuntu/windows/macos - test_provenance_wiring: enrolled code-map/coding-standards/tech-stack v2 identities stale because P-00/P-01 changed cited sources (.gitattributes, ci.yml, docs.yml, build-host-packages.py). Fixed on program/p01-context-provenance via native context preview/apply (identities only; claims re-read and still hold)."
       ],
       "evidence": [],
       "remaining": [
@@ -127,28 +189,15 @@
       "date": "2026-11-12"
     }
   ],
-  "pending_user_decisions": [
-    {
-      "id": "OBS-DELETE-BRANCH-ON-MERGE",
-      "state": "NEEDS_USER_CHOICE_BEFORE_Q-03",
-      "blocks": [],
-      "detail": "Repository setting delete_branch_on_merge=true would delete major/state-contracts when the final promotion PR merges; BRANCH-AND-RELEASE requires keeping it through publication verification. Options: deletion-restricting ruleset on major/state-contracts, or toggle the setting at promotion. Settings changes are outward-facing and need B's yes."
-    },
-    {
-      "id": "ZIP-OVERRIDE-ACK",
-      "state": "NEEDS_OWN_WORDS_ACK",
-      "blocks": [
-        "P-00 completion (manifest population)"
-      ]
-    }
-  ],
+  "pending_user_decisions": [],
   "new_required_work": [
     {
       "id": "INT-PROT-01",
       "source": "security-reviewer LOW (P-01 review, 2026-11-12)",
       "detail": "major/state-contracts is now a qualification source whose own protection is unaudited (integration push runs branch-protection job with BRANCH_PROTECTION_AUDIT_TOKEN). Add a ruleset on major/state-contracts requiring PRs + CI and restricting deletion (also resolves delete_branch_on_merge risk at promotion); optionally extend check_branch_protection.py to cover it. Repository-settings change = outward-facing; needs B's yes.",
       "owner": "release-and-integration",
-      "status": "NEEDS_USER_APPROVAL"
+      "status": "DONE",
+      "evidence": "B approved 2026-11-12; ruleset id 27158575 'major/state-contracts integration branch' active: deletion, non_fast_forward, pull_request (0 approvals, thread resolution), required check '[GATE ] | [REPO] | Merge readiness' (non-strict). Verified via gh api rules/branches/major/state-contracts. Also prevents deletion at promotion despite delete_branch_on_merge=true."
     }
   ],
   "new_transition_rows": [],
@@ -179,17 +228,37 @@
       "what": "parallel main activity",
       "observed": "open PRs #1097 (codex/adr-lifecycle-contract), #1066 (receipt reconciliation, overlaps R-01 territory), dependabot #1092/#1093; main ships patch releases frequently, so candidate versions must not collide with main's patch stream",
       "date": "2026-11-12"
+    },
+    {
+      "what": "local toolchain",
+      "observed": "Windows 11; Python 3.14.6; Go 1.27.1 (matches go.mod); Node 24.18 / npm 11.16; Codex CLI 0.145.0; Pi 1.1.0; Docker daemon NOT available",
+      "date": "2026-11-12"
+    },
+    {
+      "what": "ruleset relaxation attempt",
+      "observed": "Attempt to drop required_status_checks from ruleset 27158575 (per B: don't nitpick interim CI) was denied by the session's auto-mode CI-bypass guard; required merge-readiness check remains. Lanes keep working on branches; integrator merges child PRs when green.",
+      "date": "2026-11-12"
     }
   ],
   "scoped_blockers": [],
   "unknown_outcomes": [],
   "next_actions": [
-    "Read integration push CI logs (job selection, version lanes skipped on push, no publication jobs).",
-    "Obtain zip override acknowledgement; commit zip; add packet validator + coverage ledger check to CI.",
-    "Ask B: ruleset on major/state-contracts (INT-PROT-01 + delete-on-merge).",
-    "P-02 remaining, then dispatch independent tasks per owner."
+    "Integrate lane branches via child PRs into major/state-contracts as they return; regenerate generated trees after merges; update coverage ledger from lane evidence.",
+    "Next lanes when capacity frees: Pi (PI-D01..PI-D07, PI-L01/L02, PI-C01), farm/sandbox (FARM-R01..R03, SBX-*), packaging/site/tooling (BUILD-G01/G02, DIST-M01/M02, SITE-U01/U02, T-01, HOST-D01).",
+    "Docker unavailable locally: sandbox Docker evidence must come from hosted CI with CA_SANDBOX_REQUIRE_DOCKER=1."
   ],
   "delivery_state": "NOT_STARTED",
   "trusted_readiness_reference": null,
-  "distribution_settlement_references": []
+  "distribution_settlement_references": [],
+  "process_rules": [
+    {
+      "id": "PR-PROVENANCE",
+      "rule": "Any slice that edits a source cited by .codearbiter/.provenance/*.json must re-read the affected claims and refresh identities through the native context preview/apply path in the same child PR (check: .github/scripts/test_provenance_wiring.py).",
+      "source": "P-01 CI failure 2026-11-12"
+    },
+    {
+      "id": "PR-CHILD-PR",
+      "rule": "Since ruleset 27158575, every change to major/state-contracts lands through a child branch PR whose base is major/state-contracts (including execution-record updates)."
+    }
+  ]
 }
