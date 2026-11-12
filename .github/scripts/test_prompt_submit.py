@@ -68,6 +68,7 @@ class _FixtureClaudeHost(hostapi.Host):
 SAFETY_CORE_TEXT = "# Safety core\n\nSAFETY-CORE-MARK: residual invariants.\n"
 ARBITER_BODY_TEXT = "# codeArbiter\n\nARBITER-MODE-MARK: orchestrated work.\n"
 DANGEROUS_BODY_TEXT = "# dangerous\n\nDANGEROUS-MODE-MARK: gates-off posture.\n"
+OPS_BODY_TEXT = "# ops\n\nOPS-MODE-MARK: operations posture.\n"
 
 
 class _Fixture(unittest.TestCase):
@@ -90,6 +91,9 @@ class _Fixture(unittest.TestCase):
         with open(os.path.join(self.plugin_root, "includes", "dangerous-mode.md"),
                   "w", encoding="utf-8") as f:
             f.write(DANGEROUS_BODY_TEXT)
+        with open(os.path.join(self.plugin_root, "includes", "ops-mode.md"),
+                  "w", encoding="utf-8") as f:
+            f.write(OPS_BODY_TEXT)
 
         self._env_patch = {
             "CLAUDE_PROJECT_DIR": self.root,
@@ -604,6 +608,139 @@ class TestFailedGenerationBumpDoesNotSuppressReinjection(_Fixture):
         self.assertIn("SAFETY-CORE-MARK", out,
                       "a failed generation bump suppressed the post-compaction re-injection")
 
+
+
+# --------------------------------------------------------------------- HW-01 (HOOK-F01)
+
+class TestPersonaFollowsRealTransitions(_Fixture):
+    """hooks:persona:01..03 — delivery follows the CURRENT transition.
+
+    The pre-HW-01 dedup marker recorded "ever delivered" per (session, mode,
+    generation) and was never cleared, so A->B->A found its old A marker and
+    returned nothing: the model kept the B persona (often `dangerous`) as its
+    last instruction while the plane said A. The audit probe
+    (audit-work/probe_mode.py) measured 0 persona characters on that return.
+    """
+
+    MARKS = {"arbiter": "ARBITER-MODE-MARK", "dangerous": "DANGEROUS-MODE-MARK",
+             "ops": "OPS-MODE-MARK"}
+
+    def _turn(self, prompt="work", host=None):
+        rc, out, err = self.invoke(_ups(prompt), host=host)
+        self.assertEqual(rc, 0, err)
+        if host is not None and out:
+            return json.loads(out)["hookSpecificOutput"]["additionalContext"]
+        return out
+
+    def _walk(self, modes, host=None):
+        """Flip to each mode in turn (the first is the starting posture) and
+        return the persona text delivered on the ordinary prompt after it."""
+        delivered = []
+        for i, mode in enumerate(modes):
+            if i:
+                rc, _out, err = self.invoke(_ups("mode --" + mode), host=host)
+                if host is None:
+                    self.assertEqual(rc, 2, err)
+            elif mode != "arbiter":
+                self.invoke(_ups("mode --" + mode), host=host)
+            delivered.append(self._turn(host=host))
+        return delivered
+
+    def _assert_each_delivered(self, modes, delivered):
+        for mode, text in zip(modes, delivered):
+            self.assertIn(self.MARKS[mode], text,
+                          "transition to {} delivered no {} persona".format(mode, mode))
+            for other, mark in self.MARKS.items():
+                if other != mode:
+                    self.assertNotIn(mark, text)
+
+    def test_arbiter_dangerous_arbiter_redelivers_arbiter_claude(self):
+        modes = ["arbiter", "dangerous", "arbiter"]
+        self._assert_each_delivered(modes, self._walk(modes))
+
+    def test_ops_arbiter_ops_redelivers_ops_claude(self):
+        modes = ["ops", "arbiter", "ops"]
+        self._assert_each_delivered(modes, self._walk(modes))
+
+    def test_arbiter_dangerous_arbiter_redelivers_arbiter_codex(self):
+        modes = ["arbiter", "dangerous", "arbiter"]
+        self._assert_each_delivered(modes, self._walk(modes, host=_CodexHost()))
+
+    def test_ops_arbiter_ops_redelivers_ops_codex(self):
+        modes = ["ops", "arbiter", "ops"]
+        self._assert_each_delivered(modes, self._walk(modes, host=_CodexHost()))
+
+    def test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona(self):
+        self.invoke(_ups("mode --dangerous"))
+        self.assertIn("DANGEROUS-MODE-MARK", self._turn())
+        self.assertEqual(self._turn("again"), "")
+        rc, _out, err = self.invoke(_ups("mode --dangerous"))
+        self.assertEqual(rc, 2)
+        self.assertIn("already", err)
+        self.assertEqual(self._turn("after a no-op token"), "")
+        # A duplicate delivery of the same prompt event is also idempotent.
+        self.assertEqual(self._turn("after a no-op token"), "")
+
+    def test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition(self):
+        """Flip turns never reach the model, so A->B->A with no ordinary prompt
+        in between leaves the model's last persona A: nothing to redeliver."""
+        self.assertIn("ARBITER-MODE-MARK", self._turn())
+        self.invoke(_ups("mode --dangerous"))
+        self.invoke(_ups("mode --arbiter"))
+        self.assertEqual(self._turn(), "")
+
+    def test_compaction_redelivers_the_current_mode_once(self):
+        self.invoke(_ups("mode --ops"))
+        self.assertIn("OPS-MODE-MARK", self._turn())
+        self.assertEqual(self._turn(), "")
+        self.invoke(_precompact())
+        self.assertIn("OPS-MODE-MARK", self._turn())
+        self.assertEqual(self._turn(), "")
+
+    def test_new_session_gets_its_own_delivery(self):
+        self.assertIn("ARBITER-MODE-MARK", self._turn())
+        rc, out, _ = self.invoke(_ups("hello", session_id="s2"))
+        self.assertIn("ARBITER-MODE-MARK", out)
+
+    def test_failed_audit_then_recovery_delivers_the_eventual_effective_persona(self):
+        """Marker written, enter row owed: the effective mode stays arbiter, the
+        guard state is reported as arbiter, and once the owed row settles the
+        next ordinary prompt delivers the ops persona."""
+        self.assertIn("ARBITER-MODE-MARK", self._turn())
+        original = _modelib._append_override_line
+        _modelib._append_override_line = lambda root, line: False
+        try:
+            rc, _out, err = self.invoke(_ups("mode --ops"))
+        finally:
+            _modelib._append_override_line = original
+        self.assertEqual(rc, 2)
+        self.assertEqual(_modelib.current_mode("s1", root=self.root)[0], "ops")
+        self.assertEqual(ps._effective_mode(self.root, "s1", {})[0], "arbiter")
+        # Still arbiter effective: no redundant arbiter text, no ops persona.
+        self.assertEqual(self._turn(), "")
+        # Recovery: the same token retries settlement of the owed row.
+        rc, _out, err = self.invoke(_ups("mode --ops"))
+        self.assertEqual(rc, 2)
+        self.assertEqual(ps._effective_mode(self.root, "s1", {})[0], "ops")
+        self.assertIn("OPS-MODE-MARK", self._turn())
+        self.assertEqual(self.overrides_log().count("MODE: ops enter"), 1)
+
+    def test_unreadable_delivery_record_fails_toward_redelivery(self):
+        self.assertIn("ARBITER-MODE-MARK", self._turn())
+        path = ps._delivery_record_path(self.root, "s1")
+        os.remove(path)
+        os.makedirs(path)  # a directory: exists but cannot be read as a record
+        self.assertIn("ARBITER-MODE-MARK", self._turn())
+
+    def test_legacy_modeinject_marker_does_not_suppress_delivery(self):
+        """Rollback/upgrade: a pre-HW-01 `modeinject-` marker left on disk is
+        not reinterpreted by the new reader."""
+        import _readinjectlib
+        legacy = _readinjectlib.marker_path(self.root, "s1", "arbiter:0",
+                                            prefix="modeinject-")
+        os.makedirs(os.path.dirname(legacy), exist_ok=True)
+        open(legacy, "w").close()
+        self.assertIn("ARBITER-MODE-MARK", self._turn())
 
 
 if __name__ == "__main__":

@@ -19,9 +19,11 @@
 #      convention for a sibling event).
 #   2. Any OTHER prompt: compose `includes/safety-core.md` + the CURRENT
 #      mode's body (refusing a non-arbiter body the audit trail does not back
-#      — AC-11) and inject it, deduplicated per (session, mode, compaction
-#      generation) so a steady-state session pays for one injection per mode
-#      change, not per turn. Claude: plain stdout (host fact — plugin-scoped
+#      — AC-11) and inject it whenever the (effective mode, compaction
+#      generation) differs from the one LAST delivered to this session
+#      (HW-01), so a steady-state session pays for one injection per real
+#      transition, not per turn, and a return to an earlier mode redelivers.
+#      Claude: plain stdout (host fact — plugin-scoped
 #      `additionalContext` is unreliable, claude-code#16538; see
 #      `session-start.py:14-19`). Codex: `hookSpecificOutput.additionalContext`
 #      inside a (deliberately leaner, non-blocking) envelope.
@@ -88,11 +90,6 @@ _MODE_BODY_RELPATH = {
 }
 
 _ELLIPSIS = "…"  # U+2026 HORIZONTAL ELLIPSIS — mirrors _readinjectlib's truncation marker
-
-# Dedup marker namespace (T-30): distinct from _readinjectlib's own
-# "readinject-" default so the two consumers' markers never collide in the
-# shared .codearbiter/.markers/ directory.
-MODEINJECT_PREFIX = "modeinject-"
 
 # This script's OWN compaction-generation ledger (see the module docstring's
 # job 3). Lives beside the mode marker and the readinject markers, but is a
@@ -195,32 +192,71 @@ def _effective_mode(root, session_id, payload):
 
 
 # ---------------------------------------------------------------------------
-# Dedup — per (session, mode, compaction generation) marker (AC-23/24/25)
+# Delivery identity — the LAST persona delivered to a session (HW-01)
 # ---------------------------------------------------------------------------
+#
+# The earlier dedup recorded "ever delivered" per (session, mode, compaction
+# generation) and never cleared it, so arbiter->dangerous->arbiter found the
+# old arbiter marker and delivered NOTHING on the return: the model's last
+# persona stayed `dangerous` while the plane said arbiter (HOOK-F01).
+#
+# Delivery now compares against ONE per-session record of what was last
+# delivered — {effective mode, compaction generation}. A persona is owed
+# exactly when the current (effective mode, generation) differs from it:
+#   * a real effective transition (A->B, B->A, an owed enter row settling)
+#     changes the mode half and redelivers;
+#   * a compaction changes the generation half and redelivers;
+#   * an unchanged turn, a duplicate host event, and a no-op same-mode token
+#     match and deliver nothing;
+#   * A->B->A with no ordinary prompt between the flips is NOT a transition
+#     the model saw (flip turns never reach it), so A is not repeated.
+# Emission is not proof the model kept the text; the record only says what
+# this hook last emitted.
+#
+# Versioned (`v`), and in its own `modedelivery-v2-` namespace: a rolled-back
+# reader never sees it, and this reader never reinterprets a legacy
+# `modeinject-` marker. Unreadable or mismatched -> treated as "nothing
+# delivered", which fails toward a redundant persona, never a missing one.
 
-def _dedup_key(mode, generation):
-    return "{}:{}".format(mode, generation)
+MODEDELIVERY_PREFIX = "modedelivery-v2-"
+_DELIVERY_RECORD_VERSION = 2
 
 
-def _already_injected(root, session_id, mode, generation):
+def _delivery_record_path(root, session_id):
+    return _readinjectlib.marker_path(
+        root, session_id, "last-delivered", prefix=MODEDELIVERY_PREFIX)
+
+
+def _read_delivery_record(root, session_id):
+    """(mode, generation) last delivered to `session_id`, or None when absent,
+    unreadable, foreign, or of another version. Never raises."""
     try:
-        path = _readinjectlib.marker_path(
-            root, session_id, _dedup_key(mode, generation), prefix=MODEINJECT_PREFIX)
-        return os.path.isfile(path)
-    except Exception:  # noqa: BLE001 — degrade toward injecting again, never toward suppressing
-        return False
+        with open(_delivery_record_path(root, session_id), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:  # noqa: BLE001 — degrade toward delivering again
+        return None
+    if (not isinstance(data, dict) or data.get("v") != _DELIVERY_RECORD_VERSION
+            or data.get("session") != str(session_id)
+            or data.get("mode") not in _modelib.MODES):
+        return None
+    generation = data.get("generation")
+    if isinstance(generation, bool) or not isinstance(generation, int):
+        return None
+    return data["mode"], generation
 
 
-def _record_injected(root, session_id, mode, generation):
+def _already_delivered(root, session_id, mode, generation):
+    return _read_delivery_record(root, session_id) == (mode, generation)
+
+
+def _record_delivered(root, session_id, mode, generation):
     try:
-        path = _readinjectlib.marker_path(
-            root, session_id, _dedup_key(mode, generation), prefix=MODEINJECT_PREFIX)
+        path = _delivery_record_path(root, session_id)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        tmp = path + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            f.write("")
-        os.replace(tmp, path)
-    except Exception:  # noqa: BLE001 — a failed marker write only costs a redundant re-inject
+        _hooklib.write_text_atomic(path, json.dumps({
+            "v": _DELIVERY_RECORD_VERSION, "session": str(session_id),
+            "mode": mode, "generation": generation}))
+    except Exception:  # noqa: BLE001 — a failed record write only costs a redundant re-delivery
         pass
 
 
@@ -249,22 +285,18 @@ def _read_compaction_generation(root, session_id):
 
 
 def _invalidate_injection_markers(root, session_id):
-    """Remove every `modeinject-` marker for `session_id`, across all modes.
+    """Remove `session_id`'s last-delivered record.
 
-    The fallback when the generation cannot advance. Deleting the markers
-    forces the next turn's `_already_injected` to miss, so the persona is
+    The fallback when the generation cannot advance. Deleting the record
+    forces the next turn's `_already_delivered` to miss, so the persona is
     re-injected — the same outcome a successful bump produces, reached by the
     other side. Never raises: this runs on an already-degraded path, and a
     failure here costs the re-injection it was trying to guarantee, so it must
     not also cost the PreCompact turn."""
-    for mode in _modelib.MODES:
-        try:
-            path = _readinjectlib.marker_path(
-                root, session_id, _dedup_key(mode, _read_compaction_generation(root, session_id)),
-                prefix=MODEINJECT_PREFIX)
-            os.remove(path)
-        except Exception:  # noqa: BLE001 — absent is the desired state anyway
-            pass
+    try:
+        os.remove(_delivery_record_path(root, session_id))
+    except Exception:  # noqa: BLE001 — absent is the desired state anyway
+        pass
 
 
 def _bump_compaction_generation(root, session_id):
@@ -375,7 +407,7 @@ def _inject_claude(payload, host, root, session_id, approval_context=""):
     if diag:
         sys.stderr.write("codeArbiter: " + diag + "\n")
     generation = _read_compaction_generation(root, session_id)
-    if _already_injected(root, session_id, mode, generation):
+    if _already_delivered(root, session_id, mode, generation):
         if approval_context:
             print(approval_context)
         return
@@ -389,13 +421,13 @@ def _inject_claude(payload, host, root, session_id, approval_context=""):
         return
     composed, _truncated = _compose_persona(safety, body)
     print("\n\n".join(value for value in (approval_context, composed) if value))
-    _record_injected(root, session_id, mode, generation)
+    _record_delivered(root, session_id, mode, generation)
 
 
 def _inject_codex(payload, host, root, session_id, approval_context=""):
     mode, diag = _effective_mode(root, session_id, payload)
     generation = _read_compaction_generation(root, session_id)
-    if _already_injected(root, session_id, mode, generation):
+    if _already_delivered(root, session_id, mode, generation):
         if approval_context:
             print(json.dumps(_codex_allow_envelope(approval_context)))
         return
@@ -411,7 +443,7 @@ def _inject_codex(payload, host, root, session_id, approval_context=""):
         safety, body, limit_tokens=CODEX_ADDITIONAL_CONTEXT_LIMIT)
     context = "\n\n".join(value for value in (approval_context, composed) if value)
     print(json.dumps(_codex_allow_envelope(context)))
-    _record_injected(root, session_id, mode, generation)
+    _record_delivered(root, session_id, mode, generation)
 
 
 # ---------------------------------------------------------------------------
