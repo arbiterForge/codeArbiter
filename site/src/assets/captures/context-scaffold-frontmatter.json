@@ -42,7 +42,7 @@
     },
     {
       "path": "plugins/ca/hooks/_host.py",
-      "sha256": "b15e91d13d6a09c457693274919150751bdc323649e415153f43cd288d418b1f"
+      "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
     },
     {
       "path": "plugins/ca/hooks/_pathnorm.py",
@@ -70,7 +70,7 @@
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "21c04efefa977d6e46e9700dd923e4e6b4d0f0a636d73ec9c84b1c67d0fe9fc2"
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
     },
     {
       "path": "plugins/ca/hooks/init-codearbiter.py",

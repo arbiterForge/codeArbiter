@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.30.0]
+
+### Changed
+
+- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+
 ## [0.26.7] - 2026-11-10
 
 ### Fixed
