@@ -111,7 +111,7 @@ const H10B_NO_PASS: StableHookKey = {
   tag: "H-10b",
   file: "_bashguardlib.py",
   message:
-    "This commit introduces {kind} changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the {skill} gate (it records the pass), then commit. To bypass a security gate, /override requires its heavier security-acknowledgement path.",
+    "No security-gate PASS is recorded for this staged candidate. ",
 };
 
 const H01_PROTECTED_BRANCH: StableHookKey = {
@@ -195,7 +195,7 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
     const site = callSites.find((c) => c.tag === "H-09b" && c.file === "_bashguardlib.py");
     expect(site).toBeDefined();
     expect(site!.message).toBe(
-      "the diff for the crypto/secret security scan could not be read (git unavailable or timed out) — failing closed (ORCHESTRATOR §2). Retry, or run the crypto-compliance / secret-handling gate, then commit.",
+      "the diff for the crypto/secret security scan could not be decoded or read — failing closed (ORCHESTRATOR §2). Repair the reported cause and retry the same scan; a reviewer PASS cannot substitute for an unreadable candidate.",
     );
   });
 });

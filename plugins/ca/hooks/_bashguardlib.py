@@ -75,6 +75,7 @@
 #                                         on a shell mutation of a registered
 #                                         protected-state file
 
+from bisect import bisect_left
 import json
 import os
 import re
@@ -82,22 +83,32 @@ import shlex
 import subprocess
 import sys
 
+from _gitexec import (binary_candidate_binding, read_head_blob_digest,
+                      read_index_text, staged_changes as index_changes)
+
 from _hooklib import (
     ADR_LIFECYCLE_LOG_BASENAME, AUDIT_LOG_BASENAMES, AUDIT_LOG_FLAT_BASENAMES,
     AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_AUDIT_LOG_NAMES, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
-    GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
-    content_digest, is_migration_path, line_digest, security_scan_diff,
+    BINARY_SECURITY_CONTEXT, BinarySecurityContext, GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
+    binary_override_binding, binary_security_recovery, content_digest, gate_marker_producer_guidance, get_host, is_migration_path,
+    line_digest, security_scan_diff,
+    mixed_binary_security_recovery,
+    migration_candidate_binding, migration_gate_recovery, security_finding_summary,
+    security_gate_recovery,
+    worktree_marker_binding,
 )
-from _gitexec import git_executable
+from _gitexec import git_executable, git_read_error_summary
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
                 # gitdir: pointer) project_root() climb (#223)
-from hostapi import git_worktree_main_root  # noqa: #604 marker-root escalation
+from hostapi import git_toplevel, git_worktree_main_root  # noqa: #604 marker-root escalation
 import _protectedstatelib  # H-22's shell flank (T-08, #564) — imported as a
                             # module (not `from ... import REGISTRY`) so
                             # _STATE_WRITE_RES below is built from a live
                             # attribute lookup at import time, never a
                             # snapshotted name binding.
-from _protectedstatelib import ProtectedPolicy, marker_gated_write_admitted
+from _protectedstatelib import (
+    ProtectedPolicy, marker_gated_write_admitted, protected_state_recovery,
+)
 from _artifactlib import _CONTEXT_TARGETS  # inert candidate names; qualification is lazy
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
@@ -107,8 +118,21 @@ from _artifactlib import _CONTEXT_TARGETS  # inert candidate names; qualificatio
 _READ_ERRS = []
 
 
-def _note_read_err(argv, detail):
-    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+def _note_read_err(operation, failure_kind):
+    _READ_ERRS.append(git_read_error_summary(operation, failure_kind))
+
+
+def _exception_failure_kind(error):
+    """Classify an exception without copying its potentially sensitive text."""
+    if isinstance(error, subprocess.TimeoutExpired):
+        return "timeout"
+    if isinstance(error, PermissionError):
+        return "access"
+    if isinstance(error, FileNotFoundError):
+        return "spawn"
+    if isinstance(error, UnicodeError):
+        return "output"
+    return "failure"
 
 
 def _read_err_hint():
@@ -339,6 +363,664 @@ LOG_DESTROY_RE = re.compile(
     r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
     r"[^|;&]*" + LOG_NAMES, re.I,
 )
+# Direct PowerShell tool payloads contain the .NET expression without an
+# explicit ``pwsh -Command`` token, so the generic interpreter flank cannot
+# see them.  AppendAllText is the sanctioned append; overwrite/create shapes
+# remain H-05 violations.
+_DOTNET_CALL_RE = re.compile(
+    r"(?P<rewrite>\b(?:WriteAll(?:Text|Bytes|Lines)(?:Async)?|CreateText|"
+    r"OpenWrite|Create|Delete|Replace|Move|Copy)\s*)"
+    r"|(?P<open>(?:\[\s*[\w.]*File\s*\]|[\w.]*File)\s*::\s*"
+    r"(?:Open|OpenHandle)\b\s*)"
+    r"|(?P<filestream>\[\s*[\w.]*FileStream\s*\]\s*::\s*new\s*)"
+    r"|(?P<streamwriter>\[\s*[\w.]*StreamWriter\s*\]\s*::\s*new\s*)"
+    r"|(?P<fileinfo>\[\s*[\w.]*FileInfo\s*\]\s*::\s*new\s*)", re.I,
+)
+_FILEINFO_TAIL_RE = re.compile(
+    r"\s*\)*\s*(?:\?\.|\.)\s*(?P<method>[A-Za-z_]\w*)\s*\(", re.I,
+)
+_NEW_OBJECT_RE = re.compile(r"\bNew-Object\b", re.I)
+_DOTNET_STREAM_TYPE = (
+    r"(?:['\"])?(?:\[\s*)?(?:System\.)?IO\."
+    r"(?P<type>FileStream|StreamWriter|FileInfo)(?:\s*\])?"
+    r"(?:['\"])?(?=\s|,|\(|\)|$)"
+)
+_NEW_OBJECT_TYPE_PATTERNS = (
+    re.compile(r"\s*" + _DOTNET_STREAM_TYPE, re.I),
+    re.compile(
+        r"\s*\(\s*\[\s*(?:System\.)?IO\."
+        r"(?P<type>FileStream|StreamWriter|FileInfo)\s*\]\s*\)", re.I),
+    re.compile(
+        r"\s*\(\s*\[\s*type\s*\]\s*(?P<quote>['\"])"
+        r"(?:System\.)?IO\.(?P<type>FileStream|StreamWriter|FileInfo)"
+        r"(?P=quote)\s*\)", re.I),
+)
+_DESTRUCTIVE_FILEMODE_RE = re.compile(
+    r"(?:"
+    r"(?:\[\s*[\w.]*FileMode\s*\]|[\w.]*FileMode)\s*(?:::|\.)\s*"
+    r"(?:Create|CreateNew|OpenOrCreate|Truncate)\b"
+    r"|(?<![\w.])['\"]?(?:Create|CreateNew|OpenOrCreate|Truncate)['\"]?(?![\w.])"
+    r")", re.I,
+)
+_APPEND_FILEMODE_VALUE_RE = re.compile(
+    r"\s*(?:"
+    r"(?:\[\s*[\w.]*FileMode\s*\]|[\w.]*FileMode)\s*(?:::|\.)\s*Append"
+    r"|'Append'|\"Append\""
+    r")\s*", re.I,
+)
+_READ_FILEACCESS_VALUE_RE = re.compile(
+    r"\s*(?:"
+    r"(?:\[\s*[\w.]*FileAccess\s*\]|[\w.]*FileAccess)\s*(?:::|\.)\s*Read"
+    r"|'Read'|\"Read\""
+    r")\s*", re.I,
+)
+
+
+def _powershell_comment_boundary(text, index, allow_scriptblock=False):
+    """Whether a PowerShell comment opener begins a new shell token."""
+    return (index == 0 or text[index - 1].isspace()
+            or text[index - 1] in ";|&,(" or
+            (allow_scriptblock and text[index - 1] == "{"))
+
+
+def _powershell_layout(text, allow_scriptblock_comments=False):
+    """Index PowerShell nesting, calls, commas, and command boundaries once."""
+    stack = []
+    pairs = {}
+    call_commas = {}
+    depth_commas = {}
+    separators = {}
+    depths = [0] * len(text)
+    code = [True] * len(text)
+    comments = [False] * len(text)
+    strings = [False] * len(text)
+    quote = None
+    line_comment = False
+    block_depth = 0
+    index = 0
+    while index < len(text):
+        char = text[index]
+        depths[index] = len(stack)
+        if block_depth:
+            code[index] = False
+            comments[index] = True
+            if text.startswith("<#", index):
+                block_depth += 1
+                if index + 1 < len(text):
+                    code[index + 1] = False
+                    comments[index + 1] = True
+                    depths[index + 1] = len(stack)
+                index += 2
+                continue
+            if text.startswith("#>", index):
+                block_depth -= 1
+                if index + 1 < len(text):
+                    code[index + 1] = False
+                    comments[index + 1] = True
+                    depths[index + 1] = len(stack)
+                index += 2
+                continue
+            index += 1
+            continue
+        if line_comment:
+            if char not in "\r\n":
+                code[index] = False
+                comments[index] = True
+                index += 1
+                continue
+            line_comment = False
+        if quote:
+            code[index] = False
+            strings[index] = True
+            if char == "`" and quote == '"' and index + 1 < len(text):
+                code[index + 1] = False
+                strings[index + 1] = True
+                depths[index + 1] = len(stack)
+                index += 2
+                continue
+            if char == quote:
+                if index + 1 < len(text) and text[index + 1] == quote:
+                    code[index + 1] = False
+                    strings[index + 1] = True
+                    depths[index + 1] = len(stack)
+                    index += 2
+                    continue
+                quote = None
+            index += 1
+            continue
+        if (text.startswith("<#", index)
+                and _powershell_comment_boundary(
+                    text, index, allow_scriptblock_comments)):
+            code[index] = False
+            comments[index] = True
+            block_depth = 1
+            if index + 1 < len(text):
+                code[index + 1] = False
+                comments[index + 1] = True
+                depths[index + 1] = len(stack)
+            index += 2
+            continue
+        if (char == "#" and _powershell_comment_boundary(
+                text, index, allow_scriptblock_comments)):
+            code[index] = False
+            comments[index] = True
+            line_comment = True
+            index += 1
+            continue
+        if char == "`":
+            code[index] = False
+            if index + 1 < len(text):
+                code[index + 1] = False
+                depths[index + 1] = len(stack)
+            index += 2
+            continue
+        if char in ("'", '"'):
+            code[index] = False
+            strings[index] = True
+            quote = char
+        elif char in "([{":
+            stack.append((char, index))
+            if char == "(":
+                call_commas[index] = []
+            separators.setdefault(len(stack), []).append(index)
+        elif char in ")]}":
+            closing_depth = len(stack)
+            if stack:
+                opening_char, opening = stack.pop()
+                if opening_char == "(" and char == ")":
+                    pairs[opening] = index
+            separators.setdefault(closing_depth, []).append(index)
+        elif char == ",":
+            depth = len(stack)
+            depth_commas.setdefault(depth, []).append(index)
+            if stack and stack[-1][0] == "(":
+                call_commas[stack[-1][1]].append(index)
+        elif char in ";|&\r\n":
+            separators.setdefault(len(stack), []).append(index)
+        index += 1
+    return (pairs, call_commas, depth_commas, separators, depths, code,
+            comments, strings)
+
+
+def _powershell_without_comments(text, allow_scriptblock_comments=False):
+    """Replace PowerShell comments with spaces while preserving all offsets."""
+    comments = _powershell_layout(text, allow_scriptblock_comments)[-2]
+    return "".join(
+        " " if comments[index] else char for index, char in enumerate(text))
+
+
+def _powershell_subexpression_end(text, opening):
+    """Return the closing parenthesis for one executable ``$(`` body."""
+    depth = 1
+    index = opening + 1
+    quote = None
+    block_depth = 0
+    line_comment = False
+    while index < len(text):
+        char = text[index]
+        if block_depth:
+            if text.startswith("<#", index):
+                block_depth += 1
+                index += 2
+            elif text.startswith("#>", index):
+                block_depth -= 1
+                index += 2
+            else:
+                index += 1
+            continue
+        if line_comment:
+            if char in "\r\n":
+                line_comment = False
+            index += 1
+            continue
+        if quote == "'":
+            if char == "'":
+                if index + 1 < len(text) and text[index + 1] == "'":
+                    index += 2
+                    continue
+                quote = None
+            index += 1
+            continue
+        if quote == '"':
+            if char == "`":
+                index += 2
+                continue
+            if char == '"':
+                quote = None
+                index += 1
+                continue
+            if char == "$" and index + 1 < len(text) and text[index + 1] == "(":
+                nested = _powershell_subexpression_end(text, index + 1)
+                if nested is None:
+                    return None
+                index = nested + 1
+                continue
+            index += 1
+            continue
+        if (text.startswith("<#", index)
+                and _powershell_comment_boundary(text, index)):
+            block_depth = 1
+            index += 2
+        elif char == "#" and _powershell_comment_boundary(text, index):
+            line_comment = True
+            index += 1
+        elif char in "'\"":
+            quote = char
+            index += 1
+        elif char == "(":
+            depth += 1
+            index += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return index
+            index += 1
+        else:
+            index += 1
+    return None
+
+
+def _powershell_expandable_analysis(text, comments):
+    """Return executable ``$()`` bodies and complete literal-string spans.
+
+    The main parser must ignore command-looking prose in every PowerShell
+    literal, while expandable strings still execute their subexpressions.  A
+    single pass records both facts so unmatched quote characters inside here
+    strings cannot expose their remaining text to the command scanner.
+    """
+    expressions = []
+    literals = [False] * len(text)
+
+    def mark_literal(start, end):
+        literals[start:end] = [True] * (end - start)
+
+    index = 0
+    while index < len(text):
+        if comments[index]:
+            index += 1
+            continue
+        if text.startswith("@'", index):
+            closing = re.search(r"(?m)^'@[ \t]*(?:\r?$)", text[index + 2:])
+            end = (index + 2 + closing.end()) if closing else len(text)
+            mark_literal(index, end)
+            index = end
+            continue
+        if text.startswith('@"', index):
+            closing = re.search(r'(?m)^"@[ \t]*(?:\r?$)', text[index + 2:])
+            body_end = index + 2 + closing.start() if closing else len(text)
+            end = index + 2 + closing.end() if closing else len(text)
+            mark_literal(index, end)
+            cursor = index + 2
+            while cursor < body_end:
+                if text[cursor] == "`":
+                    cursor += 2
+                elif (text[cursor] == "$" and cursor + 1 < body_end
+                      and text[cursor + 1] == "("):
+                    closing_expression = _powershell_subexpression_end(
+                        text, cursor + 1)
+                    if (closing_expression is None
+                            or closing_expression > body_end):
+                        break
+                    expressions.append(text[cursor + 2:closing_expression])
+                    cursor = closing_expression + 1
+                else:
+                    cursor += 1
+            index = end
+            continue
+        if text[index] == "'":
+            start = index
+            index += 1
+            while index < len(text):
+                if text[index] != "'":
+                    index += 1
+                elif index + 1 < len(text) and text[index + 1] == "'":
+                    index += 2
+                else:
+                    index += 1
+                    break
+            mark_literal(start, index)
+            continue
+        if text[index] != '"':
+            index += 1
+            continue
+        start = index
+        cursor = index + 1
+        while cursor < len(text):
+            if text[cursor] == "`":
+                cursor += 2
+            elif (text[cursor] == "$" and cursor + 1 < len(text)
+                  and text[cursor + 1] == "("):
+                closing_expression = _powershell_subexpression_end(
+                    text, cursor + 1)
+                if closing_expression is None:
+                    cursor = len(text)
+                    break
+                expressions.append(text[cursor + 2:closing_expression])
+                cursor = closing_expression + 1
+            elif text[cursor] == '"':
+                cursor += 1
+                break
+            else:
+                cursor += 1
+        mark_literal(start, min(cursor, len(text)))
+        index = cursor
+    return expressions, literals
+
+
+def _range_has(positions, start, end):
+    index = bisect_left(positions, start)
+    return index < len(positions) and positions[index] < end
+
+
+def _span_equals(text, start, end, expected):
+    while start < end and text[start].isspace():
+        start += 1
+    while end > start and text[end - 1].isspace():
+        end -= 1
+    return end - start == len(expected) and text[start:end].casefold() == expected
+
+
+def _trim_wrapping_parentheses(text, start, end, pairs):
+    while True:
+        while start < end and text[start].isspace():
+            start += 1
+        while end > start and text[end - 1].isspace():
+            end -= 1
+        if end - start < 2 or text[start] != "(" or text[end - 1] != ")":
+            return start, end
+        if pairs.get(start) != end - 1:
+            return start, end
+        start += 1
+        end -= 1
+
+
+def _second_arg_is_true(text, start, end, commas, pairs):
+    first_index = bisect_left(commas, start)
+    if first_index >= len(commas) or commas[first_index] >= end:
+        return False
+    second_start = commas[first_index] + 1
+    second_end = end
+    if first_index + 1 < len(commas) and commas[first_index + 1] < end:
+        second_end = commas[first_index + 1]
+    second_start, second_end = _trim_wrapping_parentheses(
+        text, second_start, second_end, pairs)
+    return _span_equals(text, second_start, second_end, "$true")
+
+
+def _argument_matches(text, start, end, commas, argument_index, pattern, pairs):
+    """Match one top-level positional argument without scanning later args."""
+    first = bisect_left(commas, start)
+    if argument_index:
+        separator_index = first + argument_index - 1
+        if separator_index >= len(commas) or commas[separator_index] >= end:
+            return False
+        argument_start = commas[separator_index] + 1
+    else:
+        argument_start = start
+    next_index = first + argument_index
+    argument_end = (commas[next_index]
+                    if next_index < len(commas) and commas[next_index] < end
+                    else end)
+    argument_start, argument_end = _trim_wrapping_parentheses(
+        text, argument_start, argument_end, pairs)
+    return pattern.fullmatch(text, argument_start, argument_end) is not None
+
+
+def _match_new_object_type(text, start, end):
+    for pattern in _NEW_OBJECT_TYPE_PATTERNS:
+        match = pattern.match(text, start, end)
+        if match is not None:
+            return match
+    return None
+
+
+def _new_object_parameter_index(text, depths, code):
+    """Index PowerShell-style parameters once, grouped by nesting depth."""
+    by_depth = {}
+    index = 0
+    while index < len(text):
+        if (not code[index] or text[index] != "-"
+                or (index and not text[index - 1].isspace())):
+            index += 1
+            continue
+        name_end = index + 1
+        while name_end < len(text) and text[name_end].isalnum():
+            name_end += 1
+        if name_end == index + 1 or not text[index + 1].isalpha():
+            index += 1
+            continue
+        value_start = name_end
+        if value_start < len(text) and text[value_start] == ":":
+            value_start += 1
+        else:
+            while value_start < len(text) and text[value_start].isspace():
+                value_start += 1
+        by_depth.setdefault(depths[index], []).append(
+            (index, text[index + 1:name_end].casefold(), value_start))
+        index = value_start
+    return by_depth
+
+
+def _new_object_parameters(parameter_index, start, end, depth):
+    """Return one New-Object's top-level parameters and bounded values.
+
+    PowerShell permits unique parameter-name prefixes and either whitespace or
+    a colon between a parameter and its value.  The prebuilt depth index keeps
+    nested or repeated New-Object parsing linear.
+    """
+    indexed = parameter_index.get(depth, ())
+    first = bisect_left(indexed, (start,))
+    last = bisect_left(indexed, (end,))
+    tokens = indexed[first:last]
+
+    parameters = []
+    known = ("typename", "argumentlist")
+    for token_index, (token_start, name, value_start) in enumerate(tokens):
+        matches = [candidate for candidate in known if candidate.startswith(name)]
+        canonical = matches[0] if len(matches) == 1 else None
+        value_end = tokens[token_index + 1][0] if token_index + 1 < len(tokens) else end
+        parameters.append((canonical, token_start, value_start, value_end))
+    return parameters
+
+
+def _segment_bounds(position, depth, separators, text_length):
+    boundaries = separators.get(depth, ())
+    index = bisect_left(boundaries, position)
+    start = boundaries[index - 1] + 1 if index else 0
+    end = boundaries[index] if index < len(boundaries) else text_length
+    return start, end
+
+
+def _fileinfo_tail_is_destructive(cmd, anchor, pairs, call_commas,
+                                  destructive_modes):
+    tail = _FILEINFO_TAIL_RE.match(cmd, anchor)
+    if tail is None:
+        return False
+    method_opening = tail.end() - 1
+    method_closing = pairs.get(method_opening)
+    if method_closing is None:
+        return False
+    method = tail.group("method").casefold()
+    if method in ("openread", "opentext", "refresh"):
+        return False
+    if method != "open":
+        return True
+    if _range_has(destructive_modes, method_opening + 1, method_closing):
+        return True
+    commas = call_commas.get(method_opening, ())
+    return not (
+        _argument_matches(cmd, method_opening + 1, method_closing, commas, 0,
+                          _APPEND_FILEMODE_VALUE_RE, pairs)
+        or _argument_matches(cmd, method_opening + 1, method_closing, commas, 1,
+                             _READ_FILEACCESS_VALUE_RE, pairs)
+    )
+
+
+def _dotnet_audit_rewrite(cmd):
+    """Recognize destructive .NET calls only within their own arguments."""
+    (pairs, call_commas, depth_commas, separators, depths, code,
+     comments, strings) = _powershell_layout(cmd)
+    try:
+        expressions, literals = _powershell_expandable_analysis(cmd, comments)
+        for body in expressions:
+            if _dotnet_audit_rewrite(body):
+                return True
+    except RecursionError:
+        # Deeply nested expandable subexpressions are executable but cannot be
+        # classified safely within Python's recursion ceiling. Fail closed.
+        return True
+    executable_code = [
+        code[index] and not literals[index] for index in range(len(cmd))
+    ]
+    syntax_cmd = "".join(
+        " " if comments[index] else char for index, char in enumerate(cmd))
+    audit_positions = [
+        match.start() for match in LOG_NAME_RE.finditer(syntax_cmd)
+    ]
+    if not audit_positions:
+        return False
+    executable_escapes = [
+        match for match in re.finditer(r"`[^\r\n]", syntax_cmd)
+        if not comments[match.start()] and not literals[match.start()]
+    ]
+    for escape in executable_escapes:
+        start = escape.start()
+        end = escape.end()
+        while start and not syntax_cmd[start - 1].isspace() \
+                and syntax_cmd[start - 1] not in ";|&":
+            start -= 1
+        while end < len(syntax_cmd) and not syntax_cmd[end].isspace() \
+                and syntax_cmd[end] not in ";|&":
+            end += 1
+        token = re.sub(r"`([^\r\n])", r"\1", syntax_cmd[start:end])
+        if _NEW_OBJECT_RE.search(token) or _DOTNET_CALL_RE.search(token):
+            # PowerShell permits backticks inside command/type/member names.
+            # Refuse lexical obfuscation on a protected path rather than
+            # attempting to emulate the full token-expansion grammar.
+            return True
+    mode_positions = [
+        match.start() for match in _DESTRUCTIVE_FILEMODE_RE.finditer(syntax_cmd)
+    ]
+    for match in _DOTNET_CALL_RE.finditer(syntax_cmd):
+        if not executable_code[match.start()]:
+            continue
+        opening = match.end()
+        while opening < len(syntax_cmd) and syntax_cmd[opening].isspace():
+            opening += 1
+        closing = (pairs.get(opening)
+                   if opening < len(syntax_cmd) and syntax_cmd[opening] == "("
+                   else None)
+        if closing is None:
+            continue
+        if not _range_has(audit_positions, opening + 1, closing):
+            continue
+        if match.lastgroup == "rewrite":
+            return True
+        if match.lastgroup in ("open", "filestream"):
+            if _range_has(mode_positions, opening + 1, closing):
+                return True
+            commas = call_commas.get(opening, ())
+            if not (
+                _argument_matches(syntax_cmd, opening + 1, closing, commas, 1,
+                                  _APPEND_FILEMODE_VALUE_RE, pairs)
+                or _argument_matches(syntax_cmd, opening + 1, closing, commas, 2,
+                                     _READ_FILEACCESS_VALUE_RE, pairs)
+            ):
+                return True
+            continue
+        if match.lastgroup == "streamwriter":
+            if not _second_arg_is_true(
+                    syntax_cmd, opening + 1, closing,
+                    call_commas.get(opening, ()), pairs):
+                return True
+            continue
+        if match.lastgroup == "fileinfo":
+            if _fileinfo_tail_is_destructive(
+                    syntax_cmd, closing + 1, pairs, call_commas, mode_positions):
+                return True
+
+    new_object_matches = [
+        match for match in _NEW_OBJECT_RE.finditer(syntax_cmd)
+        if executable_code[match.start()]
+    ]
+    parameter_index = _new_object_parameter_index(
+        syntax_cmd, depths, executable_code)
+    for match_index, match in enumerate(new_object_matches):
+        depth = depths[match.start()] if match.start() < len(depths) else 0
+        start, end = _segment_bounds(
+            match.start(), depth, separators, len(syntax_cmd))
+        following = None
+        if match_index + 1 < len(new_object_matches):
+            following = new_object_matches[match_index + 1]
+            if depths[following.start()] == depth and following.start() < end:
+                end = following.start()
+        parameters = _new_object_parameters(
+            parameter_index, match.end(), end, depth)
+        type_parameter = next(
+            (item for item in parameters if item[0] == "typename"), None)
+        argument_parameter = next(
+            (item for item in parameters if item[0] == "argumentlist"), None)
+        if type_parameter is not None:
+            type_match = _match_new_object_type(
+                syntax_cmd, type_parameter[2], type_parameter[3])
+        else:
+            positional_end = parameters[0][1] if parameters else end
+            type_match = _match_new_object_type(
+                syntax_cmd, match.end(), positional_end)
+        if type_match is None:
+            continue
+        type_name = type_match.group("type").casefold()
+        if argument_parameter is not None:
+            argument_start = argument_parameter[2]
+            argument_end = argument_parameter[3]
+        else:
+            argument_start = type_match.end()
+            argument_end = end
+        while argument_start < end and syntax_cmd[argument_start].isspace():
+            argument_start += 1
+        if (following is not None and following.start() < end
+                and depths[following.start()] > depth
+                and _range_has(audit_positions, argument_start, end)):
+            # A nested constructor can compute an outer stream path. Refuse
+            # the ambiguous protected-path expression rather than rescanning
+            # every nested suffix quadratically.
+            return True
+        object_tail = (_FILEINFO_TAIL_RE.search(
+            syntax_cmd, max(type_match.end(), argument_start), end)
+            if type_name == "fileinfo" else None)
+        if object_tail is not None and object_tail.start() < argument_end:
+            argument_end = object_tail.start()
+        commas = depth_commas.get(depth, ())
+        if (argument_start < argument_end
+                and syntax_cmd[argument_start] == "("):
+            nested_end = pairs.get(argument_start)
+            if nested_end is not None and nested_end <= argument_end:
+                argument_end = nested_end
+                commas = call_commas.get(argument_start, ())
+                argument_start += 1
+        if not _range_has(audit_positions, argument_start, argument_end):
+            continue
+        if type_name == "filestream":
+            if _range_has(mode_positions, argument_start, argument_end):
+                return True
+            if not (
+                _argument_matches(
+                    syntax_cmd, argument_start, argument_end, commas, 1,
+                                  _APPEND_FILEMODE_VALUE_RE, pairs)
+                or _argument_matches(
+                    syntax_cmd, argument_start, argument_end, commas, 2,
+                                     _READ_FILEACCESS_VALUE_RE, pairs)
+            ):
+                return True
+        elif type_name == "streamwriter" and not _second_arg_is_true(
+                syntax_cmd, argument_start, argument_end, commas, pairs):
+            return True
+        elif (type_name == "fileinfo"
+              and _fileinfo_tail_is_destructive(
+                  syntax_cmd, object_tail.start() if object_tail else end,
+                  pairs, call_commas, mode_positions)):
+            return True
+    return False
 # #335: checkout/restore rewrite tracked worktree files through Git itself, so
 # they bypass every filesystem verb above. Keep the match bounded to one shell
 # command and require a literal audit-log basename in that Git invocation.
@@ -1218,11 +1900,11 @@ def current_branch(cwd):
             timeout=5,
         )
         if out.returncode != 0:
-            _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+            _note_read_err("branch", "exit")
             return None
         return out.stdout.strip()
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, repr(e))
+        _note_read_err("branch", _exception_failure_kind(e))
         return None
 
 
@@ -1257,10 +1939,10 @@ def head_on_protected_tip(cwd):
             errors="replace", timeout=5,
         )
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, repr(e))
+        _note_read_err("show-ref", _exception_failure_kind(e))
         return None
     if out.returncode not in (0, 1):
-        _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+        _note_read_err("show-ref", "exit")
         return None
     head_sha, protected = None, set()
     for ln in out.stdout.splitlines():
@@ -1282,10 +1964,10 @@ def added_lines(cwd, ref, paths=None):
     error rather than silently passing — an empty diff and an unreadable diff are
     NOT the same thing. `paths`, when given, scopes the diff to the pathspec(s) a
     `git commit <path>` names (whose worktree content the --cached scan misses).
-    Decoded as UTF-8 with replacement: `text=True` alone uses the locale code
-    page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
-    UnicodeDecodeError into the bare except below and the security gate
-    silently failed OPEN on exactly the platform this layer protects.
+    Decoded strictly as UTF-8. Non-UTF-8 text fails closed with a precise route:
+    convert it to UTF-8 or classify a genuinely binary file in `.gitattributes`
+    and use the audited binary override. This avoids locale decoding (cp1252 on
+    stock Windows) and never substitutes replacement text for security input.
 
     Excludes gate-events.log (#279): `sensitive_scan_added_lines` walks the
     diff path-aware, dropping lines that belong to the crypto/secret gate's
@@ -1296,24 +1978,25 @@ def added_lines(cwd, ref, paths=None):
     argv = [git_executable(), *SECURITY_DIFF_GIT_ARGS, ref] + (
         ["--", *paths] if paths else [])
     try:
-        out = subprocess.run(
-            argv, cwd=cwd,
-            capture_output=True, text=True, encoding="utf-8", errors="replace",
-            timeout=10,
-        )
-        if out.returncode != 0:
-            _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+        out = subprocess.run(argv, cwd=cwd, capture_output=True, timeout=10)
+        if out.returncode != 0 or not isinstance(out.stdout, bytes):
+            _note_read_err("diff", "output" if out.returncode == 0 else "exit")
+            return None
+        try:
+            stdout = out.stdout.decode("utf-8", errors="strict")
+        except UnicodeDecodeError:
+            _note_read_err("diff", "non-utf8")
             return None
     except Exception as e:  # noqa: BLE001
-        _note_read_err(argv, repr(e))
+        _note_read_err("diff", _exception_failure_kind(e))
         return None
-    result = security_scan_diff(out.stdout)
+    result = security_scan_diff(stdout)
     if result is None:
-        _note_read_err(argv, "malformed or incomplete crypto context")
+        _note_read_err("diff", "output")
     return result
 
 
-def _names(cwd, args):
+def _names(cwd, args, operation):
     """A set of repo-relative paths from a `git ... --name-only` style query, or
     None when git could not answer (nonzero / timeout / error). None (not an
     empty set) lets the H-14 migration scan fail CLOSED on a read error rather
@@ -1324,10 +2007,10 @@ def _names(cwd, args):
             encoding="utf-8", errors="replace", timeout=10,
         )
         if out.returncode != 0:
-            _note_read_err(["git"] + args, out.stderr or f"exit {out.returncode}")
+            _note_read_err(operation, "exit")
             return None
     except Exception as e:  # noqa: BLE001
-        _note_read_err(["git"] + args, repr(e))
+        _note_read_err(operation, _exception_failure_kind(e))
         return None
     return {p for p in out.stdout.splitlines() if p.strip()}
 
@@ -1335,28 +2018,32 @@ def _names(cwd, args):
 def staged_paths(cwd):
     """Paths in the index — what a plain `git commit` would record. None on a
     git-read failure (caller fails closed)."""
-    return _names(cwd, ["diff", "--cached", "--name-only"])
+    return _names(cwd, ["diff", "--cached", "--name-only"], "diff")
 
 
 def worktree_paths(cwd):
     """Tracked worktree modifications (what `git commit -a` sweeps in) plus
     untracked files. None if either underlying query failed (caller fails
     closed)."""
-    tracked = _names(cwd, ["diff", "--name-only"])
-    untracked = _names(cwd, ["ls-files", "--others", "--exclude-standard"])
+    tracked = _names(cwd, ["diff", "--name-only"], "diff")
+    untracked = _names(cwd, ["ls-files", "--others", "--exclude-standard"],
+                       "ls-files")
     if tracked is None or untracked is None:
         return None
     return tracked | untracked
 
 
 def read_worktree(cwd, rel):
-    """Worktree content of `rel`, or None if absent/oversize. The H-14 producer
-    digests worktree content too, so the backstop's view matches the marker."""
+    """Worktree content of `rel`, or None if absent/oversize.
+
+    This reader remains for commit forms that intentionally inspect worktree
+    paths. Plain-commit H-14 reads the exact index blob via ``read_index_text``.
+    """
     p = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
     try:
         if os.path.getsize(p) > 1_000_000:
             return None
-        with open(p, encoding="utf-8", errors="replace") as f:
+        with open(p, encoding="utf-8", errors="strict") as f:
             return f.read()
     except Exception:  # noqa: BLE001
         return None
@@ -1666,7 +2353,7 @@ def _literal_copy_item_target(cmd, base):
     return target
 
 
-def _check_h05_audit_log(cmd):
+def _check_h05_audit_log(cmd, powershell_tool=False):
     """H-05: the audit trail is append-only — block truncation/removal of the
     audit logs via shell verbs (Write/Edit are guarded separately). The
     substring pre-filter is a cheap short-circuit before the two regexes
@@ -1681,18 +2368,33 @@ def _check_h05_audit_log(cmd):
     # at all, so this shape walked past both. A `sed` whose options and
     # script are visibly read-only is a read, as for H-11 and H-18 (#997).
     folded = cmd.casefold()
+    # PowerShell comments are shell grammar, not a generic property of .NET
+    # tokens. Bash treats `#` after punctuation such as `,` as ordinary text,
+    # so applying this lexer to a Bash payload can hide a destructive suffix.
+    lexical_cmd = (_powershell_without_comments(
+                       cmd, allow_scriptblock_comments=True)
+                   if powershell_tool else cmd)
     legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
     enrolled_name = (any(n in cmd for n in legacy_names) or
                      ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
     if enrolled_name and (
-            LOG_TRUNC_RE.search(cmd) or _shell_write(cmd, LOG_DESTROY_RE)
-            or LOG_GIT_RESTORE_RE.search(cmd) and not _index_only_restore(cmd)
-            or _interp_protected_write(cmd, LOG_INTERP_RE, LOG_NAME_RE)
-            and not _is_direct_taskwrite(cmd)):
+            LOG_TRUNC_RE.search(lexical_cmd)
+            or _shell_write(lexical_cmd, LOG_DESTROY_RE)
+            or _dotnet_audit_rewrite(lexical_cmd)
+            or LOG_GIT_RESTORE_RE.search(lexical_cmd)
+            and not _index_only_restore(lexical_cmd)
+            or _interp_protected_write(
+                lexical_cmd, LOG_INTERP_RE, LOG_NAME_RE)
+            and not _is_direct_taskwrite(lexical_cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
                       "gate-events.log, decisions/decision-log.md) are append-only "
                       "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit "
-                      "trail is prohibited; append with '>>' only.")
+                      "trail is prohibited. Use one tail-anchored Edit, or a shell-native "
+                      "UTF-8 no-BOM append: PowerShell 5.1 "
+                      "[IO.File]::AppendAllText(<path>, <line>, (New-Object "
+                      "Text.UTF8Encoding($false))); PowerShell 7 Add-Content -LiteralPath "
+                      "<path> -Value <line> -Encoding utf8NoBOM; Git Bash printf '%s\\n' "
+                      "<line> >> <path>.")
 
 
 def _check_h11_decisions(cmd):
@@ -1722,7 +2424,7 @@ def _check_h11_decisions(cmd):
                       "edits, and deletions there are prohibited.")
 
 
-def _check_h18_context_md(cmd):
+def _check_h18_context_md(cmd, root):
     """H-18: CONTEXT.md is the activation switch (#159) — shell flank. A shell
     rewrite/delete of it would make every gate dormant; init writes it via the
     Write tool, so nothing legitimate is blocked. Reads pass.
@@ -1735,13 +2437,23 @@ def _check_h18_context_md(cmd):
     (`_interp_protected_write`)."""
     if (CONTEXT_REDIRECT_RE.search(cmd) or _shell_write(cmd, CONTEXT_WRITE_RE)
             or _interp_protected_write(cmd, CONTEXT_INTERP_RE, CONTEXT_NAME_RE)):
+        initialized = False
+        try:
+            with open(os.path.join(root, ".codearbiter", "CONTEXT.md"), encoding="utf-8") as stream:
+                initialized = "<!--INITIALIZED-->" in stream.read(131072)
+        except OSError:
+            pass
+        continuation = (get_host().cmd_ref("context-check") +
+                        " and its context-draft/context-apply writer" if initialized else
+                        get_host().cmd_ref("init"))
         block("H-18", ".codearbiter/CONTEXT.md is the activation switch every enforcement "
                       "hook reads (#159) — shell rewrites, edits, or deletions that could flip "
-                      "`arbiter: enabled` off or corrupt its frontmatter are prohibited. Edit it "
-                      "through the sanctioned init path.")
+                      "`arbiter: enabled` off or corrupt its frontmatter are prohibited. "
+                      f"This repository is {'initialized' if initialized else 'not initialized'}; "
+                      f"continue through {continuation}.")
 
 
-def _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback):
+def _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback, root):
     """H-19: the gate-pass markers (#160) are recorded only by the sanctioned
     python producers — shell flank against `echo <digest> > security-gate-passed`
     and `cp`/`sed`/`tee` forges naming a gate marker, plus an interpreter
@@ -1761,11 +2473,14 @@ def _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback):
                 or GATE_MARKER_INTERP_RE.search(view))
 
     if _gate_marker_hit(git_view) or (heredoc_shell_fallback and _gate_marker_hit(cmd)):
+        guidance = gate_marker_producer_guidance(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            root)
         block("H-19", "The .codearbiter/.markers/ security-gate-passed / migration-gate-passed "
                       "tokens are recorded only by the sanctioned gate producers (#160) — a shell "
                       "redirect, write verb, or interpreter invocation (python/node/perl/ruby/sh) "
                       "naming a gate marker forges a security/migration gate pass and is "
-                      "prohibited.")
+                      f"prohibited. {guidance}")
 
 
 def _check_h22_state(cmd, root, cwd=None):
@@ -1810,8 +2525,12 @@ def _check_h22_state(cmd, root, cwd=None):
             rel_path, policy = _protectedstatelib.resolve_registered_path(copy_target, root)
             if policy == ProtectedPolicy.MARKER_GATED and marker_gated_write_admitted(rel_path, root):
                 return
+            recovery = protected_state_recovery(
+                rel_path, policy, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-22", f"'{rel_path}' is protected project state (policy={policy.value}) "
-                          "— direct shell replacement is prohibited; use the sanctioned helper.")
+                          f"— direct shell replacement is prohibited. {recovery}")
         return
     verb_scan_cmd = _strip_pkg_manager_install(cmd)
     for rel_path, policy, redirect_re, write_re, git_restore_re, interp_re in _STATE_WRITE_RES:
@@ -1822,23 +2541,34 @@ def _check_h22_state(cmd, root, cwd=None):
         if policy == ProtectedPolicy.MARKER_GATED and marker_gated_write_admitted(rel_path, root):
             continue
         if policy == ProtectedPolicy.MARKER_GATED:
+            recovery = protected_state_recovery(
+                rel_path, policy, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-22", f"'{rel_path}' is marker-gated protected project state (#564) — a "
                           f"shell redirect or write/delete verb naming it is admitted only "
-                          f"under a fresh authoring marker. Mint the marker via the sanctioned "
-                          f"authoring lane, or /override.")
+                          f"under a fresh authoring marker. {recovery}")
         else:
+            recovery = protected_state_recovery(
+                rel_path, policy, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-22", f"'{rel_path}' is protected project state (#564, "
                           f"policy={policy.value}) — shell redirects and write/delete verbs "
                           f"naming it are prohibited outright; there is no marker path for "
-                          f"this policy. Use the sanctioned helper.")
+                          f"this policy. {recovery}")
     for rel_path, _policy, redirect_re, write_re, git_restore_re, interp_re in _CONTEXT_STATE_WRITE_RES:
         if not (redirect_re.search(cmd) or write_re.search(verb_scan_cmd)
                 or git_restore_re.search(cmd) and not _index_only_restore(cmd)
                 or interp_re.search(cmd)):
             continue
         if _protectedstatelib.lookup_policy(rel_path, root=root) == ProtectedPolicy.HELPER_ONLY:
+            recovery = protected_state_recovery(
+                rel_path, ProtectedPolicy.HELPER_ONLY, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-22", f"'{rel_path}' is protected context state — direct shell replacement "
-                          "is prohibited; use the qualified context writer.")
+                          f"is prohibited. {recovery}")
 
 
 def _marker_root(root):
@@ -1861,14 +2591,12 @@ def _marker_root(root):
 def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
     """H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     a recorded security-gate pass. The crypto-compliance / secret-handling skills
-    record the pass via hooks/security-pass.py — a marker holding the digest of
-    every sensitive line the gate approved. Two checks, both required: a pass
-    is recorded AND it covers every sensitive line being committed. Coverage is
-    by line digest with no time window (as H-14 binds migrations by content): a
-    pass stays valid for exactly the lines it reviewed, and any new or changed
-    sensitive line is uncovered and blocks, so a pass for one diff can never
-    launder a different one. Scans the staged diff, plus the worktree diff when
-    the commit uses -a/--all or the same command stages files."""
+    record the pass via hooks/security-pass.py — a marker holding the complete
+    staged-candidate binding plus row diagnostics. A pass is recorded AND the
+    staged candidate must still match exactly. There is no time window, but any
+    addition, omission, move, or edit changes the candidate and blocks. Commit
+    forms that can absorb unstaged content are refused with an explicit
+    stage-review-record-plain-commit continuation."""
     if not commit:
         return
     cargs = _strip_heredoc_bodies(commit.group("args"))
@@ -1886,34 +2614,79 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
             parts.append(added_lines(cwd, "HEAD", pathspecs))
     if any(p is None for p in parts):
         block("H-09b", "the diff for the crypto/secret security scan could not be "
-                       "read (git unavailable or timed out) — failing closed "
-                       "(ORCHESTRATOR §2). Retry, or run the crypto-compliance / "
-                       "secret-handling gate, then commit." + _read_err_hint())
+                       "decoded or read — failing closed (ORCHESTRATOR §2). Repair "
+                       "the reported cause and "
+                       "retry the same scan; a reviewer PASS cannot substitute for "
+                       "an unreadable candidate." + _read_err_hint())
+    candidate_root = git_toplevel(cwd)
+    if not candidate_root:
+        block("H-09b", "the candidate repository root could not be resolved from the "
+                       "Git operation directory; repair Git readability and retry.")
+    binaries = [part for part in parts if isinstance(part, BinarySecurityContext)]
+    if binaries:
+        recovery = binary_security_recovery()
+        if binaries[0].digests:
+            block("H-09b", mixed_binary_security_recovery())
+        if len(parts) != 1:
+            block("H-09b", "This commit form can absorb unstaged binary content that the "
+                           "standalone override producer cannot bind. " + recovery)
+        marker = os.path.join(_marker_root(candidate_root), ".codearbiter", ".markers",
+                              "security-gate-passed")
+        try:
+            with open(marker, encoding="utf-8") as stream:
+                approved = set(stream.read().split())
+        except Exception:  # noqa: BLE001 - missing/unreadable means no override
+            approved = set()
+        exact_binary = binary_candidate_binding(candidate_root, preserve_index=True)
+        expected = binary_override_binding(exact_binary)
+        if (worktree_marker_binding(candidate_root) not in approved
+                or expected is None or expected not in approved):
+            block("H-09b", "No audited binary override is recorded for this exact staged "
+                           "candidate. " + recovery)
+        return
     sensitive = set().union(*(part.digests for part in parts))
     if sensitive:
+        findings = tuple(finding for part in parts for finding in part.findings)
         touches_crypto = any(part.crypto for part in parts)
-        kind = "crypto/TLS" if touches_crypto else "secret"
+        crypto_count, sensitive_match_count, locations = security_finding_summary(
+            findings, crypto_fallback=touches_crypto)
         tag = "H-09b" if touches_crypto else "H-10b"
-        skill = "crypto-compliance" if touches_crypto else "secret-handling"
-        marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "security-gate-passed")
+        plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        requires_staging = len(parts) > 1
+        recovery = security_gate_recovery(
+            plugin_root, candidate_root, crypto_count, sensitive_match_count, locations,
+            requires_staging=requires_staging)
+        marker = os.path.join(_marker_root(candidate_root), ".codearbiter", ".markers", "security-gate-passed")
         if not os.path.isfile(marker):
-            block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
-                       f"recorded (.codearbiter/.markers/security-gate-passed). Run the "
-                       f"{skill} gate (it records the pass), then commit. To bypass a "
-                       f"security gate, /override requires its heavier "
-                       f"security-acknowledgement path.")
+            block(tag, "No security-gate PASS is recorded for this staged candidate. " + recovery)
         try:
             with open(marker, encoding="utf-8") as f:
                 approved = set(f.read().split())
         except Exception:  # noqa: BLE001
-            approved = set()
+            block(tag, "The security-gate marker is unreadable or malformed; repair its "
+                       "filesystem access, then perform the independent review and PASS-only "
+                       "recording again. A PASS cannot override unreadable evidence. " + recovery)
+        expected_root = worktree_marker_binding(candidate_root)
+        if expected_root not in approved:
+            block(tag, "The recorded security-gate PASS belongs to a different or legacy "
+                       "worktree, so it cannot cover this commit. " + recovery)
+        if requires_staging:
+            block(tag, "This commit form can absorb unstaged content that the standalone "
+                       "producer cannot review. " + recovery)
+        if parts[0].candidate not in approved:
+            block(tag, "The staged candidate differs from the exact diff independently "
+                       "reviewed and recorded. " + recovery)
         uncovered = sensitive - approved
         if uncovered:
-            block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered "
-                       f"by the recorded security-gate pass — the pass is bound to the "
-                       f"exact lines it reviewed, and these changed (or appeared) after "
-                       f"it ran. Re-run the {skill} gate so it reviews the current diff "
-                       f"and re-records the binding, then commit.")
+            uncovered_findings = [finding for finding in findings if finding.digest in uncovered]
+            crypto_count, sensitive_match_count, uncovered_locations = security_finding_summary(
+                uncovered_findings, crypto_fallback=touches_crypto and bool(uncovered))
+            recovery = security_gate_recovery(
+                plugin_root, candidate_root, crypto_count, sensitive_match_count,
+                uncovered_locations, requires_staging=requires_staging)
+            block(tag, f"{len(uncovered)} sensitive binding(s) are not covered by the "
+                       f"recorded PASS; the candidate changed or was omitted after review. "
+                       + recovery)
 
 
 def _check_h14_migration(commit, add, cwd, root):
@@ -1936,9 +2709,11 @@ def _check_h14_migration(commit, add, cwd, root):
     # (whole tree) or a `git commit <pathspec>` (named paths only). A None
     # from any path query means git could not read the file list -> fail
     # CLOSED, consistent with this layer's "ambiguity resolves CLOSED" stance.
-    staged = staged_paths(cwd)
-    failed = staged is None
+    changes = index_changes(cwd, preserve_index=True)
+    staged = set(changes or {})
+    failed = changes is None
     extra = set()
+    pathspecs = []
     if COMMIT_ALL_RE.search(cargs) or add:
         wt = worktree_paths(cwd)
         failed = failed or wt is None
@@ -1946,34 +2721,59 @@ def _check_h14_migration(commit, add, cwd, root):
     else:
         pathspecs = commit_pathspecs(cargs)
         if pathspecs:
-            ps = _names(cwd, ["diff", "HEAD", "--name-only", "--", *pathspecs])
+            ps = _names(cwd, ["diff", "HEAD", "--name-only", "--", *pathspecs],
+                        "diff")
             failed = failed or ps is None
             extra = ps or set()
     if failed:
         block("H-14", "the file list for the migration scan could not be read "
                       "(git unavailable or timed out) — failing closed "
-                      "(ORCHESTRATOR §2). Retry, or run the migration-review gate, "
-                      "then commit." + _read_err_hint())
+                      "(ORCHESTRATOR §2). Repair the reported Git read failure and retry; "
+                      "a migration-review PASS cannot substitute for an unreadable "
+                      "candidate." + _read_err_hint())
+    candidate_root = git_toplevel(cwd)
+    if not candidate_root:
+        block("H-14", "the candidate repository root could not be resolved from the "
+                      "Git operation directory; repair Git readability and retry.")
     staged |= extra
-    migs = sorted(p for p in staged if is_migration_path(p, root))
+    migs = sorted(p for p in staged if is_migration_path(p, candidate_root))
     if migs:
-        marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "migration-gate-passed")
+        marker = os.path.join(_marker_root(candidate_root), ".codearbiter", ".markers", "migration-gate-passed")
         try:
             with open(marker, encoding="utf-8") as f:
                 approved = set(f.read().split())
         except Exception:  # noqa: BLE001 — missing/unreadable marker -> no coverage
             approved = set()
+        plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        requires_staging = bool(COMMIT_ALL_RE.search(cargs) or add or pathspecs)
+        recovery = migration_gate_recovery(
+            plugin_root, candidate_root, migs, requires_staging=requires_staging)
+        if requires_staging:
+            block("H-14", "This commit form can absorb unstaged migrations that the "
+                          "standalone producer cannot review. " + recovery)
+        if worktree_marker_binding(candidate_root) not in approved:
+            block("H-14", "The migration PASS is missing, unreadable, legacy, or bound to "
+                          "a different worktree. " + recovery)
         uncovered = []
+        reviewed = []
         for rel in migs:
-            text = read_worktree(cwd, rel)
-            if text is None or content_digest(text) not in approved:
+            status = changes.get(rel, "M")
+            text = None if status == "D" else read_index_text(
+                candidate_root, rel, preserve_index=True)
+            preimage = None if status == "A" else read_head_blob_digest(candidate_root, rel)
+            if ((status != "D" and (text is None or content_digest(text) not in approved))
+                    or (status != "A" and preimage is None)):
                 uncovered.append(rel)
+            reviewed.append((rel, status, text, preimage))
         if uncovered:
-            block("H-14", f"{len(uncovered)} staged migration file(s) lack a recorded "
-                          f"migration-review pass: {', '.join(uncovered)}. commit-gate "
-                          f"dispatches migration-reviewer and records the pass via "
-                          f"hooks/migration-pass.py; run that review, then commit. To "
-                          f"bypass a migration gate, /override logs the exception.")
+            block("H-14", f"{len(uncovered)} staged migration file(s) changed or were "
+                          f"omitted after review. " +
+                          migration_gate_recovery(
+                              plugin_root, candidate_root, uncovered,
+                              requires_staging=requires_staging))
+        if migration_candidate_binding(reviewed) not in approved:
+            block("H-14", "The staged migration set differs from the complete candidate "
+                          "independently reviewed and recorded. " + recovery)
 
 
 def _literal_python_read_view(cmd):
@@ -2253,10 +3053,11 @@ def run_guards(payload, root, ti):
         _check_h03_wildcard_add(staging, git_cwd(staging.group(0), exec_root))
     # Commit security/migration checks still see that the batch stages files.
     add = adds[0] if adds else None
-    _check_h05_audit_log(cmd)
+    _check_h05_audit_log(
+        cmd, powershell_tool=(payload.get("tool_name") == "PowerShell"))
     _check_h11_decisions(cmd)
-    _check_h18_context_md(cmd)
-    _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback)
+    _check_h18_context_md(cmd, root)
+    _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback, root)
     _check_h22_state(cmd, root, _effective_command_cwd(payload, root))
     _check_h09b_h10b_crypto_secret(commit, add, cwd, root)
     _check_h14_migration(commit, add, cwd, root)

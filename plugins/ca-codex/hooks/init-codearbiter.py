@@ -131,6 +131,10 @@ FILES = {
 }
 NATIVE_FILES = {name: body for name, body in FILES.items()
                 if name not in {"open-tasks.md", "done-tasks.md"}}
+RUNTIME_MARKER_FILES = frozenset({
+    "dev-session-owner.json",
+    "mode-session-seen.json",
+})
 
 
 def project_root(opt):
@@ -158,6 +162,59 @@ def _regular_scaffold_entry(path, *, directory):
         stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
     return not reparse and (stat.S_ISDIR(info.st_mode) if directory
                             else stat.S_ISREG(info.st_mode))
+
+
+def _runtime_marker_snapshot(marker_dir):
+    """Return one bounded, no-follow identity snapshot of safe pre-init markers."""
+    def identity(info):
+        return (
+            info.st_dev,
+            info.st_ino,
+            info.st_mode,
+            getattr(info, "st_file_attributes", 0),
+            info.st_size,
+            info.st_mtime_ns,
+            info.st_ctime_ns,
+        )
+
+    try:
+        before = os.lstat(marker_dir)
+        reparse = getattr(before, "st_file_attributes", 0) & getattr(
+            stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        if reparse or not stat.S_ISDIR(before.st_mode):
+            return None
+        children = []
+        with os.scandir(marker_dir) as entries:
+            for entry in entries:
+                if len(children) >= len(RUNTIME_MARKER_FILES):
+                    return None
+                if entry.name not in RUNTIME_MARKER_FILES:
+                    return None
+                info = entry.stat(follow_symlinks=False)
+                entry_reparse = getattr(info, "st_file_attributes", 0) & getattr(
+                    stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+                if entry_reparse or not stat.S_ISREG(info.st_mode):
+                    return None
+                children.append((entry.name, identity(info)))
+        after = os.lstat(marker_dir)
+    except OSError:
+        return None
+    if identity(before) != identity(after):
+        return None
+    return identity(after), tuple(sorted(children))
+
+
+def _unexpected_project_state(cad, expected):
+    """Return entries outside the scaffold and exact host runtime markers."""
+    if not os.path.isdir(cad):
+        return set()
+    entries = set(os.listdir(cad))
+    marker_dir = os.path.join(cad, ".markers")
+    if ".markers" in entries:
+        marker_snapshot = _runtime_marker_snapshot(marker_dir)
+        if marker_snapshot is not None and marker_snapshot == _runtime_marker_snapshot(marker_dir):
+            entries.remove(".markers")
+    return entries - set(expected)
 
 
 def _scaffold_inventory(cad, ctx, requested_stage, requested_format):
@@ -201,7 +258,7 @@ def _scaffold_inventory(cad, ctx, requested_stage, requested_format):
     selected_files = FILES if selected_format == "markdown" or "open-tasks.md" in present else NATIVE_FILES
     names = ("CONTEXT.md", *selected_files)
     if not present:
-        if os.path.isdir(cad) and os.listdir(cad):
+        if _unexpected_project_state(cad, ()):
             raise SystemExit(f"REFUSING: {cad} has existing state without a scaffold; inspect it first.")
         return list(names), False, selected_files, selected_format
     for name in present:
@@ -211,7 +268,7 @@ def _scaffold_inventory(cad, ctx, requested_stage, requested_format):
     if "CONTEXT.md" not in present:
         # A missing stub amid content/provenance may be an interrupted native
         # transaction. Only the known scaffold prefix can be resumed here.
-        unexpected = set(os.listdir(cad)) - set(FILES)
+        unexpected = _unexpected_project_state(cad, FILES)
         if unexpected:
             raise SystemExit(f"REFUSING: {ctx} is absent amid other project state; inspect prior write outcome.")
     else:

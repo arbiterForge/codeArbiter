@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, WORK_SYSTEM_SOURCE_BLOBS, NATIVE_FIRST_SOURCE_BLOBS, SED_READ_SOURCE_BLOBS, TRACKER_COORDINATION_SOURCE_BLOBS, CORRECTIVE_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, PI_HOST_DESCRIPTOR_BLOB, PI_SUPPORT_SOURCE_BLOBS, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, WORK_SYSTEM_SOURCE_BLOBS, NATIVE_FIRST_SOURCE_BLOBS, SED_READ_SOURCE_BLOBS, TRACKER_COORDINATION_SOURCE_BLOBS, CORRECTIVE_SOURCE_BLOBS, HOOK_RECOVERY_SOURCE_BLOBS, PERSONA_CONTEXT_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -255,7 +255,7 @@ describe('atlas source compatibility revalidation', () => {
     expect(reviewed).toHaveLength(paths.length);
     const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
     expect(changed).toEqual([
-      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
+      'CHANGELOG.md', 'core/hosts.json', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
       'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/arbiter.md',
       'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
@@ -282,7 +282,7 @@ describe('atlas source compatibility revalidation', () => {
     });
     for (const [path, blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS)) {
       expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(blob);
-      const currentBlob = CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? ASSISTIVE_SOURCE_BLOBS[path] ?? RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path] ?? blob;
+      const currentBlob = PERSONA_CONTEXT_SOURCE_BLOBS[path] ?? HOOK_RECOVERY_SOURCE_BLOBS[path] ?? CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? ASSISTIVE_SOURCE_BLOBS[path] ?? RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path] ?? blob;
       // The canonical tracked file retains this blob through a squash; no PR
       // commit has to remain reachable in a subsequent main-only clone.
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
@@ -305,7 +305,7 @@ describe('atlas source compatibility revalidation', () => {
     expect(reviewed).toHaveLength(paths.length);
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
-      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
+      'CHANGELOG.md', 'core/hosts.json', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
       'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/arbiter.md',
       'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
@@ -370,11 +370,27 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+      expect(git('hash-object', '--', path).trim()).toBe(PERSONA_CONTEXT_SOURCE_BLOBS[path] ?? HOOK_RECOVERY_SOURCE_BLOBS[path] ?? CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
         ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
+  });
+
+  it('binds the promoted Pi host descriptor independently of the historical atlas review', () => {
+    expect(PI_HOST_DESCRIPTOR_BLOB).toBe('2fc53a8b7ca7b0e5a656f5640d9662d798af8856');
+    expect(PI_SUPPORT_SOURCE_BLOBS).toEqual({
+      'core/hosts.json': '2fc53a8b7ca7b0e5a656f5640d9662d798af8856',
+      'core/surface/commands/doctor.md': '1c912de8eea432af5aec35d84294bae28a7b339a',
+      'core/surface/includes/ops-mode.md': 'cb1b2fef89a60711ca6a038b0e18b22dea9e07c8',
+      'core/surface/includes/pi-host-notes.md': '3df45a408ecb79c772f188d4151449d85fab1492',
+      'core/surface/includes/safety-core.md': '2c42c9a4765accd00a21e13ba753a722f99f15bb',
+      'docs/parity.md': '17d824a7ddc47662daa9d4069ac5afd453e033ac',
+    });
+    for (const [path, blob] of Object.entries(PI_SUPPORT_SOURCE_BLOBS)) {
+      expect(git('hash-object', '--', path).trim()).toBe(blob);
+    }
+    expect(() => loadAtlas()).not.toThrow();
   });
 
   it('refuses missing, malformed or changed historical packet inventories', () => {
@@ -524,7 +540,7 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(offset).toBe(reviewed.length);
     expect(changed).toEqual([
-      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
+      'CHANGELOG.md', 'core/hosts.json', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
       'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/arbiter.md',
       'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
@@ -565,7 +581,8 @@ describe('atlas source compatibility revalidation', () => {
       'core/pysrc/_artifactauthoritylib.py': MARKER_PREFLIGHT_BLOB,
       'core/artifacts/internal/render/render.go': SCHEMA_CACHE_RENDER_BLOB,
       ...WORK_SYSTEM_SOURCE_BLOBS, ...SED_READ_SOURCE_BLOBS, ...NATIVE_FIRST_SOURCE_BLOBS, ...TRACKER_COORDINATION_SOURCE_BLOBS,
-      ...CORRECTIVE_SOURCE_BLOBS});
+      ...CORRECTIVE_SOURCE_BLOBS, ...HOOK_RECOVERY_SOURCE_BLOBS, ...PERSONA_CONTEXT_SOURCE_BLOBS,
+      ...PI_SUPPORT_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

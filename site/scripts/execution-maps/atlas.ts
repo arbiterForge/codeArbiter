@@ -96,6 +96,19 @@ export const MARKER_PREFLIGHT_BLOB='3bd569c1cbc9be1d25da7bff51429c0cd60793af';
 // validation. Rendered artifact semantics and the reviewed map stay the same.
 export const SCHEMA_CACHE_RENDER_BLOB='916287678b836f1bf9a98782dc8e7d0bb58d6986';
 
+// The Pi 1.5.0 promotion changes the supported host fingerprint and its owned
+// compatibility guidance, not the historical atlas geometry. Bind those exact
+// reviewed bytes without relabelling the older repository-wide revalidation.
+export const PI_SUPPORT_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/hosts.json':'2fc53a8b7ca7b0e5a656f5640d9662d798af8856',
+  'core/surface/commands/doctor.md':'1c912de8eea432af5aec35d84294bae28a7b339a',
+  'core/surface/includes/ops-mode.md':'cb1b2fef89a60711ca6a038b0e18b22dea9e07c8',
+  'core/surface/includes/pi-host-notes.md':'3df45a408ecb79c772f188d4151449d85fab1492',
+  'core/surface/includes/safety-core.md':'2c42c9a4765accd00a21e13ba753a722f99f15bb',
+  'docs/parity.md':'17d824a7ddc47662daa9d4069ac5afd453e033ac',
+});
+export const PI_HOST_DESCRIPTOR_BLOB=PI_SUPPORT_SOURCE_BLOBS['core/hosts.json'];
+
 // PR1029 adds an operator-confirmed, exact-digest recovery for one stranded
 // Tribunal write lock. S29's resume/history/continue path still requires the
 // same source binding and preserves historical files; S30 now guards active
@@ -194,10 +207,12 @@ export const WORK_SYSTEM_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.fre
   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
 });
 // Native-first enrollment changes the scaffold, selected Work instructions and
-// plan attachment text. The existing atlas routes and gate owners still apply;
-// bind the exact reviewed source bytes for the affected inputs.
+// plan attachment text. The greenfield marker repair retains those routes while
+// accepting only the bounded session-start marker-file set that can precede enrollment.
+// The existing atlas routes and gate owners still apply; bind the exact reviewed
+// source bytes for the affected inputs.
 export const NATIVE_FIRST_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/pysrc/init-codearbiter.py':'40a841ce804efc29ace2abe75fe4c2989b9131b8',
+  'core/pysrc/init-codearbiter.py':'f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4',
   'core/surface/SPRINT.md':'f5eea338a7a053d6dbaff0f9332dcfe9bf5f82e7',
   'core/surface/commands/feature.md':'6a5fcbc7469ac82a2586ff3ae168d7c0fa5fd907',
   'core/surface/commands/fix.md':'e81d7a9190b160d248aa7ea322b272cb8fa5badc',
@@ -219,6 +234,27 @@ export const TRACKER_COORDINATION_SOURCE_BLOBS:Readonly<Record<string,string>>=O
   'core/surface/commands/sprint.md':'38b3ada6685e031fbdc623081b86463c27976112',
   'core/surface/commands/task.md':'417e2944dbda8d3df35acb57a41cfbe63a0500f6',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'93ee13d53363db93970b6ea0c26245a333a908f7',
+});
+// The persona-context trim (#1095) routes arbiter's override and mode rules
+// to their owners and removes rules safety-core or SPRINT.md already carry.
+// Owner routing, on-demand loading and the mode boundary cited by S03 hold.
+export const PERSONA_CONTEXT_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/arbiter.md':'93e052b93e93984b59cb899473d5264dbea9e42d',
+});
+// #1078/#1037 bind sensitive reviews to the exact candidate and add structured
+// recovery plus the existing audited binary-override route. The override and
+// commit owners keep their Atlas route and gate ownership; pin the reviewed
+// current blobs without rewriting the historical packet bindings below. The
+// CI and review follow-ups keep comment parsing bound to the actual shell,
+// distinguish a broken host adapter from an opaque edit, and make both
+// security producers standalone commands. These change recovery text and
+// refusal classification without adding an owner, gate, or route.
+// PR1094's review follow-up only aligns the enumerated board-transition
+// guidance with the existing classifier; route and gate ownership stay fixed.
+export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_bashguardlib.py':'0f899bc13543ac3832e8bc8e488e6a96391a8e24',
+  'core/surface/commands/override.md':'d5b32413bca07aa89b60a6027d533b8ae56d8ed4',
+  'core/surface/skills/commit-gate/SKILL.md':'79ae22722040e774a769047fde17427398eb0073',
 });
 // The corrective handoff changes guard classification, state diagnostics,
 // authority handoffs and payload identity reporting without adding routes or
@@ -395,9 +431,9 @@ function applySelectedWorkRoute(atlas:Atlas):void {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??PI_SUPPORT_SOURCE_BLOBS[path]??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
-    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
+    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',PI_HOST_DESCRIPTOR_BLOB],
   ]);
   for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
     ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)

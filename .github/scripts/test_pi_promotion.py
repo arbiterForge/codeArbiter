@@ -169,6 +169,16 @@ class PromotionPolicyTests(unittest.TestCase):
                 f"promotion PR does not stage declared target {path}",
             )
 
+    def test_promotion_targets_own_the_live_sidebar_runtime_version(self):
+        targets = json.loads((REPO / ".github" / "pi-promotion-targets.json").read_text(encoding="utf-8"))
+        sidebar = next(
+            target for target in targets["targets"]
+            if target["id"] == "sidebar-live-supported-version"
+        )
+        self.assertEqual(sidebar["path"], "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts")
+        self.assertEqual(sidebar["before"], 'const SUPPORTED_PI_VERSION = "{last_verified}";')
+        self.assertEqual(sidebar["after"], 'const SUPPORTED_PI_VERSION = "{candidate}";')
+
     def test_runtime_contracts_use_reviewed_baseline_before_prospective_apply(self):
         validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))
         lines = (line.strip().removeprefix("run: ") for line in validate.splitlines())

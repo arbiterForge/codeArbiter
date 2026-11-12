@@ -120,6 +120,17 @@ def test_commit_gate_phase6_board_edit_exemption():
         "project.json" in phase6 and "staged/current" in phase6.lower(),
         "commit-gate Phase 6 must validate the portable project identity with native work",
     )
+    for transition in [
+        "attachment-only",
+        "start+attachment",
+        "start+complete",
+        "already-started addition",
+    ]:
+        check(
+            transition in phase6.lower(),
+            "commit-gate SKILL.md Phase 6: board-edit exemption must name "
+            f"the classifier's {transition} transition",
+        )
 
 
 # ---- AC-05: commit-gate Phase 7 stages the board edit by explicit path (T-07) --
@@ -505,7 +516,7 @@ def test_done_flip_retained():
             sys.path.remove(str(hooks))
 
     before = "# Open tasks\n\n## In-flight\n- [~] a.b.0001 - a task (started 2026-07-01)\n"
-    after = "# Open tasks\n\n## In-flight\n- [x] a.b.0001 - a task (started 2026-07-01) (done 2026-07-02)\n"
+    after = "# Open tasks\n\n## In-flight\n- [x] a.b.0001 - a task  (done 2026-07-02)\n"
     check(tb.classify_board_diff(before, after) is True,
           "a clean done-flip must classify RETAINED, or commit-gate reads "
           "the board edit as scope creep and refuses the work commit")

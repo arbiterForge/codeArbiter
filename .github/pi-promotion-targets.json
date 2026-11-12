@@ -217,6 +217,13 @@
       "after": "version != \"{candidate}\""
     },
     {
+      "id": "sidebar-live-supported-version",
+      "path": "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts",
+      "class": "ci",
+      "before": "const SUPPORTED_PI_VERSION = \"{last_verified}\";",
+      "after": "const SUPPORTED_PI_VERSION = \"{candidate}\";"
+    },
+    {
       "id": "public-docs-supported-versions",
       "path": ".github/scripts/test_public_pi_docs.py",
       "class": "ci",

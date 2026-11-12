@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Native work lifecycle closure · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-NATIVE-WORK-LIFECYCLE-CLOSURE</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/native-work-lifecycle-closure.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Native work lifecycle closure</h1><p class="deck">Make legacy adoption and governed one-item lifecycle commits usable without weakening migration integrity, assistive-state boundaries or delivery truth.</p><div class="meta"><span>SPEC-NATIVE-WORK-LIFECYCLE-CLOSURE</span><span>Revision 1 · schema 0.3.2</span><span>35 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>Pinned implementation handoff for issues #1084, #1087 and #1089</div><div class="field"><span class="label">Outcome</span>A lossless explicit adoption path and narrow commit-gate lifecycle exemption delivered as one reviewed PR.</div><div class="field"><span class="label">Problem</span>Existing projects cannot complete native adoption for shared origins or long task lines, and legitimate owner-produced lifecycle diffs are rejected as scope creep.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-001 -->
+<article class="record" id="SCOPE-001" data-ca-symbol="SCOPE-001" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-001">SCOPE-001</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Implement and verify issues #1084, #1087 and #1089, reconcile the two named plans, generate host derivatives and open one unmerged PR.</div></article>
+<!-- CA:END:SCOPE-001 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NON-GOAL-001 -->
+<article class="record" id="NON-GOAL-001" data-ca-symbol="NON-GOAL-001" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-001">NON-GOAL-001</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Do not implement #1088, publish, merge, modify remote Projects or migrate a real consumer repository.</div></article>
+<!-- CA:END:NON-GOAL-001 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Choice</span>Repair Python preview and native Go apply as one source-coupled contract, then extend the legacy board classifier around one parsed task block and verify the full disposable journey.</div><div class="field"><span class="label">Tradeoff</span>More paired fixtures and accounting, but no new schema service, permission broker or destructive migration.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CONSTRAINT-ASSIST -->
+<article class="record" id="CONSTRAINT-ASSIST" data-ca-symbol="CONSTRAINT-ASSIST" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Preserve ADR-0043: ordinary work is assistive and does not require artifact approval receipts; real host permissions, explicit stops, integrity and release controls remain.</div></article>
+<!-- CA:END:CONSTRAINT-ASSIST -->
+
+<!-- CA:BEGIN:CONSTRAINT-MIGRATION -->
+<article class="record" id="CONSTRAINT-MIGRATION" data-ca-symbol="CONSTRAINT-MIGRATION" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Use disposable fixtures only; preserve exact legacy bytes, one writable owner, deterministic identities, CAS, journal replay, no-follow and bounded reads.</div></article>
+<!-- CA:END:CONSTRAINT-MIGRATION -->
+
+<!-- CA:BEGIN:CONSTRAINT-DELIVERY -->
+<article class="record" id="CONSTRAINT-DELIVERY" data-ca-symbol="CONSTRAINT-DELIVERY" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>One cohesive PR from fresh main; do not merge, release, modify external trackers or migrate a real project.</div></article>
+<!-- CA:END:CONSTRAINT-DELIVERY -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-001 -->
+<article class="record" id="AC-001" data-ca-symbol="AC-001" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-001">AC-001</a><h3>Distinct shared-origin rows adopt separately</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each distinct physical legacy row receives a distinct stable native Work ID and unique native correlation origin while the original shared source provenance remains directly inspectable.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-001 -->
+<article class="record" id="SCN-001" data-ca-symbol="SCN-001" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-001">SCN-001</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Two distinct rows share one legacy (from ...) origin.</div><div class="field"><span class="label">Then</span>Both rows exist as separate work items with different stable IDs and retained original provenance.</div><div class="field"><span class="label">When</span>Preview and apply adoption.</div></article>
+<!-- CA:END:SCN-001 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Each distinct physical legacy row receives a distinct stable native Work ID and unique native correlation origin while the original shared source provenance remains directly inspectable.</div><div class="field"><span class="label">Trigger</span>Distinct shared-origin rows adopt separately</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-001 -->
+<article class="record" id="VER-001" data-ca-symbol="VER-001" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-001">VER-001</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A genuine duplicate row, duplicate explicit ID or ambiguous alias must still refuse.</div><div class="field"><span class="label">Oracle</span>Both rows exist as separate work items with different stable IDs and retained original provenance.</div><div class="field"><span class="label">Planned target</span>A01/A06/A07/A08/A09/A10/A11/A19/A20</div></article>
+<!-- CA:END:VER-001 -->
+</div></article>
+<!-- CA:END:AC-001 -->
+
+<!-- CA:BEGIN:AC-002 -->
+<article class="record" id="AC-002" data-ca-symbol="AC-002" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-002">AC-002</a><h3>Long and Unicode titles migrate without text loss</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Legacy one-line titles are bounded to the schema limit by Unicode code points, remain valid UTF-8, and retain the complete original text in intent or immutable source; unrepresentable rows refuse with board and line.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-002 -->
+<article class="record" id="SCN-002" data-ca-symbol="SCN-002" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-002">SCN-002</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A row has a 600-character or multibyte-boundary title.</div><div class="field"><span class="label">Then</span>Both owners produce the same bounded human title and directly recoverable full text without invalid UTF-8.</div><div class="field"><span class="label">When</span>Run Python preview and native apply.</div></article>
+<!-- CA:END:SCN-002 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Legacy one-line titles are bounded to the schema limit by Unicode code points, remain valid UTF-8, and retain the complete original text in intent or immutable source; unrepresentable rows refuse with board and line.</div><div class="field"><span class="label">Trigger</span>Long and Unicode titles migrate without text loss</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-002 -->
+<article class="record" id="VER-002" data-ca-symbol="VER-002" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-002">VER-002</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A record over the 4,000-character intent bound must fail atomically and name its source row.</div><div class="field"><span class="label">Oracle</span>Both owners produce the same bounded human title and directly recoverable full text without invalid UTF-8.</div><div class="field"><span class="label">Planned target</span>A03/A04/A05/A12</div></article>
+<!-- CA:END:VER-002 -->
+</div></article>
+<!-- CA:END:AC-002 -->
+
+<!-- CA:BEGIN:AC-003 -->
+<article class="record" id="AC-003" data-ca-symbol="AC-003" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-003">AC-003</a><h3>Preview and native apply share one deterministic contract</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Python preview and Go apply independently reconstruct every normalized field, identity and source block identically across retry, restart and clone.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-003 -->
+<article class="record" id="SCN-003" data-ca-symbol="SCN-003" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-003">SCN-003</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Equivalent canonical source bytes are previewed, applied, replayed and reopened in a clone.</div><div class="field"><span class="label">Then</span>Every field and stable identity agrees; same-operation replay creates no duplicate and changed payload refuses.</div><div class="field"><span class="label">When</span>Compare normative/execution fields and identities.</div></article>
+<!-- CA:END:SCN-003 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Python preview and Go apply independently reconstruct every normalized field, identity and source block identically across retry, restart and clone.</div><div class="field"><span class="label">Trigger</span>Preview and native apply share one deterministic contract</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-003 -->
+<article class="record" id="VER-003" data-ca-symbol="VER-003" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-003">VER-003</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Runtime iteration order, randomness or untrusted preview-provided identities must not affect the result.</div><div class="field"><span class="label">Oracle</span>Every field and stable identity agrees; same-operation replay creates no duplicate and changed payload refuses.</div><div class="field"><span class="label">Planned target</span>A12/A13/A14/A15/A16</div></article>
+<!-- CA:END:VER-003 -->
+</div></article>
+<!-- CA:END:AC-003 -->
+
+<!-- CA:BEGIN:AC-004 -->
+<article class="record" id="AC-004" data-ca-symbol="AC-004" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-004">AC-004</a><h3>Migration safety controls remain fail closed</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Adoption retains bounded reads/counts, UTF-8 and schema validation, symlink refusal, exact board hashes, root locking, one owner and old-writer refusal.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-004 -->
+<article class="record" id="SCN-004" data-ca-symbol="SCN-004" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-004">SCN-004</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A fixture varies source hash, symlink, encoding, archive shape, cap and journal state.</div><div class="field"><span class="label">Then</span>Unsafe or stale input refuses without partial cutover or loss of history; exact retries recover consistently.</div><div class="field"><span class="label">When</span>Attempt preview/apply/recovery.</div></article>
+<!-- CA:END:SCN-004 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Adoption retains bounded reads/counts, UTF-8 and schema validation, symlink refusal, exact board hashes, root locking, one owner and old-writer refusal.</div><div class="field"><span class="label">Trigger</span>Migration safety controls remain fail closed</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-004 -->
+<article class="record" id="VER-004" data-ca-symbol="VER-004" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-004">VER-004</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>No safety check may be disabled or bypassed to make the real-shaped fixture pass.</div><div class="field"><span class="label">Oracle</span>Unsafe or stale input refuses without partial cutover or loss of history; exact retries recover consistently.</div><div class="field"><span class="label">Planned target</span>A13/A17/A18/E05/E12</div></article>
+<!-- CA:END:VER-004 -->
+</div></article>
+<!-- CA:END:AC-004 -->
+
+<!-- CA:BEGIN:AC-005 -->
+<article class="record" id="AC-005" data-ca-symbol="AC-005" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-005">AC-005</a><h3>Commit gate accepts only sanctioned one-item lifecycle diffs</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The legacy classifier accepts attach, start+attach, create+start and start+complete for one selected work item while rejecting unknown keys, second rows, removed history and unrelated edits.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-005 -->
+<article class="record" id="SCN-005" data-ca-symbol="SCN-005" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-005">SCN-005</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Actual work.py/taskwrite.py operations produce each sanctioned and mutant diff.</div><div class="field"><span class="label">Then</span>G01-G07 and G14 are accepted; G08-G13 remain rejected by the narrow exemption.</div><div class="field"><span class="label">When</span>Run classifier and real commit-gate path.</div></article>
+<!-- CA:END:SCN-005 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>The legacy classifier accepts attach, start+attach, create+start and start+complete for one selected work item while rejecting unknown keys, second rows, removed history and unrelated edits.</div><div class="field"><span class="label">Trigger</span>Commit gate accepts only sanctioned one-item lifecycle diffs</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-005 -->
+<article class="record" id="VER-005" data-ca-symbol="VER-005" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-005">VER-005</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A generic changed-line or arbitrary-metadata allowance must fail the mutant suite.</div><div class="field"><span class="label">Oracle</span>G01-G07 and G14 are accepted; G08-G13 remain rejected by the narrow exemption.</div><div class="field"><span class="label">Planned target</span>G01-G14</div></article>
+<!-- CA:END:VER-005 -->
+</div></article>
+<!-- CA:END:AC-005 -->
+
+<!-- CA:BEGIN:AC-006 -->
+<article class="record" id="AC-006" data-ca-symbol="AC-006" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-006">AC-006</a><h3>Disposable existing-project journey is lossless and truthful</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>A frozen disposable copy previews and applies adoption, reads stable work/context, attaches the correct pair, transitions work, resumes after restart and renders truthful views with complete row accounting.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-006 -->
+<article class="record" id="SCN-006" data-ca-symbol="SCN-006" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-006">SCN-006</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A sanitized real-shaped board copy includes shared origins, long titles and archive cases.</div><div class="field"><span class="label">Then</span>Every eligible row is mapped once or has a named refusal; source hashes remain preserved and check/delivery status is not inferred.</div><div class="field"><span class="label">When</span>Run the full local journey and record hashes/counts.</div></article>
+<!-- CA:END:SCN-006 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>A frozen disposable copy previews and applies adoption, reads stable work/context, attaches the correct pair, transitions work, resumes after restart and renders truthful views with complete row accounting.</div><div class="field"><span class="label">Trigger</span>Disposable existing-project journey is lossless and truthful</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-006 -->
+<article class="record" id="VER-006" data-ca-symbol="VER-006" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-006">VER-006</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>The actual repository board and external trackers must remain untouched.</div><div class="field"><span class="label">Oracle</span>Every eligible row is mapped once or has a named refusal; source hashes remain preserved and check/delivery status is not inferred.</div><div class="field"><span class="label">Planned target</span>A02/E01-E09/E11-E12</div></article>
+<!-- CA:END:VER-006 -->
+</div></article>
+<!-- CA:END:AC-006 -->
+
+<!-- CA:BEGIN:AC-007 -->
+<article class="record" id="AC-007" data-ca-symbol="AC-007" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-007">AC-007</a><h3>Canonical progress reflects actual evidence</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The native-first and project-work-system plans are reconciled through the native writer using merged source, current tests and delivery evidence, preserving unknown or pending cells.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>operational</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-007 -->
+<article class="record" id="SCN-007" data-ca-symbol="SCN-007" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-007">SCN-007</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Historical plan states lag merged implementation and contain caller-reported checks.</div><div class="field"><span class="label">Then</span>Implementation progress is corrected with reasons while unverified review, installed-host and release claims remain unknown or pending.</div><div class="field"><span class="label">When</span>Inspect exact merged commits, current code and rerun applicable checks before typed reconciliation.</div></article>
+<!-- CA:END:SCN-007 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>The native-first and project-work-system plans are reconciled through the native writer using merged source, current tests and delivery evidence, preserving unknown or pending cells.</div><div class="field"><span class="label">Trigger</span>Canonical progress reflects actual evidence</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-007 -->
+<article class="record" id="VER-007" data-ca-symbol="VER-007" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-007">VER-007</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A merge, DONE label or old reported check must not be promoted to assessed verification.</div><div class="field"><span class="label">Oracle</span>Implementation progress is corrected with reasons while unverified review, installed-host and release claims remain unknown or pending.</div><div class="field"><span class="label">Planned target</span>T3/E11</div></article>
+<!-- CA:END:VER-007 -->
+</div></article>
+<!-- CA:END:AC-007 -->
+
+<!-- CA:BEGIN:AC-008 -->
+<article class="record" id="AC-008" data-ca-symbol="AC-008" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-008">AC-008</a><h3>Claude Codex and Pi derivatives stay coherent</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Canonical shared Python/surface/host packages are regenerated and source, built-candidate, installed-host and release evidence remain separately reported.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-008 -->
+<article class="record" id="SCN-008" data-ca-symbol="SCN-008" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-008">SCN-008</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Canonical owners change.</div><div class="field"><span class="label">Then</span>All generated derivatives match their owners; every unavailable installed or platform cell is named rather than claimed.</div><div class="field"><span class="label">When</span>Run generation checks, package/source tests and available installed-host canaries.</div></article>
+<!-- CA:END:SCN-008 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>Canonical shared Python/surface/host packages are regenerated and source, built-candidate, installed-host and release evidence remain separately reported.</div><div class="field"><span class="label">Trigger</span>Claude Codex and Pi derivatives stay coherent</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-008 -->
+<article class="record" id="VER-008" data-ca-symbol="VER-008" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-008">VER-008</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A source-only pass must not be reported as installed-host or release qualification.</div><div class="field"><span class="label">Oracle</span>All generated derivatives match their owners; every unavailable installed or platform cell is named rather than claimed.</div><div class="field"><span class="label">Planned target</span>E10/T4</div></article>
+<!-- CA:END:VER-008 -->
+</div></article>
+<!-- CA:END:AC-008 -->
+
+<!-- CA:BEGIN:AC-009 -->
+<article class="record" id="AC-009" data-ca-symbol="AC-009" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-009">AC-009</a><h3>One reviewed exact-head PR reports complete evidence</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Required by the pinned handoff and current open issues.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-ASSIST">CONSTRAINT-ASSIST</a></li><li><a href="#CONSTRAINT-MIGRATION">CONSTRAINT-MIGRATION</a></li><li><a href="#CONSTRAINT-DELIVERY">CONSTRAINT-DELIVERY</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>A single focused PR links #1084, #1087 and #1089, records RED/GREEN evidence, migration accounting, review findings, exact-head CI and unresolved limitations without merge or publication.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-001">SCOPE-001</a></li></ul></div><div class="field"><span class="label">Kind</span>operational</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Fresh main and the pinned handoff have been revalidated.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-009 -->
+<article class="record" id="SCN-009" data-ca-symbol="SCN-009" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-009">SCN-009</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The implementation and local checks are complete enough for review.</div><div class="field"><span class="label">Then</span>The PR URL and exact commit identify truthful local, hosted and missing evidence; it remains draft if required acceptance is incomplete.</div><div class="field"><span class="label">When</span>Run commit-gate, independent risk review, push and open/watch the PR.</div></article>
+<!-- CA:END:SCN-009 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-HANDOFF">SRC-HANDOFF</a></li></ul></div><div class="field"><span class="label">Statement</span>A single focused PR links #1084, #1087 and #1089, records RED/GREEN evidence, migration accounting, review findings, exact-head CI and unresolved limitations without merge or publication.</div><div class="field"><span class="label">Trigger</span>One reviewed exact-head PR reports complete evidence</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-009 -->
+<article class="record" id="VER-009" data-ca-symbol="VER-009" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-009">VER-009</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>No hook bypass, merge, release or external tracker mutation is permitted.</div><div class="field"><span class="label">Oracle</span>The PR URL and exact commit identify truthful local, hosted and missing evidence; it remains draft if required acceptance is incomplete.</div><div class="field"><span class="label">Planned target</span>T5/reporting contract</div></article>
+<!-- CA:END:VER-009 -->
+</div></article>
+<!-- CA:END:AC-009 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-HANDOFF -->
+<article class="record" id="SRC-HANDOFF" data-ca-symbol="SRC-HANDOFF" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-HANDOFF">SRC-HANDOFF</a><h3>Pinned native work lifecycle handoff</h3></div><div class="field"><span class="label">Locator</span>docs/handoffs/2026-11-07-native-work-lifecycle</div><div class="field"><span class="label">Note</span>Execution contract, acceptance matrix, source map, migration safeguards and reporting contract read at the pinned commit.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/tree/df95ea4eac80e0a4b1bfbcd47bf89c88070986ea/docs/handoffs/2026-11-07-native-work-lifecycle</div></article>
+<!-- CA:END:SRC-HANDOFF -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>94d901899a5f5c0a2a6040ca74cd904db0c5793c</div><div class="field"><span class="label">Observed date</span>2026-11-07</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>core/pysrc/_workadopt.py</li><li>core/artifacts/internal/operations/work_adopt.go</li><li>core/pysrc/_taskboardlib.py</li><li>.github/scripts/test_taskboardlib.py</li><li>.github/scripts/test_artifact_work_cli.py</li><li>.codearbiter/plans/native-first-workflow.html</li><li>.codearbiter/plans/project-work-system.html</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 0442e633616c006b52d32c1993be1e5a2df92182a122284b587e858e5f227790<br>Model SHA-256: 414ca8c1d372f65f3485951d76749f09bf6918009dd876427c3b1c347b3b1bb9</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-NATIVE-WORK-LIFECYCLE-CLOSURE",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "414ca8c1d372f65f3485951d76749f09bf6918009dd876427c3b1c347b3b1bb9",
+    "normative_sha256": "0442e633616c006b52d32c1993be1e5a2df92182a122284b587e858e5f227790",
+    "symbol_count": 35
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [],
+      "choice": "Repair Python preview and native Go apply as one source-coupled contract, then extend the legacy board classifier around one parsed task block and verify the full disposable journey.",
+      "id": "APPROACH-01",
+      "tradeoff": "More paired fixtures and accounting, but no new schema service, permission broker or destructive migration."
+    },
+    "baseline": {
+      "commit": "94d901899a5f5c0a2a6040ca74cd904db0c5793c",
+      "observed_date": "2026-11-07",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-ASSIST",
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Preserve ADR-0043: ordinary work is assistive and does not require artifact approval receipts; real host permissions, explicit stops, integrity and release controls remain."
+      },
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-MIGRATION",
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Use disposable fixtures only; preserve exact legacy bytes, one writable owner, deterministic identities, CAS, journal replay, no-follow and bounded reads."
+      },
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-DELIVERY",
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "One cohesive PR from fresh main; do not merge, release, modify external trackers or migrate a real project."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "Each distinct physical legacy row receives a distinct stable native Work ID and unique native correlation origin while the original shared source provenance remains directly inspectable."
+        ],
+        "id": "AC-001",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "Two distinct rows share one legacy (from ...) origin.",
+            "id": "SCN-001",
+            "then": "Both rows exist as separate work items with different stable IDs and retained original provenance.",
+            "when": "Preview and apply adoption."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Each distinct physical legacy row receives a distinct stable native Work ID and unique native correlation origin while the original shared source provenance remains directly inspectable.",
+        "title": "Distinct shared-origin rows adopt separately",
+        "trigger": "Distinct shared-origin rows adopt separately",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-001",
+          "method": "automated_and_review",
+          "negative_control": "A genuine duplicate row, duplicate explicit ID or ambiguous alias must still refuse.",
+          "oracle": "Both rows exist as separate work items with different stable IDs and retained original provenance.",
+          "planned_target": "A01/A06/A07/A08/A09/A10/A11/A19/A20"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "Legacy one-line titles are bounded to the schema limit by Unicode code points, remain valid UTF-8, and retain the complete original text in intent or immutable source; unrepresentable rows refuse with board and line."
+        ],
+        "id": "AC-002",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "A row has a 600-character or multibyte-boundary title.",
+            "id": "SCN-002",
+            "then": "Both owners produce the same bounded human title and directly recoverable full text without invalid UTF-8.",
+            "when": "Run Python preview and native apply."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Legacy one-line titles are bounded to the schema limit by Unicode code points, remain valid UTF-8, and retain the complete original text in intent or immutable source; unrepresentable rows refuse with board and line.",
+        "title": "Long and Unicode titles migrate without text loss",
+        "trigger": "Long and Unicode titles migrate without text loss",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-002",
+          "method": "automated_and_review",
+          "negative_control": "A record over the 4,000-character intent bound must fail atomically and name its source row.",
+          "oracle": "Both owners produce the same bounded human title and directly recoverable full text without invalid UTF-8.",
+          "planned_target": "A03/A04/A05/A12"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "Python preview and Go apply independently reconstruct every normalized field, identity and source block identically across retry, restart and clone."
+        ],
+        "id": "AC-003",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "Equivalent canonical source bytes are previewed, applied, replayed and reopened in a clone.",
+            "id": "SCN-003",
+            "then": "Every field and stable identity agrees; same-operation replay creates no duplicate and changed payload refuses.",
+            "when": "Compare normative/execution fields and identities."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Python preview and Go apply independently reconstruct every normalized field, identity and source block identically across retry, restart and clone.",
+        "title": "Preview and native apply share one deterministic contract",
+        "trigger": "Preview and native apply share one deterministic contract",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-003",
+          "method": "automated_and_review",
+          "negative_control": "Runtime iteration order, randomness or untrusted preview-provided identities must not affect the result.",
+          "oracle": "Every field and stable identity agrees; same-operation replay creates no duplicate and changed payload refuses.",
+          "planned_target": "A12/A13/A14/A15/A16"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "Adoption retains bounded reads/counts, UTF-8 and schema validation, symlink refusal, exact board hashes, root locking, one owner and old-writer refusal."
+        ],
+        "id": "AC-004",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "A fixture varies source hash, symlink, encoding, archive shape, cap and journal state.",
+            "id": "SCN-004",
+            "then": "Unsafe or stale input refuses without partial cutover or loss of history; exact retries recover consistently.",
+            "when": "Attempt preview/apply/recovery."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Adoption retains bounded reads/counts, UTF-8 and schema validation, symlink refusal, exact board hashes, root locking, one owner and old-writer refusal.",
+        "title": "Migration safety controls remain fail closed",
+        "trigger": "Migration safety controls remain fail closed",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-004",
+          "method": "automated_and_review",
+          "negative_control": "No safety check may be disabled or bypassed to make the real-shaped fixture pass.",
+          "oracle": "Unsafe or stale input refuses without partial cutover or loss of history; exact retries recover consistently.",
+          "planned_target": "A13/A17/A18/E05/E12"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "The legacy classifier accepts attach, start+attach, create+start and start+complete for one selected work item while rejecting unknown keys, second rows, removed history and unrelated edits."
+        ],
+        "id": "AC-005",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "Actual work.py/taskwrite.py operations produce each sanctioned and mutant diff.",
+            "id": "SCN-005",
+            "then": "G01-G07 and G14 are accepted; G08-G13 remain rejected by the narrow exemption.",
+            "when": "Run classifier and real commit-gate path."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "The legacy classifier accepts attach, start+attach, create+start and start+complete for one selected work item while rejecting unknown keys, second rows, removed history and unrelated edits.",
+        "title": "Commit gate accepts only sanctioned one-item lifecycle diffs",
+        "trigger": "Commit gate accepts only sanctioned one-item lifecycle diffs",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-005",
+          "method": "automated_and_review",
+          "negative_control": "A generic changed-line or arbitrary-metadata allowance must fail the mutant suite.",
+          "oracle": "G01-G07 and G14 are accepted; G08-G13 remain rejected by the narrow exemption.",
+          "planned_target": "G01-G14"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "A frozen disposable copy previews and applies adoption, reads stable work/context, attaches the correct pair, transitions work, resumes after restart and renders truthful views with complete row accounting."
+        ],
+        "id": "AC-006",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "A sanitized real-shaped board copy includes shared origins, long titles and archive cases.",
+            "id": "SCN-006",
+            "then": "Every eligible row is mapped once or has a named refusal; source hashes remain preserved and check/delivery status is not inferred.",
+            "when": "Run the full local journey and record hashes/counts."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "A frozen disposable copy previews and applies adoption, reads stable work/context, attaches the correct pair, transitions work, resumes after restart and renders truthful views with complete row accounting.",
+        "title": "Disposable existing-project journey is lossless and truthful",
+        "trigger": "Disposable existing-project journey is lossless and truthful",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-006",
+          "method": "automated_and_review",
+          "negative_control": "The actual repository board and external trackers must remain untouched.",
+          "oracle": "Every eligible row is mapped once or has a named refusal; source hashes remain preserved and check/delivery status is not inferred.",
+          "planned_target": "A02/E01-E09/E11-E12"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "The native-first and project-work-system plans are reconciled through the native writer using merged source, current tests and delivery evidence, preserving unknown or pending cells."
+        ],
+        "id": "AC-007",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "operational",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "Historical plan states lag merged implementation and contain caller-reported checks.",
+            "id": "SCN-007",
+            "then": "Implementation progress is corrected with reasons while unverified review, installed-host and release claims remain unknown or pending.",
+            "when": "Inspect exact merged commits, current code and rerun applicable checks before typed reconciliation."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "The native-first and project-work-system plans are reconciled through the native writer using merged source, current tests and delivery evidence, preserving unknown or pending cells.",
+        "title": "Canonical progress reflects actual evidence",
+        "trigger": "Canonical progress reflects actual evidence",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-007",
+          "method": "automated_and_review",
+          "negative_control": "A merge, DONE label or old reported check must not be promoted to assessed verification.",
+          "oracle": "Implementation progress is corrected with reasons while unverified review, installed-host and release claims remain unknown or pending.",
+          "planned_target": "T3/E11"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "Canonical shared Python/surface/host packages are regenerated and source, built-candidate, installed-host and release evidence remain separately reported."
+        ],
+        "id": "AC-008",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "Canonical owners change.",
+            "id": "SCN-008",
+            "then": "All generated derivatives match their owners; every unavailable installed or platform cell is named rather than claimed.",
+            "when": "Run generation checks, package/source tests and available installed-host canaries."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "Canonical shared Python/surface/host packages are regenerated and source, built-candidate, installed-host and release evidence remain separately reported.",
+        "title": "Claude Codex and Pi derivatives stay coherent",
+        "trigger": "Claude Codex and Pi derivatives stay coherent",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-008",
+          "method": "automated_and_review",
+          "negative_control": "A source-only pass must not be reported as installed-host or release qualification.",
+          "oracle": "All generated derivatives match their owners; every unavailable installed or platform cell is named rather than claimed.",
+          "planned_target": "E10/T4"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Required by the pinned handoff and current open issues."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-ASSIST",
+          "CONSTRAINT-MIGRATION",
+          "CONSTRAINT-DELIVERY"
+        ],
+        "guarantees": [
+          "A single focused PR links #1084, #1087 and #1089, records RED/GREEN evidence, migration accounting, review findings, exact-head CI and unresolved limitations without merge or publication."
+        ],
+        "id": "AC-009",
+        "intent_refs": [
+          "SCOPE-001"
+        ],
+        "kind": "operational",
+        "obligation": "must",
+        "preconditions": [
+          "Fresh main and the pinned handoff have been revalidated."
+        ],
+        "scenarios": [
+          {
+            "given": "The implementation and local checks are complete enough for review.",
+            "id": "SCN-009",
+            "then": "The PR URL and exact commit identify truthful local, hosted and missing evidence; it remains draft if required acceptance is incomplete.",
+            "when": "Run commit-gate, independent risk review, push and open/watch the PR."
+          }
+        ],
+        "source_refs": [
+          "SRC-HANDOFF"
+        ],
+        "statement": "A single focused PR links #1084, #1087 and #1089, records RED/GREEN evidence, migration accounting, review findings, exact-head CI and unresolved limitations without merge or publication.",
+        "title": "One reviewed exact-head PR reports complete evidence",
+        "trigger": "One reviewed exact-head PR reports complete evidence",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-009",
+          "method": "automated_and_review",
+          "negative_control": "No hook bypass, merge, release or external tracker mutation is permitted.",
+          "oracle": "The PR URL and exact commit identify truthful local, hosted and missing evidence; it remains draft if required acceptance is incomplete.",
+          "planned_target": "T5/reporting contract"
+        }
+      }
+    ],
+    "decisions": [],
+    "governs": [
+      "core/pysrc/_workadopt.py",
+      "core/artifacts/internal/operations/work_adopt.go",
+      "core/pysrc/_taskboardlib.py",
+      ".github/scripts/test_taskboardlib.py",
+      ".github/scripts/test_artifact_work_cli.py",
+      ".codearbiter/plans/native-first-workflow.html",
+      ".codearbiter/plans/project-work-system.html"
+    ],
+    "intent": {
+      "caller": "Pinned implementation handoff for issues #1084, #1087 and #1089",
+      "id": "INTENT-01",
+      "outcome": "A lossless explicit adoption path and narrow commit-gate lifecycle exemption delivered as one reviewed PR.",
+      "problem": "Existing projects cannot complete native adoption for shared origins or long task lines, and legitimate owner-produced lifecycle diffs are rejected as scope creep.",
+      "source_refs": [
+        "SRC-HANDOFF"
+      ]
+    },
+    "non_goals": [
+      {
+        "id": "NON-GOAL-001",
+        "statement": "Do not implement #1088, publish, merge, modify remote Projects or migrate a real consumer repository."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-001",
+        "statement": "Implement and verify issues #1084, #1087 and #1089, reconcile the two named plans, generate host derivatives and open one unmerged PR."
+      }
+    ],
+    "sections": [],
+    "sources": [
+      {
+        "id": "SRC-HANDOFF",
+        "locator": "docs/handoffs/2026-11-07-native-work-lifecycle",
+        "note": "Execution contract, acceptance matrix, source map, migration safeguards and reporting contract read at the pinned commit.",
+        "title": "Pinned native work lifecycle handoff",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/tree/df95ea4eac80e0a4b1bfbcd47bf89c88070986ea/docs/handoffs/2026-11-07-native-work-lifecycle"
+      }
+    ],
+    "summary": "Make legacy adoption and governed one-item lifecycle commits usable without weakening migration integrity, assistive-state boundaries or delivery truth.",
+    "title": "Native work lifecycle closure"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/native-work-lifecycle-closure.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 1,
+  "schema_version": "0.3.2",
+  "slug": "native-work-lifecycle-closure"
+}
+</script>
+</body></html>

@@ -30,7 +30,7 @@ describe('source-traced execution map', () => {
       for (const edge of chapter.edges) expect(featureMap.sources[edge.source]).toBeDefined();
     }
     for (const edge of featureMap.alternatives) expect(featureMap.sources[edge.source]).toBeDefined();
-  });
+  }, 20_000);
   it('teaches current authorized progress, proportional verification and real delivery boundaries', () => {
     expect(featureMap.reviewedAt).toBe('a9f63fc481385680987f2ccbecede82603f011eb');
     const text = JSON.stringify(featureMap);

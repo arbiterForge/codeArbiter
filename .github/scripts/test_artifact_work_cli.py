@@ -561,6 +561,120 @@ class WorkCLITest(unittest.TestCase):
         self.assertEqual((self.root / ".codearbiter/legacy/open-tasks.md").read_bytes(), original)
         self.assertFalse(board.exists())
 
+    def test_selected_adoption_distinguishes_rows_with_shared_source_origin(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text(
+            "- [ ] demo.feat.0001 - First shared row (from DECOMP#SHARED)\n"
+            "- [ ] demo.feat.0002 - Second shared row (from DECOMP#SHARED)\n",
+            encoding="utf-8",
+        )
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 2)
+        self.assertEqual({row["legacy_origin"] for row in preview["rows"]}, {"DECOMP#SHARED"})
+        self.assertEqual(len({row["origin"] for row in preview["rows"]}), 2)
+        self.assertEqual(len({row["work_id"] for row in preview["rows"]}), 2)
+        adopted = self.run_work("adopt", "--operation-id", "adopt-shared-origin-001")
+        self.assertEqual(adopted["adopted_count"], 2)
+        for row in preview["rows"]:
+            selected = self.run_work("context", row["work_id"])
+            self.assertIn("(from DECOMP#SHARED)", selected["legacy_detail"]["text"])
+            native = selected["work"]
+            for preview_key, native_key in (
+                    ("work_id", "work_id"), ("origin", "origin"), ("title", "title"),
+                    ("intent", "intent"), ("work_type", "work_type"), ("state", "state"),
+                    ("started_at", "started_at"), ("completed_at", "completed_at"),
+                    ("spec_id", "spec_id"), ("plan_id", "plan_id")):
+                self.assertEqual(native[native_key], row[preview_key], (preview_key, row, native))
+            self.assertEqual(native["aliases"], [row["alias"]])
+
+    def test_selected_adoption_bounds_long_unicode_title_without_losing_text(self) -> None:
+        full_title = "é🙂" * 300
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text(f"- [ ] {full_title} (from DECOMP#LONG)\n", encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        row = preview["rows"][0]
+        self.assertEqual(len(row["title"]), 240)
+        self.assertEqual(row["intent"], full_title)
+        adopted = self.run_work("adopt", "--operation-id", "adopt-long-unicode-001")
+        self.assertEqual(adopted["adopted_count"], 1)
+        selected = self.run_work("context", row["work_id"])
+        self.assertEqual(selected["work"]["title"], full_title[:240])
+        self.assertEqual(selected["work"]["intent"], full_title)
+        self.assertIn(full_title, selected["legacy_detail"]["text"])
+
+    def test_selected_adoption_preserves_long_title_description_and_explicit_id(self) -> None:
+        full_title = "界" * 300
+        explicit_id = "WORK-0123456789ABCDEF0123456789ABCDEF"
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        board.write_text(
+            f"- [~] demo.fix.0001 - {full_title} (started 2026-11-01) (from DECOMP#DESCRIBED)\n"
+            "  - Desc: Existing rationale stays authoritative\n"
+            "  - Work type: fix\n"
+            f"  - Work ID: {explicit_id}\n"
+            "  - Spec ID: SPEC-ADOPTION\n"
+            "  - Plan ID: PLAN-ADOPTION\n",
+            encoding="utf-8",
+        )
+        preview = _workadopt.preview(self.root)
+        row = preview["rows"][0]
+        self.assertEqual(row["work_id"], explicit_id)
+        self.assertEqual(row["title"], full_title[:240])
+        self.assertEqual(row["intent"], "Existing rationale stays authoritative")
+        self.assertEqual(
+            {key: row[key] for key in ("work_type", "state", "started_at", "spec_id", "plan_id")},
+            {"work_type": "fix", "state": "active", "started_at": "2026-11-01",
+             "spec_id": "SPEC-ADOPTION", "plan_id": "PLAN-ADOPTION"},
+        )
+
+    def test_selected_adoption_coalesces_exact_archive_crash_copy(self) -> None:
+        block = "- [x] Archived crash copy (done 2026-11-02) (from DECOMP#ARCHIVE)"
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        archive = board.with_name("done-tasks.md")
+        board.parent.mkdir(parents=True)
+        board.write_text(block + "\n", encoding="utf-8")
+        archive.write_text(block + "\n", encoding="utf-8")
+        original, original_archive = board.read_bytes(), archive.read_bytes()
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 1)
+        self.assertEqual((preview["source_row_count"], preview["adopted_logical_count"],
+                          preview["crash_copy_coalesced_count"]), (2, 1, 1))
+        self.assertEqual((preview["rows"][0]["location"], preview["rows"][0]["state"]),
+                         ("archive", "archived"))
+        adopted = self.run_work("adopt", "--operation-id", "adopt-archive-copy-001")
+        self.assertEqual((adopted["source_row_count"], adopted["adopted_count"],
+                          adopted["crash_copy_coalesced_count"]), (2, 1, 1))
+        self.assertEqual(adopted["legacy_open_sha256"], hashlib.sha256(original).hexdigest())
+        self.assertEqual(adopted["legacy_archive_sha256"], hashlib.sha256(original_archive).hexdigest())
+        self.assertEqual((self.root / ".codearbiter/legacy/open-tasks.md").read_bytes(), original)
+        self.assertEqual((self.root / ".codearbiter/legacy/done-tasks.md").read_bytes(), original_archive)
+
+    def test_selected_adoption_distinguishes_shared_origin_across_boards(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        archive = board.with_name("done-tasks.md")
+        board.parent.mkdir(parents=True)
+        board.write_text("- [ ] Active sibling (from DECOMP#CROSS)\n", encoding="utf-8")
+        archive.write_text("- [x] Archived sibling (done 2026-11-01) (from DECOMP#CROSS)\n",
+                           encoding="utf-8")
+        preview = self.run_work("adopt-preview")
+        self.assertEqual(preview["count"], 2)
+        self.assertEqual(len({row["origin"] for row in preview["rows"]}), 2)
+        self.assertEqual(len({row["work_id"] for row in preview["rows"]}), 2)
+
+    def test_selected_adoption_refuses_duplicate_block_and_oversized_description_with_source(self) -> None:
+        board = self.root / ".codearbiter" / "open-tasks.md"
+        board.parent.mkdir(parents=True)
+        block = "- [ ] Exact originless duplicate"
+        board.write_text(block + "\n" + block + "\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, r"open-tasks\.md line 2.*duplicate"):
+            _workadopt.preview(self.root)
+        board.write_text("- [ ] Oversized description\n  - Desc: " + "x" * 4001 + "\n",
+                         encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, r"open-tasks\.md line 1.*4,000"):
+            _workadopt.preview(self.root)
+
     def test_adopted_task_details_remain_selected_and_readable(self) -> None:
         scaffold = subprocess.run([sys.executable, str(REPO / "core/pysrc/init-codearbiter.py"),
                                    "--root", str(self.root)], capture_output=True, text=True)

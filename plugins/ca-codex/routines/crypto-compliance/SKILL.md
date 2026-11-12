@@ -23,7 +23,7 @@ Scan every crypto operation in the changed code against `security-controls.md`. 
 - **Home-rolled crypto** — a hand-built cipher, AEAD, KDF, signature scheme, or any reimplementation of a primitive in userland instead of a vetted, approved one.
 - **Unapproved primitive or library** — any algorithm, mode, key size, or crypto library not on the approved list in `security-controls.md`.
 
-Dispatch the `auth-crypto-reviewer` agent ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) to confirm these findings against `security-controls.md`.
+Dispatch the independent `auth-crypto-reviewer` agent ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) to confirm the exact staged candidate in the intended worktree against `security-controls.md`; the change author must not self-approve.
 
 Gate: no banned or unapproved primitive, no disabled TLS verification, and no home-rolled crypto in the changed code.
 
@@ -39,3 +39,4 @@ Gate: no banned or unapproved primitive, no disabled TLS verification, and no ho
 - MUST NOT use a home-rolled or userland-reimplemented cryptographic primitive.
 - MUST NOT use any primitive, key size, or crypto library not on the approved list in `security-controls.md`.
 - MUST record the `security-gate-passed` marker (via `hooks/security-pass.py`) ONLY when the gate genuinely passes — the marker is what unblocks the commit (hook H-09b), so a premature or unconditional recording defeats the gate.
+- MUST keep the reviewed staged set, producer `--root`, and pending commit worktree identical; untracked, unstaged, stale, unreadable, or different-worktree rows are not covered.

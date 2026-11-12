@@ -5,6 +5,98 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Allow greenfield init with session runtime markers  (from work-op:greenfield-marker-init-20261110)  (done 2026-11-10)
+  - Work origin: work-op:greenfield-marker-init-20261110
+  - Desc: A fresh repository can contain only host-owned session-start marker files before codeArbiter initialization. Initialization must accept that exact safe runtime state, preserve marker bytes, and continue refusing unknown or unsafe pre-existing state.
+  - Work type: fix
+  - Work ID: WORK-11FAB01D2FDF8A55F7E5664F4815E119
+  - Work operation ID: greenfield-marker-init-20261110
+- [x] Refresh Atlas lifecycle guidance binding  (from https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/actions/runs/42840672769/job/129914716104
+  - Desc: The exact-head docs generator refuses the intentionally changed commit-gate source; add a distinct reviewed source binding so Atlas keeps historical provenance while accepting the reviewed lifecycle-guidance bytes.
+  - Work type: fix
+  - Work ID: WORK-7ACF52486C24C15CB7C26C86C93DFB3D
+  - Work operation ID: work-638b54b1e987fcd1362b9144b9fcb27162590ca4
+- [x] Align commit-gate lifecycle transition guidance  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072582
+  - Desc: Commit-gate Phase 6 names only the original three board transitions; it should describe every transition classify_board_diff currently accepts so valid lifecycle edits are not misclassified as scope creep.
+  - Work type: fix
+  - Work ID: WORK-0EC14A47CA71E9C9D8230BAE2F807CEA
+  - Work operation ID: work-b65a265edf4c56b49229c24e20511dae873bb81e
+- [x] Keep duplicate legacy snapshots readable  (from https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072568)  (done 2026-11-10)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1094#discussion_r4516072568
+  - Desc: Historical duplicate task blocks currently make work-context fail with STALE_LEGACY_SOURCE; immutable snapshots should remain readable while new adoption continues to refuse duplicates.
+  - Work type: fix
+  - Work ID: WORK-0AE9D92DCB45BF4F502A40FB83F56631
+  - Work operation ID: work-82fb41242bac818b5474f81b3a744178ca796620
+- [x] Close native work adoption and legacy lifecycle commit gaps for issues #1084, #1087, and #1089  (from github:issues-1084-1087-1089:handoff-df95ea4e)  (done 2026-11-09)
+  - Work origin: github:issues-1084-1087-1089:handoff-df95ea4e
+  - Desc: Implement one compatible Python and Go adoption contract for shared legacy origins and long titles, accept only sanctioned one-item legacy lifecycle diffs, reconcile evidence-backed native work plans, regenerate host derivatives, verify migration safety, and deliver one unmerged PR.
+  - Work type: unknown
+  - Work ID: WORK-96BF5FB41E95EB05088F3B6565253E35
+  - Work operation ID: 8b8a6f0d-56be-49f5-9a44-108410871089
+  - Spec ID: SPEC-NATIVE-WORK-LIFECYCLE-CLOSURE
+  - Plan ID: PLAN-NATIVE-WORK-LIFECYCLE-CLOSURE
+- [x] Remove duplicated rules from the resident persona  (from context-audit:path-01-plan:T-06-T-07)  (done 2026-11-07)
+  - Work origin: context-audit:path-01-plan:T-06-T-07
+  - Desc: Arbiter and safety-core stop restating each other within one composition (plan T-06/T-07, ADR-0036 freeze read narrowly); every test-pinned phrase and the ADR-0026 destructive bullets stay intact.
+  - Work type: feature
+  - Work ID: WORK-21869F99872EE7DCFECD663B454E1889
+  - Work operation ID: work-28faa522eae7b3f900851edb2d1e2036c33258fa
+- [x] Keep persona maintainer comments out of resident context  (from context-audit:path-01-plan:T-04-T-05)  (done 2026-11-07)
+  - Work origin: context-audit:path-01-plan:T-04-T-05
+  - Desc: Host copies of the four persona sources drop their leading maintainer HTML comment at build time, keeping it in core/surface; functional markers and non-persona files are untouched; safety-core's section-numbering note moves into that header.
+  - Work type: feature
+  - Work ID: WORK-DA45D9068AC8C69D4FDA38CF92D37385
+  - Work operation ID: work-b7ffa3b788d00bf6e46530cadb9f4a57132c9b22
+- [x] Persona routing correctness: ops-mode quotes, arbiter override and mode-logging rules  (from context-audit:path-01-plan:PR-1)  (done 2026-11-07)
+  - Work origin: context-audit:path-01-plan:PR-1
+  - Desc: Observed: ops-mode.md quotes two arbiter clauses that no longer exist and its bare §6 resolves to safety-core's irreversible-action set in the ops composition; arbiter §7 restates /override from memory without the locked helper or fail-closed rule; arbiter §3 orders mode-transition logging the hook already performs on a prompt the model never sees. Expected: ops-mode quotes resolve and safety-core §6 is stated unchanged; §7 routes to the override procedure; §3 orders no mode-transition logging.
+  - Work type: fix
+  - Work ID: WORK-FE066C3F4CF52C6182FB2CCC16014CCE
+  - Work operation ID: work-e586dfa05b9b343d0f57b6817ac975e55b817f88
+- [x] Block commented PowerShell write access to audit logs  (from github:pr-1091:run-42338710237:job-128301567904)  (done 2026-11-06)
+  - Work origin: github:pr-1091:run-42338710237:job-128301567904
+  - Desc: Ensure an inline PowerShell block comment after an argument comma cannot hide FileAccess.Write from the H-05 append-only audit-log guard; preserve legitimate read and append forms.
+  - Work type: fix
+  - Work ID: WORK-25FFFAEB903DDA7249B4B8808FE58D83
+  - Work operation ID: pr1091-h05-powershell-comma-comment
+- [x] Require crypto-compliance scan in crypto recovery  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4477302070)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4477302070
+  - Desc: Crypto/TLS recovery must direct callers through the crypto-compliance skill before independent auth-crypto review and PASS recording.
+  - Work type: fix
+  - Work ID: WORK-26E795DC64628F81052DEC93FE4088E4
+  - Work operation ID: work-26d0950db0a4982f90f2af916417a533ca81a594
+- [x] Explain non-UTF-8 security-gate recovery accurately  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476447009)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476447009
+  - Desc: A staged non-UTF-8 text candidate must remain fail-closed while recovery identifies decoding as the cause and names UTF-8 conversion or genuine-binary .gitattributes plus audited override routes.
+  - Work type: fix
+  - Work ID: WORK-5C9671D34E4BAC0FF719B6C953CD24EC
+  - Work operation ID: work-63cc3ce7cb2c522f9ef69e802d2e0c2fbae45e57
+- [x] Make security-gate recovery discard transient Git indexes  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368097)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368097
+  - Desc: Recovery emitted from the Git pre-commit hook must not preserve a temporary or alternate GIT_INDEX_FILE that can disappear or point at a different candidate; require explicit default-index staging before retry.
+  - Work type: fix
+  - Work ID: WORK-CC66F71E2C0AC7D734C563986E092500
+  - Work operation ID: work-aac8a66660e37d13ad5f9647be51fa705bd2cae9
+- [x] Remove unavailable apply_patch recovery from Claude Edit guard  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368102)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368102
+  - Desc: When Claude's Edit hook cannot decompose a payload, H-21 must name only executable Claude continuations, including separate single-file Edit calls.
+  - Work type: fix
+  - Work ID: WORK-F83394C5C4564901797D517F4CF9C1A5
+  - Work operation ID: work-308d117bc35b1c59497ab7f52c470140730c2495
+- [x] Prevent PowerShell comment stripping from hiding executable H-05 destruction  (from https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368087)  (done 2026-11-05)
+  - Work origin: https://github.com/arbiterForge/codeArbiter/pull/1091#discussion_r4476368087
+  - Desc: A hash or block-comment opener embedded inside an executable shell token must not hide a later audit-log destruction from H-05; preserve legitimate PowerShell comments.
+  - Work type: fix
+  - Work ID: WORK-86FB12D6FBB1434614952C33F128C1E8
+  - Work operation ID: work-6eb465600ce3671964e8377d51ad16f18d8200c7
+- [x] Isolate external shell state in hook append tests  (from github-actions-run:41976210734:hook-contract-hermeticity)  (done 2026-11-05)
+  - Work origin: github-actions-run:41976210734:hook-contract-hermeticity
+  - Desc: The hook hermeticity suite shows test_protectedstatelib launches PowerShell with the suite-owned redirected user home, creating cache and profile directories on Ubuntu, macOS, and Windows. Redirect every external shell process to test-local home, profile, cache, config, and data paths while preserving the real UTF-8 append behavior checks.
+  - Work type: fix
+  - Work ID: WORK-4E35208AECCFB096BFD47B721D52BD8A
+  - Work operation ID: work-dcbdba2d1c5fe9a4b89b5ef11ce0f060aa23961d
 - [x] Repair Academy promotion review findings  (from github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03)  (done 2026-11-03)
   - Work origin: github-pr-review:arbiterForge/codeArbiter#1090:2026-11-03
   - Desc: Scheduled Academy promotion must select the highest valid published Preview release, pass repository metadata through workflow environment data rather than shell source, and keep governed rollback paths complete.

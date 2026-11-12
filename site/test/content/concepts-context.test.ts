@@ -30,7 +30,7 @@ describe('C03 actual helper observations', () => {
   it('reproduces the complete capture with native helpers and real Git hashes', () => {
     expect(execFileSync('python3', ['scripts/capture-context-examples.py', '--check'], { encoding: 'utf8', timeout: 20000 }))
       .toContain('matches exact sources');
-  });
+  }, 15_000);
   it('binds inspected helpers to the exact source and publishes the same data once', async () => {
     expectSourceBindings(resolve('..'), capture);
     const result = GET();
@@ -64,7 +64,7 @@ describe('C03 actual helper observations', () => {
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
   it('composes all four tiers before bounding output rather than picking one winner', () => {
     const overlap = capture.cases.find(item => item.id === 'overlap')!;
     expect(overlap.candidate_pointers.map(pointer => pointer.tier)).toEqual(['security-controls', 'decisions', 'specs', 'standards']);

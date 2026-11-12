@@ -28,11 +28,19 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
-from _gitexec import git_executable  # noqa: E402
+from _gitexec import (  # noqa: E402
+    binary_candidate_binding, git_executable, read_head_blob_digest,
+    git_read_error_summary, read_index_text, root_bound_git_env,
+    staged_changes,
+)
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS,
-    arbiter_active, content_digest, is_migration_path, line_digest,
-    security_scan_diff, set_host, utf8_stdio,
+    BINARY_SECURITY_CONTEXT, BinarySecurityContext, CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS,
+    arbiter_active, binary_override_binding, binary_security_recovery, content_digest, is_migration_path, line_digest,
+    migration_candidate_binding, migration_gate_recovery, security_finding_summary,
+    mixed_binary_security_recovery,
+    security_gate_recovery,
+    security_scan_diff,
+    set_host, utf8_stdio, worktree_marker_binding,
 )
 
 
@@ -72,14 +80,28 @@ def repo_root():
     return os.getcwd()
 
 
-def _git(args, cwd):
+def _git_read(args, cwd):
     try:
         return subprocess.run(
             [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=10,
-        )
-    except Exception:  # noqa: BLE001
-        return None
+        ), None
+    except subprocess.TimeoutExpired:
+        return None, "timeout"
+    except PermissionError:
+        return None, "access"
+    except FileNotFoundError:
+        return None, "spawn"
+    except UnicodeError:
+        return None, "output"
+    except (OSError, subprocess.SubprocessError):
+        return None, "failure"
+    except Exception:  # noqa: BLE001 — fail closed with a sanitized recovery
+        return None, "failure"
+
+
+def _git(args, cwd):
+    return _git_read(args, cwd)[0]
 
 
 def block(tag, msg):
@@ -94,8 +116,21 @@ def block(tag, msg):
 _READ_ERRS = []
 
 
-def _note_read_err(argv, detail):
-    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+def _note_read_err(operation, failure_kind):
+    _READ_ERRS.append(git_read_error_summary(operation, failure_kind))
+
+
+def _exception_failure_kind(error):
+    """Classify an exception without copying its potentially sensitive text."""
+    if isinstance(error, subprocess.TimeoutExpired):
+        return "timeout"
+    if isinstance(error, PermissionError):
+        return "access"
+    if isinstance(error, FileNotFoundError):
+        return "spawn"
+    if isinstance(error, UnicodeError):
+        return "output"
+    return "failure"
 
 
 def _read_err_hint():
@@ -113,9 +148,9 @@ def current_branch(cwd):
     of the prior `else ""`, which collapsed "unknown" and "detached, not on a
     protected tip" into the same value and let a commit through."""
     argv = ["branch", "--show-current"]
-    r = _git(argv, cwd)
+    r, failure_kind = _git_read(argv, cwd)
     if r is None or r.returncode != 0:
-        _note_read_err(["git"] + argv, (r.stderr if r else None) or "git spawn failed")
+        _note_read_err("branch", failure_kind or "exit")
         return None
     return r.stdout.strip()
 
@@ -128,9 +163,9 @@ def head_on_protected_tip(cwd):
     so H-01 fails CLOSED on a git-read error rather than concluding "not on a
     protected tip" from a failed read."""
     argv = ["show-ref", "--head", "refs/heads/main", "refs/heads/master"]
-    r = _git(argv, cwd)
+    r, failure_kind = _git_read(argv, cwd)
     if r is None or r.returncode not in (0, 1):
-        _note_read_err(["git"] + argv, (r.stderr if r else None) or "git spawn failed")
+        _note_read_err("show-ref", failure_kind or "exit")
         return None
     head_sha, protected = None, set()
     for ln in r.stdout.splitlines():
@@ -161,28 +196,32 @@ def cached_added_lines(cwd):
     (#279 review MEDIUM-1) — a merge commit's `--cc` combined-diff sections
     are also handled correctly (MEDIUM-2): the diff walk resets attribution on
     ANY `diff ` section header, not just `diff --git`."""
-    r = _git([*SECURITY_DIFF_GIT_ARGS, "--cached"], cwd)
-    if r is None or r.returncode != 0:
+    try:
+        r = subprocess.run(
+            [git_executable(), *SECURITY_DIFF_GIT_ARGS, "--cached"], cwd=cwd,
+            capture_output=True, timeout=10,
+            env=root_bound_git_env(preserve_index=True),
+        )
+    except Exception as e:  # noqa: BLE001 — fail closed with a sanitized recovery
+        _note_read_err("diff", _exception_failure_kind(e))
         return None
-    return security_scan_diff(r.stdout)
+    if r.returncode != 0 or not isinstance(r.stdout, bytes):
+        _note_read_err("diff", "exit" if r.returncode != 0 else "output")
+        return None
+    try:
+        stdout = r.stdout.decode("utf-8", errors="strict")
+    except UnicodeDecodeError:
+        _note_read_err("diff", "non-utf8")
+        return None
+    result = security_scan_diff(stdout)
+    if result is None:
+        _note_read_err("diff", "output")
+    return result
 
 
 def cached_names(cwd):
-    r = _git(["diff", "--cached", "--name-only"], cwd)
-    if r is None or r.returncode != 0:
-        return None
-    return {p for p in r.stdout.splitlines() if p.strip()}
-
-
-def read_worktree(cwd, rel):
-    p = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
-    try:
-        if os.path.getsize(p) > 1_000_000:
-            return None
-        with open(p, encoding="utf-8", errors="replace") as f:
-            return f.read()
-    except Exception:  # noqa: BLE001
-        return None
+    """Exact no-rename index delta; retained name for existing test seams."""
+    return staged_changes(cwd, preserve_index=True)
 
 
 def _marker_set(root, name):
@@ -224,47 +263,93 @@ def pre_commit(root):
                       f"the git-level backstop (#161). Create a feature branch.")
 
     # H-09b / H-10b: a commit introducing crypto/secret changes needs a recorded,
-    # line-covering security-gate pass (bound by line digest, no time window).
+    # exact-candidate security-gate pass (plus diagnostic row bindings).
     # Reuses the exact _hooklib primitives.
     added = cached_added_lines(cwd)
     if added is None:
-        block("H-09b", "the staged diff for the crypto/secret scan could not be read — "
-                       "failing closed (ORCHESTRATOR §2).")
-    sensitive = added.digests
+        block("H-09b", "the staged diff for the crypto/secret scan could not be decoded "
+                       "or read — failing closed (ORCHESTRATOR §2). Repair the reported "
+                       "cause and retry; a reviewer PASS cannot substitute for an "
+                       "unreadable diff." + _read_err_hint())
+    if isinstance(added, BinarySecurityContext):
+        if added.digests:
+            block("H-09b", mixed_binary_security_recovery())
+        approved = _marker_set(_marker_root(root), "security-gate-passed")
+        expected = binary_override_binding(binary_candidate_binding(
+            root, preserve_index=True))
+        if (worktree_marker_binding(root) not in approved
+                or expected is None or expected not in approved):
+            block("H-09b", "No audited binary override is recorded for this exact staged "
+                           "candidate. " + binary_security_recovery())
+        sensitive = set()
+    else:
+        sensitive = added.digests
     if sensitive:
-        touches_crypto = added.crypto
-        kind = "crypto/TLS" if touches_crypto else "secret"
-        tag = "H-09b" if touches_crypto else "H-10b"
-        skill = "crypto-compliance" if touches_crypto else "secret-handling"
+        crypto_count, sensitive_match_count, locations = security_finding_summary(
+            added.findings, crypto_fallback=added.crypto)
+        tag = "H-09b" if added.crypto else "H-10b"
+        plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        recovery = security_gate_recovery(
+            plugin_root, root, crypto_count, sensitive_match_count, locations,
+            requires_staging=True)
         marker_root = _marker_root(root)
         marker = os.path.join(marker_root, ".codearbiter", ".markers", "security-gate-passed")
         if not os.path.isfile(marker):
-            block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
-                       f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
+            block(tag, "No security-gate PASS is recorded for this staged candidate "
+                       "(#161 git backstop). " + recovery)
         approved = _marker_set(marker_root, "security-gate-passed")
+        if worktree_marker_binding(root) not in approved:
+            block(tag, "The security-gate PASS is unreadable, legacy, or bound to a "
+                       "different worktree (#161 git backstop). " + recovery)
+        if added.candidate not in approved:
+            block(tag, "The staged candidate differs from the exact diff independently "
+                       "reviewed and recorded (#161 git backstop). " + recovery)
         uncovered = sensitive - approved
         if uncovered:
-            block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered by the "
-                       f"recorded security-gate pass (#161 git backstop) — re-run the {skill} "
-                       f"gate so it reviews the current diff, then commit.")
+            uncovered_findings = [f for f in added.findings if f.digest in uncovered]
+            crypto_count, sensitive_match_count, uncovered_locations = security_finding_summary(
+                uncovered_findings, crypto_fallback=added.crypto and bool(uncovered))
+            block(tag, f"{len(uncovered)} sensitive binding(s) changed or were omitted "
+                       f"after review (#161 git backstop). " + security_gate_recovery(
+                           plugin_root, root, crypto_count, sensitive_match_count,
+                           uncovered_locations, requires_staging=True))
 
     # H-14: a staged migration needs a content-bound migration-review pass.
     names = cached_names(cwd)
     if names is None:
         block("H-14", "the staged file list for the migration scan could not be read — "
-                      "failing closed (ORCHESTRATOR §2).")
+                      "failing closed (ORCHESTRATOR §2). Repair Git readability and retry; "
+                      "a reviewer PASS cannot substitute for an unreadable candidate.")
     migs = sorted(p for p in names if is_migration_path(p, root))
     if migs:
         approved = _marker_set(_marker_root(root), "migration-gate-passed")
+        plugin_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if worktree_marker_binding(root) not in approved:
+            block("H-14", "The migration PASS is missing, unreadable, legacy, or bound "
+                          "to a different worktree (#161 git backstop). " +
+                          migration_gate_recovery(plugin_root, root, migs,
+                                                  requires_staging=True))
         uncovered = []
+        reviewed = []
         for rel in migs:
-            text = read_worktree(cwd, rel)
-            if text is None or content_digest(text) not in approved:
+            status = names.get(rel, "M") if hasattr(names, "get") else "M"
+            text = None if status == "D" else read_index_text(
+                cwd, rel, preserve_index=True)
+            preimage = None if status == "A" else read_head_blob_digest(cwd, rel)
+            if ((status != "D" and (text is None or content_digest(text) not in approved))
+                    or (status != "A" and preimage is None)):
                 uncovered.append(rel)
+            reviewed.append((rel, status, text, preimage))
         if uncovered:
-            block("H-14", f"{len(uncovered)} staged migration file(s) lack a recorded "
-                          f"migration-review pass (#161 git backstop): {', '.join(uncovered)}. "
-                          f"Run the migration-review gate, then commit.")
+            block("H-14", f"{len(uncovered)} staged migration file(s) changed or were "
+                          f"omitted after review (#161 git backstop). " +
+                          migration_gate_recovery(plugin_root, root, uncovered,
+                                                  requires_staging=True))
+        if migration_candidate_binding(reviewed) not in approved:
+            block("H-14", "The staged migration set differs from the complete candidate "
+                          "independently reviewed and recorded (#161 git backstop). " +
+                          migration_gate_recovery(plugin_root, root, migs,
+                                                  requires_staging=True))
 
 
 def pre_push(root):

@@ -4,6 +4,43 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.27.7] - 2026-11-10
+
+### Fixed
+
+- Allow fresh initialization to preserve session-start markers instead of refusing an otherwise empty repository, while retaining fail-closed handling for unknown or unstable marker state.
+
+## [0.27.6] - 2026-11-09
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 1.5.0.
+
+### Fixed
+
+- Adopt shared-origin and long-title legacy work deterministically while preserving source snapshots, transaction safety, and explicit work identities.
+- Accept only owner-produced one-item lifecycle compositions and reject ambiguous bindings, malformed stamps, and unrelated board edits.
+
+## [0.27.5] - 2026-11-07
+
+### Fixed
+
+- Route the resident persona's override rule to the override procedure instead of restating it from memory; the restatement left out the locked append helper and the rule that the overridden action must not proceed unless its audit row lands.
+- Stop the resident persona ordering the model to log mode transitions. Mode changes are recorded by the host that switches modes; Pi reports the mode read-only and never asks the model to log it.
+- Make ops mode quote the arbiter routing rules it narrows as they now read, and state that safety-core's irreversible-action set is unchanged in ops mode; a bare "§6" there resolves to that set.
+
+### Changed
+
+- Cut the resident persona by about a fifth (arbiter mode, ~3,500 to ~2,700 estimated tokens on Claude Code; dangerous and ops modes by about an eighth). Host copies drop the persona files' maintainer header comments, and the arbiter body no longer restates rules that safety-core or `SPRINT.md` already carry in the same session. Every rule still applies; the ADR-required restatements and the resident destructive-operations list are unchanged.
+
+## [0.27.4] - 2026-11-05
+
+### Fixed
+
+- Bind security and migration review markers to the exact worktree, index, staged paths, statuses, bytes, and required HEAD preimages so later changes cannot reuse an earlier approval.
+- Give legitimate hook refusals a precise sanctioned continuation while keeping genuine security blocks fail-closed, and report Git read failures without exposing command arguments, stderr, or exception details.
+- Harden audited binary overrides, append-only log publication, and protected-path parsing in the shared governance kernel.
+
 ## [0.27.3] - 2026-11-02
 
 ### Fixed

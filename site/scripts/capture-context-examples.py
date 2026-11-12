@@ -3,7 +3,8 @@
 
 No coding host or typed-artifact approval is simulated. Files and dedup markers
 exist only in a temporary directory. Output is deterministic for these inputs
-and exact helper bytes; --check compares the checked-in teaching capture.
+and exact helper bytes; --write refreshes the checked-in teaching capture and
+--check compares it.
 """
 from __future__ import annotations
 
@@ -107,15 +108,21 @@ def capture() -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--check", action="store_true")
+    mode.add_argument("--write", action="store_true")
     args = parser.parse_args()
     value = capture()
+    stored = ROOT / "site/src/data/context-examples.json"
     if args.check:
-        stored = ROOT / "site/src/data/context-examples.json"
         if json.loads(stored.read_text(encoding="utf-8")) != value:
             print("Context helper capture differs: inspect the source and regenerate intentionally.", file=sys.stderr)
             return 1
         print("Context helper capture matches exact sources and all disposable observations.")
+    elif args.write:
+        stored.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+                          encoding="utf-8", newline="\n")
+        print(f"Updated {stored.relative_to(ROOT)} from exact sources and disposable observations.")
     else:
         print(json.dumps(value, ensure_ascii=False, indent=2) + "\n", end="")
     return 0

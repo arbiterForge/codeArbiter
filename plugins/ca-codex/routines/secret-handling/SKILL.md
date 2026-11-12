@@ -49,7 +49,7 @@ Trace each secret to all sinks. These are prohibited regardless of project, with
 
 Keep each secret only for the lifetime and exposure boundary approved for its access method. A request-scoped secret ends with its request. Policy-approved owning-process runtime input may remain only for that bounded process/workflow lifetime; it is not permission for a module-level cache, unrelated child environment, serialized state, or longer-lived copy. Check the actual child argv and environment before treating an injection as approved.
 
-Dispatch the `auth-crypto-reviewer` agent ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) to confirm these findings against `security-controls.md`.
+Dispatch the independent `auth-crypto-reviewer` agent ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) to confirm the exact staged candidate in the intended worktree against `security-controls.md`; the change author must not self-approve.
 
 Gate: no secret reaches a prohibited sink or persists beyond its policy-approved lifetime.
 
@@ -66,3 +66,4 @@ Gate: no secret reaches a prohibited sink or persists beyond its policy-approved
 - MUST NOT store a secret value in the database — store the approved-store reference only, with a format check constraint.
 - MUST NOT let a secret persist beyond its policy-approved request or owning-process boundary, or pass to an unrelated child.
 - MUST record the `security-gate-passed` marker (via `hooks/security-pass.py`) ONLY when the gate genuinely passes — the marker is what unblocks the commit (hook H-10b), so a premature or unconditional recording defeats the gate.
+- MUST keep the reviewed staged set, producer `--root`, and pending commit worktree identical; untracked, unstaged, stale, unreadable, or different-worktree rows are not covered.
