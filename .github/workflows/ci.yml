@@ -21,7 +21,11 @@ on:
     # the same CI gate PRs targeting main get - otherwise the whole codex
     # campaign merges with zero CI. Drop this once the campaign branch is
     # closed out and merged to main.
-    branches: [main, feat/codex-support-m0]
+    # major/state-contracts (program task P-01) integrates every child task PR
+    # of the major state-contract program before ONE promotion PR to main.
+    # Child PRs need the same CI main-targeted PRs get. Publication stays
+    # main-only: release.yml admits only same-repo main push runs.
+    branches: [main, feat/codex-support-m0, major/state-contracts]
   # Issue #383. main's ONLY required context is the `[GATE ] | [REPO] | Merge
   # readiness` aggregate below, and it merges on `strict: false` - so a green
   # aggregate computed against an OLDER base is enough, and two individually
@@ -47,8 +51,14 @@ on:
   merge_group:
     types: [checks_requested]
   push:
-    branches: [main]
+    # The integration branch push is the program's full-qualification run:
+    # the changes job selects every domain for it regardless of diff size.
+    branches: [main, major/state-contracts]
     paths:
+      # Program planning, live execution records and the integration
+      # candidate record; a policy-only program change must still run CI.
+      - "docs/state-contracts-major/**"
+      - ".github/integration-candidate.json"
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
       - "plugins/ca-codex/**"
@@ -144,21 +154,24 @@ jobs:
     name: "[CHECK] | [REPO] | Impact selection"
     runs-on: ubuntu-latest
     outputs:
-      ca: ${{ steps.filter.outputs.ca }}
-      ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
-      ca-codex: ${{ steps.filter.outputs.ca-codex }}
-      ca-pi: ${{ steps.filter.outputs.ca-pi }}
+      ca: ${{ steps.filter.outputs.ca == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      ca-sandbox: ${{ steps.filter.outputs.ca-sandbox == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      ca-codex: ${{ steps.filter.outputs.ca-codex == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      ca-pi: ${{ steps.filter.outputs.ca-pi == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       pi-versions: ${{ steps.pi-policy.outputs.versions }}
       pi-last-verified: ${{ steps.pi-policy.outputs.last-verified }}
-      host-descriptors: ${{ steps.filter.outputs.host-descriptors }}
-      hooks: ${{ steps.filter.outputs.hooks }}
-      impact: ${{ steps.filter.outputs.impact }}
-      manifests: ${{ steps.filter.outputs.manifests }}
-      codex-resources: ${{ steps.filter.outputs.codex-resources }}
+      host-descriptors: ${{ steps.filter.outputs.host-descriptors == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      hooks: ${{ steps.filter.outputs.hooks == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      impact: ${{ steps.filter.outputs.impact == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      manifests: ${{ steps.filter.outputs.manifests == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      codex-resources: ${{ steps.filter.outputs.codex-resources == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       # Every main push builds the package cohort: release.yml publishes from
       # the triggering run's artifacts, so a path-filtered skip would leave a
       # version bump with nothing to release (ADR-0040).
-      artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+      # The integration branch push also builds the full cohort so the
+      # program's exact candidate bytes are qualified; it is never a
+      # release source (release.yml requires head_branch == main).
+      artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Resolve supported Pi versions from repository policy
@@ -359,6 +372,11 @@ jobs:
               # the job that checks it.
               - '.github/scripts/payload_version_gate.py'
               - '.github/scripts/test_payload_version_gate.py'
+              # Program task P-01: the integration candidate rule both version
+              # gate owners share, its record, and its only guard.
+              - '.github/scripts/integration_candidate.py'
+              - '.github/scripts/test_integration_candidate.py'
+              - '.github/integration-candidate.json'
               # Issue #507: test_ci_impact.py's GateCommandTest is the only guard
               # that a command a gate READS from tech-stack.md is actually
               # DEFINED there. Its two subjects are the gate prose and the file
@@ -1536,6 +1554,11 @@ jobs:
         # rule against real throwaway repositories in both directions, including
         # the untagged-but-already-shipped case that produced the issue.
         run: python .github/scripts/test_payload_version_gate.py
+      - name: Validate the integration candidate-version rule
+        # Program task P-01. Same-candidate evolution is admitted only for PRs
+        # whose CI base is major/state-contracts; main and merge_group keep
+        # the strict immediate-base rule above.
+        run: python .github/scripts/test_integration_candidate.py
 
   codex-resource-contract:
     name: "[CHECK] | [CDX ] | Skill resource evidence contract"
@@ -3016,7 +3039,9 @@ jobs:
           # MANIFEST VERSION with no tag involved, so an untagged-but-already-
           # shipped version bought unlimited free payload changes that could
           # reach no installed user. Three merged PRs shipped that way on 2.9.1.
-          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca --base "origin/$BASE"
+          git fetch -q origin main
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca --base "origin/$BASE" \
+            --integration-base-branch "$BASE" --main-ref origin/main
 
   version-bump-sandbox:
     name: "[GATE ] | [SBX ] | Payload version"
@@ -3045,7 +3070,9 @@ jobs:
           # first-introduction case (no plugin.json on base) and the
           # unresolvable-base case both moved into payload_version_gate.py,
           # where they are unit-tested rather than asserted about shell.
-          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-sandbox --base "origin/$BASE"
+          git fetch -q origin main
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-sandbox --base "origin/$BASE" \
+            --integration-base-branch "$BASE" --main-ref origin/main
 
   version-bump-codex:
     name: "[GATE ] | [CDX ] | Payload version"
@@ -3074,7 +3101,9 @@ jobs:
           # wholesale. That is behaviour-neutral today because ca-codex has no
           # tools/ directory and ships no committed .js, and it means the tree
           # is already correct the day it grows one.
-          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-codex --base "origin/$BASE"
+          git fetch -q origin main
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-codex --base "origin/$BASE" \
+            --integration-base-branch "$BASE" --main-ref origin/main
 
   version-bump-pi:
     name: "[GATE ] | [PI  ] | Payload version"
@@ -3095,7 +3124,13 @@ jobs:
           # and this is the exact gate whose stale-base pass was observed on
           # PR #446 after main advanced underneath it.
           BASE_COMMIT: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
-        run: python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"
+          # Branch NAME selects the integration candidate rule (P-01); main and
+          # merge_group bases keep the strict rule.
+          BASE_BRANCH: ${{ github.base_ref || github.event.merge_group.base_ref }}
+        run: |
+          git fetch -q origin main --tags
+          python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT" \
+            --integration-base-branch "${BASE_BRANCH#refs/heads/}" --main-ref origin/main
 
   codex-host-latest:
     # Issue #408 AC-4. The required lane above pins the supported window, so it

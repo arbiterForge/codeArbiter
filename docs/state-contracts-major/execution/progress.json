@@ -14,7 +14,9 @@
   "active_writer": {
     "agent": "claude-code",
     "since": "2026-11-12",
-    "in_flight_branches": ["major/state-contracts"],
+    "in_flight_branches": [
+      "major/state-contracts"
+    ],
     "rule": "Repo state is the only lock between Claude Code and Codex sessions. Before writing, read this field and the newest CHECKPOINT; update it when you start or stop. One writer per canonical owner file."
   },
   "task_updates": [
@@ -25,43 +27,146 @@
         "Origin verified as https://github.com/arbiterForge/codeArbiter.git (owner casing arbiterForge, repo codeArbiter).",
         "major/state-contracts absent locally and on origin before creation; created from inspected origin/main 33abc347 in a new worktree (codeArbiter-worktrees/major-state-contracts). Primary worktree and its uncommitted gate-events.log / untracked .codex-remote-attachments untouched.",
         "Intake corpus imported byte-for-byte under docs/state-contracts-major/ with a scoped -text .gitattributes rule; 105 MANIFEST sha256 entries match.",
-        "Source drift worklist generated (16 cited paths changed since audit; 14 tasks require source revalidation)."
+        "Source drift worklist generated (16 cited paths changed since audit; 14 tasks require source revalidation).",
+        "Committed 59205432 (104/105 manifest files; committed-blob sha256 verified via git show HEAD:...); pushed origin/major/state-contracts; draft tracking PR #1098 (base main, DO NOT MERGE).",
+        "Independent auth-crypto-reviewer PASS (0 findings) on staged diff sha256 141f5ecc...; security-gate marker recorded."
       ],
       "tested": [
         "tools/validate_packet.py --repo <worktree> --initial: PASSED (82 tasks, 70 findings, 287 machines, 1748 rows, 31 scenarios, 252 cited source paths exist, graph acyclic). Structure-only; not product qualification. Windows run needed a separator/encoding shim outside the corpus (see CHECKPOINT environment notes)."
       ],
       "remaining": [
-        "Verify committed-blob hashes (not just working copy) after first commit.",
+        "Commit audit evidence zip after security-ceiling override acknowledgement.",
         "Disposable-clone exercise of bootstrap with pre-existing branch and dirty worktree cases."
       ],
       "evidence": []
     },
-    {"id": "P-01", "status": "NEXT", "implemented": [], "tested": [], "evidence": []},
-    {"id": "P-02", "status": "NEXT", "implemented": [], "tested": [], "evidence": []}
+    {
+      "id": "P-01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Integration candidate rule: .github/integration-candidate.json (branch, baseline main 33abc347, candidates ca 4.0.0 / ca-codex 0.30.0 / ca-pi 0.30.0 / ca-sandbox 0.2.0 - provisional, final versions re-selected at freeze) + .github/scripts/integration_candidate.py (shared by both owners).",
+        "payload_version_gate.py: --integration-base-branch/--main-ref; gate_integration measures payload change from recorded main baseline, requires head == declared candidate, strict advance over baseline AND live main, unused tag, baseline ancestor of main and HEAD. Any other base keeps the strict immediate-base rule.",
+        "tools/build-host-packages.py: pi_integration_guard + validate_pi_integration_candidate; Pi changelog-heading/root-metadata/advance judged against recorded baseline; live main must not reach the candidate or carry its heading; tag unused.",
+        "ci.yml: pull_request + push admit major/state-contracts; program paths added to push filter; integration push forces every domain flag and the artifact cohort; version-bump lanes pass CI base branch + fetch main.",
+        "docs.yml: push/PR validation on major/state-contracts; deploy job unchanged (refs/heads/main only); workflow_run stays main-only. codeql.yml: push on major/state-contracts."
+      ],
+      "tested": [
+        "test_integration_candidate.py: 38 tests OK (record parsing/selection, two successive same-candidate children pass only under the rule while strict gate refuses the second, wrong/unchanged/tagged/main-reached candidates fail, baseline-not-on-main/not-in-HEAD/unresolvable main fail closed, Pi same-candidate evolution + stale root/missing heading/heading-on-baseline/tagged/main-collision fail, workflow admission and main-only publication pins). Windows 11, Python 3.14.",
+        "Mutants killed: skip candidate equality, skip main advance, skip tag check, select-any-branch, skip HEAD ancestry, Pi skip main heading, docs deploy guard widened.",
+        "test_payload_version_gate.py 34 OK; test_ci_impact.py OK (2 pins updated); test_pi_package.py: same 8 pre-existing real-RPC env failures as baseline, contract pin updated and passing; test_release_workflow.py: 1 pre-existing Windows bash-availability failure, unchanged."
+      ],
+      "evidence": [],
+      "remaining": [
+        "Observe actual integration push CI + docs runs for the branch SHA; read job-selection logs (not status).",
+        "Child-PR CI run into major/state-contracts exercising the version lanes.",
+        "Add packet validator (structure-only) CI step once the evidence zip is committed.",
+        "Event-matrix items not locally reproducible (fork PR, canceled run, merge_group) recorded as hosted observations when they occur."
+      ]
+    },
+    {
+      "id": "P-02",
+      "status": "NEXT",
+      "implemented": [],
+      "tested": [],
+      "evidence": []
+    }
   ],
-  "later_decisions": [],
+  "later_decisions": [
+    {
+      "id": "D-PROGRESS",
+      "choice": "B",
+      "detail": "Independent recorded progress (never overwritten by dependency/evidence invalidation) with evidence applicability derived on demand from real inputs. Option A survives only as a temporary reader bridge for old clients. Legacy STALE without trustworthy prior state displays as legacy/unresolved with raw value and reason retained.",
+      "affected_tasks": [
+        "NT-09",
+        "NT-12",
+        "G-01"
+      ],
+      "source": "B via Claude Code AskUserQuestion, 2026-11-12, after SMARTS worksheet summary (SMARTS-PROGRESS-EVIDENCE.md)",
+      "date": "2026-11-12"
+    },
+    {
+      "id": "D-HIGH",
+      "choice": "downgrade-maintenance-to-MEDIUM",
+      "detail": "Maintenance-only dependency risk (unmaintained/abandoned) is MEDIUM and non-blocking; HIGH keeps one meaning everywhere (blocks). Mixed maintenance+security findings keep their security severity.",
+      "affected_tasks": [
+        "HW-09",
+        "HW-20",
+        "HW-27"
+      ],
+      "source": "B via Claude Code AskUserQuestion, 2026-11-12, after SMARTS worksheet summary (SMARTS-PROGRESS-EVIDENCE.md)",
+      "date": "2026-11-12"
+    },
+    {
+      "id": "D-GOV-PRETAG",
+      "choice": "required",
+      "detail": "Declared pre-tag checks remain a required gate (ratify current CI/release enforcement); successor ADR amends ADR-0040's advisory wording. No gate weakened.",
+      "affected_tasks": [
+        "R-03",
+        "G-01"
+      ],
+      "source": "B via Claude Code AskUserQuestion, 2026-11-12, after SMARTS worksheet summary (SMARTS-PROGRESS-EVIDENCE.md)",
+      "date": "2026-11-12"
+    },
+    {
+      "id": "ZIP-OVERRIDE",
+      "choice": "approved-pending-security-ceiling-acknowledgement",
+      "detail": "Commit docs/state-contracts-major/audit/codearbiter_audit_evidence.zip via logged H-09b binary override; /ca:override security-ceiling path requires B's own-words acknowledgement of the specific finding before the row is written.",
+      "source": "B via Claude Code AskUserQuestion, 2026-11-12, after SMARTS worksheet summary (SMARTS-PROGRESS-EVIDENCE.md)",
+      "date": "2026-11-12"
+    }
+  ],
   "pending_user_decisions": [
-    {"id": "D-PROGRESS", "state": "WORKSHOP_REQUIRED", "blocks": ["NT-09"], "source": "SMARTS-PROGRESS-EVIDENCE.md"},
-    {"id": "D-HIGH", "state": "TARGETED_DECISION_REQUIRED", "blocks": ["HW-09", "HW-20 (via HW-09)"]},
-    {"id": "D-GOV-PRETAG", "state": "TARGETED_DECISION_REQUIRED", "blocks": ["R-03"]},
-    {"id": "OBS-DELETE-BRANCH-ON-MERGE", "state": "NEEDS_USER_CHOICE_BEFORE_Q-03", "blocks": [], "detail": "Repository setting delete_branch_on_merge=true would delete major/state-contracts when the final promotion PR merges; BRANCH-AND-RELEASE requires keeping it through publication verification. Options: deletion-restricting ruleset on major/state-contracts, or toggle the setting at promotion. Settings changes are outward-facing and need B's yes."}
+    {
+      "id": "OBS-DELETE-BRANCH-ON-MERGE",
+      "state": "NEEDS_USER_CHOICE_BEFORE_Q-03",
+      "blocks": [],
+      "detail": "Repository setting delete_branch_on_merge=true would delete major/state-contracts when the final promotion PR merges; BRANCH-AND-RELEASE requires keeping it through publication verification. Options: deletion-restricting ruleset on major/state-contracts, or toggle the setting at promotion. Settings changes are outward-facing and need B's yes."
+    },
+    {
+      "id": "ZIP-OVERRIDE-ACK",
+      "state": "NEEDS_OWN_WORDS_ACK",
+      "blocks": [
+        "P-00 completion (manifest population)"
+      ]
+    }
   ],
   "new_required_work": [],
   "new_transition_rows": [],
   "evidence_records": [],
   "observations": [
-    {"what": "main branch protection", "observed": "required context '[GATE ] | [REPO] | Merge readiness', strict=true (ci.yml comment says strict:false - comment is stale), 0 required reviews, conversation resolution required, no force-push/deletion", "how": "gh api repos/arbiterForge/codeArbiter/branches/main/protection", "date": "2026-11-12"},
-    {"what": "rulesets", "observed": "tag immutability + distribution tag rulesets; branch rulesets only for refs/heads/ca-marketplace and refs/heads/ca-codex-marketplace (do not match major/*)", "date": "2026-11-12"},
-    {"what": "publication admission", "observed": "release.yml runs on workflow_run only when conclusion=success, event=push, head_branch=main, same repository, or workflow_dispatch on refs/heads/main; docs.yml deploy job requires github.ref == refs/heads/main", "date": "2026-11-12"},
-    {"what": "current targets", "observed": "ca 3.8.7 (v3.8.7 latest), ca-codex 0.26.7, ca-pi 0.27.7 published; ca-sandbox 0.1.10; ca-pi-v0.27.5 and ca-pi-v0.27.4 remain DRAFT (cause not established)", "date": "2026-11-12"},
-    {"what": "parallel main activity", "observed": "open PRs #1097 (codex/adr-lifecycle-contract), #1066 (receipt reconciliation, overlaps R-01 territory), dependabot #1092/#1093; main ships patch releases frequently, so candidate versions must not collide with main's patch stream", "date": "2026-11-12"}
+    {
+      "what": "main branch protection",
+      "observed": "required context '[GATE ] | [REPO] | Merge readiness', strict=true (ci.yml comment says strict:false - comment is stale), 0 required reviews, conversation resolution required, no force-push/deletion",
+      "how": "gh api repos/arbiterForge/codeArbiter/branches/main/protection",
+      "date": "2026-11-12"
+    },
+    {
+      "what": "rulesets",
+      "observed": "tag immutability + distribution tag rulesets; branch rulesets only for refs/heads/ca-marketplace and refs/heads/ca-codex-marketplace (do not match major/*)",
+      "date": "2026-11-12"
+    },
+    {
+      "what": "publication admission",
+      "observed": "release.yml runs on workflow_run only when conclusion=success, event=push, head_branch=main, same repository, or workflow_dispatch on refs/heads/main; docs.yml deploy job requires github.ref == refs/heads/main",
+      "date": "2026-11-12"
+    },
+    {
+      "what": "current targets",
+      "observed": "ca 3.8.7 (v3.8.7 latest), ca-codex 0.26.7, ca-pi 0.27.7 published; ca-sandbox 0.1.10; ca-pi-v0.27.5 and ca-pi-v0.27.4 remain DRAFT (cause not established)",
+      "date": "2026-11-12"
+    },
+    {
+      "what": "parallel main activity",
+      "observed": "open PRs #1097 (codex/adr-lifecycle-contract), #1066 (receipt reconciliation, overlaps R-01 territory), dependabot #1092/#1093; main ships patch releases frequently, so candidate versions must not collide with main's patch stream",
+      "date": "2026-11-12"
+    }
   ],
   "scoped_blockers": [],
   "unknown_outcomes": [],
   "next_actions": [
-    "Commit P-00 bootstrap, push major/state-contracts (push CI does not yet admit the branch, so no new workflow exposure), open draft WIP PR to main marked do-not-merge.",
-    "P-01: add major/state-contracts to ci.yml pull_request + push admission, docs validation, codeql; implement integration candidate version rule in payload_version_gate.py and tools/build-host-packages.py --release-guard-base with fixtures; verify actual run logs for job selection.",
-    "Ask B the consolidated D-PROGRESS / D-HIGH / D-GOV-PRETAG question with options and recommendations."
+    "Push P-01; inspect integration push run logs for domain selection and absence of publication jobs.",
+    "Obtain zip override acknowledgement; commit zip; add validator CI step.",
+    "P-02 owner/disposition map; then dispatch independent tasks (decisions D-PROGRESS/D-HIGH/D-GOV-PRETAG now recorded)."
   ],
   "delivery_state": "NOT_STARTED",
   "trusted_readiness_reference": null,

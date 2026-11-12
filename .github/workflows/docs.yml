@@ -18,7 +18,9 @@ name: Deploy docs
 # green and no `Site |` check among them. Same defect class as #384.
 on:
   push:
-    branches: [main]
+    # P-01: the integration branch validates the site graph; deploy stays
+    # main-only through the deploy job's refs/heads/main condition.
+    branches: [main, major/state-contracts]
     paths:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
@@ -42,7 +44,7 @@ on:
       - ".github/scripts/validate_codex_plugin.py"
       - "core/artifacts/internal/authority/receipt.go"
   pull_request:
-    branches: [main]
+    branches: [main, major/state-contracts]
     paths:
       - "site/**"
       - "plugins/ca/**"

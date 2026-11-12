@@ -54,6 +54,7 @@ from _releaselib import (  # noqa: E402
     ReleaseTargetsError, load_targets, semver_greater, semver_key,
 )
 import payload_scope  # noqa: E402
+import integration_candidate  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DECLARED_TARGETS = REPO / ".codearbiter" / "release-targets.md"
@@ -270,10 +271,67 @@ def gate(base: str, plugin: str, root: Path = REPO) -> tuple[int, str]:
     return PASS, f"shipped payload changed and version advanced: {previous} -> {current}"
 
 
+def gate_integration(
+    record: integration_candidate.Candidate, plugin: str, main_ref: str, root: Path = REPO,
+) -> tuple[int, str]:
+    """The integration-branch candidate rule (see integration_candidate.py).
+
+    Payload change is measured from the recorded main baseline; the head version
+    must equal the declared candidate, advance both baseline and live main, and
+    be untagged. Everything else about the strict gate's diagnostics is reused."""
+    manifest = GATED_MANIFESTS[plugin]
+    annotate = f"::error file={manifest}::"
+    target = Path(plugin).name
+    problem = integration_candidate.baseline_problem(record, main_ref, root)
+    if problem:
+        return FAIL, f"{annotate}{problem}"
+    if not payload_scope.payload_changed(record.baseline, plugin, root=root):
+        return PASS, (
+            f"no shipped payload change since integration baseline {record.baseline[:12]} - "
+            f"candidate version not required"
+        )
+    candidate = record.versions.get(target)
+    if candidate is None:
+        return FAIL, f"{annotate}{target} changed payload but declares no integration candidate version"
+    current = head_version(plugin, root)
+    if current != candidate:
+        return FAIL, (
+            f"{annotate}{plugin}/** changed payload on the integration branch; its manifest must "
+            f"carry the declared integration candidate {candidate} (got {current!r})."
+        )
+    for label, ref in (("integration baseline", record.baseline), (main_ref, main_ref)):
+        text = integration_candidate.show(root, ref, manifest)
+        previous = _manifest_version(text) if text is not None else None
+        if previous is not None and not semver_greater(current, previous):
+            return FAIL, (
+                f"{annotate}integration candidate {current} does not advance {previous} on {label}; "
+                f"main has reached or passed it - choose a higher candidate."
+            )
+    try:
+        namespaces = tag_prefixes()
+    except (BasenameCollisionError, ReleaseTargetsError) as exc:
+        return FAIL, f"{annotate}{exc}"
+    if target not in namespaces:
+        return FAIL, f"{annotate}{plugin}/** declares no release target namespace"
+    tag = f"{namespaces[target]}{current}"
+    if tag_exists(tag, root):
+        return FAIL, f"{annotate}integration candidate {current} is already released (tag {tag} exists)."
+    return PASS, (
+        f"integration candidate {current} carries payload changed since baseline "
+        f"{record.baseline[:12]}; untagged and ahead of {main_ref}"
+    )
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plugin", required=True, help="e.g. plugins/ca-sandbox")
     parser.add_argument("--base", required=True, help="base ref, e.g. origin/main")
+    parser.add_argument(
+        "--integration-base-branch",
+        help="CI event base branch name; selects the integration candidate rule only when it "
+             "equals the branch declared in .github/integration-candidate.json",
+    )
+    parser.add_argument("--main-ref", default="origin/main", help="live main ref for the integration rule")
     arguments = parser.parse_args(argv)
     if arguments.plugin not in GATED_MANIFESTS:
         print(
@@ -283,7 +341,15 @@ def main(argv=None) -> int:
             file=sys.stderr,
         )
         return USAGE
-    code, message = gate(arguments.base, arguments.plugin)
+    try:
+        record = integration_candidate.select(arguments.integration_base_branch)
+    except integration_candidate.IntegrationRecordError as exc:
+        print(f"::error::integration candidate record: {exc}", file=sys.stderr)
+        return FAIL
+    if record is not None:
+        code, message = gate_integration(record, arguments.plugin, arguments.main_ref)
+    else:
+        code, message = gate(arguments.base, arguments.plugin)
     print(message, file=sys.stderr if code else sys.stdout)
     return code
 

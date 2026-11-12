@@ -1441,7 +1441,8 @@ class PiPackageTests(unittest.TestCase):
     def test_ci_has_pi_path_output_matrix_and_independent_version_guard(self):
         ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         required = (
-            "ca-pi: ${{ steps.filter.outputs.ca-pi }}",
+            "ca-pi: ${{ steps.filter.outputs.ca-pi == 'true' || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}",
             "- 'plugins/ca-pi/**'",
             "ca-pi-checks:",
             "ca-pi-tools:",
@@ -1454,7 +1455,8 @@ class PiPackageTests(unittest.TestCase):
             "Test package, module identity, compatibility, and native binding",
             "Test the complete Pi adapter suite",
             "Test real package RPC activation and aliases",
-            'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"',
+            'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT" \\\n'
+            '            --integration-base-branch "${BASE_BRANCH#refs/heads/}" --main-ref origin/main',
             "ca-pi-latest:",
             "- ca-pi-checks",
             "- ca-pi-tools",

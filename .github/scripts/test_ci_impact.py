@@ -1034,7 +1034,9 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("id: impact", ci)
         self.assertIn("python tools/ci-impact.py", ci)
         self.assertIn("list-files: shell", ci)
-        self.assertIn("impact: ${{ steps.filter.outputs.impact }}", ci)
+        # P-01: the integration branch push selects every domain.
+        self.assertIn("impact: ${{ steps.filter.outputs.impact == 'true' || "
+                      "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}", ci)
         self.assertIn("needs.changes.outputs.impact == 'true'", ci)
         self.assertIn("needs.changes.outputs.ca-pi == 'true'", ci)
 
@@ -3905,7 +3907,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # Every main push must build the cohort release.yml publishes from.
         self.assertIn(
             "artifacts: ${{ steps.filter.outputs.artifacts == 'true' || "
-            "(github.event_name == 'push' && github.ref == 'refs/heads/main') }}",
+            "(github.event_name == 'push' && github.ref == 'refs/heads/main') || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}",
             changes,
         )
         self.assertIn(

@@ -6,17 +6,17 @@ Resume protocol: read current Git state first (`git fetch; git log major/state-c
 - **Integration branch:** `major/state-contracts`
 - **Active writer:** Claude Code session (2026-11-12). Codex: check `progress.json.active_writer` before writing.
 - **Current head and inspected main base:** head = the commit carrying this file; base = `33abc347` (main at branch creation). Audit baseline `fd7eb34b`; 15 commits between. Drift worklist: `execution/source-drift-33abc347.json`.
-- **Candidate versions and tag availability observation:** proposed ca 4.0.0 (unused). ca-codex/ca-pi/ca-sandbox candidates not yet chosen (P-01). Current published: v3.8.7, ca-codex-v0.26.7, ca-pi-v0.27.7, ca-sandbox-v0.1.10. ca-pi-v0.27.4/0.27.5 still draft.
+- **Candidate versions and tag availability observation:** integration candidates (provisional, `.github/integration-candidate.json`): ca 4.0.0, ca-codex 0.30.0, ca-pi 0.30.0, ca-sandbox 0.2.0 - all untagged 2026-11-12; re-select at freeze. Current published: v3.8.7, ca-codex-v0.26.7, ca-pi-v0.27.7, ca-sandbox-v0.1.10. ca-pi-v0.27.4/0.27.5 still draft.
 - **Completed task IDs with evidence links:** none.
-- **Implemented but unqualified task IDs:** P-00 (in progress — bootstrap imported; committed-blob hash check and disposable-clone exercise remaining).
+- **Implemented but unqualified task IDs:** P-00 (committed-blob hashes verified 104/105; evidence zip awaits override ack; disposable-clone exercise remaining). P-01 (integration candidate rule + workflow admission; local suites green; hosted run observation pending).
 - **Next runnable task IDs and owners:** P-01 (release-and-integration), P-02 (integration-architect).
-- **Scoped decisions still needed from B:** D-PROGRESS (blocks NT-09), D-HIGH (blocks HW-09/HW-20), D-GOV-PRETAG (blocks R-03), delete_branch_on_merge handling (needed before Q-03 only).
+- **Scoped decisions still needed from B:** none blocking tasks. Decided 2026-11-12: D-PROGRESS=B, D-HIGH=maintenance→MEDIUM, D-GOV-PRETAG=required (see progress.json later_decisions). Pending: own-words ack for the evidence-zip H-09b override; delete_branch_on_merge handling before Q-03.
 - **Actual commands/tests executed:** `tools/validate_packet.py --repo . --initial` → PASSED (structure only), Windows 11 / Python 3.14.
 - **Source/artifact digests tested:** intake MANIFEST.json 105 sha256 entries match imported bytes.
 - **Pending transaction, authority, cleanup, publication or receipt outcomes:** none.
 - **Safe recovery action for each unknown outcome:** n/a.
 - **Current rollback boundary:** whole branch is additive; nothing merged to main, no tags/releases/Pages/marketplace effects.
-- **Exact next action:** P-01 — extend `.github/workflows/ci.yml` admission to `major/state-contracts` and implement the integration candidate-version rule in both version-gate owners.
+- **Exact next action:** observe the first integration push CI/docs runs for P-01 (read job-selection logs), then P-02.
 
 ## Environment notes
 
