@@ -1,84 +1,45 @@
 {
   "schema": "codearbiter-execution-state/1",
   "program_id": "codearbiter-major-state-contracts",
+  "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "SEE_GIT: the commit containing this record; read `git log -1 major/state-contracts`",
+  "head": "b9f183672424b7bdadabd50161e52a940649fe32 plus remaining explicit qualification/delivery source and live records",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-12",
+  "recorded_at": "2026-11-13T19:46:57.288413+00:00",
   "active_writer": {
-    "agent": "claude-code (integrator) + 4 Claude subagent lanes",
-    "since": "2026-11-12",
+    "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
+    "since": "2026-11-13",
     "lanes": [
       {
-        "branch": "program/native-nt01",
-        "owner": "native",
-        "tasks": [
-          "NT-01",
-          "NT-02",
-          "NT-03",
-          "NT-04",
-          "NT-05",
-          "NT-07",
-          "NT-08",
-          "NT-11",
-          "NT-06",
-          "NT-09"
-        ]
-      },
-      {
-        "branch": "program/release-r01",
-        "owner": "release-and-integration",
-        "tasks": [
-          "R-01",
-          "R-02",
-          "R-06",
-          "R-04",
-          "R-05",
-          "R-07",
-          "R-03",
-          "R-08",
-          "Q-02"
-        ]
-      },
-      {
-        "branch": "program/hooks-hw01",
-        "owner": "hooks-workflows",
-        "tasks": [
-          "HW-01",
-          "HW-02",
-          "HW-03",
-          "HW-05",
-          "HW-07",
-          "HW-09",
-          "HW-10",
-          "HW-11",
-          "HW-12",
-          "HW-16",
-          "HW-17",
-          "HW-18",
-          "HW-19",
-          "HW-20",
-          "HW-21",
-          "HW-22",
-          "HW-23",
-          "HW-24"
-        ]
-      },
-      {
-        "branch": "program/version-candidates",
         "owner": "integrator",
-        "tasks": [
-          "version advance to integration candidates"
-        ]
+        "assigned_agent": "/root",
+        "branch": "codex/state-contracts-governance",
+        "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "scope": "Combined delivery source commits, CI qualification and honest evidence reconciliation; no main/publication."
+      },
+      {
+        "owner": "recovery",
+        "assigned_agent": "/root/recovery_program",
+        "scope": "Recovery CAS repair and genuine HTML-aware Pi promotion framework fix."
+      },
+      {
+        "owner": "pi",
+        "assigned_agent": "/root/pi_program",
+        "scope": "Frozen Pi/HW14 batch plus fresh linked HW08 corrected review resubmission."
+      },
+      {
+        "owner": "packaging-site-tools",
+        "assigned_agent": "/root/packaging_site_tools",
+        "scope": "Frozen generator/manifest/site/tool implementation, focused independent recovery review; full site qualification awaits Atlas source freeze."
       }
     ],
-    "rule": "One writer per canonical owner. Codex: do not start work on a lane's tasks or files while it is listed here; pick unassigned owners (pi, farm, sandbox, site, packaging, measurement-tools) or coordinate via this record. Integrator alone edits execution/*, manifests/changelogs, integration-candidate.json, provenance refreshes after merges."
+    "rule": "One writer per canonical owner. Codex integrator assigns resumed lanes explicitly and preserves existing committed and uncommitted work. Integrator owns main execution records, manifests/changelogs, integration-candidate.json and shared provenance; each assigned lane may record exact evidence only under execution/lanes/<owner>.json. B authorized child PR integration into major/state-contracts on 2026-11-13; PR #1098 remains held for B's full testing before any merge to main or publication. B authorized project-context HTML conversion, implemented in PR #1102; frozen intake remains unchanged. R-08 is reassigned to the later site lane. Reuse source-bound completed reviews; inspect only new affected code or actual failures. Parent PR #1098 remains draft and held for user testing."
   },
   "task_updates": [
     {
@@ -94,10 +55,11 @@
         "Evidence zip committed 13b0943f under logged H-09b binary SECURITY-OVERRIDE (row e8b0a7a5) after B's own-words acknowledgement; 105/105 manifest files committed; full packet validator PASSED."
       ],
       "tested": [
-        "tools/validate_packet.py --repo <worktree> --initial: PASSED (82 tasks, 70 findings, 287 machines, 1748 rows, 31 scenarios, 252 cited source paths exist, graph acyclic). Structure-only; not product qualification. Windows run needed a separator/encoding shim outside the corpus (see CHECKPOINT environment notes)."
+        "tools/validate_packet.py --repo <worktree> --initial: PASSED (82 tasks, 70 findings, 287 machines, 1748 rows, 31 scenarios, 252 cited source paths exist, graph acyclic). Structure-only; not product qualification. Windows run needed a separator/encoding shim outside the corpus (see CHECKPOINT environment notes).",
+        "Disposable clone at97e1ecac: pre-existing branch and dirty tracked/untracked preservation, isolated child and all105 frozen hashes observed. Procedural exercise, not product execution."
       ],
       "remaining": [
-        "Disposable-clone exercise of bootstrap with pre-existing branch and dirty worktree cases."
+        "Retain procedural bootstrap observation with exact committed evidence; product qualification belongs to owning tasks."
       ],
       "evidence": []
     },
@@ -117,7 +79,8 @@
         "Mutants killed: skip candidate equality, skip main advance, skip tag check, select-any-branch, skip HEAD ancestry, Pi skip main heading, docs deploy guard widened.",
         "test_payload_version_gate.py 34 OK; test_ci_impact.py OK (2 pins updated); test_pi_package.py: same 8 pre-existing real-RPC env failures as baseline, contract pin updated and passing; test_release_workflow.py: 1 pre-existing Windows bash-availability failure, unchanged.",
         "Independent ca:security-reviewer PASS on staged diff sha256 9a794130...: release/Pages/npm/marketplace unreachable from integration or fork events; workflow_run consumers main-only; record cannot weaken main/merge_group (select() returns strict before reading the record for main); env-quoted base names; Pi scope parity. 3 LOW (see new_required_work INT-PROT-01).",
-        "First integration push CI 43311804480 (e42bd23b): Hook contract failed on ubuntu/windows/macos - test_provenance_wiring: enrolled code-map/coding-standards/tech-stack v2 identities stale because P-00/P-01 changed cited sources (.gitattributes, ci.yml, docs.yml, build-host-packages.py). Fixed on program/p01-context-provenance via native context preview/apply (identities only; claims re-read and still hold)."
+        "First integration push CI 43311804480 (e42bd23b): Hook contract failed on ubuntu/windows/macos - test_provenance_wiring: enrolled code-map/coding-standards/tech-stack v2 identities stale because P-00/P-01 changed cited sources (.gitattributes, ci.yml, docs.yml, build-host-packages.py). Fixed on program/p01-context-provenance via native context preview/apply (identities only; claims re-read and still hold).",
+        "PR1101 squash97e1ecac integrated with user authority; integration CI43438527900 and docs43438527943 succeeded. PR1098 remains held."
       ],
       "evidence": [],
       "remaining": [
@@ -142,6 +105,1373 @@
         "Record compatibility baseline traces per owner (command grammar, exit codes, host exceptions, operation IDs/replay, output classes, authority provenance, remote-effect timing, unavailable states) before changing them - domain owners capture these at task start (NT-01 for native).",
         "Shared outcome vocabulary declaration (progress/evidence/authority/delivery/containment/identity kept independent) - aligned to D-PROGRESS=B.",
         "Wire coverage_ledger check into integration CI."
+      ]
+    },
+    {
+      "id": "R-01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-04",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-05",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-06",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-07",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "R-08",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "T-01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G-01",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "Q-01",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "Q-02",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/release.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "Q-03",
+      "status": "NOT_STARTED",
+      "implemented": [],
+      "tested": [],
+      "remaining": [
+        "User testing and explicit promotion/publication authority remain required. PR1098 must not merge to main."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NT-01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-04",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-05",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-06",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-07",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-08",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-09",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-10",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-11",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "NT-12",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/native.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-04",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-05",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-06",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-07",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-08",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Versioned review resubmission retains original evidence, operation replay and user/host refusals; no new permission authority."
+      ],
+      "tested": [
+        "21 new cases including two actual native-profile captures passed locally; existing 83-case source contract passed. Final committed/cohort proof remains separate."
+      ],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-09",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-10",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-11",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/recovery.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-12",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/recovery.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-13",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/recovery.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-14",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/recovery.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-15",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/recovery.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-16",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-17",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-18",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-19",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-20",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-21",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-22",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-23",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-24",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-25",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-26",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HW-27",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D04",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D05",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D06",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-D07",
+      "status": "IN_PROGRESS",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-L01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "PI-L02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "DIST-M01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "FARM-R01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "FARM-R02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "FARM-R03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-C01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-C02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-C03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SITE-U01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SITE-U02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "BUILD-G01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "BUILD-G02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "DIST-M02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": []
+    },
+    {
+      "id": "PI-C01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/pi.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-D01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-D02",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-D03",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "SBX-D04",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/farm-sandbox.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "id": "HOST-D01",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "implemented": [
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+      ],
+      "tested": [],
+      "remaining": [
+        "Reconcile exact task-specific evidence, final generated bytes, committed input bindings and affected hosted/installed qualification."
+      ],
+      "evidence": [
+        {
+          "ref": "docs/state-contracts-major/execution/lanes/hooks.json",
+          "kind": "local-working-evidence",
+          "commit": null
+        }
       ]
     }
   ],
@@ -192,16 +1522,153 @@
   "pending_user_decisions": [],
   "new_required_work": [
     {
+      "id": "CTX-HTML-01",
+      "owner": "integrator",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "B explicitly requested project HTML conversion on 2026-11-13",
+      "detail": "Native context cutover covers all 44 sections, with 43 exact source-note readbacks and active policy/command records. PR #1102 commits 685b51f8 and de880024; followup current narrative and remaining Markdown-only conformance consumers are being repaired. Required CI is not yet green. Frozen intake and spec/plan representations remain unchanged.",
+      "current_detail": "PR1102 current7f64baa0f82d8a8b504daf12e24e14f318400bb8 includes native current-record readers, complete owner-backed conversion, mandatory HTML-aware documentation consumers, bounded sanitized diagnostics, exact new test population and physical macOS temporary fixture. Exact-head hosted CI pending; no historical fallback or gate waiver."
+    },
+    {
       "id": "INT-PROT-01",
       "source": "security-reviewer LOW (P-01 review, 2026-11-12)",
       "detail": "major/state-contracts is now a qualification source whose own protection is unaudited (integration push runs branch-protection job with BRANCH_PROTECTION_AUDIT_TOKEN). Add a ruleset on major/state-contracts requiring PRs + CI and restricting deletion (also resolves delete_branch_on_merge risk at promotion); optionally extend check_branch_protection.py to cover it. Repository-settings change = outward-facing; needs B's yes.",
       "owner": "release-and-integration",
       "status": "DONE",
       "evidence": "B approved 2026-11-12; ruleset id 27158575 'major/state-contracts integration branch' active: deletion, non_fast_forward, pull_request (0 approvals, thread resolution), required check '[GATE ] | [REPO] | Merge readiness' (non-strict). Verified via gh api rules/branches/major/state-contracts. Also prevents deletion at promotion despite delete_branch_on_merge=true."
+    },
+    {
+      "id": "DEF-TESTLEAK-01",
+      "owner": "hooks-workflows",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "detail": "Running plugins/ca/hooks/tests (unittest discover) appends fake BLOCK rows (e.g. 'BLOCK [H-05] host=claude hook=python.exe -m unittest') to the checkout's real .codearbiter/gate-events.log - test isolation leak into an append-only audit log.",
+      "source": "version lane observation 2026-11-12 (msc-version-candidates, +140 lines uncommitted)",
+      "current_detail": "Hermetic module runner isolates hook tests. Final affected Git hooks94cases/1skip and standup95cases pass with actual Git Bash on PATH; failed earlier environmental run retained. Exact-head CI remains required."
+    },
+    {
+      "id": "DEF-PI-ENV-01",
+      "owner": "pi",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "detail": "plugins/ca-pi/tools/src/extension.ts background jobs launch with boundedPiEnvironment(process.env) (~line 997 at 033db6d7) = full parent environment incl. provider credentials. Delegated child commands (PI-D03) must use a credential-blind environment; evaluate whether existing background jobs also violate security-controls.",
+      "source": "Pi lane PI-D01 hand-back 2026-11-13",
+      "current_detail": "Credential-blind child/background environment changes and negative tests assembled in Pi lane. Final exact-head hosted/installed proof pending."
+    },
+    {
+      "id": "DOC-PI-VERSION-01",
+      "owner": "pi",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "detail": "Supported Pi is 1.5.0 per compatibility.ts and pi_promotion.py policy; intake PI-DELEGATION.md says 1.1.0. Qualification must target 1.5.0. Local Pi CLI 1.1.0 is unsupported and its installed host fails to import (pi-codemode/declarations MCP_TYPESCRIPT_PREAMBLE missing) - no installed-host Pi cell runnable locally.",
+      "source": "Pi lane hand-back",
+      "current_detail": "Frozen intake remains historical. Qualification targets supportedPi1.5.0 via isolated reviewed graph; local source and runtime probes exist. Finalhosted/visible-parent cells remain pending."
+    },
+    {
+      "id": "PROV-RELEASE-TARGETS-01",
+      "owner": "integrator",
+      "status": "OPEN",
+      "detail": "Legacy (non-enrolled v1) .codearbiter/.provenance/release-targets.json hashes are stale for several files (plugins/ca-pi/extensions/codearbiter.js already differed at 033db6d7). Not enforced by test_provenance_wiring; decide refresh via legacy rebaseline owner or retire at G-01.",
+      "source": "version + Pi lane hand-backs"
+    },
+    {
+      "id": "DEF-GO-REPEATED-01",
+      "owner": "qualification",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Observed active program implementation/qualification failure,2026-11-13",
+      "detail": "Original Go runner incorrectly collapsed duplicate named outcomes across chunks. Actual compiled regression now refuses repeated tests;19tests passed. Final exact-source CI pending."
+    },
+    {
+      "id": "DEF-NIXPACKS-ASSETS-01",
+      "owner": "sandbox",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Observed active program implementation/qualification failure,2026-11-13",
+      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification."
+    },
+    {
+      "id": "DEF-ADR-REVIEWER-01",
+      "owner": "governance-and-docs",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Observed active program implementation/qualification failure,2026-11-13",
+      "detail": "Shipped acceptancewriter emits reviewed_by while staged-eventchecker excludedit. Genuine writerregression fixed with reviewer-membership validation; missing/wrong/empty identities stillrefuse. Govsourcebinding work retains real event andancestry."
+    },
+    {
+      "id": "DEF-PI-RPC-SHUTDOWN-01",
+      "owner": "pi",
+      "status": "IN_PROGRESS",
+      "source": "Observed active program implementation/qualification failure,2026-11-13",
+      "detail": "Actual hosted Node22.19/Pi1.5 rawRPC EOF timedout30s. Isolated exactNode22.19 localcase passed25.227s; observedvariantpassed10.386s. Causeunknown, sanitizeddiagnostics beingadded; no runtimefix or budgetrelaxationclaimed."
+    },
+    {
+      "id": "DEF-COLD-ARM-DIAGNOSTICS-01",
+      "owner": "packaging",
+      "status": "IN_PROGRESS",
+      "source": "Observed active program implementation/qualification failure,2026-11-13",
+      "detail": "WindowsARM coldworkflow failed with653byte stderr retainedonlyhash. Framework closeddiagnostics nowpreserve phase/step/error/nativecode and redactarbitrarydata;5focusedcasespass andrealWindowsamd64 threehostcoldcasepasses. OriginalARMcauseunknown until owningCI rerun."
+    },
+    {
+      "id": "DEF-MAJOR-REPORT-CAPACITY-01",
+      "owner": "qualification",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual implementation/qualification failure observed during authorized major program",
+      "detail": "Actual largest owner895 cells and22-member payload produced4,348,705bytes above unchanged4MiB bound. Shared framework v2payloadtable shrinks equivalent report to610,038bytes;16report tests and37readiness tests pass, independent affected review PASS_WITH_LIMITS. Synthetic full2230cell capacity case is not installed qualification."
+    },
+    {
+      "id": "DEF-MAJOR-OBSERVER-READ-LOCK-01",
+      "owner": "qualification",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual implementation/qualification failure observed during authorized major program",
+      "detail": "Actual native readonly observation created only empty untracked store.lock and falsely reported source instability. Shared verifier excludes only that exact ordinary singlelink zero-length untracked file beneath real ancestors; actual native regression RED to GREEN. Nonempty, tracked, staged, linked and unrelated changes remain dirty."
+    },
+    {
+      "id": "DEF-FARM-BOUNDED-READ-01",
+      "owner": "farm",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual implementation/qualification failure observed during authorized major program",
+      "detail": "Recovery reader now bounds held-descriptor reads before content consumption, uses UTF8 bytes and rejects unsafe/link/identity/size/time changes. Six genuine failing cases plus one baseline now pass; source and generated bundle recovery checks pass. Source commit4c764eac15d2008b7716f2a0e2a06fde69cbb2fd; finalhosted qualification pending."
+    },
+    {
+      "id": "DEF-SANDBOX-RELEASE-RUN-01",
+      "owner": "release-and-integration",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Focused final source review by /root/pi_program during authorized major program",
+      "detail": "Sandbox publisher omitted selected ci-run-id and would refuse genuine readiness. Root repaired same shared workflow boundary used by all4publishers; exact1regression failed sandbox beforefix,10TriggerTest cases pass afterfix. Independent affected confirmation and finalexact-source CI pending; no publication performed."
+    },
+    {
+      "id": "DEF-HOOK-NATIVE-REBUILD-01",
+      "owner": "hooks-workflows",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual final source/CI failure observed during authorized major program",
+      "detail": "Actual HTML CI macOS and Windows contract jobs exhausted unchanged20minute ceiling while separate Python processes repeatedly requalified identical native inputs. Shared workflow now qualifies one fresh native reader perjob, then existing isolated manifest-verified fixtures copy it. All original commands/platformcells and tests/vet remain; legal GitHub jobenv context guard added. Actual35guardchecks pass; hosted wall effectiveness pending."
+    },
+    {
+      "id": "DEF-RECOVERY-COHORT-AUTH-01",
+      "owner": "qualification",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual final source/CI failure observed during authorized major program",
+      "detail": "Shared retained recovery runner requires independent selected source/run/workflow/stage/promotionreceipt via existing production verifier before extraction. Existing bounded reader handles canonical cohort and archives; admitted rawbytes match verifier result, and receipt uses admitted SHA without postjourney reread. Four real-verifier negatives, three bounded/raw controls and explicitly mocked-admission real3host extraction pass in2methods21.542s; independent affected reviewPASS_WITH_LIMITS. Actual finalproduction-cohort10journeys pendingCI."
     }
   ],
   "new_transition_rows": [],
-  "evidence_records": [],
+  "evidence_records": [
+    {
+      "task": "P-00",
+      "kind": "conformance-check",
+      "commit": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+      "observed": "Disposable remote clone procedural bootstrap exercise passed: inspected existing integration branch identity unchanged, dirty README and unique untracked bytes preserved, separate clean child branch created, all 105 intake manifest bindings verified. No remote write, main/tag/release/Pages mutation. This is procedural/bootstrap evidence, not product qualification."
+    },
+    {
+      "task": "P-01",
+      "kind": "hosted-run",
+      "ref": "https://github.com/arbiterForge/codeArbiter/actions/runs/43438527900",
+      "commit": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+      "observed": "Integration push CI completed SUCCESS with no failed jobs. Matching docs push run 43438527943 completed SUCCESS. This observes integration qualification admission, not whole-program readiness."
+    },
+    {
+      "task": "P-01",
+      "kind": "hosted-run",
+      "ref": "https://github.com/arbiterForge/codeArbiter/actions/runs/43311804480",
+      "commit": "e42bd23b",
+      "observed": "integration push: 74 success, 6 skipped (PR-only version/provenance/Pi security lanes), 4 failure = Hook contract x3 (stale provenance, fixed by #1100) + Merge readiness consequence; no release/publish/deploy job present"
+    }
+  ],
   "observations": [
     {
       "what": "main branch protection",
@@ -238,16 +1705,38 @@
       "what": "ruleset relaxation attempt",
       "observed": "Attempt to drop required_status_checks from ruleset 27158575 (per B: don't nitpick interim CI) was denied by the session's auto-mode CI-bypass guard; required merge-readiness check remains. Lanes keep working on branches; integrator merges child PRs when green.",
       "date": "2026-11-12"
+    },
+    {
+      "what": "assembled implementation and proof boundary",
+      "observed": "Native, Pi, recovery, farm/sandbox, release, packaging/site/tool changes have real implementation and retained local checks. Only PR1101 merged; PR1102 open. Baseline ledger remains PLANNED until exact semantic evidence is reconciled; no aggregate suite total qualifies every row.",
+      "date": "2026-11-13"
+    },
+    {
+      "what": "focused review defects",
+      "observed": "Closed native descriptor omissions, Pi cancellation/owner/retained-outcome defects, farm unreadable cache-input alias, canonical knowledge enumeration race, generator junction escape and truncate publication. Recovery target CAS lost-update was independently reproduced and author fix is being verified. Unaffected reviews reused.",
+      "date": "2026-11-13"
+    },
+    {
+      "what": "PR1102 current hosted failures",
+      "observed": "At23c74063 candidate release-intent notes stale; genuine Pi promotion path still assumes legacy tech-stack.md. Fixes in progress. One Windows raw Pi RPC EOF exit timed out30s underNode22.19; same actual case passed locally9.479s underNode24.22.1, so not silently classified fixed.",
+      "date": "2026-11-13"
+    },
+    {
+      "recorded_at": "2026-11-13T19:46:57.288413+00:00",
+      "kind": "NATIVE_DISPOSITION_RECONCILIATION",
+      "detail": "Admitted101 source-bound native disposition records:92TESTED/9PRESERVED from exact109namedPASS selectors and independent source-conformance traces.2004baseline rowsremainPLANNED. No task/scenario/installed/hosted/publication closure from suite totals.",
+      "ref": "execution/evidence/native-windows-proposed/native-tested.json"
     }
   ],
   "scoped_blockers": [],
   "unknown_outcomes": [],
   "next_actions": [
-    "Integrate lane branches via child PRs into major/state-contracts as they return; regenerate generated trees after merges; update coverage ledger from lane evidence.",
-    "Next lanes when capacity frees: Pi (PI-D01..PI-D07, PI-L01/L02, PI-C01), farm/sandbox (FARM-R01..R03, SBX-*), packaging/site/tooling (BUILD-G01/G02, DIST-M01/M02, SITE-U01/U02, T-01, HOST-D01).",
-    "Docker unavailable locally: sandbox Docker evidence must come from hosted CI with CA_SANDBOX_REQUIRE_DOCKER=1."
+    "Finish explicit remaining qualification/delivery source commit, then push one implementation child PR into major/state-contracts.",
+    "Run exact committed native/Pi/Docker/retained-cohort/site CI and repair observed failures with bounded affected checks.",
+    "Reconcile2105 baseline dispositions and added transitions from semantic source-bound evidence; keep missing runtime/visible-parent/provider cells pending.",
+    "PR1098 remains draft for B full testing; no main merge or publication authorized."
   ],
-  "delivery_state": "NOT_STARTED",
+  "delivery_state": "IMPLEMENTATION_COMMITS_IN_PROGRESS",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [

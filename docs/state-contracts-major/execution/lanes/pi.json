@@ -1,0 +1,1390 @@
+{
+  "schema": "codearbiter-program-lane-evidence/1",
+  "owner": "pi",
+  "recorded_at": "2026-11-13T15:58:48.789728+00:00",
+  "branch": "program/pi-d01",
+  "source_head": "6ff9d3883748f6635685160b46e12e0c9d095190",
+  "subject": "working tree source and owning generated bundles; not a distributable package or release receipt",
+  "authority": "Child integration only into major/state-contracts. PR1098 held for user testing before main; no publication.",
+  "environment": {
+    "os": "Windows",
+    "arch": "amd64",
+    "node": "24.22.1",
+    "python": "3.14.6",
+    "pi": "1.5.0",
+    "pi_source": "isolated temporary prefix, reviewed fixed host lock, scripts disabled",
+    "host_lock_sha256": "bf19e9f868b92fd70f62642e92de30c795f7f9a19d942f7d76b2e86105aee329",
+    "global_pi": "1.1.0 unsupported; initial failed global-runtime suite retained as superseded environment failure",
+    "node_source": "Existing Codex bundled Windows runtime invoked explicitly; no Node download/global/profile change",
+    "earlier_node": "24.18.0; new real child-loop cell repeatedly fails with native UV_HANDLE_CLOSING shutdown assertion/exit3221226505 after complete protocol and three durable effects; retained, not reclassified as pass"
+  },
+  "checks": [
+    {
+      "id": "PI-WINDOWS-SUITE",
+      "command": "explicit Node24.22.1 node_modules/vitest/vitest.mjs run --coverage",
+      "cwd": "plugins/ca-pi/tools",
+      "runtime": "isolated supported Pi1.5.0 on command-scoped PATH",
+      "result": "42 files PASS;1029 tests PASS;2 SKIP",
+      "duration_seconds": 63.26,
+      "skip": [
+        "process-tree.test.ts real POSIX child cleanup unavailable on Windows",
+        "delegation-journal.test.ts actual permission-denial cell requires non-root POSIX; unavailable on Windows"
+      ],
+      "coverage": {
+        "scope": "src/**/*.ts",
+        "host": "Windows amd64",
+        "lines": 86.53,
+        "branches": 80.8,
+        "statements": 81.36,
+        "functions": 84.29,
+        "stage": 2,
+        "minimum": 70,
+        "verdict": "PARTIAL: Windows clears floor; required Ubuntu+Windows union not yet available"
+      }
+    },
+    {
+      "id": "PI-TYPECHECK",
+      "command": "npm run typecheck",
+      "result": "PASS"
+    },
+    {
+      "id": "PI-DIFF-CHECK",
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "id": "PI-REAL-EFFECT",
+      "test": "parent-delegation.test.ts real admitted Pi file factories and managed shell produce exact effects (permission callback substituted)",
+      "result": "PASS",
+      "substitutions": [
+        "actual consent callback supplied by fixture; no visible real parent TUI",
+        "source module channel/executor; not complete packaged child-model loop"
+      ],
+      "observations": [
+        "write/edit actual admitted Pi1.5.0 factories produce exact resulting bytes",
+        "actual Windows managed Git Bash command writes expected bytes and verified-stopped cleanup"
+      ]
+    },
+    {
+      "id": "PI-MUTATION",
+      "result": "3 focused AssertionError failures when safeguards removed; all original bytes restored",
+      "guards": [
+        "constant-time token mismatch",
+        "durable claim before effect",
+        "unresolved target dependency hold"
+      ]
+    },
+    {
+      "id": "PI-BUILD-REPRODUCTION",
+      "command": "explicit Node24.22.1 build.mjs",
+      "result": "PASS: all four owning generated bundle hashes identical to tested build"
+    },
+    {
+      "id": "PI-REAL-CHILD-LOOP",
+      "test": "parent-delegation.test.ts real packaged child RPC loop performs parent-owned effects (local provider and permission callback substituted)",
+      "result": "PASS on Windows amd64 / Node24.22.1 / Pi1.5.0",
+      "observations": [
+        "actual packaged hardened child loads through actual supported Pi RPC process",
+        "private version2 fd3 bootstrap crosses actual Windows supervisor",
+        "real inference broker and deterministic loopback OpenAI-compatible fixture produce actual child write/edit/bash tool calls",
+        "actual native file bytes become after; actual managed command writes child-command-proof",
+        "parent records three completed operations and actual resulting bytes; author model judgment remains separate"
+      ],
+      "substitutions": [
+        "instrumented parent bundled from canonical source at actual package boundary, not production parent TUI",
+        "canonical installed Pi CLI supplied as fixture parent process argument for production runtime identity resolver",
+        "local deterministic provider and parent permission callback; no visible real human TUI confirmation"
+      ],
+      "qualification": "PARTIAL technical child-flow proof; not complete installed-parent or final-candidate qualification"
+    },
+    {
+      "id": "PI-ROOT-PACKAGE",
+      "command": "python .github/scripts/test_pi_package.py with supported Pi1.5.0 on PATH",
+      "result": "PARTIAL:61/64 cells passed; two doctor-format regressions fixed and actual RPC/shutdown rerun2/2 PASS; one remaining ci.yml all-OS suite-list integration failure",
+      "integration_required": "Add delegation-journal.test.ts to explicit platform-gated all-OS suite list; parent CI owner notified",
+      "earlier_environment_failure": "Initial global-Pi1.1.0 attempt failed9/64, including8 unsupported runtime cells; retained as superseded environment failure"
+    },
+    {
+      "id": "PI-PARITY",
+      "command": "python .github/scripts/test_pi_parity.py",
+      "result": "28 PASS"
+    },
+    {
+      "id": "PI-PUBLIC-DOCS",
+      "command": "python .github/scripts/test_public_pi_docs.py",
+      "result": "13 PASS"
+    },
+    {
+      "id": "PI-REVIEW-REPAIR",
+      "command": "explicit Node24.22.1 Vitest affected executor/journal/runner/contract/session suites; typecheck",
+      "result": "156 PASS;1 POSIX permission SKIP; typecheck PASS",
+      "observed_sequence": [
+        "6 cancellation/revocation/expiry spawn+started cases failed command-withheld assertion before fix",
+        "6 missing/unsafe commondir cases each failed owner-refusal before fix; real Git worktree positive passes",
+        "2 cleanup-failure projections lost completed+unknown counters after actual fixture file effects before fix; normal cleanup positive passes",
+        "6 actual codec round trips and3 full TCP channel cases exposed incompatible post-admission state; final historical admitted + retired reason + unknown effect round-trips and preserves verified containment"
+      ],
+      "limits": [
+        "Runner cleanup tests inject parent channel/summary and cleanup failures; they prove projection, not actual parent TUI consent",
+        "Actual permission-denial filesystem cell pending non-root POSIX execution"
+      ]
+    }
+  ],
+  "implementation": [
+    {
+      "task_id": "PI-D01",
+      "finding_ids": [
+        "SF01"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-D02",
+      "finding_ids": [
+        "SF01"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-D03",
+      "finding_ids": [
+        "SF01"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-D04",
+      "finding_ids": [
+        "SF01"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-D05",
+      "finding_ids": [
+        "SF01"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-D06",
+      "finding_ids": [
+        "SF01",
+        "SF12"
+      ],
+      "state": "IMPLEMENTED_CODE_INTEGRATION_REQUIRED",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": "Canonical help/host-note capability projection requires integrator hook/surface ownership; installed claims remain unqualified"
+    },
+    {
+      "task_id": "PI-D07",
+      "finding_ids": [
+        "SF01"
+      ],
+      "state": "PARTIAL_QUALIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK",
+        "PI-REAL-CHILD-LOOP"
+      ],
+      "remaining": "Visible real parent TUI, final exact candidate closure/install-update-disable-uninstall receipt, CI Node22.19/platform kill/race matrix, and retained Node24.18 Windows failure disposition pending"
+    },
+    {
+      "task_id": "PI-L01",
+      "finding_ids": [
+        "SF02"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-L02",
+      "finding_ids": [
+        "SF03"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    },
+    {
+      "task_id": "PI-C01",
+      "finding_ids": [
+        "SF12"
+      ],
+      "state": "IMPLEMENTED_SOURCE_LOCAL_VERIFICATION",
+      "evidence": [
+        "PI-WINDOWS-SUITE",
+        "PI-TYPECHECK"
+      ],
+      "remaining": ""
+    }
+  ],
+  "finding_coverage": [
+    {
+      "finding_id": "SF01",
+      "task_ids": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D03",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-D07"
+      ],
+      "assessment": "Functional source parent delegation implemented with local effects; final installed qualification incomplete"
+    },
+    {
+      "finding_id": "SF02",
+      "task_ids": [
+        "PI-L01"
+      ],
+      "assessment": "Persona readiness independently maintained; failed persona cannot be cleared by bridge success; current-lifecycle retry recovers"
+    },
+    {
+      "finding_id": "SF03",
+      "task_ids": [
+        "PI-L02"
+      ],
+      "assessment": "Pending sidebar installation invalidated by disposal; stale metrics cannot resurrect patches"
+    },
+    {
+      "finding_id": "SF12",
+      "task_ids": [
+        "PI-C01",
+        "PI-D06"
+      ],
+      "assessment": "Private legacy1.0.2 prompt explicitly unavailable on supported1.5.0; source/runtime checks are not host-observed approval proof"
+    }
+  ],
+  "machine_transition_coverage": [
+    {
+      "machine_id": "S01",
+      "task_ids": [
+        "HW-14",
+        "PI-D02",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-L01",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S01:01",
+        "S01:02",
+        "S01:03",
+        "S01:04",
+        "S01:05",
+        "S01:06",
+        "S01:07",
+        "S01:08",
+        "S01:09",
+        "S01:10"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/activation.test.ts",
+        "plugins/ca-pi/tools/test/status.test.ts"
+      ],
+      "obligations": "Dormant/untrusted activation, lifecycle invalidation, persona failure/retry, and late recovery notices",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S02",
+      "task_ids": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D04",
+        "PI-D05",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S02:01",
+        "S02:02",
+        "S02:03",
+        "S02:04",
+        "S02:05",
+        "S02:06",
+        "S02:07",
+        "S02:08",
+        "S02:09",
+        "S02:10",
+        "S02:11",
+        "S02:12",
+        "S02:13",
+        "S02:14"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/tool-guard.test.ts",
+        "plugins/ca-pi/tools/test/final-arguments.test.ts",
+        "plugins/ca-pi/tools/test/final-arguments-live.test.ts",
+        "plugins/ca-pi/tools/test/policy.test.ts"
+      ],
+      "obligations": "Final frozen args, bridge/policy denials, permission/audit revalidation, trust/mode/lifecycle/source drift; live host ordering uses substituted bridge/factories",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S03",
+      "task_ids": [
+        "PI-D02",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S03:01",
+        "S03:02",
+        "S03:03",
+        "S03:04",
+        "S03:05",
+        "S03:06",
+        "S03:07",
+        "S03:08",
+        "S03:09"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/plan-mode.test.ts"
+      ],
+      "obligations": "Plan revision/identity binding, stale read and lost-response reconciliation, cancellation and host confirmation",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S04",
+      "task_ids": [
+        "PI-D03",
+        "PI-D05",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S04:01",
+        "S04:02",
+        "S04:03",
+        "S04:04",
+        "S04:05",
+        "S04:06",
+        "S04:07",
+        "S04:08"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/background-jobs.test.ts"
+      ],
+      "obligations": "Reservation, retention, cancel/timeout/settlement and disposal",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S05",
+      "task_ids": [
+        "PI-D03",
+        "PI-D05",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S05:01",
+        "S05:02",
+        "S05:03",
+        "S05:04",
+        "S05:05",
+        "S05:06",
+        "S05:07",
+        "S05:08",
+        "S05:09"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/background-jobs.test.ts",
+        "plugins/ca-pi/tools/test/process-tree.test.ts",
+        "plugins/ca-pi/tools/test/windows-supervisor.test.ts"
+      ],
+      "obligations": "Managed readiness, audit/cleanup refusal and health; Windows native paths executed, POSIX real-process cell skipped",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S06",
+      "task_ids": [
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S06:01",
+        "S06:02",
+        "S06:03",
+        "S06:04",
+        "S06:05"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/activity.test.ts"
+      ],
+      "obligations": "Activity expiry, duplicate completion and disposal are presentation-only",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S07",
+      "task_ids": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S07:01",
+        "S07:02",
+        "S07:03",
+        "S07:04",
+        "S07:05",
+        "S07:06",
+        "S07:07",
+        "S07:08"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/dispatch.test.ts"
+      ],
+      "obligations": "Catalog/role/depth/concurrency bounds; model judgment separated from actual parent effect summary, including degraded results",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S08",
+      "task_ids": [
+        "PI-C01",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S08:01",
+        "S08:02",
+        "S08:03",
+        "S08:04",
+        "S08:05",
+        "S08:06",
+        "S08:07"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+        "plugins/ca-pi/tools/test/package.test.ts"
+      ],
+      "obligations": "Legacy private prompt runtime gating and one-shot lifecycle, distinct from supported1.5.0 general author permission",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S09",
+      "task_ids": [
+        "PI-D01",
+        "PI-D03",
+        "PI-D04",
+        "PI-D05",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S09:01",
+        "S09:02",
+        "S09:03",
+        "S09:04",
+        "S09:05",
+        "S09:06",
+        "S09:07",
+        "S09:08",
+        "S09:09",
+        "S09:10",
+        "S09:11"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
+        "plugins/ca-pi/tools/test/delegation-contract.test.ts",
+        "plugins/ca-pi/tools/test/delegation-session.test.ts",
+        "plugins/ca-pi/tools/test/parent-delegation.test.ts"
+      ],
+      "obligations": "Versioned fd3 handshake/protocol, cancellation/redaction and proxy admission; actual packaged child tool-loop on Windows Node24.22.1 with instrumented parent/local provider; visible parent TUI/final candidate still pending",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S10",
+      "task_ids": [
+        "PI-D03",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S10:01",
+        "S10:02",
+        "S10:03",
+        "S10:04",
+        "S10:05",
+        "S10:06",
+        "S10:07"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/child-env.test.ts",
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "plugins/ca-pi/tools/test/security.test.ts"
+      ],
+      "obligations": "Credential-blind schema-bounded model projection, isolated homes, rejection and cleanup; parent provider credentials remain parent-only",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S11",
+      "task_ids": [
+        "PI-D03",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S11:01",
+        "S11:02",
+        "S11:03",
+        "S11:04",
+        "S11:05",
+        "S11:06",
+        "S11:07"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/inference-broker.test.ts",
+        "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts"
+      ],
+      "obligations": "Loopback exact-route/token authorization, stream bounds/redaction, revocation and cleanup; no provider fallback",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S12",
+      "task_ids": [
+        "HW-14",
+        "PI-C01",
+        "PI-D02",
+        "PI-D03",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-D07",
+        "PI-L01"
+      ],
+      "transition_ids": [
+        "S12:01",
+        "S12:02",
+        "S12:03",
+        "S12:04",
+        "S12:05"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/runtime-resolver.test.ts",
+        "plugins/ca-pi/tools/test/package.test.ts"
+      ],
+      "obligations": "Installed supported1.5.0 runtime identity, canonical package/import closure, pre/post revalidation and counterfeit rejection",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S13",
+      "task_ids": [
+        "PI-D03",
+        "PI-D05",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S13:01",
+        "S13:02",
+        "S13:03",
+        "S13:04",
+        "S13:05",
+        "S13:06",
+        "S13:07",
+        "S13:08",
+        "S13:09"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/process-tree.test.ts",
+        "plugins/ca-pi/tools/test/windows-supervisor.test.ts"
+      ],
+      "obligations": "Windows inert supervisor/leash/cleanup regressions plus actual v2 fd3 child tool-loop under Node24.22.1; POSIX source/fixture checks only, actual POSIX test skipped here",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S14",
+      "task_ids": [
+        "HW-14",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S14:01",
+        "S14:02",
+        "S14:03",
+        "S14:04",
+        "S14:05",
+        "S14:06",
+        "S14:07"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/bridge.test.ts"
+      ],
+      "obligations": "Canonical helper/root admission, bounded bridge subprocess I/O and cancellation/backstop",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S15",
+      "task_ids": [
+        "HW-14",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S15:01",
+        "S15:02",
+        "S15:03",
+        "S15:04",
+        "S15:05",
+        "S15:06"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/activation.test.ts"
+      ],
+      "obligations": "Session-owned usage cursor, acknowledgment/retry and lifecycle freshness",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S16",
+      "task_ids": [
+        "PI-D04",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S16:01",
+        "S16:02",
+        "S16:03",
+        "S16:04",
+        "S16:05",
+        "S16:06"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/audit-sink.test.ts",
+        "plugins/ca-pi/tools/test/tool-guard.test.ts",
+        "plugins/ca-pi/tools/test/delegation-journal.test.ts"
+      ],
+      "obligations": "Append/sync failure remains uncertainty; delegation exclusive claim/outcome owner does not infer no bytes from false return",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S17",
+      "task_ids": [
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S17:01",
+        "S17:02",
+        "S17:03",
+        "S17:04",
+        "S17:05",
+        "S17:06",
+        "S17:07"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/compaction.test.ts"
+      ],
+      "obligations": "Protected tail/fingerprint and summary bounds, host-confirmed acknowledgment; no delegation grant for compaction",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S18",
+      "task_ids": [
+        "PI-D06",
+        "PI-L01",
+        "PI-L02",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S18:01",
+        "S18:02",
+        "S18:03",
+        "S18:04",
+        "S18:05",
+        "S18:06",
+        "S18:07"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/footer.test.ts",
+        "plugins/ca-pi/tools/test/activation.test.ts"
+      ],
+      "obligations": "Async metrics/data refresh lifecycle ownership, stale/disposed completion suppression, native fallback",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S19",
+      "task_ids": [
+        "PI-L02",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S19:01",
+        "S19:02",
+        "S19:03",
+        "S19:04",
+        "S19:05",
+        "S19:06",
+        "S19:07",
+        "S19:08"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+        "plugins/ca-pi/tools/test/sidebar-compositor.test.ts",
+        "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts",
+        "plugins/ca-pi/tools/test/sidebar-window-contract.test.ts",
+        "plugins/ca-pi/tools/test/sidebar.test.ts",
+        "plugins/ca-pi/tools/test/sidebar-data.test.ts"
+      ],
+      "obligations": "Disposal invalidates pending installation; repeated/coalesced install, live geometry, native restoration and renderer boundaries",
+      "qualification": "PARTIAL_WINDOWS"
+    },
+    {
+      "machine_id": "S20",
+      "task_ids": [
+        "PI-D06",
+        "PI-D07"
+      ],
+      "transition_ids": [
+        "S20:01",
+        "S20:02",
+        "S20:03",
+        "S20:04",
+        "S20:05",
+        "S20:06"
+      ],
+      "evidence_mode": "source-conformance plus executed Windows regression suite; no whole-platform qualification implied",
+      "suites": [
+        "plugins/ca-pi/tools/test/commands.test.ts",
+        "plugins/ca-pi/tools/test/notices.test.ts",
+        "plugins/ca-pi/tools/test/doctor.test.ts",
+        "plugins/ca-pi/tools/test/activation.test.ts"
+      ],
+      "obligations": "Command ownership, bounded deduplicated notices and read-only diagnostics; delegation diagnostics are source capability, never qualification",
+      "qualification": "PARTIAL_WINDOWS"
+    }
+  ],
+  "candidate_transition_deltas": [
+    {
+      "transition_ids": [
+        "S01:05",
+        "S01:07"
+      ],
+      "change": "Governed readiness requires persona as well as installed wrappers; bridge success alone cannot cure unavailable persona"
+    },
+    {
+      "transition_ids": [
+        "S09:03",
+        "S09:11"
+      ],
+      "change": "Private fd3 version2 bootstrap supports purpose-bound author delegation; proxies require confirmed handshake and parent gate, reviewers stay read-only"
+    },
+    {
+      "transition_ids": [
+        "S10:04"
+      ],
+      "change": "Frozen baseline wording describes credential-bearing model projection; current preserved ADR0019 broker configuration is credential-blind. No reusable provider credentials are written into child files"
+    },
+    {
+      "transition_ids": [
+        "S19:07",
+        "S19:08"
+      ],
+      "change": "Disposal invalidates pending install; late metrics remain disposed, never resurrect sidebar"
+    }
+  ],
+  "recovery_contract": {
+    "owner": "Pi host bookkeeping, agreed with native NT10; outside native artifact namespace",
+    "location": "<canonical Git common directory>/codearbiter/pi-delegation/v1",
+    "storage_schema": "codearbiter.pi-delegation-storage/1",
+    "inner_schema_version": 1,
+    "phases": [
+      "claimed",
+      "started(command launch reference)",
+      "observed"
+    ],
+    "binding": [
+      "canonical repository/worktree SHA256 identities",
+      "operation/run/caller/tool/digest/profile",
+      "actual parent permission correlation"
+    ],
+    "limits": [
+      "exclusive no-follow regular records; linked ancestor/hardlink rejection",
+      "bounded16KiB storage/8KiB inner records,4096-entry scan",
+      "Windows file fsync only; directory fsync durability not claimed",
+      "launch PID is historical observation only, never reused authority for signals",
+      "unknown shell containment holds delegated effects in its unbounded resource scope",
+      "unknown file effect holds dependent target/new shell; disjoint file work remains available",
+      "ordinary parent progress and unrelated native artifacts are not globally blocked",
+      "A .git pointer requires a positively observed bounded commondir; absence cannot qualify a separate-Git-dir/submodule owner or rehome old records"
+    ]
+  },
+  "red_green_defects": [
+    "observed digest mismatch accepted",
+    "pre-aborted or during-claim cancellation executed effect",
+    "delegation bearer echoed into final output",
+    "raw executor exception copied into child output",
+    "successful native write return without approved bytes claimed completion",
+    "unverified shell cleanup failed to retain dependent hold",
+    "overfull journal looked empty and clean",
+    "Git common pointer through linked ancestor adopted",
+    "target observation lacked read bound",
+    "delegation close exception skipped isolated environment cleanup",
+    "unknown file effect could be overwritten by fresh dependent request",
+    "Git-common pointer identity drift could reuse a previously opened journal",
+    "plain journal directory replacement could inherit live journal ownership",
+    "appended doctor prose displaced final structured diagnosis summary; real RPC/shutdown cells failed then passed",
+    "command stdin released after cancellation/revocation/expiry during managed spawn or started persistence",
+    "unsafe or missing linked commondir became fresh recovery owner",
+    "channel or environment cleanup failure erased parent effect summary",
+    "post-admission retirement result violated closed response axes and lost precise containment/reason through the channel"
+  ],
+  "limits": [
+    "No main merge or publication",
+    "Supported Pi1.5.0 runtime used; local globally installed1.1.0 is unsupported",
+    "Actual visible parent TUI child-author loop not established; real packaged child loop has an explicitly instrumented parent and injected consent callback",
+    "No final exact candidate package closure, cold-install/update/disable/uninstall receipt yet",
+    "POSIX/macOS and full hosted platform/race matrix pending",
+    "Current matching bundles are source-built working-tree bytes; no released/qualified flags",
+    "Cleanup of dummy fixture codearbiter-pi-child-WYXhW0 was rejected by automatic approval review; retained and reported, no alternate deletion attempted",
+    "Node24.18 Windows actual-child shutdown failure retained; Node24.22.1 local PASS does not establish CI22.19 or every admitted Node runtime",
+    "One package contract requires parent CI integration of delegation-journal.test.ts into all-OS list",
+    "Separate-Git-dir/submodule pointer layouts without positively observed common owner remain unavailable; no universal custom-topology support claimed"
+  ],
+  "source_hashes": {
+    "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+    "plugins/ca-pi/tools/src/activation.ts": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/src/approval-dialog.ts": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+    "plugins/ca-pi/tools/src/approval-entry.ts": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+    "plugins/ca-pi/tools/src/attestation.ts": "33b768897d1d4b34312731603eb16b4af552b13fbd02f29c24b1dfff52ab98e8",
+    "plugins/ca-pi/tools/src/audit-sink.ts": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+    "plugins/ca-pi/tools/src/background-jobs.ts": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+    "plugins/ca-pi/tools/src/bridge.ts": "87d98382f90b223e1356cf0b2895929690655b113f6be18aac682bb411ba9a84",
+    "plugins/ca-pi/tools/src/child-env.ts": "dd7610801c67b363ba22b62e0c1b69a9bbc7d3506af56e4289b784fb8a033b86",
+    "plugins/ca-pi/tools/src/child-extension.ts": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+    "plugins/ca-pi/tools/src/command-ownership.ts": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+    "plugins/ca-pi/tools/src/commands.ts": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+    "plugins/ca-pi/tools/src/compaction.ts": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+    "plugins/ca-pi/tools/src/compatibility.ts": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+    "plugins/ca-pi/tools/src/contracts.ts": "46ff5c3869f48042389c14cf954ea38cfa8e8392252311af60a523b425582e77",
+    "plugins/ca-pi/tools/src/delegated-executor.ts": "74b556c921450dc022399e0ed029646d8ab487c1736bd5af7fd640c5f9bc38b1",
+    "plugins/ca-pi/tools/src/delegation-client.ts": "718cc65ee5c0fd493c2cb5310630fd84a392c2c48c89f26c24d26ba7ea010d0e",
+    "plugins/ca-pi/tools/src/delegation-contract.ts": "2cafdd5191c2021a02e6d7594b407c83a542f1778c0b11acc8942e9a3fbf7d2e",
+    "plugins/ca-pi/tools/src/delegation-journal.ts": "2fda36919a5820573d5626f500c1da4ccb55b63f3089e6b3ad71212ba1494efc",
+    "plugins/ca-pi/tools/src/delegation-session.ts": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+    "plugins/ca-pi/tools/src/dispatch.ts": "3f077b55d295e6e6f4a6a9c36624f190cd8d66385dfa1cc8ec18b3069069c7d7",
+    "plugins/ca-pi/tools/src/doctor.ts": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+    "plugins/ca-pi/tools/src/extension.ts": "91e8bd52410b278177fb51ed6496752b2ebe20c2b438b3e46407333d76bc6891",
+    "plugins/ca-pi/tools/src/farm.ts": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b",
+    "plugins/ca-pi/tools/src/footer-state.ts": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+    "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+    "plugins/ca-pi/tools/src/git-facts.ts": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+    "plugins/ca-pi/tools/src/inference-broker.ts": "3faa085f28963dc150c49a8755d4d0b21970e7f410f18ff3d480963e0aed45af",
+    "plugins/ca-pi/tools/src/native-background.ts": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+    "plugins/ca-pi/tools/src/native-plan.ts": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+    "plugins/ca-pi/tools/src/notices.ts": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+    "plugins/ca-pi/tools/src/parent-delegation.ts": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/pi-api.d.ts": "12a560b01cb6efc93964f19eadb2c6561e1e2a97f50703803e4d55f26268b9f2",
+    "plugins/ca-pi/tools/src/plan-mode.ts": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+    "plugins/ca-pi/tools/src/policy.ts": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+    "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca-pi/tools/src/roles.ts": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+    "plugins/ca-pi/tools/src/runner.ts": "be7bfd86bb8d8177a1fa17b184a47d8c7723d4953ffee210480b1e3374fb7509",
+    "plugins/ca-pi/tools/src/runtime-resolver.ts": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+    "plugins/ca-pi/tools/src/session-identity.ts": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+    "plugins/ca-pi/tools/src/sidebar-compositor.ts": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+    "plugins/ca-pi/tools/src/sidebar-data.ts": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+    "plugins/ca-pi/tools/src/sidebar-manager.ts": "9434a127d94ea06b6e9d46f844ca1ce02b36048ed3270e8ef8912d543337008f",
+    "plugins/ca-pi/tools/src/sidebar.ts": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653",
+    "plugins/ca-pi/tools/src/status.ts": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+    "plugins/ca-pi/tools/src/windows-supervisor.ts": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+    "plugins/ca-pi/tools/test/activation.test.ts": "e6c140dcd71b188043dbe584f2e65e9a2b1642ef59285b1fdb51ba8aa45e6906",
+    "plugins/ca-pi/tools/test/activity.test.ts": "b17944eff2918308ba1d920894826391cc2a9ad2f06748d0443b588741a85ae5",
+    "plugins/ca-pi/tools/test/approval-dialog.test.ts": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+    "plugins/ca-pi/tools/test/audit-sink.test.ts": "2cb576607d0af8b1489f7814e5171f11e714db13737e604bb5ccbb30ec96f808",
+    "plugins/ca-pi/tools/test/background-jobs.test.ts": "b52ede11e88ab574ca6989841b96be274daecd7ddf611164bc35debb49063c3b",
+    "plugins/ca-pi/tools/test/bridge.test.ts": "be4d2fc4bef04c048b8927f6805253136a77e65f2fab816b5e3643883bc0dbc8",
+    "plugins/ca-pi/tools/test/child-env.test.ts": "a804d23de882627858aede6802b834fff5de06444c5c2f210471c8b98a9ac2ef",
+    "plugins/ca-pi/tools/test/commands.test.ts": "5a831ecae4a0613808d5fb5c95687ed5dd8a8a42fe61189dc85ea1c5686ecdf3",
+    "plugins/ca-pi/tools/test/compaction.test.ts": "d834a875f37ade4025c40f96386efc09f46adc7f2b05a3233594b0f216a7b776",
+    "plugins/ca-pi/tools/test/delegated-executor.test.ts": "9c3449e913347836cf75805a57ddccb1df4b7ba85f18b953651ce206b106207f",
+    "plugins/ca-pi/tools/test/delegation-contract.test.ts": "1ce5130d2b2532d9aae666823cd18a4ca623a8e7174c02429e27f3998214ee14",
+    "plugins/ca-pi/tools/test/delegation-journal.test.ts": "dc2722246d8866dbe36f0eb01d1c90086bc1608ca8411d18baabfba6694f6e1f",
+    "plugins/ca-pi/tools/test/delegation-session.test.ts": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+    "plugins/ca-pi/tools/test/dispatch.test.ts": "137717b73736605c2a35c6f3e41ce27afdad78d1960da5be7cc6b95c8650933b",
+    "plugins/ca-pi/tools/test/doctor.test.ts": "b63e5323e331dd559b863073faa455ba63c9708c0ecf8f50aeee6334a86706ce",
+    "plugins/ca-pi/tools/test/farm.test.ts": "526234fa1314c0d7ef31419b6dc462f4f9f5b4119b16f2af3780abc998bfe7e2",
+    "plugins/ca-pi/tools/test/final-arguments-live.test.ts": "26723789a91ab6c3f003758308f888e7b96f3184d7bbaa9de30e4ba3c19ea91d",
+    "plugins/ca-pi/tools/test/final-arguments.test.ts": "2f840602c7cb5277580481120f16b6bc134f84b529a5dcf5e74f745fe8a7d159",
+    "plugins/ca-pi/tools/test/footer.test.ts": "78dbd5207b9b7bef0e062344fa83efb9a0c233c2e6d2cbc9357c4efd21c43468",
+    "plugins/ca-pi/tools/test/git-facts.test.ts": "0aa84dbff30a0f559e1af71bfe81a91e1fbb622817178a50ac36e94852b6b41f",
+    "plugins/ca-pi/tools/test/inference-broker.test.ts": "69742040aa5e301797b3ad38d9dd80e9d05e9dff0bf2ec4d4ec8c6da45b4874f",
+    "plugins/ca-pi/tools/test/module-structure.test.ts": "6926407df813b420fb5cbf491dfa298020e7cdcf31927465ea2ab21107b01a9c",
+    "plugins/ca-pi/tools/test/notices.test.ts": "c192dd669a18b1dbcbc5b09d3581112c21587cf102b87028b51917a0d81eccd9",
+    "plugins/ca-pi/tools/test/package.test.ts": "80f0a62ce093cd34f6eab182c585ecda5fc4a94b14c03cb595f7b296d8202806",
+    "plugins/ca-pi/tools/test/parent-delegation.test.ts": "e2af7967d722655ea7c63d2baa0bbde7c07ab6347a0b832a2da1b18e71884b8c",
+    "plugins/ca-pi/tools/test/path-boundary.test.ts": "d60edbff1fdde44da8138f6ab8caa8a357f1907235d3a8b2cccceb7cc558d294",
+    "plugins/ca-pi/tools/test/plan-mode.test.ts": "25c15a8f9d3db0314230ce503aa929900f396ea77c5d64aaa03ce4debe62ed4d",
+    "plugins/ca-pi/tools/test/policy.test.ts": "0f86fb0612a166f009101ace058b554be3dee10cc8f392158d682e0107559df1",
+    "plugins/ca-pi/tools/test/process-tree.test.ts": "4885395b9f888fc057ea8de748585845d782a4ae362872548785c7c0ae71f187",
+    "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts": "69c05c96180b86e6bdec4f723518619a8d11406beb210e329c621185594780d6",
+    "plugins/ca-pi/tools/test/runner-isolation.test.ts": "ad3c1742d2405cdda323fa3eeff5bb8353057dc60254b66dbcde0621f820f096",
+    "plugins/ca-pi/tools/test/runtime-resolver.test.ts": "1140d710f1110605fad87a73bff67e977b7354f2eec2cb9c4c20293516f58c0d",
+    "plugins/ca-pi/tools/test/security.test.ts": "ae58b1033b5794213ac4a330d76325ea8b9cee99bf5933dfcaf63cc97c62c323",
+    "plugins/ca-pi/tools/test/sidebar-compositor.test.ts": "c3f454bd3b89170ad7971c62be88f7092d401d65afd2a86da3e785b41bed8f58",
+    "plugins/ca-pi/tools/test/sidebar-data.test.ts": "6f3ffd142fce3ea2a402fcdc4fb45c08382902c88a4c4734e8b32f924965db9e",
+    "plugins/ca-pi/tools/test/sidebar-manager.test.ts": "7fd059d6121f2695392a81606ab8d3c7e94126b3d43d9ae04440608ab51f8a99",
+    "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts": "7e23342d208f3eb394f6b68ccd121541fccf666005350386793b9cc778b70717",
+    "plugins/ca-pi/tools/test/sidebar-window-contract.test.ts": "dffad0bfe389194b81ef1ac0768ec8cbc81672b45d7dfe68b347425ed8060bc1",
+    "plugins/ca-pi/tools/test/sidebar.test.ts": "ac59afaea7159b28061063f2c625142a7e2d0c5d1f04469738d3d66f7dd2d77e",
+    "plugins/ca-pi/tools/test/status.test.ts": "98be82bb6fdb0489cd5f7cf7fd3c3ad4e5ec377f52a097cb1359229d916d0ad6",
+    "plugins/ca-pi/tools/test/tool-guard.test.ts": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+    "plugins/ca-pi/tools/test/windows-supervisor.test.ts": "0481277cd3b9e0d8383e222dccd4dd504f327a521b9b8a61a1481b6858f4531a",
+    "plugins/ca-pi/tools/vitest.config.ts": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d"
+  },
+  "bundle_hashes": {
+    "plugins/ca-pi/extensions/codearbiter.js": "588a847dc7753e30e756c8310c9e89b16979b1c754bf8c286426dea8f0cf65c2",
+    "plugins/ca-pi/extensions/codearbiter-child.js": "1fd82a0bb78bd58c143765a7f5f9222df1100ed30f6a192e112ee12fadd962eb",
+    "plugins/ca-pi/helpers/windows-supervisor.js": "8516f4fc0966aef8d4d2555fdee33e83fd295974db6c6f345b5468ee79929cc1",
+    "plugins/ca-pi/helpers/approval-dialog.js": "d8a44c7cc5d1424267c8c092343a7eef8c224129191d0817f1c30652aca37e5d"
+  },
+  "check_history": [
+    {
+      "node": "24.18.0",
+      "pi": "1.5.0",
+      "result": "Prior full suite1007 PASS/1 SKIP before final hardening, then1009 PASS/1 SKIP before actual child-loop fixture; Windows lines86.39/branches80.73 on last preceding source revision"
+    },
+    {
+      "node": "24.18.0",
+      "pi": "1.5.0",
+      "result": "Actual child-loop fixture initially passed once then repeatedly failed native shutdown after3 actual durable effects, including full suite1failed/1009pass/1skip; generic runner degradation correctly preserved; an additional loaded-machine parent gate fixture timed out once at5s and is retained as earlier failure",
+      "native_assertion": "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), Windows libuv async shutdown",
+      "primary_references": [
+        "https://github.com/earendil-works/pi/issues/9507",
+        "https://github.com/nodejs/node/pull/61999"
+      ],
+      "inference": "Observed failure matches reported upstream Node shutdown assertion; local Node24.22.1 actual execution establishes only the named successful environment"
+    },
+    {
+      "source_closure": "6c910686426fe33b570a028743e88d88d86195f62ecbbff34451b875abfd9141",
+      "check": {
+        "id": "PI-WINDOWS-SUITE",
+        "command": "explicit Node24.22.1 node_modules/vitest/vitest.mjs run --coverage",
+        "cwd": "plugins/ca-pi/tools",
+        "runtime": "isolated supported Pi1.5.0 on command-scoped PATH",
+        "result": "42 files PASS;1029 tests PASS;2 SKIP",
+        "duration_seconds": 63.26,
+        "skip": [
+          "process-tree.test.ts real POSIX child cleanup unavailable on Windows",
+          "delegation-journal.test.ts actual permission-denial cell requires non-root POSIX; unavailable on Windows"
+        ],
+        "coverage": {
+          "scope": "src/**/*.ts",
+          "host": "Windows amd64",
+          "lines": 86.53,
+          "branches": 80.8,
+          "statements": 81.36,
+          "functions": 84.29,
+          "stage": 2,
+          "minimum": 70,
+          "verdict": "PARTIAL: Windows clears floor; required Ubuntu+Windows union not yet available"
+        }
+      },
+      "meaning": "Pre-review baseline retained; missing retirement/topology/cleanup cases were subsequently exposed by independent review, not erased by its earlier suite pass"
+    }
+  ],
+  "new_observations": [
+    {
+      "id": "DEF-PI-ENV-01",
+      "state": "FIXED_SOURCE_VERIFIED_WINDOWS",
+      "meaning": "Background jobs previously inherited full parent process.env; now explicit credential-blind baseline; provider credentials stay parent-only"
+    },
+    {
+      "id": "PI-WINDOWS-NODE2418-SHUTDOWN",
+      "state": "RETAINED_QUALIFICATION_FAILURE",
+      "meaning": "Native Node24.18 UV_HANDLE_CLOSING after successful effects/complete protocol; no failed child upgraded to completed; Node24.22.1 local success does not erase this observation"
+    }
+  ],
+  "source_closure_sha256": "36266cd823bab140227ff33721066c4e4b278a86a2fe73613b78b081bac18dda",
+  "independent_review_history": [
+    {
+      "source_closure": "6c910686426fe33b570a028743e88d88d86195f62ecbbff34451b875abfd9141",
+      "reviewer": "independent native-program reviewer",
+      "verdict": "BLOCK",
+      "findings": {
+        "HIGH": 1,
+        "MEDIUM": 2
+      },
+      "meaning": "Observed command release after retirement, fresh journal owner from unsafe commondir, and effect summary lost after cleanup failure"
+    },
+    {
+      "verdict": "NARROW_REPAIR_REVIEW_PENDING",
+      "scope": "Only3 affected source files, corresponding tests and owning generated parent bundle; unrelated review and proof retained",
+      "latest_composed_delta_sha256": "2728a276d61932f2beb4d6c8fbfc20cc57dab5d6fbffa01a9ca7f468c03a280f"
+    }
+  ],
+  "repair_obligations": [
+    {
+      "id": "PI-REVIEW-RETIREMENT",
+      "task_ids": [
+        "PI-D01",
+        "PI-D03",
+        "PI-D05"
+      ],
+      "state": "COVERED_LOCAL_REVIEW_PENDING",
+      "checks": [
+        "executor tests authority loss during spawn/started:cancelled/revoked/expired",
+        "actual encodeOperationResponse/decodeOperationResponse for each outcome",
+        "full real loopback channel preserves post-started cancelled/revoked/expired observations"
+      ],
+      "contract": "After managed spawn or launch-record await, retire owned cleanup before stdin release. Admission is historical admitted; reason records grant retirement. Process startup effects remain unknown, never rewritten as not-started."
+    },
+    {
+      "id": "PI-REVIEW-COMMON-OWNER",
+      "task_ids": [
+        "PI-D04"
+      ],
+      "state": "COVERED_WINDOWS_PERMISSION_CELL_UNAVAILABLE",
+      "checks": [
+        "missing/oversized/empty/directory/linked/hardlinked commondir with retained prior claim",
+        "actual Git main plus git worktree add --detach positive",
+        "POSIX permission-denial test with readable positive baseline; skipped on Windows"
+      ],
+      "contract": "Plain main .git directory and valid positively observed linked common owner supported; missing/unsafe pointer never creates a fresh owner. Separate-Git-dir/submodule pointer layouts remain unsupported/unavailable until positively qualified; prior journals retained."
+    },
+    {
+      "id": "PI-REVIEW-CLEANUP-FACTS",
+      "task_ids": [
+        "PI-D04",
+        "PI-D06"
+      ],
+      "state": "COVERED_LOCAL_REVIEW_PENDING",
+      "checks": [
+        "normal/channel-failure/environment-failure structured runner result after actual fixture file effects"
+      ],
+      "contract": "Cleanup failure changes terminal result to degraded, while completed/unknown parent observations remain separately visible."
+    }
+  ],
+  "workflow_recovery_followup": {
+    "recorded_at": "2026-11-13",
+    "subject": "Pi-owned HW14 snapshot and HW13 bounded parent handback in assembled hooks worktree",
+    "prior_repair_review": "Parent reported native reviewer PASS for all prior H1/M2/M3 repairs at closure36266cd823bab140227ff33721066c4e4b278a86a2fe73613b78b081bac18dda; this does not cover the new followup",
+    "source_hashes": {
+      "plugins/ca-pi/tools/src/contracts.ts": "1e732c9a4cbd9fa0932a8ec833e369d22fde5802a15cffc3d37e8c39ce6349ec",
+      "plugins/ca-pi/tools/src/bridge.ts": "de92057de189309c8485d85fdb74c6eb89c470ac766f4de998908a2eb2656e9c",
+      "plugins/ca-pi/tools/src/extension.ts": "bb49aca14cf09834e821f6cc4f0551c4b2db7e8e4285128f867327491c0103ae",
+      "plugins/ca-pi/tools/src/dispatch.ts": "520ceb359b959f9a55dfff38aba369a18e49b5aeb2383f204dde9d1bae4314b0",
+      "plugins/ca-pi/tools/src/runner.ts": "42832ddd435d5864a784e17461fec337f1ac4534ae0b1303fa06a2b9fbd6c61a",
+      "plugins/ca-pi/tools/test/activation.test.ts": "c4aca96b0c6e8d7905288997c219320497e01ac638729a78e9479245bd11c0db",
+      "plugins/ca-pi/tools/test/bridge.test.ts": "a1d55558ee62e93159f8855e9db0161f6a9250558ee2e28fd5ca591b5d9b6e0f",
+      "plugins/ca-pi/tools/test/dispatch.test.ts": "91ed4bc79dfe0a8027339628949032f55b171957d32a62ea2597c23cdd3c46d9",
+      "plugins/ca-pi/tools/test/runner-isolation.test.ts": "ffcf239df4708351c3ed29d6dcf6d203ff4dbd32b72cbe02de008f7e6cd72f9d",
+      "plugins/ca-pi/tools/test/workflow-recovery.test.ts": "b1e7e76eb776e9586e5622e552e0c49d59089b0369ca48755680907b6d7509ca"
+    },
+    "bundle_hashes": {
+      "plugins/ca-pi/extensions/codearbiter.js": "efecd4321c882180273d33ff759d85eba24ba05b143b29205e27f4c5aa88ec4b",
+      "plugins/ca-pi/extensions/codearbiter-child.js": "1fd82a0bb78bd58c143765a7f5f9222df1100ed30f6a192e112ee12fadd962eb",
+      "plugins/ca-pi/helpers/windows-supervisor.js": "8516f4fc0966aef8d4d2555fdee33e83fd295974db6c6f345b5468ee79929cc1",
+      "plugins/ca-pi/helpers/approval-dialog.js": "d8a44c7cc5d1424267c8c092343a7eef8c224129191d0817f1c30652aca37e5d"
+    },
+    "owned_source_closure_sha256": "c50b75fb252952724b85ba0a526cbd34bbab754d2a5bb8d66b153aaee72ea5fa",
+    "checks": [
+      {
+        "id": "PI-HW14-FULL-CHECKPOINT",
+        "command": "explicit Node24.22.1 vitest run --coverage",
+        "result": "43 files PASS;1067 tests PASS;2 SKIP",
+        "duration_seconds": 63.64,
+        "subject": "Before final fixed read-only audit selector exclusion and explanatory runner comment; affected final checks below bind current source",
+        "coverage": {
+          "scope": "src/**/*.ts",
+          "host": "Windows amd64",
+          "lines": 86.65,
+          "branches": 81.18,
+          "statements": 81.55,
+          "functions": 84.4,
+          "qualification": "PARTIAL Windows only; required hosted Ubuntu+Windows union remains unavailable"
+        }
+      },
+      {
+        "id": "PI-HW14-FINAL-AFFECTED",
+        "command": "explicit Node24.22.1 vitest run test/parent-delegation.test.ts test/runner-isolation.test.ts test/dispatch.test.ts test/workflow-recovery.test.ts test/activation.test.ts test/bridge.test.ts",
+        "cwd": "plugins/ca-pi/tools",
+        "result": "6 files PASS;239 tests PASS",
+        "duration_seconds": 34.5,
+        "runtime": "Windows amd64; Node24.22.1; isolated supported Pi1.5.0 on process-scoped PATH",
+        "owned_source_closure_sha256": "c50b75fb252952724b85ba0a526cbd34bbab754d2a5bb8d66b153aaee72ea5fa"
+      },
+      {
+        "id": "PI-HW14-TYPECHECK-BUILD",
+        "result": "owning tsc --noEmit PASS; owning build.mjs PASS; diff --check PASS",
+        "generation": "Four bundles generated only by owning build; three non-parent bundles byte-identical to independently repaired prior Pi batch"
+      }
+    ],
+    "task_coverage": [
+      {
+        "task_id": "HW-14",
+        "machine_ids": [
+          "S01",
+          "S14"
+        ],
+        "assessment": "Pi-owned source implemented and locally verified; installed-parent/TUI and cross-platform qualification remain separate",
+        "scenarios": [
+          "Closed exact envelope, fixed snapshot event, numeric/page caps, partial lower-bound cursor semantics and closed reasons",
+          "Malformed or inconsistent absent/nonzero and pending/partial/unavailable empty notice refused as unknown",
+          "Enabled plus affirmative trust required before read; current lease/trust rechecked after awaits",
+          "One-second observation deadline aborts existing credentialblind bridge cleanup; existing cleanup backstop may finish after observation deadline",
+          "Actual owning Python projection and actual fixed-script BridgeClient response decode",
+          "Separate UI and returned-prompt lifecycle/fingerprint dedup; no-UI notify never records delivery; failed delivery retries",
+          "Persona failure and non-TUI/no-UI mode do not suppress prompt recovery; untrusted/retired continuations cannot deliver",
+          "Unavailable observation retains known pending page in prompt while independent work continues",
+          "Snapshot failure leaves existing project audit bytes unchanged; ordinary bash failure still blocks and audits"
+        ]
+      },
+      {
+        "task_id": "HW-13",
+        "assessment": "Bounded generic Pi parent handback verified; ca_dispatch is not one of the six registered workflow producers",
+        "scenarios": [
+          "Every returned child reports durable:false,reason:parent-context-unavailable",
+          "Valid bounded visible summary remains in parent outcome; no producer/work/origin invented",
+          "Forged child capture fields rejected by exact child schema",
+          "Completed report retained after channel/environment cleanup failure; run stays degraded and model accepted cannot promote it",
+          "Aggregate report overflow remains oversized; bounded parent completed/unknown counters survive"
+        ],
+        "limits": [
+          "Only actual owning workflow actor with real selected producer/run/work/origin may register received material through its existing CLI",
+          "No generic registration, automatic approval, grant or replay",
+          "Material exceeding existing closed report/aggregate bounds is unavailable; unreported child thoughts are not recovered"
+        ]
+      }
+    ],
+    "red_green": [
+      {
+        "id": "PI-HW14-PRESENTATION",
+        "red": "4 actual AssertionError failures for no-UI false delivery and inconsistent absent/empty pending projections",
+        "green": "81 affected codec/activation checks PASS; final239 checks PASS"
+      },
+      {
+        "id": "PI-HW13-RETAIN-MATERIAL",
+        "red": "3 actual AssertionError failures for channel/env cleanup and degraded dispatch discarding completed visible report",
+        "green": "183 affected checks PASS; final239 checks PASS"
+      },
+      {
+        "id": "PI-HW13-AGGREGATE-EFFECTS",
+        "red": "1 actual AssertionError for aggregate-cap loss of parent-observed effect counters",
+        "green": "45 dispatch checks PASS; final239 checks PASS"
+      },
+      {
+        "id": "PI-HW14-READONLY-FAILURE",
+        "red": "1 actual AssertionError for recovery observer failure appending project audit",
+        "green": "Existing audit bytes unchanged; ordinary bash PI_BRIDGE_BLOCK still recorded; final239 checks PASS"
+      }
+    ],
+    "limits": [
+      "No visible real parent TUI consent, external service provider, Linux/macOS process or final publication candidate qualification claimed",
+      "Actual child-loop tests use deterministic local provider and fixture parent permission callback; new lifecycle tests use injected host contexts",
+      "Two full-suite skips: real POSIX process cleanup and non-root POSIX commondir permission denial unavailable on Windows",
+      "Existing Node24.18.0 UV_HANDLE_CLOSING failure history retained",
+      "Node24.22.1 full/focused runs observed fd4 garbage-collection close and DEP0137 warnings without test failure; origin unattributed; clean descriptor lifetime not claimed",
+      "Fingerprint is an in-memory presentation key only, not authority, receipt or durable acknowledgment",
+      "No shared ledger/presentation marker write; generic Python Pi-notice exclusion owned by recovery lane",
+      "No stage, commit, push, main merge, publication, version or manifest change by this lane"
+    ]
+  },
+  "review_resubmission_followup": {
+    "task_id": "HW-08",
+    "source_frozen": true,
+    "worktree": "C:/Users/brenn/.codex/worktrees/program-hooks-state-contracts/codeArbiter",
+    "source_hashes": {
+      "core/pysrc/_artifactauthoritylib.py": "095ad953cf1053fdb55790f40c231498311e254a3ed2c5353113cfce7c3fe64c",
+      "core/pysrc/artifact-authority.py": "e5dfebb17bd25ccf46bf89fdaac832ef16247959ef4ce7bbd191d47070faad77",
+      "core/surface/agents/authority-reviewer.md": "40532efb100d53c635730b8aa0436004290228bbf8dcafac9ad6162c3a96b2a4",
+      "core/surface/includes/reviewer-contract.md": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+      ".github/scripts/test_review_resubmission.py": "bb486a054bac28cc9db1b8689624edf683861b4cde4aae01e5150591d5697137"
+    },
+    "implementation": [
+      "Versioned immutable16KiB intent and successor sidecars under existing Git-common authority spool; original closed request/native observation formats unchanged",
+      "Intent precedes fresh arm and pins prior terminal integrity, current context, contract/coverage hashes and deterministic successor identity",
+      "Same operation recovers same successor after interrupted intent/arm/registry/link publication; no child is launched by resubmission",
+      "Only closed known correctable review failures, corroborated interrupted children or pristine unlaunched abandonment admitted; explicit denial, stop, ambiguous launch and unknown failure remain unavailable",
+      "Fresh actual independent child and first terminal observation still required; stale/steered/changes_requested/BLOCK results do not become receipts through metadata correction",
+      "Completion resubmission requires explicit current receipt/supporting-file selection; no silent inheritance",
+      "Old readers ignore separately versioned sidecars; rollback retains prior terminal requests, links and successor observations"
+    ],
+    "checks": [
+      {
+        "id": "HW08-FINAL",
+        "command": "C:/Python314/python.exe .github/scripts/test_review_resubmission.py -v",
+        "result": "21 tests PASS; no skips",
+        "duration_seconds": 170.915,
+        "host": "Windows amd64",
+        "scope": "19 adapter/CLI/recovery negative scenarios plus actual native-engine successor receipt capture for Claude and stable Codex collaboration profile"
+      },
+      {
+        "id": "HW08-COMPATIBILITY",
+        "command": "C:/Python314/python.exe .github/scripts/test_artifact_authority_adapter.py NativeReviewTransportTest CodexNativeProtocolHookTest ClaudeAuthorityAdapterTest AuthorityStateRaceTest -v",
+        "result": "83 tests PASS",
+        "duration_seconds": 408.563,
+        "host": "Windows amd64",
+        "scope": "Existing legacy/request-format, native protocol, handback/steering, recovery/CAS and writer-race boundaries"
+      },
+      {
+        "id": "HW08-STATIC",
+        "result": "py_compile PASS; git diff --check PASS"
+      },
+      {
+        "id": "HW08-GENERATED",
+        "result": "Parent-owned sync-core produced byte-identical authority library and CLI in ca/ca-codex/ca-pi; this lane ran no concurrent generator"
+      }
+    ],
+    "required_cases": [
+      "Malformed first review report creates fresh linked request and actual fresh child result; old bytes remain immutable",
+      "Later stop of original child cannot satisfy successor; exact lost-response replay returns same request and no launch envelope after ARMED",
+      "Before/after both immutable publishes, saved arm before registry failure and lost arm response recover one successor",
+      "Changed target/coverage captured current; changed contract/context after intent requires new correction operation",
+      "Explicit denied/stop/unknown or ambiguous launch source refuses; changes_requested/BLOCK remain terminal and cannot publish merely through resubmission",
+      "Steered successor remains rejected despite later passing report",
+      "Corrupt self-alias intent, missing linked successor, retained link without intent, oversized/symlinked/hardlinked/unreadable lineage remain unavailable"
+    ],
+    "critical_guard_red_green": [
+      {
+        "guard": "fresh deterministic successor identity",
+        "red": "Actual assertion failure when corrupt intent aliased original as successor",
+        "green": "Derive nonce/successor again from exact frozen context; final21 PASS"
+      },
+      {
+        "guard": "frozen review contract after interruption",
+        "red": "Actual assertion failure when changed contract still armed from old intent",
+        "green": "Pin contract and coverage hashes, reject stale arm; final21 PASS"
+      },
+      {
+        "guard": "missing intent remains unknown",
+        "red": "Actual assertion failure when retained link silently reconstructed missing intent",
+        "green": "Refuse reconstruction before new writes; final21 PASS"
+      }
+    ],
+    "coverage_mapping": [
+      {
+        "machine_id": "hooks:authority-request",
+        "transition_ids": [
+          "hooks:authority-request:01",
+          "hooks:authority-request:02",
+          "hooks:authority-request:03",
+          "hooks:authority-request:04",
+          "hooks:authority-request:05",
+          "hooks:authority-request:06"
+        ],
+        "evidence": "New immutable arm/recovery/interruption tests plus existing AuthorityStateRaceTest; original terminal state preserved"
+      },
+      {
+        "machine_id": "hooks:codex-review",
+        "transition_ids": [
+          "hooks:codex-review:01",
+          "hooks:codex-review:02",
+          "hooks:codex-review:04",
+          "hooks:codex-review:05",
+          "hooks:codex-review:06"
+        ],
+        "evidence": "New fresh collaboration launch/result/native receipt scenario plus existing CodexNativeProtocolHookTest; original ordinary-spawn boundary unchanged"
+      },
+      {
+        "machine_id": "hooks:claude-review",
+        "transition_ids": [
+          "hooks:claude-review:01",
+          "hooks:claude-review:02",
+          "hooks:claude-review:03",
+          "hooks:claude-review:04",
+          "hooks:claude-review:05",
+          "hooks:claude-review:06"
+        ],
+        "evidence": "New fresh child/native receipt and steered-successor scenarios plus existing ClaudeAuthorityAdapterTest handback/stop matrix"
+      },
+      {
+        "machine_id": "WF-09",
+        "transition_ids": [
+          "WF-09:02",
+          "WF-09:04"
+        ],
+        "evidence": "Preserved-boundary guidance review and nonpass/immutable-history tests; no claim that this adapter changes or fully qualifies the parallel/triage funnel"
+      }
+    ],
+    "finding_ids": [
+      "W-F02",
+      "HOOK-B01"
+    ],
+    "no_tooling_exemption": {
+      "surface": "core/pysrc/*.py and .github/scripts/*.py",
+      "owner": "Installed canonical knowledge.py read tech-stack FACT-005 / CTX-TECH-STACK active HTML record",
+      "quote": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation.",
+      "pr_requirement": "Retain this exact cited Python-surface exemption in the PR description; no numeric Python coverage claim"
+    },
+    "qualification_limits": [
+      "Native-engine tests use source-derived host event fixtures and actual native admission, not a visible real independent host launch or user-consent qualification",
+      "Installed distributed-candidate/cross-host qualification belongs to integration/native owners; no cohort/publication proof inferred",
+      "Unsafe mid-publication metadata remains unavailable; no claim of universal filesystem/power-loss recovery or Windows directory fsync durability",
+      "No ADR, lifecycle/log, marker, global ledger, version, manifest, staging, commit, push or publication writes by this lane"
+    ]
+  },
+  "diagnostic_projection_followup": {
+    "task_id": "PI-D06",
+    "state": "LOCAL_CHARACTERIZATION_VERIFIED; not installed-parent/TUI qualification",
+    "test_path": "plugins/ca-pi/tools/test/doctor.test.ts",
+    "test_sha256": "7d73d9a7336710a12dcad6965756d87d93f7630b26d8171be43a386cc5a1e1f0",
+    "actual_production_source_sha256": "bb49aca14cf09834e821f6cc4f0551c4b2db7e8e4285128f867327491c0103ae",
+    "actual_shipped_parent_sha256": "efecd4321c882180273d33ff759d85eba24ba05b143b29205e27f4c5aa88ec4b",
+    "case": "production doctor separates parent UI, retained recovery and optional legacy approval without qualification claims",
+    "coverage": "9 combinations: fixtureTUI/RPC/noUI x actualGit-common clear/pending/unsafeowner; actualregisteredca-doctor handler and exact shippeddefaultentry; no injected doctorReport callback",
+    "checks": {
+      "owning_doctor": "27PASS/0FAIL/0SKIP, rawJSON C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d06-doctor-green.json",
+      "raw_sha256": "4b53ea608c2aab98c077927785e378b841a9a410b8259031df2ab097e14ca843",
+      "typecheck": "tsc --noEmit PASS",
+      "whitespace": "git diff --check PASS"
+    },
+    "method": "Backfill characterization of existing implementation, no product source/bundle edit and no artificial RED. Fixtureconfirm throws if invoked, pendingclaim remains retained after all observations.",
+    "limits": [
+      "HostAPI/context/UI are fixture ports; no visible parentTUI or realhumanconsent.",
+      "Isolated existing supportedPi1.5 module loaded offline with credentialblind childenvironment; no externalprovider service.",
+      "Historical suite/source closures remain unchanged evidence of their actual earlier source; this test append is a separate subject."
+    ]
+  }
+}

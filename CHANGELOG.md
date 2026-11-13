@@ -16,7 +16,11 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
-- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+- Separate recorded work progress from derived dependency readiness and independently verified checks; retain stable identities, journals, user stops and later edits across supported schema upgrades.
+- Reconcile interrupted workflow and farm effects through their owning receipts; preserve primary failures when staging cleanup also fails and bound recovery reads before consuming content.
+- Deliver current mode, context, task discovery and corrected-review resubmission through shared canonical helpers and generated host surfaces.
+- Bind publication readiness to authenticated source, named test observations and retained package bytes. Keep incomplete qualification and publication authority distinct.
+- Explain the changed contracts in the workflow Atlas and preserve source-bound documentation, search and interrupted-output recovery.
 - Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 

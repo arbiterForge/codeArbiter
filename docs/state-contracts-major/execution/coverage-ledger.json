@@ -115,8 +115,16 @@
    "task_ids": [
     "NT-02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N-F02": {
    "owner": null,
@@ -124,8 +132,16 @@
    "task_ids": [
     "NT-03"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N-F03": {
    "owner": null,
@@ -142,8 +158,16 @@
    "task_ids": [
     "NT-09"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N-F05": {
    "owner": null,
@@ -169,8 +193,16 @@
    "task_ids": [
     "NT-06"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N-F08": {
    "owner": null,
@@ -187,8 +219,16 @@
    "task_ids": [
     "NT-04"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N-F10": {
    "owner": null,
@@ -196,8 +236,16 @@
    "task_ids": [
     "NT-05"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "HOOK-F01": {
    "owner": null,
@@ -1199,8 +1247,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N10": {
    "owner": "native",
@@ -1220,8 +1276,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N12": {
    "owner": "native",
@@ -1243,8 +1307,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N14": {
    "owner": "native",
@@ -1254,8 +1326,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N15": {
    "owner": "native",
@@ -1275,8 +1355,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N17": {
    "owner": "native",
@@ -1287,8 +1375,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N18": {
    "owner": "native",
@@ -1326,8 +1422,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N22": {
    "owner": "native",
@@ -1335,8 +1439,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N23": {
    "owner": "native",
@@ -1344,8 +1456,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N24": {
    "owner": "native",
@@ -1353,8 +1473,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N25": {
    "owner": "native",
@@ -1394,8 +1522,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N29": {
    "owner": "native",
@@ -1413,8 +1549,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31": {
    "owner": "native",
@@ -1422,8 +1566,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N32": {
    "owner": "native",
@@ -1449,8 +1601,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N35": {
    "owner": "native",
@@ -1459,8 +1619,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N36": {
    "owner": "native",
@@ -1499,8 +1667,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "hooks:activation": {
    "owner": "hooks-workflows",
@@ -5905,8 +6081,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N01:02": {
    "owner": "native",
@@ -5983,8 +6167,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N02:01": {
    "owner": "native",
@@ -6231,8 +6423,16 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N06:04": {
    "owner": "native",
@@ -6263,8 +6463,16 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N07:03": {
    "owner": "native",
@@ -6329,8 +6537,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N09:02": {
    "owner": "native",
@@ -6340,8 +6556,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N09:03": {
    "owner": "native",
@@ -6351,8 +6575,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N09:04": {
    "owner": "native",
@@ -6362,8 +6594,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N09:05": {
    "owner": "native",
@@ -6373,8 +6613,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N10:01": {
    "owner": "native",
@@ -6438,8 +6686,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N11:02": {
    "owner": "native",
@@ -6448,8 +6704,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N11:03": {
    "owner": "native",
@@ -6458,8 +6722,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N11:04": {
    "owner": "native",
@@ -6468,8 +6740,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N12:01": {
    "owner": "native",
@@ -6524,8 +6804,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N13:02": {
    "owner": "native",
@@ -6536,8 +6824,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N13:03": {
    "owner": "native",
@@ -6548,8 +6844,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N13:04": {
    "owner": "native",
@@ -6560,8 +6864,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N14:01": {
    "owner": "native",
@@ -6571,8 +6883,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N14:02": {
    "owner": "native",
@@ -6582,8 +6902,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N14:03": {
    "owner": "native",
@@ -6593,8 +6921,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N14:04": {
    "owner": "native",
@@ -6604,8 +6940,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N14:05": {
    "owner": "native",
@@ -6615,8 +6959,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N15:01": {
    "owner": "native",
@@ -6669,8 +7021,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N16:02": {
    "owner": "native",
@@ -6679,8 +7039,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N16:03": {
    "owner": "native",
@@ -6689,8 +7057,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N16:04": {
    "owner": "native",
@@ -6699,8 +7075,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N17:01": {
    "owner": "native",
@@ -6711,8 +7095,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N17:02": {
    "owner": "native",
@@ -6723,8 +7115,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N17:03": {
    "owner": "native",
@@ -6735,8 +7135,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N17:04": {
    "owner": "native",
@@ -6747,8 +7155,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N17:05": {
    "owner": "native",
@@ -6759,8 +7175,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N18:01": {
    "owner": "native",
@@ -6839,8 +7263,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N21:01": {
    "owner": "native",
@@ -6849,8 +7281,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N21:02": {
    "owner": "native",
@@ -6859,8 +7299,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N21:03": {
    "owner": "native",
@@ -6869,8 +7317,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N21:04": {
    "owner": "native",
@@ -6879,8 +7335,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N21:05": {
    "owner": "native",
@@ -6889,8 +7353,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N21:06": {
    "owner": "native",
@@ -6899,8 +7371,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N22:01": {
    "owner": "native",
@@ -6908,8 +7388,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N22:02": {
    "owner": "native",
@@ -6917,8 +7405,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N22:03": {
    "owner": "native",
@@ -6926,8 +7422,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N23:01": {
    "owner": "native",
@@ -6935,8 +7439,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N23:02": {
    "owner": "native",
@@ -6944,8 +7456,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N23:03": {
    "owner": "native",
@@ -6953,8 +7473,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N24:01": {
    "owner": "native",
@@ -6962,8 +7490,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N24:02": {
    "owner": "native",
@@ -6971,8 +7507,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N24:03": {
    "owner": "native",
@@ -6980,8 +7524,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N25:01": {
    "owner": "native",
@@ -6998,8 +7550,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N25:03": {
    "owner": "native",
@@ -7007,8 +7567,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N25:04": {
    "owner": "native",
@@ -7025,8 +7593,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N26:01": {
    "owner": "native",
@@ -7101,8 +7677,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N28:02": {
    "owner": "native",
@@ -7111,8 +7695,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N28:03": {
    "owner": "native",
@@ -7121,8 +7713,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N28:04": {
    "owner": "native",
@@ -7131,8 +7731,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N29:01": {
    "owner": "native",
@@ -7210,8 +7818,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N30:02": {
    "owner": "native",
@@ -7219,8 +7835,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N30:03": {
    "owner": "native",
@@ -7228,8 +7852,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N30:04": {
    "owner": "native",
@@ -7237,8 +7869,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31:01": {
    "owner": "native",
@@ -7246,8 +7886,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31:02": {
    "owner": "native",
@@ -7255,8 +7903,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31:03": {
    "owner": "native",
@@ -7264,8 +7920,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31:04": {
    "owner": "native",
@@ -7273,8 +7937,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31:05": {
    "owner": "native",
@@ -7282,8 +7954,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N31:06": {
    "owner": "native",
@@ -7291,8 +7971,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N32:01": {
    "owner": "native",
@@ -7444,8 +8132,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N34:02": {
    "owner": "native",
@@ -7453,8 +8149,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N34:03": {
    "owner": "native",
@@ -7462,8 +8166,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N34:04": {
    "owner": "native",
@@ -7471,8 +8183,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N34:05": {
    "owner": "native",
@@ -7480,8 +8200,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N35:01": {
    "owner": "native",
@@ -7490,8 +8218,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N35:02": {
    "owner": "native",
@@ -7500,8 +8236,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N35:03": {
    "owner": "native",
@@ -7510,8 +8254,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N36:01": {
    "owner": "native",
@@ -7551,8 +8303,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N37:02": {
    "owner": "native",
@@ -7562,8 +8322,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N37:03": {
    "owner": "native",
@@ -7573,8 +8341,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N37:04": {
    "owner": "native",
@@ -7584,8 +8360,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+     "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e"
+    }
+   ],
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded."
   },
   "N38:01": {
    "owner": "native",
@@ -7643,8 +8427,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N39:02": {
    "owner": "native",
@@ -7652,8 +8444,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "N39:03": {
    "owner": "native",
@@ -7661,8 +8461,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+     "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
+     "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2"
+    }
+   ],
+   "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved."
   },
   "hooks:activation:01": {
    "owner": "hooks-workflows",

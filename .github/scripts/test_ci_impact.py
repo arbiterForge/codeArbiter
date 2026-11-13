@@ -812,6 +812,20 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_pi_failure_diagnostics_survive_the_failed_owning_step(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))['ca-pi-tools']
+        for name in ('Test real package RPC activation and aliases',
+                     'Test cross-platform paths, encoding, cancellation, process trees, prune, and generation'):
+            step = job.split('- name: ' + name, 1)[1].split('- name:', 1)[0]
+            self.assertIn('CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics', step)
+            self.assertNotIn('continue-on-error:', step)
+        upload = job.split('- name: Retain sanitized RPC failure phases', 1)[1]
+        self.assertIn('if: always()', upload)
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-shutdown-*.json', upload)
+        self.assertIn('if-no-files-found: ignore', upload)
+        self.assertNotIn('continue-on-error:', upload)
+
     def test_required_tag_immutability_job_requires_recorded_publications(self):
         # A missing receipt must block the required merge gate, not first surface
         # after merge when the next automatic release reaches strict preflight.
@@ -1875,6 +1889,32 @@ class WorkflowContractTest(unittest.TestCase):
                     f"a {event} touching only docs.yml never runs docs.yml",
                 )
 
+    def test_docs_pull_request_selection_covers_every_push_input(self):
+        # R-05 / C-F05: the voice gate's two rule implementations selected
+        # push builds only, so a PR changing just the rule skipped the gate
+        # that enforces it.  Validation inputs are one set for both events;
+        # deliberate event differences live in event/branch admission and the
+        # deploy condition, never in which inputs validate.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        push = set(event_trigger_paths(docs, "push"))
+        pull_request = set(event_trigger_paths(docs, "pull_request"))
+        for owned in (".github/scripts/check_site_voice.py", "core/pysrc/_sloplib.py"):
+            with self.subTest(path=owned):
+                self.assertIn(owned, pull_request, f"a PR touching only {owned} skips its gate")
+        self.assertEqual(push, pull_request)
+
+    def test_docs_validation_triggers_never_grant_deploy(self):
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(docs)
+        self.assertIn(
+            "if: contains(fromJSON('[\"push\",\"workflow_run\",\"workflow_dispatch\"]'), "
+            "github.event_name) && github.ref == 'refs/heads/main'", jobs["deploy"])
+        self.assertRegex(docs, r"(?m)^permissions:\n  contents: read$")
+        for name, body in jobs.items():
+            if name != "deploy":
+                self.assertNotIn("pages: write", body, name)
+                self.assertNotIn("id-token: write", body, name)
+
     def test_docs_release_applicability_inputs_trigger_full_history_builds(self):
         docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
         required_inputs = {
@@ -2368,6 +2408,17 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_active_knowledge_and_selector_reach_policy_conformance(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        scopes = {"push": push_trigger_paths(ci),
+                  "hooks": paths_filter(ci, "hooks"),
+                  "impact": paths_filter(ci, "impact")}
+        for name, paths in scopes.items():
+            for subject in (".codearbiter/context/**", ".codearbiter/CONTEXT.md"):
+                with self.subTest(scope=name, subject=subject):
+                    self.assertIn(subject, paths,
+                                  "an active HTML fact/policy or format-selector edit must run its conformance owner")
+
     def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
         # Issue #507, same defect class as the test above and as #384/#403/#404.
         # GateCommandTest lives in THIS file, which runs only in the path-scoped
@@ -2453,10 +2504,30 @@ class WorkflowContractTest(unittest.TestCase):
             "the range scan is not scoped to the event that has a base to diff against",
         )
 
+    def test_recovery_checks_have_required_native_cells_and_independent_exit_statuses(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        recovery = jobs["workflow-recovery"]
+        self.assertIn("os: [ubuntu-latest, windows-latest, macos-latest]", recovery)
+        self.assertIn("fail-fast: false", recovery)
+        self.assertIn("timeout-minutes: 15", recovery)
+        self.assertNotIn("continue-on-error", recovery)
+        self.assertNotIn("run: |", recovery)
+        for script in ("test_workflow_recovery.py", "test_workflow_recovery_cli.py",
+                       "test_workflow_recovery_hosts.py", "test_workflow_recovery_generator.py",
+                       "test_review_resubmission.py"):
+            self.assertEqual(recovery.count("run: python .github/scripts/" + script + "\n"), 1)
+        self.assertIn("      - workflow-recovery\n", jobs["ci-passed"])
+        self.assertIn("${{ needs['workflow-recovery'].result }}", jobs["ci-passed"])
+
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("  documentation-contract:\n", ci)
         self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
+        document_job = workflow_jobs(ci)["documentation-contract"]
+        native_setup = "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        self.assertIn(native_setup, document_job)
+        self.assertIn('go-version: "1.27.1"', document_job)
+        self.assertLess(document_job.index(native_setup), document_job.index("run: python3 .github/scripts/check_docs_contract.py"))
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
@@ -2552,6 +2623,14 @@ class WorkflowContractTest(unittest.TestCase):
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
             for condition in re.findall(r"(?m)^\s+if: (?P<test>[^\n]+)$", block):
+                # Publication-authority evidence cannot run for PR/queue
+                # events. The named-outcomes check below independently keeps
+                # the original tests and their retained observation unconditional.
+                if (job_id == 'artifact-native-build' and condition ==
+                        "github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.expected_platform == 'windows/amd64' && hashFiles('.github/integration-candidate.json') != ''"):
+                    report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
+                    self.assertIn('if: ' + condition, report_step)
+                    continue
                 if "github.event_name" not in condition:
                     continue
                 if "merge_group" not in condition:
@@ -3609,6 +3688,21 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 
 
 class ArtifactEngineCIContractTest(unittest.TestCase):
+    def test_retained_recovery_receives_independent_production_context(self):
+        ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        block = workflow_jobs(ci)["artifact-package-cold"]
+        recovery = block.split("- name: Qualify recovery against the retained exact package cohort", 1)[1]
+        recovery = recovery.split("\n      - ", 1)[0]
+        for argument in (
+            '--trusted-source-commit "${{ github.sha }}"',
+            '--trusted-workflow ".github/workflows/ci.yml"',
+            '--trusted-workflow-run "${{ github.run_id }}"',
+            '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+            '--promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"',
+        ):
+            with self.subTest(argument=argument):
+                self.assertIn(argument, recovery)
+
     """The structured-artifact engine is a required six-platform package gate."""
 
     def test_candidate_suites_have_one_qualified_execution(self):
@@ -3796,7 +3890,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "subprocess.check_output(['go', 'env', 'GOVERSION']",
             'python tools/go_test_parallel.py --module core/artifacts --build-flag=-race',
             'python .github/scripts/test_artifact_native.py',
-            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
+            'python tools/build-artifacts.py\n          --output "${{ runner.temp }}/artifact-candidate"\n          --test-observation "${{ runner.temp }}/native-tests.json"',
             'python .github/scripts/run_concurrent_suites.py',
             '.github/scripts/test_artifact_approval_adapter.py',
             '.github/scripts/test_artifact_prerequisite_adapter.py',
@@ -3875,11 +3969,12 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # One job per platform; each host runs as its own isolated step with its
         # own receipt artifact, and a failing host never hides the others.
         self.assertNotIn("matrix.host", cold)
+        cold_hosts = cold.split("Create one isolated receipt directory per host", 1)[1]
         for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
                         '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
                         '--cold-platform "${{ matrix.platform }}"',
                         'needs.artifact-package-assembly.outputs.promotion-receipt-sha256'):
-            self.assertEqual(cold.count(binding), 3, binding)
+            self.assertEqual(cold_hosts.count(binding), 3, binding)
         for host in ("claude", "codex", "pi"):
             self.assertEqual(cold.count(f'--cold-host "{host}"'), 1)
             self.assertEqual(cold.count(f"id: cold_{host}"), 1)
@@ -3966,6 +4061,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/curated/**",
             "tools/build-artifacts.py",
             "tools/test-artifact-mixed-schema.py",
+            "tools/test-artifact-work-old-client.py",
             "tools/build-host-packages.py",
             "tools/install-artifact-payload.py",
             "tools/generate-artifact-types.py",
@@ -4011,6 +4107,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "tools/create-artifact-examples.py",
             ".github/scripts/test_artifact_conformance.py",
             "tools/test-artifact-mixed-schema.py",
+            "tools/test-artifact-work-old-client.py",
             ".github/requirements/artifact-conformance-py314.lock",
         ):
             result = module.evaluate(real_map, [path], hosts())
@@ -4336,6 +4433,45 @@ class ContextImpactClosureTest(unittest.TestCase):
 
 
 class NativeQualificationTimeBudgetTest(unittest.TestCase):
+    def test_publication_reports_are_trusted_main_only_and_read_only(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        native = jobs['artifact-native-build']
+        emit = native.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
+        self.assertIn("github.event_name == 'push'", emit)
+        self.assertIn("github.ref == 'refs/heads/main'", emit)
+        self.assertIn("matrix.expected_platform == 'windows/amd64'", emit)
+        self.assertIn('GH_TOKEN: ${{ github.token }}', emit)
+        self.assertIn('major_qualification_report.py emit', emit)
+        self.assertNotIn('continue-on-error:', native)
+        producer = jobs['major-readiness-producer']
+        self.assertIn('name: major readiness producer', producer)
+        self.assertIn("github.event_name == 'push'", producer)
+        self.assertIn("github.ref == 'refs/heads/main'", producer)
+        self.assertIn('needs: [changes, ci-passed]', producer)
+        self.assertIn('actions: read', producer)
+        self.assertIn('contents: read', producer)
+        self.assertNotIn(': write', producer)
+        self.assertIn('major_readiness.py produce', producer)
+        self.assertIn('name: Upload major readiness record', producer)
+        self.assertIn("if: hashFiles('.github/integration-candidate.json') != ''", producer)
+        self.assertIn("if: steps.major-readiness.outcome == 'success'", producer)
+        self.assertIn('major-readiness-${{ github.sha }}', producer)
+        self.assertNotIn('continue-on-error:', producer)
+
+    def test_native_named_outcomes_come_from_the_original_build_run(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-native-build"]
+        self.assertEqual(job.count("python tools/build-artifacts.py"), 1)
+        self.assertIn('--test-observation "${{ runner.temp }}/native-tests.json"', job)
+        self.assertIn('major_qualification_report.py admit-go', job)
+        self.assertLess(job.index('ci20_native_binding.py stamp'),
+                        job.index('major_qualification_report.py admit-go'))
+        self.assertLess(job.index('major_qualification_report.py admit-go'),
+                        job.index('name: Share the real tested candidate'))
+        upload = job.split('name: Share the real tested candidate', 1)[1]
+        self.assertIn('${{ runner.temp }}/native-tests.json', upload)
+        self.assertIn('${{ runner.temp }}/native-observation.json', upload)
+        self.assertNotIn('continue-on-error:', job)
+
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         qualifier = jobs["artifact-engine"]

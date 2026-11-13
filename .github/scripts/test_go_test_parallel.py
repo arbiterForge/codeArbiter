@@ -66,6 +66,36 @@ class RealModule(unittest.TestCase):
         self.assertIn("5 top-level tests in 2 packages", result.stdout)
         self.assertIn("4 passed, 1 skipped, all complete", result.stdout)
 
+    def test_optional_observation_retains_actual_named_results_and_refuses_overwrite(self):
+        root = self.module(self.PASSING)
+        observation = root / "observed.json"
+        result = self.run_runner(root, "--observation", str(observation))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        value = json.loads(observation.read_text(encoding="utf-8"))
+        self.assertEqual(value["format"], "codearbiter.go-test-observation/1")
+        self.assertTrue(value["complete"])
+        self.assertEqual(len(value["selected"]), 5)
+        self.assertEqual({(r["package"], r["test"]) for r in value["selected"]},
+                         {(r["package"], r["test"]) for r in value["observed"]})
+        self.assertEqual(sum(r["result"] == "pass" for r in value["observed"]), 4)
+        self.assertEqual(sum(r["result"] == "skip" for r in value["observed"]), 1)
+        original = observation.read_bytes()
+        refused = self.run_runner(root, "--observation", str(observation))
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertEqual(observation.read_bytes(), original)
+
+    def test_optional_observation_never_turns_failed_or_missing_tests_into_passes(self):
+        files = dict(self.PASSING)
+        files["b/b_test.go"] = 'package b\nimport "testing"\nfunc TestB(t *testing.T) { t.Fatal("broken") }\n'
+        root = self.module(files)
+        observation = root / "failed.json"
+        result = self.run_runner(root, "--observation", str(observation))
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        value = json.loads(observation.read_text(encoding="utf-8"))
+        self.assertFalse(value["complete"])
+        self.assertIn({"package": "example.test/parallel/b", "test": "TestB", "result": "fail"},
+                      value["observed"])
+
     def test_a_failing_test_fails_the_run(self):
         files = dict(self.PASSING)
         files["b/b_test.go"] = 'package b\nimport "testing"\nfunc TestB(t *testing.T) { t.Fatal("broken") }\n'
@@ -178,6 +208,22 @@ class RealModule(unittest.TestCase):
             self.assertEqual(runner.main(), 1)
         self.assertIn("listed tests without a result", output.getvalue())
         self.assertIn("TestB", output.getvalue())
+
+    def test_repeated_results_across_chunks_cannot_be_collapsed_into_one_pass(self):
+        runner = load_runner()
+        root = self.module(self.PASSING)
+        original = runner.chunk
+
+        def repeated(package, names, hints, workers):
+            chunks = original(package, names, hints, workers)
+            return [*chunks, chunks[0]]
+
+        argv = ["go_test_parallel.py", "--module", str(root), "--jobs", "2", "--hints", str(root / "absent.json")]
+        with unittest.mock.patch.object(runner, "chunk", repeated), unittest.mock.patch.object(sys, "argv", argv), \
+                unittest.mock.patch.dict(os.environ, {"GOFLAGS": "", "GOWORK": "off"}), \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.main(), 1)
+        self.assertIn("repeated top-level result", output.getvalue())
 
     def test_a_compile_failure_fails_the_run(self):
         files = dict(self.PASSING)

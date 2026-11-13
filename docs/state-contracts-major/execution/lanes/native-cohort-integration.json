@@ -1,0 +1,60 @@
+{
+  "schema": "codearbiter-native-cold-integration/1",
+  "owner": "/root/native_cohort_integration",
+  "base_commit": "38c8b8e75d47d5502a487fb7af6e303ae651a5ad",
+  "source_sha256": {
+    ".github/scripts/test_artifact_installed_host.py": "87667106ad6c17fad5d2023daa3acf3b90e819cf73032af6cd26b50f792015e5"
+  },
+  "product_changes": false,
+  "cause": "task-reconcile raises progress semantic epoch3.2 to3.4; normative identity includes schema_version, so old exact workflow approval is properly stale. Ordinary task-start alone does not establish strict evidence authority.",
+  "repair": "Retained cold lifecycle proves old approval refusal, obtains fresh approval and prerequisite through the existing installed workflow prompt owner, then binds commit/finalization and report to the resumed exact normative digest. No authority/schema/timeout relaxation.",
+  "checks": [
+    {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        ".github/scripts/test_artifact_package.py",
+        "PackageTests.test_cold_execution_receipt_binds_each_host_to_the_native_promoted_bytes"
+      ],
+      "installation": "C:/Users/brenn/nt-clients/state-contracts-native-20261113-smarts-qualified",
+      "native_sha256": "575d399ad5d36453140a78dbc3afa81bbd551e38ccce18ffd8130eef2b5adafb",
+      "before": "ERROR: cold historical reconcile-review AUTHORITY_UNVERIFIED",
+      "before_seconds": 21.692,
+      "after": "PASS",
+      "after_seconds": 60.893,
+      "observed_hosts": [
+        "claude",
+        "codex",
+        "pi"
+      ],
+      "scope": "Actual extracted archivedHEAD packages with qualified new native; not final assembled cohort."
+    },
+    {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        ".github/scripts/test_artifact_package.py",
+        "PackageTests.test_cold_execution_receipt_binds_each_host_to_the_native_promoted_bytes",
+        "PackageTests.test_installed_bridge_offline_guard_has_negative_controls",
+        "PackageTests.test_manifest_decoder_offline_guard_has_negative_controls",
+        "PackageTests.test_installed_host_runtime_guard_and_failure_redaction"
+      ],
+      "installation": "C:/Users/brenn/nt-clients/basepayload",
+      "native_sha256": "6b6d9d6f1866b731c7a09b9b53fe03fa0029d8e8617a924622c29ad53565a9d2",
+      "result": "PASS",
+      "tests_run": 4,
+      "seconds": 62.661,
+      "observed_hosts": [
+        "claude",
+        "codex",
+        "pi"
+      ],
+      "scope": "Qualified existing3.2 native compatibility; source/package archive bound to existingHEAD."
+    }
+  ],
+  "limits": [
+    "Synthetic policy/reviewer observations remain explicitly labeled in the existing cold fixture; this is not live provider/visible parent consent qualification.",
+    "Final committed assembled source and all six native platform/cohort cells must still execute hosted.",
+    "Existing packaging-owner changes in this file were preserved unchanged; only reconciliation/return digest logic is this author delta."
+  ]
+}

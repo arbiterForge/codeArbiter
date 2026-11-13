@@ -22,9 +22,12 @@ import tempfile
 import unicodedata
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from owned_output import assert_complete
 from host_descriptors import HostDescriptor, host_descriptor, load_host_descriptors  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / 'core/pysrc'))
+from _artifactmanifestlib import CONTRACT as MANIFEST_CONTRACT, validate_release_manifest
 
 # Issue #530 AC-3: "advance" must mean ONE thing across all four payload gates.
 # This guard is the one that already had the rule right, so the definition moved
@@ -33,7 +36,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / ".github" / "scripts"))
 from _releaselib import SEMVER, semver_greater, semver_key  # noqa: E402,F401
 
-ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0"
+ARTIFACT_RELEASE_FORMAT = MANIFEST_CONTRACT["format"]
 ARTIFACT_QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 ARTIFACT_PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
 ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.3.0"
@@ -43,8 +46,8 @@ NPM_PACKER_VERSION = "11.19.1"
 NPM_PACKER_INTEGRITY = (
     "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
 )
-ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0"
-ARTIFACT_SCHEMA_VERSION = "0.3.2"
+ARTIFACT_PROTOCOL = MANIFEST_CONTRACT["protocol"]
+ARTIFACT_SCHEMA_VERSION = MANIFEST_CONTRACT["schema_version"]
 ARTIFACT_VERSION = "0.1.0"
 ARTIFACT_NATIVE_TESTS = frozenset({
     "artifact-bridge", "artifact-conformance", "artifact-native", "artifact-package",
@@ -67,9 +70,23 @@ _WINDOWS_RESERVED_MEMBER = re.compile(
 
 def _subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> RuntimeError:
     stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
+    # Decode only the trusted verifier's closed diagnostic schema. Arbitrary
+    # child stderr stays hash-only; diagnostic fields confer no receipt authority.
+    detail = ""
+    verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+    try:
+        spec = importlib.util.spec_from_file_location("cold_failure_diagnostics", verifier)
+        if spec is not None and spec.loader is not None:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            record = module.decode_failure(stderr)
+            if record is not None:
+                detail = "; " + "; ".join(f"{key}={record[key]}" for key in ("phase", "step", "error", "code"))
+    except (OSError, ImportError, ValueError, AttributeError):
+        pass
     return RuntimeError(
         f"{label} failed with exit {completed.returncode}; "
-        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}{detail}"
     )
 
 
@@ -577,6 +594,7 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
         release["context_qualification"] = {
             name: context_qualifications[name] for name in sorted(context_qualifications)
         }
+    validate_release_manifest(release)
     release_bytes = (json.dumps(release, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
     hosts = sorted(load_host_descriptors(str(repo)), key=lambda host: host.name)
@@ -637,6 +655,8 @@ def _git_package_output(*args: str, repo: Path, binary: bool = False):
 
 
 def _source_identity(source_repo: Path, source_commit: str) -> str:
+    assert_complete(source_repo, "core")
+    assert_complete(source_repo, "surface")
     source_repo = source_repo.absolute()
     if (source_repo.is_symlink() or not source_repo.is_dir()
             or os.path.normcase(str(source_repo.resolve(strict=True))) !=

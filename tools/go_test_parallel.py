@@ -143,10 +143,21 @@ def run() -> int:
     parser.add_argument("--timeout", default="20m")
     parser.add_argument("--build-flag", action="append", default=[], help="extra `go test -c` flag, e.g. -race")
     parser.add_argument("--hints", type=Path, default=HINTS)
+    parser.add_argument("--observation", type=Path,
+                        help="create-only named outcomes from this execution; not qualification by itself")
     args = parser.parse_args()
     if not 1 <= args.jobs <= 64:
         raise SystemExit("--jobs must be between 1 and 64")
     module = args.module.resolve()
+    module_before = None
+    if args.observation is not None:
+        if args.observation.exists() or args.observation.is_symlink() or not args.observation.parent.is_dir():
+            raise ValueError("observation must be a new file in an existing directory")
+        # Use the existing bounded source identity owner; no extra work in the
+        # ordinary runner path, and no second test execution for this record.
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / ".github/scripts"))
+        from _contextverificationlib import hash_go_module
+        module_before = hash_go_module(module)
     chunk_timeout = duration_seconds(args.timeout) + CHUNK_MARGIN_SECONDS
     env = dict(os.environ)
     hints = load_hints(args.hints)
@@ -185,7 +196,12 @@ def run() -> int:
                 bad = [n for n in names if outcomes.get(n) not in ("pass", "skip")]
                 stray = sorted(set(outcomes) - set(names))
                 for name, outcome in outcomes.items():
-                    seen[(package, name)] = outcome
+                    if (package, name) in seen:
+                        seen[(package, name)] = "repeated"
+                        failed = True
+                        print(f"go-test-parallel: repeated top-level result: {package}.{name}", flush=True)
+                    else:
+                        seen[(package, name)] = outcome
                 status = "ok" if code == 0 and not bad and not stray else "FAIL"
                 print(f"{status:4} {package} [{len(names)} tests] {seconds:.1f}s", flush=True)
                 if status == "FAIL":
@@ -199,6 +215,22 @@ def run() -> int:
         if missing:
             failed = True
             print(f"go-test-parallel: listed tests without a result: {missing}", flush=True)
+        if args.observation is not None:
+            module_after = hash_go_module(module)
+            failed = failed or module_before != module_after
+            record = {
+                "format": "codearbiter.go-test-observation/1",
+                "module": str(module), "module_sha256_before": module_before,
+                "module_sha256_after": module_after,
+                "argv": [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]],
+                "complete": not failed,
+                "selected": [{"package": package, "test": name} for package, name in sorted(expected)],
+                "observed": [{"package": package, "test": name, "result": result}
+                             for (package, name), result in sorted(seen.items())],
+            }
+            with args.observation.open("x", encoding="utf-8") as stream:
+                json.dump(record, stream, indent=2)
+                stream.write("\n")
         skipped = sum(1 for outcome in seen.values() if outcome == "skip")
         print(f"go-test-parallel: {sum(1 for o in seen.values() if o == 'pass')} passed, {skipped} skipped, "
               f"{'FAILED' if failed else 'all complete'}", flush=True)

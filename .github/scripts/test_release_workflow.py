@@ -79,12 +79,33 @@ class TriggerTest(unittest.TestCase):
         preflight = jobs()["preflight"]
         # Never skip because main moved on: a later merge may start no CI run.
         self.assertNotIn('SOURCE=""', preflight)
-        self.assertIn('SOURCE="$RUN_SHA"; CI_RUN_ID="$RUN_ID"', preflight)
+        self.assertIn('release_source.py select --event workflow_run', preflight)
+        self.assertIn('--run-sha "$RUN_SHA" --run-id "$RUN_ID"', preflight)
         self.assertIn('git merge-base --is-ancestor "$SOURCE" HEAD', preflight)
         self.assertIn('git checkout --quiet --detach "$SOURCE"', preflight)
 
     def test_dispatch_uses_the_newest_main_commit_with_successful_ci(self):
         self.assertIn("branch=main&event=push&status=success&per_page=1", jobs()["preflight"])
+
+    def test_selection_is_reported_and_bindable_to_an_approved_candidate(self):
+        # R-02 / C-F02: the run names its exact source and build, and an
+        # operator can require equality with the approved final candidate.
+        preflight = jobs()["preflight"]
+        self.assertIn("release_source.py report", preflight)
+        self.assertIn('--summary "$GITHUB_STEP_SUMMARY"', preflight)
+        self.assertIn('--expected-source "$EXPECTED_SOURCE" --expected-run "$EXPECTED_RUN"', preflight)
+        self.assertLess(preflight.index("release_source.py report"),
+                        preflight.index('git checkout --quiet --detach "$SOURCE"'))
+        text = release_text()
+        self.assertIn("expected-source:", text)
+        self.assertIn("expected-ci-run:", text)
+        self.assertNotIn("main's current head", text)
+        self.assertNotIn("publishes main's CURRENT head", text)
+
+    def test_hosted_targets_refuse_expired_ci_artifacts(self):
+        preflight = jobs()["preflight"]
+        self.assertIn('[ "$ARTIFACTS" != retained ]', preflight)
+        self.assertIn('[ "$TARGET" != ca-sandbox ]', preflight)
 
     def test_each_release_job_rechecks_before_publishing(self):
         found = jobs()
@@ -94,10 +115,119 @@ class TriggerTest(unittest.TestCase):
             self.assertIn("release_target.py eligible", block, job)
             self.assertRegex(block, r"uses: \./\.github/actions/publish-target\n\s+if: steps\.recheck\.outputs\.go == 'true'", job)
 
+    def test_every_publisher_receives_the_selected_source_and_ci_run(self):
+        for job, block in ((job, jobs()[job]) for job in RELEASE_JOBS):
+            with self.subTest(job=job):
+                publish = block.split("uses: ./.github/actions/publish-target", 1)[1]
+                publish = publish.split("\n      - ", 1)[0]
+                self.assertIn("source-commit: ${{ needs.preflight.outputs.source }}", publish)
+                self.assertIn("ci-run-id: ${{ needs.preflight.outputs.ci-run-id }}", publish)
+
     def test_dispatch_requires_a_successful_ci_run_for_the_commit(self):
         preflight = jobs()["preflight"]
         self.assertIn("status=success", preflight)
-        self.assertIn("no successful push CI run", preflight)
+        self.assertIn("release_source.py select --event workflow_dispatch", preflight)
+
+
+def _source_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "release_source", Path(__file__).with_name("release_source.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+OLD, NEW, HEAD = "1" * 40, "2" * 40, "3" * 40
+
+
+def ci_artifacts(sha, *, expired=False):
+    names = ("artifact-host-payloads-{}", "artifact-release-packages-{}")
+    return [{"total_count": len(names), "artifacts": [
+        {"name": name.format(sha), "expired": expired} for name in names]}]
+
+
+class SourceSelectionTest(unittest.TestCase):
+    """release_source.py: exact source/build selection and reporting (R-02)."""
+
+    def setUp(self):
+        self.rs = _source_module()
+
+    def test_newer_failed_head_selects_the_older_successful_source_and_says_so(self):
+        # The successful-run query excludes the failed head; the report must
+        # state that the selection is not main's head.
+        runs = {"workflow_runs": [{"head_sha": OLD, "id": 41, "conclusion": "success"}]}
+        source, run, rule = self.rs.select("workflow_dispatch", runs=runs)
+        self.assertEqual((source, run), (OLD, "41"))
+        result = self.rs.report(source=source, ci_run_id=run, head=HEAD, ancestor=True,
+                                artifacts=ci_artifacts(OLD), rule=rule)
+        self.assertEqual(result["source-is-head"], "false")
+        self.assertIn("not necessarily main's head", result["rule"])
+        text = self.rs.summary(result, "o/r")
+        self.assertIn(f"`{OLD}`", text)
+        self.assertIn("actions/runs/41", text)
+
+    def test_route_publication_is_observed_after_every_target_settles(self):
+        # R-04 / C-F04: the compatibility clock gets actual observation
+        # evidence, wired after all target jobs regardless of their outcome,
+        # and the observer never mutates or gates publication.
+        job = jobs()["route-publication-observation"]
+        self.assertIn("needs: [preflight, release-ca, release-codex, release-pi, release-sandbox]", job)
+        self.assertIn("always() && needs.preflight.result == 'success'", job)
+        self.assertIn("check_command_route_release_state.py record", job)
+        self.assertIn("--releases-exit \"$LIST_EXIT\"", job)
+        self.assertIn("upload-artifact", job)
+        self.assertNotIn("--method", job)
+        self.assertNotIn("set -e", job.replace("set -uo pipefail", ""))
+        for name in RELEASE_JOBS:
+            self.assertNotIn("route-publication-observation", jobs()[name])
+
+    def test_route_observer_uses_only_read_permission_and_declares_public_visibility(self):
+        job = jobs()["route-publication-observation"]
+        self.assertIn("contents: read", job)
+        self.assertNotIn("contents: write", job)
+        self.assertIn("--releases-visibility public", job)
+
+    def test_no_successful_ci_is_refused(self):
+        with self.assertRaisesRegex(self.rs.SelectionError, "no successful push CI run"):
+            self.rs.select("workflow_dispatch", runs={"workflow_runs": []})
+        with self.assertRaises(self.rs.SelectionError):
+            self.rs.select("workflow_dispatch", runs={"message": "Bad credentials"})
+
+    def test_source_no_longer_on_main_is_refused(self):
+        with self.assertRaisesRegex(self.rs.SelectionError, "not on main"):
+            self.rs.report(source=OLD, ci_run_id="41", head=HEAD, ancestor=False,
+                           artifacts=ci_artifacts(OLD))
+
+    def test_expired_or_missing_artifacts_are_reported_not_hidden(self):
+        expired = self.rs.report(source=OLD, ci_run_id="41", head=OLD, ancestor=True,
+                                 artifacts=ci_artifacts(OLD, expired=True))
+        self.assertEqual(expired["artifacts"], "expired")
+        self.assertIn("fresh qualification", self.rs.summary(expired, "o/r"))
+        missing = self.rs.report(source=OLD, ci_run_id="41", head=OLD, ancestor=True,
+                                 artifacts=ci_artifacts(NEW))
+        self.assertEqual(missing["artifacts"], "missing")
+        unknown = [{"artifacts": [{"name": f"artifact-host-payloads-{OLD}"},
+                                  {"name": f"artifact-release-packages-{OLD}"}]}]
+        with self.assertRaisesRegex(self.rs.SelectionError, "expiry"):
+            self.rs.artifact_state(unknown, OLD)
+
+    def test_selection_that_differs_from_the_approved_candidate_is_refused(self):
+        with self.assertRaisesRegex(self.rs.SelectionError, "approved source"):
+            self.rs.report(source=NEW, ci_run_id="42", head=NEW, ancestor=True,
+                           artifacts=ci_artifacts(NEW), expected_source=OLD)
+        with self.assertRaisesRegex(self.rs.SelectionError, "approved build run"):
+            self.rs.report(source=OLD, ci_run_id="43", head=NEW, ancestor=True,
+                           artifacts=ci_artifacts(OLD), expected_source=OLD, expected_run="41")
+        exact = self.rs.report(source=OLD, ci_run_id="41", head=NEW, ancestor=True,
+                               artifacts=ci_artifacts(OLD), expected_source=OLD,
+                               expected_run="41")
+        self.assertEqual(exact["source"], OLD)
+
+    def test_workflow_run_event_binds_its_own_run(self):
+        self.assertEqual(self.rs.select("workflow_run", run_sha=NEW, run_id="9")[:2], (NEW, "9"))
+        with self.assertRaises(self.rs.SelectionError):
+            self.rs.select("workflow_run", run_sha="abc", run_id="9")
 
 
 class IndependenceTest(unittest.TestCase):
@@ -275,9 +405,29 @@ class AdvisoryCheckTest(unittest.TestCase):
         self.assertIn("validate_publication_attestation", readback)
         self.assertNotIn("::warning::npm provenance", readback)
 
-    def test_pre_tag_checks_are_advisory(self):
-        self.assertIn("run-pre-tag", jobs()["preflight"])
-        self.assertIn("(not blocking)", jobs()["preflight"])
+    def test_pre_tag_checks_are_required_through_the_shared_owner(self):
+        # R-03 / D-GOV-PRETAG (B, 2026-11-12): declared pre-tag checks are a
+        # REQUIRED gate. Intended contract change from the old advisory warn:
+        # release planning now calls the same owner as required CI and a
+        # failure keeps that target (only) from tagging.
+        preflight = jobs()["preflight"]
+        self.assertIn("check_auto_release_candidate.py --pre-tag-target \"$TARGET\"", preflight)
+        self.assertNotIn("_releaselib.py run-pre-tag", preflight)
+        self.assertNotIn("pre-tag advisory checks did not pass (not blocking)", preflight)
+        gate = preflight[preflight.index("--pre-tag-target"):]
+        self.assertIn('ELIGIBLE=false; FAILED="$FAILED $TARGET"', gate)
+        # Pre-tag runs only before the version's tag exists (the same new-
+        # version population the CI candidate check gates).
+        self.assertIn('git rev-parse -q --verify "refs/tags/$PREFIX$VERSION"', preflight)
+        self.assertLess(preflight.index("--pre-tag-target"),
+                        preflight.index('echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"'))
+        ci = (REPO / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        self.assertIn("check_auto_release_candidate.py \\\n            --candidate \"$GITHUB_SHA\" --run-pre-tag", ci)
+
+    def test_advisory_checks_stay_visible_and_are_not_relabelled_verified(self):
+        codex = jobs()["release-codex"]
+        self.assertIn("Codex candidate provenance check did not pass (not blocking)", codex)
+        self.assertIn("(advisory)", codex)
 
 
 class ChannelTest(unittest.TestCase):

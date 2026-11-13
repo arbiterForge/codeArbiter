@@ -1,0 +1,275 @@
+{
+  "schema": "codearbiter.dependency-review/1",
+  "recorded_at": "2026-11-13",
+  "reviewer": "/root/pi_program (Codex; dependency-reviewer role)",
+  "package": "railwayapp/nixpacks@1.41.0",
+  "verdict": "PASS_SCOPED_LINUX_AMD64_ACQUISITION_AND_FIXED_PLAN_PROFILE",
+  "scope": "Required Linux amd64 Docker qualification prerequisite against reviewed fixed CI fixtures only; no product runtime auto-install, package/lock/base-image graph adoption, Windows/macOS/ARM qualification or general/untrusted-repository CLI clearance",
+  "input_trust": "Owned staging alone does not make untrusted repository configuration safe; this review clears only the exact version probe and known fixed qualification inputs",
+  "policy": {
+    "format": "HTML",
+    "owner": "Installed knowledge.py native-backed read",
+    "security_records": [
+      "CON-001",
+      "CON-002",
+      "CON-003",
+      "CON-004",
+      "CON-005",
+      "CON-006",
+      "CON-007",
+      "CON-008",
+      "CON-009",
+      "CON-010",
+      "CON-011",
+      "CON-012",
+      "CON-013",
+      "CON-014",
+      "CON-015",
+      "CON-016"
+    ],
+    "stack_records": [
+      "FACT-002",
+      "FACT-003",
+      "FACT-005",
+      "FACT-006"
+    ],
+    "controls": [
+      "CON-002 SHA2",
+      "CON-003 credentials/lifetime",
+      "CON-004 TLS/execution/container digests/no runtime acquisition",
+      "CON-005 dependency review",
+      "CON-006 MIT permitted",
+      "CON-011 exact bounded recovery/pins"
+    ],
+    "severity_rule": "Current shared reviewer contract and accepted live D-HIGH: maintenance-only MEDIUM; mixed security retains actual security severity and HIGH/CRITICAL blocks. Supersedes installed legacy reviewer charter HIGH-but-nonblocking maintenance wording."
+  },
+  "license": {
+    "spdx": "MIT",
+    "verdict": "PASS",
+    "source": "https://github.com/railwayapp/nixpacks/blob/v1.41.0/LICENSE",
+    "source_blob": "685a7c2eea2245903d15abeab0df74bf6c6c8cfc",
+    "manifest_source": "https://github.com/railwayapp/nixpacks/blob/v1.41.0/Cargo.toml"
+  },
+  "provenance": {
+    "verdict": "PASS for exact official upstream release asset and explicit SHA256 pin",
+    "repository": "https://github.com/railwayapp/nixpacks",
+    "archived_observed": false,
+    "release": "https://github.com/railwayapp/nixpacks/releases/tag/v1.41.0",
+    "release_published_at": "2025-10-24T22:27:58Z",
+    "annotated_tag_object": "bece51fbebac1d59709061a36e59dc9e0cf7ad3f",
+    "source_commit": "81be35aaa341021e02b66253edeadd8bb4a24a0d",
+    "asset_url": "https://github.com/railwayapp/nixpacks/releases/download/v1.41.0/nixpacks-v1.41.0-x86_64-unknown-linux-musl.tar.gz",
+    "asset_size": 3717141,
+    "asset_sha256": "0f55de7874507b9cf7502113120bd96f2ab6979f78d10eaf2eb2ade9207b3af6",
+    "asset_metadata_source": "https://api.github.com/repos/railwayapp/nixpacks/releases/tags/v1.41.0",
+    "limits": [
+      "Upstream release is not immutable; exact stored SHA256 is mandatory, never replace it with a newly observed digest on mismatch",
+      "No signed source-to-binary attestation or reproducible build claim; source release workflow builds with --release --locked"
+    ]
+  },
+  "maintenance": {
+    "severity": "MEDIUM",
+    "blocking": false,
+    "basis": "Upstream explicitly declares maintenance mode and recommends Railpack; repository is not archived",
+    "source": "https://github.com/railwayapp/nixpacks/blob/v1.41.0/README.md",
+    "disposition": "Bounded qualification of existing installed-builder path; not new endorsement of arbitrary workloads or future tool support"
+  },
+  "source_lock_security": {
+    "source": "https://github.com/railwayapp/nixpacks/blob/v1.41.0/Cargo.lock",
+    "source_sha256": "94e6fcb048c50f32cb97003fc4144dda6a34ce774bc1fe8c5613146a5d9bc6da",
+    "registry_crate_count": 217,
+    "comparison": "v1.40.0 and1.41.0 have identical217registry crate versions; only local nixpacks package version changed",
+    "method": "Read-only OSV querybatch of exact crates.io name/version tuples, then primary advisory/function/platform review; no installation or code execution",
+    "query_endpoint": "https://api.osv.dev/v1/querybatch",
+    "advisory_entries_including_aliases_and_information": 54,
+    "mapped_GHSA_severities": {
+      "MODERATE": 10,
+      "LOW": 5,
+      "HIGH": 1
+    },
+    "additional_RustSec_entries_without_top_level_severity": 38,
+    "important_classification": "This is not54unique vulnerabilities, an audit0, or a linked-binary SBOM scan. RustSec informational/unsound flags also live in affected[].database_specific; absence of top-level severity is not a maintenance classification.",
+    "high_platform_exclusion": {
+      "id": "GHSA-r8w9-5wcg-vfj7",
+      "severity": "HIGH unchanged",
+      "package": "mio0.8.5",
+      "basis": "Primary advisory explicitly concerns Windows named pipes; the reviewed artifact/profile is Linuxx86_64-musl only",
+      "source": "https://github.com/tokio-rs/mio/security/advisories/GHSA-r8w9-5wcg-vfj7"
+    },
+    "other_scoped_observations": [
+      "unsafe-libyaml RUSTSEC-2023-0075 explicitly excludes64-bit targets; its maintenance status remains separately reported",
+      "HTTP2/Actix/zstd network server attack paths require the optional incremental-cache HTTP server, excluded from the fixed --out profile",
+      "Source does not call anyhow::Error::downcast_mut; the rand custom-logger preconditions are absent from the bounded CLI path; generic upstream unsound API notices are not relabeled clean",
+      "LOW/MODERATE source-lock advisories and maintenance entries remain visible; no general vulnerability-free or other-platform claim"
+    ],
+    "assessment": "No applicable HIGH/CRITICAL identified under the exact bounded Linux plan-generation profile; unscoped and Windows use not cleared",
+    "npm_audit": "Declared npm audit commands apply to existing npm graphs, not this pinned Rust executable; no npm audit0 claim made"
+  },
+  "supported_profile": {
+    "argv": [
+      "nixpacks",
+      "build",
+      "<owned-repo>",
+      "--out",
+      "<owned-repo>",
+      "--no-error-without-start",
+      "--json-plan",
+      "<JSON.stringify({buildImage:pinned_index_image})>"
+    ],
+    "actual_API": [
+      "--json-plan is a real globalCLI argument (src/main.rs38..40,224..235)",
+      "BuildPlan field is buildImage (src/nixpacks/plan/mod.rs39..40)",
+      "CLI plan merges after file/env/provider plans, preserving detected phases (plan/generator.rs76..83,99..103;plan/merge.rs19)",
+      "No --build-image or NIXPACKS_BUILD_IMAGE knob exists in1.41.0",
+      "--incremental-cache-image is an explicit CLI argument only; absent means no optional HTTP cache server",
+      "Build environment imports only explicitly requested --env names/values; ambient NIXPACKS variables are not blanket-forwarded"
+    ],
+    "required_constraints": [
+      "Fixed argv, no --incremental-cache-image or --env additions; credentialblind minimal OS environment",
+      "Actual generated external FROM references must all be pinned/validated; reject unsupported mutable runImage rather than silently rewriting repository configuration",
+      "Cache/profile identity must bind the exact executed image pin and argument/profile material",
+      "Required CI must assert installed-builder path and exact version; separately force and verify fallback instead of silently treating fallback as installed-builder proof"
+    ]
+  },
+  "container_pin_metadata": {
+    "upstream_default": "ghcr.io/railwayapp/nixpacks:ubuntu-1745885067",
+    "source": "https://github.com/railwayapp/nixpacks/blob/v1.41.0/src/nixpacks/images.rs",
+    "index_image": "ghcr.io/railwayapp/nixpacks@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de",
+    "index_digest": "sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de",
+    "linux_amd64_manifest": "sha256:98801a2e9c74b1236de01aa97bc99349f700f53f81d3bbab4411e2a8a9dd316d",
+    "verification": "Primary GHCR manifest metadata only; SHA256 of each raw response matched Docker-Content-Digest and child descriptor; verified TLS, redirects refused; anonymous pull token not retained or reported",
+    "optional_runtime_image": "start.runImage emits a second external FROM; default standalone image is mutable ubuntu:noble (dockerfile_generation.rs337..350;images.rs5)",
+    "limits": "Metadata/pin review only, not image pull, vulnerability scan, execution or multi-platform qualification"
+  },
+  "qualification_block": {
+    "id": "NX-CON004-FROM",
+    "severity": "HIGH",
+    "state": "FRAMEWORK_PIN_REPAIR_REVIEW_CLOSED; HOSTED_QUALIFICATION_PENDING",
+    "source": "plugins/ca-sandbox/tools/build.ts runNixpacksBuild",
+    "description": "Existing generated Nixpacks Dockerfile was executed unchanged, permitting mutable default or optional runtime FROM; archive pin alone cannot satisfy container-input policy",
+    "required_repair": "Pinned buildImage, all external image-source validation and V2 policy identity implemented by packaging owner; narrow independent repair review closed22PASS. StaticAssets admission work tracked separately as DEF-NIXPACKS-ASSETS-01."
+  },
+  "acquisition_constraints": [
+    "Root alone may implement acquisition in required Linuxamd64 CI; this reviewer ran no install/acquisition/executable",
+    "Exact public release URL over verified TLS; no credentials, installer, curl-to-shell, latest lookup, alternate provider or version fallback",
+    "Bounded approved redirects only, no userinfo or nonHTTPS/different origin surprises; verify exact3717141 compressed bytes and SHA256 before archive parsing",
+    "Bound decompressed archive and member count; require exactly expected regular nixpacks member, reject symlinks/hardlinks/devices/directories/traversal/duplicate names; never extractall",
+    "Write only a fresh exclusive regular executable under owned runner temp; no global/profile/package/lock changes or reuse of unverified preexisting file",
+    "Validate ELF64 little-endian x86_64 shape and process platform before executing exact --version; mismatches fail closed",
+    "After qualification framework repair, test only exact version and fixed plan generation before Docker qualification; never ambient cache flags"
+  ],
+  "exceptions": [],
+  "upstream_scope_observation": {
+    "id": "DEF-NIXPACKS-ASSETS-01",
+    "severity": "HIGH",
+    "status": "LOCAL_REPAIR_VERIFIED_AND_INDEPENDENT_SECURITY_REVIEW_PASS; HOSTED_INSTALLED_QUALIFICATION_PENDING",
+    "source": [
+      "https://github.com/railwayapp/nixpacks/blob/v1.41.0/src/nixpacks/plan/mod.rs#L45",
+      "https://github.com/railwayapp/nixpacks/blob/v1.41.0/src/nixpacks/builder/docker/dockerfile_generation.rs#L288",
+      "https://github.com/railwayapp/nixpacks/blob/v1.41.0/src/nixpacks/builder/docker/docker_image_builder.rs#L89"
+    ],
+    "observation": "Source accepts arbitrary staticAssets keys, joins them to output/assets, and creates directories/files without a containment check. Supporting files are written even with --out. Absolute/parent-traversal asset names therefore present a source-observed host-path write concern.",
+    "evidence_boundary": "Owning producer and call path inspected; no Nixpacks binary exploit executed. A generated-Dockerfile check after the process cannot contain an earlier host write.",
+    "scope_effect": "Project-controlled Nixpacks config and preexisting output are unsupported and now refused before host generation. Explicit Node/Python providers only; arbitrary project config and other providers remain blocked. No global CLI or untrusted custom-config clearance.",
+    "reviewer_action": "Integrator confirmed required security work; author added the bounded framework guard after actual target RED. Independent affected review and hosted installed-builder qualification remain pending.",
+    "default_config_discovery": {
+      "source": "src/nixpacks/plan/generator.rs190..231 at v1.41.0",
+      "order": [
+        "explicit config_file",
+        "explicit Environment CONFIG_FILE",
+        "root nixpacks.toml",
+        "root nixpacks.json"
+      ],
+      "profile": "No config-file/--env argv and minimal child environment; refuse both default names via lstat, including links/dangling entries."
+    },
+    "provider_assets": {
+      "node": "Reviewed all six production src/providers/node/*.rs/subtree files. Node mod.rs240 calls SpaProvider::static_assets; spa/mod.rs43..46 returns fixed literal key Caddyfile with include_str content. No input-derived asset key in this provider subtree.",
+      "python": "src/providers/python.rs has no static_assets, StaticAssets or add_static_assets occurrence.",
+      "selection": "Supported merge-last JSON-plan providers is explicit node and/or python from package.json/requirements.txt. No upstream ... placeholder, so no auto-discovered unreviewed provider."
+    }
+  },
+  "external_effects": "Only read-only public HTTP metadata/source/advisory requests and format-owned local policy reads; no Nixpacks binary/image acquisition, install or execution",
+  "remaining_review": "Affected staticAssets independent security review PASS. Prior archive helper and image-input repair reviews retained. Hosted installed Linux Docker qualification remains pending.",
+  "acquisition_review_history": [
+    {
+      "reviewer": "/root/pi_program (Codex; independent scoped acquisition review)",
+      "helper_sha256": "9cb41986ddadd6588e8745f7d0cd6a03752aa18868ae464a0af17831b570fc2e",
+      "test_sha256": "4247bcf3ff728fac15f87e0f16d75b4fd2518c76588edd9e1bd9eea74ce150e3",
+      "tests": "Independent 9 tests PASS in0.037s",
+      "actual_archive": {
+        "source": "Parent-provided reviewed archive in Temp; this reviewer did not download it",
+        "archive_size": 3717141,
+        "archive_sha256": "0f55de7874507b9cf7502113120bd96f2ab6979f78d10eaf2eb2ade9207b3af6",
+        "binary_size": 9790496,
+        "binary_sha256": "c3b5165797767ba461ffdf10628913a3459f0331ba887e1a514cc0ef8dce3512",
+        "method": "Actual verified_binary raw-byte validation, in-memory result only; no filesystem extraction, install or execution"
+      },
+      "verdict": "PASS_WITH_MEDIUM_PATH_APPEND_FINDING; no HIGH/CRITICAL helper finding",
+      "finding": {
+        "id": "NX-ACQUIRE-PATH-01",
+        "severity": "MEDIUM",
+        "subject": ".github/scripts/acquire_nixpacks.py main --github-path append",
+        "description": "Only regular/non-symlink leaf checked; hardlinked commandfile accepted and another ownedTemp sentinel changed",
+        "reproduction": "Actual helper main with mocked acquire (no network/binary), two-link commandfile: exit0, sentinel_changed=true",
+        "remediation": "Validate commandfile ancestry and single-link/reparse identity; append using a no-follow descriptor matched to the observed regular leaf, with sentinel-preservation regression"
+      },
+      "unaffected": "Archive pin/size, single regular expected member, ELF/profile, fixed absolute version probe, credentialblind environment and exclusive output boundaries inspected and exercised",
+      "next": "Author will fix only affected path append and return exact subject for narrow rereview"
+    },
+    {
+      "reviewer": "/root/pi_program (Codex; independent scoped acquisition repair review)",
+      "helper_sha256": "6eccc5c9a6d465069fccb7978dc3f0ade61bd61ab3e06c55e168008519635b24",
+      "test_sha256": "0b680eecdd7e0cd5e8bba8e60661f2e94014709614c1fff508b716c5bfad0d2a",
+      "verdict": "PASS; NX-ACQUIRE-PATH-01 CLOSED",
+      "tests": "Independent10 tests PASS in0.028s",
+      "original_reproduction": {
+        "exit": 1,
+        "acquire_calls": 0,
+        "sentinel_unchanged": true,
+        "receipt_absent": true
+      },
+      "inspected": "Command file admitted before acquisition; no-link ancestors, single-link/no-reparse regular leaf, held O_NOFOLLOW append descriptor, fstat/lstat device+inode identity at open and before append, ExitStack/finally closes; normal existing-prefix append preserved",
+      "limits": [
+        "No binary extraction to filesystem, installation or execution; previous actual archive bytes observation retained",
+        "Open-file rename/swap probe cannot execute its intended POSIX window on Windows because the held descriptor denies rename; no dynamic POSIX swap proof claimed",
+        "Framework FROM/cache repair and hosted Docker qualification remain separate pending obligations"
+      ],
+      "previous_review": "All unaffected archive/profile/environment/exclusive-output review retained; no broad restart"
+    }
+  ],
+  "static_assets_repair": {
+    "author": "/root/pi_program (Codex)",
+    "prior_source_sha256": "503a207db0918780f970ae774494abc570ae8ff3d0c9dff0718c4c6cd9d6cd9e",
+    "paths": {
+      "plugins/ca-sandbox/tools/build.ts": "7e5f9e64e7943b5b7ea79fa361f16497a451b16533cfcf2054f258202590e2f9",
+      "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "6b8190e811ca117f07ef553bdbc8054608e04fb910877496b4439d070bdc4a07",
+      "plugins/ca-sandbox/tools/sandbox.js": "bdb16a7487a6c3873cfb64583c8e6f6243ba8fbf35818681b6ba234cbf2accf4",
+      "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f"
+    },
+    "criteria": [
+      "Reject nixpacks.toml/json before generator effects; preserve rejected input.",
+      "Reject preexisting .nixpacks or wrapper Dockerfile including dangling output link before entering cleanup.",
+      "Use only explicit reviewed Node/Python providers; refuse other automatic provider discovery.",
+      "Bind changed admission/provider policy to V2 image identity."
+    ],
+    "regression": "Actual default generator/spawn seam: 9 target assertions RED against prior source (unsafe config/output accepted, provider selection absent, other provider discovery accepted); unchanged assertions 9 GREEN after repair. Full pinned-base suite31 PASS.",
+    "checks": {
+      "focused": "build.test.ts + cache-provenance.test.ts + build-pinned-base.test.ts:53 PASS,3 SKIP (Docker-only cells),0 FAIL; JSON Temp/ca-nixpacks-assets-green.json",
+      "typecheck": "tsc --noEmit PASS",
+      "build": "npm run build PASS; two owning bundles generated; claude-inside.js unchanged"
+    },
+    "limits": [
+      "Controlled subprocess outputs and actual temporary files exercise production default path; no local Nixpacks/Docker execution.",
+      "Admission assumes inert owned staging; no adversarial same-user concurrent directory mutation defense claimed.",
+      "Custom config/other providers explicitly unsupported; hosted installed Node/Python builder proof pending."
+    ],
+    "independent_review": {
+      "reviewer": "/root/native_cohort_integration",
+      "role": "Affected independent security review",
+      "verdict": "PASS; no findings",
+      "source_sha256": "7e5f9e64e7943b5b7ea79fa361f16497a451b16533cfcf2054f258202590e2f9",
+      "packet": "C:/Users/brenn/AppData/Local/Temp/ca-nixpacks-assets-security-review.json",
+      "checks": "Independent9new controls PASS; original53PASS/3DockerSKIP raw inspected; no binary/Docker/WSL proof"
+    }
+  }
+}

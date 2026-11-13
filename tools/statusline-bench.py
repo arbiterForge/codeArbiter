@@ -27,11 +27,15 @@ For each scenario the report records these phases:
 - every structural counter total must be <= base;
 - the warm median and p95 wall time must be <= base * 1.05.
 """
+from pathlib import Path
 import argparse
 import builtins
 import json
+import hashlib
+import math
 import os
 import platform
+import re
 import shutil
 import statistics
 import subprocess
@@ -361,7 +365,13 @@ def cmd_run(args):
     rev = subprocess.run(["git", "-C", checkout, "rev-parse", "HEAD"],
                          stdout=subprocess.PIPE, text=True).stdout.strip()
     wanted = set(args.scenario or [])
-    out = {"schema": "codearbiter.statusline-bench/v1", "checkout_rev": rev,
+    known = {row[0] for row in SCENARIOS}
+    if wanted - known:
+        raise ValueError(f"unknown benchmark scenario: {sorted(wanted-known)}")
+    selected = sorted(wanted or known)
+    out = {"schema": "codearbiter.statusline-bench/v2", "checkout_rev": rev,
+           "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+           "selection": {"scope": "all" if set(selected) == known else "subset", "scenarios": selected},
            "python": sys.version.split()[0], "platform": platform.platform(),
            "captured": time.strftime("%Y-%m-%dT%H:%M:%S"), "scenarios": {}}
     for name, pn, ch, cn in SCENARIOS:
@@ -409,6 +419,12 @@ def cmd_compare(args):
         base = json.load(f)
     with open(args.head, encoding="utf-8") as f:
         head = json.load(f)
+    try:
+        validate_comparison(base, head)
+    except (ValueError, TypeError, KeyError) as error:
+        print(f"FAIL: invalid or incompatible benchmark population: {error}")
+        return 1
+    print(f"Population: {base['selection']['scope']} ({', '.join(base['selection']['scenarios'])})")
     failures = []
     rows = []
     for name, bs in sorted(base["scenarios"].items()):
@@ -454,6 +470,35 @@ def cmd_compare(args):
           " counts within the AC-39 formula bound)"
           + ("" if args.structural_only else f" and timing within x{TIMING_TOLERANCE}"))
     return 0
+
+
+def validate_comparison(base, head):
+    known = {row[0] for row in SCENARIOS}
+    for report in (base, head):
+        if not isinstance(report, dict):
+            raise ValueError('benchmark report must be an object')
+        if report.get('schema') != 'codearbiter.statusline-bench/v2':
+            raise ValueError('unsupported harness report version; rerun with the current harness')
+        if not re.fullmatch(r'[0-9a-f]{64}', report.get('harness_sha256', '')):
+            raise ValueError('missing harness identity')
+        scenarios = report.get('scenarios')
+        if not isinstance(scenarios, dict) or not scenarios or set(scenarios)-known:
+            raise ValueError('empty or unknown scenario population')
+        selection = report.get('selection', {})
+        if selection.get('scenarios') != sorted(scenarios) or selection.get('scope') != ('all' if set(scenarios)==known else 'subset'):
+            raise ValueError('selected subset is not declared exactly')
+        for scenario in scenarios.values():
+            for phase in GATED_PHASES:
+                row = scenario[phase]
+                if type(row.get('renders')) is not int or row['renders'] <= 0:
+                    raise ValueError('a gated phase has no measured renders')
+                if any(type(row['totals'].get(key)) is not int or row['totals'][key] < 0 for key in GATED_COUNTERS):
+                    raise ValueError('missing or invalid structural measurements')
+                if any(type(row.get(key)) not in (int,float) or not math.isfinite(row[key]) or row[key] < 0 for key in ('median_ms','p95_ms')):
+                    raise ValueError('missing or invalid timing measurements')
+    for field in ('harness_sha256','python','platform','selection'):
+        if not base.get(field) or base[field] != head.get(field):
+            raise ValueError(f'incompatible {field}')
 
 
 def main(argv=None):
