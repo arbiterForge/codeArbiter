@@ -2331,3 +2331,28 @@ Required declared checks keep the recorded contract consistent with actual candi
 Record ADR-0048-required-declared-pre-tag-checks. Declared targets, candidate preflight, the release owner and generated guidance must agree that these checks are required. Correct failing inputs or checks without silently removing the gate. Acceptance remains distinct from implementation, installed-host qualification and publication.
 
 ---
+
+## DECISION-0082 — adr-0046-ratified — Bind the owner's independent-progress decision
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit D-PROGRESS option B retained in DECISION-0079 and the live program progress record.
+**Decision category:** adr-ratification
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** D-PROGRESS selects independent recorded progress and derived evidence applicability.
+- **Scaffold position:** ADR-0046 records the exact accepted choice with independently reviewed obligations.
+- **Status type:** open-decision-closure
+
+### Decision
+Ratify the unchanged user choice recorded in DECISION-0079 as ADR-0046-independent-progress-derived-evidence. Its status is Accepted/Planned; this entry claims neither implementation nor verification.
+
+### SMARTS rationale
+Preserve the user's representation choice, historical progress and independent stops. Bind the exact immutable decision and complete obligations through the following acceptance event without inventing delivery evidence.
+
+### Implementation implication
+Commit the exact ADR and this append, then use the shipped acceptance writer to bind its twelve independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
+
+---
