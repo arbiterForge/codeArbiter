@@ -10044,6 +10044,7 @@ function installParent(pi, dependencies) {
   let enabled = false;
   let persona = "";
   let personaReady = false;
+  let personaFailed = false;
   let personaLoad;
   let state = "";
   let ownershipDegraded;
@@ -10103,6 +10104,7 @@ function installParent(pi, dependencies) {
     enabled = false;
     persona = "";
     personaReady = false;
+    personaFailed = false;
     personaLoad = void 0;
     state = "";
     ownershipDegraded = void 0;
@@ -10110,7 +10112,7 @@ function installParent(pi, dependencies) {
     commandInvocationDegraded = void 0;
     footerActivationEnabled = false;
   };
-  const personaDegraded = () => enabled && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : void 0;
+  const personaDegraded = () => enabled && personaFailed && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : void 0;
   const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
   const ensurePersona = (lifecycle) => {
     if (personaReady) return Promise.resolve(true);
@@ -10122,13 +10124,19 @@ function installParent(pi, dependencies) {
       try {
         loaded = await dependencies.loadPersona();
       } catch {
+        if (activeLifecycle === lifecycle) personaFailed = true;
         return false;
       } finally {
         if (personaLoad === entry) personaLoad = void 0;
       }
-      if (activeLifecycle !== lifecycle || typeof loaded !== "string" || loaded.trim() === "") return false;
+      if (activeLifecycle !== lifecycle) return false;
+      if (typeof loaded !== "string" || loaded.trim() === "") {
+        personaFailed = true;
+        return false;
+      }
       persona = loaded;
       personaReady = true;
+      personaFailed = false;
       return true;
     })();
     return entry.promise;

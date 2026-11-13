@@ -827,6 +827,16 @@ describe("Pi activation", () => {
       expect(attempts).toBe(2);
     });
 
+    test("a healthy start reports starting then governed, never persona unavailable", async () => {
+      const h = await personaHarness(async () => "PERSONA");
+      await h.host.emit("session_start", {}, h.context);
+      const texts = h.host.statusCalls.map((call) => call.text);
+      expect(texts).toContain("codeArbiter host: pi starting");
+      expect(texts.at(-1)).toBe(GOVERNED);
+      expect(texts.some((text) => text?.includes("persona unavailable"))).toBe(false);
+      expect(h.dispatchLifecycle()).toBeDefined();
+    });
+
     test("an empty persona cannot mark the session governed", async () => {
       const h = await personaHarness(async () => "  \n");
       await h.host.emit("session_start", {}, h.context);

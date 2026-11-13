@@ -448,6 +448,9 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
   // PI-L01: persona readiness is an independent prerequisite. It is never
   // stored as, or cleared by, bridge health.
   let personaReady = false;
+  // Set only once a load attempt for this lifecycle failed or returned empty, so
+  // an in-flight first load still reports "starting", not "unavailable".
+  let personaFailed = false;
   let personaLoad: { lifecycle: LifecycleLease; promise: Promise<boolean> } | undefined;
   let state = "";
   let ownershipDegraded: string | undefined;
@@ -510,6 +513,7 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     enabled = false;
     persona = "";
     personaReady = false;
+    personaFailed = false;
     personaLoad = undefined;
     state = "";
     ownershipDegraded = undefined;
@@ -517,7 +521,7 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     commandInvocationDegraded = undefined;
     footerActivationEnabled = false;
   };
-  const personaDegraded = () => (enabled && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : undefined);
+  const personaDegraded = () => (enabled && personaFailed && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : undefined);
   const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
   /** Load (or retry) the persona for one lifecycle. Concurrent callers share one
    * read; a result that lands after the lifecycle retired is discarded. */
@@ -531,13 +535,19 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
       try {
         loaded = await dependencies.loadPersona();
       } catch {
+        if (activeLifecycle === lifecycle) personaFailed = true;
         return false;
       } finally {
         if (personaLoad === entry) personaLoad = undefined;
       }
-      if (activeLifecycle !== lifecycle || typeof loaded !== "string" || loaded.trim() === "") return false;
+      if (activeLifecycle !== lifecycle) return false;
+      if (typeof loaded !== "string" || loaded.trim() === "") {
+        personaFailed = true;
+        return false;
+      }
       persona = loaded;
       personaReady = true;
+      personaFailed = false;
       return true;
     })();
     return entry.promise;
