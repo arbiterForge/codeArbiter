@@ -296,7 +296,7 @@ func readStoreJSON(t *testing.T, h *harness, ref string) object {
 	}
 	return v
 }
-func TestSMARTSRecordsProfile020(t *testing.T) {
+func TestSMARTSRecordsProfile030(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
 	_, r := pairFixture(h, true)
@@ -308,7 +308,7 @@ func TestSMARTSRecordsProfile020(t *testing.T) {
 	receipt := readStoreJSON(t, h, model.S(got["receipt"]))
 	source := readStoreJSON(t, h, model.S(receipt["authority_source_ref"]))
 	observed := readStoreJSON(t, h, model.S(source["observation_ref"]))
-	if model.S(observed["producer_profile"]) != "smarts-plan-method/0.2.0" {
+	if model.S(observed["producer_profile"]) != "smarts-plan-method/0.3.0" {
 		t.Fatalf("smarts-apply recorded profile %q", observed["producer_profile"])
 	}
 	if model.S(source["authority_kind"]) != "smarts_workflow" {

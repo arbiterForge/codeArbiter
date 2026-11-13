@@ -304,7 +304,7 @@ func resetMethodDependents(next *model.Document, task string) error {
 // smartsProducerProfile is the vocabulary smarts-apply validates new
 // decisions under and stamps on their observations; historical 0.1.0
 // records keep validating under their own recorded profile.
-const smartsProducerProfile = observation.SMARTSProfileV2
+const smartsProducerProfile = observation.SMARTSProfileV3
 
 func (e *Engine) smartsApply(r object, entry repository.Entry) (any, error) {
 	d := entry.Doc
@@ -348,6 +348,8 @@ func (e *Engine) smartsApply(r object, entry repository.Entry) (any, error) {
 		return nil, err
 	}
 	record := object{"pair": pair, "grant_receipt": grant.Path, "decision": decision, "before_normative": d.Norm(), "after_normative": next.Norm()}
+	record["before_schema_version"], record["after_schema_version"] = d.Data["schema_version"], next.Data["schema_version"]
+	record["before_normative_sha256"], record["after_normative_sha256"] = d.NormHash(), next.NormHash()
 	if err = observation.ValidateSMARTSRecordFor(smartsProducerProfile, record); err != nil {
 		return nil, err
 	}

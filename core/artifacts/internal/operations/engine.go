@@ -53,7 +53,9 @@ func sharedObservation(op string, r object) bool {
 // initStore creates the lock metadata this platform's reads require through
 // the ordinary writer lock, the same path a first mutation takes, and writes
 // nothing else. Linux locks the repository directory and reports present.
-// Reads never initialize the store; a host calls this explicitly instead.
+// Windows observations require existing metadata and a host calls this
+// explicitly there. Darwin's ordinary shared-lock path may initialize its lock
+// metadata; Linux needs none. Neither case changes canonical artifact content.
 func initStore(f *store.FS) (any, error) {
 	present, e := f.LockMetadataPresent()
 	if e != nil {
@@ -85,7 +87,7 @@ func Run(root, op string, input object) (any, error) {
 		_, contextContract := kind.Lookup("context")
 		contextCodec, contextCodecFound := kind.Codecs()["context"]
 		contextRegistered := contextContract && contextCodecFound && contextCodec.Optional && contextCodec.Representation == kind.Markdown
-		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "work_coordination_schema_version": model.WorkCoordinationVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": true, "qualification": "native-tested-package", "permission_model": "host-owned", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
+		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "work_coordination_schema_version": model.WorkCoordinationVersion, "retirement_schema_version": model.RetirementVersion, "progress_schema_version": model.ProgressVersion, "progress_projection_version": "recorded-progress/1", "renderer": render.Version, "operations": Names(), "operation_contract": operationContract(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": true, "qualification": "native-tested-package", "permission_model": "host-owned", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
 	}
 	if op == "schema" {
 		switch model.S(r["name"]) {

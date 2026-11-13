@@ -99,8 +99,9 @@ func TestDependencyInvalidationPreservesIndependentStops(t *testing.T) {
 	if !equalValue(state(after, "T-002"), stop) {
 		t.Errorf("dependency invalidation replaced an independent stop: %v", state(after, "T-002"))
 	}
-	if state(after, "T-003")["state"] != "STALE" {
-		t.Fatal("preserving a stop prevented traversal to its affected dependents")
+	// D-PROGRESS=B retains dependent progress alongside the independent stop.
+	if state(after, "T-003")["state"] != "REVIEW" {
+		t.Fatal("upstream stop overwrote dependent recorded progress")
 	}
 	f.mutate("task-reconcile", object{"task": "T-001", "state": "REVIEW", "reason": "The upstream input is available again."})
 	packet := packetFor(f, "T-002")

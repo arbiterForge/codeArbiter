@@ -48,17 +48,20 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-transition-map-get", "work-transition-map-configure", "work-coordinate-resume", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict"}
-
-func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
+// Names lists every implemented operation, derived from the descriptor table.
+func Names() []string {
+	x := make([]string, 0, len(descriptors))
+	for _, d := range descriptors {
+		x = append(x, d.Name)
+	}
+	sort.Strings(x)
+	return x
+}
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
-	switch op {
-	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "work-provider-configure", "work-transition-map-configure", "work-coordinate-resume", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
-		return true
-	}
-	return false
+	d, ok := descriptorIndex[op]
+	return ok && d.Journaled
 }
 func RequestSchema(op string) (object, error) {
 	p := object{"protocol": enum(Protocol)}
