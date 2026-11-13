@@ -1941,9 +1941,26 @@ class LifecycleContractTest(unittest.TestCase):
 
             self._git(root, "commit", "-m", "accept ADR")
             source = self._git(root, "rev-parse", "HEAD")
-            event = al.acceptance_event(
-                "0001-test", ADR, source, packet["obligations"],
-                dt.datetime.now(dt.timezone.utc).isoformat())
+            # Exercise the same owner as the public acceptance CLI. Its reviewer
+            # identity must survive the local second-leg packet check.
+            from _adrlifecyclewrite import append_acceptance
+            event = append_acceptance(
+                root, "0001-test", source, packet["obligations"],
+                "independent-reviewer:test")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 0, stderr)
+            for reviewer in (None, "different-reviewer", ""):
+                with self.subTest(unbound_reviewer=reviewer):
+                    mutant = dict(event)
+                    if reviewer is None:
+                        mutant.pop("reviewed_by")
+                    else:
+                        mutant["reviewed_by"] = reviewer
+                    self._write_ledger(root, [mutant])
+                    self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                    result, _stdout, stderr = self._run_checker(root)
+                    self.assertEqual(result, 1, stderr)
             self._write_ledger(root, [event])
             self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
             result, _stdout, stderr = self._run_checker(root)
@@ -2223,6 +2240,7 @@ class LifecycleContractTest(unittest.TestCase):
             acceptance = self._acceptance()
             acceptance["source_commit"] = self._git(root, "rev-parse", "HEAD")
             acceptance["recorded_at"] = reviewed_at.isoformat()
+            acceptance["reviewed_by"] = "independent-reviewer:test"
 
             self._write_ledger(root, [acceptance])
             result, _stdout, stderr = self._run_checker(root)
