@@ -15,21 +15,24 @@ def _installation():
     return installation
 
 
+def native_client(root=None):
+    from test_artifact_authoring import ArtifactClient
+    return ArtifactClient(Path(root) if root is not None else Path(__file__).resolve().parents[2],
+                          _installation())
+
+
 def active_records(document, *, root=None, client=None):
     import test_artifact_authoring  # Adds the canonical bridge import location.
     import _knowledgelib
     root = Path(root) if root is not None else Path(__file__).resolve().parents[2]
     if _knowledgelib.context_format(str(root)) != "html":
         return None
-    client = client or test_artifact_authoring.ArtifactClient(root, _installation())
+    client = client or native_client(root)
     artifact = _knowledgelib.artifact_id(document)
-    records = []
-    for entry in client.outline(artifact):
-        if entry.get("retired") or entry.get("kind") != "records":
-            continue
-        record = client.call("read", {"artifact_id": artifact,
-                                      "symbol": entry["id"], "mode": "exact"})["record"]
-        records.append(record)
+    from knowledge import _records
+    # The owning CLI batches active records with revision binding and bounded
+    # pagination. Reuse it rather than launching a native read per record.
+    records = _records(client, artifact, "records")
     if not records:
         raise AssertionError(f"current knowledge {artifact} has no readable content")
     return records

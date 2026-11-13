@@ -3765,9 +3765,8 @@ class NpmPublishContractTest(unittest.TestCase):
             helper.validate_main_commit(repo, "b" * 40)
 
     def test_security_policy_and_workflow_guard_the_npm_secret_boundary(self):
-        policy = (REPO / ".codearbiter" / "security-controls.md").read_text(
-            encoding="utf-8"
-        )
+        from project_knowledge import context_text
+        policy = context_text("security-controls")
         workflow = self.WORKFLOW.read_text(encoding="utf-8")
         action = self.ACTION.read_text(encoding="utf-8")
         self.assertIn("### ca-pi npm publication boundary", policy)
