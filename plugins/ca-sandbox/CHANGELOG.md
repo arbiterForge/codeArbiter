@@ -13,7 +13,18 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Changed
 
-- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+- Reuse images through a V2 cache identity that includes the builder, target platform and effective build profile, then verify the cache label and immutable image ID. Temporary checkout names no longer change that identity.
+- Limit Nixpacks generation to the reviewed Node/Python profile with pinned image inputs. Refuse custom Nixpacks configuration and existing generated output before generation or cleanup can change those paths.
+- Report requested and effective network policies separately. Ordinary exploration remains offline.
+
+### Fixed
+
+- Refuse failed manifest, daemon and resource observations instead of treating them as absence. Failed or cancelled creation retains exact resource references when independent cleanup cannot confirm removal.
+- Use bounded, cancellable process paths for clone and host staging, and report uncertain helper or staging cleanup.
+
+### Qualification pending
+
+- Installed Nixpacks and fallback two-create Docker checks, and an actual Windows WSL build, remain unqualified locally. Controlled subprocess tests do not replace those runtime checks.
 
 ## [0.1.10] - 2026-10-24
 

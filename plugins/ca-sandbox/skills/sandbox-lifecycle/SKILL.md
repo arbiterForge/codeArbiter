@@ -1,87 +1,44 @@
 ---
 name: sandbox-lifecycle
-description: The lifecycle gate for a local Codespace-equivalent sandbox. Routed to when the user invokes /ca-sandbox:sandbox to pull an untrusted repo into an ephemeral, host-FS-isolated Docker container, or any of the interaction commands (/ca-sandbox:sandbox-shell, /ca-sandbox:sandbox-exec, /ca-sandbox:sandbox-cp, /ca-sandbox:sandbox-destroy) against an existing box. Five gated phases — pre-flight, clone+build, isolated run, interact, teardown. The load-bearing invariant is structural: untrusted code in the box can never reach the host filesystem (no bind mount, no docker socket, never --privileged, cap-drop ALL, non-root, read-only root). Network defaults to offline; egress out is host-initiated only. Every object is labeled ca.sandbox=1 and torn down on exit.
+description: Create, inspect and explicitly destroy a Docker sandbox for an untrusted network repository. Runtime isolation uses named volumes, no host binds or socket, non-root, read-only root and offline networking. Shell exit detaches; named destroy and explicit prune have different scopes.
 ---
 
 # sandbox-lifecycle
 
-Pull an untrusted repo into a throwaway box, explore it without risking the host, then burn the box. This skill owns the whole arc — clone into a named volume, build a dep-cached image, run it under structural isolation, interact (shell / exec / cp out), destroy — and the one invariant that makes it safe: **the code inside the box can never touch the host filesystem.** That guarantee is enforced by construction (no bind mounts, no docker socket, never `--privileged`), not by trusting the repo.
-
-The driver lives in `${CLAUDE_PLUGIN_ROOT}/tools`. The skill never hand-rolls a `docker run` argv — every container is started through `runContainer` in `${CLAUDE_PLUGIN_ROOT}/tools/run.ts`, whose mount argv comes only from `buildMountArgs` in `${CLAUDE_PLUGIN_ROOT}/tools/mounts.ts` (the chokepoint that throws on any bind spec).
+Use the packaged `${CLAUDE_PLUGIN_ROOT}/tools/sandbox.js` driver. The following workflow is agent guidance; the binary enforces URL validation, mount rejection, runtime hardening and scoped teardown. Reading this skill does not create an additional binary approval gate. Consumer projects do not need the maintainer's spike notes, decision files or source checkout. Do not create a consumer ADR to satisfy a missing maintainer reference.
 
 ## Pre-flight
 
-Read these, or STOP and surface the gap — never guess a Docker capability, a mount layout, or an egress posture:
+Establish the repository URL and requested network policy. Supported sources are HTTPS, SSH and scp-style network remotes; local paths and transport helpers are refused. `docker info` must succeed before cloning. A failed observation is unavailable, not an empty registry.
 
-- `${CLAUDE_PLUGIN_ROOT}/tools/mounts.ts` — the mount-arg chokepoint. Every mount is built here; it throws (`BindMountRejectedError`) on any `type=bind` spec. The structural half of the host-FS invariant.
-- `${CLAUDE_PLUGIN_ROOT}/tools/run.ts` — the isolation flags (`--cap-drop ALL`, non-root `--user 1000:1000`, `--read-only`, `--security-opt no-new-privileges`, resource caps) and the `offline` => `--network none` default.
-- `${CLAUDE_PLUGIN_ROOT}/tools/network.ts` — the network policies (offline / clone-then-cut / allowlist). The IP allowlist is EXPERIMENTAL (`ALLOWLIST_EXPERIMENTAL`); offline and clone-then-cut are the solid defaults.
+Docker and Node 20.6+ are prerequisites. Probe an already installed nixpacks on the host, or its existing WSL bridge on Windows. The driver never installs a host builder. Missing nixpacks selects the packaged Dockerfile fallback for Node/Python; report that effective builder instead of stopping a supported fallback build. Unsupported stacks need a usable nixpacks; do not describe the Node/Python fallback as successful Go/Rust dependency support.
 
-Host prerequisites: **Docker** and **nixpacks** on `PATH` (the plugin's `description` states this). If `docker info` fails, STOP and report "Docker is not available" — do not proceed to clone or build. If the user supplies no repo URL to `/ca-sandbox:sandbox`, ask for one — do not guess a repo.
+Ordinary sandbox runtime is offline. `offline` is the default; requests named `clone-then-cut` or `allowlist` currently also resolve to offline runtime because the ordinary runner has no networked policy enabled. Report requested and effective policy separately. The experimental network-plan helper is not an integrated ordinary-create allowlist. Never claim that requesting an allowlist enables it, or expand network access to make a failed command work.
 
-## Phase 1 — Pre-flight & policy · gate: BLOCK
+`--with-claude` is a separate routine using `tools/claude-inside.js` and the sibling `sandbox-claude-inside` skill. Ordinary `sandbox create` has no such flag.
 
-Establish what is being sandboxed and under what egress posture before any clone:
+## Create
 
-- **Target** — the repo URL (or local path) to pull. One source, stated explicitly.
-- **Network policy** — `offline` (default), `clone-then-cut` (fetch deps at build, cut egress at run), or `allowlist` (EXPERIMENTAL — name it as experimental every time it is selected). Default to `offline` unless the user names another.
-- **Docker reachable** — `docker info` returns 0. If not, STOP here.
-- **`--with-claude`** — if requested, route to the `sandbox-claude-inside` skill (`${CLAUDE_PLUGIN_ROOT}/skills/sandbox-claude-inside/SKILL.md`) for its hardened defaults; it is NOT enabled on the default path.
+Run `node <plugin>/tools/sandbox.js create <url> [--net offline|clone-then-cut|allowlist]` under the user's authorization. Clone uses a temporary networked helper and a labeled Docker named volume at `/work/repo`. Clone/build may access registries; offline describes exploration runtime, not an air-gapped build.
 
-Gate: a named target, a named network policy, and a reachable Docker. A sandbox with no stated target or an unreachable Docker cannot be built — do not improvise either. If `allowlist` is chosen, the BLOCK is conditional on the user acknowledging it is experimental.
+The builder copies the checkout from that volume into a temporary host build-context directory. This staging directory exists during manifest inspection and image build and is removed in an owned finally path. A cleanup failure retains the exact directory/helper identity in the error. Source therefore reaches host staging; the running sandbox is given no host bind mount or Docker socket.
 
-## Phase 2 — Clone & build · gate: BLOCK
+V2 cache tags are `ca-sbx:v2-<sha256>`. The identity includes dependency manifest/lockfile bytes, the effective builder and its observed version, target Docker platform and generated build templates/options. Temporary checkout basenames have no identity role. Reuse requires the cache-key label and an immutable image ID; existence alone is insufficient. Malformed toolchain/platform observations cannot authorize reuse. Old cache tags are left intact.
 
-Clone the target into a docker **named volume** (never onto the host FS, never a bind), then build a dep-cached image:
+Dependencies live out of tree at `/deps`, with `NODE_PATH` and `PYTHONPATH`; the live source volume mounts at `/work/repo`. Runtime flags prohibit host binds, the Docker socket and privileged mode, and require non-root, dropped capabilities, read-only root, no-new-privileges and resource limits. These are driver-enforced controls; workflow prose is guidance.
 
-- Clone into the named volume via `createSandbox` (`${CLAUDE_PLUGIN_ROOT}/tools/create.ts`); the source lives at `/work/repo` inside the box.
-- Build through `${CLAUDE_PLUGIN_ROOT}/tools/build.ts`: nixpacks wraps the repo, deps are relocated **out of tree to `/deps`** (exported via `NODE_PATH`/`PYTHONPATH`/`GOPATH`/`CARGO_HOME`), and the image is tagged `ca-sbx:<repo>-<dephash>`.
-- The dephash comes from `computeDepHash` (`${CLAUDE_PLUGIN_ROOT}/tools/dephash.ts`) over the manifest/lockfile set. An unchanged dep set is a **cache hit** — no rebuild, identical tag. A manifest/lockfile change bumps the dephash and forces a rebuild; a source-only edit does not.
+Create returns exact sandbox/container/volume identities, builder notes, and requested/effective network policy. On failure, compensation has its own bounded observation budget independent of cancellation. Report verified absence or unknown cleanup with retained references; a killed Docker client does not establish that a container stopped.
 
-Gate: a built (or cache-hit) image tagged `ca-sbx:<repo>-<dephash>`, with deps at `/deps` (out of tree). The naive "mount the volume over the app dir" layout shadows baked deps and is forbidden — the volume mounts ONLY at `/work/repo`. If nixpacks is not installed, STOP with the install hint, not a stack trace.
+## Interact
 
-## Phase 3 — Isolated run · gate: BLOCK
+- `sandbox shell <id>` attaches to the named box. Shell exit detaches and leaves its container/volume running.
+- `sandbox exec <id> -- <command> [args...]` returns command exit, captured output and truncation. Timeout, cancellation or raw output overflow also initiate exact-container stop and inspection. Process exit and containment are independent; unknown containment retains the target for inspection.
+- `sandbox cp <id>:<container-path> <host-destination>` copies out only at host request. Do not add host binds or credentials as a convenience.
 
-Start the container through `runContainer` (`${CLAUDE_PLUGIN_ROOT}/tools/run.ts`) — never a hand-written `docker run`. The run carries the structural isolation set, all by construction:
+## Explicit teardown
 
-- **No host bind mount, no `/var/run/docker.sock` mount, never `--privileged`** — the three negative guarantees. The mount argv is built only by `buildMountArgs`, which throws on any bind.
-- `--cap-drop ALL`, `--user 1000:1000` (non-root), `--read-only` root, `--security-opt no-new-privileges`, resource caps (`--pids-limit`, `--memory`, `--cpus`).
-- The live source named volume mounts ONLY at `/work/repo`; `/tmp` is a tmpfs (writable scratch, no host backing).
-- Network per Phase 1: `offline` => `--network none`; the richer policies are applied by `${CLAUDE_PLUGIN_ROOT}/tools/network.ts`.
-- Every object carries the `ca.sandbox=1` label (the teardown/registry anchor).
+`sandbox destroy <id> [--keep-volume]` targets that sandbox only. It removes labeled containers, then their volume; keep-volume preserves the requested source volume. Detaching a shell never performs destroy.
 
-Gate: `docker inspect` on the started container shows no `"Type":"bind"` mount, no docker-socket mount, and not `Privileged:true`. If any of the three appears, the run is rejected — there is no override; the chokepoint failed and that is a bug, not a policy decision.
+`sandbox prune` is a separate broad operation over the initially discovered plugin-labeled targets. Run it only when broad prune was requested. A named destroy must never automatically become prune. Other sandboxes and targets created after the prune snapshot remain intact. Missing target IDs are errors; no-ID destroy does not mean prune.
 
-## Phase 4 — Interact · gate: BLOCK
-
-Explore the running box. Each interaction routes to its own command but funnels through this skill's seams:
-
-- **Shell** (`/ca-sandbox:sandbox-shell`) — an interactive shell into the box at `/work/repo`.
-- **Exec** (`/ca-sandbox:sandbox-exec`) — a single command via `execInSandbox` (`${CLAUDE_PLUGIN_ROOT}/tools/exec.ts`), returning a JSON contract: `exitCode`, separate `stdout`/`stderr`, and a `truncated` flag past the byte cap.
-- **Copy out** (`/ca-sandbox:sandbox-cp`) — host-initiated egress ONLY, via `cpOut` (`${CLAUDE_PLUGIN_ROOT}/tools/cp.ts`): `cp <id>:/work/<f> ./dest` over `docker cp`. The reverse — a host→container bind — is impossible: the mount builder rejects it.
-
-Gate: every file leaving the box is host-initiated (`docker cp` out), never a mount the container could write through to the host. No interaction re-introduces a bind, a socket, or a privilege the run dropped. Exec output honors the byte cap and reports `truncated` rather than streaming unbounded data.
-
-## Phase 5 — Teardown · gate: BLOCK
-
-A sandbox is ephemeral by contract. On exit (`/ca-sandbox:sandbox-destroy`, or the close of an interactive session):
-
-- `destroySandbox` (`${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`) removes the container and its named volume. `--keep-volume` leaves the volume (for a deliberate re-run); nothing else survives.
-- `prune` (`${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`) reclaims any leaked `ca.sandbox=1`-labeled object — the safety net for a box whose driver died mid-run.
-- Cached images (`ca-sbx:<repo>-<dephash>`) are intentionally retained for the next cache hit; they are excepted from teardown.
-- Both verbs are **best-effort but never silent**: a failed removal does not abort the sweep (everything else is still reclaimed), every failure is retained in a bounded `failures` list with docker's own exit code, and a final label-scoped re-list reports whatever is still present. The CLI exits non-zero and names the leftovers.
-
-Gate: after a `create → interact → destroy` cycle, zero `ca.sandbox=1`-labeled containers or volumes remain (cached images excepted). A run that leaves a labeled object behind without `--keep-volume` is a leak — `prune` must be able to find and reclaim it via the label alone. Teardown is verified, not assumed: a docker failure during discovery, removal, or verification means the phase FAILS loudly, because a leaked box is still running untrusted code.
-
-## Hard rules
-
-- MUST NOT give a sandbox container a host bind mount — every mount is built through `buildMountArgs`, which throws on any `type=bind`. The driver never hand-rolls a `-v` or `type=bind`.
-- MUST NOT mount `/var/run/docker.sock` into a sandbox container, and MUST NOT run one with `--privileged`. These are non-negotiable structural guarantees, not defaults to override.
-- MUST start every container through `runContainer` with `--cap-drop ALL`, non-root `--user`, `--read-only` root, and `--security-opt no-new-privileges`. A run missing any of these is rejected.
-- MUST mount the live source named volume ONLY at `/work/repo`; deps live out of tree at `/deps`. MUST NOT mount the volume over the app dir — that shadows baked deps (Spike A) and is the one layout that does not work.
-- MUST default the network policy to `offline`. The IP egress allowlist is EXPERIMENTAL — name it experimental every time it is selected; offline and clone-then-cut are the solid defaults.
-- MUST treat all egress out of the box as host-initiated (`docker cp` out) only. A host→container bind is impossible and MUST NOT be introduced as a "convenience."
-- MUST label every container and volume `ca.sandbox=1`, and MUST tear them down on exit (cached images excepted). `prune` reclaims a leaked labeled object via the label alone.
-- MUST NOT report a teardown as successful when docker refused a removal or the post-teardown verification could not confirm the scope is empty. `destroy`/`prune` exit non-zero and name every object left behind — automation must never read exit 0 over a still-running untrusted container.
-- MUST NOT enable `--with-claude` on the default path — it routes to `sandbox-claude-inside`, and MUST NEVER co-mount the token volume with an untrusted-code run.
-- MUST STOP rather than guess when Docker or nixpacks is absent — report the missing dependency, never a stack trace.
+Report removed, deliberately kept, remaining and unknown resources separately. A removal/listing/verification failure is incomplete teardown with a nonzero CLI exit, not an empty successful scope. Cached images are retained, including old cache versions. Inspection and receipt repair do not authorize starting another sandbox or deleting unrelated resources.

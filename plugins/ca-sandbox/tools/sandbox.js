@@ -3,10 +3,9 @@
 // cli.ts
 import { fileURLToPath } from "node:url";
 import path2 from "node:path";
-import { spawnSync as spawnSync2 } from "node:child_process";
+import { spawnSync } from "node:child_process";
 
 // create.ts
-import { spawnSync, spawn as spawn3 } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { readdir } from "node:fs/promises";
 
@@ -216,6 +215,9 @@ var APP_DIR = "/work/repo";
 var SANDBOX_LABEL = "ca.sandbox=1";
 var SANDBOX_USER = "1000:1000";
 var NETWORKED_POLICIES = /* @__PURE__ */ new Set();
+function ordinaryNetworkCapability(requested) {
+  return { requested, effective: "offline", available: requested === "offline" };
+}
 function hardeningFlags() {
   return [
     "--user",
@@ -281,14 +283,115 @@ ${(r.stderr || r.stdout).slice(-2e3)}`
 }
 
 // build.ts
+import { createHash } from "node:crypto";
 import { spawn as spawn2 } from "node:child_process";
-import { writeFile, readFile, rm } from "node:fs/promises";
+import { writeFile, readFile, rm, lstat } from "node:fs/promises";
 import path from "node:path";
 var IMAGE_PREFIX = "ca-sbx";
 var DEPS_DIR = "/deps";
 var APP_DIR2 = "/work/repo";
 var NIXPACKS_APP_DIR = "/app";
 var FALLBACK_BASE_IMAGE = "node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0";
+var NIXPACKS_BASE_IMAGE = "ghcr.io/railwayapp/nixpacks@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de";
+var NIXPACKS_GENERATOR_ARGS = Object.freeze(["--no-error-without-start"]);
+var NIXPACKS_BUILD_PROFILE = Object.freeze({
+  schema: 1,
+  buildImage: NIXPACKS_BASE_IMAGE,
+  generatorArgs: NIXPACKS_GENERATOR_ARGS,
+  environmentPolicy: "minimal-os-v1",
+  dockerfilePolicy: "all-image-refs-sha256-no-frontend-v2",
+  inputPolicy: "no-project-config-or-existing-output-v1",
+  providerPolicy: "explicit-node-package-json-python-requirements-txt-v1"
+});
+function nixpacksEnvironment() {
+  const env = { MSYS_NO_PATHCONV: "1" };
+  for (const key of [
+    "PATH",
+    "Path",
+    "PATHEXT",
+    "SystemRoot",
+    "SYSTEMROOT",
+    "WINDIR",
+    "ComSpec",
+    "COMSPEC",
+    "TEMP",
+    "TMP",
+    "HOME",
+    "USERPROFILE",
+    "LANG",
+    "LC_ALL"
+  ]) {
+    if (process.env[key] !== void 0) env[key] = process.env[key];
+  }
+  return env;
+}
+function validateGeneratedImageInputs(dockerfile) {
+  if (/^\s*#\s*syntax\s*=/im.test(dockerfile))
+    throw new Error("ca-sandbox: unsupported Dockerfile frontend; pinned image profile required");
+  const escape = /^\s*#\s*escape\s*=\s*(\S+)/im.exec(dockerfile);
+  if (escape && escape[1] !== "\\")
+    throw new Error("ca-sandbox: unsupported Dockerfile escape in pinned image profile");
+  const stages = /* @__PURE__ */ new Map();
+  let count = 0;
+  const pinned = (image) => /^[a-zA-Z0-9][a-zA-Z0-9._:/-]*@sha256:[a-f0-9]{64}$/.test(image);
+  const source = (image, numeric) => {
+    const stage = stages.get(image.toLowerCase());
+    if (pinned(image) || stage !== void 0 && stage < count - 1 || numeric && /^(?:0|[1-9][0-9]*)$/.test(image) && Number(image) < count - 1) return;
+    throw new Error("ca-sandbox: unpinned or unsupported external image source; pinned digest or prior stage required");
+  };
+  const active = dockerfile.split(/\r?\n/).filter((line) => !/^\s*#/.test(line)).join("\n");
+  for (const line of active.replace(/\\[ \t]*\r?\n/g, " ").split(/\r?\n/)) {
+    const tokens = line.trim().split(/\s+/);
+    const instruction = tokens.shift()?.toUpperCase();
+    if (instruction === "ONBUILD")
+      throw new Error("ca-sandbox: unsupported deferred image instructions in pinned profile");
+    if (instruction === "FROM") {
+      if (tokens[0]?.startsWith("--platform=")) tokens.shift();
+      if (tokens.length !== 1 && !(tokens.length === 3 && tokens[1].toUpperCase() === "AS" && /^[a-zA-Z][a-zA-Z0-9_.-]*$/.test(tokens[2])))
+        throw new Error("ca-sandbox: unsupported FROM declaration; immutable image required");
+      const image = tokens[0];
+      if (!image || image.toLowerCase() !== "scratch" && !stages.has(image.toLowerCase()) && !pinned(image))
+        throw new Error("ca-sandbox: unpinned external FROM image; every generated image requires a sha256 digest");
+      if (tokens.length === 3) {
+        const alias = tokens[2].toLowerCase();
+        if (stages.has(alias)) throw new Error("ca-sandbox: ambiguous FROM stage alias");
+        stages.set(alias, count);
+      }
+      count++;
+      continue;
+    }
+    if (instruction !== "COPY" && instruction !== "ADD" && instruction !== "RUN") continue;
+    const seen = /* @__PURE__ */ new Set();
+    for (const flag of tokens) {
+      if (!flag.startsWith("--")) break;
+      if (/["'\\$`]/.test(flag)) throw new Error("ca-sandbox: unsupported quoted/dynamic image flag in pinned profile");
+      const option = /^--([a-z-]+)(?:=(.+))?$/.exec(flag);
+      if (!option) throw new Error("ca-sandbox: unsupported image flag in pinned profile");
+      const [, key, value] = option;
+      if (instruction === "RUN") {
+        if (!value || !["mount", "network", "security"].includes(key))
+          throw new Error("ca-sandbox: unsupported RUN flag in pinned image profile");
+        if (key !== "mount") continue;
+        const origins = value.split(",").filter((part) => part.split("=", 1)[0].toLowerCase() === "from");
+        if (origins.length > 1) throw new Error("ca-sandbox: ambiguous mount image source in pinned profile");
+        if (origins.length) {
+          const origin = /^from=(.+)$/i.exec(origins[0]);
+          if (!origin) throw new Error("ca-sandbox: unsupported mount image source in pinned profile");
+          source(origin[1], false);
+        }
+      } else {
+        if (!value && !["link", "parents"].includes(key))
+          throw new Error("ca-sandbox: unsupported COPY/ADD flag in pinned image profile");
+        if (key === "from") {
+          if (seen.has(key)) throw new Error("ca-sandbox: ambiguous COPY image source in pinned profile");
+          source(value, true);
+        }
+        seen.add(key);
+      }
+    }
+  }
+  if (!count) throw new Error("ca-sandbox: generated Dockerfile has no supported pinned FROM declaration");
+}
 var BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 function run(cmd, args, opts = {}) {
   const { timeoutMs, ...spawnOpts } = opts;
@@ -329,14 +432,10 @@ function run(cmd, args, opts = {}) {
     });
   });
 }
-function sanitizeRepoName(repoDir) {
-  const base = path.basename(repoDir.replace(/[\\/]+$/, "")) || "repo";
-  const cleaned = base.replace(/[^A-Za-z0-9_.-]+/g, "-").replace(/-+/g, "-").replace(/^[-._]+/, "").replace(/[-._]+$/, "").toLowerCase();
-  return cleaned || "repo";
+function imageTag(_repoDir, cacheKey) {
+  return `${IMAGE_PREFIX}:v2-${cacheKey}`;
 }
-function imageTag(repoDir, dephash) {
-  return `${IMAGE_PREFIX}:${sanitizeRepoName(repoDir)}-${dephash}`;
-}
+var CACHE_LABEL = "ca.sandbox.cache-key";
 function reportBuildStage(reporter, stage) {
   try {
     const pending = reporter?.(stage);
@@ -349,13 +448,38 @@ function reportBuildStage(reporter, stage) {
 }
 async function defaultImageInspect(tag) {
   const r = await run("docker", ["image", "inspect", tag]);
+  if (r.code !== 0 && !/no such image/i.test(r.out)) throw new Error("ca-sandbox: cache observation unavailable");
   return r.code;
+}
+async function defaultImageIdentity(tag) {
+  const r = await run("docker", ["image", "inspect", tag]);
+  if (r.code !== 0) return null;
+  try {
+    const image = JSON.parse(r.stdout)[0];
+    return { id: image.Id, cacheKey: image.Config?.Labels?.[CACHE_LABEL] };
+  } catch {
+    return null;
+  }
+}
+async function defaultTargetPlatform() {
+  const r = await run("docker", ["version", "--format", "{{.Server.Os}}/{{.Server.Arch}}"]);
+  const platform = r.stdout.trim();
+  if (r.code !== 0 || !/^[a-z0-9]+\/[a-z0-9_]+(?:\/[a-z0-9]+)?$/.test(platform)) {
+    throw new Error("ca-sandbox: target Docker platform observation unavailable; no cache reuse or build");
+  }
+  return platform;
+}
+function buildIdentityArgs(ctx) {
+  if (!ctx.cacheKey || !ctx.platform) throw new Error("ca-sandbox: missing build identity");
+  return ["--platform", ctx.platform, "--label", `${CACHE_LABEL}=${ctx.cacheKey}`];
+}
+function observedNixpacksVersion(output) {
+  return /^(?:nixpacks\s+)?(\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?)$/.exec(output.trim())?.[1] ?? output.trim();
 }
 async function defaultNixpacksVersion() {
   const r = await run("nixpacks", ["--version"]);
   if (r.code !== 0) throw new Error(`nixpacks --version failed: ${r.out.trim()}`);
-  const m = r.stdout.match(/(\d+\.\d+\.\d+)/);
-  return m ? m[1] : r.stdout.trim();
+  return observedNixpacksVersion(r.stdout);
 }
 async function detectWslNixpacks(exec = run) {
   const probe = await exec("wsl.exe", [
@@ -368,14 +492,12 @@ async function detectWslNixpacks(exec = run) {
   if (!bin) return null;
   const ver = await exec("wsl.exe", ["--", bin, "--version"]);
   if (ver.code !== 0) return null;
-  const m = ver.stdout.match(/(\d+\.\d+\.\d+)/);
-  return { bin, version: m ? m[1] : ver.stdout.trim() };
+  return { bin, version: observedNixpacksVersion(ver.stdout) };
 }
 async function defaultEnsureNixpacks(exec = run) {
   const probe = await exec("nixpacks", ["--version"]);
   if (probe.code === 0) {
-    const m = probe.stdout.match(/(\d+\.\d+\.\d+)/);
-    return { available: true, via: { via: "host" }, version: m ? m[1] : probe.stdout.trim() };
+    return { available: true, via: { via: "host" }, version: observedNixpacksVersion(probe.stdout) };
   }
   if (process.platform === "win32") {
     const wsl = await detectWslNixpacks(exec);
@@ -414,6 +536,13 @@ function generateDockerfile(stack) {
   lines.push(`COPY . ${APP_DIR2}`);
   return lines.join("\n") + "\n";
 }
+function buildCapabilities(stack, nixpacksAvailable) {
+  return {
+    builder: nixpacksAvailable ? "nixpacks" : "dockerfile-fallback",
+    supported: nixpacksAvailable || stack.node || stack.python,
+    fallbackStacks: ["Node (package.json)", "Python (requirements.txt)"]
+  };
+}
 async function detectStack(repoDir) {
   const { access } = await import("node:fs/promises");
   const has = async (f) => {
@@ -448,11 +577,12 @@ function relocationOverlay() {
     ""
   ].join("\n");
 }
-async function generateNixpacks(repoDir, nx) {
+async function generateNixpacks(repoDir, nx, providers, signal) {
+  const args = [...NIXPACKS_GENERATOR_ARGS, "--json-plan", JSON.stringify({ buildImage: NIXPACKS_BASE_IMAGE, providers })];
   if (nx.via === "host") {
-    return run("nixpacks", ["build", repoDir, "--out", repoDir, "--no-error-without-start"]);
+    return run("nixpacks", ["build", repoDir, "--out", repoDir, ...args], { env: nixpacksEnvironment(), signal });
   }
-  const wp = await run("wsl.exe", ["wslpath", "-a", repoDir.replace(/\\/g, "/")]);
+  const wp = await run("wsl.exe", ["wslpath", "-a", repoDir.replace(/\\/g, "/")], { env: nixpacksEnvironment(), signal });
   if (wp.code !== 0)
     return { code: wp.code || 1, out: `wslpath failed: ${wp.out}`, stdout: "", stderr: wp.out };
   const wslRepo = wp.stdout.trim();
@@ -465,28 +595,44 @@ async function generateNixpacks(repoDir, nx) {
     wslRepo,
     "--out",
     wslRepo,
-    "--no-error-without-start"
-  ]);
+    ...args
+  ], { env: nixpacksEnvironment(), signal });
 }
 async function runNixpacksBuild(tag, ctx) {
   const nx = ctx.nixpacks ?? { via: "host" };
-  const gen = await generateNixpacks(ctx.repoDir, nx);
-  if (gen.code !== 0) return { code: gen.code, out: gen.out };
-  const genPath = path.join(ctx.repoDir, ".nixpacks", "Dockerfile");
-  let generated;
-  try {
-    generated = await readFile(genPath, "utf8");
-  } catch (e) {
-    return { code: 1, out: `nixpacks did not produce ${genPath}: ${String(e)}
-${gen.out}` };
-  }
   const dfPath = path.join(ctx.repoDir, ".ca-sandbox.nixpacks.Dockerfile");
-  await writeFile(dfPath, generated + relocationOverlay());
+  for (const name of ["nixpacks.toml", "nixpacks.json", ".nixpacks", ".ca-sandbox.nixpacks.Dockerfile"]) {
+    let present;
+    try {
+      await lstat(path.join(ctx.repoDir, name));
+      present = true;
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+      present = false;
+    }
+    if (present) throw new Error(`ca-sandbox: unsupported Nixpacks input ${name}; project config and preexisting output are refused`);
+  }
+  const stack = await detectStack(ctx.repoDir);
+  const providers = [...stack.node ? ["node"] : [], ...stack.python ? ["python"] : []];
+  if (!providers.length) throw new Error("ca-sandbox: supported Nixpacks providers require Node package.json or Python requirements.txt");
   try {
-    const b = await run("docker", ["build", "-t", tag, "-f", dfPath, ctx.repoDir], {
-      env: BUILD_ENV
+    const gen = await generateNixpacks(ctx.repoDir, nx, providers, ctx.signal);
+    if (gen.code !== 0) return { code: gen.code, out: gen.out };
+    const genPath = path.join(ctx.repoDir, ".nixpacks", "Dockerfile");
+    let generated;
+    try {
+      generated = await readFile(genPath, "utf8");
+    } catch (error) {
+      return { code: 1, out: `nixpacks did not produce ${genPath}: ${String(error)}
+${gen.out}` };
+    }
+    validateGeneratedImageInputs(generated);
+    await writeFile(dfPath, generated + relocationOverlay());
+    const built = await run("docker", ["build", ...buildIdentityArgs(ctx), "-t", tag, "-f", dfPath, ctx.repoDir], {
+      env: BUILD_ENV,
+      signal: ctx.signal
     });
-    return { code: b.code, out: gen.out + "\n" + b.out };
+    return { code: built.code, out: gen.out + "\n" + built.out };
   } finally {
     await rm(dfPath, { force: true }).catch(() => {
     });
@@ -494,47 +640,75 @@ ${gen.out}` };
     });
   }
 }
+async function verifyBuiltIdentity(result, tag, ctx) {
+  if (result.code !== 0) return result;
+  const identity = await defaultImageIdentity(tag);
+  if (!identity || !/^sha256:[a-f0-9]{64}$/.test(identity.id) || identity.cacheKey !== ctx.cacheKey)
+    return { code: 1, out: "build effect succeeded but image identity/provenance observation is unavailable; inspect the retained cache tag" };
+  return { ...result, imageId: identity.id };
+}
 async function defaultRunBuild(tag, ctx) {
   if (ctx.builder === "nixpacks") {
-    return runNixpacksBuild(tag, ctx);
+    return verifyBuiltIdentity(await runNixpacksBuild(tag, ctx), tag, ctx);
   }
   const stack = await detectStack(ctx.repoDir);
   const dockerfileContent = generateDockerfile(stack);
   const dockerfile = path.join(ctx.repoDir, ".ca-sandbox.Dockerfile");
   await writeFile(dockerfile, dockerfileContent);
   try {
-    const b = await run("docker", ["build", "-t", tag, "-f", dockerfile, ctx.repoDir]);
-    return { code: b.code, out: b.out };
+    const b = await run("docker", ["build", ...buildIdentityArgs(ctx), "-t", tag, "-f", dockerfile, ctx.repoDir], { signal: ctx.signal });
+    return verifyBuiltIdentity({ code: b.code, out: b.out }, tag, ctx);
   } finally {
     await rm(dockerfile, { force: true }).catch(() => {
     });
   }
 }
-var defaultDeps = () => ({
+var defaultBuildDeps = () => ({
   imageInspect: defaultImageInspect,
+  imageIdentity: defaultImageIdentity,
+  targetPlatform: defaultTargetPlatform,
+  detectStack,
   runBuild: defaultRunBuild,
   nixpacksVersion: defaultNixpacksVersion,
   ensureNixpacks: defaultEnsureNixpacks
 });
-async function buildOrReuseImage(repoDir, dephash, deps = defaultDeps(), reportStage) {
-  const tag = imageTag(repoDir, dephash);
+async function buildOrReuseImage(repoDir, dephash, deps = defaultBuildDeps(), reportStage, signal) {
+  signal?.throwIfAborted();
   const notes = [];
-  reportBuildStage(reportStage, "image-inspect");
-  const inspectCode = await deps.imageInspect(tag);
-  if (inspectCode === 0) {
-    return { tag, reused: true, built: false, builder: null, notes };
-  }
   reportBuildStage(reportStage, "nixpacks-probe");
   const nixpacks = await deps.ensureNixpacks();
-  let builder;
-  if (nixpacks.available) {
-    builder = "nixpacks";
-    if (nixpacks.note) notes.push(nixpacks.note);
-  } else {
-    builder = "dockerfile-fallback";
-    if (nixpacks.note) notes.push(nixpacks.note);
+  const builder = nixpacks.available ? "nixpacks" : "dockerfile-fallback";
+  if (deps.detectStack && !buildCapabilities(await deps.detectStack(repoDir), nixpacks.available).supported)
+    throw new Error("ca-sandbox: unsupported fallback stack; install/provide an already usable nixpacks builder; fallback supports Node package.json or Python requirements.txt");
+  if (nixpacks.note) notes.push(nixpacks.note);
+  const version = nixpacks.available ? nixpacks.version ?? await deps.nixpacksVersion() : "fallback-v2";
+  if (nixpacks.available && !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
+    throw new Error("ca-sandbox: malformed nixpacks version; no cache reuse or build");
   }
-  const ctx = { repoDir, builder, nixpacks: nixpacks.via, notes };
+  if (!deps.targetPlatform) throw new Error("ca-sandbox: target Docker platform observation unavailable");
+  const platform = await deps.targetPlatform();
+  if (!/^[a-z0-9]+\/[a-z0-9_]+(?:\/[a-z0-9]+)?$/.test(platform)) throw new Error("ca-sandbox: target Docker platform observation unavailable");
+  const cacheKey = createHash("sha256").update(JSON.stringify({
+    schema: 2,
+    manifests: dephash,
+    builder,
+    version,
+    platform,
+    ...builder === "nixpacks" ? { nixpacksProfile: NIXPACKS_BUILD_PROFILE } : {},
+    fallback: generateDockerfile({ node: true, python: true }),
+    relocation: relocationOverlay()
+  })).digest("hex");
+  const tag = imageTag(repoDir, cacheKey);
+  reportBuildStage(reportStage, "image-inspect");
+  const inspectCode = await deps.imageInspect(tag);
+  if (inspectCode === 0 && deps.imageIdentity) {
+    const identity = await deps.imageIdentity(tag);
+    if (identity && /^sha256:[a-f0-9]{64}$/.test(identity.id) && identity.cacheKey === cacheKey) {
+      return { tag, cacheKey, imageId: identity.id, reused: true, built: false, builder, notes };
+    }
+  }
+  const ctx = { repoDir, builder, nixpacks: nixpacks.via, notes, cacheKey, platform, signal };
+  signal?.throwIfAborted();
   reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);
   if (result.code !== 0) {
@@ -543,15 +717,15 @@ async function buildOrReuseImage(repoDir, dephash, deps = defaultDeps(), reportS
 ` + result.out.slice(-2e3)
     );
   }
-  return { tag, reused: false, built: true, builder, notes };
+  return { tag, cacheKey, imageId: result.imageId, reused: false, built: true, builder, notes };
 }
 
 // dephash.ts
-import { createHash } from "node:crypto";
+import { createHash as createHash2 } from "node:crypto";
 var DEPHASH_LENGTH = 12;
 function sha256Hex(data) {
   const buf = typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.isBuffer(data) ? data : Buffer.from(data);
-  return createHash("sha256").update(buf).digest("hex");
+  return createHash2("sha256").update(buf).digest("hex");
 }
 function computeDepHash(manifestFiles, nixpacksVersion = "") {
   const seen = /* @__PURE__ */ new Set();
@@ -566,7 +740,7 @@ function computeDepHash(manifestFiles, nixpacksVersion = "") {
   lines.sort();
   const payload = lines.join("\n") + `
 nixpacks=${nixpacksVersion}`;
-  return createHash("sha256").update(payload, "utf8").digest("hex").slice(0, DEPHASH_LENGTH);
+  return createHash2("sha256").update(payload, "utf8").digest("hex").slice(0, DEPHASH_LENGTH);
 }
 
 // registry.ts
@@ -582,17 +756,21 @@ function labelFilterArgs(labels) {
 var scopeOf = (labels) => (Array.isArray(labels) ? labels : [labels]).map((l) => `label=${l}`).join(" ");
 async function listContainersResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
   const r = await dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
-  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+  return { code: r.code, items: r.code === 0 ? splitLines(r.stdout) : [], stderr: r.stderr, scope: scopeOf(labels) };
 }
 async function listVolumesResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
   const r = await dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
-  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+  return { code: r.code, items: r.code === 0 ? splitLines(r.stdout) : [], stderr: r.stderr, scope: scopeOf(labels) };
 }
 async function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  return (await listContainersResult(labels, dockerRun)).items;
+  const result = await listContainersResult(labels, dockerRun);
+  if (result.code !== 0) throw new Error(`ca-sandbox: container observation unavailable (exit ${result.code})`);
+  return result.items;
 }
 async function listVolumes(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  return (await listVolumesResult(labels, dockerRun)).items;
+  const result = await listVolumesResult(labels, dockerRun);
+  if (result.code !== 0) throw new Error(`ca-sandbox: volume observation unavailable (exit ${result.code})`);
+  return result.items;
 }
 function splitLines(out) {
   return out.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -620,6 +798,38 @@ var APP_DIR3 = "/work/repo";
 var VOLUME_PREFIX = "ca-sbx-vol";
 var CLONE_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CLONE_TIMEOUT_MS ?? 5 * 6e4);
 var CP_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CP_TIMEOUT_MS ?? 2 * 6e4);
+var CreateFailure = class extends Error {
+  constructor(message, id, volumeName, cleanup) {
+    super(`${message}
+ca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`);
+    this.id = id;
+    this.volumeName = volumeName;
+    this.cleanup = cleanup;
+    this.name = "CreateFailure";
+  }
+  id;
+  volumeName;
+  cleanup;
+};
+async function compensateCreate(id, volume, dockerRun) {
+  const failures = [];
+  const scope = [SANDBOX_LABEL2, idLabel(id)];
+  const before = await listContainersResult(scope, dockerRun);
+  if (before.code !== 0) failures.push(`container discovery unavailable (${before.code})`);
+  const targets = before.code === 0 ? before.items : [];
+  for (const target of targets) {
+    const removed = await dockerRun(["rm", "-f", target]);
+    if (removed.code !== 0) failures.push(`container removal unverified: ${target} (${removed.code})`);
+  }
+  const removedVolume = await dockerRun(["volume", "rm", "-f", volume]);
+  if (removedVolume.code !== 0) failures.push(`volume removal unverified (${removedVolume.code})`);
+  const after = await listContainersResult(scope, dockerRun);
+  const volumes = await dockerRun(["volume", "ls", "-q", "--filter", `name=^${volume}$`]);
+  const volumePresent = volumes.stdout.split(/\r?\n/).some((v) => v.trim() === volume);
+  const verified = before.code === 0 && after.code === 0 && !after.items.length && volumes.code === 0 && !volumePresent;
+  if (!verified) failures.push("resource absence not verified");
+  return { verified, containers: after.code === 0 ? after.items : targets, volume, failures };
+}
 var InvalidRepoUrlError = class extends Error {
   constructor(url, reason) {
     super(
@@ -646,25 +856,13 @@ function validateRepoUrl(url) {
 function newSandboxId() {
   return randomBytes(6).toString("hex");
 }
-function spawnAsync(cmd, args, timeoutMs) {
-  return new Promise((resolve) => {
-    const c = spawn3(cmd, args, {
-      env: DOCKER_ENV,
-      stdio: ["ignore", "ignore", "pipe"],
-      ...timeoutMs !== void 0 ? { timeout: timeoutMs } : {}
-    });
-    const stderrChunks = [];
-    c.stderr?.on("data", (chunk) => stderrChunks.push(chunk));
-    c.on("error", () => resolve({ code: 1, stderr: "" }));
-    c.on("close", (code) => {
-      const raw = Buffer.concat(stderrChunks).toString("utf8");
-      const stderr = raw.length > 500 ? raw.slice(-500) : raw;
-      resolve({ code: code ?? 1, stderr });
-    });
-  });
+async function spawnAsync(cmd, args, timeoutMs, signal) {
+  if (cmd !== "docker") throw new Error("ca-sandbox: unsupported clone process");
+  const result = await makeDockerRun({}, { timeoutMs })(args, { signal });
+  return { code: result.code, stderr: result.stderr.slice(-500) };
 }
-async function defaultCloneRepo(url, volumeName, id) {
-  return spawnAsync("docker", buildCloneArgs(url, volumeName, id), CLONE_TIMEOUT_MS);
+async function defaultCloneRepo(url, volumeName, id, signal) {
+  return spawnAsync("docker", buildCloneArgs(url, volumeName, id), CLONE_TIMEOUT_MS, signal);
 }
 function buildCloneArgs(url, volumeName, id) {
   return [
@@ -702,49 +900,40 @@ function buildCpHelperCreateArgs(volumeName, helperName, id) {
     "true"
   ];
 }
-async function defaultBuildImage(volumeName, id) {
+async function defaultBuildImage(volumeName, id, signal, buildDeps) {
   const { mkdtemp: mkdtemp2, rm: rm2 } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
   const path3 = await import("node:path");
   const dir = await mkdtemp2(path3.join(tmpdir(), "ca-sbx-checkout-"));
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  const createResult = spawnSync("docker", buildCpHelperCreateArgs(volumeName, helper, id), {
-    env: DOCKER_ENV,
-    encoding: "utf8",
-    timeout: CP_TIMEOUT_MS
-  });
-  if ((createResult.status ?? 1) !== 0) {
-    const hint = (createResult.stderr ?? "").trim();
-    await rm2(dir, { recursive: true, force: true }).catch(() => {
-    });
-    throw new Error(
-      `ca-sandbox: docker create failed for helper container (exit ${createResult.status ?? 1})${hint ? `
-${hint}` : ""}`
-    );
-  }
+  let helperCreated = false;
   try {
-    const cpResult = spawnSync("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], {
-      env: DOCKER_ENV,
-      encoding: "utf8",
-      timeout: CP_TIMEOUT_MS
-    });
-    if ((cpResult.status ?? 1) !== 0) {
-      const hint = (cpResult.stderr ?? "").trim();
-      throw new Error(
-        `ca-sandbox: docker cp failed \u2014 empty checkout, cannot compute dephash (exit ${cpResult.status ?? 1})${hint ? `
-${hint}` : ""}`
-      );
-    }
+    const createResult = await makeDockerRun({}, { timeoutMs: CP_TIMEOUT_MS })(buildCpHelperCreateArgs(volumeName, helper, id), { signal });
+    if (createResult.code !== 0) throw new Error(`ca-sandbox: helper creation unavailable (exit ${createResult.code}); target=${helper}`);
+    helperCreated = true;
+    const cpResult = await makeDockerRun({}, { timeoutMs: CP_TIMEOUT_MS })(["cp", `${helper}:${APP_DIR3}/.`, dir], { signal });
+    if (cpResult.code !== 0) throw new Error(`ca-sandbox: checkout materialization unavailable (exit ${cpResult.code}); target=${helper}`);
     const manifests = await readManifests(dir, path3);
     const dephash = computeDepHash(manifests);
-    return await buildOrReuseImage(dir, dephash);
+    return await buildOrReuseImage(dir, dephash, buildDeps, void 0, signal);
   } finally {
-    spawnSync("docker", ["rm", "-f", helper], { env: DOCKER_ENV });
-    await rm2(dir, { recursive: true, force: true }).catch(() => {
-    });
+    const removed = helperCreated ? await defaultDockerRun(["rm", "-f", helper]) : { code: 1 };
+    const observed = await defaultDockerRun(["ps", "-a", "-q", "--filter", `name=^/${helper}$`]);
+    let stagingRemoved = false;
+    try {
+      await rm2(dir, { recursive: true, force: true });
+      stagingRemoved = true;
+    } catch {
+    }
+    if (observed.code !== 0 || observed.stdout.trim() || !stagingRemoved) {
+      throw new Error(`ca-sandbox: build staging cleanup unknown; helper=${helper} (remove=${removed.code}), staging=${dir}`);
+    }
   }
 }
 var MANIFEST_NAMES = /* @__PURE__ */ new Set([
+  "nixpacks.toml",
+  "nixpacks.json",
+  ".dockerignore",
   "package.json",
   "package-lock.json",
   "npm-shrinkwrap.json",
@@ -759,19 +948,28 @@ var MANIFEST_NAMES = /* @__PURE__ */ new Set([
   "Cargo.lock"
 ]);
 async function readManifests(dir, path3) {
-  const { readFile: readFile2 } = await import("node:fs/promises");
-  let entries = [];
-  try {
-    entries = await readdir(dir);
-  } catch {
-    return [];
-  }
+  const { readFile: readFile2, lstat: lstat2 } = await import("node:fs/promises");
+  const entries = await readdir(dir);
   const out = [];
   for (const name of entries) {
     if (!MANIFEST_NAMES.has(name)) continue;
+    const inputPath = path3.join(dir, name);
     try {
-      out.push({ path: name, bytes: await readFile2(path3.join(dir, name)) });
-    } catch {
+      const entry = await lstat2(inputPath);
+      if (!entry.isFile() || entry.isSymbolicLink()) {
+        throw new Error("unsafe declared input");
+      }
+      out.push({ path: name, bytes: await readFile2(inputPath) });
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        try {
+          await lstat2(inputPath);
+        } catch (observed) {
+          if (observed.code === "ENOENT") continue;
+        }
+      }
+      const code = error.code ?? "unsafe input";
+      throw new Error(`ca-sandbox: manifest observation unavailable: ${name} (${code}); cache/build admission refused`);
     }
   }
   return out;
@@ -780,7 +978,7 @@ async function createSandbox(url, opts = {}) {
   validateRepoUrl(url);
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const cloneRepo = opts.cloneRepo ?? defaultCloneRepo;
-  const buildImage = opts.buildImage ?? defaultBuildImage;
+  const buildImage = opts.buildImage ?? ((volume, id2, signal) => defaultBuildImage(volume, id2, signal, opts.buildDeps));
   const netPolicy = opts.netPolicy ?? "offline";
   const id = opts.id ?? newSandboxId();
   const volumeName = `${VOLUME_PREFIX}-${id}`;
@@ -791,13 +989,15 @@ async function createSandbox(url, opts = {}) {
     { signal: opts.signal }
   );
   if (mk.code !== 0) {
-    throw new Error(
-      `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})
-${mk.stderr.slice(-1e3)}`
+    throw new CreateFailure(
+      `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})`,
+      id,
+      volumeName,
+      { verified: false, containers: [], volume: volumeName, failures: ["volume creation effect unknown; inspect before cleanup or a new create"] }
     );
   }
   try {
-    const cloneRaw = await cloneRepo(url, volumeName, id);
+    const cloneRaw = await cloneRepo(url, volumeName, id, opts.signal);
     const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
     const cloneStderr = typeof cloneRaw === "number" ? "" : cloneRaw.stderr;
     if (cloneCode !== 0) {
@@ -807,8 +1007,10 @@ ${cloneStderr.trim()}` : "";
         `ca-sandbox: clone of ${url} into ${volumeName} failed (exit ${cloneCode})${hint}`
       );
     }
-    const build = await buildImage(volumeName, id);
-    const containerId = await runContainer(build.tag, volumeName, netPolicy, {
+    opts.signal?.throwIfAborted();
+    const build = await buildImage(volumeName, id, opts.signal);
+    opts.signal?.throwIfAborted();
+    const containerId = await runContainer(build.imageId ?? build.tag, volumeName, netPolicy, {
       extraLabels: [idLabel(id), ...opts.extraLabels ?? []],
       namePrefix: `ca-sbx-${id}`,
       signal: opts.signal,
@@ -817,24 +1019,15 @@ ${cloneStderr.trim()}` : "";
     return {
       id,
       volumeName,
+      network: ordinaryNetworkCapability(netPolicy),
       image: build.tag,
+      imageId: build.imageId,
       containerId,
       notes: build.notes
     };
   } catch (err) {
-    const leftover = await dockerRun([
-      "ps",
-      "-a",
-      "-q",
-      "--no-trunc",
-      "--filter",
-      `label=${idLabel(id)}`
-    ]);
-    for (const c of leftover.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
-      await dockerRun(["rm", "-f", c]);
-    }
-    await dockerRun(["volume", "rm", "-f", volumeName]);
-    throw err;
+    const cleanup = await compensateCreate(id, volumeName, dockerRun);
+    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup);
   }
 }
 
@@ -991,10 +1184,13 @@ async function execInSandbox(id, argv, opts = {}) {
   const r = await dockerRun(args, { signal: opts.signal });
   const durationMs = Date.now() - start;
   let escalation = "";
-  if (r.timedOut || r.aborted) {
-    const why = r.timedOut ? "the exec deadline" : "cancellation";
+  let containment;
+  if (r.timedOut || r.aborted || r.overflowed) {
+    const why = r.overflowed ? "lost output observation" : r.timedOut ? "the exec deadline" : "cancellation";
     const stopped = await dockerRun(["stop", "--time", "0", id]);
-    escalation = stopped.code === 0 ? `
+    const observed = await dockerRun(["inspect", "--format", "{{.State.Running}}", id]);
+    containment = stopped.code === 0 && observed.code === 0 && observed.stdout.trim() === "false" ? "verified-stopped" : "unknown";
+    escalation = containment === "verified-stopped" ? `
 ca-sandbox: stopped container ${id} after ${why}.` : `
 ca-sandbox: could not stop container ${id} after ${why} (${stopped.stderr.trim() || `exit ${stopped.code}`}); it may still be running.`;
   }
@@ -1008,7 +1204,9 @@ ca-sandbox: could not stop container ${id} after ${why} (${stopped.stderr.trim()
     durationMs,
     truncated: out.truncated || err.truncated,
     ...r.timedOut ? { timedOut: true } : {},
-    ...r.aborted ? { aborted: true } : {}
+    ...r.aborted ? { aborted: true } : {},
+    ...r.overflowed ? { overflowed: true } : {},
+    ...containment ? { containment } : {}
   };
 }
 
@@ -1187,7 +1385,7 @@ function parsePrune(args) {
 }
 async function defaultShell(id, shell) {
   const containerId = await resolveContainerId(id);
-  const r = spawnSync2("docker", ["exec", "-it", containerId, shell], {
+  const r = spawnSync("docker", ["exec", "-it", containerId, shell], {
     stdio: "inherit",
     env: DOCKER_ENV
   });

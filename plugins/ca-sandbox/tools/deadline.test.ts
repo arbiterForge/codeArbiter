@@ -353,13 +353,14 @@ describe("#479 — an in-flight docker call is cancellable", () => {
           code: DOCKER_ABORT_EXIT_CODE, stdout: "", stderr: "cancelled", aborted: true,
         };
       }
-      return { code: 0, stdout: "", stderr: "" };
+      return { code: 0, stdout: args[0] === "inspect" ? "false\n" : "", stderr: "" };
     };
     const result = await execInSandbox("box-9", ["sh", "-c", "sleep infinity"], { dockerRun });
 
     expect(result.aborted).toBe(true);
     const escalation = calls.slice(1);
-    expect(escalation).toHaveLength(1);
+    expect(escalation).toHaveLength(2);
+    expect(escalation[1][0]).toBe("inspect");
     expect(escalation[0]).toEqual(["stop", "--time", "0", "box-9"]);
     expect(result.stderr).toMatch(/stopped container box-9 after cancellation/i);
   });

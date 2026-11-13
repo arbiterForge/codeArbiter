@@ -10,19 +10,7 @@ It is independent of `ca`: CI is path-scoped and versions bump per-plugin.
 
 ## Requirements
 
-- **Docker — required.** A working Docker engine (Linux containers). Docker Desktop on Windows/macOS
-  (WSL2 backend) or native Linux all work. ca-sandbox shells out to the `docker` CLI.
-- **nixpacks — used to build the sandbox image** from the repo's detected dependencies. On
-  Linux/macOS it runs on the host. On Windows it runs via the **WSL bridge** (below). If neither a
-  host nixpacks nor a WSL bridge is found, ca-sandbox falls back to a generated Dockerfile that mimics
-  nixpacks (node/python only) — the feature still works, just without nixpacks' broader stack coverage.
-
-  > **Windows — the WSL bridge.** nixpacks ships Linux/macOS binaries only (no Windows binary). On
-  > Windows, ca-sandbox runs nixpacks inside a WSL distro purely to *generate* the Dockerfile
-  > (`nixpacks build --out`, which needs **no** Docker daemon in WSL), then builds it with your **host
-  > Docker** — the same engine the driver runs against, so the image is visible. Requirements: Docker
-  > Desktop + a WSL distro (e.g. Ubuntu) with `nixpacks` on its PATH or at `~/.local/bin/nixpacks`. No
-  > Docker Desktop WSL-integration toggle is needed.
+Docker with a reachable daemon (`docker info`) and Node 20.6+ are required. An already installed nixpacks (host or existing Windows WSL bridge) is preferred. Both builders support Node/Python dependencies. The Nixpacks profile selects those providers explicitly, pins its base image and checks generated external image references. It refuses project `nixpacks.toml`/`nixpacks.json`, an existing `.nixpacks` output tree or `.ca-sandbox.nixpacks.Dockerfile` before generation, preserving those paths. Custom configurations and other provider stacks are unsupported. Without nixpacks the packaged Dockerfile fallback supports Node/Python dependencies. The driver never installs host tooling. Consumer projects need no maintainer spike notes or ADR files.
 
 ## Security model — the load-bearing invariant
 
@@ -54,20 +42,15 @@ State is label-only: the set of sandboxes IS the set of docker objects labeled `
 > by MSYS path conversion *before* it reaches the CLI, becoming a Windows path. Wrap the command —
 > `exec <id> -- sh -c 'ls /work/repo'` — or set `MSYS_NO_PATHCONV=1`. PowerShell and cmd are unaffected.
 
-## Network policies
+## Network policies and staging
 
-- **offline** (default) — `--network none`; the box has no egress.
-- **clone-then-cut** — network up for the clone/build, severed for exploration.
-- **allowlist** — *experimental*. An iptables egress allowlist (custom bridge + `NET_ADMIN`); brittle
-  under CDN IP drift and does not close DNS-layer exfil. Prefer offline/clone-then-cut; a
-  hostname-aware forward proxy is the intended replacement.
+Ordinary exploration runtime is **offline** (`--network none`). The accepted request names `clone-then-cut` and `allowlist` also currently resolve to offline; the experimental allowlist helper is not integrated into ordinary create. Results distinguish requested and effective policy. Clone/build helpers still fetch repositories and dependencies. Never expand network access incidentally.
+
+The clone lives on a named volume. Build copies it into a temporary host build-context directory, removes that staging copy after use, and reports uncertain cleanup with its identity. The running sandbox has no host bind or socket; this does not mean source never touches host staging. Shell exit detaches; explicitly destroy the exact sandbox id when finished. Broad `sandbox prune` is separate and targets its discovery snapshot.
 
 ## Image caching
 
-The image is tagged by a hash of the repo's dependency manifests/lockfiles. An unchanged-deps re-launch
-reuses the image; a manifest change rebuilds. Deps install **out-of-tree at `/deps`** (with
-`NODE_PATH`/`PYTHONPATH` etc.) so the live source volume mounted at `/work/repo` never shadows them —
-deps survive the mount and source stays live-editable.
+V2 cache tags are `ca-sbx:v2-<sha256>`, independent of the temporary checkout basename. The key includes manifest/lockfile content, effective builder/version, Docker target platform and build templates/options. Reuse verifies the cache-key label and immutable image ID. Old cache tags remain intact. Dependencies install at `/deps` with `NODE_PATH`/`PYTHONPATH` so the source volume at `/work/repo` does not shadow them.
 
 ## `--with-claude` (Claude Code inside the box)
 

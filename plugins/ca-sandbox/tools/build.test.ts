@@ -68,8 +68,8 @@ describe("relocationOverlay — appended to the nixpacks-generated Dockerfile", 
 // PURE unit layer — injected deps, no real docker.
 // --------------------------------------------------------------------------
 describe("imageTag", () => {
-  it("tags ca-sbx:<repo>-<dephash> from the repo dir basename", async () => {
-    expect(imageTag("/tmp/some/myrepo", "abc123def456")).toBe("ca-sbx:myrepo-abc123def456");
+  it("tags a V2 identity independently of the checkout basename", async () => {
+    expect(imageTag("/tmp/some/myrepo", "abc123def456")).toBe("ca-sbx:v2-abc123def456");
   });
 
   it("sanitizes a basename that is not docker-tag-safe", async () => {
@@ -85,6 +85,8 @@ describe("buildOrReuseImage — cache hit (AC-04)", async () => {
     let inspected: string | null = null;
     let buildCalls = 0;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async (tag) => {
         inspected = tag;
         return 0; // exists
@@ -100,8 +102,8 @@ describe("buildOrReuseImage — cache hit (AC-04)", async () => {
     expect(res.reused).toBe(true);
     expect(res.built).toBe(false);
     expect(buildCalls).toBe(0);
-    expect(res.tag).toBe("ca-sbx:myrepo-deadbeef0000");
-    expect(inspected).toBe("ca-sbx:myrepo-deadbeef0000");
+    expect(res.tag).toMatch(/^ca-sbx:v2-[a-f0-9]{64}$/);
+    expect(inspected).toBe(res.tag);
   });
 });
 
@@ -110,6 +112,8 @@ describe("buildOrReuseImage — cache miss builds (AC-05)", async () => {
     let buildCalls = 0;
     let builtTag: string | null = null;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 1, // missing
       runBuild: async (tag) => {
         buildCalls++;
@@ -123,11 +127,14 @@ describe("buildOrReuseImage — cache miss builds (AC-05)", async () => {
     expect(res.built).toBe(true);
     expect(res.reused).toBe(false);
     expect(buildCalls).toBe(1);
-    expect(builtTag).toBe("ca-sbx:myrepo-feed0000face");
+    expect(builtTag).toBe(res.tag);
+    expect(builtTag).toMatch(/^ca-sbx:v2-[a-f0-9]{64}$/);
   });
 
   it("propagates a build failure", async () => {
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 1,
       runBuild: async () => ({ code: 7, out: "nixpacks blew up" }),
       nixpacksVersion: async () => "1.40.0",
@@ -141,6 +148,8 @@ describe("buildOrReuseImage — cache miss builds (AC-05)", async () => {
   it("records the generated-Dockerfile fallback note when nixpacks is unavailable", async () => {
     let usedFallback = false;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 1,
       runBuild: async (_tag, ctx) => {
         usedFallback = ctx.builder === "dockerfile-fallback";
@@ -164,6 +173,8 @@ describe("buildOrReuseImage — cache miss builds (AC-05)", async () => {
   it("uses nixpacks when it is available", async () => {
     let builder: string | null = null;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 1,
       runBuild: async (_tag, ctx) => {
         builder = ctx.builder;
@@ -192,6 +203,8 @@ describe("dephash drives the tag — unchanged vs manifest-changed (AC-04/AC-05)
 
     let builds = 0;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 0, // tag exists (first build cached it)
       runBuild: async () => {
         builds++;
@@ -322,6 +335,8 @@ describe("#394 - build.ts's spawn is bounded too", () => {
     const stdout = vi.spyOn(process.stdout, "write");
     const stderr = vi.spyOn(process.stderr, "write");
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 0,
       runBuild: async () => ({ code: 0, out: "" }),
       nixpacksVersion: async () => "1.40.0",
@@ -343,6 +358,8 @@ describe("#394 - build.ts's spawn is bounded too", () => {
     let inspectStarted = false;
     let releaseInspect!: () => void;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: () => new Promise<number>((resolve) => {
         inspectStarted = true;
         releaseInspect = () => resolve(0);
@@ -363,7 +380,8 @@ describe("#394 - build.ts's spawn is bounded too", () => {
     );
 
     try {
-      expect(stages).toEqual(["image-inspect"]);
+      await new Promise(resolve => setTimeout(resolve,0));
+      expect(stages).toEqual(["nixpacks-probe", "image-inspect"]);
       expect(JSON.stringify(stages)).not.toContain(sentinel);
     } finally {
       releaseInspect();
@@ -375,6 +393,8 @@ describe("#394 - build.ts's spawn is bounded too", () => {
     const stages: string[] = [];
     const observe = (stage: string) => stages.push(stage);
     const available: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 1,
       runBuild: async () => ({ code: 0, out: "" }),
       nixpacksVersion: async () => "1.40.0",
@@ -384,17 +404,19 @@ describe("#394 - build.ts's spawn is bounded too", () => {
 
     const nixpacks = await buildOrReuseImage("/tmp/nixpacks", "deadbeef0001", available, observe);
     expect(nixpacks.builder).toBe("nixpacks");
-    expect(stages).toEqual(["image-inspect", "nixpacks-probe", "nixpacks-build"]);
+    expect(stages).toEqual(["nixpacks-probe", "image-inspect", "nixpacks-build"]);
 
     stages.length = 0;
     const dockerfile = await buildOrReuseImage("/tmp/dockerfile", "deadbeef0002", fallback, observe);
     expect(dockerfile.builder).toBe("dockerfile-fallback");
-    expect(stages).toEqual(["image-inspect", "nixpacks-probe", "dockerfile-build"]);
+    expect(stages).toEqual(["nixpacks-probe", "image-inspect", "dockerfile-build"]);
   });
 
   it("ignores a throwing diagnostic observer and preserves a cache hit", async () => {
     let inspectCalls = 0;
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => { inspectCalls++; return 0; },
       runBuild: async () => ({ code: 0, out: "" }),
       nixpacksVersion: async () => "1.40.0",
@@ -414,6 +436,8 @@ describe("#394 - build.ts's spawn is bounded too", () => {
       rejectObserver = reject;
     });
     const deps: BuildDeps = {
+      imageIdentity: async tag => ({id:`sha256:${"a".repeat(64)}`,cacheKey:tag.split(":v2-")[1]}),
+      targetPlatform: async () => "linux/amd64",
       imageInspect: async () => 0,
       runBuild: async () => ({ code: 0, out: "" }),
       nixpacksVersion: async () => "1.40.0",

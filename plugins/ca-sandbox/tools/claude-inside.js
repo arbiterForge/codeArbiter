@@ -411,6 +411,18 @@ function buildClaudeRunArgs(opts) {
 function claudeFirewallScript(opts) {
   return resolveClaudeNetworkPlan(opts.netPolicy ?? "offline").firewallScript;
 }
+var FirewallSetupFailure = class extends Error {
+  constructor(message, containerId, commandCode, cleanup) {
+    super(message);
+    this.containerId = containerId;
+    this.commandCode = commandCode;
+    this.cleanup = cleanup;
+    this.name = "FirewallSetupFailure";
+  }
+  containerId;
+  commandCode;
+  cleanup;
+};
 async function runClaudeInside(opts, dockerRun = defaultDockerRun, call = {}) {
   const args = buildClaudeRunArgs(opts);
   const dockerEnv = { ...call.env ?? DOCKER_ENV };
@@ -431,10 +443,16 @@ ${(r.stderr || r.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`
   if (firewallScript === void 0) return id;
   const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript], normalCall);
   if (applied.code !== 0) {
-    await dockerRun(["rm", "-f", id], normalCall);
-    throw new Error(
-      `ca-sandbox: --with-claude could not apply the egress firewall to ${id} (exit ${applied.code}); the container has been destroyed rather than left running with NET_ADMIN and no rules around a live token.
-${(applied.stderr || applied.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`
+    const { signal: _cancelled, ...cleanupCall } = normalCall;
+    const removed = await dockerRun(["rm", "-f", id], cleanupCall);
+    const observed = await dockerRun(["ps", "-a", "-q", "--no-trunc", "--filter", `id=${id}`], cleanupCall);
+    const absent = observed.code === 0 && observed.stdout.trim() === "";
+    throw new FirewallSetupFailure(
+      `ca-sandbox: --with-claude could not apply the egress firewall to ${id} (exit ${applied.code}); cleanup ${absent ? "verified absent" : "unknown; container may still be running"} (remove exit ${removed.code}); retain target ${id} for inspection.
+${(applied.stderr || applied.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`,
+      id,
+      applied.code,
+      { containment: absent ? "verified-absent" : "unknown", removeCode: removed.code, observationCode: observed.code }
     );
   }
   return id;
