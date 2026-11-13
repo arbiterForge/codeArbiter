@@ -189,6 +189,16 @@ func RecordKinds(name string) map[string]bool {
 		if items, ok := s["items"]; ok {
 			walk(items, owner)
 		}
+		// Alternatives describe the same field's shape. In particular a
+		// nullable criterion verification record is behind anyOf, so retain
+		// its actual collection owner while inspecting the closed branches.
+		for _, keyword := range []string{"anyOf", "oneOf", "allOf"} {
+			if branches, ok := s[keyword].([]any); ok {
+				for _, branch := range branches {
+					walk(branch, owner)
+				}
+			}
+		}
 	}
 	walk(root, "document")
 	return out

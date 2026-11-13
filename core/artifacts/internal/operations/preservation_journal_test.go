@@ -16,6 +16,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
 // interruptedTaskStart prepares a real task-start journal that stops after
@@ -33,7 +34,7 @@ func interruptedTaskStart(t *testing.T) (f *assistiveFixture, request object, be
 // f's store: the twin store computes the exact bytes and durable result.
 func interruptedMutation(t *testing.T, f *assistiveFixture, op string, fields object) (request object, before, after []byte, result object) {
 	t.Helper()
-	twin := filepath.Join(t.TempDir(), "twin")
+	twin := filepath.Join(testutil.Root(t), "twin")
 	if err := os.CopyFS(twin, os.DirFS(f.root)); err != nil {
 		t.Fatal(err)
 	}

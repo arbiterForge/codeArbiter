@@ -472,6 +472,10 @@ func TestSMARTSCannotReapproveAnAmendedProtectedPlan(t *testing.T) {
 func TestSMARTSDoesNotClearBlockedMembersOrTheirReason(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
+	// Approve the actual progress epoch before introducing the independent
+	// stop. An older 0.3.2 grant is not current approval for a 0.3.4 document.
+	h.mut("task-block", "PLAN-EXAMPLE", object{"task": "T-002", "reason": "Prime the progress schema before initial approval."})
+	h.mut("task-reconcile", "PLAN-EXAMPLE", object{"task": "T-002", "state": "PENDING", "reason": "No worker started; prepare the initial approval fixture."})
 	_, r := pairFixture(h, true)
 	grant := model.S(h.run("sprint-approve", r)["grant_receipt"])
 	h.mut("task-block", "PLAN-EXAMPLE", object{"task": "T-002", "reason": "An external permission has not been granted."})

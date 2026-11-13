@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 )
@@ -34,6 +35,50 @@ func prepareEpochApprovalFixture(t *testing.T, f *assistiveFixture) object {
 	}
 	spec := f.doc("SPEC-EXAMPLE")
 	return object{"spec_id": spec.ID(), "spec_expected": object{"revision": spec.Revision(), "model_sha256": spec.Hash()}, "spec_source": sources[0], "plan_source": sources[1]}
+}
+
+func TestSMARTSIndependentStopRequiresCurrentApprovalEpoch(t *testing.T) {
+	for _, currentEpoch := range []bool{false, true} {
+		name := "older approval refuses"
+		if currentEpoch {
+			name = "current approval preserves stop"
+		}
+		t.Run(name, func(t *testing.T) {
+			f := newAssistiveFixture(t)
+			if currentEpoch {
+				f.mutate("task-block", object{"task": "T-002", "reason": "Prime progress epoch before approval."})
+				f.mutate("task-reconcile", object{"task": "T-002", "state": "PENDING", "reason": "Prepare initial approval without starting work."})
+			}
+			grant := approveEpochFixture(t, f)
+			f.mutate("task-block", object{"task": "T-002", "reason": "An independent permission remains unavailable."})
+			before := f.doc("PLAN-EXAMPLE")
+			if before.Data["schema_version"] != model.ProgressVersion {
+				t.Fatal("fixture did not enter the real progress schema epoch")
+			}
+			lenses := object{}
+			for _, lens := range []string{"Scalable", "Maintainable", "Available", "Reliable", "Testable", "Securable"} {
+				lenses[lens] = object{"verdict": "Adequate", "reason": "Preserves the bounded existing contract."}
+			}
+			decision := object{"task_id": "T-001", "options": []any{object{"label": "Explicit method", "steps": model.List("Retain the negative oracle.", "Use a bounded explicit implementation."), "lenses": lenses}}, "selected": int64(0), "strength": "moderate", "rationale": "Existing scope and proof obligations remain unchanged."}
+			result, err := f.request("smarts-apply", f.mutation(before.ID(), object{"grant_receipt": grant, "decision": decision}))
+			after := f.doc(before.ID())
+			if !currentEpoch {
+				if fault.Code(err) != "AUTHORITY_UNVERIFIED" || after.Hash() != before.Hash() {
+					t.Fatalf("older approval survived changed epoch or mutated state: %v", err)
+				}
+				return
+			}
+			if err != nil || model.M(result)["acceptance_granted"] != false {
+				t.Fatalf("current epoch method was refused or granted acceptance: %v", err)
+			}
+			if after.Data["schema_version"] != model.ProgressVersion || !equalValue(state(before, "T-002"), state(after, "T-002")) {
+				t.Fatal("method change relabelled the schema or cleared the independent stop/history")
+			}
+			if f.call("validate", object{"artifact_id": after.ID(), "gate": "approved"})["valid"] != true {
+				t.Fatal("current epoch method approval failed its actual consumer")
+			}
+		})
+	}
 }
 
 func TestSMARTSComposesWithActualPlanEpoch(t *testing.T) {

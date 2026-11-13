@@ -31,6 +31,24 @@ func tombstone(d *model.Document, id string) object {
 	return nil
 }
 
+// A criterion owns nested scenario and nullable verification records. Their
+// tombstones must retain the real schema collection, including alternatives.
+func TestRetiringCriterionKeepsNestedCollectionKinds(t *testing.T) {
+	f := newAssistiveFixture(t)
+	f.call("apply", f.mutation("SPEC-EXAMPLE", object{"changes": []any{
+		object{"op": "record.retire", "symbol": "AC-001", "reason": "Replace this draft criterion."},
+	}}))
+	d := f.doc("SPEC-EXAMPLE")
+	for id, kind := range map[string]string{"AC-001": "criteria", "SCN-AC-001": "scenarios", "VER-AC-001": "verification"} {
+		if stone := tombstone(d, id); stone == nil || stone["original_kind"] != kind {
+			t.Fatalf("retired %s lost its real collection %s: %v", id, kind, stone)
+		}
+	}
+	if es := validateStructural(d.Data); len(es) != 0 {
+		t.Fatalf("valid nested retirement rejected: %v", es)
+	}
+}
+
 // Acceptance "Checked task retirement".
 func TestRetiringCheckedTaskKeepsTypedHistory(t *testing.T) {
 	f := newAssistiveFixture(t)

@@ -17,6 +17,7 @@ import (
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
 const ordinaryReviewReason = "Implementation reported complete; verification and review are not assessed by this progress update."
@@ -129,7 +130,7 @@ func TestNT01TaskLabelBasesAreDistinct(t *testing.T) {
 	})
 	t.Run("receipted", func(t *testing.T) {
 		h, _ := completionHarness(t)
-		material := filepath.Join(t.TempDir(), "matrix.txt")
+		material := filepath.Join(testutil.Root(t), "matrix.txt")
 		if err := os.WriteFile(material, []byte("Task completion evidence matrix\n"), 0600); err != nil {
 			t.Fatal(err)
 		}
