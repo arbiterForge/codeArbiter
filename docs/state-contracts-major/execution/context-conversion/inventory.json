@@ -1,0 +1,454 @@
+{
+  "created": [],
+  "read": [
+    ".codearbiter/CONTEXT.md",
+    ".codearbiter/code-map.md",
+    ".codearbiter/coding-standards.md",
+    ".codearbiter/security-controls.md",
+    ".codearbiter/tech-stack.md"
+  ],
+  "sections": [
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": false,
+      "end": 54,
+      "heading": "",
+      "id": ".codearbiter/CONTEXT.md@34:54",
+      "sha256": "c79974d312d7455944eb6a6ce0b488faa105f9211ee8e238d78128baa0af12f5",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 34
+    },
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": true,
+      "end": 611,
+      "heading": "Project: codeArbiter",
+      "id": ".codearbiter/CONTEXT.md@54:611",
+      "sha256": "460f1c639457563ce4f1ad67a5b151876c1c58858694dd37b686827de01d06b2",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 54
+    },
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": true,
+      "end": 2080,
+      "heading": "Product direction",
+      "id": ".codearbiter/CONTEXT.md@611:2080",
+      "sha256": "d15fb70f1e4158c4b37d737746d010753db321a8dad1b94ac977fe7e2c7302b3",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 611
+    },
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": true,
+      "end": 3867,
+      "heading": "Components and ownership",
+      "id": ".codearbiter/CONTEXT.md@2080:3867",
+      "sha256": "7bedb3960f0928c1374cc87aca88b020bcb3034730d8d80bd23a5fdf72870355",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 2080
+    },
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": true,
+      "end": 5096,
+      "heading": "Project state and document identity",
+      "id": ".codearbiter/CONTEXT.md@3867:5096",
+      "sha256": "9572c1693e9699fd2f21f00b24d1a43b56bcebc14a743697b8c8b7a2328e24ab",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 3867
+    },
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": true,
+      "end": 5915,
+      "heading": "Domain vocabulary",
+      "id": ".codearbiter/CONTEXT.md@5096:5915",
+      "sha256": "345650391c863836e8297e9e3266a3b4192de9bfc891c8d09c7faea3aaa0afd4",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 5096
+    },
+    {
+      "artifact_id": "CTX-PROJECT",
+      "content": true,
+      "end": 6351,
+      "heading": "Boundaries",
+      "id": ".codearbiter/CONTEXT.md@5915:6351",
+      "sha256": "8cfa60ed43aa10041c6dfbd6c5334c2e0ea6a2511b69a6958109a952cd2681ab",
+      "source": ".codearbiter/CONTEXT.md",
+      "start": 5915
+    },
+    {
+      "artifact_id": "CTX-TECH-STACK",
+      "content": true,
+      "end": 310,
+      "heading": "Tech stack — codeArbiter",
+      "id": ".codearbiter/tech-stack.md@0:310",
+      "sha256": "d79a31701ff7323b548fbf6d31564f9167ae04833ac79e0110c7746ceecc68c0",
+      "source": ".codearbiter/tech-stack.md",
+      "start": 0
+    },
+    {
+      "artifact_id": "CTX-TECH-STACK",
+      "content": true,
+      "end": 2437,
+      "heading": "Components and runtime",
+      "id": ".codearbiter/tech-stack.md@310:2437",
+      "sha256": "450001a21b2d3b1ce063eaabf9edb830860dcb89ef1d92e3c21ca9ee56bf4cff",
+      "source": ".codearbiter/tech-stack.md",
+      "start": 310
+    },
+    {
+      "artifact_id": "CTX-TECH-STACK",
+      "content": true,
+      "end": 4303,
+      "heading": "Host and platform boundaries",
+      "id": ".codearbiter/tech-stack.md@2437:4303",
+      "sha256": "73ba80fd30b29879cdab31a7021084e374baf926dbc860f9b92e7ea31414465d",
+      "source": ".codearbiter/tech-stack.md",
+      "start": 2437
+    },
+    {
+      "artifact_id": "CTX-TECH-STACK",
+      "content": true,
+      "end": 13256,
+      "heading": "Test and build commands",
+      "id": ".codearbiter/tech-stack.md@4303:13256",
+      "sha256": "1e53fab5928d2e019100d194d8ba53b9c459c6068b9b82b038ed08ca0593441b",
+      "source": ".codearbiter/tech-stack.md",
+      "start": 4303
+    },
+    {
+      "artifact_id": "CTX-TECH-STACK",
+      "content": true,
+      "end": 18414,
+      "heading": "Coverage",
+      "id": ".codearbiter/tech-stack.md@13256:18414",
+      "sha256": "03ba055dc7caed3d58abc9ca79c76c497816ba4d14cc1312a3d08322f9862562",
+      "source": ".codearbiter/tech-stack.md",
+      "start": 13256
+    },
+    {
+      "artifact_id": "CTX-TECH-STACK",
+      "content": true,
+      "end": 21290,
+      "heading": "Supply chain, publication and retained decisions",
+      "id": ".codearbiter/tech-stack.md@18414:21290",
+      "sha256": "7bf8552fd3505b22e47e6d752ed93d4c219d59fca27ca2de7b239045cda2ea41",
+      "source": ".codearbiter/tech-stack.md",
+      "start": 18414
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 254,
+      "heading": "Coding standards — codeArbiter",
+      "id": ".codearbiter/coding-standards.md@0:254",
+      "sha256": "50e368f7a7e3c6434744a13cfe2f3a71b2b07ca9ea3701d968c4c533363e4945",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 0
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 1062,
+      "heading": "Source ownership",
+      "id": ".codearbiter/coding-standards.md@254:1062",
+      "sha256": "98c109c73271efdd0b43521b64c9b30611b072d3c799b7a3a54d773c54d3f1aa",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 254
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 2460,
+      "heading": "Python hooks and bridge",
+      "id": ".codearbiter/coding-standards.md@1062:2460",
+      "sha256": "0d4cd76c43fd01de2f9d98e9fc8b1442f2cd22f43e959e14e7ce267bb4718222",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 1062
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 3636,
+      "heading": "Native Go engine",
+      "id": ".codearbiter/coding-standards.md@2460:3636",
+      "sha256": "860d9b3601fa0688f1943a5db4497f2cf1b28146946832a5197f5e2d31d3a41a",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 2460
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 4911,
+      "heading": "TypeScript tools and host adapter",
+      "id": ".codearbiter/coding-standards.md@3636:4911",
+      "sha256": "535d2f757a160506a1dcb8982c7799a09828d6d7d6e71c703c02e78e30edc0b9",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 3636
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 5361,
+      "heading": "Shared instructions",
+      "id": ".codearbiter/coding-standards.md@4911:5361",
+      "sha256": "267666a1f8f7eb3d853b105c9ebb28b8170211d7c06c34ff5a4d6138f7fbbdf2",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 4911
+    },
+    {
+      "artifact_id": "CTX-CODING-STANDARDS",
+      "content": true,
+      "end": 5963,
+      "heading": "License and exact bytes",
+      "id": ".codearbiter/coding-standards.md@5361:5963",
+      "sha256": "cfce6ce179a7ff298fe36d3371f2df59d9318d6b3c4bf0beed808f550b0d61f5",
+      "source": ".codearbiter/coding-standards.md",
+      "start": 5361
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 513,
+      "heading": "Security controls — codeArbiter",
+      "id": ".codearbiter/security-controls.md@0:513",
+      "sha256": "ee1699b88f09b91d872ea2525a98a9e9f0923af0c93549a951ea67b93e40352d",
+      "source": ".codearbiter/security-controls.md",
+      "start": 0
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 928,
+      "heading": "Cryptographic primitives",
+      "id": ".codearbiter/security-controls.md@513:928",
+      "sha256": "8640e5f012334143bcc01aed1be36e09b458e4a18d7769fc3505dd866a91f89b",
+      "source": ".codearbiter/security-controls.md",
+      "start": 513
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 2942,
+      "heading": "Secret store and access method",
+      "id": ".codearbiter/security-controls.md@928:2942",
+      "sha256": "e36a71f2830985ae95a0261adff7c3b4ee6d5e603e76896f138e9ec8d317c62d",
+      "source": ".codearbiter/security-controls.md",
+      "start": 928
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 4273,
+      "heading": "Network and untrusted execution",
+      "id": ".codearbiter/security-controls.md@2942:4273",
+      "sha256": "009263c24a7ea48a7279815ec363eb3e6c544ed4b5c4637df6089629a22396cf",
+      "source": ".codearbiter/security-controls.md",
+      "start": 2942
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 4989,
+      "heading": "Dependency policy",
+      "id": ".codearbiter/security-controls.md@4273:4989",
+      "sha256": "82c4d67fe17a2d366a257073d963b1cb16de4330b3afea1e6da4c322b76204db",
+      "source": ".codearbiter/security-controls.md",
+      "start": 4273
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 6125,
+      "heading": "Approved licenses",
+      "id": ".codearbiter/security-controls.md@4989:6125",
+      "sha256": "da54cddcc29e845bd123323a9c99633b198715471c4ec67cff04401d143d1d48",
+      "source": ".codearbiter/security-controls.md",
+      "start": 4989
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 7079,
+      "heading": "Hook security (Python)",
+      "id": ".codearbiter/security-controls.md@6125:7079",
+      "sha256": "a29aa76dec756a1b4fb126a68568b700049ef919de497b74ce9a3c4535295cc4",
+      "source": ".codearbiter/security-controls.md",
+      "start": 6125
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 8314,
+      "heading": "Pi trust boundary",
+      "id": ".codearbiter/security-controls.md@7079:8314",
+      "sha256": "0c754caed07cd89785b94e77be03da6f091f55be0081fbd1b9ea9234fd5d3f47",
+      "source": ".codearbiter/security-controls.md",
+      "start": 7079
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 10579,
+      "heading": "Audit trail",
+      "id": ".codearbiter/security-controls.md@8314:10579",
+      "sha256": "d87629f540070fe8735633b46303c091142f0b4a9e03df5a2af83ddda1859544",
+      "source": ".codearbiter/security-controls.md",
+      "start": 8314
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 11241,
+      "heading": "Protected-state registry",
+      "id": ".codearbiter/security-controls.md@10579:11241",
+      "sha256": "cc8706628abfaf18a99a698b95ced4067589c462e21ffa10307aaa4231b01d2b",
+      "source": ".codearbiter/security-controls.md",
+      "start": 10579
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 12828,
+      "heading": "Native artifacts and recovery",
+      "id": ".codearbiter/security-controls.md@11241:12828",
+      "sha256": "9ff9fdebf5214dff64c770ecf458a6b9a89f124f45d15cdbcb0a1caed5fc22e1",
+      "source": ".codearbiter/security-controls.md",
+      "start": 11241
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 16413,
+      "heading": "Published tag immutability",
+      "id": ".codearbiter/security-controls.md@12828:16413",
+      "sha256": "c3cc5179d57beda5522635e4a32fc379785b18cda6e43afebb31094e5328260b",
+      "source": ".codearbiter/security-controls.md",
+      "start": 12828
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 17172,
+      "heading": "Hosted publication and distribution",
+      "id": ".codearbiter/security-controls.md@16413:17172",
+      "sha256": "6f2b6ec4f92928d1d6ec69b4f710063eecf5a776c4d823700a005ab5d0f2826b",
+      "source": ".codearbiter/security-controls.md",
+      "start": 16413
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 21953,
+      "heading": "ca-pi npm publication boundary",
+      "id": ".codearbiter/security-controls.md@17172:21953",
+      "sha256": "e36e70d466698930c06243288ce96425115b43d8f2c6bb65736c762cabf38e06",
+      "source": ".codearbiter/security-controls.md",
+      "start": 17172
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 23319,
+      "heading": "Boundary crossings",
+      "id": ".codearbiter/security-controls.md@21953:23319",
+      "sha256": "dfedf50f976452c64af85c11fa887091fcccb9c124aada35c4a9ff12fcf274f7",
+      "source": ".codearbiter/security-controls.md",
+      "start": 21953
+    },
+    {
+      "artifact_id": "CTX-SECURITY-CONTROLS",
+      "content": true,
+      "end": 24018,
+      "heading": "Evidence owners",
+      "id": ".codearbiter/security-controls.md@23319:24018",
+      "sha256": "70dbcb6300ef2d17385979f0ca1cdbcd8785c89c06036bae8659f5c8d21682a6",
+      "source": ".codearbiter/security-controls.md",
+      "start": 23319
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 258,
+      "heading": "Code map — codeArbiter",
+      "id": ".codearbiter/code-map.md@0:258",
+      "sha256": "beb834dd91aaad5f7d4513af68d5eccba1d2779266275c29a6bdaa1375cf3ffd",
+      "source": ".codearbiter/code-map.md",
+      "start": 0
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 1089,
+      "heading": "Shared source and generation",
+      "id": ".codearbiter/code-map.md@258:1089",
+      "sha256": "d463cc16a20ad4ec83f3992fb0d37d1d9ade01159f92c71f787e7a1378c7a45e",
+      "source": ".codearbiter/code-map.md",
+      "start": 258
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 3059,
+      "heading": "Native artifact engine",
+      "id": ".codearbiter/code-map.md@1089:3059",
+      "sha256": "1d4fab488b337eab1e4bb8a2dac5f5de7b09ad40ff834476b15c27bfe74a0a01",
+      "source": ".codearbiter/code-map.md",
+      "start": 1089
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 4875,
+      "heading": "Python runtime and compatibility",
+      "id": ".codearbiter/code-map.md@3059:4875",
+      "sha256": "50c81fdcbf8cb2b5039a0c6e3a33bfcf8693f8e0e06ed190fa57e8350f443ae0",
+      "source": ".codearbiter/code-map.md",
+      "start": 3059
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 5659,
+      "heading": "Host and infrastructure adapters",
+      "id": ".codearbiter/code-map.md@4875:5659",
+      "sha256": "6abbca5ca3ab85196c39f56abc836fdbed49be912fd9ff2a8d5d9181fd111259",
+      "source": ".codearbiter/code-map.md",
+      "start": 4875
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 6121,
+      "heading": "Documentation and Academy",
+      "id": ".codearbiter/code-map.md@5659:6121",
+      "sha256": "7a7f5a596fef75754df48590be4a73d6b64757a2a6bb9202d5a4242f867b5d7e",
+      "source": ".codearbiter/code-map.md",
+      "start": 5659
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 6906,
+      "heading": "Project records",
+      "id": ".codearbiter/code-map.md@6121:6906",
+      "sha256": "e40022347553e3c9cadb0e8c4214bc3b13dd971d9186e55fc529c83fb9e5bdce",
+      "source": ".codearbiter/code-map.md",
+      "start": 6121
+    },
+    {
+      "artifact_id": "CTX-CODE-MAP",
+      "content": true,
+      "end": 7905,
+      "heading": "Tests, CI, and publication",
+      "id": ".codearbiter/code-map.md@6906:7905",
+      "sha256": "d32ef5f605919c6538a82788e85b43ccb528737ff2963fd733b3d94010c08914",
+      "source": ".codearbiter/code-map.md",
+      "start": 6906
+    }
+  ],
+  "token": "6ec49a66722c9813c43b9f18feac6d2e637b00de4b34fa34ba0ebc2548c9930a",
+  "next": "Read each file. Add records or notes for every meaningful section, in batches of at most 32. Map every returned section ID to its saved record or note references in a JSON checklist ([{section, records}]); use [] only for sections marked content=false. Exclude secret values. Then run knowledge.py convert --finish TOKEN --coverage @checklist.json."
+}

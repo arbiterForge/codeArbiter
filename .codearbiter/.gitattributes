@@ -1,0 +1,5 @@
+# codeArbiter native artifacts are hash-bound to their exact bytes.
+specs/*.html -text
+plans/*.html -text
+context/*.html -text
+decomposition/*.html -text
