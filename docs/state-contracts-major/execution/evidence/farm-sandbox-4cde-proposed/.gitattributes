@@ -1,0 +1,2 @@
+# Preserve original observed JSON bytes and hashes, including Windows CRLF.
+*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -3758,28 +3758,46 @@ class NpmPublishContractTest(unittest.TestCase):
             cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
             binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
             for host, prefix in prefixes.items():
-                manifest_data = {"binaries": {
-                    platform: {"file": "artifact-bin", "sha256": binary_sha}
-                    for platform in platforms
-                }}
+                from _artifactmanifestlib import CONTRACT
+                manifest_data = {
+                    "format": CONTRACT["format"], "version": "0.1.0",
+                    "protocol": CONTRACT["protocol"],
+                    "schema_version": CONTRACT["schema_version"],
+                    "binaries": {
+                        platform: {
+                            "file": "ca-artifact-" + platform.replace("/", "-")
+                                    + (".exe" if platform.startswith("windows/") else ""),
+                            "sha256": binary_sha, "native_tested": True,
+                        }
+                        for platform in platforms
+                    },
+                }
                 if host == "pi":
                     manifest_data["context_qualification"] = {
-                        platform: {"source_commit": "a" * 40, "binary_sha256": binary_sha}
+                        platform: {
+                            "source_commit": "a" * 40, "workflow": CONTRACT["workflow"],
+                            "run_id": "123", "binary_sha256": binary_sha,
+                            "observation_sha256": "d" * 64, "module_sha256": "e" * 64,
+                            "native_cases": CONTRACT["native_cases"],
+                        }
                         for platform in platforms
                     }
                 manifest = json.dumps(manifest_data, separators=(",", ":")).encode()
+                self.assertEqual(helper.parse_release_manifest(manifest), manifest_data)
                 manifest_sha = hashlib.sha256(manifest).hexdigest()
+                archive_members = {prefix + "release.json": manifest}
+                archive_members.update({prefix + entry["file"]: binary
+                                        for entry in manifest_data["binaries"].values()})
                 archive_path = packages / f"{host}.tgz"
                 with tarfile.open(archive_path, "w:gz") as archive:
-                    for name, data in ((prefix + "release.json", manifest),
-                                       (prefix + "artifact-bin", binary)):
+                    for name, data in archive_members.items():
                         info = tarfile.TarInfo(name); info.size = len(data)
                         archive.addfile(info, io.BytesIO(data))
                 package_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
                 cohort["packages"][host] = {
                     "file": archive_path.name, "sha256": package_sha,
-                    "members": {prefix + "release.json": {"sha256": manifest_sha},
-                                prefix + "artifact-bin": {"sha256": binary_sha}},
+                    "members": {name: {"sha256": hashlib.sha256(data).hexdigest()}
+                                for name, data in archive_members.items()},
                 }
                 for platform in platforms:
                     cell = cold_root / f"{host}-{platform.replace('/', '-')}"

@@ -45,6 +45,7 @@ CURRENT_GOLDEN = {
 SUITE_TIMEOUT_SECONDS = 1200.0
 EXPECTED_SUITES = {
     "test_artifact_bridge.py": {
+        "test_malformed_optional_context_qualification_is_not_ignored",
         "test_real_cli_draft_and_index", "test_tampered_view_is_not_readable",
         "test_unknown_request_fields", "test_changed_installed_binary",
         "test_symlink_binary_rejected", "test_linked_or_reparse_installation_directory_rejected",
@@ -90,6 +91,9 @@ EXPECTED_SUITES = {
         "test_outline_accepts_matching_continuation",
     },
     "test_artifact_authoring.py": {
+        "test_native_build_preserves_explicit_cache_and_platform_defaults",
+        "test_isolated_windows_build_uses_only_a_fixture_owned_private_go_cache",
+        "test_installed_bridge_preserves_progress_and_separate_dependency_readiness",
         "test_installed_intent_cli_accepts_native_empty_diagnostics",
         "test_installed_intent_cli_reports_incomplete_native_draft",
         "test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts",
@@ -195,6 +199,7 @@ EXPECTED_SUITES = {
         "test_worktree_planning_preserves_the_selected_pairs_exact_format",
     },
     "test_artifact_farm.py": {
+        "test_real_dispatcher_accepts_supported_optional_manifest_declaration",
         "test_cleanup_success_needs_no_retry",
         "test_cleanup_retries_a_transient_sharing_violation",
         "test_cleanup_preserves_error_at_deadline",

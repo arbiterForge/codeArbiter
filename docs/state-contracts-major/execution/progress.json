@@ -4,14 +4,14 @@
   "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "02c2c8b5062c535174776ef1c6ca26a121031966 plus reviewed CI repairs and current native evidence in the commit carrying this record",
+  "head": "4cde96cb54592545d78e8cdbe42391a34748f7ff plus bounded CI repairs and exact farm/sandbox proof in the commit carrying this record",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-13T20:57:01.385663+00:00",
+  "recorded_at": "2026-11-13T21:27:15.927645+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1580,7 +1580,7 @@
       "owner": "sandbox",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Observed active program implementation/qualification failure,2026-11-13",
-      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
+      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9REDÃ¢â€ â€™GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
       "current_detail": "Profile2 adds bounded Go/nonworkspaceRust alongside explicitNode/Python with pinned runtime stages and material-input cache binding. AlloriginalfourDockerfixtures retained;123localPASS7DockerSKIP, realhostedpending."
     },
     {
@@ -1683,6 +1683,13 @@
       "ref": "https://github.com/arbiterForge/codeArbiter/actions/runs/43311804480",
       "commit": "e42bd23b",
       "observed": "integration push: 74 success, 6 skipped (PR-only version/provenance/Pi security lanes), 4 failure = Hook contract x3 (stale provenance, fixed by #1100) + Merge readiness consequence; no release/publish/deploy job present"
+    },
+    {
+      "task": "Q-02",
+      "kind": "scoped-current-proof",
+      "ref": "execution/evidence/farm-sandbox-4cde-proposed/root-carry-binding.json",
+      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+      "observed": "56admitted cells fromtenexecutedgroups/ninesourceconformancegroups. Exactoriginalraws retained; TESTEDinputphysicalbytes==Git. 147otherfarm/sandbox transitionsstillPLANNED; noexternalprovider/nonroot/installedproduction/runtimeboundary promotion."
     }
   ],
   "observations": [
@@ -1751,15 +1758,25 @@
       "checkout_source": "e4ecd09d722e14583201d0faca1d7259ec43eddf",
       "source_tree": "e409796740e65aab3511b3846adf1c8684f58078",
       "detail": "Originalrednative schema/authority/physicalfixtures cascadedinto docs/Pi/impact/hooks. Native schema alternatives and existingfixtures repaired; new477native observations and fourolderclients/twoinstalledbridgechecks pass. Pi19PASS1POSIXskip under actual matching8.3alias. Closed docs diagnostics, exactpublicdigest waiver, narrow contract/typedname/oracle repairs and bounded Go/Rust restoration remain pending replacement hosted run. Alloriginalredscope retained; no pipeline success inferred."
+    },
+    {
+      "what": "HTML child integration",
+      "observed": "PR1102 exactd0fcee75 passed86checks and requiredmergegate; squashmergeddc6e0ffc into major/state-contracts on2026-11-13. Userauthorized remotechild autodeletion. PR1098 remainsOPEN/draft/mainheld.",
+      "date": "2026-11-13"
+    },
+    {
+      "what": "current combined execution and qualification",
+      "observed": "Run43507911425 eventhead4cde: six testednativebuilds and actualDocker sandbox job succeeded. Remaining actual failures drove bounded fixture/cache/history/YAML/platform-lock/startup/conformance repairs; no whole-run success or productionpackage qualification claimed. Farm/sandbox56namedcases (12farm44sandbox) joinedliterally to71currentGitinputs with0drift; ledgeradds25TESTED+31PRESERVED cells. Totals117TESTED40PRESERVED1948PLANNED; noinstalled/released cells.",
+      "date": "2026-11-13"
     }
   ],
   "scoped_blockers": [],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push reviewed current CI repairs plus exactnew native proof bindings as one combined retry head.",
-    "Watch exactreplacement source CI and consume only authenticated original production archives for Windows/Pi/retained recovery checks.",
-    "Reconcile remaining2004baseline dispositions and addedtransition rows from actualsemanticproof; preserve unrun Docker/provider/visibleparent/otherplatform cells.",
-    "KeepPR1098 draft/unmerged until B fulltesting; no publication or remote branch deletion without its authority."
+    "Push bounded actual CI-failure repairs and exact farm/sandbox proof as one coherent retry head.",
+    "Watch exact replacement source CI; acquire only authenticated original production archives for Windows/Pi/retained recovery checks after actual assembly.",
+    "Reconcile remaining1948baseline dispositions and introducedtransition rows from actualsemanticproof; preserve unrun provider/visibleparent/installed/platform cells.",
+    "Merge green children into major/state-contracts under standingauthority; keepPR1098 draft/unmerged for B fulltesting. No publication authority."
   ],
   "delivery_state": "PR_OPEN_CI_REPAIR",
   "trusted_readiness_reference": null,
@@ -1779,7 +1796,7 @@
     "number": 1103,
     "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
     "base": "major/state-contracts",
-    "observed_head": "55509ec54327c61b94f6648aa21ac41452e0d28f",
-    "next": "Push current reviewed fixes, then watch actual replacement head CI."
+    "observed_head": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+    "next": "Push one coherent actual-failure repair/evidence batch and require the new exact-head merge gate."
   }
 }

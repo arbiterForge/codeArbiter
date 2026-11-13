@@ -274,9 +274,16 @@ class ActualPythonObserverTest(unittest.TestCase):
             self.assertTrue(record["source_stable"])
             self.assertEqual(before, owner.source_identity(repo))
             lock = repo / ".codearbiter/.artifacts/store.lock"
-            self.assertEqual(lock.read_bytes(), b"")
-            self.assertIn("?? .codearbiter/.artifacts/store.lock", subprocess.check_output(
-                ["git", "-C", str(repo), "status", "--porcelain=v1", "--untracked-files=all"], text=True))
+            status = subprocess.check_output(
+                ["git", "-C", str(repo), "status", "--porcelain=v1", "--untracked-files=all"], text=True)
+            if sys.platform == "linux":
+                # Linux takes flock on the anchored repository directory and
+                # needs no metadata file; assert the stronger no-write result.
+                self.assertFalse(lock.exists())
+                self.assertEqual(status, "")
+            else:
+                self.assertEqual(lock.read_bytes(), b"")
+                self.assertEqual(status.strip(), "?? .codearbiter/.artifacts/store.lock")
 
     def test_vitest_protocol_wrapper_invokes_one_original_process_and_retains_its_named_json(self):
         with tempfile.TemporaryDirectory(prefix="ca-vitest-observer-") as temp:

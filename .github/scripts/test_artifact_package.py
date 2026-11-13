@@ -65,10 +65,9 @@ def setUpModule():
 
 class PackageTests(unittest.TestCase):
     def shortDescription(self):
-        if (self._testMethodName.startswith("test_t018_context_kind_package_admission_")
-                or self._testMethodName == "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases"):
-            return None
-        return super().shortDescription()
+        # The conformance snapshot consumes one named result per output line.
+        # Keep all collected cases visible even when a method has a docstring.
+        return None
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
