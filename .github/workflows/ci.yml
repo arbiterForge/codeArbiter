@@ -2761,6 +2761,11 @@ jobs:
         # payload checks can mean skipped/unavailable; required consumers
         # accept only affirmative observations.
         run: python .github/scripts/test_verdictlib.py
+      - name: Run bounded verifier-subprocess contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # R-07: Codex host commands and the Pi benchmark readiness wait have
+        # deadlines and an explicit process-tree containment outcome.
+        run: python .github/scripts/test_boundedproc.py
       - name: Run Codex release identity contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_release_identity.py

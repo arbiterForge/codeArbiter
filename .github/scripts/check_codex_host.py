@@ -71,23 +71,37 @@ CODEX_HOME = REPO / ".codex-host-check"
 SCHEMA = "codearbiter-codex-host-v1"
 
 
-def _run(args: list[str], home: Path) -> subprocess.CompletedProcess:
+# R-07 / C-F08: every host command (marketplace add, plugin add/list, an npm
+# marketplace install) gets a deadline. A hang becomes a recorded failure that
+# keeps partial output and states what cleanup proved about the child tree;
+# a timeout is never read as "the child is quiescent".
+COMMAND_TIMEOUT_SECONDS = 300.0
+
+
+def _run(args: list[str], home: Path, *,
+         timeout: float = COMMAND_TIMEOUT_SECONDS) -> subprocess.CompletedProcess:
+    import _boundedproc
     env = dict(os.environ)
     env["CODEX_HOME"] = str(home)
-    return subprocess.run(args, capture_output=True, text=True,
-                          encoding="utf-8", errors="replace", env=env, cwd=str(REPO))
+    result = _boundedproc.run(args, timeout=timeout, env=env, cwd=str(REPO))
+    if result.timed_out:
+        label = " ".join([Path(args[0]).name, *args[1:4]])
+        return subprocess.CompletedProcess(
+            args, 124, result.stdout,
+            (result.stderr + "\n" if result.stderr else "") + result.diagnostic(label, timeout))
+    return subprocess.CompletedProcess(args, result.returncode, result.stdout, result.stderr)
 
 
 def codex_version() -> str | None:
     """The runtime's version, or None when no usable `codex` is on PATH."""
     if shutil.which("codex") is None:
         return None
+    import _boundedproc
     try:
-        proc = subprocess.run(["codex", "--version"], capture_output=True, text=True,
-                              encoding="utf-8", errors="replace", timeout=120)
+        proc = _boundedproc.run(["codex", "--version"], timeout=120)
     except (OSError, subprocess.SubprocessError):
         return None
-    if proc.returncode != 0:
+    if proc.timed_out or proc.returncode != 0:
         return None
     return proc.stdout.strip() or None
 
