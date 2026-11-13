@@ -1953,8 +1953,9 @@ class OfficialWriteScopeTests(unittest.TestCase):
             targets.release.package_path, targets.release.changelog_path,
             targets.release.root_package_path, targets.release.host_adapter_path,
         ) if path is not None)
+        from test_artifact_authoring import physical_test_directory
         with tempfile.TemporaryDirectory() as raw:
-            root = Path(raw)
+            root = physical_test_directory(raw)
             for path in paths:
                 if path == Path(".codearbiter/tech-stack.md") and not (REPO / path).exists():
                     # Clone canonical bytes as a fixture, then let the actual
