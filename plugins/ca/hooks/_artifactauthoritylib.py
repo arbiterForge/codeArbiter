@@ -3,6 +3,7 @@
 """Supervise verification and correlate independent Codex or Claude review evidence.
 
 arm_request(...) -> dict
+resubmit_review(...) -> dict
 validate_command_definition(definition, cwd=None) -> str
 run_verification(...) -> dict
 observe_codex_hook(...) -> dict
@@ -1819,6 +1820,222 @@ def arm_request(
             result["completion_sha256"] = context["completion_sha256"]
     return result
 
+
+
+REVIEW_RESUBMISSION_FORMAT = "codearbiter.review-resubmission/1"
+REVIEW_RESUBMISSION_INTENT_FORMAT = "codearbiter.review-resubmission-intent/1"
+REVIEW_RESUBMISSION_DIR = Path("review-resubmissions/v1")
+MAX_RESUBMISSION = 16 << 10
+RESUBMISSION_CORRECTIONS = frozenset({"report-correction", "target-correction", "operational-recovery"})
+# These are adapter validation/independence failures, not host permission results.
+# In particular an uncorrelated/failed launch Post may hide an actual denial and
+# is not inferred correctable by this route.
+CORRECTABLE_REVIEW_REJECTIONS = frozenset({
+    "rejected-first-stop", "invalid-first-native-review-stop",
+    "reviewer-steered-by-message", "native reviewer cannot be resumed, steered or closed",
+    "rejected-handback", "repeated-handback", "changed-launch-envelope",
+})
+
+
+def _resubmission_source(request: dict[str, Any]) -> None:
+    if request["activity"] not in REVIEW_ACTIVITIES:
+        raise AuthorityError("INVALID_RESUBMISSION", "only review requests have corrected submissions")
+    recovery, launch = request.get("recovery"), request.get("launch")
+    if request["state"] == "REJECTED":
+        if (not isinstance(recovery, dict) or set(recovery) != {"mode", "rerun_permitted"}
+                or recovery["rerun_permitted"] is not False
+                or recovery["mode"] not in CORRECTABLE_REVIEW_REJECTIONS):
+            raise AuthorityError("RESUBMISSION_UNAVAILABLE", "denial, stop or unknown failure cannot be cleared by correction")
+    elif request["state"] == "FAILED":
+        if (recovery != {"disposition": "failed", "previous_attempt": request.get("attempt"), "rerun_permitted": False}
+                or not isinstance(launch, dict) or launch.get("post_confirmed") is not True
+                or not isinstance(launch.get("agent_id"), str) or not launch["agent_id"]):
+            raise AuthorityError("RESUBMISSION_UNAVAILABLE", "interrupted review lacks corroborated child launch")
+    elif request["state"] == "ABANDONED":
+        if (recovery != {"disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False}
+                or not _never_launched_review({**request, "state": "ARMED", "recovery": None})):
+            raise AuthorityError("RESUBMISSION_UNAVAILABLE", "abandonment is not a pristine unlaunched review")
+    else:
+        raise AuthorityError("INVALID_RESUBMISSION", "original review must remain a terminal unsuccessful request")
+
+
+def _read_resubmission(spool: Path, relative: Path) -> dict[str, Any] | None:
+    try:
+        parent = _safe_directory(spool, relative.parent, create=False)
+        target = parent / relative.name
+        info = target.lstat()
+    except FileNotFoundError:
+        return None
+    except OSError as exc:
+        raise AuthorityError("INVALID_RESUBMISSION", "retained lineage path is unavailable") from exc
+    try:
+        if (not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode) or info.st_nlink != 1
+                or getattr(info, "st_file_attributes", 0) & 0x400 or info.st_size > MAX_RESUBMISSION):
+            raise OSError("unsafe or oversized lineage")
+        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+        with os.fdopen(os.open(target, flags), "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            if (opened.st_dev, opened.st_ino) != (info.st_dev, info.st_ino):
+                raise OSError("lineage changed")
+            raw = stream.read(MAX_RESUBMISSION + 1)
+        after = target.lstat()
+        if len(raw) > MAX_RESUBMISSION or (after.st_dev, after.st_ino) != (info.st_dev, info.st_ino):
+            raise OSError("lineage changed")
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_json_pairs, parse_constant=_invalid_json_constant)
+        if not isinstance(value, dict) or _canonical(value) != raw:
+            raise ValueError("lineage is not canonical")
+        return value
+    except (OSError, UnicodeError, ValueError, RecursionError, AuthorityError) as exc:
+        raise AuthorityError("INVALID_RESUBMISSION", "retained lineage is unavailable or malformed") from exc
+
+
+def _resubmission_identity(repository, context, key, context_hash, host, profile, selection):
+    nonce = _digest(_canonical({"resubmission": key, "context_sha256": context_hash}))
+    seed = {"repository": repository, "context": context, "nonce": nonce,
+            "command_bindings": [], "workspace_roots": {}}
+    if host != "codex":
+        seed["host"] = host
+    if profile is not None:
+        seed["codex_review_profile"] = {"native": CODEX_NATIVE_PROTOCOL, "native-v1": CODEX_NATIVE_V1, "native-v2": CODEX_NATIVE_V2}[profile]
+        if selection is not None:
+            seed["context_storage"] = CONTEXT_STORAGE
+    return nonce, _digest(_canonical(seed))
+
+
+def _resubmission_result(root: Path, request: dict[str, Any], intent: dict[str, Any], relative: Path, replay: bool) -> dict[str, Any]:
+    result = {
+        "request_id": request["request_id"], "prior_request_id": intent["prior_request_id"],
+        "state": request["state"], "activity": request["activity"], "transport_replay": replay,
+        "lineage_path": str(_spool_root(root) / relative),
+        "requires_fresh_launch": request["state"] == "ARMED",
+        "authority_restored": False,
+    }
+    if request["state"] == "ARMED":
+        for key in ("dispatch_prompt", "review_contract_sha256", "required_coverage", "launch_envelope", "codex_review_profile"):
+            if key in request:
+                result[key] = request[key]
+    return result
+
+
+def resubmit_review(
+    root: str | Path, client: Any, prior_request_id: str, *, operation_id: str,
+    correction: str, completion_receipts: list[str] | None = None,
+    supporting_files: list[str | Path] | None = None,
+) -> dict[str, Any]:
+    """Create one fresh linked request; never rerun a child or clear a denial.
+
+    The immutable intent precedes arm, so a lost arm/link response recovers the
+    same successor. Strict old request and native observation schemas stay as-is.
+    """
+    root = _real_root(root)
+    _request_path(prior_request_id)
+    if (not isinstance(operation_id, str) or TOKEN_RE.fullmatch(operation_id) is None
+            or correction not in RESUBMISSION_CORRECTIONS):
+        raise AuthorityError("INVALID_RESUBMISSION", "stable operation id and named correction are required")
+    selection = None
+    if completion_receipts is not None or supporting_files is not None:
+        if (not isinstance(completion_receipts, list) or not completion_receipts
+                or any(not isinstance(ref, str) or not ref for ref in completion_receipts)
+                or len(set(completion_receipts)) != len(completion_receipts)
+                or supporting_files is not None and not isinstance(supporting_files, list)):
+            raise AuthorityError("INVALID_RESUBMISSION", "select explicit current verification receipts")
+        paths = [os.path.abspath(value) for value in supporting_files or []
+                 if isinstance(value, (str, Path)) and Path(value).is_absolute()]
+        if (len(paths) != len(supporting_files or []) or len(paths) > MAX_COMPLETION_FILES
+                or len({os.path.normcase(path) for path in paths}) != len(paths)):
+            raise AuthorityError("INVALID_RESUBMISSION", "select bounded unique absolute supporting files")
+        selection = {"verification_receipts": completion_receipts, "supporting_files": paths}
+    repository = _repository_identity(root)
+    key = _digest(_canonical({"repository": repository, "prior_request_id": prior_request_id, "operation_id": operation_id}))
+    relative = REVIEW_RESUBMISSION_DIR / f"{key}.json"
+    intent_relative = REVIEW_RESUBMISSION_DIR / f"{key}.intent.json"
+    spool = _spool_root(root)
+    with _request_lock(spool, Path(f"resubmission-{key}")), _request_lock(spool, _request_path(prior_request_id)):
+        prior = _load(root, prior_request_id)
+        _resubmission_source(prior)
+        if prior["repository"] != repository:
+            raise AuthorityError("INVALID_RESUBMISSION", "original repository binding differs")
+        if "completion" in prior["context"] and selection is None:
+            raise AuthorityError("INVALID_RESUBMISSION", "completion resubmission requires explicit current receipt selection")
+        profile = {CODEX_NATIVE_PROTOCOL: "native", CODEX_NATIVE_V1: "native-v1", CODEX_NATIVE_V2: "native-v2"}.get(prior.get("codex_review_profile"))
+        host = prior.get("host", "codex")
+        model = (prior.get("launch_envelope") or {}).get("model", "opus")
+        binding = {"repository": repository, "prior_request_id": prior_request_id,
+                   "prior_integrity_sha256": prior["integrity_sha256"], "prior_state": prior["state"],
+                   "operation_sha256": _digest(operation_id.encode("utf-8")), "correction": correction,
+                   "host": host, "reviewer_model": model, "codex_review_profile": profile,
+                   "completion_selection": selection}
+        intent = _read_resubmission(spool, intent_relative)
+        observed_link = _read_resubmission(spool, relative)
+        replay = intent is not None
+        if intent is None and observed_link is not None:
+            raise AuthorityError("INVALID_RESUBMISSION", "retained successor link lost its intent; never reconstruct history")
+        if intent is None:
+            context, context_ref, context_hash = _context(root, client, prior["context"]["subject"]["artifact_id"],
+                prior["context"]["subject"]["record_id"], prior["activity"], completion_selection=selection)
+            nonce, successor_id = _resubmission_identity(repository, context, key, context_hash, host, profile, selection)
+            contract_hash, coverage = _review_binding(context)
+            intent = {"format": REVIEW_RESUBMISSION_INTENT_FORMAT, **binding, "context_ref": context_ref,
+                      "context_sha256": context_hash, "request_nonce": nonce,
+                      "successor_request_id": successor_id, "review_contract_sha256": contract_hash,
+                      "required_coverage_sha256": _digest(_canonical(coverage))}
+            if len(_canonical(intent)) > MAX_RESUBMISSION:
+                raise AuthorityError("INVALID_RESUBMISSION", "correction metadata exceeds retained lineage bound")
+            _publish_immutable(spool, intent_relative, _canonical(intent))
+        expected_keys = {"format", *binding, "context_ref", "context_sha256", "request_nonce", "successor_request_id", "review_contract_sha256", "required_coverage_sha256"}
+        if (set(intent) != expected_keys or intent.get("format") != REVIEW_RESUBMISSION_INTENT_FORMAT
+                or any(intent.get(key) != value for key, value in binding.items())
+                or any(not isinstance(intent.get(key), str) for key in ("context_ref", "context_sha256", "request_nonce", "successor_request_id"))
+                or SHA256_RE.fullmatch(intent["context_sha256"]) is None
+                or SHA256_RE.fullmatch(intent["successor_request_id"]) is None
+                or TOKEN_RE.fullmatch(intent["request_nonce"]) is None
+                or any(not isinstance(intent.get(key), str) or SHA256_RE.fullmatch(intent[key]) is None
+                       for key in ("review_contract_sha256", "required_coverage_sha256"))):
+            raise AuthorityError("INVALID_RESUBMISSION", "operation identity differs from retained intent")
+        frozen = _read_context(root, intent["context_ref"], intent["context_sha256"])
+        _validate_context(frozen, prior["context"]["subject"]["artifact_id"],
+                          prior["context"]["subject"]["record_id"], prior["activity"])
+        nonce, successor_id = _resubmission_identity(repository, frozen, key, intent["context_sha256"], host, profile, selection)
+        if intent["request_nonce"] != nonce or intent["successor_request_id"] != successor_id or successor_id == prior_request_id:
+            raise AuthorityError("INVALID_RESUBMISSION", "intent does not bind a fresh deterministic successor")
+        link = {"format": REVIEW_RESUBMISSION_FORMAT, "intent_sha256": _digest(_canonical(intent)),
+                "prior_request_id": prior_request_id, "successor_request_id": successor_id}
+        if observed_link is not None and observed_link != link:
+            raise AuthorityError("INVALID_RESUBMISSION", "immutable successor link differs")
+        try:
+            (spool / _request_path(successor_id)).lstat()
+        except FileNotFoundError:
+            if observed_link is not None:
+                raise AuthorityError("INVALID_RESUBMISSION", "linked successor disappeared; never re-arm it")
+            contract_hash, coverage = _review_binding(frozen)
+            if (contract_hash != intent["review_contract_sha256"]
+                    or _digest(_canonical(coverage)) != intent["required_coverage_sha256"]):
+                raise AuthorityError("STALE_AUTHORITY_REQUEST", "review contract changed; use a new correction operation")
+            # Ask the real engine again, but refuse if arm's context differs
+            # from this immutable intent. No fixture or caller context replaces it.
+            class PinnedClient:
+                def call(self, operation, request=None, **kwargs):
+                    result = client.call(operation, request, **kwargs)
+                    if operation == "evidence-context" and (result.get("context_ref"), result.get("context_sha256")) != (intent["context_ref"], intent["context_sha256"]):
+                        raise AuthorityError("STALE_AUTHORITY_REQUEST", "correction context changed; use a new correction operation")
+                    return result
+            armed = arm_request(root, PinnedClient(), prior["context"]["subject"]["artifact_id"],
+                prior["context"]["subject"]["record_id"], prior["activity"], request_nonce=intent["request_nonce"],
+                host=host, reviewer_model=model, codex_review_profile=profile,
+                completion_receipts=completion_receipts, supporting_files=supporting_files)
+            if armed["request_id"] != successor_id:
+                raise AuthorityError("INVALID_RESUBMISSION", "fresh arm differs from immutable intent")
+        successor = _load(root, successor_id)
+        if (successor["context_ref"] != intent["context_ref"] or successor["context_sha256"] != intent["context_sha256"]
+                or successor["repository"] != repository or successor["activity"] != prior["activity"]
+                or successor.get("host", "codex") != host
+                or successor.get("review_contract_sha256") != intent["review_contract_sha256"]
+                or _digest(_canonical(successor.get("required_coverage"))) != intent["required_coverage_sha256"]):
+            raise AuthorityError("INVALID_RESUBMISSION", "successor bindings differ from retained intent")
+        if successor["state"] == "ARMED":
+            _register_request(root, successor)  # arm response may have been lost before registry publication
+        _publish_immutable(spool, relative, _canonical(link))
+        return _resubmission_result(root, successor, intent, relative, replay)
 
 def _bounded_output(value: Any) -> bytes:
     if not isinstance(value, (bytes, bytearray)):

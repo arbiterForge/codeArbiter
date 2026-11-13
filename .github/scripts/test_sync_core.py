@@ -236,16 +236,14 @@ class TestUnwritableDestination(_SyntheticRepoFixture):
     def test_unwritable_destination_produces_clear_nonzero_error(self):
         dst_dir = os.path.join(self.repo, self.plugin_a)
         bad_dst = os.path.join(dst_dir, "hostapi.py")
-        real_open = open
+        real_replace = os.replace
 
-        def _boom_open(path, mode="r", *a, **kw):
-            # sync-core writes atomically via dst + ".tmp-sync" then os.replace;
-            # fail any write destined for bad_dst, including its tmp sibling.
-            if os.path.abspath(str(path)).startswith(os.path.abspath(bad_dst)) and "w" in mode:
-                raise OSError("simulated write failure")
-            return real_open(path, mode, *a, **kw)
+        def _boom_replace(source, destination):
+            if os.path.abspath(destination) == os.path.abspath(bad_dst):
+                raise OSError(f"simulated write failure: {destination}")
+            return real_replace(source, destination)
 
-        with mock.patch("builtins.open", side_effect=_boom_open):
+        with mock.patch("os.replace", side_effect=_boom_replace):
             rc, out, err = self.run_main([])
         self.assertNotEqual(rc, 0)
         self.assertIn("hostapi.py", err)

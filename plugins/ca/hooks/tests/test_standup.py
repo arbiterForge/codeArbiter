@@ -1322,7 +1322,13 @@ class TestMainDoesNotDoubleReadGovernanceInputs(_MainHarness):
             return real_open(path, *a, **kw)
 
         import unittest.mock as _mock
-        with _mock.patch("builtins.open", side_effect=spy_open):
+        # This regression owns the briefing/governance input reuse. Recovery's
+        # independent activation reads are covered by its real host journeys;
+        # they must not hide a reintroduced arbiter_state read here or turn this
+        # legacy unit into a claim about every startup consumer's total I/O.
+        with (_mock.patch("builtins.open", side_effect=spy_open),
+              _mock.patch("_workflowrecoverylib.presentation",
+                          return_value={"text": "", "fingerprint": "0" * 64})):
             out = self._run_main()
 
         self.assertIn("daily briefing", out)  # sanity: full-briefing path ran

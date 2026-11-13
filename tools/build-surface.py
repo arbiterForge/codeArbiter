@@ -36,6 +36,7 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from host_descriptors import DescriptorError, load_host_descriptors  # noqa: E402
+from command_compatibility import validate_removal_policy, removal_policy_text  # noqa: E402
 
 # Compatibility views for callers that imported the old generator constants.
 # They are derived from core/hosts.json and are not a second host registry.
@@ -49,6 +50,50 @@ _MARKER = re.compile(r"\{\{(IF:([a-z][a-z0-9-]*)|ELSE|END)\}\}")
 _CMD = re.compile(r"\{\{CMD:([a-z][a-z0-9-]*)\}\}")
 _TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|EXECUTABLE_PLUGIN_ROOT|PROJECT_DIR)\}\}")
 _SKILL_ENTRY = re.compile(r"\{\{SKILL_ENTRY:([a-z][a-z0-9-]*)\}\}\n?\Z")
+# HW-19 (W-F08): owner facts rendered at build time instead of hand-copied
+# summaries. `{{FACT:tribunal-lens-count}}` is the number of lens cards the
+# Tribunal roster actually ships; `{{FACT:argument-hint:<cmd>}}` is the owning
+# command (or its SKILL_ENTRY skill) frontmatter argument-hint, table-escaped.
+_FACT = re.compile(r"\{\{FACT:(tribunal-lens-count|compatibility-removal-rule|argument-hint:[a-z][a-z0-9-]*)\}\}")
+_NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+                 "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+                 "sixteen", "seventeen", "eighteen", "nineteen", "twenty")
+
+
+def tribunal_lens_count(repo=None):
+    repo = repo or REPO
+    lens_dir = os.path.join(repo, "core", "surface", "skills", "tribunal", "references", "lenses")
+    return len([name for name in os.listdir(lens_dir) if name.endswith(".md")])
+
+
+def owner_argument_hint(name, repo=None):
+    repo = repo or REPO
+    path = os.path.join(repo, "core", "surface", "commands", f"{name}.md")
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    entry = _SKILL_ENTRY.fullmatch(text)
+    if entry:
+        with open(os.path.join(repo, "core", "surface", "skills", entry.group(1), "SKILL.md"),
+                  encoding="utf-8") as handle:
+            text = handle.read()
+    match = re.search(r'^argument-hint:\s*"?(.*?)"?\s*$', text, re.M)
+    if match is None:
+        raise SurfaceError(f"commands/{name}.md: owner declares no argument-hint")
+    return match.group(1).replace('\\"', '"')
+
+
+def _render_facts(text, repo):
+    def _fact(match):
+        key = match.group(1)
+        if key == "compatibility-removal-rule":
+            with open(os.path.join(repo, "core", "surface", "command-routes.json"), encoding="utf-8") as handle:
+                registry = json.load(handle)
+            return removal_policy_text(registry["compatibility"]["removalRequires"])
+        if key == "tribunal-lens-count":
+            count = tribunal_lens_count(repo)
+            return _NUMBER_WORDS[count] if count < len(_NUMBER_WORDS) else str(count)
+        return owner_argument_hint(key.split(":", 1)[1], repo).replace("|", "\\|")
+    return _FACT.sub(_fact, text)
 _CMD_LITERAL = re.compile(r"/ca:([a-z][a-z0-9-]*)")
 _COMMAND_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/commands/([a-z0-9-]+)\.md")
 _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
@@ -84,11 +129,8 @@ _LEADING_HTML_COMMENT = re.compile(r"\A<!--.*?-->[ \t]*\n(?:[ \t]*\n)*", re.DOTA
 _PI_ROLE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
 _MODE_NAME = re.compile(r"^(?:--)?[a-z][a-z0-9-]*$")
 _SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
-# A command may be removed in a minor release when the CHANGELOG records the
-# removal under "Removed". The maintainer replaced the earlier
-# separately-approved-major rule on 2026-10-23: deleting a prose command body
-# does not warrant a major version.
-REMOVAL_POLICY = "minor-release-with-changelog-notice"
+# HW-21/BUILD-G02 implements the selected public compatibility rule. Historical
+# named retirements remain in Git; no route is removed by this declaration.
 _COMMAND_MODE_MARKER = re.compile(
     r"<!-- command-mode:(?P<mode>(?:--)?[a-z][a-z0-9-]*) "
     r"legacy-route:(?P<route>[a-z][a-z0-9-]*) -->"
@@ -245,6 +287,7 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
     if descriptor is None:
         raise SurfaceError(f"{where}: unknown render host {host!r}")
     text = resolve_conditionals(text, host, where, host_names=host_names)
+    text = _render_facts(text, repo)
     if where in PERSONA_SOURCES:
         text = _LEADING_HTML_COMMENT.sub("", text, count=1)
     if where.startswith("core/surface/agents/"):
@@ -433,10 +476,10 @@ def _validate_compatibility_policy(value, descriptors, where):
             f"{where}: compatibility.clockStarts must be "
             "'confirmed-non-draft-github-release'"
         )
-    if value["removalRequires"] != REMOVAL_POLICY:
-        raise SurfaceError(
-            f"{where}: compatibility.removalRequires must be {REMOVAL_POLICY!r}"
-        )
+    try:
+        validate_removal_policy(value["removalRequires"])
+    except ValueError as error:
+        raise SurfaceError(f"{where}: {error}") from error
     targets = value["targets"]
     host_names = {descriptor.name for descriptor in descriptors}
     if not isinstance(targets, dict) or set(targets) != host_names:
@@ -1195,6 +1238,7 @@ def _disk_files(repo, descriptor):
 
 def check_all(repo, hosts=None):
     """Return drift lines (empty = clean): modified, missing, and orphans."""
+    assert_complete(repo, "surface")
     descriptors = load_host_descriptors(repo)
     hosts = tuple(hosts or (item.name for item in descriptors))
     by_name = {item.name: item for item in descriptors}
@@ -1206,6 +1250,7 @@ def check_all(repo, hosts=None):
         expected = render_all(repo, host, descriptors=descriptors)
         plugin_rel = descriptor.plugin_dir
         plugin = os.path.join(repo, descriptor.plugin_dir)
+        validate_targets(repo, (os.path.join(plugin, rel.replace("/", os.sep)) for rel in expected))
         on_disk = _disk_files(repo, descriptor)
         for rel in sorted(expected):
             path = os.path.join(plugin, rel.replace("/", os.sep))
@@ -1221,38 +1266,33 @@ def check_all(repo, hosts=None):
     return drift
 
 
+from owned_output import assert_complete, publish_files, validate_targets
+
+
 def write_all(repo, hosts=None):
-    """Write every render to disk, delete orphans; return changed-file count."""
+    """Render every selected host before a single owned output changes."""
     descriptors = load_host_descriptors(repo)
     hosts = tuple(hosts or (item.name for item in descriptors))
     by_name = {item.name: item for item in descriptors}
-    changed = 0
+    updates, removals = {}, []
     for host in hosts:
         descriptor = by_name.get(host)
         if descriptor is None:
             raise SurfaceError(f"unknown render host {host!r}")
         expected = render_all(repo, host, descriptors=descriptors)
         plugin = os.path.join(repo, descriptor.plugin_dir)
-        for rel in sorted(expected):
+        validate_targets(repo, (os.path.join(plugin, rel.replace("/", os.sep)) for rel in expected))
+        for rel, data in expected.items():
             path = os.path.join(plugin, rel.replace("/", os.sep))
             try:
-                if _read_bytes(path) == expected[rel]:
+                if _read_bytes(path) == data:
                     continue
             except OSError:
                 pass
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "wb") as f:  # binary: byte-exact, LF preserved
-                f.write(expected[rel])
-            changed += 1
-        for rel in sorted(
-            _disk_files(repo, descriptor) - set(expected)
-        ):
-            path = os.path.join(plugin, rel.replace("/", os.sep))
-            os.remove(path)
-            print(f"build-surface: removed orphan "
-                  f"{descriptor.plugin_dir}/{rel}")
-            changed += 1
-    return changed
+            updates[path] = data
+        removals.extend(os.path.join(plugin, rel.replace("/", os.sep))
+                        for rel in _disk_files(repo, descriptor) - set(expected))
+    return publish_files(repo, "surface", updates, removals)
 
 
 def main(argv=None, repo=REPO):
@@ -1281,6 +1321,7 @@ def main(argv=None, repo=REPO):
         return 2
 
     try:
+        assert_complete(repo, "surface")
         if check:
             drift = check_all(repo, hosts)
             if drift:
@@ -1297,7 +1338,7 @@ def main(argv=None, repo=REPO):
         print(f"build-surface: {changed} file(s) changed "
               f"({', '.join(hosts)})")
         return 0
-    except (SurfaceError, DescriptorError) as e:
+    except (SurfaceError, DescriptorError, OSError) as e:
         sys.stderr.write(f"build-surface: {e}\n")
         return 2
 

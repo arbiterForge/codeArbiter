@@ -55,6 +55,13 @@ def main(argv=None) -> int:
         "--codex-review-profile", choices=("native", "native-v1", "native-v2"), default=None,
         help="Codex reviews default to the collaboration evidence protocol; legacy profiles are explicit",
     )
+    resubmit = sub.add_parser("resubmit-review", help="fresh linked correction; exact operation replay never relaunches a child")
+    resubmit.add_argument("--root", required=True)
+    resubmit.add_argument("--request-id", required=True, help="terminal unsuccessful original review")
+    resubmit.add_argument("--operation-id", required=True, help="stable correction operation; reuse after a lost response")
+    resubmit.add_argument("--correction", required=True, choices=sorted(_artifactauthoritylib.RESUBMISSION_CORRECTIONS))
+    resubmit.add_argument("--completion-receipt", action="append", metavar="RECEIPT_REF")
+    resubmit.add_argument("--supporting-file", action="append", metavar="ABSOLUTE_PATH")
     context_cancel = sub.add_parser("cancel-context")
     context_cancel.add_argument("--root", required=True)
     context_cancel.add_argument("--document-id", required=True)
@@ -104,6 +111,10 @@ def main(argv=None) -> int:
             result["verify_command"] = (
                 f'python "{script}" verify --root "{root}" --request-id {result["request_id"]}'
             )
+    elif args.command == "resubmit-review":
+        result = _artifactauthoritylib.resubmit_review(root, client, args.request_id,
+            operation_id=args.operation_id, correction=args.correction,
+            completion_receipts=args.completion_receipt, supporting_files=args.supporting_file)
     elif args.command == "apply-context":
         result = client.call("context-apply", {"receipt": args.receipt})
     elif args.command == "verify":

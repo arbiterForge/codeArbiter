@@ -15,6 +15,9 @@ import re
 import subprocess
 import tempfile
 import time
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'core/pysrc'))
+from _artifactmanifestlib import validate_release_manifest
 
 
 class VerificationError(ValueError):
@@ -347,6 +350,10 @@ def _bind_candidate_package(
         if len(release_bytes) > 65_536:
             raise VerificationError("candidate release manifest is unbounded")
         release_data = json.loads(release_bytes, object_pairs_hook=_object_without_duplicate_keys)
+        try:
+            validate_release_manifest(release_data)
+        except ValueError as error:
+            raise VerificationError(str(error)) from error
         if (not isinstance(release_data, dict)
                 or set(release_data) not in (
                     {"format", "version", "protocol", "schema_version", "binaries"},

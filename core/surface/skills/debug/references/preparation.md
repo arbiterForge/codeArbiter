@@ -35,7 +35,34 @@ Measure the finished candidate's UTF-8 byte count before the first invocation.
 The limit is 65,536 bytes. Prepare and, if needed, compact the candidate before
 validation, retaining all evidence required by its claims. Then invoke the
 installed helper once as the debug owner directs. A rejected packet stays
-rejected. Keep the bounded error code and field path; do not rewrite and
-resubmit it, retry through another interpreter, or use an alternate validator
-as an acceptance path. Existing logs and observations remain evidence inputs;
-rejection does not authorize an unvalidated repair handoff.
+rejected: keep the bounded error code and field path, never retry it through
+another interpreter, and never use an alternate validator as an acceptance path.
+Existing logs and observations remain evidence inputs; rejection does not
+authorize an unvalidated repair handoff.
+
+## Corrected resubmission
+
+A corrected packet may be submitted again to the same installed validator. The
+correction is a new validation of a changed packet, not a retry of the refused
+one, and it changes no authority: valid shape is not causal proof, and passing
+validation grants no code-writing, external access, or publication permission.
+State what changed and why, keep the case history, and keep observed facts
+distinct from proposed repairs. Match the remedy to the refusal:
+
+- **Input or shape defect** (for example `INVALID_JSON`, `UNKNOWN_FIELD`,
+  `REQUIRED_FIELD`, `TYPE`, `VALUE`, `INPUT_LIMIT`): correct the named field from
+  facts already in hand, then validate the corrected packet.
+- **Semantic-evidence refusal** (`REFERENCE`, `SEMANTIC`): the evidence does not
+  support the claim. Changing labels, prose, IDs or the disposition name alone
+  cannot cure it. Gather real new evidence, or choose the disposition the
+  existing evidence supports (for example `unresolved`).
+- **Stale binding**: refresh the source or runtime binding only from a new real
+  observation; never edit a fingerprint or timestamp to match.
+- **Operational failure** (exit 3, unavailable helper): once the operational
+  cause has changed, retry with the identical packet bytes. Do not alter the
+  payload to work around an I/O or interpreter failure.
+- **Actual denial** by the host or user stays denied; a correction never lifts it.
+
+An unchanged resubmission with no changed condition is not progress; stop and
+report instead. Do not persist the rejected packet or echo it whole; any
+recovery obligation carries only a sanitized follow-up.

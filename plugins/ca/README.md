@@ -19,14 +19,19 @@ declared command or test discovery.
 - **Prerequisites:** Python 3 on `PATH` (all hooks are Python); `git config user.email` set
   (audit attribution). Optional `/ca:statusline` writes to your global `~/.claude/settings.json`
   (backed up; restored on removal).
-- **Activation is per-repo and explicit:** the plugin is dormant everywhere until you run
-  `/ca:init` in a repo, which scaffolds `.codearbiter/` with `arbiter: enabled`. No `.codearbiter/`,
-  no behavior: hooks exit immediately, nothing is injected, nothing is blocked.
+- **Activation is per-repo and explicit:** `/ca:init` scaffolds `.codearbiter/` with
+  `arbiter: enabled`. Without that flag, repository persona delivery, governed repository
+  enforcement and governance rows remain dormant. Before this check, SessionStart can settle
+  session mode markers and repair an existing ca-owned global statusline pin. It preserves
+  user-owned statusline configuration and the existing ownership boundaries.
 - **Drive it:** `/ca:feature` (spec-driven, with a logged small lane for small changes),
   `/ca:fix`, `/ca:chore`, `/ca:spike`, `/ca:sprint` (autonomous, every decision logged),
   `/ca:commit`, `/ca:audit`. [`COMMANDS.md`](./COMMANDS.md) lists everything.
-- **What it writes to your repo:** `.codearbiter/` only. Uninstalling the plugin leaves your
-  project state intact and yours.
+- **Local writes:** governance records live in `.codearbiter/`. Opted-in operation also maintains
+  managed Git hooks and their Git-common enforcer registry, trusted executable identities and
+  bookkeeping. The task-board writer retains its OS-lock sidecar and adds its exact ignore rule
+  through Git-common `info/exclude` under an exclusive lock. These existing owners preserve
+  foreign hooks and unrelated configuration. Uninstalling leaves your project record intact.
 
 ## Feature Forge (preview)
 

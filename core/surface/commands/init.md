@@ -10,9 +10,19 @@ management. This is the v2 replacement for vendoring/`init-vendor`: no symlinks,
 root. It writes the activation flag and the empty state files, then hands off to the populator.
 
 `.codearbiter/CONTEXT.md` frontmatter `arbiter: enabled` is the single activation flag — it gates
-{{IF:claude}}both the SessionStart persona injection and the arbiter statusline segments{{ELSE}}the SessionStart persona injection{{END}}. The scaffolded
+repository governance and per-turn persona delivery{{IF:claude}}, including the arbiter statusline segments{{END}}.
+{{IF:pi}}Pi also requires affirmative project trust; its `session_start` event emits startup state and its pre-agent prompt seam delivers the persona.{{ELSE}}SessionStart settles mode state and emits startup state; prompt-submit composes and delivers the persona.{{END}}
+{{IF:claude}}SessionStart may repair an existing ca-owned global statusline before checking repository activation.{{END}}
+The scaffolded
 `CONTEXT.md` is a **stub** (no initialization sentinel), so after scaffolding the project still needs
 populating before normal operation.
+
+Governance records live in `.codearbiter/`. Opted-in hooks also maintain managed
+Git shims and Git-common enforcement bookkeeping; the task-board writer retains
+its lock sidecar and maintains its exact Git-common `info/exclude` rule. These
+owners retain their existing permissions and preserve foreign hooks and user
+configuration. Use the explicit-root passive check below before entering an
+unfamiliar repository session; a later skill cannot undo startup effects.
 
 <!-- catalog-command-modes:start -->
 ## Explicit population strategies

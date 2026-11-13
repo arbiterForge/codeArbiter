@@ -19,9 +19,11 @@
 #      convention for a sibling event).
 #   2. Any OTHER prompt: compose `includes/safety-core.md` + the CURRENT
 #      mode's body (refusing a non-arbiter body the audit trail does not back
-#      — AC-11) and inject it, deduplicated per (session, mode, compaction
-#      generation) so a steady-state session pays for one injection per mode
-#      change, not per turn. Claude: plain stdout (host fact — plugin-scoped
+#      — AC-11) and inject it whenever the (effective mode, compaction
+#      generation) differs from the one LAST delivered to this session
+#      (HW-01), so a steady-state session pays for one injection per real
+#      transition, not per turn, and a return to an earlier mode redelivers.
+#      Claude: plain stdout (host fact — plugin-scoped
 #      `additionalContext` is unreliable, claude-code#16538; see
 #      `session-start.py:14-19`). Codex: `hookSpecificOutput.additionalContext`
 #      inside a (deliberately leaner, non-blocking) envelope.
@@ -88,11 +90,6 @@ _MODE_BODY_RELPATH = {
 }
 
 _ELLIPSIS = "…"  # U+2026 HORIZONTAL ELLIPSIS — mirrors _readinjectlib's truncation marker
-
-# Dedup marker namespace (T-30): distinct from _readinjectlib's own
-# "readinject-" default so the two consumers' markers never collide in the
-# shared .codearbiter/.markers/ directory.
-MODEINJECT_PREFIX = "modeinject-"
 
 # This script's OWN compaction-generation ledger (see the module docstring's
 # job 3). Lives beside the mode marker and the readinject markers, but is a
@@ -188,39 +185,75 @@ def _effective_mode(root, session_id, payload):
     `overrides.log` holds no matching `MODE: <mode> enter` row (or, for
     `dangerous`, a legacy `DEV: enter` row); it resolves `arbiter` instead and
     reports why. `diagnostic` is None on a clean resolution."""
-    mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-    if mode != _modelib.MODES[0] and not _modelib.ledger_backs(root, mode, session_id=session_id):
-        return _modelib.MODES[0], "mode-not-ledger-backed:" + mode
-    return mode, diag
+    return _modelib.effective_mode(session_id, root=root, payload=payload)
 
 
 # ---------------------------------------------------------------------------
-# Dedup — per (session, mode, compaction generation) marker (AC-23/24/25)
+# Delivery identity — the LAST persona delivered to a session (HW-01)
 # ---------------------------------------------------------------------------
+#
+# The earlier dedup recorded "ever delivered" per (session, mode, compaction
+# generation) and never cleared it, so arbiter->dangerous->arbiter found the
+# old arbiter marker and delivered NOTHING on the return: the model's last
+# persona stayed `dangerous` while the plane said arbiter (HOOK-F01).
+#
+# Delivery now compares against ONE per-session record of what was last
+# delivered — {effective mode, compaction generation}. A persona is owed
+# exactly when the current (effective mode, generation) differs from it:
+#   * a real effective transition (A->B, B->A, an owed enter row settling)
+#     changes the mode half and redelivers;
+#   * a compaction changes the generation half and redelivers;
+#   * an unchanged turn, a duplicate host event, and a no-op same-mode token
+#     match and deliver nothing;
+#   * A->B->A with no ordinary prompt between the flips is NOT a transition
+#     the model saw (flip turns never reach it), so A is not repeated.
+# Emission is not proof the model kept the text; the record only says what
+# this hook last emitted.
+#
+# Versioned (`v`), and in its own `modedelivery-v2-` namespace: a rolled-back
+# reader never sees it, and this reader never reinterprets a legacy
+# `modeinject-` marker. Unreadable or mismatched -> treated as "nothing
+# delivered", which fails toward a redundant persona, never a missing one.
 
-def _dedup_key(mode, generation):
-    return "{}:{}".format(mode, generation)
+MODEDELIVERY_PREFIX = "modedelivery-v2-"
+_DELIVERY_RECORD_VERSION = 2
 
 
-def _already_injected(root, session_id, mode, generation):
+def _delivery_record_path(root, session_id):
+    return _readinjectlib.marker_path(
+        root, session_id, "last-delivered", prefix=MODEDELIVERY_PREFIX)
+
+
+def _read_delivery_record(root, session_id):
+    """(mode, generation) last delivered to `session_id`, or None when absent,
+    unreadable, foreign, or of another version. Never raises."""
     try:
-        path = _readinjectlib.marker_path(
-            root, session_id, _dedup_key(mode, generation), prefix=MODEINJECT_PREFIX)
-        return os.path.isfile(path)
-    except Exception:  # noqa: BLE001 — degrade toward injecting again, never toward suppressing
-        return False
+        with open(_delivery_record_path(root, session_id), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:  # noqa: BLE001 — degrade toward delivering again
+        return None
+    if (not isinstance(data, dict) or data.get("v") != _DELIVERY_RECORD_VERSION
+            or data.get("session") != str(session_id)
+            or data.get("mode") not in _modelib.MODES):
+        return None
+    generation = data.get("generation")
+    if isinstance(generation, bool) or not isinstance(generation, int):
+        return None
+    return data["mode"], generation
 
 
-def _record_injected(root, session_id, mode, generation):
+def _already_delivered(root, session_id, mode, generation):
+    return _read_delivery_record(root, session_id) == (mode, generation)
+
+
+def _record_delivered(root, session_id, mode, generation):
     try:
-        path = _readinjectlib.marker_path(
-            root, session_id, _dedup_key(mode, generation), prefix=MODEINJECT_PREFIX)
+        path = _delivery_record_path(root, session_id)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        tmp = path + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            f.write("")
-        os.replace(tmp, path)
-    except Exception:  # noqa: BLE001 — a failed marker write only costs a redundant re-inject
+        _hooklib.write_text_atomic(path, json.dumps({
+            "v": _DELIVERY_RECORD_VERSION, "session": str(session_id),
+            "mode": mode, "generation": generation}))
+    except Exception:  # noqa: BLE001 — a failed record write only costs a redundant re-delivery
         pass
 
 
@@ -249,22 +282,18 @@ def _read_compaction_generation(root, session_id):
 
 
 def _invalidate_injection_markers(root, session_id):
-    """Remove every `modeinject-` marker for `session_id`, across all modes.
+    """Remove `session_id`'s last-delivered record.
 
-    The fallback when the generation cannot advance. Deleting the markers
-    forces the next turn's `_already_injected` to miss, so the persona is
+    The fallback when the generation cannot advance. Deleting the record
+    forces the next turn's `_already_delivered` to miss, so the persona is
     re-injected — the same outcome a successful bump produces, reached by the
     other side. Never raises: this runs on an already-degraded path, and a
     failure here costs the re-injection it was trying to guarantee, so it must
     not also cost the PreCompact turn."""
-    for mode in _modelib.MODES:
-        try:
-            path = _readinjectlib.marker_path(
-                root, session_id, _dedup_key(mode, _read_compaction_generation(root, session_id)),
-                prefix=MODEINJECT_PREFIX)
-            os.remove(path)
-        except Exception:  # noqa: BLE001 — absent is the desired state anyway
-            pass
+    try:
+        os.remove(_delivery_record_path(root, session_id))
+    except Exception:  # noqa: BLE001 — absent is the desired state anyway
+        pass
 
 
 def _bump_compaction_generation(root, session_id):
@@ -307,20 +336,60 @@ def _bump_compaction_generation(root, session_id):
 # Claude stderr messages (AC-7/9/10)
 # ---------------------------------------------------------------------------
 
-def _flip_stderr_line(mode, result):
+def _flip_stderr_line(outcome):
+    """One user-visible line rendered from `_modelib.flip_outcome`'s ACTUAL
+    result (HW-02). The earlier blanket failure line ("the session remains in
+    its current mode") was false whenever the marker HAD changed and only its
+    audit row was owed — the raw value moved, the effective mode did or did
+    not, and the user was told neither. Each branch below states only what
+    was observed; no rollback is claimed because none is performed. Mode is a
+    persona posture: nothing here says a mode switches enforcement."""
+    mode = outcome["requested"]
+    result = outcome["result"]
+    effective = outcome["effective_after"]
     if result == _modelib.FLIP_FLIPPED:
         return "codeArbiter: mode flipped to {} (MODE: {} enter logged)".format(mode, mode)
     if result == _modelib.FLIP_NOOP:
         return "codeArbiter: mode already {}".format(mode)
-    return ("codeArbiter: mode flip to {} FAILED (marker write error) — "
-            "the session remains in its current mode".format(mode))
+    if outcome["audit"] == _modelib.AUDIT_OWED:
+        if outcome["raw_after"] == mode:
+            head = ("codeArbiter: mode flip to {m} INCOMPLETE — the session marker now "
+                    "records {m}, but its MODE: {m} enter audit row is not yet on the "
+                    "trail".format(m=mode))
+        else:
+            head = ("codeArbiter: mode flip to {m} INCOMPLETE — its MODE: {m} enter "
+                    "audit row is not yet on the trail".format(m=mode))
+        return "{}; effective mode is {} ({} audit row(s) owed). Next: {}".format(
+            head, effective, outcome["owed_rows"], outcome["next_action"])
+    if outcome["raw_changed"]:
+        state = "marker now records {}".format(outcome["raw_after"])
+    elif outcome["raw_diagnostic"] not in (None, _modelib.MODE_DIAG_ABSENT):
+        state = "marker could not be confirmed ({})".format(outcome["raw_diagnostic"])
+    else:
+        state = "marker unchanged"
+    return ("codeArbiter: mode flip to {} FAILED (marker write error) — {}; "
+            "effective mode is {}. Next: {}".format(
+                mode, state, effective, outcome["next_action"]))
 
 
-def _report_stderr_line(mode, diag):
+def _report_stderr_line(root, session_id, payload):
+    """Bare `mode` report: the EFFECTIVE mode, plus the raw marker and owed
+    audit debt whenever they differ (hooks:mode:06 used to report the raw
+    value, which named a mode no persona or ledger was honouring)."""
+    effective, diag = _modelib.effective_mode(session_id, root=root, payload=payload)
+    raw, raw_diag = _modelib.current_mode(session_id, root=root, payload=payload)
     line = "codeArbiter: current mode is {} — legal values: {}".format(
-        mode, ", ".join(_modelib.MODES))
-    if diag:
-        line += " ({})".format(diag)
+        effective, ", ".join(_modelib.MODES))
+    notes = []
+    if raw != effective:
+        notes.append("marker records {} without a backing MODE: {} enter row".format(raw, raw))
+    elif diag or raw_diag:
+        notes.append(diag or raw_diag)
+    owed = _modelib.owed_audit_rows(root)
+    if owed:
+        notes.append("{} audit row(s) owed".format(owed))
+    if notes:
+        line += " ({})".format("; ".join(notes))
     return line
 
 
@@ -375,7 +444,7 @@ def _inject_claude(payload, host, root, session_id, approval_context=""):
     if diag:
         sys.stderr.write("codeArbiter: " + diag + "\n")
     generation = _read_compaction_generation(root, session_id)
-    if _already_injected(root, session_id, mode, generation):
+    if _already_delivered(root, session_id, mode, generation):
         if approval_context:
             print(approval_context)
         return
@@ -389,13 +458,13 @@ def _inject_claude(payload, host, root, session_id, approval_context=""):
         return
     composed, _truncated = _compose_persona(safety, body)
     print("\n\n".join(value for value in (approval_context, composed) if value))
-    _record_injected(root, session_id, mode, generation)
+    _record_delivered(root, session_id, mode, generation)
 
 
 def _inject_codex(payload, host, root, session_id, approval_context=""):
     mode, diag = _effective_mode(root, session_id, payload)
     generation = _read_compaction_generation(root, session_id)
-    if _already_injected(root, session_id, mode, generation):
+    if _already_delivered(root, session_id, mode, generation):
         if approval_context:
             print(json.dumps(_codex_allow_envelope(approval_context)))
         return
@@ -411,7 +480,7 @@ def _inject_codex(payload, host, root, session_id, approval_context=""):
         safety, body, limit_tokens=CODEX_ADDITIONAL_CONTEXT_LIMIT)
     context = "\n\n".join(value for value in (approval_context, composed) if value)
     print(json.dumps(_codex_allow_envelope(context)))
-    _record_injected(root, session_id, mode, generation)
+    _record_delivered(root, session_id, mode, generation)
 
 
 # ---------------------------------------------------------------------------
@@ -420,13 +489,12 @@ def _inject_codex(payload, host, root, session_id, approval_context=""):
 
 def _handle_claude(payload, host, root, session_id, token, approval_context=""):
     if token == _modelib.MODE_TOKEN_REPORT:
-        mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-        sys.stderr.write(_report_stderr_line(mode, diag) + "\n")
+        sys.stderr.write(_report_stderr_line(root, session_id, payload) + "\n")
         return 2
     if token in _modelib.MODES:
-        result = _modelib.flip(session_id, token, root=root, payload=payload,
-                                host_name=host.name)
-        sys.stderr.write(_flip_stderr_line(token, result) + "\n")
+        outcome = _modelib.flip_outcome(session_id, token, root=root, payload=payload,
+                                        host_name=host.name)
+        sys.stderr.write(_flip_stderr_line(outcome) + "\n")
         return 2
     _inject_claude(payload, host, root, session_id, approval_context)
     return 0
@@ -434,14 +502,13 @@ def _handle_claude(payload, host, root, session_id, token, approval_context=""):
 
 def _handle_codex(payload, host, root, session_id, token, approval_context=""):
     if token == _modelib.MODE_TOKEN_REPORT:
-        mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-        msg = _report_stderr_line(mode, diag)
+        msg = _report_stderr_line(root, session_id, payload)
         print(json.dumps(_codex_block_envelope(msg, msg)))
         return 0
     if token in _modelib.MODES:
-        result = _modelib.flip(session_id, token, root=root, payload=payload,
-                                host_name=host.name)
-        msg = _flip_stderr_line(token, result)
+        outcome = _modelib.flip_outcome(session_id, token, root=root, payload=payload,
+                                        host_name=host.name)
+        msg = _flip_stderr_line(outcome)
         print(json.dumps(_codex_block_envelope(msg, msg)))
         return 0
     _inject_codex(payload, host, root, session_id, approval_context)
@@ -504,13 +571,27 @@ def _handle_user_prompt_submit(payload, host):
         else:
             print(approval_context)
         return 0
+    recovery_notice = None
+    recovery_library = None
+    if token is None and host.name != "pi":
+        try:
+            import _workflowrecoverylib as recovery_library
+            recovery_notice = recovery_library.presentation(root, session_id)
+        except Exception:
+            recovery_notice = {"text": "codeArbiter: workflow recovery notice unavailable; independent authorized work continues.", "fingerprint": None}
+        approval_context = "\n".join(value for value in (approval_context, recovery_notice["text"]) if value)
     if host.name == "codex":
-        return _handle_codex(
+        result = _handle_codex(
             payload, host, state_root, session_id, token, approval_context
         )
-    return _handle_claude(
-        payload, host, state_root, session_id, token, approval_context
-    )
+    else:
+        result = _handle_claude(
+            payload, host, state_root, session_id, token, approval_context
+        )
+    if recovery_library is not None and recovery_notice is not None and recovery_notice["text"] and recovery_notice["fingerprint"]:
+        sys.stdout.flush()
+        recovery_library.record_notice_emitted(root, session_id, recovery_notice["fingerprint"])
+    return result
 
 
 def _handle_precompact(payload, host):

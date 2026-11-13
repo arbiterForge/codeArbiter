@@ -151,6 +151,17 @@ OWNER_OPERATIONAL_SHA256.update({
     'decompose': '494371267c4d544ea7d6c2b4743af5912e57d32e2c58b8934621b449bd238ad7',
 })
 
+# The major program explicitly changes these two guidance contracts: HW-18
+# corrects gh watch polling claims; HW-06 scopes conflict pauses to dependents.
+# Historical pins remain above. Freeze the complete revised bodies too; the
+# routing/surface suite separately checks retained watcher gates and stop scope.
+EXPECTED_LEGACY_BODY_SHA256['watch'] = '22e44eae9adbe33ca92bbba7f30539f7fd1e843008a2357c6d5e6c2f726e9cf5'
+OWNER_OPERATIONAL_SHA256['context-check'] = 'be686437b253db5860fe8dd760cee0486ac374e221ad251451bf6e543095cd42'
+# HW-16/HOST-D01 correct startup/persona and maintenance effects while keeping
+# the initialization strategies, activation writer and refusal behavior intact.
+EXPECTED_DEFAULT_BODY_SHA256['init'] = 'e37a00a1b0d5d8ce05c5120449a0bc3a9bb29a0995c10a6e3abc60cb4b684f1d'
+
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:
@@ -313,7 +324,11 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
     def test_compatibility_clock_starts_only_on_independent_publication(self):
         policy = self.registry()["compatibility"]
         self.assertEqual(policy["clockStarts"], "confirmed-non-draft-github-release")
-        self.assertEqual(policy["removalRequires"], "minor-release-with-changelog-notice")
+        self.assertEqual(policy["removalRequires"], {
+            "minimumVersion": {"claude": "3.0.0", "codex": "1.0.0", "pi": "1.0.0"},
+            "decision": "separately-approved-named-removal",
+            "evidence": "fresh-exact-confirmed-non-draft-release",
+        })
         self.assertEqual(
             policy["targets"],
             {

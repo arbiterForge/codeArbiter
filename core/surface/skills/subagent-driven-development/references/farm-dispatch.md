@@ -93,10 +93,14 @@ and non-overlapping task ids (each task branch is `farm/<task-id>`). At defaults
 startup on `cannot lock ref 'refs/heads/farm/integration'`.
 
 Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted;
-**exit code 3 = the run's authoritative, run-scoped report could not be published in full.** Exit 3 is a
+**exit code 3 = the run's authoritative effect/report receipts could not be published in full.** Exit 3 is a
 RECEIPT failure, not a task failure — the tasks may all have been green — and it means this run's
-durable record is missing or incomplete. Treat the run as unverified and re-dispatch; do not accept
-tasks off a run that exited 3. Inspect `.farm/runs/<run-id>/` for whatever did land before discarding.
+receipt is missing or incomplete. Preserve completed commits/merges and inspect `.farm/runs/<run-id>/effects/`.
+Run `node <plugin>/tools/farm.js --recover-receipt <run-id>` from the same repository/report root.
+This reconciles exact recorded Git identities and writes a separate recovered receipt without invoking an
+author, resetting refs or deleting resources. Unknown effects/cleanup remain unknown. Do not automatically
+redispatch or discard completed work after exit 3. A new author attempt needs an explicit new run and
+unused task/worktree/branch identities; existing runs and resources are refused rather than pre-cleaned.
 
 A failure to refresh the top-level **latest** pointer is *not* exit 3 — that pointer is explicitly
 non-authoritative. The run settles on its task outcome and prints a `WARNING:` naming what could not be
@@ -112,8 +116,8 @@ list is capped — `artifacts.diffs.unavailable_total` is the true count. Never 
 ## Step 2.5 — Circuit-breaker abort
 
 If `farm-report.json` has `aborted: true`, the dispatcher tripped its escalation-rate breaker — the
-chosen model is likely not capable of this slice. This is a hard-gate surface: STOP and tell the user,
-recommending the premium path or a different `FARM_MODEL`. Do not silently re-dispatch every task to
+recorded escalation threshold was reached. Inspect task-level causes and tell the user what was observed.
+A breaker trip alone establishes neither model incapability nor a premium dispatch or cost. Do not silently re-dispatch every task to
 premium Phase 2 (that defeats the backend's purpose and hides a bad signal).
 
 ## Step 2.6 — Streaming consumption contract
@@ -166,3 +170,6 @@ reconciliation source on abort. For each result:
 
 Gate: every task is green AND passed Phases 3–5, or was re-dispatched via premium Phase 2 and accepted.
 No task advances to commit-gate while any sibling is unresolved.
+
+
+Effect-receipt debt is reported as `artifacts.effects.complete: false`; it does not discard completed task outcomes or terminate independent in-flight work. The scheduler drains those tasks and preserves their observed commits/results before returning receipt failure. Read `artifacts.stream.complete` independently: effect-journal failure does not imply missing stream lines. Final report files may exist even when effect publication remains incomplete.

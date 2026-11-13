@@ -272,11 +272,22 @@ Resolve the absolute installed `debug-handoff.py` helper from the loaded
 trusted package, select a working Python 3 interpreter, and invoke it once
 with `-B`, the absolute helper path, and literal `validate`. Pass bounded
 packet bytes on stdin to the helper; accept a validated packet for transfer
-only on exit 0 with `valid: true` and no errors. Exit 2 means invalid input;
-stop the handoff and report its bounded code and field path without raw values.
-Exit 3 or unavailable helper blocks validated transfer. Do not retry a helper
-refusal through another interpreter, treat the packet's intent as authority,
-or claim that structural validation proves evidence truth or freshness. A
+only on exit 0 with `valid: true` and no errors. Exit 2 means the packet was
+refused; report its bounded code and field path without raw values. Exit 3 or
+unavailable helper blocks validated transfer. Do not retry a helper refusal
+through another interpreter or alternate validator, treat the packet's intent as
+authority, or claim that structural validation proves evidence truth or
+freshness.
+
+**Corrected resubmission is allowed** through the same installed validator,
+following `<plugin-root>/routines/debug/references/preparation.md` ("Corrected
+resubmission"). Name what changed and why. Each refusal class has its own
+remedy: an input/shape defect may be corrected from facts already in hand; a
+semantic-evidence refusal needs real new evidence or a different disposition,
+never a relabel or a fabricated observation; a stale binding is refreshed only
+from a new real observation; an operational failure (exit 3) is retried with
+the identical bytes once its cause has changed; an actual host or user denial
+stays denied. An unchanged retry with no changed condition is not progress. A
 diagnosis-only caller scope stops after the recommendation even when the
 packet proposes `fix`.
 
@@ -291,8 +302,9 @@ binding, then validate that revised packet once with the selected interpreter.
 This preparation is not a retry after a validator refusal. Never silently
 drop evidence needed by a conclusion; if safe compaction cannot preserve it,
 report the capacity limit and stop the validated transfer. A rejected packet
-stays rejected; do not silently repair and resubmit it or retry through another
-interpreter. No new persistent store, case directory, root instruction file,
+stays rejected; a correction is a new validation of a changed packet, made
+openly under the corrected-resubmission rules above, never a silent repair or
+a retry through another interpreter. No new persistent store, case directory, root instruction file,
 or automatic per-turn packet injection is created.
 
 On resume, use a retained packet or identity only when it is actually

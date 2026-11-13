@@ -256,6 +256,16 @@ Activation is explicit and per repository. Claude Code and Codex check
 extension event and also requires affirmative project trust. Without `arbiter: enabled`, the global
 install is dormant: no repository persona, no repository gates, and no governance row.
 
+Claude/Codex SessionStart performs session-mode settlement before this activation check.
+On a host with a statusline, it can also repair an existing ca-owned global statusline pin
+while preserving foreign configuration. In an opted-in repository, startup maintains the
+managed Git enforcement shims and Git-common enforcer registry; the task-board writer
+maintains its retained lock sidecar and exact Git-common `info/exclude` rule. Governance
+records remain in `.codearbiter/`, while those owned Git and host maintenance paths have
+their own boundaries. Persona composition and delivery occur at the per-turn prompt seam;
+SessionStart emits the startup state. For passive inspection before entering an unfamiliar
+repository session, use `init --check --passive --root PATH`.
+
 The project record lives beside the code:
 
 ```text

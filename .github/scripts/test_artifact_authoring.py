@@ -1284,6 +1284,33 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
 
+    def test_installed_bridge_preserves_progress_and_separate_dependency_readiness(self) -> None:
+        self.harness.create_pair()
+        second = json.loads(json.dumps(plan_normative("SPEC-FLOW", "0" * 64)["tasks"][0]))
+        second.update(id="T-002", depends_on=["T-001"])
+        self.harness.mutate("apply", "PLAN-FLOW", changes=[
+            {"op": "record.add", "collection": "tasks", "record": second},
+            {"op": "record.update", "symbol": "CP-01", "fields": {"tasks": ["T-001", "T-002"]}},
+        ])
+        for task in ("T-001", "T-002"):
+            self.harness.mutate("task-start", "PLAN-FLOW", task=task)
+            self.harness.mutate("task-review", "PLAN-FLOW", task=task)
+        self.harness.mutate("task-block", "PLAN-FLOW", task="T-001", reason="Upstream stopped.")
+        identity = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        packet = self.harness.client.call("task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-002", "model_sha256": identity["model_sha256"],
+        })
+        self.assertEqual(packet["state"], "REVIEW")
+        self.assertEqual(packet["waiting_on"], ["T-001"])
+        self.assertEqual(packet["progress"]["projection_version"], "recorded-progress/1")
+        self.assertEqual(packet["progress"]["basis"], "caller_reported")
+        self.assertIs(packet["progress"]["evidence_assessed"], False)
+        advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        dependent = next(row for row in advice["tasks"] if row["task"] == "T-002")
+        self.assertEqual(dependent["progress"], packet["progress"])
+        self.assertEqual(dependent["waiting_on"], ["T-001"])
+        self.assertIs(dependent["eligible"], False)
+
     def test_installed_bootstrap_example_reads_native_task_context(self) -> None:
         self.harness.create_pair()
         plugin = self.installation.parent.parent
