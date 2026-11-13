@@ -407,6 +407,11 @@ it with null without copying requirements or tasks. Exact spec and plan
 IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
 slice has no operation to assert a passing check, merge, release or deployment.
+The work schema also accepts stored `passed` and `failed` check values so a
+record written by another tool stays readable, but no native operation sets
+them. `capabilities` lists them under `operation_contract.schema_only_values`,
+and the work view labels a stored `passed` or `failed` as not being a
+verification event.
 
 An older binary can read a work item that still uses its known fields. Once a
 newer binary adds a cycle or other newer work field, that older binary rejects

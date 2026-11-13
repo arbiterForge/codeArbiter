@@ -173,6 +173,12 @@ func operationContract() object {
 		rows = append(rows, object{"name": d.Name, "effect": d.Effect, "journaled": d.Journaled,
 			"lock": d.Lock, "writes": writes, "evidence": d.Evidence})
 	}
-	return object{"format": OperationContractFormat, "operations": rows,
+	// Accepted stored vocabulary that no implemented operation produces is
+	// labeled, so a reader never infers a transition from a schema enum (N-F06).
+	schemaOnly := []any{object{"field": "work.execution.check_status",
+		"produced_values": []any{"unknown"}, "produced_by": []any{"work-create", "work-adopt"},
+		"values":  []any{"passed", "failed"},
+		"meaning": "accepted and preserved when stored by another writer; no native operation sets it and it is not a verification event"}}
+	return object{"format": OperationContractFormat, "operations": rows, "schema_only_values": schemaOnly,
 		"note": "Traits describe actual effects; none is a permission or a verification claim."}
 }
