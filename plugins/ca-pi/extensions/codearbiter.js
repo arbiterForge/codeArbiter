@@ -5609,6 +5609,9 @@ var Manager = class {
   autoDecided = false;
   lastReason;
   metrics;
+  /** PI-L02: bumped by dispose(); an install that awaited across a disposal
+   * belongs to a retired session and must not patch the terminal. */
+  generation = 0;
   register(context) {
     if (!interactiveParent(context)) return false;
     this.expected = true;
@@ -5637,6 +5640,7 @@ var Manager = class {
     await this.install(context);
   }
   dispose() {
+    this.generation += 1;
     try {
       this.compositor?.dispose();
     } catch {
@@ -5659,22 +5663,31 @@ var Manager = class {
     });
   }
   async install(context) {
+    const generation = this.generation;
+    if (this.ports.currentTui() === void 0 || this.ports.terminal() === void 0) {
+      this.lastReason = this.ports.currentTui() === void 0 ? "no-tui" : "no-terminal";
+      return false;
+    }
+    if (this.metrics === void 0) {
+      let loaded;
+      try {
+        loaded = await this.ports.loadMetrics?.();
+      } catch {
+        loaded = void 0;
+      }
+      if (loaded !== void 0) this.metrics ??= loaded;
+      if (generation !== this.generation) return false;
+      if (this.metrics === void 0) {
+        this.lastReason = "no-metrics";
+        return false;
+      }
+    }
+    if (this.compositor?.installed === true) return true;
     const tui = this.ports.currentTui();
     const terminal = this.ports.terminal();
     if (tui === void 0 || terminal === void 0) {
       this.lastReason = tui === void 0 ? "no-tui" : "no-terminal";
       return false;
-    }
-    if (this.metrics === void 0) {
-      try {
-        this.metrics = await this.ports.loadMetrics?.();
-      } catch {
-        this.metrics = void 0;
-      }
-      if (this.metrics === void 0) {
-        this.lastReason = "no-metrics";
-        return false;
-      }
     }
     const notify = (message) => {
       try {
