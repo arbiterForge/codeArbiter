@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.30.0]
+## [0.30.0] - 2026-11-13
 
 ### Changed
 

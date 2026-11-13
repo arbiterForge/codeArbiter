@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [4.0.0]
+## [4.0.0] - 2026-11-13
 
 ### Changed
 

@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.30.0]
+## [0.30.0] - 2026-11-13
 
 ### Changed
 
