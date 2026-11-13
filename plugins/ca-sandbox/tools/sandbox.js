@@ -798,10 +798,28 @@ var APP_DIR3 = "/work/repo";
 var VOLUME_PREFIX = "ca-sbx-vol";
 var CLONE_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CLONE_TIMEOUT_MS ?? 5 * 6e4);
 var CP_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CP_TIMEOUT_MS ?? 2 * 6e4);
+var BuildStagingFailure = class extends Error {
+  constructor(primaryFailure, cleanup) {
+    const primary = primaryFailure === void 0 ? "" : `${primaryFailure instanceof Error ? primaryFailure.message : String(primaryFailure)}
+`;
+    super(
+      `${primary}ca-sandbox: build staging cleanup unknown; helper=${cleanup.helper} (remove=${cleanup.removeCode}), staging=${cleanup.staging}`,
+      primaryFailure === void 0 ? void 0 : { cause: primaryFailure }
+    );
+    this.primaryFailure = primaryFailure;
+    this.cleanup = cleanup;
+    this.name = "BuildStagingFailure";
+  }
+  primaryFailure;
+  cleanup;
+};
 var CreateFailure = class extends Error {
-  constructor(message, id, volumeName, cleanup) {
-    super(`${message}
-ca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`);
+  constructor(message, id, volumeName, cleanup, cause) {
+    super(
+      `${message}
+ca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`,
+      cause === void 0 ? void 0 : { cause }
+    );
     this.id = id;
     this.volumeName = volumeName;
     this.cleanup = cleanup;
@@ -907,6 +925,7 @@ async function defaultBuildImage(volumeName, id, signal, buildDeps) {
   const dir = await mkdtemp2(path3.join(tmpdir(), "ca-sbx-checkout-"));
   const helper = `ca-sbx-cp-${newSandboxId()}`;
   let helperCreated = false;
+  let primaryFailure;
   try {
     const createResult = await makeDockerRun({}, { timeoutMs: CP_TIMEOUT_MS })(buildCpHelperCreateArgs(volumeName, helper, id), { signal });
     if (createResult.code !== 0) throw new Error(`ca-sandbox: helper creation unavailable (exit ${createResult.code}); target=${helper}`);
@@ -916,6 +935,9 @@ async function defaultBuildImage(volumeName, id, signal, buildDeps) {
     const manifests = await readManifests(dir, path3);
     const dephash = computeDepHash(manifests);
     return await buildOrReuseImage(dir, dephash, buildDeps, void 0, signal);
+  } catch (error) {
+    primaryFailure = error;
+    throw error;
   } finally {
     const removed = helperCreated ? await defaultDockerRun(["rm", "-f", helper]) : { code: 1 };
     const observed = await defaultDockerRun(["ps", "-a", "-q", "--filter", `name=^/${helper}$`]);
@@ -926,7 +948,13 @@ async function defaultBuildImage(volumeName, id, signal, buildDeps) {
     } catch {
     }
     if (observed.code !== 0 || observed.stdout.trim() || !stagingRemoved) {
-      throw new Error(`ca-sandbox: build staging cleanup unknown; helper=${helper} (remove=${removed.code}), staging=${dir}`);
+      throw new BuildStagingFailure(primaryFailure, {
+        helper,
+        staging: dir,
+        removeCode: removed.code,
+        observationCode: observed.code,
+        stagingRemoved
+      });
     }
   }
 }
@@ -1027,7 +1055,7 @@ ${cloneStderr.trim()}` : "";
     };
   } catch (err) {
     const cleanup = await compensateCreate(id, volumeName, dockerRun);
-    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup);
+    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err);
   }
 }
 

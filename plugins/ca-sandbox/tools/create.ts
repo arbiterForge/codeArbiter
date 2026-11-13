@@ -83,9 +83,23 @@ export const CP_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CP_TIMEOUT_MS ?? 2 * 
 /** Result returned by the injectable repo cloner. */
 export type CloneResult = { code: number; stderr: string };
 export type Compensation = { verified: boolean; containers: string[]; volume: string; failures: string[] };
+export type BuildStagingCleanup = {
+  helper: string; staging: string; removeCode: number; observationCode: number; stagingRemoved: boolean;
+};
+/** Build failure and independent staging observations have separate identities. */
+export class BuildStagingFailure extends Error {
+  constructor(readonly primaryFailure: unknown, readonly cleanup: BuildStagingCleanup) {
+    const primary = primaryFailure === undefined ? "" :
+      `${primaryFailure instanceof Error ? primaryFailure.message : String(primaryFailure)}\n`;
+    super(`${primary}ca-sandbox: build staging cleanup unknown; helper=${cleanup.helper} (remove=${cleanup.removeCode}), staging=${cleanup.staging}`,
+          primaryFailure === undefined ? undefined : { cause: primaryFailure });
+    this.name = "BuildStagingFailure";
+  }
+}
 export class CreateFailure extends Error {
-  constructor(message: string, readonly id: string, readonly volumeName: string, readonly cleanup: Compensation) {
-    super(`${message}\nca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`);
+  constructor(message: string, readonly id: string, readonly volumeName: string, readonly cleanup: Compensation, cause?: unknown) {
+    super(`${message}\nca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`,
+          cause === undefined ? undefined : { cause });
     this.name = "CreateFailure";
   }
 }
@@ -328,6 +342,7 @@ async function defaultBuildImage(volumeName: string, id: string, signal?: AbortS
   // mount the volume read-only and `docker cp` its /work/repo out.
   const helper = `ca-sbx-cp-${newSandboxId()}`;
   let helperCreated=false;
+  let primaryFailure: unknown;
   try {
     const createResult = await makeDockerRun({}, {timeoutMs:CP_TIMEOUT_MS})(buildCpHelperCreateArgs(volumeName, helper, id), {signal});
     if (createResult.code !== 0) throw new Error(`ca-sandbox: helper creation unavailable (exit ${createResult.code}); target=${helper}`);
@@ -337,6 +352,9 @@ async function defaultBuildImage(volumeName: string, id: string, signal?: AbortS
     const manifests = await readManifests(dir, path);
     const dephash = computeDepHash(manifests);
     return await buildOrReuseImage(dir, dephash, buildDeps, undefined, signal);
+  } catch (error) {
+    primaryFailure = error;
+    throw error;
   } finally {
     // Cleanup has independent authority; observe this exact named helper.
     const removed = helperCreated ? await defaultDockerRun(["rm", "-f", helper]) : {code:1};
@@ -344,7 +362,10 @@ async function defaultBuildImage(volumeName: string, id: string, signal?: AbortS
     let stagingRemoved = false;
     try { await rm(dir, { recursive: true, force: true }); stagingRemoved = true; } catch { /* reported below */ }
     if (observed.code !== 0 || observed.stdout.trim() || !stagingRemoved) {
-      throw new Error(`ca-sandbox: build staging cleanup unknown; helper=${helper} (remove=${removed.code}), staging=${dir}`);
+      throw new BuildStagingFailure(primaryFailure, {
+        helper, staging: dir, removeCode: removed.code,
+        observationCode: observed.code, stagingRemoved,
+      });
     }
   }
 }
@@ -475,6 +496,6 @@ export async function createSandbox(
     };
   } catch (err) {
     const cleanup = await compensateCreate(id, volumeName, dockerRun);
-    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup);
+    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err);
   }
 }
