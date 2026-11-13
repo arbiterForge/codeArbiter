@@ -270,6 +270,8 @@ jobs:
               - '.github/scripts/test_host_descriptors.py'
               - '.github/workflows/ci.yml'
             hooks:
+              - 'tools/build-artifacts.py'
+              - 'tools/go_test_parallel.py'
               - '.codearbiter/context/**'
               - '.codearbiter/CONTEXT.md'
               - '.github/fixtures/context-onboarding/**'
@@ -2553,7 +2555,11 @@ jobs:
     # Bounded above the isolation slice's internal 15-minute child timeout so
     # a wedged runner cannot turn one actionable failure into another 30-minute
     # feedback loop.
+    # Each job qualifies one fresh native reader for process-local test harnesses.
+    # Tests and vet still run; only repeated identical qualifications disappear.
     timeout-minutes: 20
+    env:
+      ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../hooks-native
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -2582,6 +2588,10 @@ jobs:
           check-latest: false
           cache: false
           go-download-base-url: https://go.dev/dl
+      - name: Qualify one native reader for hook contracts
+        env:
+          ARTIFACT_TEST_INSTALLATION: ""
+        run: python tools/build-artifacts.py --output "${{ github.workspace }}/../hooks-native"
       - name: Validate hook partition coverage
         run: python .github/scripts/test_hook_ci_partition.py
       - name: Validate shared suite observation
