@@ -712,5 +712,42 @@ class TestArbiterOverrideRoutesToItsProcedure(unittest.TestCase):
                     self.assertNotIn(stale, section)
 
 
+class TestWatchDescribesOneRefreshingProcess(unittest.TestCase):
+    """HW-18 (W-F07): `gh pr checks --watch` is one detached process that
+    refreshes the checks itself on its interval (`-i, --interval`, default 10s
+    in gh 2.93.0). The old 'server-side block / NOT a polling loop' claim was
+    false about the CLI; the true claim is that no MODEL call happens."""
+
+    RENDERINGS = (
+        "core/surface/commands/watch.md",
+        "plugins/ca/commands/watch.md",
+        "plugins/ca-codex/skills/ca-watch/SKILL.md",
+        "plugins/ca-pi/skills/ca-watch/SKILL.md",
+        "site/src/curated/commands/watch.md",
+    )
+
+    def test_no_server_side_or_no_polling_claim_remains(self):
+        for rel in self.RENDERINGS:
+            with self.subTest(rel=rel):
+                text = read(rel)
+                self.assertNotIn("server-side", text)
+                self.assertNotIn("NOT a polling loop", text)
+                self.assertIn("gh pr checks <PR> --watch", text)
+                self.assertRegex(" ".join(text.split()), r"refresh(es)? the check")
+
+    def test_model_calls_are_distinguished_and_flow_is_preserved(self):
+        for rel in self.RENDERINGS[:4]:
+            with self.subTest(rel=rel):
+                text = " ".join(read(rel).split())
+                self.assertIn("ONE **detached background task**", text)
+                self.assertIn("not model calls", text)
+                self.assertIn("re-invoked once, when the watch process exits", text)
+                self.assertIn("MUST NOT auto-merge", text)
+                self.assertIn("never invokes `gh pr merge`", text)
+                self.assertIn("precondition failure", text)
+        routing = read("core/surface/includes/routing-table.md")
+        self.assertIn("no agent poll loop (gh refreshes checks itself)", routing)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2 if "-v" in sys.argv else 1)

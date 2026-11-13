@@ -12,9 +12,10 @@ argument-hint: "<PR number | url | branch>"
 > continue with the unchanged watcher workflow below.
 <!-- catalog-compatibility-notice:end -->
 
-Watch a pull request's checks to completion without babysitting them by hand. The
-wait happens server-side, so it costs nothing while CI runs; arbiter wakes once, on
-the verdict — diagnoses a red, or offers you the merge on a green. Arbiter never
+Watch a pull request's checks to completion without babysitting them by hand. One
+detached `gh` process waits; the GitHub CLI itself re-reads the checks on its refresh
+interval, but the model is not called while CI runs — arbiter wakes once, on the
+verdict — diagnoses a red, or offers you the merge on a green. Arbiter never
 pulls the merge trigger.
 
 ## Precondition
@@ -27,14 +28,16 @@ a phantom watcher.
 
 1. **Resolve the PR** from `$ARGUMENTS` (number, URL, or branch; default to the
    current branch's PR).
-2. **Watch to completion** — run the watch as a **detached background task** built on
-   the server-side block:
+2. **Watch to completion** — run the watch as ONE **detached background task**:
    ```
    gh pr checks <PR> --watch
    ```
-   This blocks until every check finishes and then exits non-zero on failure. It is
-   NOT a polling loop — there is no interval-based wake-up. Arbiter is re-invoked once
-   when the watch process exits.
+   The `gh` process blocks until every check finishes and then exits non-zero on
+   failure. While it waits, `gh` itself refreshes the check status on its own
+   interval (`gh pr checks --help`: `-i, --interval` "Refresh interval in seconds in
+   watch mode", default 10 in gh 2.93.0) — those are CLI-side API requests, not model
+   calls. There is no agent polling loop and no interval-based model wake-up: arbiter
+   is re-invoked once, when the watch process exits.
 3. **On red** — retrieve the failing job's logs (`gh run view --log-failed` /
    `gh pr checks`) and act at the configured depth. Resolve that depth with the
    canonical resolver rather than reading the env var by hand (so the accepted
@@ -77,7 +80,7 @@ the flag are dormant in a repo without `arbiter: enabled`.
 - A merge into the default branch MUST route through the merge-to-default hard gate —
   the green offer cannot and does not bypass it.
 - MUST NOT implement a polling loop that re-invokes the model on a timer — the watch
-  is the server-side `gh pr checks --watch` block.
+  is one detached `gh pr checks --watch` process (which refreshes checks itself).
 - MUST surface a missing/unauthenticated `gh` as a precondition failure, not a silent
   no-op.
 - At depth `propose` MUST NOT edit any tracked file; at depth `branch` the proposed
