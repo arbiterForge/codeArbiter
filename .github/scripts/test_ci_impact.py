@@ -812,6 +812,20 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_pi_failure_diagnostics_survive_the_failed_owning_step(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))['ca-pi-tools']
+        for name in ('Test real package RPC activation and aliases',
+                     'Test cross-platform paths, encoding, cancellation, process trees, prune, and generation'):
+            step = job.split('- name: ' + name, 1)[1].split('- name:', 1)[0]
+            self.assertIn('CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics', step)
+            self.assertNotIn('continue-on-error:', step)
+        upload = job.split('- name: Retain sanitized RPC failure phases', 1)[1]
+        self.assertIn('if: always()', upload)
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-shutdown-*.json', upload)
+        self.assertIn('if-no-files-found: ignore', upload)
+        self.assertNotIn('continue-on-error:', upload)
+
     def test_required_tag_immutability_job_requires_recorded_publications(self):
         # A missing receipt must block the required merge gate, not first surface
         # after merge when the next automatic release reaches strict preflight.

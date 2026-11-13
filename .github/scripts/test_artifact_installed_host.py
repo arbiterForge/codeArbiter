@@ -151,12 +151,143 @@ def canonical_bytes(value: object) -> bytes:
                       separators=(",", ":")).encode("ascii")
 
 
+_FAILURE_FORMAT = "codearbiter.installed-host-failure/0.1.0"
+_FAILURE_PHASE = "bootstrap"
+_FAILURE_PHASES = frozenset({
+    "bootstrap", "assistive-progress", "assistive-readback", "author-dispatch",
+    "reconcile-review", "accept", "commit-proof", "finalization-proof",
+    "context-create", "context-update", "context-recover",
+})
+_FAILURE_STEPS = frozenset({
+    "entrypoint", "main", "expected_binary", "install_runtime_guard", "enforce_runtime_event",
+    "assert_offline_bridge", "assert_packaged_consumers", "load_bridge", "phase_run", "child",
+    "orchestrate", "orchestrate_context", "approve", "satisfy_prerequisite", "mutate", "ticket",
+    "accept", "review", "stage_policy_event", "assistive_phase", "context_phase",
+})
+_FAILURE_ERRORS = frozenset({
+    "unclassified", "AssertionError", "ArtifactError", "RuntimeError", "ValueError",
+    "TypeError", "KeyError", "OSError", "FileNotFoundError", "PermissionError",
+    "TimeoutExpired", "JSONDecodeError", "UnicodeDecodeError", "ImportError", "ModuleNotFoundError",
+})
+# Fixed source-defined API codes only. Never echo arbitrary error text or paths.
+_FAILURE_CODES = frozenset({
+    "unclassified",
+    'ACCEPTANCE_REQUIRED', 'ACTIVE_WORK', 'ALREADY_CONVERTED', 'ALREADY_EXISTS', 'ALREADY_INITIALIZED',
+    'AMBIGUOUS_ARTIFACT', 'AMBIGUOUS_EVIDENCE', 'ARTIFACT_NOT_FOUND', 'AUTHORITY_MISMATCH', 'AUTHORITY_REQUIRED',
+    'AUTHORITY_UNVERIFIED', 'CAPABILITY_MISSING', 'CHECK_MISMATCH', 'COMPLETION_REQUIRED', 'CONCURRENT_CHANGE',
+    'CONTEXT_WORKFLOW_UNAVAILABLE', 'COORDINATION_TOO_LARGE', 'COORDINATION_WAITING', 'CORRUPT_CONTEXT_TOKEN', 'CORRUPT_JOURNAL',
+    'DANGLING_REFERENCE', 'DECISION_SOURCE_REQUIRED', 'DELEGATION_REQUIRED', 'DELEGATION_SCOPE', 'DEPENDENCY_NOT_ACCEPTED',
+    'DEPENDENCY_UNSATISFIED', 'DIGEST_MISMATCH', 'DRAFT_BINDING', 'DUPLICATE_ID', 'EFFECT_PAUSED',
+    'FAILED_VERIFICATION', 'FARM_BINDING_MISSING', 'FARM_SEAL_MISSING', 'FARM_UNSUPPORTED', 'FILE_TOO_LARGE',
+    'HEADER_MISMATCH', 'ID_UNAVAILABLE', 'IMMUTABLE_ID', 'IMMUTABLE_TOMBSTONE', 'INCOMPLETE_ADOPTION',
+    'INCOMPLETE_CONTEXT', 'INCOMPLETE_REVIEW', 'INCOMPLETE_VERIFICATION', 'INITIAL_APPROVAL_ONLY', 'INPUT_MEMBERSHIP_UNAVAILABLE',
+    'INVALID_ADOPTION', 'INVALID_BINDING', 'INVALID_BRAND', 'INVALID_BUDGET', 'INVALID_CHANGE',
+    'INVALID_CHECK', 'INVALID_COLLECTION', 'INVALID_COMMAND', 'INVALID_COMPLETION_SELECTION', 'INVALID_CONTAINER',
+    'INVALID_CONTEXT_AUTHORITY', 'INVALID_CONTEXT_FINALIZATION', 'INVALID_CONTEXT_MUTATION', 'INVALID_CONTEXT_OUTPUT', 'INVALID_CONTEXT_PREVIEW',
+    'INVALID_CONTEXT_REQUEST', 'INVALID_CURSOR', 'INVALID_CUTOVER', 'INVALID_DELIVERY_OBSERVATION', 'INVALID_ENGINE_TIMEOUT',
+    'INVALID_EVENT', 'INVALID_EVIDENCE', 'INVALID_FARM_ENRICHMENT', 'INVALID_FARM_PROJECTION', 'INVALID_FIELD',
+    'INVALID_ID', 'INVALID_INPUT_POLICY', 'INVALID_INSTALLATION', 'INVALID_JSON', 'INVALID_LANE',
+    'INVALID_LEGACY', 'INVALID_LEGACY_BOARD', 'INVALID_LEGACY_OFFSET', 'INVALID_LEGACY_SOURCE', 'INVALID_LIMIT',
+    'INVALID_LINE_MAPPING', 'INVALID_LOCATION', 'INVALID_MERGE', 'INVALID_NUMBER', 'INVALID_OBSERVATION',
+    'INVALID_OFFSET', 'INVALID_OPERATION_ID', 'INVALID_OUTPUT', 'INVALID_PATH', 'INVALID_PERMUTATION',
+    'INVALID_PROJECT_OBSERVATION', 'INVALID_RECEIPT', 'INVALID_RECOVERY', 'INVALID_REFERENCE', 'INVALID_REQUEST',
+    'INVALID_RESPONSE', 'INVALID_ROUTE', 'INVALID_SCOPE_BLOCK', 'INVALID_SLUG', 'INVALID_SMARTS',
+    'INVALID_TRANSACTION', 'INVALID_TRANSITION', 'INVALID_UNICODE', 'INVALID_VIEW', 'INVALID_WORKFLOW',
+    'INVALID_WORK_TRANSITION', 'INVALID_WORK_UPDATE', 'LEGACY_CONFLICT', 'LEGACY_LOCK_FAILED', 'LEGACY_LOCK_TIMEOUT',
+    'LOCK_FAILED', 'LOCK_TIMEOUT', 'MAPPED_INTENT_CHANGED', 'MAX_ARTIFACTS', 'MAX_BYTES',
+    'MAX_DEPTH', 'MAX_ENTRIES', 'MAX_INPUTS', 'MAX_SYMBOLS', 'MISSING_TEST',
+    'NOT_FOUND', 'NOT_INITIALIZED', 'NOT_PENDING', 'NO_LOCAL_STORE', 'NO_MAPPED_INTENT',
+    'NO_TESTS_DECLARED', 'OBSERVATION_REQUIRED', 'OBSERVATION_UNVERIFIED', 'OPERATION_ID_REUSE', 'OPERATION_ROLLED_BACK',
+    'ORIGIN_CONFLICT', 'ORPHAN_PLAN', 'OVERLAPPING_MAPPING', 'OWNERSHIP_REQUIRED', 'PACKAGE_INTEGRITY',
+    'PAIR_APPROVAL_REQUIRED', 'PAIR_MISMATCH', 'PAIR_REQUIRED', 'PREREQUISITE_KIND_REQUIRED', 'PREREQUISITE_UNSATISFIED',
+    'PROVENANCE_CONFLICT', 'REASON_REQUIRED', 'RECORD_TOO_LARGE', 'RECOVERY_CONFLICT', 'RECOVERY_REQUIRED',
+    'RENDER_DRIFT', 'REQUEST_TOO_LARGE', 'REQUIRED_RECORD', 'RESERVED_MIGRATION_ID', 'RESPONSE_TOO_LARGE',
+    'RETIREMENT_REASON_REQUIRED', 'REVISION_CONFLICT', 'SCOPE_EMPTY', 'SCOPE_NOT_READY', 'SCOPE_RECONCILIATION_REQUIRED',
+    'SCOPE_UNFINISHED', 'SECTION_PAGE_TOO_LARGE', 'SMARTS_PRODUCER_REQUIRED', 'SOURCE_EVIDENCE_CONFLICT', 'SOURCE_EVIDENCE_UNKNOWN',
+    'SOURCE_EVIDENCE_UNSUPPORTED', 'SOURCE_INVALID', 'SPEC_NOT_FOUND', 'SPEC_REQUIRED', 'STALE_CONTEXT',
+    'STALE_CURSOR', 'STALE_EVIDENCE', 'STALE_PREVIEW', 'STALE_ROUTE', 'STYLE_MISMATCH',
+    'SUBPROCESS_FAILED', 'SYMBOL_NOT_FOUND', 'TIMEOUT', 'TOO_MANY_SECTIONS', 'UNADDRESSED_CONTEXT_GAP',
+    'UNCHANGED_DECISION', 'UNCOVERED_SECTION', 'UNKNOWN_CHECK', 'UNKNOWN_OPERATION', 'UNKNOWN_PREREQUISITE',
+    'UNKNOWN_SCHEMA', 'UNKNOWN_SCOPE', 'UNKNOWN_SUBJECT', 'UNKNOWN_TASK', 'UNMAPPED_LEGACY',
+    'UNQUALIFIED_COMPLETION_VERIFICATION', 'UNRECOGNIZED_OUTPUT', 'UNRESOLVED_CONTEXT', 'UNSAFE_ARTIFACT_PATH', 'UNSAFE_COMPLETION_MATERIAL',
+    'UNSAFE_PATH', 'UNSAFE_ROOT', 'UNSUPPORTED_PLATFORM', 'UNSUPPORTED_RENDERER', 'UNSUPPORTED_REPRESENTATION',
+    'UNSUPPORTED_VALUE', 'UNSUPPORTED_VERSION', 'UNVERIFIED_PLATFORM', 'WORKSPACE_DRIFT', 'WORK_SCAN_LIMIT',
+    'WRONG_FORMAT', 'WRONG_KIND',
+})
+
+
+def decode_failure(raw: bytes) -> dict[str, str] | None:
+    """Diagnostic data only, never an admission/qualification receipt."""
+    if not isinstance(raw, bytes) or len(raw) > 4096:
+        return None
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate failure field")
+            result[key] = value
+        return result
+    try:
+        value = json.loads(raw, object_pairs_hook=pairs)
+    except (ValueError, UnicodeError, RecursionError):
+        return None
+    if (not isinstance(value, dict)
+            or set(value) != {"format", "phase", "step", "error", "code"}
+            or any(not isinstance(item, str) for item in value.values())
+            or value["format"] != _FAILURE_FORMAT
+            or value["phase"] not in _FAILURE_PHASES
+            or value["step"] not in _FAILURE_STEPS
+            or value["error"] not in _FAILURE_ERRORS
+            or value["code"] not in _FAILURE_CODES):
+        return None
+    return value
+
+
+def failure_record(error: Exception, *, phase: str) -> dict[str, str]:
+    """Keep only bounded symbols from the actual failure and owning frames."""
+    nested = getattr(error, "failure_record", None)
+    if isinstance(nested, dict):
+        try:
+            retained = decode_failure(json.dumps(nested).encode())
+        except (TypeError, ValueError, RecursionError):
+            retained = None
+        if retained is not None:
+            return retained
+    name = type(error).__name__
+    code = "unclassified"
+    cause = error
+    for _ in range(8):
+        candidate = getattr(cause, "code", None)
+        if isinstance(candidate, str) and candidate in _FAILURE_CODES:
+            code = candidate
+            break
+        cause = cause.__cause__ or cause.__context__
+        if cause is None:
+            break
+    step = "entrypoint"
+    frame = error.__traceback__
+    while frame is not None:
+        if (frame.tb_frame.f_code.co_filename == __file__
+                and frame.tb_frame.f_code.co_name in _FAILURE_STEPS):
+            step = frame.tb_frame.f_code.co_name
+        frame = frame.tb_next
+    return {"format": _FAILURE_FORMAT,
+            "phase": phase if phase in _FAILURE_PHASES else "bootstrap",
+            "step": step, "error": name if name in _FAILURE_ERRORS else "unclassified", "code": code}
+
+
 def subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> AssertionError:
     stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
-    return AssertionError(
+    record = decode_failure(stderr)
+    detail = ("; " + "; ".join(f"{key}={record[key]}" for key in ("phase", "step", "error", "code"))
+              if record is not None else "")
+    error = AssertionError(
         f"{label} failed with exit {completed.returncode}; "
-        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}{detail}"
     )
+    if record is not None:
+        error.failure_record = record
+    return error
 
 
 def expected_binary(installation: Path, expected_sha256: str) -> Path:
@@ -1154,6 +1285,7 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
 
 
 def main() -> int:
+    global _FAILURE_PHASE
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", choices=("claude", "codex", "pi"), required=True)
     parser.add_argument("--plugin-root", type=Path, required=True)
@@ -1166,6 +1298,7 @@ def main() -> int:
     parser.add_argument("--candidate-manifest-sha256")
     parser.add_argument("--phase", choices=("assistive-progress", "assistive-readback", "author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
     args = parser.parse_args()
+    _FAILURE_PHASE = args.phase or "bootstrap"
     args.plugin_root = args.plugin_root.resolve(strict=True)
     args.repository = args.repository.resolve(strict=True)
     if args.context_kind:
@@ -1210,5 +1343,17 @@ def main() -> int:
     return 0
 
 
+def run_cli() -> int:
+    try:
+        return main()
+    except Exception as error:
+        # The raw traceback may contain provider data, paths or credentials.
+        # Emit only closed diagnostic symbols; failed proof remains failed.
+        json.dump(failure_record(error, phase=_FAILURE_PHASE), sys.stderr,
+                  sort_keys=True, separators=(",", ":"))
+        sys.stderr.write("\n")
+        return 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_cli())

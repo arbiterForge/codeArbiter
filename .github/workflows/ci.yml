@@ -2362,6 +2362,8 @@ jobs:
         run: npm test -- test/activation.test.ts test/audit-sink.test.ts test/background-jobs.test.ts test/child-env.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts
       - name: Test real package RPC activation and aliases
         working-directory: .
+        env:
+          CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics
         run: python .github/scripts/test_pi_package.py --rpc-commands
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
@@ -2371,7 +2373,18 @@ jobs:
           go-download-base-url: https://go.dev/dl
       - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
         working-directory: .
+        env:
+          CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics
         run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
+      - name: Retain sanitized RPC failure phases
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pi-rpc-diagnostics-${{ matrix.os }}-${{ matrix.pi-version }}
+          path: ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-shutdown-*.json
+          if-no-files-found: ignore
+          retention-days: 7
+          overwrite: false
 
   ca-pi-latest:
     name: "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>"
