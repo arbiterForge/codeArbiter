@@ -1,0 +1,54 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "packaging_site_tools / original local Windows Python3.14 source-af5f named9+10tool checks"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T04:06"
+  ],
+  "inputs": {
+    "tools/test_ci20_baseline.py": "4577deac26c8c03891ab678eec8da2534edb863ffc032965c92504806bc3d93b",
+    "tools/ci20_baseline.py": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+    "tools/ci20_inventory.py": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tools-local-af5f/raw/ci20.log",
+      "sha256": "b1618e3e0c987a68c873740c3b48592663134f9fda2558eaf268aabedeb83875"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tools-local-af5f/raw/original-named-results.json",
+      "sha256": "4842e63992dd3c234b0f2aaf23e2534bab2496feca1eceb3361a08a06ee201c4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tools-local-af5f/raw/ci20-workflow-identity-stability.json",
+      "sha256": "93bab0fd875897931619d10eaf15fda705c5b40c8e2ca1d21410974a0e2a128d"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "tools/test_ci20_baseline.py",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0
+    }
+  ],
+  "named_assertions": [
+    "__main__.BaselineTest.test_dirty_workflow_cannot_be_bound_to_clean_head_before_api_read",
+    "__main__.BaselineTest.test_optimized_inventory_still_rejects_wrong_checkout"
+  ],
+  "scope": "Actual dirtyfixture workflow rejected before API; optimized inventory refuses stalecheckout. Not live workflow/runtime-duration qualification.",
+  "limits": [
+    "No provider/model invocation or positive live screenshot/native/installed/cohort qualification.",
+    "T08:03material quality and T11normal positivePNG/normal-cleanup acceptance remain pending.",
+    "Source inputs committed; wholeworktree may contain unrelated active farm changes."
+  ]
+}

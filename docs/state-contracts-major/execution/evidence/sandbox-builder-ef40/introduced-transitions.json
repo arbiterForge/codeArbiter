@@ -1,0 +1,71 @@
+{
+  "schema": "codearbiter.proposed-added-transitions/1",
+  "state": "PROPOSED_ROOT_CARRY_REQUIRED_NO_LEDGER_OR_PROGRESS_WRITE",
+  "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+  "source_base_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+  "baseline_machine": "S49",
+  "related_baseline_transitions": [
+    "S49:02",
+    "S49:03",
+    "S49:05",
+    "S49:06",
+    "S49:07"
+  ],
+  "preserved_clause": "Currentprovenanceverifiedcachehitremainsno-build/no-secondprobe; no newglobalmachine/approvalauthority.",
+  "new_transition_rows": [
+    {
+      "transition_id": "SBX-BUILD-OBSERVATION:01",
+      "machine_id": "S49",
+      "owner": "sandbox",
+      "task_ids": [
+        "SBX-D01",
+        "SBX-C01"
+      ],
+      "from": "cache miss with initial builder/version/invocation bound into key",
+      "event": "fresh pre-build capability observation resolves",
+      "guard": "availability unchanged; whenNixpacks selected exactversion andnormalizedhost/WSLbin+distro unchanged; signalnotaborted",
+      "to": "build admitted",
+      "effects": "Invoke selectedrunBuild once with originalcurrentkey/context. Fallbacktemplate/identity unchanged.",
+      "failure_retry": "No automatictool acquisition orbuilder substitution; changed/unavailable observations use refusalrow. Cooperativecheck is notatomicexecutablepin.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@ef40ab5f33f4430a3650c225909801094acabbb4:plugins/ca-sandbox/tools/build.ts"
+      ]
+    },
+    {
+      "transition_id": "SBX-BUILD-OBSERVATION:02",
+      "machine_id": "S49",
+      "owner": "sandbox",
+      "task_ids": [
+        "SBX-D01",
+        "SBX-C01"
+      ],
+      "from": "cache miss with initial builder identity",
+      "event": "pre-build reobservation changes, fails, or cancellation arrives",
+      "guard": "availability,version,host/WSL invocation mismatch, probe rejection oraborted signal",
+      "to": "build refused",
+      "effects": "No generation/build/tag effect admitted understaleidentity. Existingcreatecompensation/reconciliation remainsindependent; retainoldimages.",
+      "failure_retry": "Caller mayretrywithfreshobservation/attempt afterowningcleanupcontract; noauto-retry/acquisition/retag andnoatomic same-user race guarantee.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@ef40ab5f33f4430a3650c225909801094acabbb4:plugins/ca-sandbox/tools/build.ts"
+      ]
+    },
+    {
+      "transition_id": "SBX-BUILD-OBSERVATION:03",
+      "machine_id": "S49",
+      "owner": "sandbox",
+      "task_ids": [
+        "SBX-C01",
+        "SBX-D01"
+      ],
+      "from": "Nixpacks profile3 cache lookup",
+      "event": "onlyweakerprofile2 image/provenancelabel available",
+      "guard": "profile3key differs fromlegacyprofile2identity",
+      "to": "cache miss",
+      "effects": "Do notadopt/reuse/delete/retagweakerprofileimage; buildonlyafterfreshadmission. Newprofile records pre-build observationpolicy.",
+      "failure_retry": "Existingprovenanceverifiedprofile3cachehit stillreturnswithoutbuild-timeprobe; changedtoolavailabilityafterinitiallookup doesnotrequiregeneratoronreuse.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@ef40ab5f33f4430a3650c225909801094acabbb4:plugins/ca-sandbox/tools/build.ts"
+      ]
+    }
+  ]
+}

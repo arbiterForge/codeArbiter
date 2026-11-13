@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "builder-observation.test.ts",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-builder-admission-w_0306cr\\red-results.json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.4535946846008301,
+  "build_sha256": "5126c4cc8954b4ae5dbe0e297200d33aafbfaadb295cb069c079ed4d5fd15414",
+  "test_sha256": "d4805c7371eef1a96e5ad803a5179318f6ca3a1af24a1dd91bd8dc0634d3ba00"
+}

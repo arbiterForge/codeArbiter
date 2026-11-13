@@ -1,0 +1,52 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Original Windows child fixtures, author source2990 plus exact three frozen files subsequently committed as dde4"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/check_codex_host.py": "63ce9fd75af79739681d3fe5c2f28bd56517cd7e7a568da465fd63d80ae8cdb4",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+  },
+  "execution_context": {
+    "original_base_commit": "2990d2c88456ac0ae356be7663be0f6986ab1641",
+    "source_binding": "Three actual frozen source hashes equal dde4. Two other imported tracked owners were unchanged2990->dde4; no concurrent source writer. No per-run runtime executable fingerprints or complete import trace were captured.",
+    "limits": "Local actual Python children and controlled syscall fault, not installed Codex/Pi, actual POSIX qualification, provider, performance, or whole-host acceptance."
+  },
+  "disposition_ids": [
+    "disposition:findings:C-F08",
+    "disposition:transitions:C36:02",
+    "disposition:transitions:C36:03",
+    "disposition:added_transitions:C36:added-prefetched-completion",
+    "disposition:added_transitions:C36:added-stdin-eof",
+    "disposition:added_transitions:C36:added-input-once",
+    "disposition:added_transitions:C36:added-input-timeout",
+    "disposition:added_transitions:C36:added-cleanup-denied"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        ".github/scripts/test_boundedproc.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "seconds": 10.18,
+      "passed": 23
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/raw/reader-23.log",
+      "sha256": "e1ad713e507674175baefc00a6bd61c7a8dd99d8c96832c0384443ba51c5eb64"
+    }
+  ],
+  "scope": "C-F08 two wait sites exercised by actual hanging Codex command fixture and Pi readiness/completion children. C36:02/:03 only bounded readiness/completion contract. Actual100warm benchmark remains corroborating prior source evidence, not a claimed captured full runtime closure."
+}

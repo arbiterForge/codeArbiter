@@ -1,0 +1,18 @@
+
+> ca-sandbox-tools@0.1.1 coverage
+> npx vitest run --coverage --reporter=json --outputFile=C:\Users\brenn\AppData\Local\Temp\ca-sbx-builder-admission-w_0306cr\coverage-tests.json
+
+{"id":"id1","volumeName":"vol1","image":"img1","containerId":"cid1","notes":[]}
+{"id":"id1","exitCode":7,"stdout":"","stderr":"","durationMs":1,"truncated":false}
+{"id":"id1","removedContainers":["cid1"],"removedVolumes":["vol1"],"keptVolumes":[],"failures":[],"failureCount":0,"remainingContainers":[],"remainingVolumes":[]}
+{"removedContainers":[],"removedVolumes":[],"failures":[],"failureCount":0,"remainingContainers":[],"remainingVolumes":[]}
+{"id":"id1","exitCode":42,"stdout":"","stderr":"","durationMs":1,"truncated":false}
+JSON report written to C:/Users/brenn/AppData/Local/Temp/ca-sbx-builder-admission-w_0306cr/coverage-tests.json
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 88.98% ( 1083/1217 )
+Branches     : 84.44% ( 760/900 )
+Functions    : 85.16% ( 155/182 )
+Lines        : 91.39% ( 966/1057 )
+================================================================================

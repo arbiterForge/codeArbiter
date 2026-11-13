@@ -1,0 +1,28 @@
+{
+  "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+  "actual_execution_context": {
+    "candidate_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+    "actual_execution_base_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+    "captured_inputs": 72,
+    "candidate_input_mismatches": [],
+    "recorded_execution_state": "Author run was HEADdde429 plus modifiedbuild.ts/sandbox.js and newuntrackedbuilder-observation.test.ts; unrelated .codearbiter/.artifacts preserved. Rootcommittedidentical72inputbytes after execution. This is byteidentitybinding, not a claimednewrun at ef40."
+  },
+  "local_coverage": {
+    "command_result": "raw/coverage-result.json",
+    "passed": 357,
+    "failed": 0,
+    "skipped": 34,
+    "skipped_scope": "34Docker-gatedcases across14files; actualDockerdaemonpipeunavailable. NoneclassifiedN/A orqualified.",
+    "lines": 91.39,
+    "branches": 84.44,
+    "statements": 88.98,
+    "functions": 85.16,
+    "stage": 2,
+    "required_profile": "lines-branches",
+    "minimum_percent": 70,
+    "local_required_metrics": "PASS",
+    "overall_host_qualification": "PARTIAL; requiredhostedDockercellsremainunexecutedlocally",
+    "tool_config": "vitest.config.ts ownsproduction*.ts exclusions andV8tool; maturityinclude owns70floor, noembeddedVitestthreshold."
+  },
+  "scope": "Only3proposednewtransitionrows; noexisting56histproofrewrite or203rowblanketpromotion. Oldproofcurrentapplicabilitymaybestale; recordeddonehistoryretained."
+}

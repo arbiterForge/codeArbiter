@@ -679,12 +679,19 @@
   },
   "C-F08": {
    "owner": null,
-   "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
    "task_ids": [
     "R-07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
   },
   "SX-F01": {
    "owner": null,
@@ -23008,23 +23015,37 @@
   },
   "C36:02": {
    "owner": "release-and-tooling",
-   "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
    "task_ids": [
     "R-07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
   },
   "C36:03": {
    "owner": "release-and-tooling",
-   "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
    "task_ids": [
     "R-07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
   },
   "C36:04": {
    "owner": "release-and-tooling",
@@ -23681,8 +23702,15 @@
     "T-01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/ci20-workflow-identity.json",
+     "sha256": "d2b6ecb2e4cd7f71ba5f3eb9e72e7db947dcf9865ad28a6d0af28ae89071db3c"
+    }
+   ]
   },
   "T05:01": {
    "owner": "release-and-tooling",
@@ -23831,8 +23859,15 @@
     "T-01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+     "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+    }
+   ]
   },
   "T09:01": {
    "owner": "release-and-tooling",
@@ -23937,8 +23972,15 @@
     "T-01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+     "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+    }
+   ]
   },
   "T10:08": {
    "owner": "release-and-tooling",
@@ -23947,8 +23989,15 @@
     "T-01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+     "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+    }
+   ]
   },
   "T11:01": {
    "owner": "release-and-tooling",
@@ -25201,5 +25250,351 @@
    "candidate_contract_note": "Only successful setup registers process exit handler; handler attempts rmSync of exact freshly created root with exceptions swallowed. Abrupt exit or cleanup error can leave that exact disposable residue; no production resource cleanup promise."
   }
  },
- "added_transitions": {}
+ "added_transitions": {
+  "T11:added-renderer-refused": {
+   "owner": "measurement-tools",
+   "treatment": "INTRODUCED_FAILURE_BOUNDARY",
+   "task_ids": [
+    "T-01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/illustration-failure-boundaries.json",
+     "sha256": "7045c4cc6f921db0ddf008049fb51302cc00d33833581159267a34fc055c2f1d"
+    }
+   ]
+  },
+  "T11:added-render-failure-cleanup": {
+   "owner": "measurement-tools",
+   "treatment": "INTRODUCED_FAILURE_BOUNDARY",
+   "task_ids": [
+    "T-01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/illustration-failure-boundaries.json",
+     "sha256": "7045c4cc6f921db0ddf008049fb51302cc00d33833581159267a34fc055c2f1d"
+    }
+   ]
+  },
+  "T11:added-browser-failure-cleanup": {
+   "owner": "measurement-tools",
+   "treatment": "INTRODUCED_FAILURE_BOUNDARY",
+   "task_ids": [
+    "T-01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/illustration-failure-boundaries.json",
+     "sha256": "7045c4cc6f921db0ddf008049fb51302cc00d33833581159267a34fc055c2f1d"
+    }
+   ]
+  },
+  "S75:added-stage-failed": {
+   "owner": "packaging",
+   "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE",
+   "task_ids": [
+    "BUILD-G01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "508bce4d719557dc5ea3b80b76b5c1d9d08822bf",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/publisher-introduced-edges.json",
+     "sha256": "2aaec5e296556a0aacedf13a40504a924ed5330ee82e6a00ef893d74737abed2"
+    }
+   ]
+  },
+  "S75:added-rolled-back": {
+   "owner": "packaging",
+   "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE",
+   "task_ids": [
+    "BUILD-G01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "508bce4d719557dc5ea3b80b76b5c1d9d08822bf",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/publisher-introduced-edges.json",
+     "sha256": "2aaec5e296556a0aacedf13a40504a924ed5330ee82e6a00ef893d74737abed2"
+    }
+   ]
+  },
+  "S75:added-unusable": {
+   "owner": "packaging",
+   "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE",
+   "task_ids": [
+    "BUILD-G01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "508bce4d719557dc5ea3b80b76b5c1d9d08822bf",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/publisher-introduced-edges.json",
+     "sha256": "2aaec5e296556a0aacedf13a40504a924ed5330ee82e6a00ef893d74737abed2"
+    }
+   ]
+  },
+  "S75:added-writer-refused": {
+   "owner": "packaging",
+   "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE",
+   "task_ids": [
+    "BUILD-G01"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "508bce4d719557dc5ea3b80b76b5c1d9d08822bf",
+     "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/publisher-introduced-edges.json",
+     "sha256": "2aaec5e296556a0aacedf13a40504a924ed5330ee82e6a00ef893d74737abed2"
+    }
+   ]
+  },
+  "SBX-BUILD-OBSERVATION:01": {
+   "owner": "sandbox",
+   "task_ids": [
+    "SBX-D01",
+    "SBX-C01"
+   ],
+   "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/sandbox-builder-tested.json",
+     "sha256": "82b5a2e342e6cd364d5808815dd0228bde18144c8c3d4482df5e4ec5b9cfff1a"
+    }
+   ]
+  },
+  "SBX-BUILD-OBSERVATION:02": {
+   "owner": "sandbox",
+   "task_ids": [
+    "SBX-D01",
+    "SBX-C01"
+   ],
+   "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/sandbox-builder-tested.json",
+     "sha256": "82b5a2e342e6cd364d5808815dd0228bde18144c8c3d4482df5e4ec5b9cfff1a"
+    }
+   ]
+  },
+  "SBX-BUILD-OBSERVATION:03": {
+   "owner": "sandbox",
+   "task_ids": [
+    "SBX-C01",
+    "SBX-D01"
+   ],
+   "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/sandbox-builder-tested.json",
+     "sha256": "82b5a2e342e6cd364d5808815dd0228bde18144c8c3d4482df5e4ec5b9cfff1a"
+    }
+   ]
+  },
+  "C36:added-prefetched-completion": {
+   "owner": "release-and-tooling",
+   "task_ids": [
+    "R-07"
+   ],
+   "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
+  },
+  "C36:added-stdin-eof": {
+   "owner": "release-and-tooling",
+   "task_ids": [
+    "R-07"
+   ],
+   "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
+  },
+  "C36:added-input-once": {
+   "owner": "release-and-tooling",
+   "task_ids": [
+    "R-07"
+   ],
+   "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
+  },
+  "C36:added-input-timeout": {
+   "owner": "release-and-tooling",
+   "task_ids": [
+    "R-07"
+   ],
+   "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
+  },
+  "C36:added-cleanup-denied": {
+   "owner": "release-and-tooling",
+   "task_ids": [
+    "R-07"
+   ],
+   "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+     "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88"
+    }
+   ]
+  },
+  "P02:added-stale-history": {
+   "owner": "integration-architect",
+   "task_ids": [
+    "P-02",
+    "Q-02"
+   ],
+   "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+     "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581"
+    }
+   ]
+  },
+  "P02:added-unknown-input": {
+   "owner": "integration-architect",
+   "task_ids": [
+    "P-02",
+    "Q-02"
+   ],
+   "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+     "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581"
+    }
+   ]
+  },
+  "P02:added-original-tamper": {
+   "owner": "integration-architect",
+   "task_ids": [
+    "P-02",
+    "Q-02"
+   ],
+   "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+     "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581"
+    }
+   ]
+  },
+  "P02:added-frozen-anchor": {
+   "owner": "integration-architect",
+   "task_ids": [
+    "P-02",
+    "Q-02"
+   ],
+   "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+     "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581"
+    }
+   ]
+  },
+  "P02:added-origin-mix": {
+   "owner": "integration-architect",
+   "task_ids": [
+    "P-02",
+    "Q-02"
+   ],
+   "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+     "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581"
+    }
+   ]
+  },
+  "P02:added-selected-gate": {
+   "owner": "integration-architect",
+   "task_ids": [
+    "P-02",
+    "Q-02"
+   ],
+   "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+     "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581"
+    }
+   ]
+  }
+ }
 }

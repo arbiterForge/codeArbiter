@@ -4,14 +4,14 @@
   "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "2990d2c88456ac0ae356be7663be0f6986ab1641 plus shared process-reader and partial-program CI wiring in the commit carrying this record",
+  "head": "ef40ab5f33f4430a3650c225909801094acabbb4 plus retained row-specific evidence in this commit",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-13T22:42:14.821961+00:00",
+  "recorded_at": "2026-11-13T23:42:37.328694+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1697,7 +1697,441 @@
       "detail": "Actual Windows8.3 and macOS alias fixtures supplied unsafe spellings; onlyownedtemporaryroots nowphysical. Go actual5failurecases andPi8failures reproduced beforefix, unchangedguards/assertions pass afterward. Contractoracle/status/schema-version checks aligned to acceptedsource; no productionpolicy softening."
     }
   ],
-  "new_transition_rows": [],
+  "new_transition_rows": [
+    {
+      "transition_id": "T11:added-renderer-refused",
+      "machine_id": "T11",
+      "owner": "measurement-tools",
+      "task_ids": [
+        "T-01"
+      ],
+      "from": "renderer invoked",
+      "event": "renderer fails or emits no nonempty visible text",
+      "guard": "returncode nonzero or stripped output empty",
+      "to": "illustration refused",
+      "effects": "Raise before HTML/browser/PNG publication; prior image remains unmodified.",
+      "source_refs": [
+        "af5f74a6afb0090a378520f7e175a8cb2ea29d39:tools/statusline-screenshot.py"
+      ],
+      "assertions": [
+        "__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image"
+      ],
+      "treatment": "INTRODUCED_FAILURE_BOUNDARY"
+    },
+    {
+      "transition_id": "T11:added-render-failure-cleanup",
+      "machine_id": "T11",
+      "owner": "measurement-tools",
+      "task_ids": [
+        "T-01"
+      ],
+      "from": "owned illustration scratch created",
+      "event": "renderer raises",
+      "guard": "no new image has been published",
+      "to": "owned scratch removed; caller failure",
+      "effects": "TemporaryDirectory removes all owned fixture files; existing target image survives.",
+      "source_refs": [
+        "af5f74a6afb0090a378520f7e175a8cb2ea29d39:tools/statusline-screenshot.py"
+      ],
+      "assertions": [
+        "__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image"
+      ],
+      "treatment": "INTRODUCED_FAILURE_BOUNDARY"
+    },
+    {
+      "transition_id": "T11:added-browser-failure-cleanup",
+      "machine_id": "T11",
+      "owner": "measurement-tools",
+      "task_ids": [
+        "T-01"
+      ],
+      "from": "browser launched",
+      "event": "page navigation/rendering fails",
+      "guard": "browser instance exists; screenshot not published",
+      "to": "browser closed and scratch removed; caller failure",
+      "effects": "finally closes browser; owned scratch removed; prior target bytes unchanged.",
+      "source_refs": [
+        "af5f74a6afb0090a378520f7e175a8cb2ea29d39:tools/statusline-screenshot.py"
+      ],
+      "assertions": [
+        "__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "treatment": "INTRODUCED_FAILURE_BOUNDARY"
+    },
+    {
+      "transition_id": "S75:added-stage-failed",
+      "machine_id": "S75",
+      "owner": "packaging",
+      "task_ids": [
+        "BUILD-G01"
+      ],
+      "from": "fully rendered updates",
+      "event": "staging/validation fails",
+      "guard": "Owned bounded publisher is the selected output owner; actual fault/refusal path is reached.",
+      "to": "old complete output retained",
+      "effects": "No output target changed; failed staging cleaned.",
+      "source_refs": [
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/owned_output.py",
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/build-surface.py"
+      ],
+      "assertions": [
+        "__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set"
+      ],
+      "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE"
+    },
+    {
+      "transition_id": "S75:added-rolled-back",
+      "machine_id": "S75",
+      "owner": "packaging",
+      "task_ids": [
+        "BUILD-G01"
+      ],
+      "from": "partial promotion",
+      "event": "later rename fails and rollback succeeds",
+      "guard": "Owned bounded publisher is the selected output owner; actual fault/refusal path is reached.",
+      "to": "old complete output restored",
+      "effects": "Restore prior files, remove unusablemarker; cleanrerun converges to exactnew outputs.",
+      "source_refs": [
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/owned_output.py",
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/build-surface.py"
+      ],
+      "assertions": [
+        "__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges"
+      ],
+      "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE"
+    },
+    {
+      "transition_id": "S75:added-unusable",
+      "machine_id": "S75",
+      "owner": "packaging",
+      "task_ids": [
+        "BUILD-G01"
+      ],
+      "from": "partial promotion",
+      "event": "restore fails",
+      "guard": "Owned bounded publisher is the selected output owner; actual fault/refusal path is reached.",
+      "to": "explicitly unusable projection",
+      "effects": "Retain lock+journal; assert_complete refuses consumption; no silentready mixture.",
+      "source_refs": [
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/owned_output.py",
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/build-surface.py"
+      ],
+      "assertions": [
+        "__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal"
+      ],
+      "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE"
+    },
+    {
+      "transition_id": "S75:added-writer-refused",
+      "machine_id": "S75",
+      "owner": "packaging",
+      "task_ids": [
+        "BUILD-G01"
+      ],
+      "from": "publication owner busy",
+      "event": "another writer targets same namespace",
+      "guard": "Owned bounded publisher is the selected output owner; actual fault/refusal path is reached.",
+      "to": "second writer refused",
+      "effects": "Existing marker/oldtarget bytes untouched.",
+      "source_refs": [
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/owned_output.py",
+        "508bce4d719557dc5ea3b80b76b5c1d9d08822bf:tools/build-surface.py"
+      ],
+      "assertions": [
+        "__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker"
+      ],
+      "treatment": "INTRODUCED_OWNED_PUBLICATION_STATE"
+    },
+    {
+      "transition_id": "SBX-BUILD-OBSERVATION:01",
+      "machine_id": "S49",
+      "owner": "sandbox",
+      "task_ids": [
+        "SBX-D01",
+        "SBX-C01"
+      ],
+      "from": "cache miss with initial builder/version/invocation bound into key",
+      "event": "fresh pre-build capability observation resolves",
+      "guard": "availability unchanged; whenNixpacks selected exactversion andnormalizedhost/WSLbin+distro unchanged; signalnotaborted",
+      "to": "build admitted",
+      "effects": "Invoke selectedrunBuild once with originalcurrentkey/context. Fallbacktemplate/identity unchanged.",
+      "failure_retry": "No automatictool acquisition orbuilder substitution; changed/unavailable observations use refusalrow. Cooperativecheck is notatomicexecutablepin.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@ef40ab5f33f4430a3650c225909801094acabbb4:plugins/ca-sandbox/tools/build.ts"
+      ],
+      "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE"
+    },
+    {
+      "transition_id": "SBX-BUILD-OBSERVATION:02",
+      "machine_id": "S49",
+      "owner": "sandbox",
+      "task_ids": [
+        "SBX-D01",
+        "SBX-C01"
+      ],
+      "from": "cache miss with initial builder identity",
+      "event": "pre-build reobservation changes, fails, or cancellation arrives",
+      "guard": "availability,version,host/WSL invocation mismatch, probe rejection oraborted signal",
+      "to": "build refused",
+      "effects": "No generation/build/tag effect admitted understaleidentity. Existingcreatecompensation/reconciliation remainsindependent; retainoldimages.",
+      "failure_retry": "Caller mayretrywithfreshobservation/attempt afterowningcleanupcontract; noauto-retry/acquisition/retag andnoatomic same-user race guarantee.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@ef40ab5f33f4430a3650c225909801094acabbb4:plugins/ca-sandbox/tools/build.ts"
+      ],
+      "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE"
+    },
+    {
+      "transition_id": "SBX-BUILD-OBSERVATION:03",
+      "machine_id": "S49",
+      "owner": "sandbox",
+      "task_ids": [
+        "SBX-C01",
+        "SBX-D01"
+      ],
+      "from": "Nixpacks profile3 cache lookup",
+      "event": "onlyweakerprofile2 image/provenancelabel available",
+      "guard": "profile3key differs fromlegacyprofile2identity",
+      "to": "cache miss",
+      "effects": "Do notadopt/reuse/delete/retagweakerprofileimage; buildonlyafterfreshadmission. Newprofile records pre-build observationpolicy.",
+      "failure_retry": "Existingprovenanceverifiedprofile3cachehit stillreturnswithoutbuild-timeprobe; changedtoolavailabilityafterinitiallookup doesnotrequiregeneratoronreuse.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@ef40ab5f33f4430a3650c225909801094acabbb4:plugins/ca-sandbox/tools/build.ts"
+      ],
+      "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE"
+    },
+    {
+      "transition_id": "C36:added-prefetched-completion",
+      "machine_id": "C36",
+      "owner": "release-and-tooling",
+      "task_ids": [
+        "R-07"
+      ],
+      "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+      "from": "readiness consumed",
+      "event": "child finishes in the same write",
+      "guard": "one captured stdout owner",
+      "to": "completion retained",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/_boundedproc.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/pi_benchmark.py"
+      ],
+      "assertions": [
+        "ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write"
+      ]
+    },
+    {
+      "transition_id": "C36:added-stdin-eof",
+      "machine_id": "C36",
+      "owner": "release-and-tooling",
+      "task_ids": [
+        "R-07"
+      ],
+      "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+      "from": "ready child waits for stdin",
+      "event": "communicate input=None",
+      "guard": "stdin PIPE exists",
+      "to": "EOF delivered, child completes",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/_boundedproc.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/pi_benchmark.py"
+      ],
+      "assertions": [
+        "ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness"
+      ]
+    },
+    {
+      "transition_id": "C36:added-input-once",
+      "machine_id": "C36",
+      "owner": "release-and-tooling",
+      "task_ids": [
+        "R-07"
+      ],
+      "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+      "from": "communicating input",
+      "event": "timeout then retry without new input",
+      "guard": "one original writer",
+      "to": "original payload delivered once",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/_boundedproc.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/pi_benchmark.py"
+      ],
+      "assertions": [
+        "ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once"
+      ]
+    },
+    {
+      "transition_id": "C36:added-input-timeout",
+      "machine_id": "C36",
+      "owner": "release-and-tooling",
+      "task_ids": [
+        "R-07"
+      ],
+      "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+      "from": "ready child never reads stdin",
+      "event": "bounded communicate deadline",
+      "guard": "payload larger than pipe capacity",
+      "to": "timeout; tree cleanup settles writer",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/_boundedproc.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/pi_benchmark.py"
+      ],
+      "assertions": [
+        "ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer"
+      ]
+    },
+    {
+      "transition_id": "C36:added-cleanup-denied",
+      "machine_id": "C36",
+      "owner": "release-and-tooling",
+      "task_ids": [
+        "R-07"
+      ],
+      "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+      "from": "partial readiness failure",
+      "event": "group signal denied",
+      "guard": "real child exited; cleanup observation unavailable",
+      "to": "primary failure retained; containment unconfirmed",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/_boundedproc.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/pi_benchmark.py"
+      ],
+      "assertions": [
+        "PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+      ]
+    },
+    {
+      "transition_id": "P02:added-stale-history",
+      "machine_id": "P02-INTEGRITY",
+      "owner": "integration-architect",
+      "task_ids": [
+        "P-02",
+        "Q-02"
+      ],
+      "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+      "from": "current inputs match original",
+      "event": "relevant input changes",
+      "guard": "original proof authenticates",
+      "to": "recorded progress retained; applicability STALE",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/check_state_contracts_integration.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/major_readiness.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/workflows/ci.yml"
+      ],
+      "assertions": [
+        "test_stale_history_passes_integration_but_strict_publication_refuses"
+      ]
+    },
+    {
+      "transition_id": "P02:added-unknown-input",
+      "machine_id": "P02-INTEGRITY",
+      "owner": "integration-architect",
+      "task_ids": [
+        "P-02",
+        "Q-02"
+      ],
+      "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+      "from": "recorded proof authentic",
+      "event": "current input unavailable",
+      "guard": "original evidence retained",
+      "to": "applicability UNKNOWN, not passed",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/check_state_contracts_integration.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/major_readiness.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/workflows/ci.yml"
+      ],
+      "assertions": [
+        "test_unavailable_current_input_is_unknown_not_passed_applicability"
+      ]
+    },
+    {
+      "transition_id": "P02:added-original-tamper",
+      "machine_id": "P02-INTEGRITY",
+      "owner": "integration-architect",
+      "task_ids": [
+        "P-02",
+        "Q-02"
+      ],
+      "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+      "from": "recorded source/evidence",
+      "event": "original raw bytes or source changed",
+      "guard": "exact original digest mismatch",
+      "to": "integrity refused even if current input stale",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/check_state_contracts_integration.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/major_readiness.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/workflows/ci.yml"
+      ],
+      "assertions": [
+        "test_changed_original_raw_proof_refuses_even_when_current_source_stale"
+      ]
+    },
+    {
+      "transition_id": "P02:added-frozen-anchor",
+      "machine_id": "P02-INTEGRITY",
+      "owner": "integration-architect",
+      "task_ids": [
+        "P-02",
+        "Q-02"
+      ],
+      "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+      "from": "accepted frozen intake",
+      "event": "file and manifest both rehashed",
+      "guard": "accepted manifest identity differs",
+      "to": "replacement intake refused",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/check_state_contracts_integration.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/major_readiness.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/workflows/ci.yml"
+      ],
+      "assertions": [
+        "test_rehashed_frozen_file_and_manifest_cannot_rebaseline"
+      ]
+    },
+    {
+      "transition_id": "P02:added-origin-mix",
+      "machine_id": "P02-INTEGRITY",
+      "owner": "integration-architect",
+      "task_ids": [
+        "P-02",
+        "Q-02"
+      ],
+      "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+      "from": "raw local path",
+      "event": "hosted run/job/artifact identity added",
+      "guard": "two origins mixed",
+      "to": "refuse before origin selection/API bypass",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/check_state_contracts_integration.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/major_readiness.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/workflows/ci.yml"
+      ],
+      "assertions": [
+        "test_hosted_claim_cannot_borrow_valid_local_raw_path"
+      ]
+    },
+    {
+      "transition_id": "P02:added-selected-gate",
+      "machine_id": "P02-INTEGRITY",
+      "owner": "integration-architect",
+      "task_ids": [
+        "P-02",
+        "Q-02"
+      ],
+      "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+      "from": "selected integration check",
+      "event": "failure/cancellation/skip/missing result",
+      "guard": "program_integrity selected true",
+      "to": "actual merge shell refuses",
+      "source_refs": [
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/check_state_contracts_integration.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/scripts/major_readiness.py",
+        "dde429b98eb16622cf4ed211386783342fc9d48a:.github/workflows/ci.yml"
+      ],
+      "assertions": [
+        "test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ]
+    }
+  ],
   "evidence_records": [
     {
       "task": "P-00",
@@ -1823,6 +2257,16 @@
       "what": "Authenticated original Windows installed cohort",
       "observed": "Source09038cd753f57f405ecedc7394f72d5083447930 fromrun43516404599/event2990 verified originaluploads14082711045/14081832586/cohorta599a442. Owning productionverifier PASS6.532s beforeexecution; coldWindowsPi/Codex/Claude PASS17.48/18.868/19.323s, retainedrecovery10PASS28.67s, realPi1.5original273member package CLI/discovery/alias/doctor fixture1PASS17.359s with3actualRPCroutes. Deterministiclocalprovider/fixturetrust/syntheticcoldPi policy; doctorDEGRADED(no parentUI/active author-dispatch); no realhumanconsent/externalprovider/futureheadqualification claim. Raworiginals remainlocalTemp/ca-original-cohort-2990-43516404599/windows-proof and originalCIartifacts.",
       "date": "2026-11-13"
+    },
+    {
+      "what": "Builder admission and meaningful measurement assertion",
+      "observed": "Cache misses reobserve builder availability/version/invocation before effect; weaker profile2 labels miss profile3 without deletion/retag. Actual102PASS1DockerSKIP and owningcoverage357PASS34DockerSKIP,lines91.39branches84.44. Measurement single-case fixture now detects removed child-exit guard; actual19namedchecks passed. New source-bound transition definitions retain original run identities; no global generation transaction or source-equality-only bulk promotion.",
+      "date": "2026-11-13"
+    },
+    {
+      "what": "Introduced transition accountability",
+      "observed": "21introduced edges explicitly recorded with actual scoped test evidence:5reader,6integrity,3sandbox,3illustrationfailure and4ownedpublicationfailure/recovery. Seven existing baseline cells gained scoped test evidence. Original197records remain untouched; changed sandbox proof inputs may now be STALE independently of recorded progress. No whole task/machine/runtime closure inferred.",
+      "date": "2026-11-13"
     }
   ],
   "scoped_blockers": [],
@@ -1851,7 +2295,7 @@
     "number": 1103,
     "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
     "base": "major/state-contracts",
-    "observed_head": "2990d2c88456ac0ae356be7663be0f6986ab1641",
-    "next": "Push shared process-reader/P02 integration repair together; require replacement exact-head CI and original-cohort package proof for that source."
+    "observed_head": "ef40ab5f33f4430a3650c225909801094acabbb4",
+    "next": "Push retained source-bound evidence with ef40 builder/test repairs; require replacement exact-head CI and authentic original-package TUI/installed proof. Keep1098draft/mainhold."
   }
 }

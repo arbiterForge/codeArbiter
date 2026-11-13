@@ -1,0 +1,62 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Root actual Windows18case original Git-fixture integrity run; exact implementation subsequently committed dde4"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/check_state_contracts_integration.py": "0913c941f25461ccb34f602e89e96bfedadb5eedca6adbaaca2f4a38100a1067",
+    ".github/scripts/test_state_contracts_integration.py": "8681aa43a81b9aca7a5a85f4e3d42d25d299da3d639fd50e9eb044bd6e9885c0",
+    ".github/scripts/major_readiness.py": "3bc43e5765ae067368fe2d7ae258c4c7ab47bb0081081f0db9b0ed1d79745b84",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/workflows/ci.yml": "19e6c7f65f3187b3e694174b84a4aaf39299e493b950ecf73889613f65f240ca",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4"
+  },
+  "execution_context": {
+    "original_base_commit": "2990d2c88456ac0ae356be7663be0f6986ab1641",
+    "fixture_git_source": "2990d2c88456ac0ae356be7663be0f6986ab1641",
+    "source_binding": "Actual run used code with staged-candidate hashes retained in ca-1103-reader-integrity-gwjy396p; those exact files are now dde4 Git blobs. Fixture setup reads immutable2990 corpus separately.",
+    "limits": "Synthetic disposable Git history and actual Windows Bash merge script. Not a new product/platform/publication qualification. All required selected jobs remain exact-head hosted obligations."
+  },
+  "disposition_ids": [
+    "disposition:added_transitions:P02:added-stale-history",
+    "disposition:added_transitions:P02:added-unknown-input",
+    "disposition:added_transitions:P02:added-original-tamper",
+    "disposition:added_transitions:P02:added-frozen-anchor",
+    "disposition:added_transitions:P02:added-origin-mix",
+    "disposition:added_transitions:P02:added-selected-gate"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-X",
+        "utf8",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "seconds": 14.090175400022417,
+      "passed": 18
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/raw/integration-18.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/raw/integration-18.stderr",
+      "sha256": "c1a4d159af047f9b65033dd2179da29e30288b926510a1a6845cf75ebf2ffac2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/raw/integration-command.json",
+      "sha256": "f03dd6b511aeb6979ec7ac5216dbe03be324357384335761d9d7bd2ddab1c456"
+    }
+  ]
+}
