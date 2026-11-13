@@ -812,6 +812,20 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_pi_failure_diagnostics_survive_the_failed_owning_step(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))['ca-pi-tools']
+        for name in ('Test real package RPC activation and aliases',
+                     'Test cross-platform paths, encoding, cancellation, process trees, prune, and generation'):
+            step = job.split('- name: ' + name, 1)[1].split('- name:', 1)[0]
+            self.assertIn('CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics', step)
+            self.assertNotIn('continue-on-error:', step)
+        upload = job.split('- name: Retain sanitized RPC failure phases', 1)[1]
+        self.assertIn('if: always()', upload)
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-shutdown-*.json', upload)
+        self.assertIn('if-no-files-found: ignore', upload)
+        self.assertNotIn('continue-on-error:', upload)
+
     def test_required_tag_immutability_job_requires_recorded_publications(self):
         # A missing receipt must block the required merge gate, not first surface
         # after merge when the next automatic release reaches strict preflight.
@@ -2368,6 +2382,17 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_active_knowledge_and_selector_reach_policy_conformance(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        scopes = {"push": push_trigger_paths(ci),
+                  "hooks": paths_filter(ci, "hooks"),
+                  "impact": paths_filter(ci, "impact")}
+        for name, paths in scopes.items():
+            for subject in (".codearbiter/context/**", ".codearbiter/CONTEXT.md"):
+                with self.subTest(scope=name, subject=subject):
+                    self.assertIn(subject, paths,
+                                  "an active HTML fact/policy or format-selector edit must run its conformance owner")
+
     def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
         # Issue #507, same defect class as the test above and as #384/#403/#404.
         # GateCommandTest lives in THIS file, which runs only in the path-scoped
@@ -2457,6 +2482,11 @@ class WorkflowContractTest(unittest.TestCase):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("  documentation-contract:\n", ci)
         self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
+        document_job = workflow_jobs(ci)["documentation-contract"]
+        native_setup = "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        self.assertIn(native_setup, document_job)
+        self.assertIn('go-version: "1.27.1"', document_job)
+        self.assertLess(document_job.index(native_setup), document_job.index("run: python3 .github/scripts/check_docs_contract.py"))
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
@@ -3008,6 +3038,20 @@ class GateCommandTest(unittest.TestCase):
 
     def _defines(self, token, tech_stack):
         """Does tech-stack.md define `token`? Regex where one fits, structure where not."""
+        if token in ("test", "audit"):
+            from project_knowledge import active_records
+            records = active_records("tech-stack")
+            if records is not None:
+                if token == "audit":
+                    return any(record.get("type") == "command"
+                               and record["command"]["argv"][0] == "npm"
+                               and "audit" in record["command"]["argv"]
+                               and "--audit-level=high" in record["command"]["argv"]
+                               for record in records)
+                return any(record.get("type") == "command"
+                           and record["command"]["purpose"] == "test"
+                           and record["command"]["argv"][0] != ":"
+                           for record in records)
         proof = self.DEFINITIONS[token]
         if proof is not None:
             return proof.search(tech_stack) is not None
@@ -3027,7 +3071,8 @@ class GateCommandTest(unittest.TestCase):
         return found
 
     def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         missing = []
         for token, who in sorted(self._demanded().items()):
             names = ", ".join(sorted(who))
@@ -3078,7 +3123,8 @@ class GateCommandTest(unittest.TestCase):
         leaves the gate pointing at nothing while every text assertion still
         passes - #507 reachable straight through the fix for #507.
         """
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         pairs = self._npm_invocations(tech_stack)
         # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
         # is satisfied by the unrelated `build` and `typecheck` invocations in the same
@@ -3129,7 +3175,8 @@ class GateCommandTest(unittest.TestCase):
 
     def test_every_tested_tree_has_its_coverage_command_documented(self):
         """Completeness, driven by the filesystem rather than by the prose."""
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
         undocumented = [
             tree for tree in sorted(self._tested_trees())
@@ -3563,9 +3610,9 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         for name, command in scripts.items():
             if name != "test:browser":
                 self.assertNotRegex(command, r"playwright|test:browser", name)
-        for path in (REPO_ROOT / ".codearbiter/tech-stack.md",
-                     REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md"):
-            self.assertNotRegex(path.read_text(encoding="utf-8"), r"playwright install|run test:browser")
+        from project_knowledge import context_text
+        self.assertNotRegex(context_text("tech-stack"), r"playwright install|run test:browser")
+        self.assertNotRegex((REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md").read_text(encoding="utf-8"), r"playwright install|run test:browser")
 
     def test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition(self):
         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(

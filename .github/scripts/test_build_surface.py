@@ -1342,7 +1342,8 @@ class VerificationBoundaryContractTest(unittest.TestCase):
             "Run it before opening a PR",
         )
         for path in paths:
-            text = self.read(path)
+            from project_knowledge import context_text
+            text = context_text("tech-stack") if path == ".codearbiter/tech-stack.md" else self.read(path)
             if path.startswith("core/surface/commands/"):
                 text = B._compose_skill_entry(
                     text, path, str(REPO_ROOT / "core/surface"), {}
@@ -1965,7 +1966,8 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
     def test_secret_source_guidance_uses_active_policy(self):
         secret = (REPO_ROOT / 'core/surface/skills/secret-handling/SKILL.md').read_text(encoding='utf-8')
         reviewer = (REPO_ROOT / 'core/surface/agents/auth-crypto-reviewer.md').read_text(encoding='utf-8')
-        policy = (REPO_ROOT / '.codearbiter/security-controls.md').read_text(encoding='utf-8')
+        from project_knowledge import context_text
+        policy = context_text("security-controls")
         self.assertRegex(policy, r"owning process's\s+approved environment")
         self.assertIn('runtime transport', policy)
         self.assertIn('reading `process.env` alone neither approves nor rejects', secret)
@@ -2787,7 +2789,8 @@ class LanguageCoveragePolicyTest(unittest.TestCase):
                 self.assertIn('Unmeasured:', auditor)
 
     def test_repository_binds_existing_surfaces_to_the_approved_profiles(self):
-        stack = (REPO_ROOT / '.codearbiter/tech-stack.md').read_text(encoding='utf-8')
+        from project_knowledge import context_text
+        stack = context_text("tech-stack")
         coverage = stack.split('## Coverage\n', 1)[1].split('\n## ', 1)[0]
         for path in ('plugins/ca/tools', 'plugins/ca-pi/tools',
                      'plugins/ca-sandbox/tools', 'site/'):

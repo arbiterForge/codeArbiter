@@ -139,6 +139,78 @@ class PackageTests(unittest.TestCase):
             ):
                 INSTALLED_HOST.assert_offline_bridge(candidate)
 
+    def test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details(self):
+        missing = self.base / "private-fixture-value-not-for-output"
+        completed = subprocess.run(
+            [sys.executable, "-I", "-B", str(REPO / ".github/scripts/test_artifact_installed_host.py"),
+             "--host", "claude", "--plugin-root", str(missing),
+             "--repository", str(self.base), "--expected-binary-sha256", "0" * 64],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20, check=False)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertEqual(completed.stdout, b"")
+        self.assertTrue(completed.stderr.startswith(b"{"), "missing bounded installed-host failure record")
+        record = json.loads(completed.stderr)
+        self.assertEqual(record, {"format": "codearbiter.installed-host-failure/0.1.0",
+                                 "phase": "bootstrap", "step": "main",
+                                 "error": "FileNotFoundError", "code": "unclassified"})
+        self.assertNotIn(missing.name.encode(), completed.stderr)
+        message = str(PACKAGER._subprocess_failure("cold installed-host workflow", completed))
+        self.assertIn("phase=bootstrap", message)
+        self.assertIn("error=FileNotFoundError", message)
+
+    def test_cold_failure_diagnostic_survives_verifier_child_boundary(self):
+        record = {"format": "codearbiter.installed-host-failure/0.1.0",
+                  "phase": "author-dispatch", "step": "approve",
+                  "error": "ArtifactError", "code": "AUTHORITY_UNVERIFIED"}
+        raw = json.dumps(record).encode()
+        completed = subprocess.CompletedProcess([], 1, b"", raw)
+        nested = INSTALLED_HOST.subprocess_failure("installed-host phase author-dispatch", completed)
+        self.assertEqual(getattr(nested, "failure_record", None), record)
+        for error in (nested, PACKAGER._subprocess_failure("cold", completed)):
+            self.assertIn("phase=author-dispatch", str(error))
+            self.assertIn("code=AUTHORITY_UNVERIFIED", str(error))
+        self.assertEqual(INSTALLED_HOST.failure_record(nested, phase="bootstrap"), record)
+
+    def test_cold_failure_producer_keeps_known_native_cause_without_message(self):
+        import contextlib
+        import io
+        native = _artifactlib.ArtifactError("AUTHORITY_UNVERIFIED", "private-fixture-value-not-for-output")
+        outer = AssertionError("private-fixture-value-not-for-output")
+        outer.__cause__ = native
+        stderr = io.StringIO()
+        with mock.patch.object(INSTALLED_HOST, "main", side_effect=outer), \
+             mock.patch.object(INSTALLED_HOST, "_FAILURE_PHASE", "author-dispatch"), \
+             contextlib.redirect_stderr(stderr):
+            self.assertEqual(INSTALLED_HOST.run_cli(), 1)
+        raw = stderr.getvalue().encode()
+        record = json.loads(raw)
+        self.assertEqual(record["phase"], "author-dispatch")
+        self.assertEqual(record["code"], "AUTHORITY_UNVERIFIED")
+        self.assertEqual(record["error"], "AssertionError")
+        self.assertNotIn("private-fixture-value-not-for-output", stderr.getvalue())
+        self.assertIn("code=AUTHORITY_UNVERIFIED", str(PACKAGER._subprocess_failure(
+            "cold", subprocess.CompletedProcess([], 1, b"", raw))))
+
+    def test_cold_failure_diagnostic_rejects_malformed_arbitrary_and_duplicate_fields(self):
+        good = {"format": "codearbiter.installed-host-failure/0.1.0",
+                "phase": "author-dispatch", "step": "approve",
+                "error": "ArtifactError", "code": "AUTHORITY_UNVERIFIED"}
+        samples = [b"private-fixture-value-not-for-output", b"{", b"x" * 4097,
+                   json.dumps({**good, "extra": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "code": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "phase": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "step": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "error": "private-fixture-value-not-for-output"}).encode(),
+                   (json.dumps(good)[:-1] + ', "code":"AUTHORITY_UNVERIFIED"}').encode()]
+        for raw in samples:
+            completed = subprocess.CompletedProcess([], 7, b"", raw)
+            for error in (INSTALLED_HOST.subprocess_failure("phase", completed),
+                          PACKAGER._subprocess_failure("cold", completed)):
+                message = str(error)
+                self.assertNotIn("phase=", message)
+                self.assertNotIn("private-fixture-value-not-for-output", message)
+                self.assertIn(hashlib.sha256(raw).hexdigest(), message)
+
     def test_installed_host_runtime_guard_and_failure_redaction(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
         entry = next(iter(manifest["binaries"].values()))

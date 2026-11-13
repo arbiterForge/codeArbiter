@@ -210,6 +210,10 @@ EXPECTED_SUITES = {
         "test_dispatcher_does_not_downgrade_after_html_and_binding_deleted",
     },
     "test_artifact_package.py": {
+        "test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details",
+        "test_cold_failure_diagnostic_survives_verifier_child_boundary",
+        "test_cold_failure_producer_keeps_known_native_cause_without_message",
+        "test_cold_failure_diagnostic_rejects_malformed_arbitrary_and_duplicate_fields",
         "test_t018_context_kind_package_admission_positive_controls",
         "test_t018_context_kind_package_admission_negative_controls",
         "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases",

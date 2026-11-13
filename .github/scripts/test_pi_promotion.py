@@ -8,10 +8,12 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -156,6 +158,9 @@ class PromotionPolicyTests(unittest.TestCase):
         self.assertNotIn("test_pi_platform_contract.py --pi-version", validate)
         stage_line = next(line.strip() for line in open_pr.splitlines() if line.strip().startswith("git add --"))
         stage_entries = [entry.replace("\\", "/").rstrip("/") for entry in shlex.split(stage_line)[3:]]
+        if "$knowledge_path" in stage_entries:
+            self.assertIn('_knowledgelib.narrative_path(".", "tech-stack")', open_pr)
+            stage_entries.extend((".codearbiter/tech-stack.md", ".codearbiter/context/tech-stack.html"))
         self.assertFalse(
             any(entry in (".", ".github", ".github/workflows") or entry.startswith(".github/workflows/")
                 for entry in stage_entries),
@@ -168,6 +173,21 @@ class PromotionPolicyTests(unittest.TestCase):
                 any(path == entry or path.startswith(entry + "/") for entry in stage_entries),
                 f"promotion PR does not stage declared target {path}",
             )
+
+    def test_html_promotion_prepares_a_source_tested_installed_writer_before_apply(self):
+        workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+        for job in (validation_job(workflow), workflow.split("\n  open-pr:\n", 1)[1]):
+            with self.subTest(job=job.splitlines()[0]):
+                self.assertIn("actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e", job)
+                self.assertIn('go-version: "1.27.1"', job)
+                builder = "python tools/build-artifacts.py --output plugins/ca/helpers/artifacts"
+                self.assertEqual(job.count(builder), 1)
+                self.assertLess(job.index(builder), job.index("pi_promotion.py apply"))
+                self.assertNotIn("--skip-tests", job)
+        open_pr = workflow.split("\n  open-pr:\n", 1)[1]
+        self.assertIn('_knowledgelib.narrative_path(".", "tech-stack")', open_pr)
+        self.assertIn('"$knowledge_path"', open_pr)
+        self.assertIn('git diff --cached --name-only -- plugins/ca/helpers/artifacts .codearbiter/.artifacts', open_pr)
 
     def test_promotion_targets_own_the_live_sidebar_runtime_version(self):
         targets = json.loads((REPO / ".github" / "pi-promotion-targets.json").read_text(encoding="utf-8"))
@@ -1747,6 +1767,158 @@ class DocumentationContractTests(unittest.TestCase):
                 docs.load_contract(contract_path)
 
 
+class KnowledgePromotionTests(unittest.TestCase):
+    """Promote active typed facts with the actual installed knowledge writer."""
+    @classmethod
+    def setUpClass(cls):
+        cls.home = tempfile.TemporaryDirectory(prefix="ca-promotion-import-home-")
+        cls.addClassCleanup(cls.home.cleanup)
+        safe = {k: os.environ[k] for k in ("SystemRoot", "WINDIR", "TEMP", "TMP", "PATH", "ARTIFACT_TEST_INSTALLATION") if k in os.environ}
+        safe.update(HOME=cls.home.name, USERPROFILE=cls.home.name, PYTHONDONTWRITEBYTECODE="1")
+        patch = mock.patch.dict(os.environ, safe, clear=True)
+        patch.start(); cls.addClassCleanup(patch.stop)
+        from project_knowledge import native_client
+        selected = native_client()
+        cls.installation = selected.installation
+        cls.plugin = cls.installation.parent.parent
+        cls.Client = type(selected)
+        spec = importlib.util.spec_from_file_location("promotion_installed_knowledge", cls.plugin / "hooks/knowledge.py")
+        cls.frontend = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.frontend)
+
+    def setUp(self):
+        owner = tempfile.TemporaryDirectory(prefix="ca-promotion-knowledge-")
+        self.addCleanup(owner.cleanup)
+        self.root = Path(owner.name).resolve()
+        self.promotion = load_module()
+        fixture = PromotionPatchTests()
+        fixture.fixture_repo(self.root)
+        base = self.promotion.load_targets(fixture.targets(self.root))
+        self.targets = self.promotion.Targets(base.policy, (
+            self.promotion.PromotionTarget("tech-stack-current", Path(".codearbiter/tech-stack.md"), "current-doc",
+                "The supported promotion version is exact Pi {last_verified}.",
+                "The supported promotion version is exact Pi {candidate}.", "one"),
+            self.promotion.PromotionTarget("tech-stack-run", Path(".codearbiter/tech-stack.md"), "current-doc",
+                "`--pi-version {last_verified}`", "`--pi-version {candidate}`", "one"),
+        ), None)
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        self.client = self.Client(self.root, self.installation)
+
+    def knowledge(self, *arguments):
+        env = {**os.environ, "CLAUDE_PROJECT_DIR": str(self.root), "PYTHONIOENCODING": "utf-8"}
+        result = subprocess.run([sys.executable, "-B", str(self.plugin / "hooks/knowledge.py"), *arguments],
+                                cwd=self.root, env=env, capture_output=True, text=True, encoding="utf-8", timeout=60)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return json.loads(result.stdout)
+
+    def seed_html(self):
+        state = self.root / ".codearbiter"; state.mkdir()
+        (state / "CONTEXT.md").write_text("---\narbiter: enabled\ncontext-format: html\n---\n")
+        self.knowledge("create-missing")
+        fact = {"type": "fact", "title": "Current support", "statement": "The supported promotion version is exact Pi 0.80.6.",
+                "basis": "proposed", "scope": {"paths": []}, "source_refs": [], "related_refs": []}
+        first = self.knowledge("add", "tech-stack", "--record", json.dumps(fact))["record"]
+        run = dict(fact, title="Current run", statement="A current check uses `--pi-version 0.80.6`.")
+        second = self.knowledge("add", "tech-stack", "--record", json.dumps(run))["record"]
+        old = self.knowledge("add", "tech-stack", "--record", json.dumps(dict(fact, title="Retired support")))["record"]
+        self.knowledge("retire", "tech-stack", old, "--reason", "Historical fixture")
+        self.knowledge("add", "tech-stack", "--collection", "notes", "--record", json.dumps(
+            {"title": "Historical proof", "text": "The supported promotion version is exact Pi 0.80.6.", "basis": "source-observed", "origin": None}))
+        return first, second, old
+
+    def _documentation_binding_findings(self, *, paths=None):
+        docs = load_docs_module()
+        contract_path = self.root / "docs-contract.json"
+        contract_path.write_text(json.dumps({
+            "schema": 1, "classes": [{"name": "current", "include": ["**/*.md"]}],
+            "bindings": [{"path": ".codearbiter/tech-stack.md",
+                          "template": "The supported promotion version is exact Pi {last_verified}."}],
+            "generator_checks": [],
+        }), encoding="utf-8")
+        with mock.patch("project_knowledge.native_client", return_value=self.client):
+            return docs.check_documentation(self.root, docs.load_contract(contract_path),
+                self.promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)), paths=paths)
+
+    def test_docs_contract_does_not_drop_a_stale_active_html_binding_or_use_history(self):
+        self.seed_html()
+        self.knowledge("add", "tech-stack", "--collection", "notes", "--record", json.dumps(
+            {"title": "Historical current-looking text", "text": "The supported promotion version is exact Pi 0.80.10.",
+             "basis": "source-observed", "origin": None}))
+        self.assertIn("DOC-FACT-STALE", [r.code for r in self._documentation_binding_findings()])
+
+    def test_docs_contract_reads_current_html_fact_after_real_owner_promotion(self):
+        self.seed_html()
+        with mock.patch.object(self.promotion, "_knowledge_owner", return_value=(self.frontend, self.client)):
+            self.promotion.apply_promotion(self.root, self.targets, self.promotion.Candidate("0.80.10"))
+        self.assertEqual(self._documentation_binding_findings(), [])
+
+    def test_docs_contract_missing_active_html_cannot_fallback_to_a_legacy_fact(self):
+        state = self.root / ".codearbiter"; state.mkdir()
+        (state / "CONTEXT.md").write_text("---\narbiter: enabled\ncontext-format: html\n---\n")
+        (state / "tech-stack.md").write_text("The supported promotion version is exact Pi 0.80.10.\n")
+        self.assertIn("DOC-UNREADABLE", [r.code for r in self._documentation_binding_findings()])
+
+    def test_html_promotion_updates_current_records_preserving_retired_notes_and_no_md(self):
+        first, second, old = self.seed_html()
+        retained = self.knowledge("read", "tech-stack", old)["records"]
+        notes = self.frontend._records(self.client, "CTX-TECH-STACK", "notes")
+        with mock.patch.object(self.promotion, "_knowledge_owner", return_value=(self.frontend, self.client), create=True):
+            changed = self.promotion.apply_promotion(self.root, self.targets, self.promotion.Candidate("0.80.10"))
+        records = self.knowledge("read", "tech-stack", first, second)["records"]
+        self.assertTrue(all("0.80.10" in r["statement"] and "0.80.6" not in r["statement"] for r in records))
+        self.assertEqual(self.knowledge("read", "tech-stack", old)["records"], retained)
+        self.assertEqual(self.frontend._records(self.client, "CTX-TECH-STACK", "notes"), notes)
+        self.assertIn(Path(".codearbiter/context/tech-stack.html"), changed)
+        self.assertNotIn(Path(".codearbiter/tech-stack.md"), changed)
+        self.assertFalse((self.root / ".codearbiter/tech-stack.md").exists())
+
+    def test_legacy_markdown_promotion_keeps_the_existing_path_without_native_writer(self):
+        state = self.root / ".codearbiter"; state.mkdir()
+        path = state / "tech-stack.md"
+        path.write_text("The supported promotion version is exact Pi 0.80.6.\n`--pi-version 0.80.6`\nOld evidence: Pi0.80.5\n")
+        with mock.patch.object(self.promotion, "_knowledge_owner", side_effect=AssertionError("legacy selected native"), create=True):
+            changed = self.promotion.apply_promotion(self.root, self.targets, self.promotion.Candidate("0.80.10"))
+        self.assertIn(Path(".codearbiter/tech-stack.md"), changed)
+        self.assertIn("Old evidence: Pi0.80.5", path.read_text())
+        self.assertEqual(path.read_text().count("0.80.10"), 2)
+
+    def test_real_native_edit_after_preparation_conflicts_without_overwriting_current_facts(self):
+        first, second, _ = self.seed_html()
+        actual, fixture = self.client, self
+
+        class ConcurrentWriter:
+            edited = False
+            def outline(self, *args, **kwargs):
+                return actual.outline(*args, **kwargs)
+            def call(self, operation, request):
+                if operation == "apply" and not self.edited:
+                    self.edited = True
+                    fixture.knowledge("update", "tech-stack", first, "--fields", json.dumps(
+                        {"statement": "An independently corrected current policy"}))
+                return actual.call(operation, request)
+
+        concurrent = ConcurrentWriter()
+        with mock.patch.object(self.promotion, "_knowledge_owner", return_value=(self.frontend, concurrent)):
+            with self.assertRaisesRegex(self.promotion.PromotionError, "inspect its current state"):
+                self.promotion.apply_promotion(self.root, self.targets, self.promotion.Candidate("0.80.10"))
+        self.assertTrue(concurrent.edited)
+        records = self.knowledge("read", "tech-stack", first, second)["records"]
+        self.assertEqual(records[0]["statement"], "An independently corrected current policy")
+        self.assertIn("0.80.6", records[1]["statement"])
+        self.assertNotIn("0.80.10", records[1]["statement"])
+
+    def test_default_writer_uses_fixed_installed_helper_and_manifest_pinned_native(self):
+        self.seed_html()
+        installation_root = self.root / "disposable-installed-source"
+        plugin = installation_root / "plugins/ca"
+        shutil.copytree(self.plugin, plugin)
+        with mock.patch.object(self.promotion, "REPOSITORY", installation_root):
+            owner, client = self.promotion._knowledge_owner(self.root)
+        self.assertEqual(Path(owner.__file__), plugin / "hooks/knowledge.py")
+        self.assertEqual(client.installation, plugin / "helpers/artifacts")
+        self.assertEqual(client.call("identity", {"artifact_id": "CTX-TECH-STACK"})["artifact_id"], "CTX-TECH-STACK")
+
+
 class OfficialWriteScopeTests(unittest.TestCase):
     """The checked-in recipe must stay executable against its own allowlist.
 
@@ -1781,13 +1953,27 @@ class OfficialWriteScopeTests(unittest.TestCase):
             targets.release.package_path, targets.release.changelog_path,
             targets.release.root_package_path, targets.release.host_adapter_path,
         ) if path is not None)
+        from test_artifact_authoring import physical_test_directory
         with tempfile.TemporaryDirectory() as raw:
-            root = Path(raw)
+            root = physical_test_directory(raw)
             for path in paths:
+                if path == Path(".codearbiter/tech-stack.md") and not (REPO / path).exists():
+                    # Clone canonical bytes as a fixture, then let the actual
+                    # owner read and update them. Never scrape/rewrite HTML.
+                    shutil.copytree(REPO / ".codearbiter/context", root / ".codearbiter/context")
+                    shutil.copyfile(REPO / ".codearbiter/CONTEXT.md", root / ".codearbiter/CONTEXT.md")
+                    continue
                 destination = root / path
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_bytes((REPO / path).read_bytes())
-            changed = promotion.apply_promotion(root, targets, candidate, date="2026-10-07")
+            from project_knowledge import native_client
+            client = native_client(root)
+            helper = client.installation.parent.parent / "hooks/knowledge.py"
+            spec = importlib.util.spec_from_file_location("prospective_installed_knowledge", helper)
+            frontend = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(frontend)
+            with mock.patch.object(promotion, "_knowledge_owner", return_value=(frontend, client)):
+                changed = promotion.apply_promotion(root, targets, candidate, date="2026-10-07")
             self.assertEqual(
                 [path.as_posix() for path in changed if path.parts[:2] == (".github", "workflows")],
                 [], "a prospective promotion still rewrites a workflow",

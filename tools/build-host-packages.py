@@ -67,9 +67,23 @@ _WINDOWS_RESERVED_MEMBER = re.compile(
 
 def _subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> RuntimeError:
     stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
+    # Decode only the trusted verifier's closed diagnostic schema. Arbitrary
+    # child stderr stays hash-only; diagnostic fields confer no receipt authority.
+    detail = ""
+    verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+    try:
+        spec = importlib.util.spec_from_file_location("cold_failure_diagnostics", verifier)
+        if spec is not None and spec.loader is not None:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            record = module.decode_failure(stderr)
+            if record is not None:
+                detail = "; " + "; ".join(f"{key}={record[key]}" for key in ("phase", "step", "error", "code"))
+    except (OSError, ImportError, ValueError, AttributeError):
+        pass
     return RuntimeError(
         f"{label} failed with exit {completed.returncode}; "
-        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}{detail}"
     )
 
 
