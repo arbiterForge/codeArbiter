@@ -2044,6 +2044,9 @@ def _integration_candidate_module():
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load integration candidate rule: {path}")
     module = importlib.util.module_from_spec(spec)
+    # The rule's dataclass resolves postponed annotations through
+    # sys.modules[cls.__module__]; register before executing it.
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
