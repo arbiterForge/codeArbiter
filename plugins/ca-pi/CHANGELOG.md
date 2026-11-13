@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-13
+
+### Changed
+
+- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+
 ## [0.27.7] - 2026-11-10
 
 ### Fixed

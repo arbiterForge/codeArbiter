@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-11-13
+
+### Changed
+
+- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+
 ## [3.8.7] - 2026-11-10
 
 ### Fixed

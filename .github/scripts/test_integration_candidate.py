@@ -274,6 +274,32 @@ class PiIntegrationValidation(unittest.TestCase):
         kwargs.update(overrides)
         return self.hp.validate_pi_integration_candidate(**kwargs)
 
+    def test_the_guard_can_load_the_shared_rule_module_in_a_fresh_process_state(self):
+        # The CI path (main() with --release-guard-base) loads the rule via
+        # importlib in a process that never imported it. A dataclass with
+        # postponed annotations needs its module registered in sys.modules,
+        # or loading crashes on EVERY Pi guard run. This file imports the
+        # module at top, so remove it to reproduce the CI process state.
+        saved = sys.modules.pop("integration_candidate", None)
+        try:
+            rules = self.hp._integration_candidate_module()
+            record = rules.Candidate(branch=BRANCH, baseline="a" * 40, versions={"ca-pi": "0.30.0"})
+            self.assertEqual(record.versions["ca-pi"], "0.30.0")
+            self.assertIsNone(rules.select("main"))
+        finally:
+            if saved is not None:
+                sys.modules["integration_candidate"] = saved
+
+    def test_the_guard_cli_runs_end_to_end_without_crashing(self):
+        # Exercise the real entry point in a subprocess on this checkout.
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "tools" / "build-host-packages.py"), "--check",
+             "--release-guard-base", "HEAD", "--integration-base-branch", "main"],
+            cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", timeout=300,
+        )
+        self.assertNotIn("Traceback", result.stderr, result.stderr[-2000:])
+
     def test_second_child_passes_when_heading_already_on_integration_base(self):
         # The immediate integration base carries 0.30.0's heading; only the
         # baseline comparison makes this admissible.
