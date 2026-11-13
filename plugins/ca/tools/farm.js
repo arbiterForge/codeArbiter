@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 // farm-recovery.ts
-import { mkdir, open, rename, readFile, readdir, lstat, realpath } from "node:fs/promises";
+import { mkdir, open, rename, readdir, lstat, realpath } from "node:fs/promises";
+import { constants } from "node:fs";
 import { randomBytes } from "node:crypto";
 import path from "node:path";
 var hash = /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/;
@@ -53,6 +54,32 @@ function validIdentity(v) {
 function same(a, b) {
   return !!a && !!b && a.commit === b.commit && a.tree === b.tree;
 }
+async function readEffect(file) {
+  const maximum = 128 * 1024;
+  const before = await lstat(file);
+  if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1) throw new Error("unsafe recovery record: expected a single-link regular file");
+  if (before.size > maximum) throw new Error("oversized recovery record");
+  const noFollow = process.platform === "win32" ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK;
+  const handle = await open(file, constants.O_RDONLY | noFollow);
+  try {
+    const opened = await handle.stat();
+    const unchanged = (info) => info.isFile() && !info.isSymbolicLink() && info.nlink === 1 && info.dev === before.dev && info.ino === before.ino && info.size === before.size && info.mtimeMs === before.mtimeMs && info.ctimeMs === before.ctimeMs;
+    if (!unchanged(opened)) throw new Error("recovery record changed before read");
+    const buffer = Buffer.alloc(maximum + 1);
+    let length = 0;
+    while (length < buffer.length) {
+      const { bytesRead } = await handle.read(buffer, length, buffer.length - length, length);
+      if (bytesRead === 0) break;
+      length += bytesRead;
+    }
+    if (length > maximum) throw new Error("oversized recovery record");
+    if (length !== before.size || !unchanged(await handle.stat()) || !unchanged(await lstat(file)))
+      throw new Error("recovery record changed during read");
+    return buffer.subarray(0, length).toString("utf8");
+  } finally {
+    await handle.close();
+  }
+}
 async function recoverReceipt(dir, runId, git2) {
   const run2 = await lstat(dir);
   const effects = path.join(dir, "effects");
@@ -62,8 +89,7 @@ async function recoverReceipt(dir, runId, git2) {
   const files = (await readdir(effects)).filter((f) => f.endsWith(".json")).sort();
   for (const file of files) {
     if (!safe.test(file.slice(0, -5)) || (await lstat(path.join(effects, file))).isSymbolicLink()) throw new Error("invalid recovery record path");
-    const bytes = await readFile(path.join(effects, file), "utf8");
-    if (bytes.length > 128 * 1024) throw new Error("oversized recovery record");
+    const bytes = await readEffect(path.join(effects, file));
     const record = JSON.parse(bytes);
     if (record.schema !== 1 || record.runId !== runId || record.repository !== repository || `${record.taskId}.json` !== file || typeof record.branch !== "string" || !record.branch.startsWith("farm/") || typeof record.integration !== "string" || !["prepared", "commit-pending", "committed", "merge-pending", "merged", "settled"].includes(record.stage) || record.candidate !== void 0 && !validIdentity(record.candidate) || record.integrationAfter !== void 0 && !validIdentity(record.integrationAfter) || record.finalIntegration !== void 0 && !validIdentity(record.finalIntegration)) throw new Error("incompatible or unverified recovery record");
     const candidate = await refIdentity(git2, `refs/heads/${record.branch}`);
@@ -165,7 +191,7 @@ function parseArtifactReleaseManifest(text) {
 }
 
 // farm.ts
-import { readFile as readFile3, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3 } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes as randomBytes2 } from "node:crypto";
 import { spawn as spawn3, spawnSync } from "node:child_process";
@@ -176,7 +202,7 @@ import { fileURLToPath } from "node:url";
 
 // exec.ts
 import { spawn } from "node:child_process";
-import { readFile as readFile2 } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path2 from "node:path";
 var EXIT_TIMEOUT = 124;
 var EXIT_TIMEOUT_UNCLEAN = 125;
@@ -349,7 +375,7 @@ function run(cmd, args, cwd, opts = {}, timeoutMs = 0, kill = treeKill) {
 }
 async function readWorktreeFile(wt, relPath) {
   try {
-    return await readFile2(path2.resolve(wt, relPath), "utf8");
+    return await readFile(path2.resolve(wt, relPath), "utf8");
   } catch {
     return null;
   }
@@ -431,7 +457,7 @@ import { spawn as spawn2 } from "node:child_process";
 import { performance } from "node:perf_hooks";
 
 // worktree-fs.ts
-import { constants } from "node:fs";
+import { constants as constants2 } from "node:fs";
 import { lstat as lstat2, mkdir as mkdir2, open as open2, realpath as realpath2 } from "node:fs/promises";
 import path3 from "node:path";
 var UNSAFE_MESSAGE = "unsafe worktree path rejected";
@@ -532,8 +558,8 @@ async function writeWorktreeFile(worktree, relPath, contents, testHooks = {}) {
     }
     if (before !== void 0 && !safeRegularFile(before)) unsafe();
     if (before !== void 0 && !contained(canonicalRoot, await realpath2(target))) unsafe();
-    const noFollow = typeof constants.O_NOFOLLOW === "number" ? constants.O_NOFOLLOW : 0;
-    const flags = before === void 0 ? constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | noFollow : constants.O_RDWR | noFollow;
+    const noFollow = typeof constants2.O_NOFOLLOW === "number" ? constants2.O_NOFOLLOW : 0;
+    const flags = before === void 0 ? constants2.O_RDWR | constants2.O_CREAT | constants2.O_EXCL | noFollow : constants2.O_RDWR | noFollow;
     handle = await open2(target, flags, 384);
     const opened = await handle.stat();
     const atPath = await lstat2(target);
@@ -1798,7 +1824,7 @@ function postApplySweep(cwd, filesWritten, forbidden) {
 }
 async function fileHash(p) {
   try {
-    const buf = await readFile3(p);
+    const buf = await readFile2(p);
     return createHash("sha256").update(buf).digest("hex");
   } catch {
     return null;
@@ -3042,7 +3068,7 @@ async function main() {
   let plan;
   let projectionSha256;
   try {
-    const planBytes = await readFile3(planPath);
+    const planBytes = await readFile2(planPath);
     projectionSha256 = createHash("sha256").update(planBytes).digest("hex");
     plan = parsePlan(JSON.parse(planBytes.toString("utf8")));
     validate(plan);

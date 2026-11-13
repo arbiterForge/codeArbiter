@@ -1,5 +1,6 @@
 /** Farm effect receipts. Recovery observes exact Git identities; it never authors. */
-import { mkdir, open, rename, readFile, readdir, lstat, realpath } from "node:fs/promises";
+import { mkdir, open, rename, readdir, lstat, realpath } from "node:fs/promises";
+import { constants } from "node:fs";
 import { randomBytes } from "node:crypto";
 import path from "node:path";
 
@@ -53,6 +54,33 @@ function validIdentity(v:unknown):v is RefIdentity {
   return !!v && typeof v==="object" && hash.test((v as RefIdentity).commit) && hash.test((v as RefIdentity).tree);
 }
 function same(a:RefIdentity|null,b:RefIdentity|undefined):boolean {return !!a && !!b && a.commit===b.commit && a.tree===b.tree;}
+/** A retained descriptor and a maximum-plus-one buffer bound even a growing file. */
+async function readEffect(file:string):Promise<string> {
+  const maximum=128*1024;
+  const before=await lstat(file);
+  if(!before.isFile() || before.isSymbolicLink() || before.nlink!==1) throw new Error("unsafe recovery record: expected a single-link regular file");
+  if(before.size>maximum) throw new Error("oversized recovery record");
+  const noFollow=process.platform==="win32" ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK;
+  const handle=await open(file,constants.O_RDONLY | noFollow);
+  try {
+    const opened=await handle.stat();
+    const unchanged=(info:typeof before)=>info.isFile() && !info.isSymbolicLink() && info.nlink===1 &&
+      info.dev===before.dev && info.ino===before.ino && info.size===before.size &&
+      info.mtimeMs===before.mtimeMs && info.ctimeMs===before.ctimeMs;
+    if(!unchanged(opened)) throw new Error("recovery record changed before read");
+    const buffer=Buffer.alloc(maximum+1);
+    let length=0;
+    while(length<buffer.length) {
+      const {bytesRead}=await handle.read(buffer,length,buffer.length-length,length);
+      if(bytesRead===0) break;
+      length+=bytesRead;
+    }
+    if(length>maximum) throw new Error("oversized recovery record");
+    if(length!==before.size || !unchanged(await handle.stat()) || !unchanged(await lstat(file)))
+      throw new Error("recovery record changed during read");
+    return buffer.subarray(0,length).toString("utf8");
+  } finally { await handle.close(); }
+}
 /** Repairs only a separate receipt. Original streams/reports and refs are preserved. */
 export async function recoverReceipt(dir:string, runId:string, git:Git):Promise<Record<string,unknown>> {
   const run=await lstat(dir);
@@ -63,8 +91,7 @@ export async function recoverReceipt(dir:string, runId:string, git:Git):Promise<
   const files=(await readdir(effects)).filter(f=>f.endsWith(".json")).sort();
   for(const file of files) {
     if(!safe.test(file.slice(0,-5)) || (await lstat(path.join(effects,file))).isSymbolicLink()) throw new Error("invalid recovery record path");
-    const bytes=await readFile(path.join(effects,file),"utf8");
-    if(bytes.length>128*1024) throw new Error("oversized recovery record");
+    const bytes=await readEffect(path.join(effects,file));
     const record=JSON.parse(bytes) as FarmEffect;
     if(record.schema!==1 || record.runId!==runId || record.repository!==repository || `${record.taskId}.json`!==file ||
       typeof record.branch!=="string" || !record.branch.startsWith("farm/") || typeof record.integration!=="string" ||
