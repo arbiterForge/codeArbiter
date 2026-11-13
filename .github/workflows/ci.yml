@@ -285,6 +285,9 @@ jobs:
               - '.github/workflows/release.yml'
               - '.github/scripts/release_target.py'
               - 'tools/promote-claude-marketplace.py'
+              # R-01: channel readback runs this promoter; its guard is
+              # test_marketplace_git_channels.py in the hooks job.
+              - 'tools/promote-codex-marketplace.py'
               - '.codearbiter/release-targets.md'
               - 'CHANGELOG.md'
               # This job validates the retained historical live-proof record.
@@ -520,6 +523,9 @@ jobs:
               - '.github/workflows/release.yml'
               - '.github/scripts/release_target.py'
               - 'tools/promote-claude-marketplace.py'
+              # R-01: channel readback runs this promoter; its guard is
+              # test_marketplace_git_channels.py in the hooks job.
+              - 'tools/promote-codex-marketplace.py'
               - '.codearbiter/release-targets.md'
               - '.github/workflows/ci.yml'
       - name: Write impact receipt

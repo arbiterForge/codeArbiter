@@ -15,12 +15,18 @@ name: release
 # and there is no resume state. Every publish step observes the remote first
 # and does only what is missing. To recover a half-finished release, use
 # "Re-run failed jobs" on the original run: it reuses that run's planned
-# commit and CI artifacts, while they are retained. A manual dispatch
-# publishes main's CURRENT head, so it helps only while the version's tag is
-# not yet cut or still names that head. The only refusals are ones that
-# protect users: a version whose tag already names another commit (bump and
-# merge again), a package cohort that does not verify, or published bytes that
-# do not read back.
+# commit and CI artifacts, while they are retained (the repository caps
+# artifact retention, so this window is short). A manual dispatch publishes
+# the NEWEST main commit whose push CI SUCCEEDED, which is not necessarily
+# main's head: a newer head whose CI failed or never ran is skipped. Every run
+# names its selected source, CI build run, main head and artifact retention in
+# the step summary (release_source.py). A dispatch may bind `expected-source`
+# and `expected-ci-run`; then a different selection publishes nothing, which
+# is how an approved final candidate is published and nothing else. The only
+# refusals are ones that protect users: a version whose tag already names
+# another commit (bump and merge again), a package cohort that does not
+# verify, expired CI artifacts for a hosted target, or published bytes that do
+# not read back.
 
 on:
   workflow_run:
@@ -30,10 +36,18 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: "Plugin to (re)publish from main's current head"
+        description: "Plugin to (re)publish from the newest main commit whose CI succeeded"
         required: true
         type: choice
         options: [ca, ca-codex, ca-pi, ca-sandbox]
+      expected-source:
+        description: "Optional approved source commit; refuse unless the selection equals it"
+        required: false
+        default: ""
+      expected-ci-run:
+        description: "Optional approved CI build run id; refuse unless the selection equals it"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -56,6 +70,7 @@ jobs:
     outputs:
       source: ${{ steps.source.outputs.source }}
       ci-run-id: ${{ steps.source.outputs.ci-run-id }}
+      artifacts: ${{ steps.source.outputs.artifacts }}
       ca: ${{ steps.eligible.outputs.ca }}
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
       ca-pi: ${{ steps.eligible.outputs.ca-pi }}
@@ -75,6 +90,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_SHA: ${{ github.event.workflow_run.head_sha }}
           RUN_ID: ${{ github.event.workflow_run.id }}
+          EXPECTED_SOURCE: ${{ inputs.expected-source }}
+          EXPECTED_RUN: ${{ inputs.expected-ci-run }}
         run: |
           set -euo pipefail
           if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
@@ -82,22 +99,32 @@ jobs:
             # merge may start no CI run (path filters) or fail CI, and skipping
             # here would lose this release. Overlap is safe: the planner refuses
             # a spent tag, and each release job re-checks before publishing.
-            SOURCE="$RUN_SHA"; CI_RUN_ID="$RUN_ID"
+            python3 .github/scripts/release_source.py select --event workflow_run \
+              --run-sha "$RUN_SHA" --run-id "$RUN_ID" > "$RUNNER_TEMP/selected.txt"
           else
-            # Dispatch: the newest main commit with a successful push CI run
-            # (and therefore a retained package cohort), not necessarily HEAD.
-            read -r SOURCE CI_RUN_ID < <(gh api \
-              "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=1" \
-              --jq '.workflow_runs[0] | "\(.head_sha) \(.id)"')
-            [ -n "${SOURCE:-}" ] && [ "$SOURCE" != null ] || {
-              echo "::error::no successful push CI run on main; re-run CI on main first"; exit 1; }
+            # Dispatch: the newest main commit with a successful push CI run,
+            # not necessarily HEAD (a newer failed or CI-less head is skipped).
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=1" \
+              > "$RUNNER_TEMP/successful-runs.json"
+            python3 .github/scripts/release_source.py select --event workflow_dispatch \
+              --runs "$RUNNER_TEMP/successful-runs.json" > "$RUNNER_TEMP/selected.txt"
           fi
-          git merge-base --is-ancestor "$SOURCE" HEAD || {
-            echo "::error::$SOURCE is not on main"; exit 1; }
+          SOURCE=$(sed -n 's/^source=//p' "$RUNNER_TEMP/selected.txt")
+          CI_RUN_ID=$(sed -n 's/^ci-run-id=//p' "$RUNNER_TEMP/selected.txt")
+          RULE=$(sed -n 's/^rule=//p' "$RUNNER_TEMP/selected.txt")
+          ANCESTOR=false
+          if git merge-base --is-ancestor "$SOURCE" HEAD; then ANCESTOR=true; fi
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID/artifacts?per_page=100" \
+            > "$RUNNER_TEMP/ci-artifacts.json"
+          # GATE: name the exact source and build; refuse an off-main source or
+          # a selection that differs from an approved expected source/run.
+          python3 .github/scripts/release_source.py report --source "$SOURCE" \
+            --ci-run-id "$CI_RUN_ID" --head "$(git rev-parse HEAD)" --ancestor "$ANCESTOR" \
+            --artifacts "$RUNNER_TEMP/ci-artifacts.json" --rule "$RULE" \
+            --expected-source "$EXPECTED_SOURCE" --expected-run "$EXPECTED_RUN" \
+            --repository "$GITHUB_REPOSITORY" --output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
           # Plan from the release commit's own manifests and changelogs.
           git checkout --quiet --detach "$SOURCE"
-          echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
-          echo "ci-run-id=${CI_RUN_ID:-}" >> "$GITHUB_OUTPUT"
 
       # A moved or deleted recorded tag blocks; an unrecorded new tag only warns
       # (ADR-0040) — the tag rulesets already refuse moving or deleting one.
@@ -117,6 +144,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DISPATCHED: ${{ inputs.target }}
           SOURCE: ${{ steps.source.outputs.source }}
+          ARTIFACTS: ${{ steps.source.outputs.artifacts }}
         run: |
           set -euo pipefail
           git for-each-ref --format='%(objectname) %(refname)%0a%(*objectname) %(refname)^{}' \
@@ -141,6 +169,12 @@ jobs:
               ELIGIBLE=false; FAILED="$FAILED $TARGET"
             fi
             if [ -n "$DISPATCHED" ] && [ "$DISPATCHED" != "$TARGET" ]; then ELIGIBLE=false; fi
+            # A hosted target publishes only the selected run's retained CI
+            # bytes; rebuilding would create new identities to requalify.
+            if [ "$ELIGIBLE" = true ] && [ "$TARGET" != ca-sandbox ] && [ "$ARTIFACTS" != retained ]; then
+              echo "::error::$TARGET needs CI run artifacts that are $ARTIFACTS; it will not release this run"
+              ELIGIBLE=false; FAILED="$FAILED $TARGET"
+            fi
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
             if [ "$ELIGIBLE" = true ]; then
