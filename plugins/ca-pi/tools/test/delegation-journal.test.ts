@@ -10,7 +10,7 @@ import type { JournalRecord } from "../src/delegation-contract.ts";
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
 async function fixture() {
-  const root = await mkdtemp(join(tmpdir(), "ca-delegation-test-")); roots.push(root);
+  const root = await realpath(await mkdtemp(join(tmpdir(), "ca-delegation-test-"))); roots.push(root);
   await mkdir(join(root, ".git"));
   return root;
 }

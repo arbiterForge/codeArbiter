@@ -1,3 +1,13 @@
+# Current CI repair checkpoint (2026-11-13)
+
+- Delivery PR: #1103 into major/state-contracts. Source head55509ec5 produced original run43498670196 (actual checkout e4ecd09d, identical source tree). Its failures remain retained.
+- Native repair source02c2c8b5 fixes nested retirement collection discovery and owned fixture paths/SMARTS epoch setup. Fresh normal Windows477selected/474PASS3SKIP+vet; newc36binary passes4older-client journeys and2installedbridge checks. Other hosted platforms remain pending.
+- Native101local dispositions retain their counts and now bind this committed native source; originaled9/0cc/f974 proof bytes stay unchanged. Remaining2004baseline dispositions are not inferred from totals.
+- Current coherent retry adds closed reader diagnostics, one exact public-digest exemption, typed UTF8 check-name repair, bounded contract oracles, Pi owned-temp canonicalization and explicit pinned Go/nonworkspaceRust generation. Original4Dockerstack fixtures retained; actualDocker/profile qualification pending.
+- PR1098 stays draft and unmerged for B fulltesting. No publication. Originalcheckout/authorworktrees and unrelated local state remain preserved.
+
+## Preserved checkpoint history
+
 # Current delivery checkpoint (2026-11-13)
 
 - Delivery checkout: codex/state-contracts-governance, C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter. Component source is committed through b9f183672424b7bdadabd50161e52a940649fe32; remaining qualification/CI source is being committed as one final batch. Original assembly and author worktrees remain preserved.

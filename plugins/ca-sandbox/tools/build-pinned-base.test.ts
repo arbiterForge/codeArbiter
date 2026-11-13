@@ -25,7 +25,7 @@ beforeEach(()=>{
    else if(command==='wsl.exe' && args[0]==='wslpath')stdout='/mnt/fixture';
    else if((command==='nixpacks' && args[0]==='build') || (command==='wsl.exe' && args.includes('--json-plan'))){
     const pos=args.indexOf('--json-plan'),plan=pos<0?{}:JSON.parse(args[pos+1]);mkdirSync(path.join(repo,'.nixpacks'),{recursive:true});
-    writeFileSync(path.join(repo,'.nixpacks/Dockerfile'),generated??`FROM ${plan.buildImage??'ghcr.io/railwayapp/nixpacks:ubuntu-latest'} AS build\nWORKDIR /app\n`);
+    writeFileSync(path.join(repo,'.nixpacks/Dockerfile'),generated??(`FROM ${plan.buildImage??'ghcr.io/railwayapp/nixpacks:ubuntu-latest'} AS build\nWORKDIR /app\n`+(plan.start?`FROM ${plan.start.runImage}\nCOPY --from=build /app/. /app/\n`:'')));
    }else if(command==='docker' && args[0]==='version')stdout='linux/amd64';
    else if(command==='docker' && args[0]==='image' && args[1]==='inspect'){
     const image=images.get(args[2]);if(image)stdout=JSON.stringify([{Id:image.id,Config:{Labels:{[build.CACHE_LABEL]:image.key}}}]);else{code=1;stderr='No such image';}
@@ -38,6 +38,48 @@ beforeEach(()=>{
 });
 afterEach(()=>rmSync(repo,{recursive:true,force:true}));
 describe('fixed Nixpacks image inputs through the default generator',()=>{
+ it.each(['go','rust'])('still refuses an unpinned generated %s runtime image',async(kind)=>{
+  rmSync(path.join(repo,'package.json'));writeFileSync(path.join(repo,kind==='go'?'go.mod':'Cargo.toml'),kind==='go'?'module fixture\n\ngo 1.21\n':'[package]\nname="fixture"\nversion="1.0.0"\n');
+  generated=`FROM ${PIN} AS build\nFROM ubuntu:noble\nCOPY --from=build /app/. /app/\n`;
+  await expect(build.buildOrReuseImage(repo,'unsafe-runtime-'+kind)).rejects.toThrow(/unpinned external FROM/i);
+  expect(calls.some(c=>c.command==='docker' && c.args[0]==='build')).toBe(false);
+ });
+ it.each(['go','rust'])('restores bounded %s with pinned runtime and all source files',async(kind)=>{
+  rmSync(path.join(repo,'package.json'));
+  if(kind==='go'){writeFileSync(path.join(repo,'go.mod'),'module fixture\n\ngo 1.21\n');writeFileSync(path.join(repo,'main.go'),'package main\nfunc main() {}\n');}
+  else{writeFileSync(path.join(repo,'Cargo.toml'),'[package]\nname="fixture"\nversion="1.0.0"\nedition="2021"\n');writeFileSync(path.join(repo,'Cargo.lock'),'version = 3\n');}
+  const first=await build.buildOrReuseImage(repo,'native-'+kind);
+  const args=calls.find(c=>c.command==='nixpacks' && c.args[0]==='build')!.args;
+  expect(JSON.parse(args[args.indexOf('--json-plan')+1])).toEqual({buildImage:PIN,providers:[kind],start:{runImage:PIN,onlyIncludeFiles:['.']}});
+  expect(first).toMatchObject({built:true,reused:false});
+  const second=await build.buildOrReuseImage(repo,'native-'+kind);expect(second).toMatchObject({built:false,reused:true,imageId:first.imageId,cacheKey:first.cacheKey});
+ });
+ it.each([
+  '[workspace]\nmembers=["../../outside"]',
+  '"workspace".members=["../../outside"]',
+  '["work\\u0073pace"]\nmembers=["../../outside"]',
+  '[package]\ndescription="escaped\\nmanifest"',
+ ])('refuses unsupported Rust workspace/escaped metadata before generation: %s',async(text)=>{
+  rmSync(path.join(repo,'package.json'));writeFileSync(path.join(repo,'Cargo.toml'),text);
+  await expect(build.buildOrReuseImage(repo,'unsafe-rust')).rejects.toThrow(/unsupported Rust.*workspace|unsupported Rust.*backslash/i);
+  expect(calls.some(c=>c.args[0]==='build')).toBe(false);
+ });
+ it.each(['go.mod','Cargo.toml','Cargo.lock','.cargo/config.toml','rust-toolchain','rust-toolchain.toml','cmd'])('refuses unsafe native input %s before generation',async(name)=>{
+  rmSync(path.join(repo,'package.json'));writeFileSync(path.join(repo,'Cargo.toml'),'[package]\nname="fixture"\nversion="1.0.0"\n');
+  if(name==='cmd')writeFileSync(path.join(repo,'go.mod'),'module fixture\n\ngo 1.21\n');
+  const target=path.join(repo,name);if(name==='Cargo.toml')rmSync(target);
+  mkdirSync(path.dirname(target),{recursive:true});symlinkSync(path.join(repo,'missing'),target,process.platform==='win32'?'junction':'dir');
+  await expect(build.buildOrReuseImage(repo,'unsafe-native')).rejects.toThrow(/unsafe native.*input|native.*input.*unavailable/i);
+  expect(calls.some(c=>c.args[0]==='build')).toBe(false);expect(lstatSync(target).isSymbolicLink()).toBe(true);
+ });
+ it('rechecks Rust admission before a possible cache hit and binds optional toolchain bytes',async()=>{
+  rmSync(path.join(repo,'package.json'));writeFileSync(path.join(repo,'Cargo.toml'),'[package]\nname="fixture"\nversion="1.0.0"\n');
+  const first=await build.buildOrReuseImage(repo,'rust-inputs');writeFileSync(path.join(repo,'rust-toolchain'),'1.75.0\n');
+  const changed=await build.buildOrReuseImage(repo,'rust-inputs');expect(changed.cacheKey).not.toBe(first.cacheKey);expect(changed.built).toBe(true);
+  writeFileSync(path.join(repo,'Cargo.toml'),'[workspace]\nmembers=["../outside"]');calls=[];
+  await expect(build.buildOrReuseImage(repo,'rust-inputs')).rejects.toThrow(/unsupported Rust.*workspace/i);
+  expect(calls.some(c=>c.command==='nixpacks' && c.args[0]==='build' || c.command==='docker')).toBe(false);
+ });
  it.each(['nixpacks.toml','nixpacks.json'])('refuses project %s before generation without modifying it',async(name)=>{
   const target=path.join(repo,name),text=name.endsWith('json')?'{"staticAssets":{"../../../outside":"untrusted"}}':'[staticAssets]\n"../../../outside" = "untrusted"';
   writeFileSync(target,text);

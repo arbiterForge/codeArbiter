@@ -26,6 +26,7 @@
  * scan enumerates production sources explicitly rather than globbing everything.
  */
 import { describe, it, expect } from "vitest";
+import * as ts from "typescript";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -120,7 +121,29 @@ const NAMESPACED_IMAGE_LITERAL =
   /(["'`])([a-z0-9]+(?:[._-][a-z0-9]+)*(?:\/[a-z0-9]+(?:[._-][a-z0-9]+)*)+:[A-Za-z0-9][A-Za-z0-9._-]*(?:@sha256:[0-9a-f]{64})?)\1/g;
 
 /** `FROM <ref>` inside emitted Dockerfile text. */
-const FROM_REF = /\bFROM\s+([^\s"'`\\]+)/g;
+const FROM_REF = /^\s*FROM\s+([^\s"'`\\]+)/gim;
+
+/** Inspect emitted string/template lines, rather than comments or FROM prose.
+ * TypeScript also decodes quoted Dockerfile newlines in the committed JS bundle.
+ * Actual inline, multiline and interpolated instructions stay in the audit. */
+function dockerfileFromRefs(src: string, label: string): Array<{ ref: string; index: number }> {
+  const source = ts.createSourceFile(label, src, ts.ScriptTarget.Latest, true);
+  const refs: Array<{ ref: string; index: number }> = [];
+  const visit = (node: ts.Node): void => {
+    let text: string | undefined;
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) text = node.text;
+    else if (ts.isTemplateExpression(node)) {
+      text = node.head.text;
+      for (const span of node.templateSpans) text += "${" + span.expression.getText(source) + "}" + span.literal.text;
+    }
+    if (text !== undefined) {
+      for (const match of text.matchAll(FROM_REF)) refs.push({ ref: match[1], index: node.getStart(source) });
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return refs;
+}
 
 /** `const <name> = <initializer>` — used to follow a FROM interpolation home. */
 const ANY_BINDING = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*([^;\n]*)/g;
@@ -184,9 +207,8 @@ function scanUnpinnedImages(src: string, label: string): string[] {
   //     a blanket `${...}` pass would let an unpinned constant through (a) via
   //     the Dockerfile it emits.
   const resolvable = pinnedNames(src, pinnedConsts);
-  for (const m of src.matchAll(FROM_REF)) {
-    const ref = m[1];
-    const at = `${label}:${lineOf(src, m.index)}`;
+  for (const { ref, index } of dockerfileFromRefs(src, label)) {
+    const at = `${label}:${lineOf(src, index)}`;
     const interpolated = ref.match(/^\$\{(.*)\}$/);
     if (interpolated) {
       const ids = interpolated[1].match(/[A-Za-z_$][\w$]*/g) ?? [];
@@ -335,6 +357,29 @@ describe("supply chain: container inputs are digest-pinned (#402)", () => {
  * this driver uses; these cases make that failure mode loud.
  */
 describe("supply chain: the digest scanner itself fires (#402)", () => {
+  it("ignores FROM prose in comments and diagnostic strings", () => {
+    const src = [
+      "// FROM rules do not create an image input",
+      "/** FROM and COPY inputs must be immutable. */",
+      'throw new Error("unsupported FROM declaration; immutable image required");',
+      'const policy = "all-image-refs-sha256-no-frontend-v2";',
+    ].join("\n");
+    expect(scanUnpinnedImages(src, "probe.ts")).toEqual([]);
+  });
+
+  it("still audits literal and interpolated instructions beside ignored prose", () => {
+    const src = [
+      "// FROM prose is not a Dockerfile instruction",
+      'throw new Error("unpinned FROM image; refused");',
+      'const df = "FROM debian:bookworm\\nRUN true";',
+      "lines.push(`FROM ${unreviewed}`);",
+    ].join("\n");
+    expect(scanUnpinnedImages(src, "probe.ts")).toEqual([
+      "probe.ts:3: unpinned FROM: debian:bookworm",
+      "probe.ts:4: FROM ${unreviewed} does not resolve to a digest-pinned image constant",
+    ]);
+  });
+
   it("catches an unpinned image constant declared across two lines", async () => {
     const src = ["export const PROBE_HELPER_IMAGE =", '  "aquasec/trivy:0.50.0";'].join("\n");
     expect(scanUnpinnedImages(src, "probe.ts")).toEqual([

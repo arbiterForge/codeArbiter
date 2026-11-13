@@ -273,7 +273,9 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
 
     const r1: BuildResult = await buildOrReuseImage(repoDir, hash1, undefined, reportStage);
     created.push(r1.tag);
-    expect(r1.tag).toBe(imageTag(repoDir, hash1));
+    expect(r1.cacheKey).toMatch(/^[a-f0-9]{64}$/);
+    expect(r1.imageId).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(r1.tag).toBe(imageTag(repoDir, r1.cacheKey!));
     expect(r1.built).toBe(true);
     expect(r1.reused).toBe(false);
 

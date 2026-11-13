@@ -593,7 +593,7 @@ def check_documentation(
     # to native knowledge, or when its source is accidentally removed.
     selected = (tuple(paths) if paths is not None else
                 tuple(dict.fromkeys((*tracked_markdown(repo), *(Path(p) for p in bindings)))))
-    from project_knowledge import active_document_aliases, context_text
+    from project_knowledge import active_document_aliases, context_text, failure_detail
     aliases = active_document_aliases(repo) if bindings else {}
     findings = []
     for path in selected:
@@ -613,7 +613,8 @@ def check_documentation(
             text = (context_text(projection[0], root=repo) if projection is not None
                     else full_path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
-            detail = "active knowledge source unavailable" if projection is not None else str(error)
+            detail = ("active knowledge source unavailable (" + failure_detail(error) + ")"
+                      if projection is not None else str(error))
             findings.append(Finding("DOC-UNREADABLE", relative.as_posix(), detail))
             continue
         # Native typed references are checked by their owning schema; projected

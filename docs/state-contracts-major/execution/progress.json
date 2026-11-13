@@ -4,14 +4,14 @@
   "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "b9f183672424b7bdadabd50161e52a940649fe32 plus remaining explicit qualification/delivery source and live records",
+  "head": "02c2c8b5062c535174776ef1c6ca26a121031966 plus reviewed CI repairs and current native evidence in the commit carrying this record",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-13T19:46:57.288413+00:00",
+  "recorded_at": "2026-11-13T20:57:01.385663+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1527,7 +1527,7 @@
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "B explicitly requested project HTML conversion on 2026-11-13",
       "detail": "Native context cutover covers all 44 sections, with 43 exact source-note readbacks and active policy/command records. PR #1102 commits 685b51f8 and de880024; followup current narrative and remaining Markdown-only conformance consumers are being repaired. Required CI is not yet green. Frozen intake and spec/plan representations remain unchanged.",
-      "current_detail": "PR1102 current7f64baa0f82d8a8b504daf12e24e14f318400bb8 includes native current-record readers, complete owner-backed conversion, mandatory HTML-aware documentation consumers, bounded sanitized diagnostics, exact new test population and physical macOS temporary fixture. Exact-head hosted CI pending; no historical fallback or gate waiver."
+      "current_detail": "HTML child d0fcee75 ancestry joined by55509ec5 with identical source tree. AllfourHTML-hostedhookpartitions passed; currentcombinedPR1103 requiredCI isbeingrepaired honestly."
     },
     {
       "id": "INT-PROT-01",
@@ -1580,7 +1580,8 @@
       "owner": "sandbox",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Observed active program implementation/qualification failure,2026-11-13",
-      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification."
+      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
+      "current_detail": "Profile2 adds bounded Go/nonworkspaceRust alongside explicitNode/Python with pinned runtime stages and material-input cache binding. AlloriginalfourDockerfixtures retained;123localPASS7DockerSKIP, realhostedpending."
     },
     {
       "id": "DEF-ADR-REVIEWER-01",
@@ -1636,7 +1637,8 @@
       "owner": "hooks-workflows",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Actual final source/CI failure observed during authorized major program",
-      "detail": "Actual HTML CI macOS and Windows contract jobs exhausted unchanged20minute ceiling while separate Python processes repeatedly requalified identical native inputs. Shared workflow now qualifies one fresh native reader perjob, then existing isolated manifest-verified fixtures copy it. All original commands/platformcells and tests/vet remain; legal GitHub jobenv context guard added. Actual35guardchecks pass; hosted wall effectiveness pending."
+      "detail": "Actual HTML CI macOS and Windows contract jobs exhausted unchanged20minute ceiling while separate Python processes repeatedly requalified identical native inputs. Shared workflow now qualifies one fresh native reader perjob, then existing isolated manifest-verified fixtures copy it. All original commands/platformcells and tests/vet remain; legal GitHub jobenv context guard added. Actual35guardchecks pass; hosted wall effectiveness pending.",
+      "current_detail": "Actuald0fcee75 allfourhostedhookpartitions passed within unchanged20minutes; current combinedsource mustqualifythe newnativefix. No timeout budget or originalpopulation relaxed."
     },
     {
       "id": "DEF-RECOVERY-COHORT-AUTH-01",
@@ -1644,6 +1646,20 @@
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Actual final source/CI failure observed during authorized major program",
       "detail": "Shared retained recovery runner requires independent selected source/run/workflow/stage/promotionreceipt via existing production verifier before extraction. Existing bounded reader handles canonical cohort and archives; admitted rawbytes match verifier result, and receipt uses admitted SHA without postjourney reread. Four real-verifier negatives, three bounded/raw controls and explicitly mocked-admission real3host extraction pass in2methods21.542s; independent affected reviewPASS_WITH_LIMITS. Actual finalproduction-cohort10journeys pendingCI."
+    },
+    {
+      "id": "DEF-NATIVE-NESTED-RETIREMENT-01",
+      "owner": "native",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual combined candidate CI failure,2026-11-13",
+      "detail": "Actual hosted nestedcriterion retirement rejected a real verification kind because schema.RecordKinds omitted alternatives.10line productionfix+2portablecases, actualRED toGREEN; source02c2c8b5/fresh477native observations. Allpath/approvalguards retained; hostedreplacementpending."
+    },
+    {
+      "id": "DEF-CI-OWNED-FIXTURE-ALIASES-01",
+      "owner": "qualification",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "Actual combined candidate CI failure,2026-11-13",
+      "detail": "Actual Windows8.3 and macOS alias fixtures supplied unsafe spellings; onlyownedtemporaryroots nowphysical. Go actual5failurecases andPi8failures reproduced beforefix, unchangedguards/assertions pass afterward. Contractoracle/status/schema-version checks aligned to acceptedsource; no productionpolicy softening."
     }
   ],
   "new_transition_rows": [],
@@ -1726,17 +1742,26 @@
       "kind": "NATIVE_DISPOSITION_RECONCILIATION",
       "detail": "Admitted101 source-bound native disposition records:92TESTED/9PRESERVED from exact109namedPASS selectors and independent source-conformance traces.2004baseline rowsremainPLANNED. No task/scenario/installed/hosted/publication closure from suite totals.",
       "ref": "execution/evidence/native-windows-proposed/native-tested.json"
+    },
+    {
+      "recorded_at": "2026-11-13T20:57:01.385663+00:00",
+      "kind": "ACTUAL_COMBINED_CI_REPAIRS",
+      "run_id": 43498670196,
+      "event_head": "55509ec54327c61b94f6648aa21ac41452e0d28f",
+      "checkout_source": "e4ecd09d722e14583201d0faca1d7259ec43eddf",
+      "source_tree": "e409796740e65aab3511b3846adf1c8684f58078",
+      "detail": "Originalrednative schema/authority/physicalfixtures cascadedinto docs/Pi/impact/hooks. Native schema alternatives and existingfixtures repaired; new477native observations and fourolderclients/twoinstalledbridgechecks pass. Pi19PASS1POSIXskip under actual matching8.3alias. Closed docs diagnostics, exactpublicdigest waiver, narrow contract/typedname/oracle repairs and bounded Go/Rust restoration remain pending replacement hosted run. Alloriginalredscope retained; no pipeline success inferred."
     }
   ],
   "scoped_blockers": [],
   "unknown_outcomes": [],
   "next_actions": [
-    "Finish explicit remaining qualification/delivery source commit, then push one implementation child PR into major/state-contracts.",
-    "Run exact committed native/Pi/Docker/retained-cohort/site CI and repair observed failures with bounded affected checks.",
-    "Reconcile2105 baseline dispositions and added transitions from semantic source-bound evidence; keep missing runtime/visible-parent/provider cells pending.",
-    "PR1098 remains draft for B full testing; no main merge or publication authorized."
+    "Push reviewed current CI repairs plus exactnew native proof bindings as one combined retry head.",
+    "Watch exactreplacement source CI and consume only authenticated original production archives for Windows/Pi/retained recovery checks.",
+    "Reconcile remaining2004baseline dispositions and addedtransition rows from actualsemanticproof; preserve unrun Docker/provider/visibleparent/otherplatform cells.",
+    "KeepPR1098 draft/unmerged until B fulltesting; no publication or remote branch deletion without its authority."
   ],
-  "delivery_state": "IMPLEMENTATION_COMMITS_IN_PROGRESS",
+  "delivery_state": "PR_OPEN_CI_REPAIR",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -1749,5 +1774,12 @@
       "id": "PR-CHILD-PR",
       "rule": "Since ruleset 27158575, every change to major/state-contracts lands through a child branch PR whose base is major/state-contracts (including execution-record updates)."
     }
-  ]
+  ],
+  "delivery_pr": {
+    "number": 1103,
+    "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
+    "base": "major/state-contracts",
+    "observed_head": "55509ec54327c61b94f6648aa21ac41452e0d28f",
+    "next": "Push current reviewed fixes, then watch actual replacement head CI."
+  }
 }

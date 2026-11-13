@@ -4,7 +4,8 @@
  * installed. Runtime source is volume-backed; create.ts owns transient host staging. */
 import { createHash } from "node:crypto";
 import { spawn, type SpawnOptionsWithoutStdio } from "node:child_process";
-import { mkdtemp, writeFile, readFile, rm, lstat } from "node:fs/promises";
+import { mkdtemp, writeFile, readFile, rm, lstat, open, realpath, opendir } from "node:fs/promises";
+import { constants } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { DEFAULT_DOCKER_TIMEOUT_MS, DOCKER_TIMEOUT_EXIT_CODE, timeoutForArgs, DOCKER_ENV } from "./docker.ts";
@@ -37,13 +38,17 @@ export const FALLBACK_BASE_IMAGE =
 export const NIXPACKS_BASE_IMAGE =
   "ghcr.io/railwayapp/nixpacks@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de";
 const NIXPACKS_GENERATOR_ARGS = Object.freeze(["--no-error-without-start"]);
+const NATIVE_RUNTIME_START = Object.freeze({ runImage: NIXPACKS_BASE_IMAGE, onlyIncludeFiles: Object.freeze(["."]) });
+export const MAX_NATIVE_INPUT_BYTES = 1024 * 1024;
 /** The same fixed inputs govern generation and V2 cache admission. Change this
  * policy identity when supported generation/environment/FROM rules change. */
 export const NIXPACKS_BUILD_PROFILE = Object.freeze({
-  schema: 1, buildImage: NIXPACKS_BASE_IMAGE, generatorArgs: NIXPACKS_GENERATOR_ARGS,
+  schema: 2, buildImage: NIXPACKS_BASE_IMAGE, generatorArgs: NIXPACKS_GENERATOR_ARGS,
   environmentPolicy: "minimal-os-v1", dockerfilePolicy: "all-image-refs-sha256-no-frontend-v2",
   inputPolicy: "no-project-config-or-existing-output-v1",
-  providerPolicy: "explicit-node-package-json-python-requirements-txt-v1",
+  providerPolicy: "explicit-node-python-go-mod-nonworkspace-rust-v2",
+  nativeInputPolicy: "owned-utf8-max1MiB-rust-no-workspace-or-backslash-v1",
+  nativeRuntime: NATIVE_RUNTIME_START,
 });
 function nixpacksEnvironment(): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = { MSYS_NO_PATHCONV: "1" };
@@ -262,6 +267,7 @@ export type BuildContext = {
   cacheKey?: string;
   platform?: string;
   signal?: AbortSignal;
+  nativeProviderInputs?: NativeProviderInputs;
   /** How to invoke nixpacks (only set when builder === "nixpacks"). */
   nixpacks?: NixpacksInvocation;
   /** Notes accumulated so far (e.g. the nixpacks-missing fallback note). */
@@ -289,6 +295,7 @@ export type BuildDeps = {
   imageIdentity?: (tag: string) => Promise<ImageIdentity | null>;
   targetPlatform?: () => Promise<string>;
   detectStack?: (repoDir:string) => Promise<{node:boolean;python:boolean}>;
+  nativeProviderInputs?: (repoDir:string) => Promise<NativeProviderInputs | undefined>;
   /** Build + tag the image for the given builder; resolves with the build result. */
   runBuild: (tag: string, ctx: BuildContext) => Promise<{ code: number; out: string; imageId?:string }>;
   /** Resolve the installed nixpacks version; rejects if nixpacks is absent. */
@@ -508,6 +515,100 @@ async function detectStack(repoDir: string): Promise<{ node: boolean; python: bo
   return { node: await has("package.json"), python: await has("requirements.txt") };
 }
 
+export type NativeProviderInputs = { providers: string[]; sha256: string };
+
+/** Fixed native-provider reads stay within an inert, owned staging root.
+ * Optional inputs may be genuinely absent; present unsafe/unreadable inputs
+ * refuse. This is not a sandbox against another same-user writer racing the
+ * later upstream generator. No TOML parser or manifest code is executed here. */
+export async function inspectNativeProviderInputs(repoDir: string): Promise<NativeProviderInputs | undefined> {
+  const rootInfo = await lstat(repoDir);
+  if (!rootInfo.isDirectory() || rootInfo.isSymbolicLink()) throw new Error("ca-sandbox: unsafe native input root");
+  const root = await realpath(repoDir);
+  const records: Array<{path:string; sha256?:string; absent?:boolean; entries?:string[]}> = [];
+  const owned = async (relative:string, kind:"file"|"directory"|"either", optional:boolean) => {
+    let current = root;
+    const parts = relative.split("/");
+    for (let index = 0; index < parts.length; index++) {
+      current = path.join(current, parts[index]);
+      let info;
+      try { info = await lstat(current); }
+      catch (error) {
+        if (optional && (error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw new Error(`ca-sandbox: native input unavailable: ${relative}`);
+      }
+      const last = index === parts.length - 1;
+      if (info.isSymbolicLink() || path.relative(current, await realpath(current)) !== "" ||
+          (!last || kind === "directory" ? !info.isDirectory() :
+            kind === "file" ? !info.isFile() || info.nlink !== 1 :
+            !info.isDirectory() && (!info.isFile() || info.nlink !== 1)))
+        throw new Error(`ca-sandbox: unsafe native input: ${relative}`);
+      if (last) return { file: current, info };
+    }
+    throw new Error("ca-sandbox: unsafe native input path");
+  };
+  const read = async (relative:string):Promise<string|undefined> => {
+    const found = await owned(relative, "file", true);
+    if (!found) { records.push({path:relative,absent:true}); return undefined; }
+    const before = found.info;
+    if (before.size > MAX_NATIVE_INPUT_BYTES) throw new Error(`ca-sandbox: oversized native input: ${relative}`);
+    const flags = constants.O_RDONLY | (process.platform === "win32" ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    const handle = await open(found.file, flags);
+    try {
+      const unchanged = (info:typeof before) => info.isFile() && !info.isSymbolicLink() && info.nlink === 1 &&
+        info.dev === before.dev && info.ino === before.ino && info.size === before.size &&
+        info.mtimeMs === before.mtimeMs && info.ctimeMs === before.ctimeMs;
+      if (!unchanged(await handle.stat())) throw new Error(`ca-sandbox: changed native input: ${relative}`);
+      const buffer = Buffer.alloc(MAX_NATIVE_INPUT_BYTES + 1);
+      let length = 0;
+      while (length < buffer.length) {
+        const {bytesRead} = await handle.read(buffer, length, buffer.length - length, length);
+        if (!bytesRead) break;
+        length += bytesRead;
+      }
+      if (length > MAX_NATIVE_INPUT_BYTES) throw new Error(`ca-sandbox: oversized native input: ${relative}`);
+      const after = await owned(relative, "file", false);
+      if (length !== before.size || !unchanged(await handle.stat()) || !after || !unchanged(after.info))
+        throw new Error(`ca-sandbox: changed native input: ${relative}`);
+      const bytes = buffer.subarray(0,length);
+      let text:string;
+      try { text = new TextDecoder("utf-8", {fatal:true}).decode(bytes); }
+      catch { throw new Error(`ca-sandbox: invalid UTF-8 native input: ${relative}`); }
+      records.push({path:relative,sha256:createHash("sha256").update(bytes).digest("hex")});
+      return text;
+    } finally { await handle.close(); }
+  };
+  const entries = async (relative:string, maximum:number, rootGoOnly=false) => {
+    const dir = relative === "." ? {file:root} : await owned(relative, "directory", true);
+    if (!dir) { records.push({path:relative,absent:true}); return; }
+    const names:string[] = [];
+    let count = 0;
+    for await (const entry of await opendir(dir.file)) {
+      if (++count > maximum) throw new Error("ca-sandbox: native input metadata limit exceeded");
+      if (rootGoOnly && !entry.name.endsWith(".go")) continue;
+      const rel = relative === "." ? entry.name : `${relative}/${entry.name}`;
+      const item = await owned(rel, rootGoOnly ? "file" : "either", false);
+      if (!item) throw new Error("ca-sandbox: native input metadata unavailable");
+      names.push(`${entry.name}:${item.info.isDirectory() ? "directory" : "file"}`);
+    }
+    if (relative !== ".") await owned(relative,"directory",false);
+    records.push({path:relative,entries:names.sort()});
+  };
+  const go = await read("go.mod"), rust = await read("Cargo.toml");
+  if (go === undefined && rust === undefined) return undefined;
+  const providers:string[] = [];
+  if (go !== undefined) {
+    providers.push("go"); await read("go.sum"); await entries(".",4096,true); await entries("cmd",256);
+  }
+  if (rust !== undefined) {
+    if (rust.includes("workspace")) throw new Error("ca-sandbox: unsupported Rust workspace metadata; bounded non-workspace profile required");
+    if (rust.includes("\\")) throw new Error("ca-sandbox: unsupported Rust backslash/escaped manifest; bounded ordinary UTF-8 profile required");
+    providers.push("rust");
+    for (const name of ["Cargo.lock",".cargo/config.toml","rust-toolchain","rust-toolchain.toml"]) await read(name);
+  }
+  return {providers,sha256:createHash("sha256").update(JSON.stringify(records)).digest("hex")};
+}
+
 /**
  * The relocation overlay appended to the nixpacks-GENERATED Dockerfile. nixpacks
  * bakes deps into /app and sets a bash-login ENTRYPOINT; this moves the deps
@@ -549,7 +650,9 @@ async function generateNixpacks(repoDir: string, nx: NixpacksInvocation, provide
   // ca-sandbox never RUNS the repo as an app (the container runs `sleep infinity`
   // and you exec in), so a library / bare repo with no start command must still
   // build. `--no-error-without-start` tells nixpacks not to fail in that case.
-  const args = [...NIXPACKS_GENERATOR_ARGS, "--json-plan", JSON.stringify({ buildImage: NIXPACKS_BASE_IMAGE, providers })];
+  const nativeRuntime = providers.some(provider => provider === "go" || provider === "rust");
+  const args = [...NIXPACKS_GENERATOR_ARGS, "--json-plan", JSON.stringify({ buildImage: NIXPACKS_BASE_IMAGE, providers,
+    ...(nativeRuntime ? { start: NATIVE_RUNTIME_START } : {}) })];
   if (nx.via === "host") {
     return run("nixpacks", ["build", repoDir, "--out", repoDir, ...args], { env: nixpacksEnvironment(), signal });
   }
@@ -599,11 +702,14 @@ async function runNixpacksBuild(
     if (present) throw new Error(`ca-sandbox: unsupported Nixpacks input ${name}; project config and preexisting output are refused`);
   }
   const stack = await detectStack(ctx.repoDir);
-  const providers = [...(stack.node ? ["node"] : []), ...(stack.python ? ["python"] : [])];
-  if (!providers.length) throw new Error("ca-sandbox: supported Nixpacks providers require Node package.json or Python requirements.txt");
-  // JSON-plan providers without the upstream "..." placeholder replace
-  // autodetection. Reviewed Node SPA assets have one fixed Caddyfile key;
-  // Python emits no static assets. Other providers remain unsupported here.
+  const nativeInputs = await inspectNativeProviderInputs(ctx.repoDir);
+  if (JSON.stringify(nativeInputs) !== JSON.stringify(ctx.nativeProviderInputs))
+    throw new Error("ca-sandbox: native provider inputs changed after cache admission; retry with a fresh observation");
+  const providers = [...(stack.node ? ["node"] : []), ...(stack.python ? ["python"] : []), ...(nativeInputs?.providers ?? [])];
+  if (!providers.length) throw new Error("ca-sandbox: supported Nixpacks providers require Node package.json, Python requirements.txt, Go go.mod or bounded non-workspace Rust Cargo.toml");
+  // The explicit list replaces autodetection. Node/Python plans are unchanged.
+  // Go/Rust add no host static assets and use our pinned runtime/source policy.
+  // Rust workspace/escaped metadata is refused before the upstream reader.
   try {
     const gen = await generateNixpacks(ctx.repoDir, nx, providers, ctx.signal);
     if (gen.code !== 0) return { code: gen.code, out: gen.out };
@@ -666,6 +772,7 @@ export const defaultBuildDeps = (): BuildDeps => ({
   imageIdentity: defaultImageIdentity,
   targetPlatform: defaultTargetPlatform,
   detectStack,
+  nativeProviderInputs: inspectNativeProviderInputs,
   runBuild: defaultRunBuild,
   nixpacksVersion: defaultNixpacksVersion,
   ensureNixpacks: defaultEnsureNixpacks,
@@ -705,6 +812,8 @@ export async function buildOrReuseImage(
   if (nixpacks.available && !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error("ca-sandbox: malformed nixpacks version; no cache reuse or build");
   }
+  const nativeProviderInputs = nixpacks.available && deps.nativeProviderInputs
+    ? await deps.nativeProviderInputs(repoDir) : undefined;
   // Observe the target daemon; never substitute the client host platform.
   if(!deps.targetPlatform) throw new Error("ca-sandbox: target Docker platform observation unavailable");
   const platform = await deps.targetPlatform();
@@ -712,6 +821,7 @@ export async function buildOrReuseImage(
   const cacheKey = createHash("sha256").update(JSON.stringify({
     schema: 2, manifests: dephash, builder, version, platform,
     ...(builder === "nixpacks" ? { nixpacksProfile: NIXPACKS_BUILD_PROFILE } : {}),
+    ...(nativeProviderInputs ? {nativeProviderInputs} : {}),
     fallback: generateDockerfile({ node: true, python: true }),
     relocation: relocationOverlay(),
   })).digest("hex");
@@ -724,7 +834,7 @@ export async function buildOrReuseImage(
       return { tag, cacheKey, imageId: identity.id, reused: true, built: false, builder, notes };
     }
   }
-  const ctx: BuildContext = { repoDir, builder, nixpacks: nixpacks.via, notes, cacheKey, platform, signal };
+  const ctx: BuildContext = { repoDir, builder, nixpacks: nixpacks.via, notes, cacheKey, platform, signal, nativeProviderInputs };
   signal?.throwIfAborted();
   reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);

@@ -271,5 +271,33 @@
       "packet": "C:/Users/brenn/AppData/Local/Temp/ca-nixpacks-assets-security-review.json",
       "checks": "Independent9new controls PASS; original53PASS/3DockerSKIP raw inspected; no binary/Docker/WSL proof"
     }
+  },
+  "bounded_go_rust_profile_restoration": {
+    "recorded_at": "2026-11-13T20:57:01.385663+00:00",
+    "upstream_commit": "81be35aaa341021e02b66253edeadd8bb4a24a0d",
+    "profile_schema": 2,
+    "providers": [
+      "node",
+      "python",
+      "go",
+      "rust (bounded non-workspace manifest only)"
+    ],
+    "runtime_image": "existing digest-pinned NIXPACKS_BASE_IMAGE for Go/Rust; no unpinned slim stage",
+    "input_policy": "Ordinary safe fixed inputs, held-fd max1MiB+1, fatalUTF8, singlelink/identity/size/time checks. Rust literalworkspace/backslash refused; optional absence remains absence. Material native inputs/Go command metadata join cache key before admission.",
+    "source_hashes": {
+      "plugins/ca-sandbox/README.md": "b024372b828c7281a68ff7a4542ba20405a356449147e50ad346c5d59f624c8d",
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+      "plugins/ca-sandbox/tools/build.ts": "5126c4cc8954b4ae5dbe0e297200d33aafbfaadb295cb069c079ed4d5fd15414",
+      "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+      "plugins/ca-sandbox/tools/native-build-inputs.test.ts": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+      "plugins/ca-sandbox/tools/build.test.ts": "872ff21ccd5b2c25009d34246a45561a770c6128ab526c9ceb03551c04a6f30c",
+      "plugins/ca-sandbox/tools/layering.test.ts": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+      "plugins/ca-sandbox/tools/multistack.test.ts": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+      "plugins/ca-sandbox/tools/supply-chain.test.ts": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+      "plugins/ca-sandbox/tools/sandbox.js": "6c873ef61f7fcb144a00f017ea617339d7edc326179eb1478326f6acb3f9877b"
+    },
+    "independent_review_sha256": "337718981a3e9f075733eef58cee73a5d76f7e06c0b6277a2cd1067d8ec5d052",
+    "local_validation": "123PASS/7DockerSKIP,16post-build source/bundle pin-audits,fulltypecheck/build/diffcheckPASS",
+    "limits": "Real Docker/cache/4stack qualification pending hosted rerun. No reproducible Nix/packageclosure claim; same-user concurrent later generator mutation outside inert-stage contract."
   }
 }

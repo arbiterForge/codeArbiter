@@ -116,7 +116,7 @@
     }
   ],
   "current_verification": {
-    "go_test_all": "PASS, go test -buildvcs=false ./... on Windows amd64; operations package169.941s. Earlier qualified build ran473 top-level tests:470passed,3skipped. After independent SMARTS schema finding was fixed, final qualified build ran474 top-level tests:471passed,3skipped,all complete, followed by go vet.",
+    "go_test_all": "PASS latest Windows477selected/474PASS3SKIP+vet128.263s on exactmodule28dc; prior471/472epochs retained historically.",
     "go_vet_all": "PASS, both direct invocation and final native qualified build.",
     "generated_types": "PASS, python -B tools/generate-artifact-types.py --check.",
     "generated_python": "PASS, python -B tools/sync-core.py --check,93 canonical files x3 hosts. Python bridge currently validates envelope and preserves native result object; no runtime bridge edit needed.",
@@ -143,7 +143,8 @@
       "sha256": "48de0c3f436518a364df9ad2b34e07b364285d6846a7700a3962b0d4d2c507f7",
       "result": "PASS pre-cycle work read/write refusal and preserved later bytes/identity; exact committed source verified with no extra files before offline build."
     },
-    "preserved": "All exercised upgrade variants retain stops, stable IDs, true journal before-images, later saved work, exact operation replay, separate-root complete-store restoration and forward export. Old clients refuse unsupported state before write."
+    "preserved": "All exercised upgrade variants retain stops, stable IDs, true journal before-images, later saved work, exact operation replay, separate-root complete-store restoration and forward export. Old clients refuse unsupported state before write.",
+    "superseded_by": "ci_repair_native_qualification (new c36 actual4variants+2bridge checks; old575d results remain historical)"
   },
   "qualification": "Windows local implementation/conformance and native-qualified binary evidence available; other-platform, actual upstream host, Pi effect composition and complete program qualification remain pending.",
   "review_corrections": [
@@ -172,11 +173,9 @@
     }
   ],
   "remaining": [
-    "Integrator merges latest candidate versions and HTML context into this lane without overwriting local work, then refreshes affected context provenance through its native owner.",
-    "Independent contract coverage and CI/security review, commit-gate, child PR and required hosted platform/race/coverage checks.",
-    "Hook owner aligns canonical/generated guidance with recorded-progress/1 and performs actual rejected-to-corrected host attempt sequence. Native fixture is explicitly synthetic.",
-    "Pi owner completes and qualifies agreed Git-common claim/outcome executor/recovery; native kernel preservation alone does not qualify Pi source effects.",
-    "Cross-platform Linux/Darwin/Windows amd64/arm64 and exact installed/upstream host composition before whole-program qualification; user testing still holds promotion PR1098."
+    "Exactnewsource hosted Linux/Darwin/Windows sixplatform/race/coverage, actual supported host/provider compositions and current retained productioncohort.",
+    "Complete frozen disposition/task/scenario reconciliation; no suite-total or source-only installed qualification.",
+    "PR1098 stays draft and unmerged for user full testing; no publication."
   ],
   "rollback_boundary": "Retain typed tombstones, journals, before-images and later writes. Older readers refuse0.3.4 before write. Complete preupgrade store restoration is tested only in a separate root; never restore an old single HTML file over later live work.",
   "commit": null,
@@ -225,5 +224,24 @@
       "binary_and_source_stable": true,
       "scope": "Actual Windows amd64 qualified native payload only. No other-platform, visible-parent/provider or publication claim."
     }
+  },
+  "ci_repair_native_qualification": {
+    "recorded_at": "2026-11-13T20:57:01.385663+00:00",
+    "source_commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+    "actual_execution_base": "55509ec54327c61b94f6648aa21ac41452e0d28f plus exact frozen6Go files",
+    "module_sha256": "28dc44c2486928f9086f8ced09ea44a8aa2fc0391a46470d42b50a1a6c1645c3",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "native_tested": true,
+    "selected": 477,
+    "passed": 474,
+    "skipped": 3,
+    "complete": true,
+    "vet": "PASS",
+    "older_client_variants": 4,
+    "installed_bridge_named_tests": 2,
+    "raw_evidence": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/raw/",
+    "refreshed_TESTED_dispositions": 92,
+    "refreshed_PRESERVED_dispositions": 9,
+    "qualification_scope": "Actual Windows native module/client/installed Python bridge fixtures only; Linux compile-only, other actual hosted platforms/hosts remain pending."
   }
 }

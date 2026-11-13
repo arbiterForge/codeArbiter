@@ -2414,7 +2414,7 @@ jobs:
         run: python .github/scripts/pi_benchmark.py --samples 100
 
   ca-pi-tools:
-    name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} Â· runtime: Pi ${{ matrix.pi-version }}>"
+    name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>"
     # Issue #390: the lean compatibility matrix. Only steps whose verdict is a
     # function of matrix.os or matrix.pi-version live here - the installed-Pi
     # admission boundary, live package RPC activation, the cross-platform
@@ -2646,7 +2646,7 @@ jobs:
         run: python .github/scripts/test_pi_security.py --sarif codeql-results
 
   hooks:
-    name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} Â· partition: ${{ matrix.partition }}>"
+    name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
     # Windows runs independent command groups on fresh runners. Linux/macOS
     # retain their original order. The hermetic isolation run is the hook
     # suite's only execution; no other command is removed or repeated.
@@ -2754,13 +2754,13 @@ jobs:
         # read-only verdict aggregator, leave repository bytes unchanged, and
         # keep checkpoint persistence as a separate non-overwriting writer.
         run: python .github/scripts/test_review_funnel.py
-      - name: Run Â§6 routing + post-merge-cleanup surface contract
+      - name: Run §6 routing + post-merge-cleanup surface contract
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Issue #308 / ADR-0022. Both halves of #308 are prose contracts
         # projected into three host surfaces, so what silently regresses is a
         # paragraph reverting, or landing on one host and not the others. This
         # pins the three routing tiers, the destructive set that keeps an
-        # obvious-but-irreversible command at tier 2, the preserved Â§6
+        # obvious-but-irreversible command at tier 2, the preserved §6
         # invariant (route the command, never improvise the operation), the
         # never-steer-to-override rule, and the cleanup owner's own acceptance
         # gates - on every generated projection.
@@ -2768,7 +2768,7 @@ jobs:
       - name: Enforce authoritative destructive-operation registry parity
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # ADR-0026, narrowed by ADR-0030 and bound by ADR-0033: the routing
-        # table owns the current four-item set while arbiter Â§6 retains the
+        # table owns the current four-item set while arbiter §6 retains the
         # pre-load resident copy. The suite above carries the seeded mismatch;
         # this command checks all four live canonical/generated surface pairs.
         run: python .github/scripts/check_destructive_registry.py
@@ -2787,7 +2787,7 @@ jobs:
         # so this pins the anchors that must survive every mode (the conflict
         # ladder, diagnose-don't-bypass, the irreversible set, the secrets
         # prohibition) and the ORDERING that keeps the anti-circumvention rule
-        # from binding over nothing. Also proves every hook's Â§N citation
+        # from binding over nothing. Also proves every hook's §N citation
         # resolves in all three modes.
         run: python .github/scripts/test_persona_composition.py
       - name: Run prompt-seam interceptor contract (ADR-0030)
