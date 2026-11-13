@@ -119,9 +119,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -132,6 +132,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -145,9 +152,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -158,6 +165,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -180,9 +194,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -193,6 +207,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -211,8 +232,15 @@
    "task_ids": [
     "NT-07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N-F07": {
    "owner": null,
@@ -224,9 +252,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -237,6 +265,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -246,8 +281,15 @@
    "task_ids": [
     "NT-08"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N-F09": {
    "owner": null,
@@ -259,9 +301,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -272,6 +314,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -285,9 +334,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -298,6 +347,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1305,9 +1361,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1318,6 +1374,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1343,9 +1406,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1356,6 +1419,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1383,9 +1453,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1396,6 +1466,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1411,9 +1488,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1424,6 +1501,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1449,9 +1533,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1462,6 +1546,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1478,9 +1569,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1491,6 +1582,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1534,9 +1632,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1547,6 +1645,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1560,9 +1665,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1573,6 +1678,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1586,9 +1698,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1599,6 +1711,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1612,9 +1731,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1625,6 +1744,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1670,9 +1796,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1683,6 +1809,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1706,9 +1839,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1719,6 +1852,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1732,9 +1872,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1745,6 +1885,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1776,9 +1923,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1789,6 +1936,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1803,9 +1957,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1816,6 +1970,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -1860,9 +2021,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -1873,6 +2034,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6297,9 +6465,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6310,6 +6478,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6392,9 +6567,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -6405,6 +6580,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6657,9 +6839,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6670,6 +6852,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6706,9 +6895,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -6719,6 +6908,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6789,9 +6985,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6802,6 +6998,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6817,9 +7020,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6830,6 +7033,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6845,9 +7055,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6858,6 +7068,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6873,9 +7090,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6886,6 +7103,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6901,9 +7125,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6914,6 +7138,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -6983,9 +7214,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -6996,6 +7227,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7010,9 +7248,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7023,6 +7261,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7037,9 +7282,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7050,6 +7295,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7064,9 +7316,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7077,6 +7329,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7088,8 +7347,15 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N12:02": {
    "owner": "native",
@@ -7099,8 +7365,15 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N12:03": {
    "owner": "native",
@@ -7110,8 +7383,15 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
+    }
+   ]
   },
   "N12:04": {
    "owner": "native",
@@ -7137,9 +7417,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7150,6 +7430,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7166,9 +7453,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7179,6 +7466,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7195,9 +7489,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7208,6 +7502,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7224,9 +7525,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7237,6 +7538,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7252,9 +7560,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7265,6 +7573,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7280,9 +7595,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7293,6 +7608,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7308,9 +7630,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7321,6 +7643,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7336,9 +7665,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7349,6 +7678,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7364,9 +7700,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7377,6 +7713,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7435,9 +7778,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7448,6 +7791,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7462,9 +7812,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7475,6 +7825,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7489,9 +7846,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7502,6 +7859,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7516,9 +7880,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7529,6 +7893,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7545,9 +7916,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7558,6 +7929,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7574,9 +7952,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7587,6 +7965,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7603,9 +7988,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7616,6 +8001,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7632,9 +8024,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7645,6 +8037,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7661,9 +8060,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7674,6 +8073,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7758,9 +8164,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -7771,6 +8177,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7785,9 +8198,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7798,6 +8211,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7812,9 +8232,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7825,6 +8245,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7839,9 +8266,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7852,6 +8279,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7866,9 +8300,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7879,6 +8313,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7893,9 +8334,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7906,6 +8347,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7920,9 +8368,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7933,6 +8381,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7946,9 +8401,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7959,6 +8414,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7972,9 +8434,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -7985,6 +8447,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -7998,9 +8467,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8011,6 +8480,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8024,9 +8500,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8037,6 +8513,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8050,9 +8533,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8063,6 +8546,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8076,9 +8566,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8089,6 +8579,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8102,9 +8599,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8115,6 +8612,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8128,9 +8632,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8141,6 +8645,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8154,9 +8665,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8167,6 +8678,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8189,9 +8707,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -8202,6 +8720,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8215,9 +8740,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -8228,6 +8753,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8250,9 +8782,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -8263,6 +8795,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8343,9 +8882,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8356,6 +8895,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8370,9 +8916,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8383,6 +8929,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8397,9 +8950,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8410,6 +8963,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8424,9 +8984,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8437,6 +8997,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8507,8 +9074,15 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N30:01": {
    "owner": "native",
@@ -8520,9 +9094,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8533,6 +9107,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8546,9 +9127,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8559,6 +9140,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8572,9 +9160,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8585,6 +9173,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8598,9 +9193,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8611,6 +9206,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8624,9 +9226,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8637,6 +9239,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8650,9 +9259,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8663,6 +9272,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8676,9 +9292,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8689,6 +9305,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8702,9 +9325,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8715,6 +9338,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8728,9 +9358,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8741,6 +9371,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8754,9 +9391,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8767,6 +9404,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8924,9 +9568,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8937,6 +9581,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8950,9 +9601,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8963,6 +9614,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -8976,9 +9634,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -8989,6 +9647,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9002,9 +9667,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9015,6 +9680,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9028,9 +9700,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9041,6 +9713,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9055,9 +9734,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9068,6 +9747,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9082,9 +9768,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9095,6 +9781,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9109,9 +9802,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9122,6 +9815,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9132,8 +9832,15 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N36:02": {
    "owner": "native",
@@ -9142,8 +9849,15 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
+    }
+   ]
   },
   "N36:03": {
    "owner": "native",
@@ -9167,9 +9881,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9180,6 +9894,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9195,9 +9916,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -9208,6 +9929,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9223,9 +9951,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -9236,6 +9964,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9251,9 +9986,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
-     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+     "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8"
     }
    ],
    "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
@@ -9264,6 +9999,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
      "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+     "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9327,9 +10069,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9340,6 +10082,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9353,9 +10102,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9366,6 +10115,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -9379,9 +10135,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
-     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
-     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb"
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-tested.json",
+     "sha256": "1b15e29b5fa9e35aade34ab5e74bd7a0817d834dcbc90e4b6953c80cd51ee553"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -9392,6 +10148,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-tested.json",
      "sha256": "4b144f2c150f35d525bd17bed4d78a1ca1773a58b85d35c2741c1244ca8edbc2",
      "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+    },
+    {
+     "kind": "test",
+     "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+     "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-tested.json",
+     "sha256": "af17bf89d0ae4781a3b56448eef7437d9d2720ed5312e7cf94d08ba2e0b8e0eb",
+     "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
     }
    ]
   },
@@ -10829,8 +11592,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-npm-boundary-tested.json",
+     "sha256": "e049ab751db5dd06ad7f83360b31280f93cade7a7b26faf2db2426c45cb182ea"
+    }
+   ],
+   "candidate_contract_note": "Real Python npm-script producer on Windows0/30/31/32workspaces emits4/35/36/37files; current Go schema, role and completion consumers accept. Current named negatives reject33workspace roles,38totalfiles, duplicate/unknown roles, changed runtime hash, mutated argv/path, missing root/helper and malformed/unknown fields."
   },
   "hooks:codex-review:01": {
    "owner": "hooks-workflows",
@@ -11037,8 +11808,15 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json",
+     "sha256": "0ebebeb80ad5d8c904a45b188de0a36419ac57f4622d225da7b82056fc4e183d"
+    }
+   ]
   },
   "hooks:native-client:03": {
    "owner": "hooks-workflows",
@@ -12226,8 +13004,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
   },
   "hooks:cleanup-journal:02": {
    "owner": "hooks-workflows",
@@ -12236,8 +13022,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
   },
   "hooks:cleanup-journal:03": {
    "owner": "hooks-workflows",
@@ -12246,8 +13040,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
   },
   "hooks:cleanup-journal:04": {
    "owner": "hooks-workflows",
@@ -12256,8 +13058,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
   },
   "hooks:cleanup-journal:05": {
    "owner": "hooks-workflows",
@@ -12266,8 +13076,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
   },
   "hooks:cleanup-journal:06": {
    "owner": "hooks-workflows",
@@ -12276,8 +13094,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
   },
   "hooks:prune-plan:01": {
    "owner": "hooks-workflows",
@@ -19177,8 +20003,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pagefind-publication.json",
+     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c"
+    }
+   ]
   },
   "S65:06": {
    "owner": "site",
@@ -19187,8 +20020,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pagefind-publication.json",
+     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c"
+    }
+   ]
   },
   "S65:07": {
    "owner": "site",
@@ -19207,8 +20047,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pagefind-publication.json",
+     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c"
+    }
+   ]
   },
   "S66:01": {
    "owner": "site",
@@ -20017,8 +20864,15 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "508bce4d719557dc5ea3b80b76b5c1d9d08822bf",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/surface-publication-508b.json",
+     "sha256": "149a7fdff1a78b77d279fa25c4d5246604c230987fde6c25f72524d1f140e1f4"
+    }
+   ]
   },
   "S75:06": {
    "owner": "packaging",
@@ -20062,8 +20916,15 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "508bce4d719557dc5ea3b80b76b5c1d9d08822bf",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/surface-publication-508b.json",
+     "sha256": "149a7fdff1a78b77d279fa25c4d5246604c230987fde6c25f72524d1f140e1f4"
+    }
+   ]
   },
   "S76:01": {
    "owner": "packaging",
@@ -22347,8 +23208,15 @@
     "R-08",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/observed-publication.json",
+     "sha256": "71a75ed7ee4d76547a3b301fd0b8b6c0b39e052d195e58380b33cf62b98b2275"
+    }
+   ]
   },
   "SX03:03": {
    "owner": "site-and-release",
@@ -22822,8 +23690,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T05:02": {
    "owner": "release-and-tooling",
@@ -23121,8 +23996,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:02": {
    "owner": "release-and-tooling",
@@ -23130,8 +24012,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:03": {
    "owner": "release-and-tooling",
@@ -23139,8 +24028,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:04": {
    "owner": "release-and-tooling",
@@ -23148,8 +24044,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:05": {
    "owner": "release-and-tooling",
@@ -23157,8 +24060,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:06": {
    "owner": "release-and-tooling",
@@ -23166,8 +24076,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:07": {
    "owner": "release-and-tooling",
@@ -23175,8 +24092,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:08": {
    "owner": "release-and-tooling",
@@ -23184,8 +24108,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "T12:09": {
    "owner": "release-and-tooling",
@@ -23193,8 +24124,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+     "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+   ]
   },
   "generator:markdown:01": {
    "owner": "hooks-workflows",
@@ -24121,8 +25059,16 @@
     "HW-26",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
   },
   "pi-qualification:runtime-discovery:02": {
    "owner": "hooks-workflows",
@@ -24131,8 +25077,16 @@
     "HW-26",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
   },
   "pi-qualification:runtime-discovery:03": {
    "owner": "hooks-workflows",
@@ -24141,8 +25095,16 @@
     "HW-26",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
   },
   "pi-qualification:runtime-discovery:04": {
    "owner": "hooks-workflows",
@@ -24151,8 +25113,16 @@
     "HW-26",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
   },
   "pi-qualification:disposable-home:01": {
    "owner": "hooks-workflows",
@@ -24162,8 +25132,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-pi-isolation-tested.json",
+     "sha256": "f277f3bec9b61c0c70eb6db69f089f675af451ecad6c4a2294d20acb87db392d"
+    }
+   ],
+   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
   },
   "pi-qualification:disposable-home:02": {
    "owner": "hooks-workflows",
@@ -24173,8 +25151,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-pi-isolation-tested.json",
+     "sha256": "f277f3bec9b61c0c70eb6db69f089f675af451ecad6c4a2294d20acb87db392d"
+    }
+   ],
+   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
   },
   "pi-qualification:disposable-home:03": {
    "owner": "hooks-workflows",
@@ -24184,8 +25170,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-pi-isolation-tested.json",
+     "sha256": "f277f3bec9b61c0c70eb6db69f089f675af451ecad6c4a2294d20acb87db392d"
+    }
+   ],
+   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
   },
   "pi-qualification:disposable-home:04": {
    "owner": "hooks-workflows",
@@ -24195,8 +25189,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+    }
+   ],
+   "candidate_contract_note": "Only successful setup registers process exit handler; handler attempts rmSync of exact freshly created root with exceptions swallowed. Abrupt exit or cleanup error can leave that exact disposable residue; no production resource cleanup promise."
   }
  },
  "added_transitions": {}

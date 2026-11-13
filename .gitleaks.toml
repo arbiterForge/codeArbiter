@@ -243,3 +243,19 @@ regexes = [
   '''\A\Q-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
       "-----END PRIVATE KEY-----\E\z'''
 ]
+
+# Exact public source SHA-256 values retained by the major qualification packet.
+# Each value matches its named Git blob at94b569fb51ab306ac187f60fe4e61cf0bef6992a.
+# API/auth/secret words in filenames caused generic-api-key false positives.
+# Preserve scans for every other value, path, commit and credential shape.
+[[allowlists]]
+description = "Public core/pysrc/hostapi.py SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4\z']
+
+[[allowlists]]
+description = "Public core/surface/agents/auth-crypto-reviewer.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\Ac8d4aae68642746dc19803bdd9bbe738c540dae33a72baeed39ee0b1ea3b1143\z']
+
+[[allowlists]]
+description = "Public core/surface/skills/tribunal/references/lenses/secrets-supply.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A0de0dd521693c80fba4ce695c290d08df1b73452632f19efb6f332a0f0518a0e\z']

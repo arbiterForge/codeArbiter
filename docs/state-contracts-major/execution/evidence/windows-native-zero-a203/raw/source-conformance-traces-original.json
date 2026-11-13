@@ -1,0 +1,1587 @@
+{
+  "schema": "codearbiter-native-transition-gap-inspection/1",
+  "author": "native_cohort_integration",
+  "created_at": "2026-11-13T19:18:01.065980+00:00",
+  "state": "LOCAL_SOURCE_CONFORMANCE_COMPLETE_CI_QUALIFICATION_PENDING",
+  "native_source_commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+  "source_commit": null,
+  "candidate_binding_note": "Native243files match committed ed9 bytes. Final combined source/metadata commit and original authenticated CI report bindings remain pending.",
+  "native_module_sha256": "0cc6bd0afa9b4b373267ef9170b20fd7c107bfdf52f51f6f248062a77b0f6016",
+  "module_inputs": {
+    "core/artifacts/cmd/ca-artifact/main.go": {
+      "git_blob": "144a6a04324d33dc37d4740a26e73422564cba0b",
+      "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+    },
+    "core/artifacts/cmd/ca-artifact/main_test.go": {
+      "git_blob": "faa20f010500d2ecd5ac7d4e27f776fda82b19f4",
+      "sha256": "173855b959fc24785c602f76c437c3170b141fcbadad83a35eb528084096892c"
+    },
+    "core/artifacts/go.mod": {
+      "git_blob": "e91977493049bdc77ae432eecd4de28818921e84",
+      "sha256": "2a297e7679c4149e206721d75d7eecff1171541a7a5517d6f7107aff0d560e77"
+    },
+    "core/artifacts/internal/authority/observed_event_test.go": {
+      "git_blob": "cc4dbe6bffccc86eb78c193b2e1f7d9f5a050bef",
+      "sha256": "15c52464d438a40873774b5d2daed0c155f2e85eb3439ee079e01c3e243925f4"
+    },
+    "core/artifacts/internal/authority/receipt.go": {
+      "git_blob": "f581ff6e836bb22c7f93be8193a377b09e971868",
+      "sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694"
+    },
+    "core/artifacts/internal/authority/reuse.go": {
+      "git_blob": "58aa138e47799d9ddb2d73f2e57c47a6c2fe09ab",
+      "sha256": "15df76cf2d0c7b5c02037d92fa04b66983a939280fb28ac5507c207eef4306c5"
+    },
+    "core/artifacts/internal/canonical/canonical_test.go": {
+      "git_blob": "3612a06fcb405abfa762a4d28f19d52244751d32",
+      "sha256": "e2d3032908a168f9fd6211cd30af3efd977f52c19d8ecc3d9fc74d002e63b36d"
+    },
+    "core/artifacts/internal/canonical/json.go": {
+      "git_blob": "880c27dc684ef3da7e09344b59c2aa8ceaceb8f9",
+      "sha256": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149"
+    },
+    "core/artifacts/internal/conformance/conformance_test.go": {
+      "git_blob": "f7ddf567d9889b38b601ca3109ec2b3d9d7efd17",
+      "sha256": "137e181a673e28284ea28ece92e75cff6e994a293b355959bfff75bc768d4282"
+    },
+    "core/artifacts/internal/contextdocument/assistive_recovery_test.go": {
+      "git_blob": "cb8722e2a6146bd43787fdb88acd8b922d7fe34f",
+      "sha256": "6090fc203f3fcf584d7e6618b0c37610b03d4445c498d9136288edafd17d6b31"
+    },
+    "core/artifacts/internal/contextdocument/contract.go": {
+      "git_blob": "6c3fd897e1dbe6c4933dce6bab55fbd4f81a5860",
+      "sha256": "62d24a2193b7a68a659c3f3beaa8d09b34ac03d165e781aae20939d8ad2ca84a"
+    },
+    "core/artifacts/internal/contextdocument/contract_test.go": {
+      "git_blob": "50002cd91e9256123ac4aaa198ae224b57f97317",
+      "sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c"
+    },
+    "core/artifacts/internal/contextdocument/document_selection.go": {
+      "git_blob": "9ff5b8ab4cdda001bf027dbb4aca0906e2df8b3a",
+      "sha256": "68e3685b06efdf1a51e71277bee8f57fc93f758a100af3e5735a73962cde3932"
+    },
+    "core/artifacts/internal/contextdocument/evidence.go": {
+      "git_blob": "623de8f62fff93e022c65b8f79df37294a4fb6b6",
+      "sha256": "07170c0fb1637400cb326a49bb4c305d986e7982ef0f106defc4832af01d0bcf"
+    },
+    "core/artifacts/internal/contextdocument/evidence_test.go": {
+      "git_blob": "5c6e95e3928990e299c8eb565993107995175728",
+      "sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+    },
+    "core/artifacts/internal/contextdocument/finalization.go": {
+      "git_blob": "e48bb44dfae84966fc976d6850bc82d561e8dc6b",
+      "sha256": "1d3783b6ba12b4b8469899ad28723dd66c5e9c3f264b1dd12b2ce55fff7765df"
+    },
+    "core/artifacts/internal/contextdocument/finalization_test.go": {
+      "git_blob": "834ccadaa39517b04b870cf9fcda2bf96e9c0a91",
+      "sha256": "5d6e7e65c191c82fd811d332b9fb67f871e42b254d8693b729adcb38f914a121"
+    },
+    "core/artifacts/internal/contextdocument/knowledge.go": {
+      "git_blob": "02480a67614e372393833a40e2cea750bae19661",
+      "sha256": "68db524db3c7a17d25069005c371a84a6ecc316e5f7343bd2b3a8b1347c60ef3"
+    },
+    "core/artifacts/internal/contextdocument/knowledge_test.go": {
+      "git_blob": "ba64ce95e5fb8659ea2231c312671ff0ac9dfe14",
+      "sha256": "ca60fa238b3d14d53a21c2f1c627cdc15d25f823496bc0337507d5a86783f81c"
+    },
+    "core/artifacts/internal/contextdocument/markdown.go": {
+      "git_blob": "d33c12fc7fab4f93751396a411e53969ec8ad98c",
+      "sha256": "097259156dd4f787dd51d63a0dda3b52811bbafe968c37584b8c0822aff469f3"
+    },
+    "core/artifacts/internal/contextdocument/markdown_test.go": {
+      "git_blob": "1f2a25b2852dcba5ae5a41b89e779b6cc0b79489",
+      "sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e"
+    },
+    "core/artifacts/internal/contextdocument/operations.go": {
+      "git_blob": "ff0c467801679f74b7b8b4638c773e390de5102d",
+      "sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f"
+    },
+    "core/artifacts/internal/contextdocument/operations_test.go": {
+      "git_blob": "5ecf3112e5b2933c03fd0e94448b8d90a72cc872",
+      "sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a"
+    },
+    "core/artifacts/internal/contextdocument/preview_contract.go": {
+      "git_blob": "18e24931f43ce1254db844c71790a238973de08d",
+      "sha256": "f8bf02404db6d664c604d9f3860ada2e2ddb0447592427c76f9acf7563cfc421"
+    },
+    "core/artifacts/internal/contextdocument/preview_contract_test.go": {
+      "git_blob": "f2619d38c82cbcbec8da2842fb5c18f081715730",
+      "sha256": "083c1407a7913ecc310b56a5744d91c2df60fdb50e8a0b14e3727abc103cc5b0"
+    },
+    "core/artifacts/internal/contextdocument/recovery_test.go": {
+      "git_blob": "4b38a7cbcf72dc3c96f29d6542f80354c57c91ee",
+      "sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502"
+    },
+    "core/artifacts/internal/contextdocument/refresh_test.go": {
+      "git_blob": "f29d64bcb740168d1376e0779b362b65eebd92e2",
+      "sha256": "fd0ce70f2e4316407d31abde05d531ea1b20fa45bd36ed33260d5c5fc7d3efc4"
+    },
+    "core/artifacts/internal/contextdocument/render.go": {
+      "git_blob": "ebb36ed6d1da192dd237ff50e672ef59b2bccbe1",
+      "sha256": "2cdde4553109e3c85492d918146842f5c06aa020230902251d9e921b11483d44"
+    },
+    "core/artifacts/internal/contextdocument/render_test.go": {
+      "git_blob": "5cc8653da52a2f0f8eeaadb2213d8371f31b94de",
+      "sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393"
+    },
+    "core/artifacts/internal/contextdocument/sections.go": {
+      "git_blob": "c0dd4f43797f5e0336ed6dd49bed08338a3e91d5",
+      "sha256": "1fc1b0603177598eae86dcc1497174bb5ed45dc24e6f8ff8c1caf098bbae026d"
+    },
+    "core/artifacts/internal/contextdocument/validation.go": {
+      "git_blob": "68d2cd0cb3c4fcc275c1e3e522cfee42925d58bf",
+      "sha256": "d7bfd357beb1881ed6000ada2ec6c58b21d6254ebc35aed6ae6cc8ff4b057a59"
+    },
+    "core/artifacts/internal/contextdocument/validation_test.go": {
+      "git_blob": "4f86e00213330d9ddbaf9178914ab6a9d980df1b",
+      "sha256": "28b81e7922fe61400ebff6f72f8ddbe073942db10b14a36718e944505947b291"
+    },
+    "core/artifacts/internal/evidence/completion.go": {
+      "git_blob": "4b1f0a36c7c1cb825a4a1d6b2235822cea9024bb",
+      "sha256": "6f29e201a3060445bb635bf143bd1739f52b9855f4216b780e4f5fbc32d584f8"
+    },
+    "core/artifacts/internal/evidence/completion_identity_other.go": {
+      "git_blob": "f393933fbc6ffc6de43d63fd2f044c17fc15c179",
+      "sha256": "b7fba2acc66a21541c5dbf30a865e26e47cbd029fe829c375292cd42b1d4032a"
+    },
+    "core/artifacts/internal/evidence/completion_identity_unix.go": {
+      "git_blob": "7e16fb88e642551338c51fb489cb31fae44848b0",
+      "sha256": "49b665ed6a76b65636cb086951a63acdf44d965a7ac71beca98abfe2df7b9791"
+    },
+    "core/artifacts/internal/evidence/completion_identity_windows.go": {
+      "git_blob": "d59ce8086855529d1c25ac6b710405c5461daf1b",
+      "sha256": "51e2c8f6f044d1f528c8ee5fa8e981251704103e4e46756d05b3af793e0e20d5"
+    },
+    "core/artifacts/internal/evidence/completion_identity_windows_test.go": {
+      "git_blob": "7b8df6fe5c9d3b14d7bf91db953fbf7b8f7a33be",
+      "sha256": "da5afd862681f5b9c7eb7f85e32939027ad4f11998633904b5beacbffa2890d0"
+    },
+    "core/artifacts/internal/evidence/completion_workspace.go": {
+      "git_blob": "b45360699fcf0a0bae3e49d82f18e5ed0ddc8ddf",
+      "sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05"
+    },
+    "core/artifacts/internal/evidence/completion_workspace_test.go": {
+      "git_blob": "20acc1d6a90d366491fc25ff9abd88a7dea0e9aa",
+      "sha256": "c100404a7d96d94395342b68fb775e7d90545d2eb220b7e5ff19f984fef8273f"
+    },
+    "core/artifacts/internal/evidence/launch_binding_limits_test.go": {
+      "git_blob": "d12c82533700d3d6fd2d420c242346349351b277",
+      "sha256": "fd4fca3c284f7355acdc155005e5739dbe04cb25662b24ac4d0840cb7caa2adf"
+    },
+    "core/artifacts/internal/evidence/output_contract_test.go": {
+      "git_blob": "f2dd1e1014ce3fd19121973b4dfe8c218be40542",
+      "sha256": "22ac4aee28a217c3da36977fa664f22baf9662d0f1c7a683909ddaa74df2f050"
+    },
+    "core/artifacts/internal/evidence/review_regressions_test.go": {
+      "git_blob": "83472e16d7d7677d732c61edb545458deabdc5b4",
+      "sha256": "9f042099186215288da84665d44ceea4ed515487495f629d8dd1a59db7caa54c"
+    },
+    "core/artifacts/internal/evidence/snapshot.go": {
+      "git_blob": "86bca80cc2e595e8a2ca3992135be3bf23d88c41",
+      "sha256": "57ee8711c04d053cdc8ced739c51b6848e4b87a5a61d5c9f03a985998b8748d7"
+    },
+    "core/artifacts/internal/evidence/snapshot_bounds_test.go": {
+      "git_blob": "1ff92c92ae0b235426934a85551415b1ce341966",
+      "sha256": "33b8248810153a4e43e481b110e7f79a40e06074e5e350c0ed5999a6b8b7de9a"
+    },
+    "core/artifacts/internal/evidence/snapshot_canonical_test.go": {
+      "git_blob": "4057c530fa7cb185119f986186d188c689cec4f4",
+      "sha256": "c2ac03020b25fcbf1e67cf5f4f7ab09add3afa9624115ff8c2c04ee1fa624337"
+    },
+    "core/artifacts/internal/evidence/snapshot_hardening_test.go": {
+      "git_blob": "d9862793a46153cb381c79f0785f6cc45151b825",
+      "sha256": "e82c880f70f84998102083090892cc1d582ef90b5aaff1af48d53d1ad229afe5"
+    },
+    "core/artifacts/internal/evidence/snapshot_short_other_test.go": {
+      "git_blob": "1a0ccbb8ea2f392f0b97b59d78c7e2930343b301",
+      "sha256": "8d8642de864bda60cfb5421914202b08364fa012fab32b5aed3b31868e1b31ca"
+    },
+    "core/artifacts/internal/evidence/snapshot_short_windows_test.go": {
+      "git_blob": "084b2089f8a71ed809420221f4a908941cd58e74",
+      "sha256": "3d26e42bd6a43c303f19d5cdd81fa29ced17708c0fa4a0fc84591e4e00234bc9"
+    },
+    "core/artifacts/internal/evidence/snapshot_test.go": {
+      "git_blob": "dd9b238bad5108d126505642c1d8e89212ea8b27",
+      "sha256": "2b46aac7312b8097af1bd8df2b33fb499412f116928a60a6a62d4620ea6f3a65"
+    },
+    "core/artifacts/internal/evidence/verification.go": {
+      "git_blob": "fe067d2ba82e2fb8d3545cf926e4ad7740a73cdb",
+      "sha256": "eeb406fbe1f4ad38dc693059347421416172f4a705fefe61c6e7d34008d28d36"
+    },
+    "core/artifacts/internal/fault/fault.go": {
+      "git_blob": "a09dc9492e3cd4962fe6a1be3440300a10c6d2cf",
+      "sha256": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452"
+    },
+    "core/artifacts/internal/fault/fault_test.go": {
+      "git_blob": "02e3d92122ccbd44ee5bf7dc5e91c149644b8b37",
+      "sha256": "875bbffb267ac6a0c0e5bec6ae5027a277ba13aff157eefc77afa670a8d86ea4"
+    },
+    "core/artifacts/internal/kind/contracts.go": {
+      "git_blob": "76ae8739a204803ac881d06c044f83e646c77636",
+      "sha256": "c96ef2079b31d639e8b50008900e360743a1933d2c839d6c56524953e55b0e71"
+    },
+    "core/artifacts/internal/kind/contracts_test.go": {
+      "git_blob": "eeae7300b10956028350d53a1f1ccd5469496a16",
+      "sha256": "51074b89a2856a7b8d99e55474c8094c2dc8bcec395cc637d57d6f22561e85c5"
+    },
+    "core/artifacts/internal/model/artifact.go": {
+      "git_blob": "a0a6d964c9dbac2fd4f06f2ce9ccff9c2bd903bb",
+      "sha256": "b59394d6a08cccf8ec2ee91607d72f86debf0c209892bc79c8a24c62d74d275e"
+    },
+    "core/artifacts/internal/model/artifact_test.go": {
+      "git_blob": "3092af5e580ff15b48d8164a9ecc877100f26ecd",
+      "sha256": "597150b6eff5117b1fcf2c2e36e4f93d64c933718e0a2645139fd145e36f95cb"
+    },
+    "core/artifacts/internal/model/assistive.go": {
+      "git_blob": "74a59e614520ae2abd2bc64b5771ac1139846130",
+      "sha256": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c"
+    },
+    "core/artifacts/internal/model/types_generated.go": {
+      "git_blob": "9b80f64a3bdf007b0be11f547646b9939d552769",
+      "sha256": "a98ab09d775c2d63903c305260e91bd61a15033e4c3eea8de1bb2f06ba1543e5"
+    },
+    "core/artifacts/internal/observation/completion.go": {
+      "git_blob": "529e42134c209830ca76b5fe5b689fbdaafea412",
+      "sha256": "697e2c5e3232ea95c53b6dcb42d09595917d518578f9333423bcc3763b0aa204"
+    },
+    "core/artifacts/internal/observation/contract.go": {
+      "git_blob": "2bca05eeff59dccd0a81df4c69ebb68f9817c952",
+      "sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca"
+    },
+    "core/artifacts/internal/observation/contract_test.go": {
+      "git_blob": "176ebcc41761a0c0ba38e15a9eef5e2880fcb7be",
+      "sha256": "00df97605e4d68f83b3384e986a20c79c5a108d5ed8edcd0c47ef25a502a7dad"
+    },
+    "core/artifacts/internal/observation/native_v1_test.go": {
+      "git_blob": "4cb6f4a6c13ecd4fbc8c9a306cb6ea2028cfd9f3",
+      "sha256": "b07e24e7393ab5e37b1c546ff9d4258bc02426017e439bfe0b4223f1a1214e27"
+    },
+    "core/artifacts/internal/observation/native_v2_test.go": {
+      "git_blob": "5a63d549af61ac3e2ec05cd467ea72f6549219cd",
+      "sha256": "d25646217bde38fdaa1c1d9b7444d13a60612310e90a1d35ba0020f8492b572d"
+    },
+    "core/artifacts/internal/observation/runner_contract.go": {
+      "git_blob": "bbffc65021bdad13cd82b903193282bc30b2f6e3",
+      "sha256": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab"
+    },
+    "core/artifacts/internal/observation/runner_contract_test.go": {
+      "git_blob": "e488fa8d6e957b7ca15f2b48dc3eaa1243843057",
+      "sha256": "1a459def27ec537cb037a62f6478b25a831e20563c0929a360417227858b1614"
+    },
+    "core/artifacts/internal/observation/sprint.go": {
+      "git_blob": "71df5c0d07d7e8c5b239b4111aee6b3ad478dd9a",
+      "sha256": "c668b0aef7322fa26f067e48650200c2ab3a502df4f2e3ed505d9e8718f1c3b1"
+    },
+    "core/artifacts/internal/observation/sprint_test.go": {
+      "git_blob": "ff52dd93c99e76adac984598bab397d8c50925fa",
+      "sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+    },
+    "core/artifacts/internal/operations/assistive.go": {
+      "git_blob": "345fb8216f828d422fdc32d4a62c8eb58fe6db93",
+      "sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c"
+    },
+    "core/artifacts/internal/operations/assistive_test.go": {
+      "git_blob": "a40aa1474cd089ae945d74b8ded43da54fedd677",
+      "sha256": "00859a597624dbc01c043ca4feb543e085fb5481554a3a0184959c466cf177b8"
+    },
+    "core/artifacts/internal/operations/capabilities_test.go": {
+      "git_blob": "4ecc02f7d1311a3d41a1bb19317c1eecf048d884",
+      "sha256": "f67e6cb3bdc45e64b7edc910822b7a772e10c8988bcdbafd39b9bbbe21dd2a53"
+    },
+    "core/artifacts/internal/operations/capture_boundary_test.go": {
+      "git_blob": "041fe92ab1fc96d1ab5a4704a871389ba28661a4",
+      "sha256": "cccf442427da961d1da9d4296e83cc07dc233ac3806d87b01ab70f195a5f6c98"
+    },
+    "core/artifacts/internal/operations/capture_export.go": {
+      "git_blob": "e2f22a7ee441b175baac9d4cc3a2ba77a5892815",
+      "sha256": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479"
+    },
+    "core/artifacts/internal/operations/catalog_bench_test.go": {
+      "git_blob": "31fced1944a14eac06a479694b5bd03e21059e09",
+      "sha256": "94e961850d313e42694a5be439ef563c442a556948bf44547a20f68cc68138e1"
+    },
+    "core/artifacts/internal/operations/catalog_cap_linux_test.go": {
+      "git_blob": "367db341cba3fc82f84b20c67d7d94fb1dc5d737",
+      "sha256": "03c5440d1e791b1a2646f3091cccd0bb9c9060c6b9e5194b80cb1d948e80f777"
+    },
+    "core/artifacts/internal/operations/check_conflicts_test.go": {
+      "git_blob": "73a5b18957432c81ba455c01d36af7e16d214eaa",
+      "sha256": "022511cd1f0285d59b5f473e47ef389d12e36197961315e1348d8bf776b7ff18"
+    },
+    "core/artifacts/internal/operations/completion_fixture_test.go": {
+      "git_blob": "71746fbc6f50501a44ff34ae5c48d14b46b3f0c8",
+      "sha256": "4cfeb45f0cd7e99d0c20d675fe9aac3ab3ad97bbd0935c8435fbc99b60a5c742"
+    },
+    "core/artifacts/internal/operations/completion_rerun_test.go": {
+      "git_blob": "a8546636f19b82a24a3e407e5fff8763eabf9c2e",
+      "sha256": "558437da0248c21d8e09629f2add7f3f721f8065f9ec793af27021b267952217"
+    },
+    "core/artifacts/internal/operations/completion_review_test.go": {
+      "git_blob": "3c2a76c9c3833ce314e7254c3197fc1a0ad69071",
+      "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+    },
+    "core/artifacts/internal/operations/concurrent_readers_test.go": {
+      "git_blob": "369a1300175ec891d9712298cf748889a08bde59",
+      "sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+    },
+    "core/artifacts/internal/operations/context_assistive.go": {
+      "git_blob": "5e506d1069511c7a15ca381d58354e3c8f0d95a6",
+      "sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a"
+    },
+    "core/artifacts/internal/operations/context_assistive_test.go": {
+      "git_blob": "91fd72c673cb524663c29055716a7776e703e9d7",
+      "sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+    },
+    "core/artifacts/internal/operations/context_authority.go": {
+      "git_blob": "af7c2082c328f3ddd63109c75365e50393ca67a5",
+      "sha256": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083"
+    },
+    "core/artifacts/internal/operations/context_authority_test.go": {
+      "git_blob": "651dc3d9f304003762a9081066d710f947f66692",
+      "sha256": "6072c1a6b9704b8421beb62687a9341eaa1bfd1509454067bf229065c40b5e21"
+    },
+    "core/artifacts/internal/operations/context_capability_test.go": {
+      "git_blob": "31e8b15b47b2f53b052306009df4ea3bfc79716e",
+      "sha256": "0385f47655407ee5e89ccf44b6569a04c128e077c9ee461c5c13759c8cb8943b"
+    },
+    "core/artifacts/internal/operations/context_finalization_test.go": {
+      "git_blob": "f32c3d0a7fefdbcd21336ac76a77c75e31f78831",
+      "sha256": "22ccc2005fcf352a1c59c0536f3dda0a4b2bee8f1ea19d5f9cee5e9df231705c"
+    },
+    "core/artifacts/internal/operations/context_preview_output_test.go": {
+      "git_blob": "ad2939aae3ca1d20ee15b92935f0014e03283a6c",
+      "sha256": "02837dd724ab9f7966a150f1f23ea36c9f66103ab75196578ebb6780d7891397"
+    },
+    "core/artifacts/internal/operations/context_preview_reserved_test.go": {
+      "git_blob": "7961e8cceab27d7cd00a9fdf7776347363a3afb3",
+      "sha256": "efd27edcbb7c2cae7ba2bca151c4ce052e752114b5fde33a50e5132824ce0c96"
+    },
+    "core/artifacts/internal/operations/context_readonly_linux_test.go": {
+      "git_blob": "0c630427e095387d6432fbaf6bfb3c02ec62f649",
+      "sha256": "48f422ce33ee40ea8c2f4c5b764b603df5bd91d5eb682f717c1e36aa05c0f378"
+    },
+    "core/artifacts/internal/operations/context_refresh_test.go": {
+      "git_blob": "9e5b425992b9bddb54e1a4aefc330dabd6a978cf",
+      "sha256": "f36c28fb1f56971f0b0fd5daeea83b9853ac66abb015b851bd7cf21cf7c58dbd"
+    },
+    "core/artifacts/internal/operations/corrected_attempt_test.go": {
+      "git_blob": "a11111f95d68c06a5c2d0c6f8da7ec7fd1565bcb",
+      "sha256": "9b30e65feb7a18f2f548e16cc5616645740250b17a89f79f2bbce358ab02c843"
+    },
+    "core/artifacts/internal/operations/cycle_view.go": {
+      "git_blob": "03a325948a468fb0af600ff5b8a0b132c31a845c",
+      "sha256": "b7f3f168f99634986591c9416e95d84dc9b3f0d02a65fac5f5d165a1292062d8"
+    },
+    "core/artifacts/internal/operations/dependency_advice_test.go": {
+      "git_blob": "d19fd846f387f8052e6424e18e0c75a3a2230638",
+      "sha256": "f353a26a30d71b04f8593d4531b98e63d7544bc55f79cf3b7ef4db0a327ac03a"
+    },
+    "core/artifacts/internal/operations/descriptor_effects_test.go": {
+      "git_blob": "eadf90f287a9f065d4b058e60314bb918ca0315e",
+      "sha256": "c7f28165e4fda90cd8038caac1805882177161a625dc23a796114559672e1873"
+    },
+    "core/artifacts/internal/operations/descriptors.go": {
+      "git_blob": "4f62cffa6877a5170326511ccf40516bcfd0820b",
+      "sha256": "0bcda8cffe06761b871bf1dc28bbeda8a5af269e5deac0904cb179262510d321"
+    },
+    "core/artifacts/internal/operations/descriptors_test.go": {
+      "git_blob": "e651565c3c062076546680fdbc021efd93ac6787",
+      "sha256": "bb070f2074675e4473885f6735be31e8e307e8b70326be03dd7df621bcb3861b"
+    },
+    "core/artifacts/internal/operations/eligible_bounds_test.go": {
+      "git_blob": "e082e8ac817c3492cebdbebb0e260dc8fe465ce5",
+      "sha256": "9970984344901a7b69d79b0f616c9b474eadb48a4e48e01aeee950633845bd91"
+    },
+    "core/artifacts/internal/operations/engine.go": {
+      "git_blob": "a8551a096ea719d66a1279df619680806ac81c7d",
+      "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+    },
+    "core/artifacts/internal/operations/engine_test.go": {
+      "git_blob": "fe769e45c52699af9b73b941d2ca1bd04f116472",
+      "sha256": "63b8891b508920884cdaac697e923f1cc71e9dcf18f46332c2579f213b09e98f"
+    },
+    "core/artifacts/internal/operations/evidence_context.go": {
+      "git_blob": "0b02a3dca5c2b440175b1b78a9f7b466ce9ba9e7",
+      "sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd"
+    },
+    "core/artifacts/internal/operations/evidence_reads_test.go": {
+      "git_blob": "54c332817af3d4c443e537969c584e034cc7b86f",
+      "sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+    },
+    "core/artifacts/internal/operations/farm_projection.go": {
+      "git_blob": "a35e0b7a54c4ffa11d323c96f14c226f1461f363",
+      "sha256": "1572ede5a88343cefb1cfc87cdc1a5a2fb5de3ae0eb7fb2a266846e39751114f"
+    },
+    "core/artifacts/internal/operations/farm_projection_test.go": {
+      "git_blob": "e22045581ac47fa1f068e28ec70fdb44b06e5a74",
+      "sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+    },
+    "core/artifacts/internal/operations/index_page_bench_test.go": {
+      "git_blob": "47ed18ba8d92a9e7f9b28c25fb00bf1e163e1365",
+      "sha256": "553955f341464be4fd74426e6c2197429080cabbfcae3db0b881d08a69f125b2"
+    },
+    "core/artifacts/internal/operations/init_store_test.go": {
+      "git_blob": "f6c92de8e5bbe896b921254d533792f840fc7a3c",
+      "sha256": "77782792c97b65fc6cce2cd0b542707812a559230c60debf271d7b3f24395a50"
+    },
+    "core/artifacts/internal/operations/input_scope.go": {
+      "git_blob": "4ea9e8ed7da40a6b1ab4b851801c999b85749e2a",
+      "sha256": "8bd249a58d04a421957505ee8ea1cf891c9fcac2f93618b50a86cc8860fc505f"
+    },
+    "core/artifacts/internal/operations/input_scope_test.go": {
+      "git_blob": "1a9c378ae56aba88aade4b33b8427f4bf0ef0547",
+      "sha256": "c0b7b97ac2dcf4211d1c7b177210750a1e8e21acaf3985c7b853b3ad29756035"
+    },
+    "core/artifacts/internal/operations/intentional_change_test.go": {
+      "git_blob": "c8ce744f76432c1029391347dcc6278b1f87a870",
+      "sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b"
+    },
+    "core/artifacts/internal/operations/knowledge_merge.go": {
+      "git_blob": "01847072add513bd666e33dafa86b5ee47da3c78",
+      "sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5"
+    },
+    "core/artifacts/internal/operations/knowledge_ops.go": {
+      "git_blob": "02621d92451fc4a8754cef10a556a11a64c16832",
+      "sha256": "db3838a5fb68e05c6ddf0bfdcf3223bcb44a8cdb71ad4c45d91529c7ff9194c7"
+    },
+    "core/artifacts/internal/operations/knowledge_ops_test.go": {
+      "git_blob": "b996ba5b55fdc7029524373b4ff0b3b13f568530",
+      "sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+    },
+    "core/artifacts/internal/operations/knowledge_sections.go": {
+      "git_blob": "8f43ac172a54a3fb6759e4c1e17d967f62e0f8a1",
+      "sha256": "8b49e13fe04846c8677efd4b9600b2c1046c467412ff99aa005574ef6cba157d"
+    },
+    "core/artifacts/internal/operations/knowledge_test.go": {
+      "git_blob": "1fe3f91b9512c501b4d51b4e9bea77c76c953619",
+      "sha256": "5a38854e05f397f157cb880d47f0bc22a13c55d75637ed53893e72dc9addebe8"
+    },
+    "core/artifacts/internal/operations/lifecycle.go": {
+      "git_blob": "b5b344b6b7c2d1d12c383fb12b6b90e3fe5003a8",
+      "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362"
+    },
+    "core/artifacts/internal/operations/main_test.go": {
+      "git_blob": "6219959f9db6f311316d57972379f4d75fb54fe1",
+      "sha256": "c86db983b82e1d353996534b439f6f5428b8b1b65de9339e9f956f4a65ec1b0c"
+    },
+    "core/artifacts/internal/operations/migration.go": {
+      "git_blob": "dde46d7fc3f34dcbfc452aac68adab5be379a43e",
+      "sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45"
+    },
+    "core/artifacts/internal/operations/migration_test.go": {
+      "git_blob": "07adc7110cfd41aacf5e3f242df458a0805ca4ca",
+      "sha256": "8424b182ad70fa0c657f3b6fb0656d1fac0806432ae683c344d3597608d084ab"
+    },
+    "core/artifacts/internal/operations/mutations.go": {
+      "git_blob": "630133887e1ae407a5f05ff005a8644f8dbf5f5a",
+      "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+    },
+    "core/artifacts/internal/operations/native_v1_review_test.go": {
+      "git_blob": "9c61146f52141d6cc5aae375d7eead051cc745ca",
+      "sha256": "da259968451726234a7d2d8bd8d19c406eb07fbc8e11823bbd942ea9daa1e00b"
+    },
+    "core/artifacts/internal/operations/native_v2_review_test.go": {
+      "git_blob": "659a4e0efe50bb236d386b7033653f60546d0f45",
+      "sha256": "346f2e56ab950209ac774a8d249c8b3c00b9c266df42cf75c80492da7cab3ba9"
+    },
+    "core/artifacts/internal/operations/observed_fixture_test.go": {
+      "git_blob": "502fea11b684a30dce5404d8bf6cf68f4007eb9a",
+      "sha256": "4d599b7936a2e021321c4224b25bc552eaea564998c99a884ea7b8b2a8fa41f6"
+    },
+    "core/artifacts/internal/operations/prerequisite_observation.go": {
+      "git_blob": "69a9c20f06c65af59bea1df47abb3b26e71c2636",
+      "sha256": "2017cd8a74a4e3c29d276aeaea67fd0dc014c4ef17ce58f34a869433ccdbb9d0"
+    },
+    "core/artifacts/internal/operations/prerequisite_observation_test.go": {
+      "git_blob": "e12ad521e38a8c0f2dbd0bd2b7f4065e93585478",
+      "sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+    },
+    "core/artifacts/internal/operations/preservation_contract_test.go": {
+      "git_blob": "842a512854bb666d5cef7e78a0a61b69fe2fe7bd",
+      "sha256": "254340ac8c3730031a95c1b2323346f97a312599583f9936d393e9e2c4fa6282"
+    },
+    "core/artifacts/internal/operations/preservation_journal_test.go": {
+      "git_blob": "bc514b20a7ab0ecd73f76a04422114ed1c8debd7",
+      "sha256": "90a80ae53ba0ad25d42a8317d16bd12ff70205e221cdff24b3825e44745fa77a"
+    },
+    "core/artifacts/internal/operations/project_view.go": {
+      "git_blob": "9b4056e2f7e2df178b390a218bcd42db79bdf95e",
+      "sha256": "c1f3e9c8b441908e02c410c49dc040178044f26f494475b4946047adfc7afc57"
+    },
+    "core/artifacts/internal/operations/project_view_test.go": {
+      "git_blob": "40ef76689f9ba59783a03062d5a96690d73e529a",
+      "sha256": "42e4e6c665ac81a06cca06473fcd463c1e485f13eafb5c0a6a4a5dd7039d14e1"
+    },
+    "core/artifacts/internal/operations/protocol.go": {
+      "git_blob": "48faadf93c77f80d970698b279c011047404fa8d",
+      "sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b"
+    },
+    "core/artifacts/internal/operations/protocol_boundary_test.go": {
+      "git_blob": "2f4a3baaffdd5faa92261f0bcd11c1ea11b5a33f",
+      "sha256": "6a5620842c90fcc30e3e8bc9b8247e96e9b6566a7c5d92e6256a5c45eca7cceb"
+    },
+    "core/artifacts/internal/operations/protocol_test.go": {
+      "git_blob": "74fca93e93290e724b7bae65f6e5182d0d4e6086",
+      "sha256": "abb85d1bbbe0dbb89fc951adec9491739b5d46c5a28be1744c0e8f3f42f54f80"
+    },
+    "core/artifacts/internal/operations/read_only_windows_test.go": {
+      "git_blob": "48067c5153ea6857fd3dd4e2f9368f1309d174ce",
+      "sha256": "06b8d47dd7d95d6f5f44a9fbe348d84d6a967821ca607073805d1614447f36eb"
+    },
+    "core/artifacts/internal/operations/reorder_test.go": {
+      "git_blob": "8f1bde090f560484d74886d94c3482a78cfaa88f",
+      "sha256": "cea94feb78c18259bcab5e9ba79c542ea4896bd815bb7cf9af7bb1fd9ddd3ef8"
+    },
+    "core/artifacts/internal/operations/retirement_test.go": {
+      "git_blob": "41e482faf67cd4592bc5e4ac7fae7bacfd1f00fb",
+      "sha256": "252c07a52977b00a1dd6bb3d2500b46d288d3bd6b0997e8a61d13d75ed9b117d"
+    },
+    "core/artifacts/internal/operations/review_regression_test.go": {
+      "git_blob": "e7a3ce05c9d14467855ab3cc5d6324a367be5337",
+      "sha256": "e799c36032fcd43302d27e2f892b1bc0e8192b324074b4e91cd72c9c9976c3c3"
+    },
+    "core/artifacts/internal/operations/review_regressions_test.go": {
+      "git_blob": "b11e5103f8d511b8edcb21331ff2ffb956582051",
+      "sha256": "82ff1cf31c2077b1b72a74bffb5ede85d58445d583ca39658d150ac06e976422"
+    },
+    "core/artifacts/internal/operations/smarts_epoch_test.go": {
+      "git_blob": "e22776dc42cb6da357027a9953638d28ee3c4901",
+      "sha256": "0036ec7d7ff8ee65a95536cf90ca20ab6a86dcfd0e9909ebfdeadeb8797fe7a0"
+    },
+    "core/artifacts/internal/operations/sprint.go": {
+      "git_blob": "50c98dd96119b5a756e6cf3a8a04f5044028b652",
+      "sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436"
+    },
+    "core/artifacts/internal/operations/sprint_authority_test.go": {
+      "git_blob": "a02c568393ff0a8915e8e0dd0ed9bd6892c4f78a",
+      "sha256": "21ba610f440f04485c8f94febac7cfe59ab2666a0e5060ec9b013d9efd1fe03c"
+    },
+    "core/artifacts/internal/operations/task_check.go": {
+      "git_blob": "8398a560c8312417fde3f71347e8e2adb7a89f8f",
+      "sha256": "8403342ab4529d290d5ddf3069a0936d9b9c3f04cca6b0afe0a19e2a93c75ba6"
+    },
+    "core/artifacts/internal/operations/task_check_test.go": {
+      "git_blob": "1e1f7b4c3786db9d18f77609c3e7f4d0fd52239d",
+      "sha256": "54e31ecbf7ad9f7ac013b3b94959195009bcb8660ffa15212d8e20cbe255de40"
+    },
+    "core/artifacts/internal/operations/task_context.go": {
+      "git_blob": "0b6fc74a3d606e3e033f99187ac0bad7110f7d23",
+      "sha256": "fdb69363794e066bb18174346f0ed7cbe9c09cd85b99c6bf23480d6ea281fb3c"
+    },
+    "core/artifacts/internal/operations/task_context_test.go": {
+      "git_blob": "c9cc4a45888f66488a97da9709289b990e5b44e2",
+      "sha256": "6e7659a9b1a7378339b97cb1d717b6378f94a92eff9560cf8544185a5cf5da8a"
+    },
+    "core/artifacts/internal/operations/task_knowledge.go": {
+      "git_blob": "d4425001894543df6e22b14b7ab08b42df830dc7",
+      "sha256": "10f3ca40c5bf7539a0a6dfb916da87ff04c6402df5228da2a84cdb6613f0ad49"
+    },
+    "core/artifacts/internal/operations/verification_check_test.go": {
+      "git_blob": "b0ff1edd083ab4c1cb4291c35c3778d43b8deebe",
+      "sha256": "025b860e2c5f222aaab335eaf1eacccab7e8134ee564031ef06a879879657837"
+    },
+    "core/artifacts/internal/operations/work.go": {
+      "git_blob": "3614974657c4da9a1d2cc306a0f4432d549702a0",
+      "sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3"
+    },
+    "core/artifacts/internal/operations/work_adopt.go": {
+      "git_blob": "0e92202254d40f9a89ef6f5aceed9ddf64c5d356",
+      "sha256": "6ef20339ab2bcf9653a2d595e4b14bf807143ffebd9ccf1b82bdcd8ec3dcbcb6"
+    },
+    "core/artifacts/internal/operations/work_board_lock.go": {
+      "git_blob": "5a1442a922f6d41961c860a25f66b7fdd7b07d8f",
+      "sha256": "86942f8e08ecb1142e0202ce0275b2b75e525202f7db2b186b6e823a0d362771"
+    },
+    "core/artifacts/internal/operations/work_board_lock_other.go": {
+      "git_blob": "afc450722cd0dc15711c385cc0c860d07151f2fa",
+      "sha256": "379081791ceff7759b5a160f275f60984f4780f9c4137802c700cf6bd9ec0fce"
+    },
+    "core/artifacts/internal/operations/work_board_lock_unix.go": {
+      "git_blob": "4fef47bfdd1aee507b71406a43d23557403b675e",
+      "sha256": "ebdf6d80511fae13cea475bc9acf7420c90e215f14bcbc0fc33eb01747cc6932"
+    },
+    "core/artifacts/internal/operations/work_board_lock_windows.go": {
+      "git_blob": "1a5defe75dd73e10ea040194b035453f73390adb",
+      "sha256": "2c6859fdfde9bef9aa40b179c3f6bfcc3ffbf3cf0252c6537ae80c643cbb60a9"
+    },
+    "core/artifacts/internal/operations/work_check_status_test.go": {
+      "git_blob": "d041160cc260137b1d5e03d48b482cdd68be36d0",
+      "sha256": "ca4c27b1614dd6238ced69e12da7cc6fda871bc559246a29ed069af49ed627de"
+    },
+    "core/artifacts/internal/operations/work_coordination.go": {
+      "git_blob": "cd7b9f679b785dc5c9e16e76591e2a206a4e1e48",
+      "sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd"
+    },
+    "core/artifacts/internal/operations/work_effects.go": {
+      "git_blob": "194c67d29bdc31a8903ceb8b315496980b4bfe24",
+      "sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e"
+    },
+    "core/artifacts/internal/operations/work_page_bench_test.go": {
+      "git_blob": "3ebbc97dda1dc2f015ee1896deb4b98f705749c4",
+      "sha256": "8137841cd45efd39b46740bc4d31f9e84169a3fdf5c46cb24ed0639a1e21db50"
+    },
+    "core/artifacts/internal/operations/work_project.go": {
+      "git_blob": "febdc05847e3f28352dd3614925d26ba6bb34d6f",
+      "sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e"
+    },
+    "core/artifacts/internal/operations/work_project_bootstrap_test.go": {
+      "git_blob": "275a1d7eeb452fd3efffd34ee9ddb0a21b504406",
+      "sha256": "907809e318a88f6f01246b7d4a22ee437fed87e9d29751bd741ecf02478b6375"
+    },
+    "core/artifacts/internal/operations/work_project_test.go": {
+      "git_blob": "218486da275c540d3723f2eb54380e6008db6111",
+      "sha256": "266711b8519076b9c5c3777ab257279131df181bbabb15d8a59c85875e577546"
+    },
+    "core/artifacts/internal/operations/work_test.go": {
+      "git_blob": "8f0e0cd075c2d12e7b40058211eacb412156d32e",
+      "sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+    },
+    "core/artifacts/internal/operations/work_transition_map.go": {
+      "git_blob": "1dee85682073afaf3628ebb1692ccc479e3ec710",
+      "sha256": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19"
+    },
+    "core/artifacts/internal/operations/work_transition_map_test.go": {
+      "git_blob": "c87df173fbb98d7ddb64ab1b3a3c0102b0483a1c",
+      "sha256": "6c8f031516cd651cd575cbd508ae377ebf8f1128cf23c0daa076e182c4898752"
+    },
+    "core/artifacts/internal/operations/work_view.go": {
+      "git_blob": "91a8d3fb51ed2c7dc0411a81b71bde92b1713ab6",
+      "sha256": "ac7f3bf1253589d08b5c51534c3f918dea7e597bcdecd54397e9c5e1fa51b42e"
+    },
+    "core/artifacts/internal/operations/work_view_test.go": {
+      "git_blob": "facf8a71867217778350f44ba80304f5dcd0d9d1",
+      "sha256": "602bc447fb0f040c0019e53073a72044e061e7b19669305bb8357a414b56cd5d"
+    },
+    "core/artifacts/internal/read/outline_bench_test.go": {
+      "git_blob": "b79efab2713d809bd7205c0c59245d216197dec9",
+      "sha256": "eb2c2216533312760b0d3dd79dccb839f84e8be08b6a22e5bda0d7735cf2091a"
+    },
+    "core/artifacts/internal/read/read.go": {
+      "git_blob": "677ed0dd66447353b6600b7017003530d303ee24",
+      "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39"
+    },
+    "core/artifacts/internal/read/read_test.go": {
+      "git_blob": "5a7e28df962b7b576801f6b6b39f248eb2fcc498",
+      "sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+    },
+    "core/artifacts/internal/render/assets/artifact.css": {
+      "git_blob": "3b6f6dd0a299d342baa34ee84e7ad55594c83e46",
+      "sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+    },
+    "core/artifacts/internal/render/assets/logo.svg": {
+      "git_blob": "ec56d4e2f2d512f59128acdd20b1e5b1eda475cf",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a"
+    },
+    "core/artifacts/internal/render/brand.go": {
+      "git_blob": "e488e71d79942b44080c709a0fc6df0923c36666",
+      "sha256": "2201d839e67bbe849865188645e228a5a591bcfdc05dd702f9692add5d90abe2"
+    },
+    "core/artifacts/internal/render/cycle_view.go": {
+      "git_blob": "38463ee0bc9df346c4335c349c316f2fe3b29ffb",
+      "sha256": "e88fe263789d37ef8903750a94bc969b96c505812c444be1cd202ca50e440279"
+    },
+    "core/artifacts/internal/render/project_view.go": {
+      "git_blob": "7d95f7d1cac86203c748c0970835ef897af5268d",
+      "sha256": "247f1ecbe73f195c443f153362a6b241af561cda14c41c070e11c4011e581583"
+    },
+    "core/artifacts/internal/render/render.go": {
+      "git_blob": "c17d027974ff9a91cb60dd1bfd1cabd2c41e0d39",
+      "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+    },
+    "core/artifacts/internal/render/render_test.go": {
+      "git_blob": "dd5509e207bb178d834f733a616f3e8b47635191",
+      "sha256": "9fb7f06fd4856d62df7d5cc5a2a5f5aecd8c4293f6ff6e59e94586963abace41"
+    },
+    "core/artifacts/internal/render/review_compat_test.go": {
+      "git_blob": "6556b870d84bdc803836c6d1bf16f2a277978843",
+      "sha256": "2236105fd3f25d92d529e4208d8bb786e8cf85fe5b7eadb956f85b932a604bee"
+    },
+    "core/artifacts/internal/render/work_check_provenance_test.go": {
+      "git_blob": "8568d1f0f41353bb8b7ee82daf6b690475ab5209",
+      "sha256": "bba1beb4646b3ebfda1807f55cacf3bb35d860a282e7f33f424c4723be42c615"
+    },
+    "core/artifacts/internal/render/work_view.go": {
+      "git_blob": "7f395e2f6b9b71e4268bd62520ade43f94639b54",
+      "sha256": "9c710770543f1a9c7a7e8e2f60499f3c64c486c64e92cf73709b8b4c5d9a485d"
+    },
+    "core/artifacts/internal/render/work_view_test.go": {
+      "git_blob": "26ad2138403fa275c4620b28fb45831e0262157e",
+      "sha256": "78fcf3101b6e86a1d9d47d6dc6fdf5a525df554de57d168756e9401d93434ec3"
+    },
+    "core/artifacts/internal/repository/catalog.go": {
+      "git_blob": "65d280e8ac0b02b46ed44f9b49fad0f9910f6a54",
+      "sha256": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727"
+    },
+    "core/artifacts/internal/repository/catalog_bench_test.go": {
+      "git_blob": "e23fb2569808e11c07f199593deb295fd237a3f9",
+      "sha256": "f36dc16a09effceab95407d298795b18b507d7d37359028759ef09342244c413"
+    },
+    "core/artifacts/internal/repository/catalog_test.go": {
+      "git_blob": "ef47438c82d0ff2dbf00dd61b24283473b91e45f",
+      "sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b"
+    },
+    "core/artifacts/internal/repository/knowledge.go": {
+      "git_blob": "43d18902b5a5dd97f48295c920d92285b54c4c46",
+      "sha256": "416ac68ac37ca8134e9f32a8d0372c001c89cf3375389863e42bb38db781fd1c"
+    },
+    "core/artifacts/internal/schema/common.schema.json": {
+      "git_blob": "336f0164084ba9fc1139ad7c88b522ab5f60b152",
+      "sha256": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee"
+    },
+    "core/artifacts/internal/schema/context.schema.json": {
+      "git_blob": "92e82ffe9d677df3b856df04fcd33e90f703aadb",
+      "sha256": "c3ef4b71c6cffbfcb29596129d2c6e3b048b8a94165a6ea1ef26f663e48d1d32"
+    },
+    "core/artifacts/internal/schema/decomposition.schema.json": {
+      "git_blob": "13b3c7b7c6f55b8eff7b1b8dc6de770d6a6843c2",
+      "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+    },
+    "core/artifacts/internal/schema/diagnostics_test.go": {
+      "git_blob": "7f798c009eda51e07f7823ab16e505045faa7b97",
+      "sha256": "ed8ffcd572aeefada6a237a59aceb4b61b90f2271ba5be463d98410957394422"
+    },
+    "core/artifacts/internal/schema/knowledge.schema.json": {
+      "git_blob": "eff83ba1a651d426279423caaf1caf084aa5504c",
+      "sha256": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101"
+    },
+    "core/artifacts/internal/schema/pattern_test.go": {
+      "git_blob": "cf638f7999b06e9c2d0823acbb21ca4f7981f1d2",
+      "sha256": "46150b8ee90d36006862cfcf55696e283b6aabe2c1461bfb166d6de0cc94eec3"
+    },
+    "core/artifacts/internal/schema/plan.schema.json": {
+      "git_blob": "865f3a0bc9b1edadc061cff935d85a0f7a0f4d19",
+      "sha256": "1c866b7fa9a2b9434bf0c7d8f488348a5539120a1d5fd2d77c9a2235673a2226"
+    },
+    "core/artifacts/internal/schema/schema.go": {
+      "git_blob": "45368d909600a1a5c276d5b4edba88ae2b03880d",
+      "sha256": "4da2235a475fdd0af612312df9c01c04e55ef6c7a9d4df4bf3741c7dfb8e2dbd"
+    },
+    "core/artifacts/internal/schema/spec.schema.json": {
+      "git_blob": "39d43d6e72cb65c900bcd02344b287fbd4fab910",
+      "sha256": "3f7f3e4b6161cad885d4b5e5df0e7c1f51351ec272ece89d558bdf5cd13f6210"
+    },
+    "core/artifacts/internal/schema/work.schema.json": {
+      "git_blob": "e0c0f5b5a1197a3f3122795aad5ceb51ad6529d7",
+      "sha256": "8323b2aab06626629efa8cb406e655dec783e42a0d95feecaf674eaa757f517d"
+    },
+    "core/artifacts/internal/store/backends.go": {
+      "git_blob": "69e9018a5b39506ae6eb3145d05a6931e19fa2ed",
+      "sha256": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6"
+    },
+    "core/artifacts/internal/store/backends_test.go": {
+      "git_blob": "716cc0acfd25eab92f9504b99611b808b7f69559",
+      "sha256": "4437af1b49089ea304663ce4f3dcbb2e8039bb90e75be4b2e5e8c986513887f7"
+    },
+    "core/artifacts/internal/store/crash_test.go": {
+      "git_blob": "df5bd8c4fc8319263ad9bffb59e9f169012e59bc",
+      "sha256": "d933c54125503079d5b3f66e2f45eb4b594d455e56290e13bc5879c0a144221a"
+    },
+    "core/artifacts/internal/store/entryname.go": {
+      "git_blob": "953813f16c29b81e7f5c2098af372edbb200387e",
+      "sha256": "8d2e0119683904d1871df1cdda0a61c229befe835d37a981e0a2c650bb5b325f"
+    },
+    "core/artifacts/internal/store/fs_linux.go": {
+      "git_blob": "e3055105458e5da7623e9771029383f1632de9b1",
+      "sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf"
+    },
+    "core/artifacts/internal/store/fs_lock_darwin.go": {
+      "git_blob": "1baad15deb78ecf42d6793b8547df3f0bf09d22c",
+      "sha256": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56"
+    },
+    "core/artifacts/internal/store/fs_lock_windows.go": {
+      "git_blob": "d99626f6b0ef604973a1c21333c7d294d0e28a2f",
+      "sha256": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3"
+    },
+    "core/artifacts/internal/store/fs_other.go": {
+      "git_blob": "40f1f8b12008e3e6706973369499aee3923ad1a5",
+      "sha256": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687"
+    },
+    "core/artifacts/internal/store/fs_portable.go": {
+      "git_blob": "1837a8ce37a60e4c4b905c6b483f4d908bf0b8fa",
+      "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+    },
+    "core/artifacts/internal/store/hardening_unix_test.go": {
+      "git_blob": "5e43fe578c4d9f61c4cd66ed0c00c2ee22be54a3",
+      "sha256": "f6c4d760861453c536180cfe99107fb1d313a6c20f2f6774215907c5767b7953"
+    },
+    "core/artifacts/internal/store/infrastructure.go": {
+      "git_blob": "f4a23652379fd3e6104a1c698b4569af183b6ca8",
+      "sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328"
+    },
+    "core/artifacts/internal/store/io_fault.go": {
+      "git_blob": "7d86ce213c46b5efd022cab4dd2858bf3d635c0b",
+      "sha256": "320a519f14de3d3d1db36e73ef37ed5a04a29deff4e60dc51ce4bc43039ed31d"
+    },
+    "core/artifacts/internal/store/io_linux_test.go": {
+      "git_blob": "b8f6ab3853bf26c0935e9fa50dacd1b1bec4ccf7",
+      "sha256": "1de521e779772ffc7b12ff5b140f55ffa6e1da1f2d1891371bd346d175a12345"
+    },
+    "core/artifacts/internal/store/io_windows_test.go": {
+      "git_blob": "4770518fb1cc6c40d7d0da87b91d1f4aa9236176",
+      "sha256": "a30df3757a0065e4e9f922ee399203ad717fa770fd72067d2fc4ffe3a93e91fe"
+    },
+    "core/artifacts/internal/store/journal_diagnostics_test.go": {
+      "git_blob": "a511b9ae8bf57cfea5646f6ab664b79b0121ce34",
+      "sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+    },
+    "core/artifacts/internal/store/journal_digest_test.go": {
+      "git_blob": "f491a8323a04b7395e83db5ad6487373c8ec5392",
+      "sha256": "8b62c89bef277bcfb9f60538f4a7d4d787ca91dc1444faacf67171341b3ababa"
+    },
+    "core/artifacts/internal/store/journal_scan_bench_test.go": {
+      "git_blob": "b1e26252e73bf0ab4a8b8e0262c5057def6613bb",
+      "sha256": "41ee7618f7324d13e12028a31f434de544e65bb5d4c6b1759cf1b8c502708ee4"
+    },
+    "core/artifacts/internal/store/journal_scan_hardening_unix_test.go": {
+      "git_blob": "7a5e7fc5175e9d0ae8f888b895f4940814b01220",
+      "sha256": "978be32ad157564cb84fd1e1026e2e762983b44dfe87be2af3de6dbd78ca4bf4"
+    },
+    "core/artifacts/internal/store/journal_scan_open_test.go": {
+      "git_blob": "9c805cd45b6578090e6c15bc55913f652b592535",
+      "sha256": "87d7f561786d08c68a766c09a0c7df209e5eae596103b6c266a280156198a0ec"
+    },
+    "core/artifacts/internal/store/journal_unreadable_linux_test.go": {
+      "git_blob": "5b04cc49ecdb94a4f58b4c1245a83e0e201f7eb6",
+      "sha256": "0ce36227d88401103cb996f7a7049b741592d9af843347225032424128d96b36"
+    },
+    "core/artifacts/internal/store/junction_windows_test.go": {
+      "git_blob": "a5a6fdbac16c7556fe20b1aa8dbe6e2fedee2988",
+      "sha256": "25d90968a60b7ef52fbdcadc3b1c4b24154731738fea2ba95f3284816e026d6e"
+    },
+    "core/artifacts/internal/store/memo.go": {
+      "git_blob": "63c877a2f091039d365891db9c8033355825c2dd",
+      "sha256": "4e9200cf7afbfb4a16920083c6ce8281f47142d8e09653f946b57ed4f38a28a2"
+    },
+    "core/artifacts/internal/store/openflags_darwin.go": {
+      "git_blob": "2b6ed5ca6ce404ab8081dc28504b8e0eb8c7556a",
+      "sha256": "67ab8b96f70df181bdfe07a810cedf122a7cbbc2b32fbeb3a13909fdc92f9faa"
+    },
+    "core/artifacts/internal/store/openflags_windows.go": {
+      "git_blob": "314f4e555b9ed44b2e504311a2fc347a8159d200",
+      "sha256": "a6fe3a7f8f4b07110b01b7e71778c7b6a49062de377b40610e71f23feb98d169"
+    },
+    "core/artifacts/internal/store/openstats.go": {
+      "git_blob": "368bbcddaf1fa8262221a9d469507b4bd635e730",
+      "sha256": "9ffc244c0e398bd4ab30ba1ecbe1ec660677d15afe21cb1a0fcdfde3e3bf7c07"
+    },
+    "core/artifacts/internal/store/readonly_lock_windows_test.go": {
+      "git_blob": "2964e2606659b64428ee56ff358c63d29cdc80c6",
+      "sha256": "607325743dace57ef2f89e3141b8d296eb182210bde9abb64a7fd3f49ad4c126"
+    },
+    "core/artifacts/internal/store/review_regression_test.go": {
+      "git_blob": "bcf598c4fc6a5c60b0dd7846667021a1cb3e097e",
+      "sha256": "a3000f74139333ba027b44330478e5d2f0e855547fbea8dc833cece8662635d2"
+    },
+    "core/artifacts/internal/store/review_regressions_test.go": {
+      "git_blob": "4ca3f5017eec188afcbbee5c0b41adf53abc9435",
+      "sha256": "8f9b91cdd65475ee980baff0957c193d55be0225a4649b30167ad53b9e69e798"
+    },
+    "core/artifacts/internal/store/store_test.go": {
+      "git_blob": "8fd5acb859d362c0e22969bca83a3b66b009dc05",
+      "sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+    },
+    "core/artifacts/internal/store/transaction.go": {
+      "git_blob": "1b741e9528e8b255c54fc7c7ec5cedd877649c1a",
+      "sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+    },
+    "core/artifacts/internal/symbol/index.go": {
+      "git_blob": "62baf5db0dd92c5e17aae71c918a990e4a2c46ea",
+      "sha256": "bffa5d9db042067b8b4b3fd1046eb9273ce09106271e42c78421d60c86360792"
+    },
+    "core/artifacts/internal/symbol/index_test.go": {
+      "git_blob": "f52ffcdbad61dedaec65723473374c334f2de9e8",
+      "sha256": "9bd9a89fcc3c40f073cc84d2f624d0400c472d8aa1122b68e3b1716d639f5155"
+    },
+    "core/artifacts/internal/testutil/fixtures.go": {
+      "git_blob": "274ff830dcd28c1732ee0da3bfaac73209d2c553",
+      "sha256": "242adf302aa77e9512deb7eba878707789d304c04274b1e28720f5dfadf17e22"
+    },
+    "core/artifacts/internal/testutil/readonly_windows.go": {
+      "git_blob": "dba522f3ba58e7c2ff539e97cebc988609b3089f",
+      "sha256": "393f9f49332956846ab8a139bfbec7f3d4836ebaa124a810caf1dd0efc8148e1"
+    },
+    "core/artifacts/internal/testutil/root.go": {
+      "git_blob": "af55568add0f7440b54f29ffb099774be7dde2d1",
+      "sha256": "93edf23e0553524fb0d470ff4eb90fac25d67b232c0dd558e57eab6c98a78a4d"
+    },
+    "core/artifacts/internal/validate/input_policy.go": {
+      "git_blob": "77a95412ec0765e67ad9907d3860611103efeaef",
+      "sha256": "37753c70960afab70865e1994415426a2751b7c5048af109f00d4d1484216458"
+    },
+    "core/artifacts/internal/validate/knowledge.go": {
+      "git_blob": "aa5f9d566f19f0aeeb02555f8a32ee5413ac10cf",
+      "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+    },
+    "core/artifacts/internal/validate/review_policy_test.go": {
+      "git_blob": "8b0617eea6ddb8c165986ebdb39c7899d6238611",
+      "sha256": "ec3a2293f83f6fd239431f04099d221b62f732182c93c0575cd49e01a679a4f0"
+    },
+    "core/artifacts/internal/validate/validate.go": {
+      "git_blob": "eca766c7172696f5f9b4da91effc6115f2df23f5",
+      "sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56"
+    },
+    "core/artifacts/internal/validate/validate_test.go": {
+      "git_blob": "afb531ca6b4137327f611ab868e84b7b935f7dac",
+      "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+    },
+    "core/artifacts/schemas/common.schema.json": {
+      "git_blob": "336f0164084ba9fc1139ad7c88b522ab5f60b152",
+      "sha256": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee"
+    },
+    "core/artifacts/schemas/context.schema.json": {
+      "git_blob": "92e82ffe9d677df3b856df04fcd33e90f703aadb",
+      "sha256": "c3ef4b71c6cffbfcb29596129d2c6e3b048b8a94165a6ea1ef26f663e48d1d32"
+    },
+    "core/artifacts/schemas/decomposition.schema.json": {
+      "git_blob": "13b3c7b7c6f55b8eff7b1b8dc6de770d6a6843c2",
+      "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+    },
+    "core/artifacts/schemas/knowledge.schema.json": {
+      "git_blob": "eff83ba1a651d426279423caaf1caf084aa5504c",
+      "sha256": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101"
+    },
+    "core/artifacts/schemas/plan.schema.json": {
+      "git_blob": "865f3a0bc9b1edadc061cff935d85a0f7a0f4d19",
+      "sha256": "1c866b7fa9a2b9434bf0c7d8f488348a5539120a1d5fd2d77c9a2235673a2226"
+    },
+    "core/artifacts/schemas/spec.schema.json": {
+      "git_blob": "39d43d6e72cb65c900bcd02344b287fbd4fab910",
+      "sha256": "3f7f3e4b6161cad885d4b5e5df0e7c1f51351ec272ece89d558bdf5cd13f6210"
+    },
+    "core/artifacts/schemas/work.schema.json": {
+      "git_blob": "e0c0f5b5a1197a3f3122795aad5ceb51ad6529d7",
+      "sha256": "8323b2aab06626629efa8cb406e655dec783e42a0d95feecaf674eaa757f517d"
+    },
+    "core/artifacts/testdata/compat/plan-0.3.0.html": {
+      "git_blob": "dd90acfbbc6e034c1d4834f84a13f10b6f737a9a",
+      "sha256": "8512690e2f7a899a42f43a38509ed02457bb5bbaace754d8a79e8971c7b2191b"
+    },
+    "core/artifacts/testdata/compat/spec-0.3.0.html": {
+      "git_blob": "1a3ab42a868c26ec00df39313779021d3a6d80c1",
+      "sha256": "733e96f8b9a1d3b75ff2561ce7cad1c314ec1bcaa9f56758914c899536789ce8"
+    },
+    "core/artifacts/testdata/reference/plan.html": {
+      "git_blob": "909aa9ad9ceb880fa065d6f78e990257d300d9d3",
+      "sha256": "fdc917767b25928a5b27b1ecc5da89e3d3172d41ebe921ef0282c73077961bd8"
+    },
+    "core/artifacts/testdata/reference/plan.json": {
+      "git_blob": "05bae1df9a96fa4070f2721df5890a4e709675b0",
+      "sha256": "7d1a2e86dde48210cdc7362ea3270746cd2b6caf4468c464eb3ae4f5becd5356"
+    },
+    "core/artifacts/testdata/reference/spec.html": {
+      "git_blob": "674706dc26a50cefe10db0d2b09884d2ba1a9bf9",
+      "sha256": "d206bff4525ce9498b0d20ee5621a1199eeef57fb986b25c0828ebb60fc2c6b4"
+    },
+    "core/artifacts/testdata/reference/spec.json": {
+      "git_blob": "bbf6f52addac3f0887d81bf30712cf8031c13ce9",
+      "sha256": "993ab984404fd92339bd42bd62d30a3db5f28a2311ad087740ee24d0c855cff3"
+    },
+    "core/artifacts/testdata/spec-plan-golden/README.md": {
+      "git_blob": "f63000cbc4bf3c383352aa0f12007afc9740a157",
+      "sha256": "154e26f5e7a478957572043e3abe9a0adcd56909453fa7a61c955f50ac98361e"
+    }
+  },
+  "local_named_observation": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\native-tests.json",
+    "sha256": "662e928b8ba8e0b6db50b3ad599acdc8eeee2e16fe3bc6c4d13ae4f040e7cb8e",
+    "origin": "Actual final Windows normal native build, local fixture/module execution; not upstream host or hosted evidence",
+    "selected": 475,
+    "passed": 472,
+    "skipped": 3,
+    "complete": true,
+    "source_stable": true,
+    "binary_sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+    "payload_manifest_sha256": "a5e1288533268e5ff8f348cf95cbbd4e4e7d8245fab8406d7624a2364d097ef6",
+    "actual_manifest_native_tested": true
+  },
+  "counts": {
+    "inspected_native_gaps": 10,
+    "source_conformance_supported_baseline_rows": 9,
+    "intentional_changed_rows": 1,
+    "new_runtime_tests_executed": 0,
+    "new_go_or_product_changes": 0,
+    "ci_qualified_rows": 0
+  },
+  "source_conformance_rows": [
+    {
+      "transition_id": "N01:07",
+      "cell": "disposition:transitions:N01:07",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 78,
+          "symbol_or_anchor": "func Run(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "line": 45,
+          "symbol_or_anchor": "func Open(",
+          "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "line": 72,
+          "symbol_or_anchor": "func (f *FS) Close(",
+          "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "Run returns immediately if opening the filesystem fails. After successful open it registers defer f.Close before every later return; after successful lock it registers defer unlock. Go defer order releases the lock before closing the filesystem on ordinary return/error or recoverable stack unwinding.",
+        "Store.Open creates a new FS and newMemo for that handle. The Engine is allocated within Run with that FS; production openStore is the store.Open function. No daemon/global memo is assigned. Memo lifetime is scoped to the per-call handle reachability, not an explicit memory wipe claim.",
+        "Native init-store has its own immediate unlock and is still covered by deferred filesystem close. Failure before a lock is acquired has no acquired unlock obligation."
+      ],
+      "existing_named_assertions": [
+        {
+          "name": "TestConcurrentReadersPreserveWriterRetry",
+          "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+          "line": 167,
+          "build_constraints": [
+            "//go:build linux || darwin || windows"
+          ],
+          "sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        },
+        {
+          "name": "TestConcurrentObservationsShareRepositoryLock",
+          "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+          "line": 102,
+          "build_constraints": [
+            "//go:build linux || darwin || windows"
+          ],
+          "sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        },
+        {
+          "name": "TestEvidenceObjectsReadOnce",
+          "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+          "line": 261,
+          "build_constraints": [],
+          "sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        }
+      ],
+      "remaining_runtime_assertion_gaps": [
+        "Existing runtime tests exercise successful return and subsequent operations, lock exclusion/retry and bounded per-operation reuse; no named test directly observes every deferred close on every error branch."
+      ],
+      "assumptions": [
+        "Go defer semantics apply; process termination/os.Exit and uncooperative filesystem attacks are outside this return/error contract."
+      ],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N07:02",
+      "cell": "disposition:transitions:N07:02",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/validate.go",
+          "line": 450,
+          "symbol_or_anchor": "func Ready(",
+          "sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/common.schema.json",
+          "line": 461,
+          "symbol_or_anchor": "\"open_decision\":",
+          "sha256": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "Generic record.update clones the document, finds the active symbol, keeps its immutable ID, and writes supplied fields before structural validation. It contains no irreversible open-decision transition rule.",
+        "The closed open_decision schema allows exactly open/resolved status. Generic apply can therefore move resolved to open if all record fields remain valid. Prepare performs Structural, not Ready; saving an explicitly unresolved draft remains possible.",
+        "Ready separately emits OPEN_BLOCKER whenever blocking is true and status is not resolved. The update changes semantic content/revision; invalid structure is rejected before save."
+      ],
+      "existing_named_assertions": [],
+      "remaining_runtime_assertion_gaps": [
+        "No existing named assertion found for the complete resolved\u2192open\u2192Ready OPEN_BLOCKER sequence or invalid status preserving the original document. Static schema/control-flow conformance supports the baseline; no runtime test result is invented."
+      ],
+      "assumptions": [],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N20:04",
+      "cell": "disposition:transitions:N20:04",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "line": 383,
+          "symbol_or_anchor": "func CheckTicket(",
+          "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "line": 193,
+          "symbol_or_anchor": "func (f *FS) ContextToken(",
+          "sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 78,
+          "symbol_or_anchor": "func Run(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "line": 252,
+          "symbol_or_anchor": "func (e *Engine) progress(",
+          "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "CheckTicket loads the retained content-addressed receipt, checks purpose=context plus exact artifact/task symbol, computes current Context and compares vector_sha256, manifest_sha256 and full delivered offset=len(items). It returns the appropriate error without changing task progress.",
+        "The current production Go call graph has no CheckTicket consumer: the only calls outside its definition are two Linux-only direct tests. Ordinary task-start routes to recordWork and does not consult historical CheckTicket.",
+        "Retained ticket validation does not grant authority or start work. Changed selection/manifest/offset refuses; no private context-key is used."
+      ],
+      "existing_named_assertions": [
+        {
+          "name": "TestContextDeliveryRejectsInventedReceipts",
+          "path": "core/artifacts/internal/operations/engine_test.go",
+          "line": 657,
+          "build_constraints": [
+            "//go:build linux"
+          ],
+          "sha256": "63b8891b508920884cdaac697e923f1cc71e9dcf18f46332c2579f213b09e98f",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextDeliveryRejectsInventedReceipts",
+          "current_windows_original_result": "NOT_SELECTED",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        },
+        {
+          "name": "TestContextUsesContentAddressedCooperativeReceipts",
+          "path": "core/artifacts/internal/operations/engine_test.go",
+          "line": 687,
+          "build_constraints": [
+            "//go:build linux"
+          ],
+          "sha256": "63b8891b508920884cdaac697e923f1cc71e9dcf18f46332c2579f213b09e98f",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextUsesContentAddressedCooperativeReceipts",
+          "current_windows_original_result": "NOT_SELECTED",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        }
+      ],
+      "remaining_runtime_assertion_gaps": [
+        "Both existing selectors are Linux-build-only and absent from the actual Windows475 population. They cover invented/forged receipt rejection and content-addressing; no named positive CheckTicket or stale vector/manifest/partial-offset matrix was found."
+      ],
+      "assumptions": [],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N25:02",
+      "cell": "disposition:transitions:N25:02",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "line": 13,
+          "symbol_or_anchor": "func knowledgeStructure(",
+          "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/decomposition.schema.json",
+          "line": 207,
+          "symbol_or_anchor": "\"promotion\":",
+          "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "Question is a decomposition record type. The closed schema permits open,answered,deferred statuses; knowledgeStructure requires status exactly for question records.",
+        "Changing question status to answered requires nonblank answer. Structural validation happens before native save; an answered-without-answer update therefore cannot publish a new canonical revision.",
+        "A valid generic update persists the answer and revision via the common transactional save; no user/event receipt is required by this generic record contract."
+      ],
+      "existing_named_assertions": [],
+      "remaining_runtime_assertion_gaps": [
+        "No direct existing named answer/nonblank/refusal-preserves-revision assertion found. Source conformance is limited to the closed shape, validator predicate and pre-save ordering."
+      ],
+      "assumptions": [],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N25:03",
+      "cell": "disposition:transitions:N25:03",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "line": 13,
+          "symbol_or_anchor": "func knowledgeStructure(",
+          "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/decomposition.schema.json",
+          "line": 207,
+          "symbol_or_anchor": "\"promotion\":",
+          "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "The same closed decomposition record schema allows open and deferred. record.update has no irreversible answered-state rule, so an answered/open question can reopen or defer if the resulting record remains structurally valid.",
+        "knowledgeStructure rejects status or answer on non-question records. Generic update retains immutable identity and saves one new semantic revision only after Structural passes.",
+        "Ready does not reinterpret decomposition question status as artifact authority. Retained answer text may remain when reopening; no additional actor/event requirement is introduced."
+      ],
+      "existing_named_assertions": [],
+      "remaining_runtime_assertion_gaps": [
+        "No direct named answered\u2192open/deferred matrix or non-question status/answer refusal sequence found. The relevant enum/type/control-flow are source-conformant."
+      ],
+      "assumptions": [],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N25:05",
+      "cell": "disposition:transitions:N25:05",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "line": 13,
+          "symbol_or_anchor": "func knowledgeStructure(",
+          "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/decomposition.schema.json",
+          "line": 207,
+          "symbol_or_anchor": "\"promotion\":",
+          "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "Promotion is permitted only on work_item records. The closed promotion shape is null or exactly one origin+board_id or origin+WORK-[A-F0-9]{32} work_id form; malformed or non-work-item promotion fails Structural before save.",
+        "Generic record.update stores a back-reference through ordinary save. It does not invoke work-create or verify that the cross-store target exists. Cross-store retry/reconciliation is a caller responsibility.",
+        "The existing candidate-is-not-published test confirms saving an unpromoted candidate changes neither the legacy board nor promotion field; Python promotion adapters separately own actual work creation and idempotent repair."
+      ],
+      "existing_named_assertions": [
+        {
+          "name": "TestBrownfieldCandidatesAreNotPublished",
+          "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+          "line": 419,
+          "build_constraints": [],
+          "sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestBrownfieldCandidatesAreNotPublished",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        }
+      ],
+      "remaining_runtime_assertion_gaps": [
+        "Candidate nonpublication is an actual Windows named pass. No native named promotion shape/type matrix or arbitrary syntactically valid but nonexistent target probe was found.",
+        "Existing Python KnowledgeCLITest promotion tests exercise caller repair/work creation, not a substitute for every native generic-promotion rejection clause."
+      ],
+      "assumptions": [],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N37:02",
+      "cell": "disposition:transitions:N37:02",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "line": 17,
+          "symbol_or_anchor": "func run(",
+          "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "CLI calls operations.Run before serializing the success envelope. It marshals that envelope, selects default65536 or a present request budget, and rejects encoded length+newline above the limit with RESPONSE_TOO_LARGE.",
+        "The size check precedes stdout success write but follows Run. Therefore its error does not establish rollback or absence of a completed mutation. Recovery/operation identity remains authoritative for uncertain acknowledgement.",
+        "Native source is unchanged for this wrapper; the one CLI named test only proves a JSON public fault and matching unknown-operation exit classification."
+      ],
+      "existing_named_assertions": [
+        {
+          "name": "TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "path": "core/artifacts/cmd/ca-artifact/main_test.go",
+          "line": 9,
+          "build_constraints": [],
+          "sha256": "173855b959fc24785c602f76c437c3170b141fcbadad83a35eb528084096892c",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        }
+      ],
+      "remaining_runtime_assertion_gaps": [
+        "No named runtime fixture covers a successful Run whose final encoded envelope exceeds the wrapper budget, especially after a mutation. Source ordering establishes the limited no-rollback contract, not a local execution observation."
+      ],
+      "assumptions": [],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N37:03",
+      "cell": "disposition:transitions:N37:03",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "line": 17,
+          "symbol_or_anchor": "func run(",
+          "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "After passing encoding/budget checks, CLI writes the success JSON plus newline once. A returned stdout write error yields exit5; successful writes proceed to ordinary exit0 or validation exit2 as applicable.",
+        "There is no rollback on acknowledgement write failure. Run may already have committed; the caller must inspect/retry the same operation ID according to native recovery state.",
+        "The public-fault helper has a separate best-effort write; it is not the successful acknowledgement branch being preserved here."
+      ],
+      "existing_named_assertions": [
+        {
+          "name": "TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "path": "core/artifacts/cmd/ca-artifact/main_test.go",
+          "line": 9,
+          "build_constraints": [],
+          "sha256": "173855b959fc24785c602f76c437c3170b141fcbadad83a35eb528084096892c",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        }
+      ],
+      "remaining_runtime_assertion_gaps": [
+        "No direct named stdout-write-error/exit5 assertion found. Existing actual JSON-fault test does not exercise successful-envelope write failure."
+      ],
+      "assumptions": [
+        "io.Writer follows its interface contract; this branch guarantees handling a returned write error, not an independently proven arbitrary writer implementation."
+      ],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    },
+    {
+      "transition_id": "N37:04",
+      "cell": "disposition:transitions:N37:04",
+      "local_source_conformance": "SUPPORTED",
+      "qualification_state": "NOT_CI_QUALIFIED",
+      "source_refs": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "line": 17,
+          "symbol_or_anchor": "func run(",
+          "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+        }
+      ],
+      "guard_effect_retry_trace": [
+        "CLI installs a deferred recover handler before argument/request/Run processing. A recoverable panic is converted to INTERNAL_ERROR with explicit no-completion/recovery-inspection advice and the public fault exit class.",
+        "The handler never claims transaction rollback. Canonical recovery state remains the source of safe retry truth after a possible effect.",
+        "A failure/panic inside the reporting writers themselves is not promised as a second independently recoverable failure by this source contract."
+      ],
+      "existing_named_assertions": [
+        {
+          "name": "TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "path": "core/artifacts/cmd/ca-artifact/main_test.go",
+          "line": 9,
+          "build_constraints": [],
+          "sha256": "173855b959fc24785c602f76c437c3170b141fcbadad83a35eb528084096892c",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "current_windows_original_result": "pass",
+          "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+        }
+      ],
+      "remaining_runtime_assertion_gaps": [
+        "No direct named injected panic\u2192INTERNAL_ERROR/recovery-advice assertion found; the ordinary public fault named pass is only partial output-shape evidence."
+      ],
+      "assumptions": [
+        "A recoverable Go panic and functioning diagnostic writers are required; fatal runtime/process termination and a second panic in reporting are excluded."
+      ],
+      "reason_source_conformance_is_not_runtime_qualification": "This is an inspected program/source contract. Actual platform execution, original upload attribution and named observer/report binding remain distinct; no suite total is assigned to a cell."
+    }
+  ],
+  "intentional_change": {
+    "transition_id": "N10:02",
+    "cell": "disposition:transitions:N10:02",
+    "local_source_conformance": "INTENTIONALLY_CHANGED_NOT_PRESERVED",
+    "qualification_state": "NOT_CI_QUALIFIED",
+    "source_refs": [
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "line": 252,
+        "symbol_or_anchor": "func (e *Engine) progress(",
+        "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362"
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "line": 482,
+        "symbol_or_anchor": "func (e *Engine) save(",
+        "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+      },
+      {
+        "path": "core/artifacts/internal/operations/protocol.go",
+        "line": 469,
+        "symbol_or_anchor": "case \"task-reconcile\":",
+        "sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b"
+      },
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "line": 153,
+        "symbol_or_anchor": "func (e *Engine) recordWork(",
+        "sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c"
+      }
+    ],
+    "decision": {
+      "id": "D-PROGRESS",
+      "choice": "B",
+      "ref": "docs/state-contracts-major/execution/progress.json#later_decisions/D-PROGRESS",
+      "meaning": "Recorded dependent progress/history is never destructively replaced by dependency/evidence invalidation; readiness/evidence applicability is derived."
+    },
+    "preserved_receipted_guards": [
+      "authority.Load and receipt.Subject require the current plan/task/reconciliation subject.",
+      "Current input_sha256, canonical task hash and target_state must match the exact request.",
+      "Target REVIEW additionally requires evidence.TaskFresh.",
+      "Failures return before e.save; the cloned document remains unpublished.",
+      "Successful selected-task state/reason/evidence_refs are saved with CAS."
+    ],
+    "changed_effect": "Targets other than REVIEW now advance to ProgressVersion while retaining dependent recorded progress; former transitive destructive STALE propagation is removed.",
+    "existing_named_assertions": [
+      {
+        "name": "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+        "path": "core/artifacts/internal/operations/dependency_advice_test.go",
+        "line": 11,
+        "build_constraints": [],
+        "sha256": "f353a26a30d71b04f8593d4531b98e63d7544bc55f79cf3b7ef4db0a327ac03a",
+        "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+        "current_windows_original_result": "pass",
+        "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+      },
+      {
+        "name": "TestNT09TaskBlockPreservesDependentRecordedProgress",
+        "path": "core/artifacts/internal/operations/intentional_change_test.go",
+        "line": 21,
+        "build_constraints": [],
+        "sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b",
+        "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+        "current_windows_original_result": "pass",
+        "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+      },
+      {
+        "name": "TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+        "path": "core/artifacts/internal/operations/intentional_change_test.go",
+        "line": 48,
+        "build_constraints": [],
+        "sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b",
+        "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+        "current_windows_original_result": "pass",
+        "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+      },
+      {
+        "name": "TestDependencyInvalidationPreservesIndependentStops",
+        "path": "core/artifacts/internal/operations/dependency_advice_test.go",
+        "line": 87,
+        "build_constraints": [],
+        "sha256": "f353a26a30d71b04f8593d4531b98e63d7544bc55f79cf3b7ef4db0a327ac03a",
+        "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+        "current_windows_original_result": "pass",
+        "scope": "Actual named outcome only; does not independently establish every mapped transition clause."
+      }
+    ],
+    "runtime_assertion_limits": [
+      "Existing actual Windows passes exercise ordinary reconciliation plus dependency readiness/history, replay and stale CAS.",
+      "They do not exercise every current receipted reconciliation target, each subject/input/task/target mismatch, REVIEW freshness or selected evidence append. TaskFresh is covered elsewhere for review acceptance but is not a substitute for this exact reconciliation branch."
+    ],
+    "introduced_transition_proposals": [
+      {
+        "id": "N10:02/ordinary-progress-axis",
+        "event": "task-reconcile without receipt",
+        "guards": "Known task; current model CAS; explicit requested PENDING/REVIEW/BLOCKED plus reason as required by the record-work protocol.",
+        "effects": "Record selected task state/reason; retain dependent progress/check history; derive dependency readiness; ordinary writes do not assert assessed proof.",
+        "existing_named_selectors": [
+          "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+          "TestDependencyInvalidationPreservesIndependentStops"
+        ]
+      },
+      {
+        "id": "N10:02/receipted-proof-axis",
+        "event": "task-reconcile with receipt",
+        "guards": "Existing exact reconciliation subject/input/task/target; REVIEW requires TaskFresh; model CAS.",
+        "effects": "Append selected receipt/reason/state; retain dependent progress under ProgressVersion; readiness/proof applicability remains independent.",
+        "missing_runtime_assertions": "Explicit receipted target and rejection matrix; source conformance proves current guard/effect ordering only."
+      }
+    ],
+    "explicit_receipt_contract_note": "Current RequestSchema task-reconcile has optional receipt, required exact task/state/reason and CAS. Only a present receipt selects the retained authority.Load/Subject/input/task/target/TaskFresh path. A missing receipt selects ordinary recordWork; no receipt gate is reintroduced for ordinary progress."
+  },
+  "remaining_delivery_limits": [
+    "Source-conformance findings preserve specific source-level guard/effect/retry contracts; they do not fill missing runtime assertions or establish OS/kernel/provider behavior.",
+    "No suite total creates a per-cell pass, and absent/Linux-only/skipped selectors are not promoted to Windows success.",
+    "No coverage-ledger status, task status, frozen intake row or readiness receipt has been modified.",
+    "Formal source-conformance evidence admission and original CI named report mapping must be bound by their owning tooling after final source commit."
+  ]
+}
