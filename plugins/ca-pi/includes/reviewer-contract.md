@@ -28,6 +28,16 @@ Agent-specific deltas declared in the agent body (examples): `security-reviewer`
 `**Package:** <name@version>` as the subject field; `coverage-auditor` uses
 `**File:** <source path> / <test path, if exists>`.
 
+## Severity and gate
+
+Severity is one scale with one meaning in every reviewer: any **CRITICAL** or **HIGH** finding
+blocks (gate status BLOCK); **MEDIUM** and **LOW** never do. An agent body may not declare a
+non-blocking HIGH; where a risk should not block, the body assigns a lower severity by a closed,
+named rule. The only such rule today: dependency-reviewer's maintenance-only risk (unmaintained or
+abandoned, no security finding) is **MEDIUM**; a finding that mixes maintenance with a security
+problem keeps the security severity (D-HIGH, B 2026-11-12). Resubmitting or reformatting a report
+with unchanged findings cannot change their severity or gate disposition.
+
 ## Review output template
 
 ```
