@@ -588,12 +588,20 @@ def check_documentation(
     policy: object,
     paths: Iterable[Path] | None = None,
 ) -> list[Finding]:
-    selected = tuple(paths) if paths is not None else tracked_markdown(repo)
     bindings = {binding.path: binding for binding in contract.bindings}
+    # A declared fact remains mandatory when its logical Markdown path moves
+    # to native knowledge, or when its source is accidentally removed.
+    selected = (tuple(paths) if paths is not None else
+                tuple(dict.fromkeys((*tracked_markdown(repo), *(Path(p) for p in bindings)))))
+    from project_knowledge import active_document_aliases, context_text
+    aliases = active_document_aliases(repo) if bindings else {}
     findings = []
     for path in selected:
         relative = PurePosixPath(path.as_posix())
+        projection = aliases.get(relative.as_posix()) if relative in bindings else None
         classes = classify(relative, contract)
+        if not classes and projection is not None:
+            classes = classify(PurePosixPath(projection[1]), contract)
         if not classes:
             findings.append(Finding("DOC-UNCLASSIFIED", relative.as_posix()))
             continue
@@ -602,11 +610,15 @@ def check_documentation(
             continue
         full_path = repo / path
         try:
-            text = full_path.read_text(encoding="utf-8")
-        except (OSError, UnicodeError) as error:
-            findings.append(Finding("DOC-UNREADABLE", relative.as_posix(), str(error)))
+            text = (context_text(projection[0], root=repo) if projection is not None
+                    else full_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+            detail = "active knowledge source unavailable" if projection is not None else str(error)
+            findings.append(Finding("DOC-UNREADABLE", relative.as_posix(), detail))
             continue
-        for target in _relative_targets(text):
+        # Native typed references are checked by their owning schema; projected
+        # narrative has no Markdown file-relative link base.
+        for target in (() if projection is not None else _relative_targets(text)):
             finding = _link_finding(repo, Path(relative), target)
             if finding is not None:
                 findings.append(finding)

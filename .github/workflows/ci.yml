@@ -98,6 +98,8 @@ on:
       # side; without this line a push that ONLY deletes the coverage section
       # starts no run at all, so the guard never evaluates.
       - ".codearbiter/tech-stack.md"
+      - ".codearbiter/context/**"
+      - ".codearbiter/CONTEXT.md"
       # Same defect class, same fix: test_ci_impact.py is the ONLY guard on the
       # secret-scan allowlist (#404) and on docs.yml's site CVE gate (#403), so
       # a change to either must start a run that can execute it.
@@ -268,6 +270,8 @@ jobs:
               - '.github/scripts/test_host_descriptors.py'
               - '.github/workflows/ci.yml'
             hooks:
+              - '.codearbiter/context/**'
+              - '.codearbiter/CONTEXT.md'
               - '.github/fixtures/context-onboarding/**'
               - '.github/fixtures/debug/**'
               - 'plugins/ca/hooks/**'
@@ -387,6 +391,8 @@ jobs:
               # omission as #384, #403/#404 and #416; listing them here is the
               # established fix, not a new pattern.
               - '.codearbiter/tech-stack.md'
+              - '.codearbiter/context/**'
+              - '.codearbiter/CONTEXT.md'
               - 'plugins/ca/skills/**'
               - 'plugins/ca/agents/**'
               - 'core/surface/skills/**'
@@ -3615,6 +3621,12 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Check repository documentation contract
         run: python3 .github/scripts/check_docs_contract.py
 

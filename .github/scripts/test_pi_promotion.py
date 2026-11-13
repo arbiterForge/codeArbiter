@@ -1826,6 +1826,38 @@ class KnowledgePromotionTests(unittest.TestCase):
             {"title": "Historical proof", "text": "The supported promotion version is exact Pi 0.80.6.", "basis": "source-observed", "origin": None}))
         return first, second, old
 
+    def _documentation_binding_findings(self, *, paths=None):
+        docs = load_docs_module()
+        contract_path = self.root / "docs-contract.json"
+        contract_path.write_text(json.dumps({
+            "schema": 1, "classes": [{"name": "current", "include": ["**/*.md"]}],
+            "bindings": [{"path": ".codearbiter/tech-stack.md",
+                          "template": "The supported promotion version is exact Pi {last_verified}."}],
+            "generator_checks": [],
+        }), encoding="utf-8")
+        with mock.patch("project_knowledge.native_client", return_value=self.client):
+            return docs.check_documentation(self.root, docs.load_contract(contract_path),
+                self.promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)), paths=paths)
+
+    def test_docs_contract_does_not_drop_a_stale_active_html_binding_or_use_history(self):
+        self.seed_html()
+        self.knowledge("add", "tech-stack", "--collection", "notes", "--record", json.dumps(
+            {"title": "Historical current-looking text", "text": "The supported promotion version is exact Pi 0.80.10.",
+             "basis": "source-observed", "origin": None}))
+        self.assertIn("DOC-FACT-STALE", [r.code for r in self._documentation_binding_findings()])
+
+    def test_docs_contract_reads_current_html_fact_after_real_owner_promotion(self):
+        self.seed_html()
+        with mock.patch.object(self.promotion, "_knowledge_owner", return_value=(self.frontend, self.client)):
+            self.promotion.apply_promotion(self.root, self.targets, self.promotion.Candidate("0.80.10"))
+        self.assertEqual(self._documentation_binding_findings(), [])
+
+    def test_docs_contract_missing_active_html_cannot_fallback_to_a_legacy_fact(self):
+        state = self.root / ".codearbiter"; state.mkdir()
+        (state / "CONTEXT.md").write_text("---\narbiter: enabled\ncontext-format: html\n---\n")
+        (state / "tech-stack.md").write_text("The supported promotion version is exact Pi 0.80.10.\n")
+        self.assertIn("DOC-UNREADABLE", [r.code for r in self._documentation_binding_findings()])
+
     def test_html_promotion_updates_current_records_preserving_retired_notes_and_no_md(self):
         first, second, old = self.seed_html()
         retained = self.knowledge("read", "tech-stack", old)["records"]

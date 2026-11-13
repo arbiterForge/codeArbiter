@@ -2368,6 +2368,17 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_active_knowledge_and_selector_reach_policy_conformance(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        scopes = {"push": push_trigger_paths(ci),
+                  "hooks": paths_filter(ci, "hooks"),
+                  "impact": paths_filter(ci, "impact")}
+        for name, paths in scopes.items():
+            for subject in (".codearbiter/context/**", ".codearbiter/CONTEXT.md"):
+                with self.subTest(scope=name, subject=subject):
+                    self.assertIn(subject, paths,
+                                  "an active HTML fact/policy or format-selector edit must run its conformance owner")
+
     def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
         # Issue #507, same defect class as the test above and as #384/#403/#404.
         # GateCommandTest lives in THIS file, which runs only in the path-scoped
@@ -2457,6 +2468,11 @@ class WorkflowContractTest(unittest.TestCase):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("  documentation-contract:\n", ci)
         self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
+        document_job = workflow_jobs(ci)["documentation-contract"]
+        native_setup = "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        self.assertIn(native_setup, document_job)
+        self.assertIn('go-version: "1.27.1"', document_job)
+        self.assertLess(document_job.index(native_setup), document_job.index("run: python3 .github/scripts/check_docs_contract.py"))
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)

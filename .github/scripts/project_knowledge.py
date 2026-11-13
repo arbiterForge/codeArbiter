@@ -39,3 +39,15 @@ def context_text(document, *, root=None, client=None, commands_only=False):
     if native is None and _knowledgelib.context_format(str(root)) == "html":
         native = native_client(root)
     return read_context(root, document, client=native, commands_only=commands_only)
+
+
+def active_document_aliases(root=None):
+    """Resolve declared knowledge paths through the active format owner."""
+    import test_artifact_authoring  # Select the canonical bridge import location.
+    import _knowledgelib
+    root = Path(root) if root is not None else Path(__file__).resolve().parents[2]
+    if _knowledgelib.context_format(str(root)) != "html":
+        return {}
+    return {path: (document, _knowledgelib.LEGACY_PATHS[document])
+            for paths in (_knowledgelib.LEGACY_PATHS, _knowledgelib.HTML_PATHS)
+            for document, path in paths.items()}
