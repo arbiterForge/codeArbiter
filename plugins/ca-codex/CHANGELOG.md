@@ -11,6 +11,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ### Changed
 
 - Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+- Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
 ## [0.26.7] - 2026-11-10

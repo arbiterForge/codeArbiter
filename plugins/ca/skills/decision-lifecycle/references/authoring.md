@@ -99,19 +99,24 @@ that any obligation is Implemented or Verified. When the user explicitly authori
 2. Route through `commit-gate` to commit the accepted ADR and decision-log append. Do not add the
    acceptance binding to that commit: its `source_commit` cannot truthfully name a commit that does
    not exist yet.
-3. From that exact commit, hash the committed Git blob bytes and the separately canonicalized
-   immutable record: strict UTF-8 with LF-normalized line endings, containing the complete ADR while
-   replacing only the recognized status value in the strictly parsed frontmatter `status:` field and
-   `## Status` section with fixed sentinels. The two values must agree. All remaining Status prose,
-   including approval attribution, stays bound alongside title, date, `decided-by`, supersession,
-   governed paths, H1, and every other section. Malformed or duplicate frontmatter, status, or
-   headings fail closed. Append one
-   `acceptance` event to
-   `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/adr-lifecycle.jsonl`, then persist that acceptance binding
-   in a subsequent commit. The event uses schema `adr-lifecycle/v1` and records `adr` (full stem),
-   `recorded_at`, `source_commit`, `blob_sha256`, `body_sha256`, `obligations`,
-   `obligations_sha256`, and `obligations_sealed: true`. A second acceptance or baseline binding for
-   the same stem is invalid.
+3. From that exact commit, put the independently reviewed obligations in a JSON array of
+   `id`, `section`, and exact `text`. Use a full-stem `id` followed by a dot and stable suffix.
+   Run the shipped writer from the project root, substituting the selected Python 3 interpreter:
+
+   ```sh
+   python "${CLAUDE_PLUGIN_ROOT}/hooks/adr-acceptance.py" --root "${CLAUDE_PROJECT_DIR}" --adr <full-stem> --source-commit <full-accepted-ADR-commit> --obligations-json <reviewed-file.json> --reviewed-by <reviewer-identity>
+   ```
+
+   The writer reads the exact committed Git blob, checks ancestry and the current accepted ADR,
+   computes the canonical immutable-body and obligation digests using the verifier's code, records
+   the reviewer's identity, validates the complete event, and appends it under the audit lock. It refuses an existing binding, a dirty
+   ledger, changed ADR content, or malformed obligations. Do not hand-calculate hashes or hand-append
+   acceptance JSON. After you commit the accepted ADR, the writer will append the acceptance binding;
+   persist it in a subsequent commit. A second acceptance or baseline binding for the same stem is
+   invalid.
+   The immutable-body digest excludes only the recognized status values. It still binds
+   approval attribution, title, date, decided-by, supersession, governed paths, headings and
+   every other section. Malformed or duplicate status fields and headings fail closed.
 4. Preserve **ADR source ancestry** through delivery. Before opening the PR and again before
    its merge offer, follow the finishing skill's `--merge-method` preflight on the exact base/head.
    A source not already in base ancestry requires a true merge commit with `--match-head-commit`;
@@ -130,6 +135,20 @@ caller. A later uniquely identified event may renew expired or changed-input evi
 invalidation event may withdraw a prior evidence event. Only a complete,
 sealed obligation set with current implementation inputs and fresh verification inputs derives
 Implemented or Verified. Changed inputs invalidate the derived state; history is never rewritten.
+
+If a committed acceptance was malformed, do not rewrite it or create another acceptance. Obtain
+independent review of a corrected obligation set against the unchanged accepted ADR, then use the
+same shipped writer with `--correct --reason <specific-error>` and the original source commit.
+It appends an `acceptance-correction` bound to the original event digest and the same ADR/source
+identity. A correction cannot replace an already valid binding or remap obligations that have
+delivery evidence. A committed ledger may contain several malformed bindings; append a correction
+for each one, keeping every prior line. The writer admits only a valid append-only correction suffix
+before the next commit. The verifier checks the retained original and its replacement; failures remain
+blocking. A correction is governance evidence, not a new user decision.
+
+```sh
+python "${CLAUDE_PLUGIN_ROOT}/hooks/adr-acceptance.py" --root "${CLAUDE_PROJECT_DIR}" --adr <full-stem> --source-commit <original-source-commit> --obligations-json <reviewed-file.json> --reviewed-by <reviewer-identity> --correct --reason <specific-error>
+```
 
 After acceptance, do not edit any bound ADR content. A later user-authorized stored status transition
 may change only the recognized status value in the strictly parsed frontmatter `status:` and
