@@ -63,13 +63,23 @@ worktree does not establish their referenced verification or approval history.
 
 ## Operation families
 
+`capabilities` returns `operations` (every implemented name) and a versioned
+`operation_contract` (`codearbiter.operation-descriptors/0.1.0`) with one row per
+operation: its effect class, whether `Run` gives it operation-ID replay, the
+repository lock it takes (`read` is shared only in `exact` mode), the reserved
+directories or file classes it can write, and whether it is ordinary,
+explicit-evidence or decided by its request fields. These traits describe actual
+effects; none is a permission, and `journaled: false` does not mean the
+operation writes nothing.
+
 | Family | Operations |
 |---|---|
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity`, `task-context` |
 | Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover`, `init-store` |
-| Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
+| Explicit attestation | `capture`, `capture-observation`, `evidence-context`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
 | Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-check`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
+| Repository context documents | `context-preview`, `context-finalize-preview`, `context-evidence-context`, `context-finalize-evidence-context`, `context-apply` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
