@@ -41,9 +41,10 @@ const NIXPACKS_GENERATOR_ARGS = Object.freeze(["--no-error-without-start"]);
 const NATIVE_RUNTIME_START = Object.freeze({ runImage: NIXPACKS_BASE_IMAGE, onlyIncludeFiles: Object.freeze(["."]) });
 export const MAX_NATIVE_INPUT_BYTES = 1024 * 1024;
 /** The same fixed inputs govern generation and V2 cache admission. Change this
- * policy identity when supported generation/environment/FROM rules change. */
+ * policy identity when generation/environment/FROM or builder admission rules change. */
 export const NIXPACKS_BUILD_PROFILE = Object.freeze({
-  schema: 2, buildImage: NIXPACKS_BASE_IMAGE, generatorArgs: NIXPACKS_GENERATOR_ARGS,
+  schema: 3, buildImage: NIXPACKS_BASE_IMAGE, generatorArgs: NIXPACKS_GENERATOR_ARGS,
+  builderObservationPolicy: "pre-build-capability-version-invocation-v1",
   environmentPolicy: "minimal-os-v1", dockerfilePolicy: "all-image-refs-sha256-no-frontend-v2",
   inputPolicy: "no-project-config-or-existing-output-v1",
   providerPolicy: "explicit-node-python-go-mod-nonworkspace-rust-v2",
@@ -835,6 +836,23 @@ export async function buildOrReuseImage(
     }
   }
   const ctx: BuildContext = { repoDir, builder, nixpacks: nixpacks.via, notes, cacheKey, platform, signal, nativeProviderInputs };
+  signal?.throwIfAborted();
+  // Cache inspection can await other effects while the installed builder changes.
+  // Revalidate immediately before a build; do not label a different builder with
+  // the earlier key. This is cooperative observation, not an atomic executable
+  // pin against a concurrent same-user replacement between probe and spawn.
+  const current = await deps.ensureNixpacks();
+  signal?.throwIfAborted();
+  let changed = current.available !== nixpacks.available;
+  if (!changed && nixpacks.available) {
+    const currentVersion = current.version ?? await deps.nixpacksVersion();
+    const before = nixpacks.via ?? { via: "host" as const };
+    const after = current.via ?? { via: "host" as const };
+    changed = currentVersion !== version || before.via !== after.via ||
+      (before.via === "wsl" && after.via === "wsl" &&
+        (before.bin !== after.bin || before.distro !== after.distro));
+  }
+  if (changed) throw new Error("ca-sandbox: builder capability changed after cache observation; retry with a fresh observation");
   signal?.throwIfAborted();
   reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);

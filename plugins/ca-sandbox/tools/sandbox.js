@@ -298,9 +298,10 @@ var NIXPACKS_GENERATOR_ARGS = Object.freeze(["--no-error-without-start"]);
 var NATIVE_RUNTIME_START = Object.freeze({ runImage: NIXPACKS_BASE_IMAGE, onlyIncludeFiles: Object.freeze(["."]) });
 var MAX_NATIVE_INPUT_BYTES = 1024 * 1024;
 var NIXPACKS_BUILD_PROFILE = Object.freeze({
-  schema: 2,
+  schema: 3,
   buildImage: NIXPACKS_BASE_IMAGE,
   generatorArgs: NIXPACKS_GENERATOR_ARGS,
+  builderObservationPolicy: "pre-build-capability-version-invocation-v1",
   environmentPolicy: "minimal-os-v1",
   dockerfilePolicy: "all-image-refs-sha256-no-frontend-v2",
   inputPolicy: "no-project-config-or-existing-output-v1",
@@ -821,6 +822,17 @@ async function buildOrReuseImage(repoDir, dephash, deps = defaultBuildDeps(), re
     }
   }
   const ctx = { repoDir, builder, nixpacks: nixpacks.via, notes, cacheKey, platform, signal, nativeProviderInputs };
+  signal?.throwIfAborted();
+  const current = await deps.ensureNixpacks();
+  signal?.throwIfAborted();
+  let changed = current.available !== nixpacks.available;
+  if (!changed && nixpacks.available) {
+    const currentVersion = current.version ?? await deps.nixpacksVersion();
+    const before = nixpacks.via ?? { via: "host" };
+    const after = current.via ?? { via: "host" };
+    changed = currentVersion !== version || before.via !== after.via || before.via === "wsl" && after.via === "wsl" && (before.bin !== after.bin || before.distro !== after.distro);
+  }
+  if (changed) throw new Error("ca-sandbox: builder capability changed after cache observation; retry with a fresh observation");
   signal?.throwIfAborted();
   reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);
