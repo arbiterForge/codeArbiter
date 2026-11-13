@@ -65,7 +65,7 @@ class MeasurementContracts(unittest.TestCase):
         exercise = load('live-smarts-exercise')
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            with mock.patch.object(exercise.sys, 'argv', ['exercise', '--case', 'material', '--keep']), \
+            with mock.patch.object(exercise.sys, 'argv', ['exercise', '--case', 'single', '--keep']), \
                  mock.patch.object(exercise, 'plugin_root', return_value=root), \
                  mock.patch.object(exercise.tempfile, 'mkdtemp', return_value=str(root)), \
                  mock.patch.object(exercise, 'scaffold'), \
