@@ -303,17 +303,30 @@ def main(argv=None, *, token=None, rest=None, graphql=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", ""))
     parser.add_argument("--branch", default="main")
+    parser.add_argument("--verdict-output",
+                        help="append one typed qualification observation (JSON line) here")
     arguments = parser.parse_args(argv)
+
+    def done(code: int, outcome: str, reason: str) -> int:
+        # R-06: exit 0 can mean verified, skipped or partially unreadable.
+        if arguments.verdict_output:
+            import _verdictlib
+            _verdictlib.write(_verdictlib.observation(
+                "branch-protection", outcome, reason,
+                scope=f"{arguments.repo or 'unknown'}@{arguments.branch} merge-readiness enforcement",
+                source=_verdictlib.source_identity(arguments.repo), exit_code=code),
+                arguments.verdict_output)
+        return code
 
     if token is None:
         token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
     if not arguments.repo:
         print("SKIP: no --repo and no GITHUB_REPOSITORY; nothing to audit.")
-        return 0
+        return done(0, "skipped", "no repository named")
     if not token and (rest is None or graphql is None):
         print(_SKIP_NOTE)
         print(f"::notice title=Branch protection audit::skipped for {arguments.repo} - no GH_TOKEN")
-        return 0
+        return done(0, "skipped", "no token with Administration:read")
 
     enforcement = read_enforcement(
         arguments.repo,
@@ -333,15 +346,15 @@ def main(argv=None, *, token=None, rest=None, graphql=None) -> int:
             + " - see the note above on Administration:read."
         )
     if findings:
-        return 1
+        return done(1, "rejected", "; ".join(findings))
     if blind:
-        return 0
+        return done(0, "unavailable", "could not read " + "; ".join(blind))
     print(
         f"OK: {arguments.repo}@{arguments.branch} still enforces merge readiness "
         f"and permits source-preserving merges against the current base (strict={enforcement.strict}, "
         f"merge_queue={enforcement.merge_queue})."
     )
-    return 0
+    return done(0, "verified", f"strict={enforcement.strict} merge_queue={enforcement.merge_queue}")
 
 
 if __name__ == "__main__":

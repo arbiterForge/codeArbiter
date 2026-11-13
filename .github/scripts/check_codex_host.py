@@ -359,7 +359,21 @@ def main(argv=None) -> int:
         "--qualified-npm-metadata", type=Path,
         help="exact trusted npm member receipt to compare with the installed cache",
     )
+    parser.add_argument("--verdict-output",
+                        help="append one typed qualification observation (JSON line) here")
     arguments = parser.parse_args(argv)
+
+    def done(code: int, outcome: str, reason: str) -> int:
+        # R-06: an optional absent host exits 0 but is `skipped`, never verified.
+        if arguments.verdict_output:
+            import _verdictlib
+            _verdictlib.write(_verdictlib.observation(
+                "codex-host-install", outcome, reason,
+                scope=("npm marketplace " + arguments.npm_marketplace_version
+                       if arguments.npm_marketplace_version else "checked-out ca-codex"),
+                source=_verdictlib.source_identity(root=REPO), exit_code=code),
+                arguments.verdict_output)
+        return code
 
     if arguments.npm_marketplace_version is not None:
         if arguments.npm_marketplace_version != expected_version():
@@ -380,11 +394,11 @@ def main(argv=None) -> int:
         if required:
             print("::error::CA_REQUIRE_CODEX=1 but no usable `codex` runtime is on PATH; "
                   "a missing host must not read as a passing gate (#408)", file=sys.stderr)
-            return 1
+            return done(1, "unavailable", "required codex runtime is absent or unusable")
         if not arguments.json:
             print("codex host: no runtime on PATH - SKIPPED "
                   "(set CA_REQUIRE_CODEX=1 to make this a failure)", file=sys.stderr)
-        return 0
+        return done(0, "skipped", "optional codex runtime is absent")
 
     # A disposable home, rebuilt every run: a leftover marketplace or a cached
     # plugin from a previous run would let a BROKEN checkout pass on stale state.
@@ -430,11 +444,11 @@ def main(argv=None) -> int:
     if failed:
         for r in failed:
             print(f"::error::{r['code']}: {r.get('detail', 'failed')}", file=sys.stderr)
-        return 1
+        return done(1, "rejected", ", ".join(r["code"] for r in failed))
     if not arguments.json:
         print(f"codex host: {version} installed the checked-out ca-codex "
               f"{expected_version()} and read it back enabled", file=sys.stderr)
-    return 0
+    return done(0, "verified", f"{version} installed and read back {len(results)} check(s)")
 
 
 if __name__ == "__main__":

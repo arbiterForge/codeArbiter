@@ -2755,6 +2755,12 @@ jobs:
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
+      - name: Run typed qualification-outcome contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # R-06: a green exit from the tag, branch-protection, Codex-host and
+        # payload checks can mean skipped/unavailable; required consumers
+        # accept only affirmative observations.
+        run: python .github/scripts/test_verdictlib.py
       - name: Run Codex release identity contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_release_identity.py
