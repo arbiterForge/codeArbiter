@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import importlib.util
 import json
 import re
 import shutil
@@ -24,6 +26,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "package.json",
     "plugins/ca-pi/hooks/_host.py",
     ".codearbiter/tech-stack.md",
+    ".codearbiter/context/tech-stack.html",
     ".github/scripts/test_host_descriptors.py",
     ".github/scripts/test_pi_child_live.py",
     ".github/scripts/test_public_pi_docs.py",
@@ -405,6 +408,76 @@ def _plan_release_metadata(repo: Path, release: ReleaseSource, candidate: Candid
     return _ReleasePlan(writes=tuple(writes), changed=tuple(changed))
 
 
+_TECH_STACK_TARGETS = {Path(".codearbiter/tech-stack.md"), Path(".codearbiter/context/tech-stack.html")}
+
+
+def _knowledge_owner(repo: Path):
+    """The fixed checkout-installed owner, never a helper from target metadata."""
+    helper = REPOSITORY / "plugins/ca/hooks/knowledge.py"
+    spec = importlib.util.spec_from_file_location("pi_promotion_knowledge_owner", helper)
+    if spec is None or spec.loader is None:
+        raise PromotionError("installed knowledge writer is unavailable")
+    owner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(owner)
+    return owner, owner._client(str(repo))
+
+
+def _plan_knowledge(repo: Path, targets: Targets, policy: SupportPolicy, candidate: Candidate):
+    selected = [target for target in targets.targets if target.path in _TECH_STACK_TARGETS]
+    if not selected:
+        return None
+    sys.path.insert(0, str(REPOSITORY / "core/pysrc"))
+    import _knowledgelib
+    if _knowledgelib.context_format(str(repo)) != "html":
+        if any(target.path.suffix == ".html" for target in selected):
+            raise PromotionError("HTML tech-stack target requires the active knowledge owner")
+        return None  # Preserve the existing Markdown recipe and write behavior.
+    try:
+        owner, client = _knowledge_owner(repo)
+        identity = client.call("identity", {"artifact_id": "CTX-TECH-STACK"})
+        records = owner.current_records(repo, "tech-stack", client=client)
+        if client.call("identity", {"artifact_id": "CTX-TECH-STACK"})["model_sha256"] != identity["model_sha256"]:
+            raise PromotionError("knowledge changed while preparing promotion")
+        statements = {record["id"]: record["statement"] for record in records if isinstance(record.get("statement"), str)}
+        original = dict(statements)
+        for target in selected:
+            before = _render(target.before, policy, candidate, target.id)
+            after = _render(target.after, policy, candidate, target.id)
+            count = sum(text.count(before) for text in statements.values())
+            if count == 0 or (target.occurrences == "one" and count != 1):
+                raise PromotionError(f"{target.id}: declared promotion target occurrence mismatch in current knowledge")
+            statements = {key: text.replace(before, after, -1 if target.occurrences == "all" else 1)
+                          for key, text in statements.items()}
+        changes = [{"op": "record.update", "symbol": key, "fields": {"statement": text}}
+                   for key, text in statements.items() if text != original[key]]
+        if not changes or len(changes) > 32:
+            raise PromotionError("knowledge promotion must update between 1 and 32 current records")
+        expected = {"revision": identity["revision"], "model_sha256": identity["model_sha256"]}
+        operation = hashlib.sha256(json.dumps({"expected": expected, "changes": changes}, sort_keys=True).encode()).hexdigest()
+        return owner, client, expected, changes, "pi-promotion-knowledge-" + operation[:40]
+    except PromotionError:
+        raise
+    except Exception as error:
+        raise PromotionError(f"cannot prepare installed knowledge promotion: {error}") from error
+
+
+def _apply_knowledge(repo: Path, plan) -> None:
+    owner, client, expected, changes, operation = plan
+    try:
+        # Keep the exact read preimage. The native CAS protects against edits
+        # between preparation and publication; a fresh identity is not consent
+        # to overwrite newer fields. Retired records/notes are never selected.
+        client.call("apply", {"artifact_id": "CTX-TECH-STACK", "operation_id": operation,
+                              "expected": expected, "changes": changes})
+        current = {record["id"]: record for record in owner.current_records(repo, "tech-stack", client=client)}
+        if any(current.get(change["symbol"], {}).get("statement") != change["fields"]["statement"] for change in changes):
+            raise PromotionError("knowledge promotion target readback does not match; inspect the committed outcome")
+    except PromotionError:
+        raise
+    except Exception as error:
+        raise PromotionError(f"installed knowledge promotion unavailable; inspect its current state: {error}") from error
+
+
 def apply_promotion(
     repo: Path,
     targets: Targets,
@@ -429,11 +502,18 @@ def apply_promotion(
         if overlap:
             raise PromotionError(f"release path is also a declared promotion target: {overlap[0]}")
     release_plan = None if targets.release is None else _plan_release_metadata(repo, targets.release, candidate, date)
+    knowledge_plan = _plan_knowledge(repo, targets, policy, candidate)
     changed = []
+    writes = {}
     for target in targets.targets:
+        if knowledge_plan is not None and target.path in _TECH_STACK_TARGETS:
+            physical = Path(".codearbiter/context/tech-stack.html")
+            if physical not in changed:
+                changed.append(physical)
+            continue
         path = _target_path(repo, target)
         try:
-            text = path.read_text(encoding="utf-8")
+            text = writes[path] if path in writes else path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
             raise PromotionError(f"{target.id}: cannot read target: {error}") from error
         before = _render(target.before, policy, candidate, target.id)
@@ -441,12 +521,12 @@ def apply_promotion(
         count = text.count(before)
         if count == 0 or (target.occurrences == "one" and count != 1):
             raise PromotionError(f"{target.id}: declared promotion target occurrence mismatch")
-        path.write_text(
-            text.replace(before, after, -1 if target.occurrences == "all" else 1),
-            encoding="utf-8",
-            newline="\n",
-        )
+        writes[path] = text.replace(before, after, -1 if target.occurrences == "all" else 1)
         changed.append(target.path)
+    if knowledge_plan is not None:
+        _apply_knowledge(repo, knowledge_plan)
+    for path, content in writes.items():
+        path.write_text(content, encoding="utf-8", newline="\n")
     if release_plan is not None:
         for path, content in release_plan.writes:
             path.write_text(content, encoding="utf-8", newline="\n")
