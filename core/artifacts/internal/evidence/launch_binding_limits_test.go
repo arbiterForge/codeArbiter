@@ -35,7 +35,13 @@ func producerNPMBindings(t *testing.T, root string, workspaces int) ([]any, map[
 		manifest, _ := json.Marshal(map[string]any{"name": fmt.Sprintf("p%d", i), "scripts": map[string]any{"test": "vitest run --reporter=verbose"}})
 		completionWrite(t, root, filepath.Join(paths[i], "package.json"), manifest)
 	}
-	rootManifest, _ := json.Marshal(map[string]any{"name": "root", "workspaces": paths, "scripts": map[string]any{"test": "npm -w p0 run test"}})
+	rootScript := "npm -w p0 run test"
+	if workspaces == 0 {
+		// Exercise npm-script qualification with its root manifest even when
+		// no workspace role exists; npm --version is a distinct exit-only shape.
+		rootScript = "vitest run --reporter=verbose"
+	}
+	rootManifest, _ := json.Marshal(map[string]any{"name": "root", "workspaces": paths, "scripts": map[string]any{"test": rootScript}})
 	completionWrite(t, root, "package.json", rootManifest)
 	_, file, _, _ := runtime.Caller(0)
 	source := filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", "..", "pysrc"))
@@ -62,18 +68,23 @@ print(json.dumps(a._bind_commands(root, {"commands": [{"definition": definition,
 }
 
 func TestCompletionAdmitsActualProducerLaunchBindingCounts(t *testing.T) {
-	for _, workspaces := range []int{30, 31, 32} {
+	for _, workspaces := range []int{0, 30, 31, 32} {
 		t.Run(fmt.Sprintf("workspaces-%d", workspaces), func(t *testing.T) {
 			f := completionFixture(t)
 			bindings, definition := producerNPMBindings(t, f.Root, workspaces)
 			binding := model.M(bindings[0])
 			files := model.A(binding["launch_files"])
 			// POSIX npm binds wrapper + root manifest; native Windows npm also binds
-			// node runtime, npm CLI and the npm prefix helper.
+			// node runtime and npm CLI; nested workspace delegation also binds
+			// the npm prefix helper. A root-only script does not use that helper.
 			extra := 2
 			if strings.EqualFold(filepath.Base(model.S(model.A(binding["argv"])[0])), "node.exe") {
-				extra = 5
+				extra = 4
+				if workspaces > 0 {
+					extra++
+				}
 			}
+			t.Logf("actual %s npm-script producer: workspaces=%d launch_files=%d base_roles=%d", runtime.GOOS, workspaces, len(files), extra)
 			if len(files) != workspaces+extra || len(files) > observation.MaxLaunchFiles {
 				t.Fatalf("producer emitted %d launch files for %d workspaces", len(files), workspaces)
 			}
