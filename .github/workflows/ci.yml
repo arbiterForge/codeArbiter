@@ -353,6 +353,7 @@ jobs:
               - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
+              - '.github/scripts/project_knowledge.py'
               # The site CVE gate's accepted-advisory judge and its only guard.
               - '.github/scripts/npm_audit_gate.py'
               - '.github/scripts/test_npm_audit_gate.py'
@@ -1532,6 +1533,12 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
       - name: Validate strict parallel native qualification and shard coverage
@@ -3622,6 +3629,12 @@ jobs:
           python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
           --manifest .github/published-tags.json
           --legacy-manifest .github/legacy-published-tags.json
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Test the audit's own logic
         # The unit tests are offline and tokenless; they pin the strict,
         # drift, and deletion verdicts without depending on live availability.

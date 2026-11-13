@@ -25,8 +25,8 @@ from a bundle nor absence of execution risk.
 ## What dependency-free means here
 
 - **Python hooks:** standard library only, as required by
-  [coding standards](../../.codearbiter/coding-standards.md) and
-  [security controls](../../.codearbiter/security-controls.md#hook-security-python).
+  [coding standards](https://github.com/arbiterForge/codeArbiter/blob/4a578c5a31f768d4e8437adba31e876687c6fe4e/.codearbiter/coding-standards.md) and
+  [security controls](https://github.com/arbiterForge/codeArbiter/blob/4a578c5a31f768d4e8437adba31e876687c6fe4e/.codearbiter/security-controls.md#hook-security-python).
   A third-party Python test harness does not make that package available to hooks.
 - **Artifact engine:** the current [Go module](../../core/artifacts/go.mod) has
   no external requirements. A library compiled into its binary is distributed
@@ -51,8 +51,8 @@ development dependency becomes distributed code.
 | --- | --- | --- |
 | [Dependency command](../../core/surface/commands/add-dep.md) | The one-off exception requires a user-named tool, while its opening graph-based explanation can sound broader. | Keep the exact one-off conditions visible: named, pinned, once, no manifest/lock/script/CI adoption. A recurring script is adoption even without a manifest. |
 | [Dependency reviewer](../../core/surface/agents/dependency-reviewer.md) | Manifest fields and generic CVE severity guidance can obscure surface-specific policy. | State execution class and distribution class, then apply the repository's license scopes and advisory exceptions. |
-| [Security controls](../../.codearbiter/security-controls.md) | License permission can be limited to development/build use or one exact CI tool. | Preserve these restrictions; approving a tool does not authorize copying it into the product. |
-| [Tech stack](../../.codearbiter/tech-stack.md) | Unqualified "dependency-free" and "high everywhere" phrases can hide host prerequisites and explicitly accepted advisories. | Qualify the relevant surface and link the existing exception records. |
+| [Security controls](https://github.com/arbiterForge/codeArbiter/blob/4a578c5a31f768d4e8437adba31e876687c6fe4e/.codearbiter/security-controls.md) | License permission can be limited to development/build use or one exact CI tool. | Preserve these restrictions; approving a tool does not authorize copying it into the product. |
+| [Tech stack](https://github.com/arbiterForge/codeArbiter/blob/4a578c5a31f768d4e8437adba31e876687c6fe4e/.codearbiter/tech-stack.md) | Unqualified "dependency-free" and "high everywhere" phrases can hide host prerequisites and explicitly accepted advisories. | Qualify the relevant surface and link the existing exception records. |
 | [Pi package checks](../../.github/scripts/test_pi_package.py) and [artifact package tests](../../.github/scripts/test_artifact_package.py) | Package contents and dependency declarations answer different questions. | Keep both forms of evidence; a clean manifest is not a complete distribution check. |
 
 ## Small follow-through

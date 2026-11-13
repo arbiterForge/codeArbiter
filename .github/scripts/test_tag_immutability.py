@@ -27,7 +27,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / ".github" / "scripts" / "check_tag_immutability.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
-SECURITY_CONTROLS = REPO_ROOT / ".codearbiter" / "security-controls.md"
 RELEASE_SKILL = REPO_ROOT / "core" / "surface" / "skills" / "release" / "SKILL.md"
 RELEASE_TARGETS = REPO_ROOT / ".codearbiter" / "release-targets.md"
 LEGACY_MANIFEST = REPO_ROOT / ".github" / "legacy-published-tags.json"
@@ -36,7 +35,6 @@ PUBLISH_ACTION = REPO_ROOT / ".github" / "actions" / "publish-target" / "action.
 RECONCILE_TOOL = REPO_ROOT / ".github" / "scripts" / "reconcile_tag_receipt.py"
 ADR = REPO_ROOT / ".codearbiter" / "decisions" / "0034-establish-closed-legacy-published-tag-provenance-epoch.md"
 ADR_LIFECYCLE = REPO_ROOT / ".codearbiter" / "decisions" / "adr-lifecycle.jsonl"
-TECH_STACK = REPO_ROOT / ".codearbiter" / "tech-stack.md"
 
 _spec = importlib.util.spec_from_file_location("check_tag_immutability", _TOOL)
 module = importlib.util.module_from_spec(_spec)
@@ -621,7 +619,8 @@ class LegacyEpochContract(unittest.TestCase):
 
     def test_public_policy_names_epoch_risk_review_and_no_break_glass(self):
         provenance = RELEASE_PROVENANCE.read_text(encoding="utf-8")
-        controls = SECURITY_CONTROLS.read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        controls = context_text("security-controls")
         for text in (provenance, controls):
             self.assertIn("2026-09-04T20:45:43Z", text)
             self.assertIn("legacy-published-tags.json", text)
@@ -880,7 +879,8 @@ class RepositoryWiring(unittest.TestCase):
         self.assertIn("--legacy-manifest .github/legacy-published-tags.json", job)
 
     def test_local_governance_matrix_names_all_provenance_suites(self):
-        commands = TECH_STACK.read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        commands = context_text("tech-stack")
         for script in ("test_tag_immutability.py", "test_tag_publication_receipt.py",
                        "test_reconcile_tag_receipt.py"):
             self.assertIn(f"python .github/scripts/{script}", commands)
@@ -965,7 +965,8 @@ class RepositoryWiring(unittest.TestCase):
         self.assertIn("provenance-manifest: .github/published-tags.json", declared)
 
     def test_security_controls_records_tag_immutability_with_no_break_glass(self):
-        controls = SECURITY_CONTROLS.read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        controls = context_text("security-controls")
         self.assertIn("## Published tag immutability", controls)
         self.assertIn("no break-glass", controls)
 

@@ -20,6 +20,24 @@ CONTEXT = ".codearbiter/" + "CONTEXT.md"
 
 
 class KnowledgeCli(unittest.TestCase):
+    def test_conformance_reads_current_records_without_reviving_historical_notes(self):
+        from project_knowledge import context_text
+        from test_artifact_authoring import ArtifactClient
+        self.scaffold()
+        self.knowledge("create-missing")
+        note = {"title": "Prior policy", "text": "old immutable policy",
+                "basis": "source-observed", "origin": None}
+        self.knowledge("add", "security-controls", "--collection", "notes", "--record", json.dumps(note))
+        constraint = {"type": "constraint", "title": "Current policy", "statement": "current policy",
+                      "basis": "proposed", "scope": {"paths": []},
+                      "related_refs": [], "source_refs": []}
+        added = self.knowledge("add", "security-controls", "--record", json.dumps(constraint))
+        client = ArtifactClient(self.root, self.installation)
+        self.assertEqual(context_text("security-controls", root=self.root, client=client), "current policy")
+        self.knowledge("retire", "security-controls", added["record"], "--reason", "Policy withdrawn")
+        with self.assertRaisesRegex(AssertionError, "no readable content"):
+            context_text("security-controls", root=self.root, client=client)
+
     @classmethod
     def setUpClass(cls):
         cls.owner, cls.installation = build_installation()

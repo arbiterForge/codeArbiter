@@ -3008,6 +3008,20 @@ class GateCommandTest(unittest.TestCase):
 
     def _defines(self, token, tech_stack):
         """Does tech-stack.md define `token`? Regex where one fits, structure where not."""
+        if token in ("test", "audit"):
+            from project_knowledge import active_records
+            records = active_records("tech-stack")
+            if records is not None:
+                if token == "audit":
+                    return any(record.get("type") == "command"
+                               and record["command"]["argv"][0] == "npm"
+                               and "audit" in record["command"]["argv"]
+                               and "--audit-level=high" in record["command"]["argv"]
+                               for record in records)
+                return any(record.get("type") == "command"
+                           and record["command"]["purpose"] == "test"
+                           and record["command"]["argv"][0] != ":"
+                           for record in records)
         proof = self.DEFINITIONS[token]
         if proof is not None:
             return proof.search(tech_stack) is not None
@@ -3027,7 +3041,8 @@ class GateCommandTest(unittest.TestCase):
         return found
 
     def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack")
         missing = []
         for token, who in sorted(self._demanded().items()):
             names = ", ".join(sorted(who))
@@ -3078,7 +3093,8 @@ class GateCommandTest(unittest.TestCase):
         leaves the gate pointing at nothing while every text assertion still
         passes - #507 reachable straight through the fix for #507.
         """
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack")
         pairs = self._npm_invocations(tech_stack)
         # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
         # is satisfied by the unrelated `build` and `typecheck` invocations in the same
@@ -3129,7 +3145,8 @@ class GateCommandTest(unittest.TestCase):
 
     def test_every_tested_tree_has_its_coverage_command_documented(self):
         """Completeness, driven by the filesystem rather than by the prose."""
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack")
         documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
         undocumented = [
             tree for tree in sorted(self._tested_trees())
@@ -3563,9 +3580,9 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         for name, command in scripts.items():
             if name != "test:browser":
                 self.assertNotRegex(command, r"playwright|test:browser", name)
-        for path in (REPO_ROOT / ".codearbiter/tech-stack.md",
-                     REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md"):
-            self.assertNotRegex(path.read_text(encoding="utf-8"), r"playwright install|run test:browser")
+        from project_knowledge import context_text
+        self.assertNotRegex(context_text("tech-stack"), r"playwright install|run test:browser")
+        self.assertNotRegex((REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md").read_text(encoding="utf-8"), r"playwright install|run test:browser")
 
     def test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition(self):
         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
