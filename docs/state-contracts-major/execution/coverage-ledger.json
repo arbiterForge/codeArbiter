@@ -3088,9 +3088,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
     }
    ]
   },
@@ -3293,9 +3302,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
     }
    ]
   },
@@ -16180,11 +16198,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean."
+   "candidate_contract_note": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S23:03": {
    "owner": "farm",
@@ -16230,11 +16257,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "Journal publication failure escalates affected result yet drains independent in-flight work; real independent merge/result survives. Stream/effects receipt health remain separate."
+   "candidate_contract_note": "Journal publication failure escalates affected result yet drains independent in-flight work; real independent merge/result survives. Stream/effects receipt health remain separate.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S23:06": {
    "owner": "farm",
@@ -16322,11 +16358,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown."
+   "candidate_contract_note": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S23:12": {
    "owner": "farm",
@@ -16358,11 +16403,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean."
+   "candidate_contract_note": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S24:02": {
    "owner": "farm",
@@ -16379,12 +16433,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry."
+   "candidate_contract_note": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S24:03": {
    "owner": "farm",
@@ -16401,12 +16464,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry."
+   "candidate_contract_note": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S24:04": {
    "owner": "farm",
@@ -16494,11 +16566,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "Failed128 and malformed successful Git readback are unavailable, never []. A bounded retry accepts only an actually successful current observation; unavailable sample drift preserves candidate evidence, buys no reset/new author."
+   "candidate_contract_note": "Failed128 and malformed successful Git readback are unavailable, never []. A bounded retry accepts only an actually successful current observation; unavailable sample drift preserves candidate evidence, buys no reset/new author.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S24:10": {
    "owner": "farm",
@@ -16544,11 +16625,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof."
+   "candidate_contract_note": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S24:13": {
    "owner": "farm",
@@ -16607,12 +16697,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S25:03": {
    "owner": "farm",
@@ -16629,12 +16728,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S25:04": {
    "owner": "farm",
@@ -16651,12 +16759,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S25:05": {
    "owner": "farm",
@@ -16673,12 +16790,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S25:06": {
    "owner": "farm",
@@ -16695,12 +16821,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+   "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S25:07": {
    "owner": "farm",
@@ -16717,12 +16852,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S25:08": {
    "owner": "farm",
@@ -16739,12 +16883,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S26:01": {
    "owner": "farm",
@@ -16761,12 +16914,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S26:02": {
    "owner": "farm",
@@ -16825,12 +16987,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S26:06": {
    "owner": "farm",
@@ -16847,12 +17018,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S26:07": {
    "owner": "farm",
@@ -16869,12 +17049,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S26:08": {
    "owner": "farm",
@@ -16891,12 +17080,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+   "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S26:09": {
    "owner": "farm",
@@ -16913,12 +17111,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S27:01": {
    "owner": "farm",
@@ -17201,12 +17408,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Original bytes are restored through in-loop and final paths after mutations; deadline-before-test does not invent a measured run. This narrow row is restoration only, not heuristic intent or verified kill coverage."
+   "candidate_contract_note": "Original bytes are restored through in-loop and final paths after mutations; deadline-before-test does not invent a measured run. This narrow row is restoration only, not heuristic intent or verified kill coverage.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S28:12": {
    "owner": "farm",
@@ -17263,12 +17479,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "A verified-gone cleanup returns124/timedOut and no cleanupFailed, distinct from125 unknown. Mocked process verification tests establish result semantics; no POSIX descendant or nonroot execution claim."
+   "candidate_contract_note": "A verified-gone cleanup returns124/timedOut and no cleanupFailed, distinct from125 unknown. Mocked process verification tests establish result semantics; no POSIX descendant or nonroot execution claim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S29:05": {
    "owner": "farm",
@@ -17282,11 +17507,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof."
+   "candidate_contract_note": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S29:06": {
    "owner": "farm",
@@ -17313,12 +17547,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S30:02": {
    "owner": "farm",
@@ -17335,12 +17578,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S30:03": {
    "owner": "farm",
@@ -17371,12 +17623,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S30:05": {
    "owner": "farm",
@@ -17407,12 +17668,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+   "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S31:01": {
    "owner": "farm",
@@ -17500,11 +17770,20 @@
     {
      "kind": "test",
      "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/farm-tested-successor.json",
+     "sha256": "6a183434a38490a1d291c89b9923ebd18aca88ea5e5faccb73707cfe3ac4a8ce"
     }
    ],
-   "candidate_contract_note": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown."
+   "candidate_contract_note": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S32:01": {
    "owner": "farm",
@@ -17614,12 +17893,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S33:02": {
    "owner": "farm",
@@ -17631,12 +17919,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S33:03": {
    "owner": "farm",
@@ -17648,12 +17945,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S33:04": {
    "owner": "farm",
@@ -17665,12 +17971,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S33:05": {
    "owner": "farm",
@@ -17682,12 +17997,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+   "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S34:01": {
    "owner": "hooks-workflows",
@@ -18578,12 +18902,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment."
+   "candidate_contract_note": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S47:02": {
    "owner": "sandbox",
@@ -18608,12 +18941,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment."
+   "candidate_contract_note": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S47:04": {
    "owner": "sandbox",
@@ -18627,12 +18969,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment."
+   "candidate_contract_note": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S47:05": {
    "owner": "sandbox",
@@ -18740,12 +19091,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome."
+   "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S48:07": {
    "owner": "sandbox",
@@ -18760,12 +19120,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome."
+   "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S48:08": {
    "owner": "sandbox",
@@ -18793,12 +19162,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit."
+   "candidate_contract_note": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S49:02": {
    "owner": "sandbox",
@@ -18915,12 +19293,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
-     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
+     "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4"
     }
    ],
-   "candidate_contract_note": "Ordinary NETWORKED_POLICIES remains empty; requested unsupported allowlist returns effective offline/availablefalse and actual argv --network none without privileged/NET_ADMIN. Argument construction is tested, not actual nonroot/network boundary enforcement."
+   "candidate_contract_note": "Ordinary NETWORKED_POLICIES remains empty; requested unsupported allowlist returns effective offline/availablefalse and actual argv --network none without privileged/NET_ADMIN. Argument construction is tested, not actual nonroot/network boundary enforcement.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-preserved.json",
+     "sha256": "6f4b8fd0a8493e396140041ac24cd11337c14df056be53373f1558dd817dc573",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S50:02": {
    "owner": "sandbox",
@@ -19028,12 +19415,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Controlled Docker failure130 after token container creation triggers exact independent rm+ps without cancelled signal; failed removal/observation retain containerId, original commandCode and cleanup unknown. Dummy token only; no real provider/token-host qualification."
+   "candidate_contract_note": "Controlled Docker failure130 after token container creation triggers exact independent rm+ps without cancelled signal; failed removal/observation retain containerId, original commandCode and cleanup unknown. Dummy token only; no real provider/token-host qualification.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S51:06": {
    "owner": "sandbox",
@@ -19057,12 +19453,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails."
+   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S52:02": {
    "owner": "sandbox",
@@ -19075,12 +19480,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails."
+   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S52:03": {
    "owner": "sandbox",
@@ -19093,12 +19507,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails."
+   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S52:04": {
    "owner": "sandbox",
@@ -19111,12 +19534,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails."
+   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S52:05": {
    "owner": "sandbox",
@@ -19129,12 +19561,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails."
+   "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S52:06": {
    "owner": "sandbox",
@@ -19158,12 +19599,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S53:02": {
    "owner": "sandbox",
@@ -19177,12 +19627,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S53:03": {
    "owner": "sandbox",
@@ -19196,12 +19655,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S53:04": {
    "owner": "sandbox",
@@ -19215,12 +19683,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S53:05": {
    "owner": "sandbox",
@@ -19234,12 +19711,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S53:06": {
    "owner": "sandbox",
@@ -19253,12 +19739,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S53:07": {
    "owner": "sandbox",
@@ -19272,12 +19767,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
-     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25"
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+     "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f"
     }
    ],
-   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts."
+   "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+     "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+     "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+    }
+   ]
   },
   "S54:01": {
    "owner": "sandbox",

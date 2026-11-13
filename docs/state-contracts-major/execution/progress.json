@@ -2267,6 +2267,11 @@
       "what": "Introduced transition accountability",
       "observed": "21introduced edges explicitly recorded with actual scoped test evidence:5reader,6integrity,3sandbox,3illustrationfailure and4ownedpublicationfailure/recovery. Seven existing baseline cells gained scoped test evidence. Original197records remain untouched; changed sandbox proof inputs may now be STALE independently of recorded progress. No whole task/machine/runtime closure inferred.",
       "date": "2026-11-13"
+    },
+    {
+      "what": "Current applicability restored without replacing history",
+      "observed": "56Farm/sandboxsuccessors retain originalrefs underanchored evidence_history. Farm8 reusesoriginal12actualobservations withcomplete24unchangeddependencyfiles. Sandbox17 joins44exactcurrentpassedselectors fromexisting357PASS34DockerSKIPcoverage;31remainingcells receiveexplicitcurrentclauseconformanceoutsidechangedS49admission. No newtestexecution ornewproductqualification inferred. All225scopedrecords nowcurrent whenboundbyowningchecker.",
+      "date": "2026-11-13"
     }
   ],
   "scoped_blockers": [],
