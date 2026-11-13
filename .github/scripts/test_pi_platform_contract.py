@@ -234,7 +234,8 @@ class PlatformContractFixtures(unittest.TestCase):
         })
 
     def test_tech_stack_declares_the_pi_tools_install_an_aggregate_prerequisite(self):
-        tech_stack = (ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack")
         self.assertIn(
             "The Pi tools install is an aggregate prerequisite: "
             "`npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.",

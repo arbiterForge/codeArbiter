@@ -880,7 +880,7 @@ class RepositoryWiring(unittest.TestCase):
 
     def test_local_governance_matrix_names_all_provenance_suites(self):
         from project_knowledge import context_text
-        commands = context_text("tech-stack")
+        commands = context_text("tech-stack", commands_only=True)
         for script in ("test_tag_immutability.py", "test_tag_publication_receipt.py",
                        "test_reconcile_tag_receipt.py"):
             self.assertIn(f"python .github/scripts/{script}", commands)

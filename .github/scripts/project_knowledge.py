@@ -35,7 +35,7 @@ def active_records(document, *, root=None, client=None):
     return records
 
 
-def context_text(document, *, root=None, client=None):
+def context_text(document, *, root=None, client=None, commands_only=False):
     records = active_records(document, root=root, client=client)
     if records is None:
         import _knowledgelib
@@ -43,6 +43,8 @@ def context_text(document, *, root=None, client=None):
         return (root / _knowledgelib.LEGACY_PATHS[document]).read_text(encoding="utf-8")
     parts = []
     for record in records:
+        if commands_only and record.get("type") != "command":
+            continue
         if record.get("type") == "command":
             command = record["command"]
             argv = list(command["argv"])

@@ -74,6 +74,18 @@
 
 title = "codeArbiter hosted secret scan"
 
+[[allowlists]]
+description = """
+Public SHA-256 source fingerprint emitted by knowledge.py conversion in
+docs/state-contracts-major/execution/context-conversion/inventory.json at
+685b51f8412690d8b49a8c468455973785a281ac. It is deterministically derived
+from the five original Markdown Git blobs at 97e1ecac, with no secret input
+or access authority. The transient field is removed from current evidence;
+this exact value-only exception covers retained PR history. No path, commit,
+credential pattern, or other digest value is exempted.
+"""
+regexes = ['''\A6ec49a66722c9813c43b9f18feac6d2e637b00de4b34fa34ba0ebc2548c9930a\z''']
+
 [extend]
 # Start from gitleaks' full first-party ruleset. This file only ever SUBTRACTS
 # known-fake fixture literals from it; it never adds a rule of its own.

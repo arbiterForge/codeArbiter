@@ -449,6 +449,6 @@
       "start": 6906
     }
   ],
-  "token": "6ec49a66722c9813c43b9f18feac6d2e637b00de4b34fa34ba0ebc2548c9930a",
+  "transient_cutover_token_omitted": true,
   "next": "Read each file. Add records or notes for every meaningful section, in batches of at most 32. Map every returned section ID to its saved record or note references in a JSON checklist ([{section, records}]); use [] only for sections marked content=false. Exclude secret values. Then run knowledge.py convert --finish TOKEN --coverage @checklist.json."
 }

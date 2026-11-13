@@ -20,6 +20,24 @@ CONTEXT = ".codearbiter/" + "CONTEXT.md"
 
 
 class KnowledgeCli(unittest.TestCase):
+    def test_command_checks_cannot_use_narrative_examples_after_retirement(self):
+        from project_knowledge import context_text
+        from test_artifact_authoring import ArtifactClient
+        self.scaffold()
+        self.knowledge("create-missing")
+        fact = {"type": "fact", "title": "Narrative example", "statement": "python prior-test.py",
+                "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        self.knowledge("add", "tech-stack", "--record", json.dumps(fact))
+        command = {**fact, "type": "command", "title": "Current test", "statement": "Declared test",
+                   "command": {"argv": ["python", "current-test.py"], "cwd": ".",
+                               "purpose": "test", "run_state": "unrun"}}
+        added = self.knowledge("add", "tech-stack", "--record", json.dumps(command))
+        client = ArtifactClient(self.root, self.installation)
+        self.assertEqual(context_text("tech-stack", root=self.root, client=client, commands_only=True),
+                         "python current-test.py")
+        self.knowledge("retire", "tech-stack", added["record"], "--reason", "Command withdrawn")
+        self.assertEqual(context_text("tech-stack", root=self.root, client=client, commands_only=True), "")
+
     def test_conformance_reads_current_records_without_reviving_historical_notes(self):
         from project_knowledge import context_text
         from test_artifact_authoring import ArtifactClient

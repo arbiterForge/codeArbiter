@@ -2351,6 +2351,12 @@ jobs:
       - name: Test real package RPC activation and aliases
         working-directory: .
         run: python .github/scripts/test_pi_package.py --rpc-commands
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
         working-directory: .
         run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
@@ -2405,6 +2411,12 @@ jobs:
           pi --version
           npm test -- test/package.test.ts -t "installed Pi runtime is admitted by the production boundary"
           npm test -- test/package.test.ts
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Run the latest Pi platform contract as a nonblocking canary
         id: platform-contract
         continue-on-error: true
@@ -2539,6 +2551,13 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Validate hook partition coverage
         run: python .github/scripts/test_hook_ci_partition.py
       - name: Validate shared suite observation

@@ -3042,7 +3042,7 @@ class GateCommandTest(unittest.TestCase):
 
     def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
         from project_knowledge import context_text
-        tech_stack = context_text("tech-stack")
+        tech_stack = context_text("tech-stack", commands_only=True)
         missing = []
         for token, who in sorted(self._demanded().items()):
             names = ", ".join(sorted(who))
@@ -3094,7 +3094,7 @@ class GateCommandTest(unittest.TestCase):
         passes - #507 reachable straight through the fix for #507.
         """
         from project_knowledge import context_text
-        tech_stack = context_text("tech-stack")
+        tech_stack = context_text("tech-stack", commands_only=True)
         pairs = self._npm_invocations(tech_stack)
         # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
         # is satisfied by the unrelated `build` and `typecheck` invocations in the same
@@ -3146,7 +3146,7 @@ class GateCommandTest(unittest.TestCase):
     def test_every_tested_tree_has_its_coverage_command_documented(self):
         """Completeness, driven by the filesystem rather than by the prose."""
         from project_knowledge import context_text
-        tech_stack = context_text("tech-stack")
+        tech_stack = context_text("tech-stack", commands_only=True)
         documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
         undocumented = [
             tree for tree in sorted(self._tested_trees())
