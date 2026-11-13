@@ -678,6 +678,124 @@ class TestSpinnerVerbsIdempotent(_WireStatuslineTest):
         self.assertGreater(len(verbs), 0)
 
 
+class TestSpinnerOwnershipIsExact(_WireStatuslineTest):
+    """HW-05 (HOOK-F05): uninstall restored the pre-install spinnerVerbs
+    backup whenever the backup key existed — even when the user had since set
+    their OWN spinner — so uninstall clobbered a later user choice. The
+    installed value is now stamped separately; uninstall restores only while
+    the current value still equals that stamp."""
+
+    PRIOR = {"mode": "replace", "verbs": ["Thinking", "Working"]}
+    CUSTOM = {"mode": "append", "verbs": ["My own verb"]}
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = _make_plugin_root(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _settings(self, content):
+        self.settings = _make_settings(self.tmp.name, content)
+
+    def _install(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+
+    def _uninstall(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            ws.main(["uninstall", "--settings", self.settings,
+                     "--plugin-root", self.root])
+        return out.getvalue()
+
+    def _set(self, **updates):
+        data = _read(self.settings)
+        data.update(updates)
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+    def test_install_stamps_the_exact_owned_value(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        data = _read(self.settings)
+        self.assertEqual(data[ws.SPINNER_OWNER_KEY], data["spinnerVerbs"])
+        self.assertEqual(data[ws.SPINNER_BACKUP_KEY], self.PRIOR)
+
+    def test_still_owned_uninstall_restores_previous_value(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.PRIOR)
+        self.assertNotIn(ws.SPINNER_OWNER_KEY, data)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+
+    def test_user_custom_spinner_after_install_survives_uninstall(self):
+        """The audit clobber reproduction."""
+        self._settings({"spinnerVerbs": self.PRIOR, "theme": "dark"})
+        self._install()
+        self._set(spinnerVerbs=self.CUSTOM)
+        output = self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.CUSTOM)
+        self.assertNotIn(ws.SPINNER_OWNER_KEY, data)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+        self.assertEqual(data.get("theme"), "dark")
+        self.assertIn("spinner ownership ended", output)
+
+    def test_user_removed_spinner_after_install_is_not_recreated(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        data = _read(self.settings)
+        del data["spinnerVerbs"]
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+        self._uninstall()
+        self.assertNotIn("spinnerVerbs", _read(self.settings))
+
+    def test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it(self):
+        self._settings({})
+        self._install()
+        self._set(spinnerVerbs=self.CUSTOM)
+        self._install()   # explicit re-install takes over WITH a fresh backup
+        data = _read(self.settings)
+        self.assertEqual(data[ws.SPINNER_BACKUP_KEY], self.CUSTOM)
+        self._uninstall()
+        self.assertEqual(_read(self.settings).get("spinnerVerbs"), self.CUSTOM)
+
+    def test_legacy_backup_without_stamp_is_conservative(self):
+        # Older installs wrote only the backup key. Restore only while the
+        # current value is exactly the verbs codeArbiter installs.
+        self._settings({"spinnerVerbs": ws.ARBITER_SPINNER_VERBS,
+                        ws.SPINNER_BACKUP_KEY: self.PRIOR})
+        self._uninstall()
+        self.assertEqual(_read(self.settings).get("spinnerVerbs"), self.PRIOR)
+        self._settings({"spinnerVerbs": self.CUSTOM,
+                        ws.SPINNER_BACKUP_KEY: self.PRIOR})
+        self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.CUSTOM)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+
+    def test_repeated_uninstall_is_a_noop(self):
+        self._settings({"spinnerVerbs": self.PRIOR, "keep": 1})
+        self._install()
+        self._uninstall()
+        first = _read(self.settings)
+        self._uninstall()
+        self.assertEqual(_read(self.settings), first)
+
+    def test_spinner_ownership_is_independent_of_statusline_replacement(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        self._set(statusLine={"type": "command", "command": "other-statusline"})
+        self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data["statusLine"]["command"], "other-statusline")
+        self.assertEqual(data.get("spinnerVerbs"), self.PRIOR)
+
+
 class TestRefreshStalePathOnSessionStart(_WireStatuslineTest):
     """Regression (#fix): a ca-owned statusLine whose command points at an OLD
     plugin-version path must be REFRESHED to the current renderer path on its own
