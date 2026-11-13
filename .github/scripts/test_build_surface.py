@@ -2859,5 +2859,46 @@ class RealPersonaCopiesTest(unittest.TestCase):
                     self.assertTrue(text.startswith("# "), f"{plugin}/{rel}: {text[:60]!r}")
 
 
+
+class TestOwnerFactsAreGenerated(unittest.TestCase):
+    """HW-19 (W-F08): command signatures and the Tribunal lens count come from
+    their owners at build time, not from hand-copied catalog prose."""
+
+    def test_rendered_catalogs_carry_owner_release_grammar_and_lens_count(self):
+        hint = B.owner_argument_hint("release").replace("|", "\\|")
+        count = B.tribunal_lens_count()
+        self.assertEqual(count, len(list((REPO_ROOT / "core/surface/skills/tribunal/references/lenses").glob("*.md"))))
+        word = B._NUMBER_WORDS[count]
+        for plugin, form in (("plugins/ca", "/ca:release"), ("plugins/ca-codex", "$ca-release"),
+                             ("plugins/ca-pi", "/ca-release")):
+            with self.subTest(plugin=plugin):
+                text = (REPO_ROOT / plugin / "COMMANDS.md").read_text(encoding="utf-8")
+                self.assertIn(f"| `{form}` | `{hint}` |", text)
+                self.assertIn(f"resumable {word}-lens audit", text)
+                self.assertNotIn("eleven-lens", text)
+                self.assertNotIn("{{FACT:", text)
+        self.assertIn("[target]", B.owner_argument_hint("release"))
+        self.assertIn("--dry-run", B.owner_argument_hint("release"))
+
+    def test_a_new_lens_card_changes_the_rendered_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lenses = Path(tmp) / "core/surface/skills/tribunal/references/lenses"
+            lenses.mkdir(parents=True)
+            for i in range(14):
+                (lenses / f"lens{i}.md").write_text("# lens\n", encoding="utf-8")
+            (lenses / "README.txt").write_text("not a card\n", encoding="utf-8")
+            self.assertEqual(B._render_facts("{{FACT:tribunal-lens-count}}", tmp), "fourteen")
+
+    def test_argument_hint_follows_the_skill_entry_owner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            _write(tmp, "core/surface/commands/x.md", "{{SKILL_ENTRY:x}}\n")
+            _write(tmp, "core/surface/skills/x/SKILL.md",
+                   '---\nname: x\nargument-hint: "[a] | --b"\n---\nbody\n')
+            self.assertEqual(B._render_facts("`{{FACT:argument-hint:x}}`", tmp), "`[a] \\| --b`")
+            _write(tmp, "core/surface/commands/y.md", "---\ndescription: d\n---\nbody\n")
+            with self.assertRaises(B.SurfaceError):
+                B._render_facts("{{FACT:argument-hint:y}}", tmp)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

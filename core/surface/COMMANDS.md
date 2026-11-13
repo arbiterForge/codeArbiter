@@ -49,7 +49,7 @@ loads only when that route is invoked. Never bulk-read the directory.
 |---|---|---|
 | `{{CMD:commit}}` | _(none)_ | Run the full commit gate and stage only the reviewed paths. |
 | `{{CMD:pr}}` | `["title"] \| --watch [PR] \| --cleanup` | Open or finish a pull request; watch hosted CI; or clean a proven merged branch. Never write directly to the default branch. |
-| `{{CMD:release}}` | `[--dry-run]` | Prepare a target-aware SemVer bump, changelog, and annotated tag when release authority is explicit. |
+| `{{CMD:release}}` | `{{FACT:argument-hint:release}}` | Prepare a target-aware SemVer bump, changelog, and annotated tag when release authority is explicit. |
 
 ### Operate
 
@@ -75,7 +75,7 @@ loads only when that route is invoked. Never bulk-read the directory.
 |---|---|---|
 | `{{CMD:checkpoint}}` | `[focus]` | Run a periodic whole-codebase reviewer sweep and return a triaged report. |
 | `{{CMD:threat-model}}` | `"scope"` | Run an opt-in lightweight STRIDE pass for a sensitive feature. |
-| `{{CMD:tribunal}}` | `[scope-path] [--tag <label>]` | Run a deep, resumable eleven-lens audit. It is expensive and never a routine gate. |
+| `{{CMD:tribunal}}` | `[scope-path] [--tag <label>]` | Run a deep, resumable {{FACT:tribunal-lens-count}}-lens audit. It is expensive and never a routine gate. |
 
 ### Decide
 

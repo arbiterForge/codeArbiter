@@ -49,6 +49,46 @@ _MARKER = re.compile(r"\{\{(IF:([a-z][a-z0-9-]*)|ELSE|END)\}\}")
 _CMD = re.compile(r"\{\{CMD:([a-z][a-z0-9-]*)\}\}")
 _TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|EXECUTABLE_PLUGIN_ROOT|PROJECT_DIR)\}\}")
 _SKILL_ENTRY = re.compile(r"\{\{SKILL_ENTRY:([a-z][a-z0-9-]*)\}\}\n?\Z")
+# HW-19 (W-F08): owner facts rendered at build time instead of hand-copied
+# summaries. `{{FACT:tribunal-lens-count}}` is the number of lens cards the
+# Tribunal roster actually ships; `{{FACT:argument-hint:<cmd>}}` is the owning
+# command (or its SKILL_ENTRY skill) frontmatter argument-hint, table-escaped.
+_FACT = re.compile(r"\{\{FACT:(tribunal-lens-count|argument-hint:[a-z][a-z0-9-]*)\}\}")
+_NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+                 "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+                 "sixteen", "seventeen", "eighteen", "nineteen", "twenty")
+
+
+def tribunal_lens_count(repo=None):
+    repo = repo or REPO
+    lens_dir = os.path.join(repo, "core", "surface", "skills", "tribunal", "references", "lenses")
+    return len([name for name in os.listdir(lens_dir) if name.endswith(".md")])
+
+
+def owner_argument_hint(name, repo=None):
+    repo = repo or REPO
+    path = os.path.join(repo, "core", "surface", "commands", f"{name}.md")
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    entry = _SKILL_ENTRY.fullmatch(text)
+    if entry:
+        with open(os.path.join(repo, "core", "surface", "skills", entry.group(1), "SKILL.md"),
+                  encoding="utf-8") as handle:
+            text = handle.read()
+    match = re.search(r'^argument-hint:\s*"?(.*?)"?\s*$', text, re.M)
+    if match is None:
+        raise SurfaceError(f"commands/{name}.md: owner declares no argument-hint")
+    return match.group(1).replace('\\"', '"')
+
+
+def _render_facts(text, repo):
+    def _fact(match):
+        key = match.group(1)
+        if key == "tribunal-lens-count":
+            count = tribunal_lens_count(repo)
+            return _NUMBER_WORDS[count] if count < len(_NUMBER_WORDS) else str(count)
+        return owner_argument_hint(key.split(":", 1)[1], repo).replace("|", "\\|")
+    return _FACT.sub(_fact, text)
 _CMD_LITERAL = re.compile(r"/ca:([a-z][a-z0-9-]*)")
 _COMMAND_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/commands/([a-z0-9-]+)\.md")
 _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
@@ -245,6 +285,7 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
     if descriptor is None:
         raise SurfaceError(f"{where}: unknown render host {host!r}")
     text = resolve_conditionals(text, host, where, host_names=host_names)
+    text = _render_facts(text, repo)
     if where in PERSONA_SOURCES:
         text = _LEADING_HTML_COMMENT.sub("", text, count=1)
     if where.startswith("core/surface/agents/"):
