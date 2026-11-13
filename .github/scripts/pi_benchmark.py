@@ -159,15 +159,18 @@ def _boundary_session(argv, cwd, ready_timeout=BOUNDARY_READY_SECONDS,
     import _boundedproc
 
     def fail(phase, reason):
-        containment = _boundedproc.terminate_tree(process)
         try:
-            _out, err = process.communicate(timeout=_boundedproc.GRACE_SECONDS)
-        except (subprocess.TimeoutExpired, ValueError):
-            err = ""
-        tail = (err or "").strip()[-400:]
+            containment = _boundedproc.terminate_tree(process)
+        except OSError:
+            containment = "unconfirmed"
+        try:
+            partial_out, err = process.communicate(timeout=_boundedproc.GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError, ValueError):
+            partial_out, err = "", ""
+        tail = (err or partial_out or ready_raw or "").strip()[-400:]
         raise RuntimeError(
             f"production Pi benchmark boundary {phase} failed: {reason}; "
-            f"containment={containment}" + (f"; stderr: {tail}" if tail else ""))
+            f"containment={containment}" + (f"; partial output: {tail}" if tail else ""))
 
     startup = time.perf_counter_ns()
     process = _boundedproc.start(

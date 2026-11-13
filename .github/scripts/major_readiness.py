@@ -121,8 +121,8 @@ def open_decisions(raw):
     return sorted(found)
 
 
-def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
-    """Validate retained proof and applicability without relabelling its origin.
+def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, cache):
+    """Authenticate recorded proof at its original identities.
 
     A reviewed instruction may preserve many baseline rows. Local installed
     evidence remains local evidence; a hosted runner only authenticates its
@@ -165,6 +165,10 @@ def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
             raw = record.get('raw_evidence', [])
             require(isinstance(raw, list) and raw and all(isinstance(p, dict) for p in raw),
                     'disposition proof lacks original raw evidence')
+            for proof in raw:
+                require('path' not in proof or not any(
+                    key in proof for key in ('run_id', 'job_id', 'artifact_id')),
+                    'mixed original raw evidence origin')
             require(isinstance(record.get('disposition_ids'), list) and record['disposition_ids']
                     and len(set(record['disposition_ids'])) == len(record['disposition_ids']),
                     'disposition proof scope is malformed or duplicated')
@@ -195,7 +199,6 @@ def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
             require(isinstance(inputs, dict) and inputs, 'disposition proof lacks checked inputs')
             for path, expected in inputs.items():
                 path_value(tested, path, expected)
-                path_value(candidate, path, expected)
             cache[key] = record
         record = cache[key]
         require(record.get('source_commit') == tested and record.get('kind') == item.get('kind'),
@@ -219,6 +222,26 @@ def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
         bound.append({'ref': item['ref'], 'sha256': item['sha256'], 'source_commit': tested,
                       'producer_class': record['producer']['class']})
     require(bound, 'disposition has no retained proof: ' + cell)
+    return bound
+
+
+def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
+    """Publication additionally requires every recorded input at the candidate.
+
+    Recorded progress/history is never rewritten when applicability changes.
+    Integration uses authenticate_recorded_disposition and reports applicability;
+    this publication entry remains the strict all-current contract.
+    """
+    bound = authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, cache)
+    for item in row.get('evidence', []):
+        retained = item.get('ref_commit', candidate)
+        key = ('proof', retained, item.get('ref'), item.get('sha256'))
+        current_key = ('current-proof', candidate, key)
+        if current_key not in cache:
+            for path, expected in cache[key]['inputs'].items():
+                require(digest(load(candidate, path)) == expected,
+                        'retained evidence bytes differ: ' + path)
+            cache[current_key] = True
     return bound
 
 

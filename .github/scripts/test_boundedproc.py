@@ -8,6 +8,7 @@ would survive termination of its direct parent alone.
 from __future__ import annotations
 
 import ctypes
+import hashlib
 import importlib.util
 import os
 import subprocess
@@ -94,6 +95,104 @@ class ReadinessWaitTest(unittest.TestCase):
         line, reason = B.readline(process, 5.0)
         self.assertEqual((line, reason), ('{"phase":', ""))
         process.wait(5)
+
+    def test_binary_readiness_preserves_completion_from_one_write(self):
+        process = B.start([PY, "-c", "import sys;sys.stdout.buffer.write(b'ready\\ncomplete\\n');sys.stdout.flush()"],
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        line, reason = B.readline(process, 5.0)
+        self.assertEqual((line, reason), (b"ready\n", ""))
+        output, error = process.communicate(timeout=0.5)
+        self.assertEqual((output, error), (b"complete\n", b""))
+        self.assertEqual(process.returncode, 0)
+
+    def test_binary_early_eof_reports_closed_and_finishes_empty(self):
+        process = B.start([PY, "-c", "raise SystemExit(3)"],
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        line, reason = B.readline(process, 5.0)
+        self.assertEqual(line, b"")
+        self.assertIn("closed before", reason)
+        self.assertEqual(process.communicate(timeout=0.5), (b"", b""))
+        self.assertEqual(process.returncode, 3)
+
+    def test_communicate_without_input_closes_stdin_after_readiness(self):
+        for text_mode in (False, True):
+            with self.subTest(text_mode=text_mode):
+                process = B.start(
+                    [PY, "-c", "import sys;sys.stdout.buffer.write(b'ready\\n');sys.stdout.flush();sys.stdin.read();sys.stdout.buffer.write(b'complete\\n')"],
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    **({"text": True, "encoding": "utf-8"} if text_mode else {}))
+                try:
+                    expected_ready = "ready\n" if text_mode else b"ready\n"
+                    self.assertEqual(B.readline(process, 5.0), (expected_ready, ""))
+                    expected = ("complete\n", "") if text_mode else (b"complete\n", b"")
+                    self.assertEqual(process.communicate(input=None, timeout=0.5), expected)
+                    self.assertTrue(process.stdin.closed)
+                    self.assertEqual(process.returncode, 0)
+                finally:
+                    if process.poll() is None:
+                        B.terminate_tree(process)
+                    process.communicate(timeout=B.GRACE_SECONDS)
+                    process.stdin.close()
+
+    def test_communicate_sends_text_or_binary_input_after_readiness(self):
+        for text_mode in (False, True):
+            with self.subTest(text_mode=text_mode):
+                process = B.start(
+                    [PY, "-c", "import sys;sys.stdout.buffer.write(b'ready\\n');sys.stdout.flush();data=sys.stdin.buffer.read();sys.stdout.buffer.write(b'complete:'+data)"],
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    **({"text": True, "encoding": "utf-8"} if text_mode else {}))
+                try:
+                    B.readline(process, 5.0)
+                    payload = "payload once" if text_mode else b"payload once\x00"
+                    expected = ("complete:" + payload, "") if text_mode else (b"complete:" + payload, b"")
+                    self.assertEqual(process.communicate(input=payload, timeout=1.0), expected)
+                    self.assertTrue(process.stdin.closed)
+                finally:
+                    if process.poll() is None:
+                        B.terminate_tree(process)
+                    process.communicate(timeout=B.GRACE_SECONDS)
+                    process.stdin.close()
+
+    def test_communicate_timeout_retry_sends_the_original_payload_once(self):
+        payload = b"x" * (512 * 1024)
+        source = ("import hashlib,sys,time;sys.stdout.buffer.write(b'ready\\n');sys.stdout.flush();"
+                  "time.sleep(0.2);data=sys.stdin.buffer.read();"
+                  "sys.stdout.write(str(len(data))+':'+hashlib.sha256(data).hexdigest())")
+        process = B.start([PY, "-c", source], stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            B.readline(process, 5.0)
+            with self.assertRaises(subprocess.TimeoutExpired):
+                process.communicate(input=payload, timeout=0.05)
+            with self.assertRaisesRegex(ValueError, "after starting communication"):
+                process.communicate(input=payload, timeout=0.05)
+            output, error = process.communicate(timeout=5.0)
+            self.assertEqual(output, (str(len(payload)) + ":" + hashlib.sha256(payload).hexdigest()).encode())
+            self.assertEqual(error, b"")
+        finally:
+            if process.poll() is None:
+                B.terminate_tree(process)
+            process.communicate(timeout=B.GRACE_SECONDS)
+            process.stdin.close()
+
+    def test_unread_stdin_stays_bounded_and_cleanup_settles_writer(self):
+        source = "import sys;sys.stdout.buffer.write(b'ready\\n');sys.stdout.flush();\n" + HANG
+        process = B.start([PY, "-c", source], stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            B.readline(process, 5.0)
+            started = time.monotonic()
+            with self.assertRaises(subprocess.TimeoutExpired):
+                process.communicate(input=b"x" * (512 * 1024), timeout=0.1)
+            self.assertLess(time.monotonic() - started, 5)
+            self.assertEqual(B.terminate_tree(process), "terminated")
+            process.communicate(timeout=B.GRACE_SECONDS)
+            self.assertTrue(process.stdin.closed)
+        finally:
+            if process.poll() is None:
+                B.terminate_tree(process)
+            process.communicate(timeout=B.GRACE_SECONDS)
+            process.stdin.close()
 
     def test_child_that_exits_immediately_reports_a_closed_stream(self):
         process = child("raise SystemExit(3)")
@@ -203,11 +302,29 @@ class PiBenchmarkReadinessDeadlineTest(unittest.TestCase):
             self.session("print('{\"phase\":\"ready\"}', flush=True)\n" + HANG)
 
     def test_well_behaved_boundary_completes(self):
+        # Both records arrive in one OS write: TextIO may prefetch completion
+        # while reading readiness. Communication must retain those same bytes.
+        completion = '{"phase":"complete","marker":"complete marker"}\n'
+        output = '{"phase":"ready"}\n' + completion
         _, ready, remainder = self.session(
-            "print('{\"phase\":\"ready\"}', flush=True)\nprint('{\"phase\":\"complete\"}')",
+            "import sys\nsys.stdout.write(" + repr(output) + ");sys.stdout.flush()",
             ready=10, complete=10)
         self.assertEqual(ready, {"phase": "ready"})
-        self.assertIn("complete", remainder)
+        self.assertEqual(remainder, completion)
+
+    def test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied(self):
+        actual_cleanup = B.terminate_tree
+        def denied_group(process):
+            # Exercise the real child and real cleanup owner, with precisely
+            # the macOS killpg EPERM syscall fault observed in the original log.
+            with patch.object(B.os, "name", "posix"), \
+                    patch.object(B.signal, "SIGKILL", 9, create=True), \
+                    patch.object(B.os, "killpg", side_effect=PermissionError("denied group"), create=True), \
+                    patch.object(B, "_group_alive", return_value=True):
+                return actual_cleanup(process, grace=0)
+        with patch.object(B, "terminate_tree", side_effect=denied_group), \
+                self.assertRaisesRegex(RuntimeError, "readiness.*containment=unconfirmed.*partial fixture"):
+            self.session("import sys\nsys.stderr.write('partial fixture');sys.stdout.write('{\"phase\":')")
 
 
 if __name__ == "__main__":

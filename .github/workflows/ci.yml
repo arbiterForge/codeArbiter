@@ -165,6 +165,7 @@ jobs:
       pi-last-verified: ${{ steps.pi-policy.outputs.last-verified }}
       host-descriptors: ${{ steps.filter.outputs.host-descriptors == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       hooks: ${{ steps.filter.outputs.hooks == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      program_integrity: ${{ steps.filter.outputs.program_integrity == 'true' || steps.filter.outputs.hooks == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       impact: ${{ steps.filter.outputs.impact == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       manifests: ${{ steps.filter.outputs.manifests == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       codex-resources: ${{ steps.filter.outputs.codex-resources == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
@@ -269,6 +270,12 @@ jobs:
               - 'tools/sync-core.py'
               - 'tools/build-host-packages.py'
               - '.github/scripts/test_host_descriptors.py'
+              - '.github/workflows/ci.yml'
+            program_integrity:
+              - 'docs/state-contracts-major/**'
+              - '.github/scripts/check_state_contracts_integration.py'
+              - '.github/scripts/test_state_contracts_integration.py'
+              - '.github/scripts/major_readiness.py'
               - '.github/workflows/ci.yml'
             hooks:
               - 'tools/build-artifacts.py'
@@ -2645,6 +2652,40 @@ jobs:
       - name: Fail unresolved high-severity findings
         run: python .github/scripts/test_pi_security.py --sarif codeql-results
 
+  # P-02 is Git/Python-only. Keep it outside the nearly full native hook
+  # budget; incomplete recorded work is allowed, publication remains Q-02's.
+  program-integrity:
+    name: "[CHECK] | [REPO] | Program integrity  <os: ${{ matrix.os }}>"
+    needs: changes
+    if: needs.changes.outputs.program_integrity == 'true'
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Check partial-program coverage accounting
+        run: python docs/state-contracts-major/execution/tools/coverage_ledger.py check
+      - name: Authenticate recorded program evidence and report applicability
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # P-02 validates historical integrity; unfinished or stale work is not
+        # publication-ready. Q-02 retains its strict all-current main barrier.
+        run: python .github/scripts/check_state_contracts_integration.py
+      - name: Test partial-program integrity and historical applicability
+        run: python .github/scripts/test_state_contracts_integration.py
+
   hooks:
     name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
     # Windows runs independent command groups on fresh runners. Linux/macOS
@@ -4037,6 +4078,7 @@ jobs:
       - coverage-union-pi-merge
       - ca-pi-codeql
       - hooks
+      - program-integrity
       - workflow-recovery
       - version-bump
       - version-bump-sandbox
@@ -4057,13 +4099,19 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['workflow-recovery'].result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['program-integrity'].result }} ${{ needs['workflow-recovery'].result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
           artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
           artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
+          program_integrity_required="${{ needs.changes.outputs.program_integrity }}"
+          program_integrity_result="${{ needs['program-integrity'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           release_candidate_result="${{ needs['auto-release-candidate'].result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
+          if [ "$program_integrity_required" = true ] && [ "$program_integrity_result" != success ]; then
+            echo "::error::selected program integrity did not succeed: $program_integrity_result"
+            exit 1
+          fi
           if [ "$artifact_coverage_required" = true ] && [ "$artifact_coverage_result" != success ]; then
             echo "::error::required native statement coverage did not succeed: $artifact_coverage_result"
             exit 1
