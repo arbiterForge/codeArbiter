@@ -73,6 +73,29 @@ and check the diagram. Update only the necessary geometry and text wrapping.
 Advance the reviewed binding and geometry fingerprint after that review, not to
 silence a failing test. Unrelated source commits do not require repinning all maps.
 
+## Major state-contract source review
+
+The major-program update retains every original map, source URL, position and
+relationship. `major-state-contracts-update.json` names 40 inspected complete
+owner files by exact Git blob. These bindings cover preserved task progress and
+retirement history, the shared context-preview and manifest contracts, early
+follow-up capture, bounded recovery, persona redelivery, corrected review
+resubmission and dependency-scoped conflicts. The original assistive packet
+remains unchanged; the current source explanation adds the inspected differences.
+
+Three additional text overlays correct the conflict, task and harvest nodes:
+conflicts hold affected dependents, discovery capture precedes terminal harvest,
+and promotion still needs existing authority and exact readback. The recovery
+inspector explains uncertain outcomes and retained grants without claiming a
+restart restores authority. Original geometry and historical approval wording
+remain historical, separately labeled from current source explanations.
+
+The command catalog keeps its command identities, host forms and removal
+history. Its new exact binding changes only the separately approved removal
+requirements. The review does not certify a live parent host, final package
+cohort, responsiveness or publication. Changed owner bytes still fail the same
+source check; no moving HEAD binding or drift-check exemption was introduced.
+
 ## Historical changelog growth
 
 The October 9 branch update to `26ecb3eac589cdb12102c29eb5b7847eab5c4fb7`

@@ -1,0 +1,426 @@
+{
+  "revision": "6a8967f03078fa3c7b0d92a8d19f2d6383dd66e3",
+  "title": "State-contract program: inspected source changes",
+  "summary": "Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims. Real user stops and host permissions remain effective. This source review covers progress preservation, discovery capture, bounded recovery, scoped conflicts, generator and manifest contracts; it is not installed-host certification.",
+  "changes": [
+    {
+      "path": "core/surface/COMMANDS.md",
+      "blob": "662ac6c88b69c95c971fedf5bd535f8aa48190ca",
+      "summary": "Compatibility routes keep their identities; removal requires the declared major-version floors, fresh confirmed publication evidence and a separately approved named removal.",
+      "nodes": [
+        "o-release",
+        "r-release"
+      ]
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "blob": "bd8d7d03d321724eef0c075c50f28ff825c59fb8",
+      "summary": "Conflicting rules pause affected work and actual authority, data or decision dependents. Independent authorized work continues; global user and host stops remain global.",
+      "nodes": [
+        "o-conflict",
+        "k-conflict",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/surface/SPRINT.md",
+      "blob": "4a719ae5df42d6447ad58172d81480ccbdd6f436",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "blob": "d443555fb865bc43ebe0d3375c267d12c6c3f9dd",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "blob": "31d100450d46ecdb3203ed796a08c7aa1117181b",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/pysrc/prompt-submit.py",
+      "blob": "5a92b48650a9b5beb056e0d01cc6af997ff98acd",
+      "summary": "Startup emits mode and project state; prompt delivery tracks the last delivered mode and compaction generation. A return to a previous mode redelivers its persona, while unchanged turns do not. Recovery notices use a separate identity.",
+      "nodes": [
+        "o-runtime",
+        "c-live",
+        "c-persona"
+      ]
+    },
+    {
+      "path": "core/surface/agents/INDEX.md",
+      "blob": "5b831ac106d0f053bf51917d40d2e7d46b2339c8",
+      "summary": "The reviewer index reflects the actual blocking severity contracts. Maintenance-only dependency concerns and ordinary coverage gaps remain non-blocking; critical-path and threshold failures retain their gates.",
+      "nodes": [
+        "r-fleet",
+        "r-verdict"
+      ]
+    },
+    {
+      "path": "core/surface/commands/init.md",
+      "blob": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
+      "summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. Opted-in Git-common enforcement and writer sidecars are disclosed separately from project records.",
+      "nodes": [
+        "o-init",
+        "o-runtime",
+        "c-live"
+      ]
+    },
+    {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "blob": "d2377928f6f096aa69816f8ef067903f9a638673",
+      "summary": "A refused debug packet can be corrected through the same installed validator with actual changed facts or evidence. Operational retry preserves identical bytes; actual host and user denial remain binding.",
+      "nodes": [
+        "d-task",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "blob": "2db5a03a1d2f09ea2ee05832b3dc4eedd7763606",
+      "summary": "Conflicting rules pause affected work and actual authority, data or decision dependents. Independent authorized work continues; global user and host stops remain global.",
+      "nodes": [
+        "o-conflict",
+        "k-conflict",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "blob": "7f93794bde693fd632a9f298129148c002e737ab",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/pysrc/_artifactlib.py",
+      "blob": "4ebc16010335c0288a65ff8721068717d4212d78",
+      "summary": "The canonical release-manifest contract is shared by producers and consumers, including optional qualification metadata. A declaration never substitutes for matching payload digests, executable format and native-tested qualification.",
+      "nodes": [
+        "f-capability",
+        "b-profile",
+        "k-doctor"
+      ]
+    },
+    {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "blob": "654a830c105ef12d2188f485e642382ccac0fb2a",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/task_context.go",
+      "blob": "0b6fc74a3d606e3e033f99187ac0bad7110f7d23",
+      "summary": "Recorded progress and derived check applicability remain separate. Blocking a dependency preserves downstream progress and independent stops. Legacy STALE remains unresolved; receipt labels are unassessed until actual evidence is checked.",
+      "nodes": [
+        "f-resume",
+        "f-selection",
+        "f-verify",
+        "f-accept",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/task_check.go",
+      "blob": "8398a560c8312417fde3f71347e8e2adb7a89f8f",
+      "summary": "Typed retirement preserves original symbol kind and historical command observations without live scheduling or ID reuse. Feature-aware schema labels advance monotonically; incompatible old clients refuse new writes.",
+      "nodes": [
+        "f-plan",
+        "f-selection",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/model/assistive.go",
+      "blob": "74a59e614520ae2abd2bc64b5771ac1139846130",
+      "summary": "Recorded progress and derived check applicability remain separate. Blocking a dependency preserves downstream progress and independent stops. Legacy STALE remains unresolved; receipt labels are unassessed until actual evidence is checked.",
+      "nodes": [
+        "f-resume",
+        "f-selection",
+        "f-verify",
+        "f-accept",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/render/render.go",
+      "blob": "c17d027974ff9a91cb60dd1bfd1cabd2c41e0d39",
+      "summary": "Typed retirement preserves original symbol kind and historical command observations without live scheduling or ID reuse. Feature-aware schema labels advance monotonically; incompatible old clients refuse new writes.",
+      "nodes": [
+        "f-plan",
+        "f-selection",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/protocol.go",
+      "blob": "48faadf93c77f80d970698b279c011047404fa8d",
+      "summary": "The native operation inventory and journaled classification derive from the descriptor owner. Descriptors state backend availability and effects; they do not grant permission or certify installed behavior.",
+      "nodes": [
+        "f-capability",
+        "c-read",
+        "k-doctor"
+      ]
+    },
+    {
+      "path": "core/artifacts/schemas/common.schema.json",
+      "blob": "336f0164084ba9fc1139ad7c88b522ab5f60b152",
+      "summary": "Typed retirement preserves original symbol kind and historical command observations without live scheduling or ID reuse. Feature-aware schema labels advance monotonically; incompatible old clients refuse new writes.",
+      "nodes": [
+        "f-plan",
+        "f-selection",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/surface/commands/status.md",
+      "blob": "905b4f65b6ed147c047f791f6bfef8441f644c3e",
+      "summary": "Startup and status expose a bounded read-only registered recovery inventory. Partial pages are lower bounds; unknown or corrupt state remains unavailable. Optional notice markers are presentation bookkeeping, never restored permission.",
+      "nodes": [
+        "c-live",
+        "k-status",
+        "k-standup",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/context_assistive.go",
+      "blob": "5e506d1069511c7a15ca381d58354e3c8f0d95a6",
+      "summary": "Preview producer and consumer share the closed stored format and directory contract. Validation and exact before/after binding precede mutation; a preview grants no approval.",
+      "nodes": [
+        "b-preview",
+        "b-apply",
+        "b-recover"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/assistive.go",
+      "blob": "345fb8216f828d422fdc32d4a62c8eb58fe6db93",
+      "summary": "Recorded progress and derived check applicability remain separate. Blocking a dependency preserves downstream progress and independent stops. Legacy STALE remains unresolved; receipt labels are unassessed until actual evidence is checked.",
+      "nodes": [
+        "f-resume",
+        "f-selection",
+        "f-verify",
+        "f-accept",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/lifecycle.go",
+      "blob": "b5b344b6b7c2d1d12c383fb12b6b90e3fe5003a8",
+      "summary": "Recorded progress and derived check applicability remain separate. Blocking a dependency preserves downstream progress and independent stops. Legacy STALE remains unresolved; receipt labels are unassessed until actual evidence is checked.",
+      "nodes": [
+        "f-resume",
+        "f-selection",
+        "f-verify",
+        "f-accept",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "blob": "3df9aea87710fdcee35f43ebab181d72789ec788",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/render/work_view.go",
+      "blob": "7f395e2f6b9b71e4268bd62520ade43f94639b54",
+      "summary": "The work view keeps local completion, checks and delivery separate. Stored passed/failed values from another writer are explicitly not native verification events.",
+      "nodes": [
+        "k-board",
+        "f-verify"
+      ]
+    },
+    {
+      "path": "core/surface/commands/override.md",
+      "blob": "7bf6654b069232c11ece3ca120b87f8f216cc242",
+      "summary": "The security marker binds the worktree and complete staged candidate, including non-sensitive edits. Recording a result does not itself establish a semantic reviewer pass.",
+      "nodes": [
+        "r-c2",
+        "k-override"
+      ]
+    },
+    {
+      "path": "core/surface/commands/conflict.md",
+      "blob": "96e20f1e79e0412acb37ec7ee626119e45406722",
+      "summary": "Conflicting rules pause affected work and actual authority, data or decision dependents. Independent authorized work continues; global user and host stops remain global.",
+      "nodes": [
+        "o-conflict",
+        "k-conflict",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/surface/commands/standup.md",
+      "blob": "623b994b9ca4dbfebb04666d617dd76cc42bf663",
+      "summary": "Startup and status expose a bounded read-only registered recovery inventory. Partial pages are lower bounds; unknown or corrupt state remains unavailable. Optional notice markers are presentation bookkeeping, never restored permission.",
+      "nodes": [
+        "c-live",
+        "k-status",
+        "k-standup",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/surface/commands/watch.md",
+      "blob": "cb9f526f0f69931b64b10e030c66f4937c084c73",
+      "summary": "One detached GitHub CLI watch refreshes checks itself. The agent resumes on completion, diagnoses failures and never derives merge authority from green checks.",
+      "nodes": [
+        "r-watch",
+        "o-watch-clean"
+      ]
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "blob": "b3f612df41d0b42231933b8dae7d737c86a8652f",
+      "summary": "Recorded progress and derived check applicability remain separate. Blocking a dependency preserves downstream progress and independent stops. Legacy STALE remains unresolved; receipt labels are unassessed until actual evidence is checked.",
+      "nodes": [
+        "f-resume",
+        "f-selection",
+        "f-verify",
+        "f-accept",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "blob": "c2bc83af5d9d70ad163c2b5f1efadbf382093c67",
+      "summary": "Pi author children request exact parent-executed operations under current policy and consent. The trusted-host profile has no OS confinement. Restart retires grants; journal reconciliation, child judgment and installed qualification remain separate. Generic reports lack durable producer context.",
+      "nodes": [
+        "f-capability",
+        "c-read",
+        "k-doctor"
+      ]
+    },
+    {
+      "path": "core/surface/includes/harvest.md",
+      "blob": "1995cf0f251057ab32b9cdd9143c1af0aa501136",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/pysrc/_workflowrecoverylib.py",
+      "blob": "7214f98ef18d1aa6578253b0926c85de0a0519c3",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work. Decision and decline publication carries the caller preimage through both atomic comparisons; a concurrent append remains a conflict with its effect unresolved.",
+      "nodes": [
+        "c-harvest",
+        "c-decisions",
+        "f-recovery",
+        "k-task"
+      ]
+    },
+    {
+      "path": "core/pysrc/workflow-recovery.py",
+      "blob": "41f0ade6ae5ade17915dda699ef6432fe9079739",
+      "summary": "Startup and status expose a bounded read-only registered recovery inventory. Partial pages are lower bounds; unknown or corrupt state remains unavailable. Optional notice markers are presentation bookkeeping, never restored permission.",
+      "nodes": [
+        "c-live",
+        "k-status",
+        "k-standup",
+        "f-recovery"
+      ]
+    },
+    {
+      "path": "core/artifact-release-manifest.json",
+      "blob": "ca170c2b363301e75c28b39976c92218e5ac624c",
+      "summary": "The canonical release-manifest contract is shared by producers and consumers, including optional qualification metadata. A declaration never substitutes for matching payload digests, executable format and native-tested qualification.",
+      "nodes": [
+        "f-capability",
+        "b-profile",
+        "k-doctor"
+      ]
+    },
+    {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "blob": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+      "summary": "The canonical release-manifest contract is shared by producers and consumers, including optional qualification metadata. A declaration never substitutes for matching payload digests, executable format and native-tested qualification.",
+      "nodes": [
+        "f-capability",
+        "b-profile",
+        "k-doctor"
+      ]
+    },
+    {
+      "path": "core/pysrc/_artifactauthoritylib.py",
+      "blob": "e934626f5bd03c04271d1299b0ba369be251a300",
+      "summary": "A known correctable terminal review can receive a fresh linked request with current target, contract and explicit completion selections. Immutable separately versioned lineage supports exact operation replay across interruption. The old terminal request stays unchanged; a fresh independent child and actual first terminal observation remain required. Unknown failures, user/host denials and unresolved findings are not permission to retry.",
+      "nodes": [
+        "f-spec-review",
+        "f-recovery",
+        "r-c2",
+        "c-review"
+      ]
+    },
+    {
+      "path": "core/pysrc/artifact-authority.py",
+      "blob": "9ecd8bb20f843b9b97069f0289f898747eade725",
+      "summary": "A known correctable terminal review can receive a fresh linked request with current target, contract and explicit completion selections. Immutable separately versioned lineage supports exact operation replay across interruption. The old terminal request stays unchanged; a fresh independent child and actual first terminal observation remain required. Unknown failures, user/host denials and unresolved findings are not permission to retry.",
+      "nodes": [
+        "f-spec-review",
+        "f-recovery",
+        "r-c2",
+        "c-review"
+      ]
+    },
+    {
+      "path": "core/surface/agents/authority-reviewer.md",
+      "blob": "9d39b7fe744b7384cb0fe42948b83491fdfe099a",
+      "summary": "A known correctable terminal review can receive a fresh linked request with current target, contract and explicit completion selections. Immutable separately versioned lineage supports exact operation replay across interruption. The old terminal request stays unchanged; a fresh independent child and actual first terminal observation remain required. Unknown failures, user/host denials and unresolved findings are not permission to retry.",
+      "nodes": [
+        "f-spec-review",
+        "f-recovery",
+        "r-c2",
+        "c-review"
+      ]
+    },
+    {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "blob": "355bfac4f20d2dc4a750212d16119357d7427043",
+      "summary": "A known correctable terminal review can receive a fresh linked request with current target, contract and explicit completion selections. Immutable separately versioned lineage supports exact operation replay across interruption. The old terminal request stays unchanged; a fresh independent child and actual first terminal observation remain required. Unknown failures, user/host denials and unresolved findings are not permission to retry.",
+      "nodes": [
+        "f-spec-review",
+        "f-recovery",
+        "r-c2",
+        "c-review"
+      ]
+    }
+  ]
+}

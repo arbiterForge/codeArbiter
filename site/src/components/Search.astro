@@ -185,6 +185,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       let latest = 0;
       const render = async (query: string, forceLoad = false) => {
         const token = ++latest;
+        try {
         await loadPagefind(forceLoad);
         if (token !== latest) return;
         if (loadErr || !pagefind) {
@@ -224,6 +225,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         } for "${query}".`;
         data.forEach(appendResult);
         open();
+        } catch {
+          // Both provider queries and lazy result data can reject. Only the
+          // current query owns visible failure and retry state.
+          if (token !== latest) return;
+          listbox.replaceChildren();
+          options = [];
+          remainingResults = [];
+          clearActive();
+          showAll.hidden = true;
+          showAll.disabled = false;
+          retry.hidden = false;
+          status.textContent = "Search is temporarily unavailable.";
+          open();
+        }
       };
 
       retry.addEventListener("click", () => {
@@ -236,6 +251,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         const token = ++latest;
         const pending = remainingResults;
         showAll.disabled = true;
+        try {
         const data = await Promise.all(pending.map((result: any) => result.data()));
         if (token !== latest) return;
         remainingResults = [];
@@ -244,6 +260,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         showAll.hidden = true;
         showAll.disabled = false;
         status.textContent = `${options.length} results for "${resultQuery}".`;
+        } catch {
+          if (token !== latest) return;
+          status.textContent = "Could not load more results. Try again.";
+          showAll.textContent = "Retry loading more results";
+        } finally {
+          if (token === latest) showAll.disabled = false;
+        }
       });
 
       // Live search: debounce keystrokes so we query as the user types without

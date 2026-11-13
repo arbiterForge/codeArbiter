@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, PI_HOST_DESCRIPTOR_BLOB, PI_SUPPORT_SOURCE_BLOBS, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, WORK_SYSTEM_SOURCE_BLOBS, NATIVE_FIRST_SOURCE_BLOBS, SED_READ_SOURCE_BLOBS, TRACKER_COORDINATION_SOURCE_BLOBS, CORRECTIVE_SOURCE_BLOBS, HOOK_RECOVERY_SOURCE_BLOBS, PERSONA_CONTEXT_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
+import {MAJOR_SOURCE_BLOBS, loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, PI_HOST_DESCRIPTOR_BLOB, PI_SUPPORT_SOURCE_BLOBS, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS, COMMAND_REMOVAL_SOURCE_BLOBS, CONTEXT_KNOWLEDGE_SOURCE_BLOBS, TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS, MARKER_PREFLIGHT_BLOB, SCHEMA_CACHE_RENDER_BLOB, WORK_SYSTEM_SOURCE_BLOBS, NATIVE_FIRST_SOURCE_BLOBS, SED_READ_SOURCE_BLOBS, TRACKER_COORDINATION_SOURCE_BLOBS, CORRECTIVE_SOURCE_BLOBS, HOOK_RECOVERY_SOURCE_BLOBS, PERSONA_CONTEXT_SOURCE_BLOBS, RETIRED_COMMANDS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -255,26 +255,52 @@ describe('atlas source compatibility revalidation', () => {
     expect(reviewed).toHaveLength(paths.length);
     const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
     expect(changed).toEqual([
-      'CHANGELOG.md', 'core/hosts.json', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
-      'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
-      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/arbiter.md',
-      'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
-      'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md', 'core/surface/commands/doctor.md',
-      'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
-      'core/surface/commands/init.md', 'core/surface/commands/override.md', 'core/surface/commands/review.md',
+      'CHANGELOG.md',
+      'core/hosts.json',
+      'core/pysrc/_artifactauthoritylib.py',
+      'core/pysrc/_contextselectlib.py',
+      'core/pysrc/_readinjectlib.py',
+      'core/pysrc/_tribunalrunlib.py',
+      'core/pysrc/prompt-submit.py',
+      'core/surface/COMMANDS.md',
+      'core/surface/SPRINT.md',
+      'core/surface/agents/INDEX.md',
+      'core/surface/arbiter.md',
+      'core/surface/command-routes.json',
+      'core/surface/commands/add-dep.md',
+      'core/surface/commands/audit.md',
+      'core/surface/commands/checkpoint.md',
+      'core/surface/commands/conflict.md',
+      'core/surface/commands/doctor.md',
+      'core/surface/commands/feature.md',
+      'core/surface/commands/fix.md',
+      'core/surface/commands/init.md',
+      'core/surface/commands/override.md',
+      'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
-      'core/surface/commands/status.md', 'core/surface/commands/task.md',
-      'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
-      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
-      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
-      'core/surface/skills/context-creation/SKILL.md', 'core/surface/skills/debug/SKILL.md',
+      'core/surface/commands/sprint.md',
+      'core/surface/commands/standup.md',
+      'core/surface/commands/status.md',
+      'core/surface/commands/task.md',
+      'core/surface/commands/watch.md',
+      'core/surface/includes/artifacts.md',
+      'core/surface/includes/reference-map.md',
+      'core/surface/includes/routing-table.md',
+      'core/surface/skills/INDEX.md',
+      'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/skills/context-check/SKILL.md',
+      'core/surface/skills/context-creation/SKILL.md',
+      'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/decompose/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md',
+      'core/surface/skills/refactor/SKILL.md',
+      'core/surface/skills/release/SKILL.md',
       'core/surface/skills/security-architecture/SKILL.md',
       'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/tdd/SKILL.md',
+      'core/surface/skills/tribunal/SKILL.md',
+      'docs/hooks.md',
+      'docs/parity.md',
     ]);
     expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
       'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
@@ -282,7 +308,7 @@ describe('atlas source compatibility revalidation', () => {
     });
     for (const [path, blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS)) {
       expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(blob);
-      const currentBlob = PERSONA_CONTEXT_SOURCE_BLOBS[path] ?? HOOK_RECOVERY_SOURCE_BLOBS[path] ?? CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? ASSISTIVE_SOURCE_BLOBS[path] ?? RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path] ?? blob;
+      const currentBlob = MAJOR_SOURCE_BLOBS[path] ?? PERSONA_CONTEXT_SOURCE_BLOBS[path] ?? HOOK_RECOVERY_SOURCE_BLOBS[path] ?? CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? ASSISTIVE_SOURCE_BLOBS[path] ?? RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path] ?? blob;
       // The canonical tracked file retains this blob through a squash; no PR
       // commit has to remain reachable in a subsequent main-only clone.
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
@@ -305,33 +331,59 @@ describe('atlas source compatibility revalidation', () => {
     expect(reviewed).toHaveLength(paths.length);
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
-      'CHANGELOG.md', 'core/hosts.json', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
-      'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
-      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/arbiter.md',
-      'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
-      'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md', 'core/surface/commands/doctor.md',
-      'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
-      'core/surface/commands/init.md', 'core/surface/commands/override.md', 'core/surface/commands/review.md',
+      'CHANGELOG.md',
+      'core/hosts.json',
+      'core/pysrc/_artifactauthoritylib.py',
+      'core/pysrc/_contextselectlib.py',
+      'core/pysrc/_readinjectlib.py',
+      'core/pysrc/_tribunalrunlib.py',
+      'core/pysrc/prompt-submit.py',
+      'core/surface/COMMANDS.md',
+      'core/surface/SPRINT.md',
+      'core/surface/agents/INDEX.md',
+      'core/surface/arbiter.md',
+      'core/surface/command-routes.json',
+      'core/surface/commands/add-dep.md',
+      'core/surface/commands/audit.md',
+      'core/surface/commands/checkpoint.md',
+      'core/surface/commands/conflict.md',
+      'core/surface/commands/doctor.md',
+      'core/surface/commands/feature.md',
+      'core/surface/commands/fix.md',
+      'core/surface/commands/init.md',
+      'core/surface/commands/override.md',
+      'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
-      'core/surface/commands/status.md', 'core/surface/commands/task.md',
-      'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
-      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
-      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
-      'core/surface/skills/context-creation/SKILL.md', 'core/surface/skills/debug/SKILL.md',
+      'core/surface/commands/sprint.md',
+      'core/surface/commands/standup.md',
+      'core/surface/commands/status.md',
+      'core/surface/commands/task.md',
+      'core/surface/commands/watch.md',
+      'core/surface/includes/artifacts.md',
+      'core/surface/includes/reference-map.md',
+      'core/surface/includes/routing-table.md',
+      'core/surface/skills/INDEX.md',
+      'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/skills/context-check/SKILL.md',
+      'core/surface/skills/context-creation/SKILL.md',
+      'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/decompose/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md',
+      'core/surface/skills/refactor/SKILL.md',
+      'core/surface/skills/release/SKILL.md',
       'core/surface/skills/security-architecture/SKILL.md',
       'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/tdd/SKILL.md',
+      'core/surface/skills/tribunal/SKILL.md',
+      'docs/hooks.md',
+      'docs/parity.md',
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
     // Retain the historical assistive binding while checking the newer
     // runtime-marker preflight against its own exact source blob.
     expect(ASSISTIVE_SOURCE_BLOBS[path]).toBe(RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
-    expect(git('hash-object', '--', path).trim()).toBe(MARKER_PREFLIGHT_BLOB);
+    expect(git('hash-object', '--', path).trim()).toBe(MAJOR_SOURCE_BLOBS[path] ?? MARKER_PREFLIGHT_BLOB);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
     expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),
@@ -370,7 +422,7 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(PERSONA_CONTEXT_SOURCE_BLOBS[path] ?? HOOK_RECOVERY_SOURCE_BLOBS[path] ?? CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+      expect(git('hash-object', '--', path).trim()).toBe(MAJOR_SOURCE_BLOBS[path] ?? PERSONA_CONTEXT_SOURCE_BLOBS[path] ?? HOOK_RECOVERY_SOURCE_BLOBS[path] ?? CORRECTIVE_SOURCE_BLOBS[path] ?? TRACKER_COORDINATION_SOURCE_BLOBS[path] ?? NATIVE_FIRST_SOURCE_BLOBS[path] ?? WORK_SYSTEM_SOURCE_BLOBS[path] ?? CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path] ?? SMARTS_INTEGRATION_SOURCE_BLOBS[path]
         ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
@@ -388,7 +440,7 @@ describe('atlas source compatibility revalidation', () => {
       'docs/parity.md': '17d824a7ddc47662daa9d4069ac5afd453e033ac',
     });
     for (const [path, blob] of Object.entries(PI_SUPPORT_SOURCE_BLOBS)) {
-      expect(git('hash-object', '--', path).trim()).toBe(blob);
+      expect(git('hash-object', '--', path).trim()).toBe(MAJOR_SOURCE_BLOBS[path] ?? blob);
     }
     expect(() => loadAtlas()).not.toThrow();
   });
@@ -446,6 +498,9 @@ describe('atlas source compatibility revalidation', () => {
       ['knowledge-operations', 'k-writer'],
       ['knowledge-operations', 'k-board'],
       ['debug-handoff', 'd-task'],
+      ['knowledge-operations', 'k-conflict'],
+      ['knowledge-operations', 'k-task'],
+      ['context-layers', 'c-harvest'],
     ]) {
       const node = current.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
       const baseline = original.views.find(view => view.id === viewId)?.nodes.find(item => item.id === nodeId);
@@ -485,7 +540,7 @@ describe('atlas source compatibility revalidation', () => {
       'core/pysrc/_tribunalrunlib.py': 'c2db7a2b082e005e0be9dd637a853c6ee096a01f',
     });
     for (const [path, blob] of Object.entries(TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS)) {
-      expect(git('hash-object', '--', path).trim()).toBe(blob);
+      expect(git('hash-object', '--', path).trim()).toBe(MAJOR_SOURCE_BLOBS[path] ?? blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n'));
     }
     const sources = new Map(atlas.sources.map(source => [source.id, source]));
@@ -540,26 +595,52 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(offset).toBe(reviewed.length);
     expect(changed).toEqual([
-      'CHANGELOG.md', 'core/hosts.json', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
-      'core/pysrc/_readinjectlib.py', 'core/pysrc/_tribunalrunlib.py',
-      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/arbiter.md',
-      'core/surface/command-routes.json', 'core/surface/commands/add-dep.md',
-      'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md', 'core/surface/commands/doctor.md',
-      'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
-      'core/surface/commands/init.md', 'core/surface/commands/override.md', 'core/surface/commands/review.md',
+      'CHANGELOG.md',
+      'core/hosts.json',
+      'core/pysrc/_artifactauthoritylib.py',
+      'core/pysrc/_contextselectlib.py',
+      'core/pysrc/_readinjectlib.py',
+      'core/pysrc/_tribunalrunlib.py',
+      'core/pysrc/prompt-submit.py',
+      'core/surface/COMMANDS.md',
+      'core/surface/SPRINT.md',
+      'core/surface/agents/INDEX.md',
+      'core/surface/arbiter.md',
+      'core/surface/command-routes.json',
+      'core/surface/commands/add-dep.md',
+      'core/surface/commands/audit.md',
+      'core/surface/commands/checkpoint.md',
+      'core/surface/commands/conflict.md',
+      'core/surface/commands/doctor.md',
+      'core/surface/commands/feature.md',
+      'core/surface/commands/fix.md',
+      'core/surface/commands/init.md',
+      'core/surface/commands/override.md',
+      'core/surface/commands/review.md',
       'core/surface/commands/spike.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/standup.md',
-      'core/surface/commands/status.md', 'core/surface/commands/task.md',
-      'core/surface/includes/artifacts.md', 'core/surface/includes/reference-map.md',
-      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
-      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md',
-      'core/surface/skills/context-creation/SKILL.md', 'core/surface/skills/debug/SKILL.md',
+      'core/surface/commands/sprint.md',
+      'core/surface/commands/standup.md',
+      'core/surface/commands/status.md',
+      'core/surface/commands/task.md',
+      'core/surface/commands/watch.md',
+      'core/surface/includes/artifacts.md',
+      'core/surface/includes/reference-map.md',
+      'core/surface/includes/routing-table.md',
+      'core/surface/skills/INDEX.md',
+      'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/skills/context-check/SKILL.md',
+      'core/surface/skills/context-creation/SKILL.md',
+      'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/decompose/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md',
+      'core/surface/skills/refactor/SKILL.md',
+      'core/surface/skills/release/SKILL.md',
       'core/surface/skills/security-architecture/SKILL.md',
       'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/tdd/SKILL.md',
+      'core/surface/skills/tribunal/SKILL.md',
+      'docs/hooks.md',
+      'docs/parity.md',
     ]);
     expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
       'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
@@ -582,7 +663,7 @@ describe('atlas source compatibility revalidation', () => {
       'core/artifacts/internal/render/render.go': SCHEMA_CACHE_RENDER_BLOB,
       ...WORK_SYSTEM_SOURCE_BLOBS, ...SED_READ_SOURCE_BLOBS, ...NATIVE_FIRST_SOURCE_BLOBS, ...TRACKER_COORDINATION_SOURCE_BLOBS,
       ...CORRECTIVE_SOURCE_BLOBS, ...HOOK_RECOVERY_SOURCE_BLOBS, ...PERSONA_CONTEXT_SOURCE_BLOBS,
-      ...PI_SUPPORT_SOURCE_BLOBS});
+      ...PI_SUPPORT_SOURCE_BLOBS,...MAJOR_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

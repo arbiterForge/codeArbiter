@@ -18,7 +18,11 @@
     },
     {
       "path": "plugins/ca/hooks/_artifactlib.py",
-      "sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1"
+      "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b"
+    },
+    {
+      "path": "plugins/ca/hooks/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
     },
     {
       "path": "plugins/ca/hooks/_durabilitylib.py",

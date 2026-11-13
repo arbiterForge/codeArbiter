@@ -14,6 +14,7 @@ interface HostRelease {
   tag: string;
   publicationCommit: string;
   originalPublicationReceipt: "recorded" | "not-recorded";
+  publication: { state: string; observedAt?: string };
 }
 
 interface ApplicabilityRecord {
@@ -21,6 +22,7 @@ interface ApplicabilityRecord {
   hosts: HostRelease[];
   proof: {
     applicable: boolean;
+    publication: { state: string };
     publishedSource: { matchesReplay: boolean };
     currentSource: { matchesReplay: boolean };
   };
@@ -71,7 +73,7 @@ function requireBuiltValue(value: string, description: string): void {
 }
 
 requireBuiltValue(
-  "Published governance host releases described by this documentation",
+  "Governance host tags and observed publication described by this documentation",
   "the release table caption",
 );
 for (const host of generated.hosts) {
@@ -119,7 +121,9 @@ if (!publishedCa) {
   throw new Error("Generated release applicability is missing the ca host row");
 }
 const proofPresentation = presentProofApplicability(generated.proof);
-const expectedApplicableMessage = "Replay source applies to the exact latest published ca artifact";
+const identityLabel = generated.proof.publication.state === "published"
+  ? "exact observed published ca artifact" : `selected ca tag (publication ${generated.proof.publication.state})`;
+const expectedApplicableMessage = `Replay source applies to the ${identityLabel}`;
 if (proofPresentation.message !== expectedApplicableMessage) {
   throw new Error(`Unexpected proof applicability message: ${proofPresentation.message}`);
 }
@@ -128,7 +132,7 @@ for (const [value, description] of [
   [`href="https://github.com/arbiterForge/codeArbiter/releases/tag/${encodeURIComponent(publishedCa.tag)}"`, "the exact published ca release link"],
   [`>${publishedCa.tag}</code>`, "the exact visible published ca tag"],
   [`href="https://github.com/arbiterForge/codeArbiter/commit/${publishedCa.publicationCommit}"`, "the full ca publication-commit link"],
-  [`aria-label="View full ca publication commit ${publishedCa.publicationCommit}"`, "the full accessible ca publication-commit identity"],
+  [`aria-label="View full ca tag commit ${publishedCa.publicationCommit}"`, "the full accessible ca publication-commit identity"],
   ['href="/release-applicability.json"', "the complete applicability-record link"],
   ["It does not prove a host discovered or registered that hook.", "the HookProof evidence boundary"],
 ] as const) {
@@ -139,6 +143,10 @@ for (const [value, description] of [
 
 // Receipt status is its own column, never folded into the selected tag.
 requireBuiltValue("Original-publication receipt", "the receipt-status column");
+requireBuiltValue("Observed publication", "the separate publication-status column");
+for (const host of generated.hosts) {
+  requireBuiltValue(host.publication.state, `${host.target} observed publication state`);
+}
 const receiptCells = [...compatibilityHtml.matchAll(/<td\b[^>]*>(Recorded|Not yet reconciled)<\/td>/g)]
   .map((match) => match[1]);
 const expectedReceiptCells = generated.hosts.map((host) =>

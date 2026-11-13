@@ -94,7 +94,7 @@ These require explicit per-finding acknowledgement and a heavier log entry. The 
    ```text capture="override-security-row"
    ```
 
-4. Only after steps 1 through 3 does the bypass record. For H-09b / H-10b, recording the bypass means running `security-pass.py`, which writes a digest-bound gate-pass marker covering the specific sensitive lines approved. The commit gate then allows the commit for those exact lines.
+4. Only after steps 1 through 3 does the bypass record. For H-09b / H-10b, recording the bypass means running `security-pass.py`, which writes a digest-bound gate-pass marker for this worktree and the complete staged candidate, with a binding for each sensitive row. The commit gate then allows a commit of exactly that candidate; any later staged change, including an unrelated one, needs the gate again.
 
 ## The Audit Trail Is Permanent
 

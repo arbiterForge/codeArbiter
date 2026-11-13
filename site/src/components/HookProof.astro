@@ -52,12 +52,12 @@ const proofApplicability = presentProofApplicability(applicability.proof);
       <p><strong>Audit side effect</strong> The block appended an H-03 event to <code>.codearbiter/gate-events.log</code>.</p>
       <p><strong>Capture source</strong> <code>{proof.source}</code> at SHA-256 <code>{proof.sourceSha256}</code> (<code>{shortDigest}</code>).</p>
       <p class:list={["ca-hook-proof__applicability", { "is-mismatch": proofApplicability.isMismatch }]}>
-        <strong>Published-artifact applicability</strong> {proofApplicability.message}:{" "}
+        <strong>Tag-source applicability</strong> {proofApplicability.message}:{" "}
         <a href={`${repositoryUrl}/releases/tag/${publishedCa.tag}`}><code>{publishedCa.tag}</code></a>{" "}
         at{" "}
         <a
           href={`${repositoryUrl}/commit/${publishedCa.publicationCommit}`}
-          aria-label={`View full ca publication commit ${publishedCa.publicationCommit}`}
+          aria-label={`View full ca tag commit ${publishedCa.publicationCommit}`}
         ><code>{shortPublicationCommit}</code></a>.
         {applicability.proof.statement}{" "}
         <a href="/release-applicability.json">Read the complete release applicability record.</a>

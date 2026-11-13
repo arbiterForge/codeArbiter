@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beforeAll,describe,expect,it} from 'vitest';
-import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,SED_READ_SOURCE_BLOBS,WORK_SYSTEM_SOURCE_BLOBS,NATIVE_FIRST_SOURCE_BLOBS,TRACKER_COORDINATION_SOURCE_BLOBS,CORRECTIVE_SOURCE_BLOBS,HOOK_RECOVERY_SOURCE_BLOBS,PERSONA_CONTEXT_SOURCE_BLOBS,PI_SUPPORT_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
+import {MAJOR_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,SED_READ_SOURCE_BLOBS,WORK_SYSTEM_SOURCE_BLOBS,NATIVE_FIRST_SOURCE_BLOBS,TRACKER_COORDINATION_SOURCE_BLOBS,CORRECTIVE_SOURCE_BLOBS,HOOK_RECOVERY_SOURCE_BLOBS,PERSONA_CONTEXT_SOURCE_BLOBS,PI_SUPPORT_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
 import {geometryRecord,REVIEWED_AT,validateAtlas} from './atlas-model';
 import {nodeDetails,renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 
@@ -17,15 +17,16 @@ describe('assistive candidate versus retained historical routes',()=>{
     expect(createHash('sha256').update(historical).digest('hex'))
       .toBe('13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50');
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('3549ed56f5d5849116aef8d5e946423d8ee677fc');
-    expect(update.changes).toHaveLength(67);
-    expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
+    expect(update.revision).toBe('6a8967f03078fa3c7b0d92a8d19f2d6383dd66e3');
+    expect(update.changes).toHaveLength(new Set([...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(MAJOR_SOURCE_BLOBS)]).size);
+    expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(ASSISTIVE_SOURCE_BLOBS)));
+    expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(MAJOR_SOURCE_BLOBS)));
     const objects=execFileSync('git',['--no-replace-objects','cat-file','--batch'],{
       cwd:root,input:update.changes.map(change=>`${change.blob}\n`).join(''),maxBuffer:4*1024*1024,
     });
     let offset=0;
     for(const change of update.changes) {
-      const later=PI_SUPPORT_SOURCE_BLOBS[change.path]??PERSONA_CONTEXT_SOURCE_BLOBS[change.path]??HOOK_RECOVERY_SOURCE_BLOBS[change.path]??CORRECTIVE_SOURCE_BLOBS[change.path]??TRACKER_COORDINATION_SOURCE_BLOBS[change.path]??NATIVE_FIRST_SOURCE_BLOBS[change.path]??SED_READ_SOURCE_BLOBS[change.path]??WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
+      const later=MAJOR_SOURCE_BLOBS[change.path]??PI_SUPPORT_SOURCE_BLOBS[change.path]??PERSONA_CONTEXT_SOURCE_BLOBS[change.path]??HOOK_RECOVERY_SOURCE_BLOBS[change.path]??CORRECTIVE_SOURCE_BLOBS[change.path]??TRACKER_COORDINATION_SOURCE_BLOBS[change.path]??NATIVE_FIRST_SOURCE_BLOBS[change.path]??SED_READ_SOURCE_BLOBS[change.path]??WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
         ??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)
         ??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
@@ -76,6 +77,9 @@ describe('assistive candidate versus retained historical routes',()=>{
       ['knowledge-operations','k-writer'],
       ['knowledge-operations','k-board'],
       ['debug-handoff','d-task'],
+      ['knowledge-operations','k-conflict'],
+      ['knowledge-operations','k-task'],
+      ['context-layers','c-harvest'],
     ]){
       const node=current.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
       const baseline=original.views.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);

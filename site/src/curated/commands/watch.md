@@ -12,9 +12,10 @@ gates:
 
 ## What it does
 
-Watches a pull request's CI checks to completion without polling by hand. The wait is a real
-server-side block (`gh pr checks <PR> --watch`), so it costs nothing while checks run — arbiter is
-re-invoked exactly once, when that process exits, not on a timer. On red, it retrieves the failing
+Watches a pull request's CI checks to completion without polling by hand. One detached
+`gh pr checks <PR> --watch` process waits; the GitHub CLI refreshes the check status itself on its
+own interval, but no model call happens while checks run — arbiter is re-invoked exactly once, when
+that process exits, not on a timer. On red, it retrieves the failing
 job's logs and acts at a configured depth: `propose` names the likely cause and proposes a fix
 without touching any tracked file (the fix itself routes through `/ca:fix` or `/ca:feature`);
 `branch` additionally opens an unmergeable `spike/fix-*` branch carrying the proposed change for
@@ -38,7 +39,7 @@ Defaults to the current branch's PR when the argument names none of those.
 > /ca:watch 231
 
 watching PR #231 checks... (gh pr checks 231 --watch)
-[blocks server-side until every check finishes]
+[gh refreshes the checks until every check finishes]
 
 All checks passed.
 Ready to merge:

@@ -55,7 +55,7 @@
     },
     {
       "path": "plugins/ca/hooks/wire-statusline.py",
-      "sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92"
+      "sha256": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
     }
   ]
 }
