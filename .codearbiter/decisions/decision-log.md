@@ -2356,3 +2356,28 @@ Preserve the user's representation choice, historical progress and independent s
 Commit the exact ADR and this append, then use the shipped acceptance writer to bind its twelve independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
 
 ---
+
+## DECISION-0083 — adr-0047-ratified — Bind the owner's dependency-severity decision
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit D-HIGH choice retained in DECISION-0080 and the live program progress record.
+**Decision category:** adr-ratification
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Maintenance-only dependency risk is MEDIUM and non-blocking; HIGH blocks affected work.
+- **Scaffold position:** ADR-0047 records the accepted choice and preserves independent security severity.
+- **Status type:** open-decision-closure
+
+### Decision
+Ratify the unchanged user choice recorded in DECISION-0080 as ADR-0047-maintenance-risk-medium. Its status is Accepted/Planned; this entry claims neither implementation nor verification.
+
+### SMARTS rationale
+Keep one meaning for HIGH across dependency review and triage. Record maintenance concerns without downgrading independent security findings, and preserve the owner's explicit decision.
+
+### Implementation implication
+Commit the exact ADR and this append, then use the shipped acceptance writer to bind its seven independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
+
+---
