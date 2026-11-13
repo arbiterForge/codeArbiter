@@ -9883,6 +9883,8 @@ function commandCatalogEntries(value) {
   return Object.freeze(entries);
 }
 var PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";
+var PI_PERSONA_UNAVAILABLE_STATUS = "codeArbiter host: pi degraded - persona unavailable; run /ca-doctor";
+var PI_PERSONA_UNAVAILABLE_PROMPT = "codeArbiter persona unavailable; governance instructions are not loaded. Run /ca-doctor.";
 function hasAffirmativeProjectTrust(context) {
   try {
     return context.isProjectTrusted?.() === true;
@@ -10041,6 +10043,8 @@ ${PERSONA_SENTINEL}
 function installParent(pi, dependencies) {
   let enabled = false;
   let persona = "";
+  let personaReady = false;
+  let personaLoad;
   let state = "";
   let ownershipDegraded;
   let bridgeDegraded;
@@ -10086,7 +10090,7 @@ function installParent(pi, dependencies) {
     noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR")
   });
   const readActivation = dependencies.readActivation ?? isEnabled;
-  dependencies.installDispatch?.(() => readyLifecycle, currentActivity2);
+  dependencies.installDispatch?.(() => personaReady ? readyLifecycle : void 0, currentActivity2);
   dependencies.installCompaction?.(() => readyLifecycle);
   dependencies.installFarmPreview?.(() => readyLifecycle);
   const publishStatus = (context, text2) => {
@@ -10098,13 +10102,37 @@ function installParent(pi, dependencies) {
     readyLifecycle = void 0;
     enabled = false;
     persona = "";
+    personaReady = false;
+    personaLoad = void 0;
     state = "";
     ownershipDegraded = void 0;
     bridgeDegraded = void 0;
     commandInvocationDegraded = void 0;
     footerActivationEnabled = false;
   };
-  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? bridgeDegraded;
+  const personaDegraded = () => enabled && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : void 0;
+  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
+  const ensurePersona = (lifecycle) => {
+    if (personaReady) return Promise.resolve(true);
+    if (personaLoad?.lifecycle === lifecycle) return personaLoad.promise;
+    const entry = { lifecycle, promise: Promise.resolve(false) };
+    personaLoad = entry;
+    entry.promise = (async () => {
+      let loaded;
+      try {
+        loaded = await dependencies.loadPersona();
+      } catch {
+        return false;
+      } finally {
+        if (personaLoad === entry) personaLoad = void 0;
+      }
+      if (activeLifecycle !== lifecycle || typeof loaded !== "string" || loaded.trim() === "") return false;
+      persona = loaded;
+      personaReady = true;
+      return true;
+    })();
+    return entry.promise;
+  };
   const doctorHealth = (context) => {
     const footerHealth = footer.health();
     const backgroundExpected = footerHealth.expected && enabled;
@@ -10210,9 +10238,12 @@ function installParent(pi, dependencies) {
       context.ui.notify(bridgeDegraded, "error");
       throw new Error(bridgeDegraded, { cause: error });
     }
-    try {
-      persona = await dependencies.loadPersona();
+    if (!await ensurePersona(lifecycle)) {
       if (!isCurrent()) return;
+      context.ui.notify(PI_PERSONA_UNAVAILABLE_STATUS, "error");
+    }
+    if (!isCurrent()) return;
+    try {
       const response = await dependencies.bridge.call({ version: 1, event: "session_start", cwd: context.cwd }, context.signal ?? neverAborted);
       if (!isCurrent()) return;
       state = response.context ?? "host: pi";
@@ -10234,7 +10265,12 @@ function installParent(pi, dependencies) {
     const lifecycle = readyLifecycle;
     if (!enabled || lifecycle === void 0) return;
     ownershipDegraded = ownershipStatus(pi, dependencies, nativePlanRegistered, nativeJobsRegistered);
-    if (degradedStatus() !== void 0) publishStatus(context, degradedStatus());
+    const personaWasReady = personaReady;
+    await ensurePersona(lifecycle);
+    if (readyLifecycle !== lifecycle) return;
+    if (degradedStatus() !== void 0 || personaWasReady !== personaReady) {
+      publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
+    }
     try {
       const response = await dependencies.bridge.call({
         version: 1,
@@ -10255,7 +10291,7 @@ function installParent(pi, dependencies) {
       publishStatus(context, degradedStatus());
     }
     const systemPrompt = typeof event.systemPrompt === "string" ? event.systemPrompt : "";
-    return { systemPrompt: appendPrompt(systemPrompt, persona, state) };
+    return { systemPrompt: appendPrompt(systemPrompt, personaReady ? persona : PI_PERSONA_UNAVAILABLE_PROMPT, state) };
   });
   pi.on("agent_start", (_event, context) => {
     if (enabled) publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");

@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { isEnabled, readCachedUpdateVersion } from "../src/activation.ts";
 import { BridgeClient } from "../src/bridge.ts";
@@ -764,6 +764,124 @@ describe("Pi activation", () => {
     expect(warnings).toEqual(["bridge failed; run /ca-doctor"]);
     expect(host.statusCalls.at(-1)?.text).toContain("degraded");
     expect(host.statusCalls.at(-1)?.text).toContain("/ca-doctor");
+  });
+
+  // PI-L01 / SF02: persona readiness is its own prerequisite. A failed persona
+  // read used to be stored as bridge degradation, so the next successful bridge
+  // refresh published "governed" while the persona stayed empty forever.
+  describe("persona readiness is independent of bridge health (PI-L01)", () => {
+    const GOVERNED = "codeArbiter host: pi governed";
+    async function personaHarness(loadPersona: () => Promise<string>) {
+      const cwd = await project("---\narbiter: enabled\n---\n");
+      const packageRoot = await project("");
+      const bridge = new FakeBridge();
+      const host = new FakePi(packageRoot, []);
+      let dispatchLifecycle: (() => unknown) | undefined;
+      installParent(host, {
+        bridge, catalog: [], packageRoot, loadPersona,
+        installDispatch: (lifecycle) => { dispatchLifecycle = lifecycle; },
+      });
+      const context = host.context(cwd);
+      const agentStart = async () => (await host.emit("before_agent_start", {
+        prompt: "p", systemPrompt: "BASE", systemPromptOptions: {},
+      }, context))[0] as { systemPrompt: string } | undefined;
+      return { host, bridge, context, agentStart, dispatchLifecycle: () => dispatchLifecycle?.() };
+    }
+
+    test("persona failure followed by bridge success alone stays persona-unavailable", async () => {
+      const h = await personaHarness(async () => { throw new Error("arbiter.md missing"); });
+      await h.host.emit("session_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toContain("persona unavailable");
+      expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+
+      const result = await h.agentStart();
+      // The bridge refreshed successfully; that must not heal the persona.
+      expect(h.bridge.calls.map((call) => call.event)).toEqual(["session_start", "before_agent_start"]);
+      expect(result?.systemPrompt).toContain("codeArbiter persona unavailable");
+      await h.host.emit("agent_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toContain("persona unavailable");
+      expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+    });
+
+    test("a successful persona retry in the current lifecycle restores prompt and readiness once", async () => {
+      let attempts = 0;
+      const h = await personaHarness(async () => {
+        attempts += 1;
+        if (attempts === 1) throw new Error("transient read failure");
+        return "RECOVERED PERSONA";
+      });
+      await h.host.emit("session_start", {}, h.context);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+      const first = await h.agentStart();
+      expect(attempts).toBe(2);
+      expect(first?.systemPrompt).toContain("BASE\n\nRECOVERED PERSONA");
+      expect(first?.systemPrompt.split("RECOVERED PERSONA")).toHaveLength(2);
+      expect(first?.systemPrompt).not.toContain("persona unavailable");
+      expect(h.dispatchLifecycle()).toBeDefined();
+      await h.host.emit("agent_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toBe(GOVERNED);
+      // Once loaded, later turns do not reload.
+      await h.agentStart();
+      expect(attempts).toBe(2);
+    });
+
+    test("an empty persona cannot mark the session governed", async () => {
+      const h = await personaHarness(async () => "  \n");
+      await h.host.emit("session_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toContain("persona unavailable");
+      expect(h.dispatchLifecycle()).toBeUndefined();
+    });
+
+    test("a late persona from a retired session never populates the next session", async () => {
+      let release!: (value: string) => void;
+      let calls = 0;
+      const h = await personaHarness(() => {
+        calls += 1;
+        return calls === 1 ? new Promise<string>((resolveLoad) => { release = resolveLoad; }) : Promise.resolve("NEW PERSONA");
+      });
+      const oldStart = h.host.emit("session_start", {}, h.context);
+      await vi.waitFor(() => expect(calls).toBe(1));
+      await h.host.emit("session_start", {}, h.context);
+      release("OLD PERSONA");
+      await oldStart;
+      const result = await h.agentStart();
+      expect(result?.systemPrompt).toContain("NEW PERSONA");
+      expect(result?.systemPrompt).not.toContain("OLD PERSONA");
+    });
+
+    test("shutdown during persona load publishes no governed status afterwards", async () => {
+      let release!: (value: string) => void;
+      const h = await personaHarness(() => new Promise<string>((resolveLoad) => { release = resolveLoad; }));
+      const start = h.host.emit("session_start", {}, h.context);
+      await vi.waitFor(() => expect(release).toBeDefined());
+      await h.host.emit("session_shutdown", {}, h.context);
+      release("LATE PERSONA");
+      await start;
+      expect(h.host.statusCalls.at(-1)?.text).toBeUndefined();
+      expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+    });
+
+    test("a retry racing a concurrent bridge refresh loads the persona once", async () => {
+      let attempts = 0;
+      let release!: (value: string) => void;
+      const h = await personaHarness(() => {
+        attempts += 1;
+        if (attempts === 1) return Promise.reject(new Error("first read failed"));
+        return new Promise<string>((resolveLoad) => { release = resolveLoad; });
+      });
+      await h.host.emit("session_start", {}, h.context);
+      const turnA = h.agentStart();
+      const turnB = h.agentStart();
+      await vi.waitFor(() => expect(release).toBeDefined());
+      release("RETRIED PERSONA");
+      const [a, b] = await Promise.all([turnA, turnB]);
+      expect(attempts).toBe(2);
+      expect(a?.systemPrompt).toContain("RETRIED PERSONA");
+      expect(b?.systemPrompt).toContain("RETRIED PERSONA");
+    });
   });
 
   test("hard-stops enabled activation on enforcement failure and retries successfully", async () => {

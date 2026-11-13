@@ -228,6 +228,10 @@ export interface ParentDependencies {
 }
 
 const PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";
+const PI_PERSONA_UNAVAILABLE_STATUS = "codeArbiter host: pi degraded - persona unavailable; run /ca-doctor";
+/** Injected instead of the persona while it is unavailable, so the model is told
+ * honestly that it is running without its governing instructions. */
+const PI_PERSONA_UNAVAILABLE_PROMPT = "codeArbiter persona unavailable; governance instructions are not loaded. Run /ca-doctor.";
 
 function hasAffirmativeProjectTrust(context: { isProjectTrusted?: () => boolean }): boolean {
   try {
@@ -441,6 +445,10 @@ export async function loadPersonaFrom(packageRoot: string): Promise<string> {
 export function installParent(pi: ParentPiPort, dependencies: ParentDependencies): void {
   let enabled = false;
   let persona = "";
+  // PI-L01: persona readiness is an independent prerequisite. It is never
+  // stored as, or cleared by, bridge health.
+  let personaReady = false;
+  let personaLoad: { lifecycle: LifecycleLease; promise: Promise<boolean> } | undefined;
   let state = "";
   let ownershipDegraded: string | undefined;
   let bridgeDegraded: string | undefined;
@@ -487,7 +495,9 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR"),
   });
   const readActivation = dependencies.readActivation ?? isEnabled;
-  dependencies.installDispatch?.(() => readyLifecycle, currentActivity);
+  // Dispatch admission shares the prerequisite vector used for the prompt and
+  // the governed status: no author/reviewer run starts without the persona.
+  dependencies.installDispatch?.(() => (personaReady ? readyLifecycle : undefined), currentActivity);
   dependencies.installCompaction?.(() => readyLifecycle);
   dependencies.installFarmPreview?.(() => readyLifecycle);
   const publishStatus = (context: ExtensionContextPort, text: string | undefined) => {
@@ -499,13 +509,39 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     readyLifecycle = undefined;
     enabled = false;
     persona = "";
+    personaReady = false;
+    personaLoad = undefined;
     state = "";
     ownershipDegraded = undefined;
     bridgeDegraded = undefined;
     commandInvocationDegraded = undefined;
     footerActivationEnabled = false;
   };
-  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? bridgeDegraded;
+  const personaDegraded = () => (enabled && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : undefined);
+  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
+  /** Load (or retry) the persona for one lifecycle. Concurrent callers share one
+   * read; a result that lands after the lifecycle retired is discarded. */
+  const ensurePersona = (lifecycle: LifecycleLease): Promise<boolean> => {
+    if (personaReady) return Promise.resolve(true);
+    if (personaLoad?.lifecycle === lifecycle) return personaLoad.promise;
+    const entry: { lifecycle: LifecycleLease; promise: Promise<boolean> } = { lifecycle, promise: Promise.resolve(false) };
+    personaLoad = entry;
+    entry.promise = (async () => {
+      let loaded: unknown;
+      try {
+        loaded = await dependencies.loadPersona();
+      } catch {
+        return false;
+      } finally {
+        if (personaLoad === entry) personaLoad = undefined;
+      }
+      if (activeLifecycle !== lifecycle || typeof loaded !== "string" || loaded.trim() === "") return false;
+      persona = loaded;
+      personaReady = true;
+      return true;
+    })();
+    return entry.promise;
+  };
   const doctorHealth = (context: ExtensionContextPort) => {
     const footerHealth = footer.health();
     // `enabled` records the authority under which this session initialized.
@@ -618,9 +654,12 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
       context.ui.notify(bridgeDegraded, "error");
       throw new Error(bridgeDegraded, { cause: error });
     }
-    try {
-      persona = await dependencies.loadPersona();
+    if (!await ensurePersona(lifecycle)) {
       if (!isCurrent()) return;
+      context.ui.notify(PI_PERSONA_UNAVAILABLE_STATUS, "error");
+    }
+    if (!isCurrent()) return;
+    try {
       const response = await dependencies.bridge.call({ version: 1, event: "session_start", cwd: context.cwd }, context.signal ?? neverAborted);
       if (!isCurrent()) return;
       state = response.context ?? "host: pi";
@@ -643,7 +682,13 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     const lifecycle = readyLifecycle;
     if (!enabled || lifecycle === undefined) return;
     ownershipDegraded = ownershipStatus(pi, dependencies, nativePlanRegistered, nativeJobsRegistered);
-    if (degradedStatus() !== undefined) publishStatus(context, degradedStatus());
+    // The retry edge for a failed persona read: only a persona read clears it.
+    const personaWasReady = personaReady;
+    await ensurePersona(lifecycle);
+    if (readyLifecycle !== lifecycle) return;
+    if (degradedStatus() !== undefined || personaWasReady !== personaReady) {
+      publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
+    }
     try {
       const response = await dependencies.bridge.call({
         version: 1,
@@ -664,7 +709,7 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
       publishStatus(context, degradedStatus());
     }
     const systemPrompt = typeof event.systemPrompt === "string" ? event.systemPrompt : "";
-    return { systemPrompt: appendPrompt(systemPrompt, persona, state) };
+    return { systemPrompt: appendPrompt(systemPrompt, personaReady ? persona : PI_PERSONA_UNAVAILABLE_PROMPT, state) };
   });
 
   pi.on("agent_start", (_event, context) => {
