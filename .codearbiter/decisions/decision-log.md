@@ -2381,3 +2381,28 @@ Keep one meaning for HIGH across dependency review and triage. Record maintenanc
 Commit the exact ADR and this append, then use the shipped acceptance writer to bind its seven independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
 
 ---
+
+## DECISION-0084 — adr-0048-ratified — Bind the owner's pre-tag verification decision
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit D-GOV-PRETAG choice retained in DECISION-0081 and the live program progress record.
+**Decision category:** adr-ratification
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Declared target pre-tag checks are required before creating a publication effect.
+- **Scaffold position:** ADR-0048 records the accepted choice without granting publication authority.
+- **Status type:** open-decision-closure
+
+### Decision
+Ratify the unchanged user choice recorded in DECISION-0081 as ADR-0048-required-declared-pre-tag-checks. Its status is Accepted/Planned; this entry claims neither implementation nor verification.
+
+### SMARTS rationale
+Keep declared checks executable and required at their actual publication boundary. Bind the user's existing decision while preserving separate qualification, authorization and receipt-only repair semantics.
+
+### Implementation implication
+Commit the exact ADR and this append, then use the shipped acceptance writer to bind its ten independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
+
+---
