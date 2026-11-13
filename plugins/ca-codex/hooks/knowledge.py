@@ -8,7 +8,7 @@
 # Verbs:
 #   format                         active format and the five narrative paths
 #   relevant PATH [PATH ...]       knowledge records relevant to these paths
-#   read DOC [RECORD ...]          outline of a document, or exact records
+#   read DOC [RECORD ...] [--text] outline, exact records, or current narrative
 #   commands [--purpose P]         declared command records (stored unrun)
 #   add DOC --record JSON [--collection records|sources|notes]
 #                                  add one entry; an identical one is reused
@@ -35,6 +35,8 @@ import argparse
 import hashlib
 import json
 import os
+from pathlib import Path
+import shlex
 import subprocess
 import sys
 
@@ -82,9 +84,11 @@ def _identity(client, doc_id):
 
 
 def _records(client, doc_id, collection="records"):
-    ids = [r["id"] for r in client.outline(doc_id) if r.get("kind") == collection and not r.get("retired")]
-    out = []
     model = _identity(client, doc_id)["model_sha256"]
+    ids = [r["id"] for r in client.outline(doc_id) if r.get("kind") == collection and not r.get("retired")]
+    if _identity(client, doc_id)["model_sha256"] != model:
+        raise ValueError("knowledge changed while enumerating current records; retry the read")
+    out = []
     for start in range(0, len(ids), 32):
         offset = 0
         while True:
@@ -95,6 +99,46 @@ def _records(client, doc_id, collection="records"):
                 break
             offset = page["next_offset"]
     return out
+
+
+def current_records(root, document, *, client=None):
+    """Read current narrative records through the native owner; None for Markdown.
+
+    Retained notes and retired records never supply current instructions. Empty
+    HTML documents remain inspectable with ordinary `read`; they cannot supply
+    a current-content projection by falling back to history or an old filename.
+    """
+    doc_id = kl.artifact_id(document)
+    if kl.context_format(str(root)) != "html":
+        return None
+    records = _records(client or _client(str(root)), doc_id, "records")
+    if not records:
+        raise ValueError(f"current knowledge {doc_id} has no readable current records")
+    return records
+
+
+def context_text(root, document, *, client=None, commands_only=False):
+    """Format-aware narrative projection for framework and tooling readers.
+
+    Commands are declarations, never execution evidence. Markdown has no typed
+    command collection, so its existing document remains the legacy projection.
+    """
+    records = current_records(root, document, client=client)
+    if records is None:
+        return (Path(root) / kl.LEGACY_PATHS[document]).read_text(encoding="utf-8")
+    parts = []
+    for record in records:
+        if commands_only and record.get("type") != "command":
+            continue
+        if record.get("type") == "command":
+            command = record["command"]
+            argv = list(command["argv"])
+            if argv[0] == "npm" and command["cwd"] != ".":
+                argv[1:1] = ["--prefix", command["cwd"]]
+            parts.append(shlex.join(argv))
+        elif record.get("statement"):
+            parts.append(record["statement"])
+    return "\n\n".join(parts)
 
 
 def _apply(client, doc_id, changes, purpose):
@@ -130,6 +174,8 @@ def main(argv=None):
     prd = sub.add_parser("read")
     prd.add_argument("doc", choices=DOC_CHOICES)
     prd.add_argument("records", nargs="*")
+    prd.add_argument("--text", action="store_true", help="current narrative in either active format")
+    prd.add_argument("--commands-only", action="store_true", help="with --text, project only active HTML commands")
     pc = sub.add_parser("commands")
     pc.add_argument("--purpose")
     pa = sub.add_parser("add")
@@ -165,7 +211,8 @@ def main(argv=None):
                           "decomposition": kl.DECOMPOSITION_PATH if kl.context_format(root) == "html" else None}))
         return 0
     try:
-        client = _client(root)
+        legacy_text = args.verb == "read" and args.text and kl.context_format(root) != "html"
+        client = None if legacy_text else _client(root)
         result = _dispatch(args, client, root)
     except (_artifactlib.ArtifactError, OSError, ValueError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}))
@@ -178,6 +225,14 @@ def _dispatch(args, client, root):
     if args.verb == "relevant":
         return client.call("knowledge-context", {"paths": args.paths, "budget": 65536})
     if args.verb == "read":
+        if getattr(args, "text", False):
+            if args.records:
+                raise ValueError("read --text cannot be combined with explicit record IDs")
+            return {"document": args.doc, "format": kl.context_format(root),
+                    "text": context_text(root, args.doc, client=client,
+                                         commands_only=getattr(args, "commands_only", False))}
+        if getattr(args, "commands_only", False):
+            raise ValueError("--commands-only requires read --text")
         doc_id = _doc_id(args.doc)
         if not args.records:
             return {"artifact_id": doc_id, "records": list(client.outline(doc_id))}

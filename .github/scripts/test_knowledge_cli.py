@@ -7,6 +7,7 @@ unknowns, relevant lookup, explicit Markdown conversion, and idempotent promotio
 """
 
 import json
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
@@ -20,6 +21,52 @@ CONTEXT = ".codearbiter/" + "CONTEXT.md"
 
 
 class KnowledgeCli(unittest.TestCase):
+    def test_current_reader_refuses_a_real_native_edit_during_record_enumeration(self):
+        from test_artifact_authoring import ArtifactClient
+        self.scaffold()
+        self.knowledge("create-missing")
+        record = {"type": "constraint", "title": "First policy", "statement": "first policy",
+                  "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        self.knowledge("add", "security-controls", "--record", json.dumps(record))
+        spec = importlib.util.spec_from_file_location("installed_knowledge_reader", self.plugin / "hooks/knowledge.py")
+        reader = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reader)
+        actual = ArtifactClient(self.root, self.installation)
+        owner = self
+        class ConcurrentEdit:
+            def call(self, *args, **kwargs):
+                return actual.call(*args, **kwargs)
+            def outline(self, artifact):
+                observed = list(actual.outline(artifact))
+                added = dict(record, title="Concurrent policy", statement="concurrent policy")
+                owner.knowledge("add", "security-controls", "--record", json.dumps(added))
+                return iter(observed)
+        with self.assertRaisesRegex(ValueError, "changed while enumerating"):
+            reader.current_records(self.root, "security-controls", client=ConcurrentEdit())
+        self.assertEqual({r["statement"] for r in reader.current_records(
+            self.root, "security-controls", client=actual)}, {"first policy", "concurrent policy"})
+
+    def test_current_text_reader_uses_active_native_records_and_preserves_legacy_reads(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        note = {"title": "Retained history", "text": "old policy must not revive",
+                "basis": "source-observed", "origin": None}
+        self.knowledge("add", "security-controls", "--collection", "notes", "--record", json.dumps(note))
+        constraint = {"type": "constraint", "title": "Current policy", "statement": "current policy",
+                      "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        added = self.knowledge("add", "security-controls", "--record", json.dumps(constraint))
+        result = self.knowledge("read", "security-controls", "--text")
+        self.assertEqual((result["format"], result["text"]), ("html", "current policy"))
+        self.knowledge("retire", "security-controls", added["record"], "--reason", "Withdrawn")
+        refused = self.knowledge("read", "security-controls", "--text", success=False)
+        self.assertFalse(refused["ok"])
+        self.assertIn("no readable current records", refused["error"])
+        state = self.root / ".codearbiter"
+        (state / "CONTEXT.md").write_text("---\narbiter: enabled\n---\nLegacy project\n", encoding="utf-8")
+        (state / "security-controls.md").write_text("Legacy policy\n", encoding="utf-8")
+        result = self.knowledge("read", "security-controls", "--text")
+        self.assertEqual((result["format"], result["text"]), ("markdown", "Legacy policy\n"))
+
     def test_command_checks_cannot_use_narrative_examples_after_retirement(self):
         from project_knowledge import context_text
         from test_artifact_authoring import ArtifactClient
@@ -53,7 +100,7 @@ class KnowledgeCli(unittest.TestCase):
         client = ArtifactClient(self.root, self.installation)
         self.assertEqual(context_text("security-controls", root=self.root, client=client), "current policy")
         self.knowledge("retire", "security-controls", added["record"], "--reason", "Policy withdrawn")
-        with self.assertRaisesRegex(AssertionError, "no readable content"):
+        with self.assertRaisesRegex(ValueError, "no readable current records"):
             context_text("security-controls", root=self.root, client=client)
 
     @classmethod

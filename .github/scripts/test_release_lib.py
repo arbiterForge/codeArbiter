@@ -11200,7 +11200,8 @@ class ReleaseSurfaceTest(unittest.TestCase):
         cls.command = build_surface.render_all(REPO_ROOT, "claude")["commands/release.md"].decode()
         cls.releaselib_source = read("core", "pysrc", "_releaselib.py")
         cls.index = read("core", "surface", "skills", "INDEX.md")
-        cls.security = read(".codearbiter", "security-controls.md")
+        from project_knowledge import context_text
+        cls.security = context_text("security-controls")
         cls.plan = read(".codearbiter", "plans", "preview-release-contract.md")
 
     def test_skill_reads_every_new_field_mechanically(self):
