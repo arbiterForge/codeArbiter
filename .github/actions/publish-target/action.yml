@@ -195,24 +195,31 @@ runs:
         printf '%s\nReleased-at: %s\n' "$(cat notes.md)" "$RELEASE_DATE" > tagmsg.txt
         echo "RELEASED_AT=$RELEASE_DATE" >> "$GITHUB_ENV"
 
+    # One completion model (release_target.py observe) decides what remains:
+    # `effects` lists only the missing publication effects, in order. A public
+    # Release missing only its receipt schedules `receipt` alone; complete is
+    # empty. The cohort's file must be the target's declared package asset,
+    # and a present asset whose digest differs is refused, never replaced.
     - name: Observe remote state and plan
       id: plan
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github-token }}
+        TARGET: ${{ inputs.target }}
+        VERSION: ${{ steps.v.outputs.version }}
         TAG: ${{ steps.v.outputs.tag }}
         SOURCE_COMMIT: ${{ inputs.source-commit }}
         ASSET: ${{ steps.package.outputs.file }}
+        ASSET_SHA256: ${{ steps.package.outputs.sha256 }}
       run: |
         set -euo pipefail
         gh auth setup-git
         git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" > "$RUNNER_TEMP/remote-tag.txt"
         gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
-        extra=()
-        [ -z "$ASSET" ] || extra+=(--asset "$ASSET")
         python3 .github/scripts/release_target.py plan --tag "$TAG" --source "$SOURCE_COMMIT" \
           --remote-tag "$RUNNER_TEMP/remote-tag.txt" --releases "$RUNNER_TEMP/releases.json" \
-          --asset codearbiter-publication.json "${extra[@]}" --output "$GITHUB_OUTPUT"
+          --target "$TARGET" --version "$VERSION" \
+          --package-file "$ASSET" --package-sha256 "$ASSET_SHA256" --output "$GITHUB_OUTPUT"
 
     - name: Select the exact Pi npm tarball
       id: pi
@@ -355,6 +362,9 @@ runs:
         gh api -H "Accept: application/octet-stream" "$URL" > "$RUNNER_TEMP/readback-$ASSET_FILE"
         printf '%s  %s\n' "$ASSET_SHA256" "$RUNNER_TEMP/readback-$ASSET_FILE" | sha256sum --check --strict
 
+    # A public Release already passed its channel effect; then the channel is
+    # only read back (the commit that promoted these exact bytes), never
+    # re-promoted, so receipt recovery survives a channel that moved on.
     - name: Publish the Claude marketplace channel
       id: claude-channel
       if: ${{ inputs.host == 'claude' }}
@@ -364,14 +374,16 @@ runs:
         SOURCE_COMMIT: ${{ inputs.source-commit }}
         COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}
         VERSION: ${{ steps.v.outputs.version }}
+        EFFECTS: ${{ steps.plan.outputs.effects }}
       run: |
         set -euo pipefail
+        case " $EFFECTS " in *" channel "*) MODE=--push ;; *) MODE=--readback ;; esac
         python3 tools/promote-claude-marketplace.py \
           --package-root "$RUNNER_TEMP/artifact-publication-packages" \
           --cohort-sha256 "$COHORT_SHA256" --source-commit "$SOURCE_COMMIT" \
           --remote-url "$(git remote get-url origin)" --version "$VERSION" \
           --work "$RUNNER_TEMP/claude-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
-          --push > "$RUNNER_TEMP/claude-channel.json"
+          "$MODE" > "$RUNNER_TEMP/claude-channel.json"
         echo "ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["marketplace_commit"])' "$RUNNER_TEMP/claude-channel.json")" >> "$GITHUB_OUTPUT"
 
     - name: Audit Codex distribution rulesets (advisory)
@@ -396,6 +408,7 @@ runs:
         SOURCE_COMMIT: ${{ inputs.source-commit }}
         COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}
         VERSION: ${{ steps.v.outputs.version }}
+        EFFECTS: ${{ steps.plan.outputs.effects }}
       run: |
         set -euo pipefail
         promote() {
@@ -404,15 +417,23 @@ runs:
             --cohort-sha256 "$COHORT_SHA256" --source-repo . --source-commit "$SOURCE_COMMIT" \
             --remote-url "$(git remote get-url origin)" \
             --catalog-url "https://github.com/$GITHUB_REPOSITORY.git" \
-            --version "$VERSION" --catalog-mode git --push "$@"
+            --version "$VERSION" --catalog-mode git "$@"
         }
-        promote --work "$RUNNER_TEMP/codex-dist-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > /dev/null
-        promote --work "$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
-          --advance-channel > "$RUNNER_TEMP/codex-channel.json"
+        case " $EFFECTS " in
+          *" channel "*)
+            promote --push --work "$RUNNER_TEMP/codex-dist-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > /dev/null
+            promote --push --work "$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+              --advance-channel > "$RUNNER_TEMP/codex-channel.json" ;;
+          *)
+            promote --readback --work "$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+              > "$RUNNER_TEMP/codex-channel.json" ;;
+        esac
         echo "ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["marketplace_commit"])' "$RUNNER_TEMP/codex-channel.json")" >> "$GITHUB_OUTPUT"
 
+    # Never on a public Release: its npm effect already read back before the
+    # public transition, so an absent version there fails readback instead.
     - name: Publish @arbiterforge/ca-pi to npm
-      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
+      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' && contains(steps.plan.outputs.effects, 'channel') }}
       shell: bash
       env:
         NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
@@ -506,12 +527,27 @@ runs:
           pi) CHANNEL="npm:@arbiterforge/ca-pi@$VERSION" ;;
           *) CHANNEL=none ;;
         esac
-        case " $MISSING " in *" codearbiter-publication.json "*) ;; *) echo "receipt already attached"; exit 0 ;; esac
-        receipt="$RUNNER_TEMP/codearbiter-publication.json"
-        python3 .github/scripts/release_target.py receipt --target "$TARGET" --host "${HOST:-none}" \
-          --tag "$TAG" --version "$VERSION" --source "$SOURCE_COMMIT" \
-          --package-file "$(basename "${PACKAGE_FILE:-none}")" --package-sha256 "${PACKAGE_SHA256:-none}" \
-          --channel "$CHANNEL" --channel-ref "${CHANNEL_REF:-none}" --release-state published \
-          --output "$receipt"
-        gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
-          "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-publication.json" >/dev/null
+        PACKAGE_NAME="$(basename "${PACKAGE_FILE:-none}")"
+        case " $MISSING " in
+          *" codearbiter-publication.json "*)
+            receipt="$RUNNER_TEMP/codearbiter-publication.json"
+            python3 .github/scripts/release_target.py receipt --target "$TARGET" --host "${HOST:-none}" \
+              --tag "$TAG" --version "$VERSION" --source "$SOURCE_COMMIT" \
+              --package-file "$PACKAGE_NAME" --package-sha256 "${PACKAGE_SHA256:-none}" \
+              --channel "$CHANNEL" --channel-ref "${CHANNEL_REF:-none}" --release-state published \
+              --output "$receipt"
+            gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
+              "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-publication.json" >/dev/null ;;
+        esac
+        # GATE: whether just attached or found from an earlier run, the receipt
+        # must read back naming exactly this publication; a same-named asset
+        # with other content is a conflict, not "already attached".
+        URL=$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets" \
+          --jq '.[] | select(.name == "codearbiter-publication.json") | .url')
+        [ -n "$URL" ] || { echo "::error::codearbiter-publication.json is missing after attach"; exit 1; }
+        gh api -H "Accept: application/octet-stream" "$URL" > "$RUNNER_TEMP/readback-receipt.json"
+        python3 .github/scripts/release_target.py verify-receipt --receipt "$RUNNER_TEMP/readback-receipt.json" \
+          --target "$TARGET" --host "${HOST:-none}" --tag "$TAG" --version "$VERSION" \
+          --source "$SOURCE_COMMIT" --package-file "$PACKAGE_NAME" \
+          --package-sha256 "${PACKAGE_SHA256:-none}" --channel "$CHANNEL" \
+          --channel-ref "${CHANNEL_REF:-none}"

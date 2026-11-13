@@ -116,9 +116,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           DISPATCHED: ${{ inputs.target }}
+          SOURCE: ${{ steps.source.outputs.source }}
         run: |
           set -euo pipefail
-          git tag -l > "$RUNNER_TEMP/tags.txt"
+          git for-each-ref --format='%(objectname) %(refname)%0a%(*objectname) %(refname)^{}' \
+            refs/tags > "$RUNNER_TEMP/tag-refs.txt"
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
           FAILED=""
           for row in \
@@ -132,8 +134,9 @@ jobs:
             # One plugin's planning error must not block the others: mark only
             # that target ineligible and fail the run afterwards (ADR-0040).
             if ! VERSION=$(node -p "require('./$MANIFEST').version") \
-              || ! ELIGIBLE=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
-                --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json"); then
+              || ! ELIGIBLE=$(python3 .github/scripts/release_target.py eligible --target "$TARGET" \
+                --version "$VERSION" --prefix "$PREFIX" --tag-refs "$RUNNER_TEMP/tag-refs.txt" \
+                --releases "$RUNNER_TEMP/releases.json" --source "$SOURCE"); then
               echo "::error::$TARGET eligibility could not be decided; it will not release this run"
               ELIGIBLE=false; FAILED="$FAILED $TARGET"
             fi
@@ -184,16 +187,20 @@ jobs:
         id: recheck
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGET: ca
+          SOURCE: ${{ needs.preflight.outputs.source }}
           MANIFEST: plugins/ca/.claude-plugin/plugin.json
           PREFIX: v
         run: |
           set -euo pipefail
           VERSION=$(node -p "require('./$MANIFEST').version")
-          git tag -l > "$RUNNER_TEMP/tags.txt"
+          git for-each-ref --format='%(objectname) %(refname)%0a%(*objectname) %(refname)^{}' \
+            refs/tags > "$RUNNER_TEMP/tag-refs.txt"
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
-          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
-            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
-          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          GO=$(python3 .github/scripts/release_target.py eligible --target "$TARGET" --version "$VERSION" \
+            --prefix "$PREFIX" --tag-refs "$RUNNER_TEMP/tag-refs.txt" --releases "$RUNNER_TEMP/releases.json" \
+            --source "$SOURCE")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION publication is complete; nothing to do"
           echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
         if: steps.recheck.outputs.go == 'true'
@@ -289,16 +296,20 @@ jobs:
         id: recheck
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGET: ca-codex
+          SOURCE: ${{ needs.preflight.outputs.source }}
           MANIFEST: plugins/ca-codex/.codex-plugin/plugin.json
           PREFIX: ca-codex-v
         run: |
           set -euo pipefail
           VERSION=$(node -p "require('./$MANIFEST').version")
-          git tag -l > "$RUNNER_TEMP/tags.txt"
+          git for-each-ref --format='%(objectname) %(refname)%0a%(*objectname) %(refname)^{}' \
+            refs/tags > "$RUNNER_TEMP/tag-refs.txt"
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
-          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
-            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
-          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          GO=$(python3 .github/scripts/release_target.py eligible --target "$TARGET" --version "$VERSION" \
+            --prefix "$PREFIX" --tag-refs "$RUNNER_TEMP/tag-refs.txt" --releases "$RUNNER_TEMP/releases.json" \
+            --source "$SOURCE")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION publication is complete; nothing to do"
           echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
         if: steps.recheck.outputs.go == 'true'
@@ -339,16 +350,20 @@ jobs:
         id: recheck
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGET: ca-pi
+          SOURCE: ${{ needs.preflight.outputs.source }}
           MANIFEST: plugins/ca-pi/package.json
           PREFIX: ca-pi-v
         run: |
           set -euo pipefail
           VERSION=$(node -p "require('./$MANIFEST').version")
-          git tag -l > "$RUNNER_TEMP/tags.txt"
+          git for-each-ref --format='%(objectname) %(refname)%0a%(*objectname) %(refname)^{}' \
+            refs/tags > "$RUNNER_TEMP/tag-refs.txt"
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
-          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
-            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
-          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          GO=$(python3 .github/scripts/release_target.py eligible --target "$TARGET" --version "$VERSION" \
+            --prefix "$PREFIX" --tag-refs "$RUNNER_TEMP/tag-refs.txt" --releases "$RUNNER_TEMP/releases.json" \
+            --source "$SOURCE")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION publication is complete; nothing to do"
           echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
         if: steps.recheck.outputs.go == 'true'
@@ -385,16 +400,20 @@ jobs:
         id: recheck
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGET: ca-sandbox
+          SOURCE: ${{ needs.preflight.outputs.source }}
           MANIFEST: plugins/ca-sandbox/.claude-plugin/plugin.json
           PREFIX: ca-sandbox-v
         run: |
           set -euo pipefail
           VERSION=$(node -p "require('./$MANIFEST').version")
-          git tag -l > "$RUNNER_TEMP/tags.txt"
+          git for-each-ref --format='%(objectname) %(refname)%0a%(*objectname) %(refname)^{}' \
+            refs/tags > "$RUNNER_TEMP/tag-refs.txt"
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
-          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
-            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
-          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          GO=$(python3 .github/scripts/release_target.py eligible --target "$TARGET" --version "$VERSION" \
+            --prefix "$PREFIX" --tag-refs "$RUNNER_TEMP/tag-refs.txt" --releases "$RUNNER_TEMP/releases.json" \
+            --source "$SOURCE")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION publication is complete; nothing to do"
           echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
         if: steps.recheck.outputs.go == 'true'
