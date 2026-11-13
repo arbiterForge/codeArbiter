@@ -16,7 +16,7 @@ from owned_output import publish_files, assert_complete
 class GeneratedOutputTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
-        self.root=Path(self.temp.name);self.a=self.root/'a';self.b=self.root/'b'
+        self.root=Path(self.temp.name).resolve();self.a=self.root/'a';self.b=self.root/'b'
         self.a.write_bytes(b'old-a');self.b.write_bytes(b'old-b')
     def test_late_stage_failure_preserves_old_complete_set(self):
         with self.assertRaises(TypeError): publish_files(self.root,'test',{self.a:b'new',self.b:None})

@@ -93,7 +93,8 @@ class _RepoCase(unittest.TestCase):
 
     def setUp(self):
         self._td = tempfile.TemporaryDirectory()
-        self.repo = self._td.name
+        # The owned fixture is physical; publisher link refusals stay enabled.
+        self.repo = os.path.realpath(self._td.name)
         self.addCleanup(self._td.cleanup)
         _write(
             self.repo,

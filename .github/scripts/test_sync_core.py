@@ -50,7 +50,9 @@ class _SyntheticRepoFixture(unittest.TestCase):
 
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
-        self.repo = self._tmp.name
+        # Own the physical fixture directory before the publisher checks links.
+        # macOS commonly exposes its temp root through the /var alias.
+        self.repo = os.path.realpath(self._tmp.name)
         self.core = os.path.join(self.repo, "core", "pysrc")
         self.plugin_a = os.path.join("plugins", "ca", "hooks")
         self.plugin_b = os.path.join("plugins", "ca-codex", "hooks")
