@@ -95,9 +95,14 @@ Heavier path (all required, in order):
 
    Do not combine launcher discovery and the producer in one chained shell expression, and never
    use `python3 X || python X`, which reruns X on any nonzero exit (#577). The producer
-   writes `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` bound to the
-   sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
-   steps 1–3, never to skip the gate proper.
+   writes `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` bound to this worktree,
+   the digest of the complete staged diff, and the diagnostic bindings of its sensitive rows, so
+   hook H-09b/H-10b allows a commit of exactly that candidate — recorded **only** after steps 1–3,
+   never to skip the gate proper. Any later change to the staged candidate, including an
+   unrelated staged edit to a non-sensitive file, invalidates it; restage the reviewed candidate or
+   repeat the review for the new one rather than looking for a freshness bypass. The producer's
+   success records the outcome you established; it does not itself prove a semantic reviewer
+   PASS.
 
    If the gate explicitly reports a genuine binary whose text context is unavailable, run the
    combined audited producer below from the exact reviewed checkout root. It appends the mandatory `SECURITY-OVERRIDE` row first and
