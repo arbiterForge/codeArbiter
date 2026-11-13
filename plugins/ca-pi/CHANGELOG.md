@@ -11,6 +11,17 @@ All notable changes to `ca-pi` are documented in this file.
 - Major state-contract program (in progress on major/state-contracts; final notes at freeze).
 - Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
+- Report source author capability separately from packaged-host qualification. The optional private artifact approval entry remains unavailable on supported Pi 1.5.0.
+
+### Added
+
+- Route scoped child author write, edit and command requests through the parent's current permission gate, with authenticated requests, exact replay protection and retained effect observations.
+- Show bounded delegation and workflow recovery notices while independent authorized work continues; retain visible child handback material when cleanup degrades.
+
+### Fixed
+
+- Keep failed persona readiness separate from bridge health, and retry persona loading only for the current session.
+- Cancel pending sidebar installation across disposal so late metrics cannot restore stale terminal patches.
 
 ## [0.27.7] - 2026-11-10
 

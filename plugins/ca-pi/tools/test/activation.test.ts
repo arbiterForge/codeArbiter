@@ -3,12 +3,13 @@ import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { isEnabled, readCachedUpdateVersion } from "../src/activation.ts";
 import { BridgeClient } from "../src/bridge.ts";
 import type {
   BridgePort,
+  PiWorkflowRecoverySnapshot,
   BridgeRequest,
   BridgeResponse,
   CommandCatalogEntry,
@@ -133,6 +134,104 @@ afterEach(async () => {
 });
 
 describe("Pi activation", () => {
+  test("workflow recovery presentation is independent of persona, dedups each delivered sink and refreshes changed pages", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n"); const packageRoot = await project("");
+    const host = new FakePi(packageRoot, []); const bridge = new FakeBridge();
+    let page: PiWorkflowRecoverySnapshot = { status: "partial", revision: 1, pending: 1, claimed: 0, unavailable: 0,
+      cursor: "next", bytesRead: 10, reason: null, notice: "Inventory partial: unscanned obligations unknown.", fingerprint: "a".repeat(64) };
+    let reads = 0;
+    installParent(host, { packageRoot, catalog: [], bridge, loadPersona: async () => { throw Error("persona unavailable"); },
+      readWorkflowRecovery: async () => { reads++; return page; } });
+    const context = { ...host.context(cwd), mode: "rpc" as const, hasUI: false };
+    await host.emit("session_start", {}, context);
+    expect(host.notifications.filter((notice) => notice.message === page.notice)).toHaveLength(0);
+    const first = await host.emit("before_agent_start", { systemPrompt: "BASE" }, context);
+    expect(JSON.stringify(first)).toContain(page.notice);
+    const repeated = await host.emit("before_agent_start", { systemPrompt: "BASE" }, context);
+    expect(JSON.stringify(repeated)).not.toContain(page.notice);
+    expect(host.notifications.filter((notice) => notice.message === page.notice)).toHaveLength(0);
+    context.hasUI = true;
+    expect(JSON.stringify(await host.emit("before_agent_start", {}, context))).not.toContain(page.notice);
+    expect(host.notifications.filter((notice) => notice.message === page.notice)).toHaveLength(1);
+    context.hasUI = false;
+    page = { ...page, revision: 2, notice: "Changed recovery page.", fingerprint: "b".repeat(64) };
+    expect(JSON.stringify(await host.emit("before_agent_start", {}, context))).toContain(page.notice);
+    expect(host.notifications.filter((notice) => notice.message === page.notice)).toHaveLength(0);
+    expect(reads).toBe(5);
+  });
+  test("workflow notice retries failed delivery and ignores retired or newly untrusted observations", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n"); const packageRoot = await project("");
+    const host = new FakePi(packageRoot, []); const bridge = new FakeBridge();
+    const page: PiWorkflowRecoverySnapshot = { status: "complete", revision: 1, pending: 1, claimed: 0, unavailable: 0,
+      cursor: null, bytesRead: 10, reason: null, notice: "Pending recovery item.", fingerprint: "a".repeat(64) };
+    let finish: ((value: PiWorkflowRecoverySnapshot) => void) | undefined;
+    let delayed = false; let trusted = true; let fail = true;
+    installParent(host, { packageRoot, catalog: [], bridge, loadPersona: async () => "PERSONA",
+      readWorkflowRecovery: async () => delayed ? await new Promise((resolve) => { finish = resolve; }) : page });
+    const context = host.context(cwd); context.hasUI = true; context.isProjectTrusted = () => trusted;
+    const notify = context.ui.notify;
+    context.ui.notify = (message, level) => { if (message === page.notice && fail) { fail = false; throw Error("delivery"); } notify(message, level); };
+    await host.emit("session_start", {}, context);
+    expect(host.notifications.filter((notice) => notice.message === page.notice)).toHaveLength(0);
+    await host.emit("before_agent_start", {}, context);
+    expect(host.notifications.filter((notice) => notice.message === page.notice)).toHaveLength(1);
+    delayed = true;
+    const stale = host.emit("before_agent_start", {}, context);
+    await Promise.resolve(); trusted = false;
+    finish?.({ ...page, notice: "Must not show.", fingerprint: "b".repeat(64) });
+    expect(await stale).toEqual([undefined]);
+    expect(host.notifications.some((notice) => notice.message === "Must not show.")).toBe(false);
+    trusted = true;
+    const retired = host.emit("before_agent_start", {}, context);
+    await Promise.resolve(); await host.emit("session_shutdown", {}, context);
+    finish?.({ ...page, notice: "Retired.", fingerprint: "c".repeat(64) });
+    expect(await retired).toEqual([undefined]);
+    expect(host.notifications.some((notice) => notice.message === "Retired.")).toBe(false);
+  });
+  test.each([false, null])("workflow recovery is never observed without affirmative trust: %j", async (trusted) => {
+    const cwd = await project("---\narbiter: enabled\n---\n"); const packageRoot = await project(""); const host = new FakePi(packageRoot, []);
+    let reads = 0;
+    installParent(host, { packageRoot, catalog: [], bridge: new FakeBridge(), loadPersona: async () => "PERSONA",
+      readWorkflowRecovery: async () => { reads++; return undefined; } });
+    const context = host.context(cwd, trusted);
+    await host.emit("session_start", {}, context); await host.emit("before_agent_start", {}, context);
+    expect(reads).toBe(0);
+  });
+  test("unavailable workflow observation preserves a known pending page in the delivered prompt and independent work", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n"); const packageRoot = await project("");
+    const host = new FakePi(packageRoot, []); let available = true;
+    const page: PiWorkflowRecoverySnapshot = { status: "complete", revision: 1, pending: 1, claimed: 0, unavailable: 0,
+      cursor: null, bytesRead: 10, reason: null, notice: "Retained pending page.", fingerprint: "a".repeat(64) };
+    installParent(host, { packageRoot, catalog: [], bridge: new FakeBridge(), loadPersona: async () => "PERSONA",
+      readWorkflowRecovery: async () => available ? page : undefined });
+    const context = host.context(cwd); await host.emit("session_start", {}, context); available = false;
+    const result = JSON.stringify(await host.emit("before_agent_start", { systemPrompt: "INDEPENDENT WORK" }, context));
+    expect(result).toContain("Retained pending page."); expect(result).toContain("observation unavailable");
+    expect(result).toContain("INDEPENDENT WORK");
+  });
+  test("disabled projects have zero workflow observers", async () => {
+    const cwd = await project(""); const packageRoot = await project(""); const host = new FakePi(packageRoot, []);
+    const observe = vi.fn(async () => undefined);
+    installParent(host, { packageRoot, catalog: [], bridge: new FakeBridge(), loadPersona: async () => "PERSONA", readWorkflowRecovery: observe });
+    await host.emit("session_start", {}, host.context(cwd)); await host.emit("before_agent_start", {}, host.context(cwd));
+    expect(observe).not.toHaveBeenCalled();
+  });
+  test("delegation recovery observation is nonblocking and late results cannot notify a retired session", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n"); const packageRoot = await project("");
+    const host = new FakePi(packageRoot, []); const bridge = new FakeBridge();
+    let complete!: (value: { state: "pending"; count: number; operationIds: string[] }) => void;
+    const recovery = new Promise<{ state: "pending"; count: number; operationIds: string[] }>((resolve) => { complete = resolve; });
+    let observations = 0;
+    installParent(host, { packageRoot, catalog: [], bridge, loadPersona: async () => "PERSONA",
+      readDelegationRecovery: async () => { observations++; return await recovery; } });
+    const context = host.context(cwd);
+    await host.emit("session_start", {}, context);
+    expect(observations).toBe(1); expect(bridge.calls.some((call) => call.event === "session_start")).toBe(true);
+    await host.emit("session_shutdown", {}, context);
+    complete({ state: "pending", count: 1, operationIds: ["a".repeat(64)] });
+    await Promise.resolve(); await Promise.resolve();
+    expect(host.notifications.filter((notice) => notice.message.includes("unresolved operation"))).toEqual([]);
+  });
   test("bounds the OS environment and resolves the configured shell to an absolute identity", async () => {
     expect(boundedPiEnvironment({ SAFE: "1", OMITTED: undefined })).toEqual([["SAFE", "1"], ["OMITTED", undefined]]);
     expect(boundedPiEnvironment(Object.fromEntries(Array.from({ length: 257 }, (_, index) => [`K${index}`, "v"])))).toBeUndefined();
@@ -764,6 +863,134 @@ describe("Pi activation", () => {
     expect(warnings).toEqual(["bridge failed; run /ca-doctor"]);
     expect(host.statusCalls.at(-1)?.text).toContain("degraded");
     expect(host.statusCalls.at(-1)?.text).toContain("/ca-doctor");
+  });
+
+  // PI-L01 / SF02: persona readiness is its own prerequisite. A failed persona
+  // read used to be stored as bridge degradation, so the next successful bridge
+  // refresh published "governed" while the persona stayed empty forever.
+  describe("persona readiness is independent of bridge health (PI-L01)", () => {
+    const GOVERNED = "codeArbiter host: pi governed";
+    async function personaHarness(loadPersona: () => Promise<string>) {
+      const cwd = await project("---\narbiter: enabled\n---\n");
+      const packageRoot = await project("");
+      const bridge = new FakeBridge();
+      const host = new FakePi(packageRoot, []);
+      let dispatchLifecycle: (() => unknown) | undefined;
+      installParent(host, {
+        bridge, catalog: [], packageRoot, loadPersona,
+        installDispatch: (lifecycle) => { dispatchLifecycle = lifecycle; },
+      });
+      const context = host.context(cwd);
+      const agentStart = async () => (await host.emit("before_agent_start", {
+        prompt: "p", systemPrompt: "BASE", systemPromptOptions: {},
+      }, context))[0] as { systemPrompt: string } | undefined;
+      return { host, bridge, context, agentStart, dispatchLifecycle: () => dispatchLifecycle?.() };
+    }
+
+    test("persona failure followed by bridge success alone stays persona-unavailable", async () => {
+      const h = await personaHarness(async () => { throw new Error("arbiter.md missing"); });
+      await h.host.emit("session_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toContain("persona unavailable");
+      expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+
+      const result = await h.agentStart();
+      // The bridge refreshed successfully; that must not heal the persona.
+      expect(h.bridge.calls.map((call) => call.event)).toEqual(["session_start", "before_agent_start"]);
+      expect(result?.systemPrompt).toContain("codeArbiter persona unavailable");
+      await h.host.emit("agent_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toContain("persona unavailable");
+      expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+    });
+
+    test("a successful persona retry in the current lifecycle restores prompt and readiness once", async () => {
+      let attempts = 0;
+      const h = await personaHarness(async () => {
+        attempts += 1;
+        if (attempts === 1) throw new Error("transient read failure");
+        return "RECOVERED PERSONA";
+      });
+      await h.host.emit("session_start", {}, h.context);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+      const first = await h.agentStart();
+      expect(attempts).toBe(2);
+      expect(first?.systemPrompt).toContain("BASE\n\nRECOVERED PERSONA");
+      expect(first?.systemPrompt.split("RECOVERED PERSONA")).toHaveLength(2);
+      expect(first?.systemPrompt).not.toContain("persona unavailable");
+      expect(h.dispatchLifecycle()).toBeDefined();
+      await h.host.emit("agent_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toBe(GOVERNED);
+      // Once loaded, later turns do not reload.
+      await h.agentStart();
+      expect(attempts).toBe(2);
+    });
+
+    test("a healthy start reports starting then governed, never persona unavailable", async () => {
+      const h = await personaHarness(async () => "PERSONA");
+      await h.host.emit("session_start", {}, h.context);
+      const texts = h.host.statusCalls.map((call) => call.text);
+      expect(texts).toContain("codeArbiter host: pi starting");
+      expect(texts.at(-1)).toBe(GOVERNED);
+      expect(texts.some((text) => text?.includes("persona unavailable"))).toBe(false);
+      expect(h.dispatchLifecycle()).toBeDefined();
+    });
+
+    test("an empty persona cannot mark the session governed", async () => {
+      const h = await personaHarness(async () => "  \n");
+      await h.host.emit("session_start", {}, h.context);
+      expect(h.host.statusCalls.at(-1)?.text).toContain("persona unavailable");
+      expect(h.dispatchLifecycle()).toBeUndefined();
+    });
+
+    test("a late persona from a retired session never populates the next session", async () => {
+      let release!: (value: string) => void;
+      let calls = 0;
+      const h = await personaHarness(() => {
+        calls += 1;
+        return calls === 1 ? new Promise<string>((resolveLoad) => { release = resolveLoad; }) : Promise.resolve("NEW PERSONA");
+      });
+      const oldStart = h.host.emit("session_start", {}, h.context);
+      await vi.waitFor(() => expect(calls).toBe(1));
+      await h.host.emit("session_start", {}, h.context);
+      release("OLD PERSONA");
+      await oldStart;
+      const result = await h.agentStart();
+      expect(result?.systemPrompt).toContain("NEW PERSONA");
+      expect(result?.systemPrompt).not.toContain("OLD PERSONA");
+    });
+
+    test("shutdown during persona load publishes no governed status afterwards", async () => {
+      let release!: (value: string) => void;
+      const h = await personaHarness(() => new Promise<string>((resolveLoad) => { release = resolveLoad; }));
+      const start = h.host.emit("session_start", {}, h.context);
+      await vi.waitFor(() => expect(release).toBeDefined());
+      await h.host.emit("session_shutdown", {}, h.context);
+      release("LATE PERSONA");
+      await start;
+      expect(h.host.statusCalls.at(-1)?.text).toBeUndefined();
+      expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);
+      expect(h.dispatchLifecycle()).toBeUndefined();
+    });
+
+    test("a retry racing a concurrent bridge refresh loads the persona once", async () => {
+      let attempts = 0;
+      let release!: (value: string) => void;
+      const h = await personaHarness(() => {
+        attempts += 1;
+        if (attempts === 1) return Promise.reject(new Error("first read failed"));
+        return new Promise<string>((resolveLoad) => { release = resolveLoad; });
+      });
+      await h.host.emit("session_start", {}, h.context);
+      const turnA = h.agentStart();
+      const turnB = h.agentStart();
+      await vi.waitFor(() => expect(release).toBeDefined());
+      release("RETRIED PERSONA");
+      const [a, b] = await Promise.all([turnA, turnB]);
+      expect(attempts).toBe(2);
+      expect(a?.systemPrompt).toContain("RETRIED PERSONA");
+      expect(b?.systemPrompt).toContain("RETRIED PERSONA");
+    });
   });
 
   test("hard-stops enabled activation on enforcement failure and retries successfully", async () => {

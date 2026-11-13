@@ -9,7 +9,7 @@ import { pathToFileURL } from "node:url";
 
 import { describe, expect, test } from "vitest";
 
-import { compatibilityDirection } from "../src/compatibility.ts";
+import { compatibilityDirection, privateApprovalCapability } from "../src/compatibility.ts";
 import { commandCatalogEntries, createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
 import { exists, findPiCliEntry, findPiPackageRoot } from "./live-pi-host.ts";
 
@@ -364,6 +364,12 @@ async function createPinnedGitFixture(root: string, environment: NodeJS.ProcessE
 }
 
 describe("ca-pi package", () => {
+  test("private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support", () => {
+    expect(privateApprovalCapability("1.5.0")).toEqual({ state: "unavailable", evidenceMode: "runtime-gated" });
+    expect(privateApprovalCapability("1.0.2")).toEqual({ state: "legacy-runtime-gated", evidenceMode: "runtime-gated" });
+    expect(compatibilityDirection({ piVersion: "1.0.2", nodeVersion: "24.18.0", pythonMajor: 3 })).not.toBeNull();
+    expect(privateApprovalCapability("1.5.0-rc.1").state).toBe("unsupported-runtime");
+  });
   test.runIf(process.platform === "win32")("real Pi dormant load never executes a project-cwd Python candidate", async () => {
     const projectCwd = await mkdtemp(resolve(tmpdir(), "ca-pi-python-cwd-poison-"));
     const agentDir = await mkdtemp(resolve(tmpdir(), "ca-pi-python-cwd-agent-"));

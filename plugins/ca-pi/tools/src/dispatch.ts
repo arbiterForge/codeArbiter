@@ -15,7 +15,8 @@ import { redactSecrets, safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog, validRoleName } from "./roles.ts";
 import type { PiRole } from "./roles.ts";
 import { runPiChild } from "./runner.ts";
-import type { ChildResult, PiChildRequest } from "./runner.ts";
+import type { ChildResult, PiChildRequest, ParentDelegationChannel } from "./runner.ts";
+import type { DelegationSummary } from "./delegation-contract.ts";
 
 interface DispatchAuditRecord {
   cwd: string;
@@ -100,6 +101,7 @@ export interface DispatchRuntime {
   childExtensionPath: string;
   parentEnv?: Readonly<NodeJS.ProcessEnv>;
   platform?: NodeJS.Platform;
+  openDelegation?: (role: PiRole, runId: string, signal: AbortSignal) => Promise<ParentDelegationChannel>;
 }
 
 export interface DispatchRequest {
@@ -112,6 +114,11 @@ export interface DispatchRequest {
 }
 
 export interface DispatchChild {
+  /** Generic dispatch has no registered workflow producer/work/origin binding.
+   * The bounded visible summary remains with the parent until the actual owner
+   * receives it and registers through its selected workflow CLI. */
+  followupCapture?: Readonly<{ durable: false; reason: "parent-context-unavailable" }>;
+  effects?: DelegationSummary;
   role: string;
   state: DispatchTerminal;
   summary?: string;
@@ -187,13 +194,16 @@ function roleLaunch(runtime: DispatchRuntime, role: PiRole, task: string, timeou
     charterPath: resolve(runtime.packageRoot, role.charterPath),
     task,
     timeoutMs,
+    ...(role.classification !== "author" || runtime.openDelegation === undefined ? {} : {
+      openDelegation: (runId: string, signal: AbortSignal) => runtime.openDelegation!(role, runId, signal),
+    }),
     ...(runtime.parentEnv === undefined ? {} : { parentEnv: runtime.parentEnv }),
     ...(runtime.platform === undefined ? {} : { platform: runtime.platform }),
   };
 }
 
 function parseStructuredOutput(result: ChildResult, maxBytes: number): InternalChild | undefined {
-  if (result.terminal !== "completed" || typeof result.output !== "string") return undefined;
+  if (typeof result.output !== "string") return undefined;
   const outputBytes = Buffer.byteLength(result.output, "utf8");
   if (outputBytes > maxBytes) {
     return { role: "", state: "oversized", outputBytes };
@@ -218,12 +228,15 @@ function parseStructuredOutput(result: ChildResult, maxBytes: number): InternalC
     outputBytes,
     ...(result.pid === undefined ? {} : { pid: result.pid }),
     ...(result.correlationId === undefined ? {} : { correlationId: result.correlationId }),
+    ...(result.delegation === undefined ? {} : { effects: result.delegation }),
   };
 }
 
 function publicChild(child: InternalChild): DispatchChild {
   const { outputBytes: _outputBytes, ...result } = child;
-  return Object.freeze(result);
+  return Object.freeze({ ...result,
+    followupCapture: Object.freeze({ durable: false as const, reason: "parent-context-unavailable" as const }),
+  });
 }
 
 function overallState(children: readonly InternalChild[]): DispatchTerminal {
@@ -245,7 +258,8 @@ function enforceAggregateLimit(children: readonly InternalChild[], maximum: numb
   let total = 0;
   return children.map((child) => {
     if (!JUDGMENT_STATES.has(child.state)) return child;
-    if (total + child.outputBytes > maximum) return { role: child.role, state: "oversized", outputBytes: child.outputBytes };
+    if (total + child.outputBytes > maximum) return { role: child.role, state: "oversized", outputBytes: child.outputBytes,
+      ...(child.effects === undefined ? {} : { effects: child.effects }) };
     total += child.outputBytes;
     return child;
   });
@@ -325,6 +339,7 @@ export function createDispatcher(dependencies: DispatchDependencies) {
       const startedAt = Date.now();
       try {
         const result = await dependencies.runChild(roleLaunch(request.runtime, role, task, limits.timeoutMs), controller.signal);
+        const observedEffects = result.delegation === undefined ? {} : { effects: result.delegation };
         await appendDispatchAudit({
           cwd: request.runtime.cwd,
           role: role.name,
@@ -337,13 +352,16 @@ export function createDispatcher(dependencies: DispatchDependencies) {
           ...(result.stderrBytes === undefined ? {} : { stderrBytes: result.stderrBytes }),
           ...(result.diagnostic === undefined ? {} : { diagnostic: result.diagnostic }),
         });
-        if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
-        if (timedOut) return { role: role.name, state: "timeout", outputBytes: 0 };
-        if (result.terminal === "degraded") return { role: role.name, state: "degraded", outputBytes: 0 };
         const parsed = parseStructuredOutput(result, limits.maxChildOutputBytes);
+        // Retain a valid bounded report as material even if cancellation or
+        // cleanup retired the run. Its model judgment cannot promote that run.
+        const material = parsed !== undefined && JUDGMENT_STATES.has(parsed.state) ? parsed : undefined;
+        if (signal.aborted) return { ...material, role: role.name, state: "cancelled", outputBytes: material?.outputBytes ?? 0, ...observedEffects };
+        if (timedOut) return { ...material, role: role.name, state: "timeout", outputBytes: material?.outputBytes ?? 0, ...observedEffects };
+        if (result.terminal === "degraded") return { ...material, role: role.name, state: "degraded", outputBytes: material?.outputBytes ?? 0, ...observedEffects };
         return parsed === undefined
-          ? { role: role.name, state: "protocol_error", outputBytes: 0 }
-          : { ...parsed, role: role.name };
+          ? { role: role.name, state: "protocol_error", outputBytes: 0, ...observedEffects }
+          : { ...parsed, role: role.name, ...observedEffects };
       } catch {
         if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
         if (timedOut) return { role: role.name, state: "timeout", outputBytes: 0 };
@@ -403,7 +421,7 @@ export const dispatch = createDispatcher({
 
 interface DispatchToolDependencies {
   authorize(context: ToolExecutionContextPort): boolean | LifecycleAuthorization | undefined | Promise<boolean | LifecycleAuthorization | undefined>;
-  resolveRuntime(context: ToolExecutionContextPort): DispatchRuntime | Promise<DispatchRuntime>;
+  resolveRuntime(context: ToolExecutionContextPort, parentToolCallId?: string): DispatchRuntime | Promise<DispatchRuntime>;
   dispatch?: (request: DispatchRequest, signal: AbortSignal) => Promise<DispatchResult>;
   activity?: () => ActivityPublisher | undefined;
   createActivityId?: () => string;
@@ -528,7 +546,7 @@ export function createDispatchTool(dependencies: DispatchToolDependencies): Tool
           content: [{ type: "text", text: JSON.stringify(fixedResult("degraded")) }],
           details: fixedResult("degraded"),
         };
-        const runtime = await dependencies.resolveRuntime(context);
+        const runtime = await dependencies.resolveRuntime(context, _toolCallId);
         const request = parseToolRequest(params, runtime);
         if (authorization !== true && !authorization.isCurrent(authorization.lease)) {
           result = fixedResult("degraded");

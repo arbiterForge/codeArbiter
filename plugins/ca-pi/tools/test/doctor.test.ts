@@ -1,8 +1,13 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
+import { credentialBlindHostEnvironment } from "../src/delegated-executor.ts";
+import { openDelegationJournal } from "../src/delegation-journal.ts";
+import { DELEGATION_PROFILE, operationId } from "../src/delegation-contract.ts";
+import { findPiPackageRoot, findPiCliEntry } from "./live-pi-host.ts";
 
 import {
   collectPiDoctorInput,
@@ -109,6 +114,84 @@ const ACTIVE_DISPATCH_MESSAGE =
   "Supported Pi 1.5.0 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.";
 const ACTIVE_DISPATCH_REMEDIATION =
   "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.";
+
+test("production doctor separates parent UI, retained recovery and optional legacy approval without qualification claims", async () => {
+  // Actual shipped parent entry + admitted Pi module + actual Git-common
+  // records. The host API/context/UI are fixture ports, not a visible TUI or
+  // installed-parent qualification. No doctorReport callback is substituted.
+  const parentRoot = resolve(import.meta.dirname, "../..");
+  const home = resolve(FIXTURE, "production-home");
+  const agent = resolve(home, "agent");
+  mkdirSync(agent, { recursive: true });
+  const projects = Object.fromEntries(["clear", "pending", "unavailable"].map((name) => {
+    const cwd = resolve(FIXTURE, `production-${name}`);
+    mkdirSync(resolve(cwd, ".codearbiter"), { recursive: true });
+    writeFileSync(resolve(cwd, ".codearbiter/CONTEXT.md"), "---\narbiter: enabled\n---\n");
+    if (name === "unavailable") writeFileSync(resolve(cwd, ".git"), "gitdir: absent-owner\n");
+    else mkdirSync(resolve(cwd, ".git"));
+    return [name, cwd];
+  }));
+  const journal = (await openDelegationJournal(projects.pending!))!;
+  const pendingId = operationId("a".repeat(32), "doctor-pending");
+  expect((await journal.claim({ v: 1, phase: "claimed", operationId: pendingId, runId: "a".repeat(32),
+    callerCorrelation: "b".repeat(64), role: "backend-author", tool: "write", digest: "c".repeat(64),
+    profile: DELEGATION_PROFILE, recordedAt: "2026-11-13T00:00:00Z", target: "unchanged.txt", targetHash: "absent" })).state).toBe("claimed");
+  const script = `
+    import { readFileSync } from 'node:fs';
+    import { resolve } from 'node:path';
+    import { pathToFileURL } from 'node:url';
+    const input = JSON.parse(readFileSync(0, 'utf8'));
+    const commands = new Map(), handlers = new Map(), tools = new Map(), messages = [];
+    const catalog = Object.values(JSON.parse(readFileSync(resolve(input.parentRoot,'generated/command-catalog.json'),'utf8')).commands);
+    const info = path => ({path,source:'fixture',scope:'user',origin:'package',baseDir:input.parentRoot});
+    const pi = {
+      on: (event,handler) => handlers.set(event,[...(handlers.get(event)??[]),handler]),
+      registerCommand: (name,options) => commands.set(name,options),
+      registerTool: tool => tools.set(tool.name,tool),
+      getActiveTools: () => [], getAllTools: () => [...tools.keys()].map(name => ({name,sourceInfo:info(input.parent)})),
+      getCommands: () => [...[...commands.keys()].map(name=>({name,source:'extension',sourceInfo:info(input.parent)})),
+        ...catalog.map(entry=>({name:'skill:ca-'+entry.name,source:'skill',sourceInfo:info(resolve(input.parentRoot,entry.skillPath))}))],
+      sendUserMessage: content => messages.push(content),
+    };
+    await (await import(pathToFileURL(input.parent).href)).default(pi);
+    const reports=[];
+    for (const mode of ['tui','rpc','no-ui']) for (const state of ['clear','pending','unavailable']) {
+      messages.length=0;
+      const context={cwd:input.projects[state], mode:mode==='no-ui'?'tui':mode,hasUI:mode!=='no-ui',
+        isProjectTrusted:()=>true,ui:{notify:()=>{},setStatus:()=>{},confirm:async()=>{throw Error('doctor must not ask for authority');}}};
+      await commands.get('ca-doctor').handler('',context);
+      if(messages.length!==1) throw Error('production doctor did not queue one report');
+      const prefix='<codearbiter-doctor-report>\\n',text=messages[0],start=text.indexOf(prefix)+prefix.length;
+      const report=JSON.parse(text.slice(start,text.indexOf('\\n</codearbiter-doctor-report>',start))).report;
+      reports.push({mode,state,report});
+    }
+    process.stdout.write(JSON.stringify(reports));
+  `;
+  const host = await findPiPackageRoot();
+  const raw = execFileSync(process.execPath, ["--input-type=module", "--eval", script, await findPiCliEntry(host)], {
+    input: JSON.stringify({ parentRoot, parent: resolve(parentRoot, "extensions/codearbiter.js"), projects }),
+    encoding: "utf8", timeout: 20_000, maxBuffer: 262_144,
+    env: { ...credentialBlindHostEnvironment(process.env), HOME: home, USERPROFILE: home,
+      APPDATA: resolve(home, "appdata"), XDG_CONFIG_HOME: resolve(home, "xdg"),
+      PI_CODING_AGENT_DIR: agent, PI_OFFLINE: "1", PI_TELEMETRY: "0" },
+  });
+  const rows = JSON.parse(raw) as Array<{ mode: string; state: string; report: string }>;
+  expect(rows).toHaveLength(9);
+  for (const {mode,state,report} of rows) {
+    expect(report).toContain(`${mode === "tui" ? "HEALTHY" : "DEGRADED"}  author-delegation:`);
+    expect(report).toContain(mode === "tui" ? "per-operation parent confirmation available" : "unavailable (no-parent-ui)");
+    expect(report).toContain("trusted-host-exact-operation-v1 with host filesystem/network access");
+    expect(report).toContain("Source capability is not packaged-author qualification");
+    expect(report).toContain(`${state === "clear" ? "HEALTHY" : "DEGRADED"}  delegation-recovery:`);
+    expect(report).toContain(state === "clear" ? "no unresolved retained operations observed"
+      : state === "pending" ? "1 unresolved operation(s)" : "observation unavailable; unknown outcomes remain unknown");
+    if (state === "pending") expect(report).toContain(pendingId);
+    expect(report).toContain("private-artifact-approval: unavailable on Pi 1.5.0");
+    expect(report).toContain("legacy private entry is runtime-gated to 1.0.2");
+    expect(report).toContain("does not qualify host-observed approval or grant delegation authority");
+  }
+  expect(readFileSync(resolve(journal.root, `${pendingId}.claimed.json`), "utf8")).toContain('"claimed"');
+}, 30_000);
 
 function brokenFixture(id: keyof typeof remediation): PiDoctorInput {
   const input = healthyInput();

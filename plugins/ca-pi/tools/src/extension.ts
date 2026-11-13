@@ -7,11 +7,12 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { types as utilTypes } from "node:util";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { compatibilityDirection } from "./compatibility.ts";
+import { compatibilityDirection, privateApprovalCapability, PRIVATE_APPROVAL_LEGACY_PI_VERSION } from "./compatibility.ts";
 import type { HostCompatibility } from "./compatibility.ts";
-import { BridgeClient, resolveGitExecutable, resolvePythonCommand } from "./bridge.ts";
+import { BridgeClient, readWorkflowRecoverySnapshot, shouldAuditBridgeFailure, resolveGitExecutable, resolvePythonCommand } from "./bridge.ts";
 import type {
   BridgePort,
+  PiWorkflowRecoverySnapshot,
   BuiltinToolFactories,
   CommandCatalogEntry,
   ExtensionContextPort,
@@ -56,6 +57,12 @@ import { lexicallyInside } from "./path-boundary.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { createDispatchTool } from "./dispatch.ts";
 import type { DispatchRequest, DispatchResult } from "./dispatch.ts";
+import type { PiRole } from "./roles.ts";
+import type { ParentDelegationChannel } from "./runner.ts";
+import { openParentDelegation } from "./parent-delegation.ts";
+import { openDelegationJournal, readDelegationRecovery } from "./delegation-journal.ts";
+import type { DelegationRecoverySummary } from "./delegation-journal.ts";
+import { createDelegatedExecutor, credentialBlindHostEnvironment } from "./delegated-executor.ts";
 import { createFarmPreviewTool } from "./farm.ts";
 import type { FarmPreviewInput, FarmResult } from "./farm.ts";
 import {
@@ -190,6 +197,8 @@ export interface ParentDependencies {
   catalog: readonly CommandCatalogEntry[];
   packageRoot: string;
   loadPersona: () => Promise<string>;
+  readWorkflowRecovery?: (context: ExtensionContextPort) => Promise<PiWorkflowRecoverySnapshot | undefined>;
+  readDelegationRecovery?: (cwd: string) => Promise<DelegationRecoverySummary>;
   readActivation?: (cwd: string) => Promise<boolean>;
   resetBridge?: () => void;
   prepareFooterBridge?: (cwd: string, context: ExtensionContextPort) => Promise<void> | void;
@@ -228,6 +237,10 @@ export interface ParentDependencies {
 }
 
 const PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";
+const PI_PERSONA_UNAVAILABLE_STATUS = "codeArbiter host: pi degraded - persona unavailable; run /ca-doctor";
+/** Injected instead of the persona while it is unavailable, so the model is told
+ * honestly that it is running without its governing instructions. */
+const PI_PERSONA_UNAVAILABLE_PROMPT = "codeArbiter persona unavailable; governance instructions are not loaded. Run /ca-doctor.";
 
 function hasAffirmativeProjectTrust(context: { isProjectTrusted?: () => boolean }): boolean {
   try {
@@ -248,6 +261,8 @@ interface PiDispatchInstallOptions {
   isLifecycleReady?: () => boolean;
   dispatch?: (request: DispatchRequest, signal: AbortSignal) => Promise<DispatchResult>;
   currentActivity?: () => ActivityPublisher | undefined;
+  openDelegation?: (context: ToolExecutionContextPort, parentToolCallId: string, role: PiRole, runId: string,
+    signal: AbortSignal, isCurrent: () => boolean) => Promise<ParentDelegationChannel>;
 }
 
 export function installPiDispatch(pi: PiDispatchTarget, options: PiDispatchInstallOptions): void {
@@ -263,12 +278,13 @@ export function installPiDispatch(pi: PiDispatchTarget, options: PiDispatchInsta
         return { lease, isCurrent: (candidate) => currentLifecycle() === candidate };
       } catch { return undefined; }
     },
-    resolveRuntime: (context: ToolExecutionContextPort) => {
+    resolveRuntime: (context: ToolExecutionContextPort, parentToolCallId?: string) => {
       if (typeof context.cwd !== "string"
         || typeof context.model?.provider !== "string" || context.model.provider.trim() === ""
         || typeof context.model.id !== "string" || context.model.id.trim() === "") {
         throw new Error("Pi dispatch runtime context is unavailable.");
       }
+      const lease = currentLifecycle();
       return {
         nodePath: process.execPath,
         piCliPath: options.piCliPath,
@@ -279,6 +295,10 @@ export function installPiDispatch(pi: PiDispatchTarget, options: PiDispatchInsta
         childExtensionPath: resolve(options.packageRoot, "extensions", "codearbiter-child.js"),
         parentEnv: process.env,
         platform: process.platform,
+        ...(options.openDelegation === undefined || parentToolCallId === undefined || lease === undefined ? {} : {
+          openDelegation: (role: PiRole, runId: string, signal: AbortSignal) => options.openDelegation!(context,
+            parentToolCallId, role, runId, signal, () => currentLifecycle() === lease && hasAffirmativeProjectTrust(context)),
+        }),
       };
     },
     ...(options.currentActivity === undefined ? {} : { activity: options.currentActivity }),
@@ -441,7 +461,19 @@ export async function loadPersonaFrom(packageRoot: string): Promise<string> {
 export function installParent(pi: ParentPiPort, dependencies: ParentDependencies): void {
   let enabled = false;
   let persona = "";
+  // PI-L01: persona readiness is an independent prerequisite. It is never
+  // stored as, or cleared by, bridge health.
+  let personaReady = false;
+  // Set only once a load attempt for this lifecycle failed or returned empty, so
+  // an in-flight first load still reports "starting", not "unavailable".
+  let personaFailed = false;
+  let personaLoad: { lifecycle: LifecycleLease; promise: Promise<boolean> } | undefined;
   let state = "";
+  let workflowRecovery: PiWorkflowRecoverySnapshot | undefined;
+  let workflowPresentation: { notice: string; key: string } | undefined;
+  let workflowRead: { lifecycle: LifecycleLease; promise: Promise<void> } | undefined;
+  const workflowUiDelivered = new Set<string>();
+  const workflowPromptDelivered = new Set<string>();
   let ownershipDegraded: string | undefined;
   let bridgeDegraded: string | undefined;
   let commandInvocationDegraded: string | undefined;
@@ -487,7 +519,9 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR"),
   });
   const readActivation = dependencies.readActivation ?? isEnabled;
-  dependencies.installDispatch?.(() => readyLifecycle, currentActivity);
+  // Dispatch admission shares the prerequisite vector used for the prompt and
+  // the governed status: no author/reviewer run starts without the persona.
+  dependencies.installDispatch?.(() => (personaReady ? readyLifecycle : undefined), currentActivity);
   dependencies.installCompaction?.(() => readyLifecycle);
   dependencies.installFarmPreview?.(() => readyLifecycle);
   const publishStatus = (context: ExtensionContextPort, text: string | undefined) => {
@@ -499,13 +533,75 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     readyLifecycle = undefined;
     enabled = false;
     persona = "";
+    personaReady = false;
+    personaFailed = false;
+    personaLoad = undefined;
     state = "";
+    workflowRecovery = undefined;
+    workflowPresentation = undefined;
+    workflowRead = undefined;
+    workflowUiDelivered.clear();
+    workflowPromptDelivered.clear();
     ownershipDegraded = undefined;
     bridgeDegraded = undefined;
     commandInvocationDegraded = undefined;
     footerActivationEnabled = false;
   };
-  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? bridgeDegraded;
+  const observeWorkflowRecovery = (lifecycle: LifecycleLease, context: ExtensionContextPort): Promise<void> => {
+    if (dependencies.readWorkflowRecovery === undefined || !enabled || readyLifecycle !== lifecycle
+      || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return Promise.resolve();
+    if (workflowRead?.lifecycle === lifecycle) return workflowRead.promise;
+    const entry = { lifecycle, promise: Promise.resolve() };
+    workflowRead = entry;
+    entry.promise = (async () => {
+      let observed: PiWorkflowRecoverySnapshot | undefined;
+      try { observed = await dependencies.readWorkflowRecovery!(context); } catch { /* unknown stays unavailable */ }
+      if (!enabled || readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
+      // A missing observation cannot erase a previously observed unresolved page.
+      if (observed !== undefined) workflowRecovery = observed;
+      const notice = observed?.notice ?? "codeArbiter: workflow recovery observation unavailable. Inspect with the installed workflow-recovery.py scan; independent authorized work continues.";
+      const key = observed?.fingerprint ?? `unavailable:${workflowRecovery?.fingerprint ?? "unknown"}`;
+      workflowPresentation = { notice: observed === undefined && workflowRecovery?.notice
+        ? `${workflowRecovery.notice} ${notice}` : notice, key };
+      // Pi's supported no-UI context implements notify as a no-op. Do not
+      // record UI delivery there; the returned prompt remains its own sink.
+      if (context.hasUI === true && notice !== "" && !workflowUiDelivered.has(key)) {
+        try { context.ui.notify(notice, "warning"); workflowUiDelivered.add(key); } catch { /* retry presentation later */ }
+      }
+    })().finally(() => { if (workflowRead === entry) workflowRead = undefined; });
+    return entry.promise;
+  };
+  const personaDegraded = () => (enabled && personaFailed && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : undefined);
+  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
+  /** Load (or retry) the persona for one lifecycle. Concurrent callers share one
+   * read; a result that lands after the lifecycle retired is discarded. */
+  const ensurePersona = (lifecycle: LifecycleLease): Promise<boolean> => {
+    if (personaReady) return Promise.resolve(true);
+    if (personaLoad?.lifecycle === lifecycle) return personaLoad.promise;
+    const entry: { lifecycle: LifecycleLease; promise: Promise<boolean> } = { lifecycle, promise: Promise.resolve(false) };
+    personaLoad = entry;
+    entry.promise = (async () => {
+      let loaded: unknown;
+      try {
+        loaded = await dependencies.loadPersona();
+      } catch {
+        if (activeLifecycle === lifecycle) personaFailed = true;
+        return false;
+      } finally {
+        if (personaLoad === entry) personaLoad = undefined;
+      }
+      if (activeLifecycle !== lifecycle) return false;
+      if (typeof loaded !== "string" || loaded.trim() === "") {
+        personaFailed = true;
+        return false;
+      }
+      persona = loaded;
+      personaReady = true;
+      personaFailed = false;
+      return true;
+    })();
+    return entry.promise;
+  };
   const doctorHealth = (context: ExtensionContextPort) => {
     const footerHealth = footer.health();
     // `enabled` records the authority under which this session initialized.
@@ -618,9 +714,26 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
       context.ui.notify(bridgeDegraded, "error");
       throw new Error(bridgeDegraded, { cause: error });
     }
-    try {
-      persona = await dependencies.loadPersona();
+    void observeWorkflowRecovery(lifecycle, context);
+    if (!await ensurePersona(lifecycle)) {
       if (!isCurrent()) return;
+      context.ui.notify(PI_PERSONA_UNAVAILABLE_STATUS, "error");
+    }
+    if (!isCurrent()) return;
+    if (dependencies.readDelegationRecovery !== undefined) {
+      // Recovery observation does not delay ordinary ready work and cannot restore authority.
+      void dependencies.readDelegationRecovery(context.cwd).then((recovery) => {
+        if (!isCurrent() || !hasAffirmativeProjectTrust(context)) return;
+        if (recovery.state === "pending") context.ui.notify(
+          `Pi delegation has ${recovery.count} unresolved operation(s). Run /ca-doctor; inspect retained outcomes before any new attempt.`, "warning");
+        else if (recovery.state === "unavailable") context.ui.notify(
+          "Pi delegation recovery observation is unavailable. Run /ca-doctor before retrying an uncertain effect.", "warning");
+      }).catch(() => {
+        if (isCurrent() && hasAffirmativeProjectTrust(context)) context.ui.notify(
+          "Pi delegation recovery observation is unavailable. Run /ca-doctor before retrying an uncertain effect.", "warning");
+      });
+    }
+    try {
       const response = await dependencies.bridge.call({ version: 1, event: "session_start", cwd: context.cwd }, context.signal ?? neverAborted);
       if (!isCurrent()) return;
       state = response.context ?? "host: pi";
@@ -643,7 +756,15 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     const lifecycle = readyLifecycle;
     if (!enabled || lifecycle === undefined) return;
     ownershipDegraded = ownershipStatus(pi, dependencies, nativePlanRegistered, nativeJobsRegistered);
-    if (degradedStatus() !== undefined) publishStatus(context, degradedStatus());
+    await observeWorkflowRecovery(lifecycle, context);
+    if (readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
+    // The retry edge for a failed persona read: only a persona read clears it.
+    const personaWasReady = personaReady;
+    await ensurePersona(lifecycle);
+    if (readyLifecycle !== lifecycle) return;
+    if (degradedStatus() !== undefined || personaWasReady !== personaReady) {
+      publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
+    }
     try {
       const response = await dependencies.bridge.call({
         version: 1,
@@ -664,7 +785,14 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
       publishStatus(context, degradedStatus());
     }
     const systemPrompt = typeof event.systemPrompt === "string" ? event.systemPrompt : "";
-    return { systemPrompt: appendPrompt(systemPrompt, persona, state) };
+    if (readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
+    const recoveryText = workflowPresentation !== undefined && !workflowPromptDelivered.has(workflowPresentation.key)
+      ? workflowPresentation.notice : "";
+    const result = { systemPrompt: appendPrompt(systemPrompt, personaReady ? persona : PI_PERSONA_UNAVAILABLE_PROMPT,
+      recoveryText === "" ? state : `${state}\n${recoveryText}`) };
+    // Returning the prompt is this sink's delivery boundary; UI delivery has its own key.
+    if (workflowPresentation !== undefined && recoveryText !== "") workflowPromptDelivered.add(workflowPresentation.key);
+    return result;
   });
 
   pi.on("agent_start", (_event, context) => {
@@ -884,8 +1012,6 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
   let pythonResolutionAttempted = false;
   let concreteBridge: BridgeClient | undefined;
   let unavailableBridge: BridgeClient | undefined;
-  const shouldAuditBridgeFailure = (request: Parameters<BridgePort["call"]>[0]) =>
-    request.event !== "footer_usage_update" && request.event !== "footer_status_snapshot";
   const bridge: BridgePort = {
     call: async (request, signal) => {
       const selectedPython = pythonCommand;
@@ -933,6 +1059,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
     }
   };
   const enforcement = new EnforcementInstaller();
+  const delegatedExecutors = new Map<string, Promise<ReturnType<typeof createDelegatedExecutor>>>();
   enforcement.ensureBootstrap(pi, toolClasses);
   installParent(pi, {
     bridge,
@@ -944,6 +1071,8 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
     },
     enforcementReadiness: enforcement,
     loadPersona: async () => await loadPersonaFrom(packageRoot),
+    readWorkflowRecovery: (context) => readWorkflowRecoverySnapshot(bridge, context, { enabled: true }),
+    readDelegationRecovery,
     resetBridge,
     prepareFooterBridge: (cwd) => { prepareBridgeIdentity(cwd); },
     readFooterUpdateVersion: async () => await readCachedUpdateVersion(packageRoot),
@@ -953,6 +1082,41 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       piCliPath: runtime.cliEntry,
       currentLifecycle,
       currentActivity,
+      openDelegation: async (context, parentToolCallId, role, runId, signal, isCurrent) => {
+        if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
+          throw new Error("Parent delegation unavailable (no-parent-ui).");
+        }
+        if (typeof context.cwd !== "string" || !isCurrent()) throw new Error("Parent delegation context is unavailable.");
+        const worktree = await realpath(context.cwd);
+        const observeCommandBinding = async () => {
+          const settings = runtime.SettingsManager.create(worktree, runtime.getAgentDir(), { projectTrusted: true });
+          const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
+          if (shellPath === undefined) return null;
+          return Object.freeze({ shellPath, commandPrefix: settings.getShellCommandPrefix() });
+        };
+        const commandBinding = await observeCommandBinding();
+        const commandIdentity = JSON.stringify(commandBinding);
+        let executor = delegatedExecutors.get(worktree);
+        if (executor === undefined) {
+          executor = (async () => {
+            const journal = await openDelegationJournal(worktree);
+            if (journal === undefined) throw new Error("Parent delegation journal is unavailable.");
+            return createDelegatedExecutor({ journal,
+              write: (root) => runtime.createWriteToolDefinition(root), edit: (root) => runtime.createEditToolDefinition(root),
+              shell: async () => {
+                const settings = runtime.SettingsManager.create(worktree, runtime.getAgentDir(), { projectTrusted: true });
+                const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
+                return shellPath === undefined ? undefined : { shellPath, commandPrefix: settings.getShellCommandPrefix() };
+              }, environment: process.env });
+          })();
+          delegatedExecutors.set(worktree, executor);
+          executor.catch(() => { delegatedExecutors.delete(worktree); });
+        }
+        return await openParentDelegation({ runId, role, parentToolCallId, worktree, signal, isCurrent, commandBinding,
+          enabled: async () => await isEnabled(worktree) && JSON.stringify(await observeCommandBinding()) === commandIdentity, executor: await executor,
+          gate: async (request, operationSignal, effect, description) => await enforcement.executeDelegated(request.tool,
+            `${parentToolCallId}:${request.requestId}`, request.params as Record<string, unknown>, operationSignal, context, effect, description) });
+      },
     }),
     installCompaction: (currentLifecycle) => installPiCompaction(pi, {
       packageRoot,
@@ -994,7 +1158,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       resolveLaunch: async (cwd) => {
         const settings = runtime.SettingsManager.create(cwd, runtime.getAgentDir(), { projectTrusted: true });
         const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
-        const env = boundedPiEnvironment(process.env);
+        const env = boundedPiEnvironment(credentialBlindHostEnvironment(process.env, process.platform));
         if (shellPath === undefined || env === undefined) return undefined;
         const commandPrefix = settings.getShellCommandPrefix();
         return Object.freeze({
@@ -1069,7 +1233,29 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
         projectTrusted: trustedForDoctor,
         executeBash: async () => await enforcement.runDoctorWrapperSelfTest(context.signal),
       });
-      return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest]);
+      const recovery = enabledForDoctor && trustedForDoctor ? await readDelegationRecovery(context.cwd) : undefined;
+      const recoveryText = recovery === undefined ? "not inspected (project trust or activation unavailable)"
+        : recovery.state === "clear" ? "no unresolved retained operations observed"
+          : recovery.state === "unavailable" ? "observation unavailable; unknown outcomes remain unknown"
+            : `${recovery.count} unresolved operation(s); read-only observation required, never automatic effect replay\n`
+              + recovery.operationIds.join("\n");
+      const parentUI = context.mode === "tui" && context.hasUI === true && typeof context.ui?.confirm === "function";
+      return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest, {
+        id: "author-delegation", state: parentUI ? "healthy" : "degraded",
+        message: `${parentUI
+          ? "per-operation parent confirmation available; executor and journal checked for each live author run"
+          : "unavailable (no-parent-ui); read-only reviewer capability remains separate"}. `
+          + "Execution uses trusted-host-exact-operation-v1 with host filesystem/network access. Source capability is not packaged-author qualification.",
+        remediation: "Use a trusted parent TUI for concrete operation confirmation; require exact supported-host author qualification before promotion.",
+      }, {
+        id: "delegation-recovery", state: recovery?.state === "pending" || recovery?.state === "unavailable" ? "degraded" : "healthy",
+        message: recoveryText, remediation: "Inspect retained observations before retrying dependent effects; never replay uncertain operations automatically.",
+      }, {
+        id: "private-artifact-approval", state: "healthy",
+        message: `${privateApprovalCapability(runtimeIdentity.version).state} on Pi ${runtimeIdentity.version}; `
+          + `legacy private entry is runtime-gated to ${PRIVATE_APPROVAL_LEGACY_PI_VERSION}. This does not qualify host-observed approval or grant delegation authority.`,
+        remediation: "Treat this optional legacy capability separately from ordinary author delegation.",
+      }]);
     },
     installEnforcement: (cwd, context, getMode, backgroundToolFactory) => {
       const guardPi = pi;

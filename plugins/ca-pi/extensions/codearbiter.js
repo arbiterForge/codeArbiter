@@ -8,15 +8,19 @@ var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "1.5.0": "126
 var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_background_bash: "EXEC", codearbiter_dispatch: "EXEC", codearbiter_farm_preview: "EXEC", write: "WRITE", edit: "EDIT", read: "READ" };
 
 // src/extension.ts
-import { lstat as lstat4, readFile as readFile6, realpath as realpath7 } from "node:fs/promises";
+import { lstat as lstat6, readFile as readFile6, realpath as realpath9 } from "node:fs/promises";
 import { realpathSync as realpathSync7 } from "node:fs";
 import { createRequire as createRequire2 } from "node:module";
-import { delimiter, dirname as dirname7, isAbsolute as isAbsolute8, resolve as resolve15 } from "node:path";
+import { delimiter, dirname as dirname7, isAbsolute as isAbsolute10, resolve as resolve17 } from "node:path";
 import { fileURLToPath as fileURLToPath5, pathToFileURL as pathToFileURL2 } from "node:url";
-import { types as utilTypes9 } from "node:util";
+import { types as utilTypes10 } from "node:util";
 
 // src/compatibility.ts
 var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["1.5.0"]);
+var PRIVATE_APPROVAL_LEGACY_PI_VERSION = "1.0.2";
+function privateApprovalCapability(piVersion) {
+  return Object.freeze({ state: SUPPORTED_PI_VERSIONS.has(piVersion) ? "unavailable" : piVersion === PRIVATE_APPROVAL_LEGACY_PI_VERSION ? "legacy-runtime-gated" : "unsupported-runtime", evidenceMode: "runtime-gated" });
+}
 var MINIMUM_NODE = [22, 19, 0];
 var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
@@ -294,6 +298,9 @@ var PI_STATUS_RESULT_KEYS = /* @__PURE__ */ new Set([
   "mode",
   "prune"
 ]);
+function shouldAuditBridgeFailure(request) {
+  return request.event !== "footer_usage_update" && request.event !== "footer_status_snapshot" && request.event !== "workflow_recovery_snapshot";
+}
 function minimalEnvironment(identities, userHome) {
   const allowed = ["SystemRoot", "WINDIR", "TEMP", "TMP"];
   const env = { PYTHONIOENCODING: "utf-8", PYTHONUTF8: "1" };
@@ -701,6 +708,51 @@ async function readFooterStatusSnapshot(bridge, context, activation) {
     return statusResult(response);
   } catch {
     return void 0;
+  }
+}
+var RECOVERY_KEYS = /* @__PURE__ */ new Set(["status", "revision", "pending", "claimed", "unavailable", "cursor", "bytesRead", "reason", "notice", "fingerprint"]);
+var RECOVERY_REASONS = /* @__PURE__ */ new Set(["io-temporary", "storage-unavailable", "capacity", "unsupported-version", "unknown-kind", "corrupt-record", "changed-binding", "source-stale", "owner-ambiguous", "authorization-denied", "explicit-stop", "material-unavailable", "uncertain-effect", "target-unavailable", "busy", "invalid", "inactive", "untrusted-helper", "scan-timeout"]);
+var boundedInteger = (value, maximum) => typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= maximum;
+function workflowRecoveryResult(response) {
+  if (!validResponse(response) || response.outcome !== "notice" || response.auditCode !== "PI_WORKFLOW_RECOVERY" || !exactKeys(response, /* @__PURE__ */ new Set(["version", "outcome", "auditCode", "resultPatch"]))) return void 0;
+  const patch = record(response.resultPatch);
+  const value = patch === void 0 ? void 0 : record(patch.workflowRecovery);
+  if (patch === void 0 || !exactKeys(patch, /* @__PURE__ */ new Set(["workflowRecovery"])) || value === void 0 || !exactKeys(value, RECOVERY_KEYS) || !["absent", "complete", "partial", "unavailable"].includes(value.status) || !(value.revision === null || boundedInteger(value.revision, 1e10)) || !boundedInteger(value.pending, 32) || !boundedInteger(value.claimed, 32) || !boundedInteger(value.unavailable, 32) || value.pending + value.claimed + value.unavailable > 32 || !boundedInteger(value.bytesRead, 262144) || !(value.reason === null || typeof value.reason === "string" && RECOVERY_REASONS.has(value.reason)) || !(value.cursor === null || typeof value.cursor === "string" && value.cursor.length <= 256 && /^[A-Za-z0-9_-]+={0,2}$/u.test(value.cursor)) || value.status === "partial" && value.cursor === null || ["absent", "complete"].includes(value.status) && value.cursor !== null || value.status !== "unavailable" && value.reason !== null || typeof value.notice !== "string" || value.notice.length > 768 || CONTROL_RE.test(value.notice) || value.status === "absent" && (value.revision !== null || value.pending + value.claimed + value.unavailable !== 0 || value.notice !== "") || (value.status === "partial" || value.status === "unavailable" || value.pending + value.claimed + value.unavailable > 0) && value.notice.trim() === "" || typeof value.fingerprint !== "string" || !/^[a-f0-9]{64}$/u.test(value.fingerprint)) return void 0;
+  return Object.freeze({ ...value });
+}
+async function readWorkflowRecoverySnapshot(bridge, context, activation) {
+  if (activation.enabled !== true || context.signal?.aborted) return void 0;
+  try {
+    if (context.isProjectTrusted?.() !== true) return void 0;
+  } catch {
+    return void 0;
+  }
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  context.signal?.addEventListener("abort", abort, { once: true });
+  let timer;
+  const deadline = new Promise((resolveDeadline) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      resolveDeadline(void 0);
+    }, 1e3);
+  });
+  try {
+    const rawSessionId = callMember(context.sessionManager, "getSessionId");
+    const sessionId2 = typeof rawSessionId === "string" && rawSessionId.length <= 1024 ? rawSessionId : void 0;
+    const response = await Promise.race([bridge.call({
+      version: 1,
+      event: "workflow_recovery_snapshot",
+      cwd: context.cwd,
+      ...sessionId2 === void 0 ? {} : { sessionId: sessionId2 }
+    }, controller.signal), deadline]);
+    if (response === void 0 || controller.signal.aborted || context.isProjectTrusted?.() !== true) return void 0;
+    return workflowRecoveryResult(response);
+  } catch {
+    return void 0;
+  } finally {
+    if (timer !== void 0) clearTimeout(timer);
+    context.signal?.removeEventListener("abort", abort);
   }
 }
 var WINDOWS_TASKKILL_TIMEOUT_MS = 1e3;
@@ -5609,6 +5661,9 @@ var Manager = class {
   autoDecided = false;
   lastReason;
   metrics;
+  /** PI-L02: bumped by dispose(); an install that awaited across a disposal
+   * belongs to a retired session and must not patch the terminal. */
+  generation = 0;
   register(context) {
     if (!interactiveParent(context)) return false;
     this.expected = true;
@@ -5637,6 +5692,7 @@ var Manager = class {
     await this.install(context);
   }
   dispose() {
+    this.generation += 1;
     try {
       this.compositor?.dispose();
     } catch {
@@ -5659,22 +5715,31 @@ var Manager = class {
     });
   }
   async install(context) {
+    const generation = this.generation;
+    if (this.ports.currentTui() === void 0 || this.ports.terminal() === void 0) {
+      this.lastReason = this.ports.currentTui() === void 0 ? "no-tui" : "no-terminal";
+      return false;
+    }
+    if (this.metrics === void 0) {
+      let loaded;
+      try {
+        loaded = await this.ports.loadMetrics?.();
+      } catch {
+        loaded = void 0;
+      }
+      if (loaded !== void 0) this.metrics ??= loaded;
+      if (generation !== this.generation) return false;
+      if (this.metrics === void 0) {
+        this.lastReason = "no-metrics";
+        return false;
+      }
+    }
+    if (this.compositor?.installed === true) return true;
     const tui = this.ports.currentTui();
     const terminal = this.ports.terminal();
     if (tui === void 0 || terminal === void 0) {
       this.lastReason = tui === void 0 ? "no-tui" : "no-terminal";
       return false;
-    }
-    if (this.metrics === void 0) {
-      try {
-        this.metrics = await this.ports.loadMetrics?.();
-      } catch {
-        this.metrics = void 0;
-      }
-      if (this.metrics === void 0) {
-        this.lastReason = "no-metrics";
-        return false;
-      }
     }
     const notify = (message) => {
       try {
@@ -6379,7 +6444,7 @@ function fixedFallbackSessionId() {
 function executionCwd(context, fallback) {
   return context !== null && typeof context === "object" && typeof context.cwd === "string" ? context.cwd : fallback;
 }
-function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, bridge, boundGeneration, activeGeneration, isReady, sessionIdFor, permissionPolicy, getMode, permissionAudit, wrapperSourcePath, projectTrust, onTrustWithdrawn, allowNativeFallback = true, bridgeToolName = toolName) {
+function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, bridge, boundGeneration, activeGeneration, isReady, sessionIdFor, permissionPolicy, getMode, permissionAudit, wrapperSourcePath, projectTrust, onTrustWithdrawn, allowNativeFallback = true, bridgeToolName = toolName, delegatedConfirmation) {
   const original = factory(cwd);
   if (original.name !== toolName || typeof original.execute !== "function") {
     throw new Error(`Pi built-in ${toolName} factory identity is invalid; run /ca-doctor.`);
@@ -6477,7 +6542,7 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
         if (!trustHeld()) return "lifecycle-stale";
         return activeGeneration() === generation && generation === boundGeneration && isReady() ? "current" : "lifecycle-stale";
       };
-      if (policy.decision === "ask") {
+      if (policy.decision === "ask" || delegatedConfirmation !== void 0) {
         const confirmation = confirmationUi(context);
         if (confirmation === void 0) {
           await audit("denied");
@@ -6492,7 +6557,7 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
           confirmed = await confirmation.confirm.call(
             confirmation.ui,
             CONFIRMATION_TITLE,
-            confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence),
+            delegatedConfirmation ?? (policy.decision === "ask" ? confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence) : "Allow this exact governed operation?"),
             { timeout: CONFIRMATION_TIMEOUT_MS, signal }
           ) === true;
         } catch {
@@ -6581,6 +6646,7 @@ var EnforcementInstaller = class {
   fallbackSessionId;
   lifecycleGeneration;
   trustRevoked = false;
+  delegatedBuiltins;
   sessionIdFor(context) {
     const native = nativeSessionId(context);
     if (native !== void 0) return native;
@@ -6634,6 +6700,7 @@ var EnforcementInstaller = class {
     this.trustRevoked = false;
     this.fallbackSessionId = void 0;
     this.lifecycleGeneration = void 0;
+    this.delegatedBuiltins = void 0;
   }
   ensureGuard(pi, descriptor, wrapperSourcePath) {
     if (this.guardInstalled) return;
@@ -6658,6 +6725,73 @@ var EnforcementInstaller = class {
       (context) => this.sessionIdFor(context),
       () => this.revokeForTrustWithdrawal()
     );
+    if (this.lifecycleGeneration !== void 0) {
+      this.delegatedBuiltins = { pi, bridge, options, generation: this.lifecycleGeneration };
+    }
+  }
+  /** Reuse the parent's final gate while substituting only its owned effect executor.
+   * Context is the original parent dispatch context, never child-supplied data. */
+  async executeDelegated(tool, toolCallId, params, signal, context, effect, executionDescription) {
+    const declined = () => ({ admitted: false, result: {
+      isError: true,
+      content: [{ type: "text", text: "Parent permission gate refused the delegated operation." }]
+    } });
+    if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
+      return { ...declined(), reason: "no-parent-ui" };
+    }
+    const saved = this.delegatedBuiltins;
+    if (saved === void 0 || saved.generation !== this.lifecycleGeneration || !this.ready) {
+      return declined();
+    }
+    const { pi, bridge, options, generation } = saved;
+    const policy = options.permissionPolicy ?? compileBuiltinPermissionPolicy(options.descriptor, {});
+    if (policy === void 0) return declined();
+    let admitted = false;
+    const factory = () => ({ name: tool, execute: async (_id, approved) => {
+      admitted = true;
+      return await effect(approved);
+    } });
+    let snapshot2;
+    try {
+      snapshot2 = canonicalSnapshot(params);
+    } catch {
+      return declined();
+    }
+    const exact = JSON.stringify(snapshot2);
+    const confirmation = `Delegated ${tool} in ${options.cwd}
+${exact}
+SHA-256: ${createHash5("sha256").update(exact).digest("hex")}
+` + (executionDescription === void 0 ? "" : `${executionDescription}
+`) + "The parent executes this exact request on the trusted host. Approved commands have host filesystem and network access.";
+    const definition = wrappedDefinition(
+      pi,
+      tool,
+      factory,
+      factory,
+      options.descriptor[tool] ?? "OTHER",
+      options.cwd,
+      bridge,
+      generation,
+      () => this.lifecycleGeneration,
+      () => this.ready,
+      (ctx) => this.sessionIdFor(ctx),
+      policy,
+      options.getMode ?? (() => "execute"),
+      options.permissionAudit,
+      options.wrapperSourcePath,
+      options.projectTrust,
+      () => this.revokeForTrustWithdrawal(),
+      false,
+      tool,
+      confirmation
+    );
+    try {
+      const result3 = await definition.execute(toolCallId, snapshot2, signal, void 0, context);
+      return { admitted, result: result3 };
+    } catch (error) {
+      if (admitted) throw error;
+      return declined();
+    }
   }
   ensureCustomTool(pi, bridge, options) {
     const boundGeneration = this.lifecycleGeneration ?? STANDALONE_GENERATION;
@@ -7097,7 +7231,7 @@ function formatPiDoctorReport(diagnoses) {
 // src/dispatch.ts
 import { randomUUID as randomUUID5 } from "node:crypto";
 import { resolve as resolve12 } from "node:path";
-import { types as utilTypes8 } from "node:util";
+import { types as utilTypes9 } from "node:util";
 
 // src/roles.ts
 import { readFile as readFile4, realpath as realpath4 } from "node:fs/promises";
@@ -7421,16 +7555,16 @@ async function startInferenceBroker(options) {
     sockets.add(socket);
     socket.on("close", () => sockets.delete(socket));
   });
-  await new Promise((resolve16, reject) => {
+  await new Promise((resolve18, reject) => {
     server.once("error", reject);
     server.listen({ host: "127.0.0.1", port: 0, exclusive: true }, () => {
       server.removeListener("error", reject);
-      resolve16();
+      resolve18();
     });
   }).catch(() => refuseBroker());
   const address = server.address();
   if (address === null || typeof address === "string") {
-    await new Promise((resolve16) => server.close(() => resolve16()));
+    await new Promise((resolve18) => server.close(() => resolve18()));
     refuseBroker();
   }
   const baseUrl = `http://127.0.0.1:${address.port}${BROKER_ROUTE_PREFIX}`;
@@ -7461,8 +7595,8 @@ async function startInferenceBroker(options) {
     async close() {
       revoked = true;
       upstream = void 0;
-      closed ??= new Promise((resolve16) => {
-        server.close(() => resolve16());
+      closed ??= new Promise((resolve18) => {
+        server.close(() => resolve18());
         for (const socket of sockets) socket.destroy();
         sockets.clear();
       });
@@ -8106,6 +8240,251 @@ function childAttestationDigest(input) {
   ]), "utf8").digest("hex");
 }
 
+// src/delegation-contract.ts
+import { createHash as createHash8, timingSafeEqual as timingSafeEqual2 } from "node:crypto";
+import { types as utilTypes8 } from "node:util";
+var DELEGATION_PROFILE = "trusted-host-exact-operation-v1";
+var BOOTSTRAP_ENVELOPE_VERSION = 2;
+var MAX_BOOTSTRAP_BYTES = 512;
+var OPERATION_PROTOCOL_VERSION = 1;
+var MAX_OPERATION_REQUEST_BYTES = 1048576;
+var MAX_OPERATION_RESULT_TEXT_BYTES = 65536;
+var MAX_OPERATIONS_PER_GRANT = 256;
+var MAX_BASH_COMMAND_BYTES = 131072;
+var MAX_BASH_TIMEOUT_SECONDS = 600;
+var MAX_EDITS_PER_OPERATION = 64;
+var DELEGATED_TOOLS = Object.freeze(["write", "edit", "bash"]);
+var ADMISSION_STATES = Object.freeze(["admitted", "denied", "cancelled", "expired", "revoked", "unavailable"]);
+var EXECUTION_STATES = Object.freeze(["not-started", "executing", "completed", "failed", "outcome-unknown"]);
+var CONTAINMENT_STATES = Object.freeze(["not-applicable", "running", "verified-stopped", "unverified"]);
+var OBSERVATION_STATES = Object.freeze(["exact", "target-state-only", "unavailable", "stale"]);
+var RECOVERY_STATES = Object.freeze(["none", "read-only-reconciliation", "new-operation-required", "dependent-resource-held"]);
+var DELEGATION_REASONS = Object.freeze([
+  "protocol-invalid",
+  "token-invalid",
+  "sequence-invalid",
+  "digest-mismatch",
+  "operation-id-reused",
+  "grant-expired",
+  "grant-revoked",
+  "grant-exhausted",
+  "tool-not-delegated",
+  "target-invalid",
+  "permission-denied",
+  "no-parent-ui",
+  "journal-unavailable",
+  "journal-unknown",
+  "containment-unverified",
+  "executor-failed",
+  "executor-unavailable",
+  "busy"
+]);
+var HEX32 = /^[0-9a-f]{32}$/u;
+var HEX64 = /^[0-9a-f]{64}$/u;
+var REQUEST_ID = /^[A-Za-z0-9_-]{1,64}$/u;
+var ENDPOINT = /^http:\/\/127\.0\.0\.1:([1-9][0-9]{0,4})\/v1\/operation$/u;
+var DelegationContractError = class extends Error {
+  constructor(reason) {
+    super(`codeArbiter delegation refused (${reason}).`);
+    this.reason = reason;
+    this.name = "DelegationContractError";
+  }
+  reason;
+};
+function refuse(reason) {
+  throw new DelegationContractError(reason);
+}
+function plainRecord2(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes8.isProxy(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+function exactKeys4(value, required, optional = []) {
+  const keys = Object.keys(value);
+  return required.every((key) => Object.prototype.hasOwnProperty.call(value, key)) && keys.every((key) => required.includes(key) || optional.includes(key)) && Reflect.ownKeys(value).length === keys.length;
+}
+function boundedText(value, maxBytes) {
+  return typeof value === "string" && !value.includes("\0") && Buffer.byteLength(value, "utf8") <= maxBytes;
+}
+function canonicalJson(value, depth = 0) {
+  if (depth > 16) refuse("protocol-invalid");
+  if (value === null || typeof value === "boolean") return JSON.stringify(value);
+  if (typeof value === "number") return Number.isFinite(value) ? JSON.stringify(value) : refuse("protocol-invalid");
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value) && !utilTypes8.isProxy(value)) {
+    return `[${value.map((item) => canonicalJson(item, depth + 1)).join(",")}]`;
+  }
+  if (!plainRecord2(value)) refuse("protocol-invalid");
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key], depth + 1)}`).join(",")}}`;
+}
+function parseCanonical(text2) {
+  let value;
+  try {
+    value = JSON.parse(text2);
+  } catch {
+    refuse("protocol-invalid");
+  }
+  let canonical;
+  try {
+    canonical = canonicalJson(value);
+  } catch {
+    refuse("protocol-invalid");
+  }
+  if (canonical !== text2) refuse("protocol-invalid");
+  return value;
+}
+function deepFreeze(value) {
+  if (value !== null && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const key of Object.keys(value)) deepFreeze(value[key]);
+  }
+  return value;
+}
+function tokenMatches(expected, presented) {
+  if (typeof expected !== "string" || typeof presented !== "string" || !HEX64.test(expected) || !HEX64.test(presented) || expected.length !== presented.length) return false;
+  const left = Buffer.from(expected, "hex");
+  const right = Buffer.from(presented, "hex");
+  return left.length === 32 && right.length === 32 && timingSafeEqual2(left, right);
+}
+function createSequenceChecker() {
+  let last = 0;
+  return {
+    accept(seq) {
+      if (!Number.isSafeInteger(seq) || seq <= last) return false;
+      last = seq;
+      return true;
+    },
+    get last() {
+      return last;
+    }
+  };
+}
+function operationDigest(tool, params) {
+  return createHash8("sha256").update(canonicalJson({ profile: DELEGATION_PROFILE, tool, params }), "utf8").digest("hex");
+}
+function encodeBootstrapEnvelope(envelope) {
+  if (!HEX32.test(envelope.nonce)) refuse("protocol-invalid");
+  if (envelope.delegation !== void 0 && (!ENDPOINT.test(envelope.delegation.endpoint) || Number(ENDPOINT.exec(envelope.delegation.endpoint)[1]) > 65535 || !HEX64.test(envelope.delegation.token))) refuse("protocol-invalid");
+  const text2 = canonicalJson({
+    v: BOOTSTRAP_ENVELOPE_VERSION,
+    nonce: envelope.nonce,
+    ...envelope.delegation === void 0 ? {} : {
+      delegation: { endpoint: envelope.delegation.endpoint, token: envelope.delegation.token }
+    }
+  });
+  if (Buffer.byteLength(text2, "utf8") > MAX_BOOTSTRAP_BYTES) refuse("protocol-invalid");
+  return text2;
+}
+function validDelegatedParams(tool, params) {
+  if (!plainRecord2(params)) return false;
+  if (tool === "write") {
+    return exactKeys4(params, ["path", "content"]) && boundedText(params.path, 4096) && params.path !== "" && boundedText(params.content, MAX_OPERATION_REQUEST_BYTES);
+  }
+  if (tool === "edit") {
+    const edits = params.edits;
+    return exactKeys4(params, ["path", "edits"]) && boundedText(params.path, 4096) && params.path !== "" && Array.isArray(edits) && !utilTypes8.isProxy(edits) && edits.length > 0 && edits.length <= MAX_EDITS_PER_OPERATION && edits.every((edit) => plainRecord2(edit) && exactKeys4(edit, ["oldText", "newText"]) && boundedText(edit.oldText, MAX_OPERATION_REQUEST_BYTES) && edit.oldText !== "" && boundedText(edit.newText, MAX_OPERATION_REQUEST_BYTES));
+  }
+  return exactKeys4(params, ["command"], ["timeout"]) && boundedText(params.command, MAX_BASH_COMMAND_BYTES) && params.command.trim() !== "" && (params.timeout === void 0 || typeof params.timeout === "number" && Number.isFinite(params.timeout) && params.timeout > 0 && params.timeout <= MAX_BASH_TIMEOUT_SECONDS);
+}
+function decodeOperationRequest(text2) {
+  if (typeof text2 !== "string" || Buffer.byteLength(text2, "utf8") > MAX_OPERATION_REQUEST_BYTES) refuse("protocol-invalid");
+  const value = parseCanonical(text2);
+  if (!plainRecord2(value) || !exactKeys4(value, ["v", "seq", "requestId", "tool", "params", "digest"]) || value.v !== OPERATION_PROTOCOL_VERSION || !Number.isSafeInteger(value.seq) || value.seq < 1 || typeof value.requestId !== "string" || !REQUEST_ID.test(value.requestId) || typeof value.tool !== "string" || !DELEGATED_TOOLS.includes(value.tool) || typeof value.digest !== "string" || !HEX64.test(value.digest)) refuse("protocol-invalid");
+  const tool = value.tool;
+  if (!validDelegatedParams(tool, value.params)) refuse("protocol-invalid");
+  if (operationDigest(tool, value.params) !== value.digest) refuse("digest-mismatch");
+  return Object.freeze({
+    v: OPERATION_PROTOCOL_VERSION,
+    seq: value.seq,
+    requestId: value.requestId,
+    tool,
+    params: deepFreeze(value.params),
+    digest: value.digest
+  });
+}
+function validResult(value) {
+  return plainRecord2(value) && exactKeys4(value, ["content", "isError"]) && typeof value.isError === "boolean" && Array.isArray(value.content) && value.content.length <= 16 && value.content.every((block) => plainRecord2(block) && exactKeys4(block, ["type", "text"]) && block.type === "text" && boundedText(block.text, MAX_OPERATION_RESULT_TEXT_BYTES));
+}
+function consistentAxes(response) {
+  const { admission, execution, result: result3, reason } = response;
+  if (admission !== "admitted") {
+    return execution === "not-started" && result3 === void 0 && reason !== void 0 && response.containment === "not-applicable";
+  }
+  if (response.observation === "stale" && execution !== "failed") return false;
+  if (execution === "executing") return result3 === void 0 && response.recovery !== "none";
+  if (response.containment === "running") return false;
+  if (execution === "completed") return result3 !== void 0 && reason === void 0;
+  if (execution === "outcome-unknown") return result3 === void 0 && response.recovery !== "none";
+  if (execution === "failed") return reason !== void 0 || result3 !== void 0;
+  return result3 === void 0 && reason !== void 0;
+}
+function encodeOperationResponse(response) {
+  const full = { v: OPERATION_PROTOCOL_VERSION, ...response };
+  const text2 = canonicalJson(JSON.parse(JSON.stringify(full)));
+  decodeOperationResponse(text2);
+  return text2;
+}
+function decodeOperationResponse(text2) {
+  if (typeof text2 !== "string" || Buffer.byteLength(text2, "utf8") > 16 * MAX_OPERATION_RESULT_TEXT_BYTES + 4096) refuse("protocol-invalid");
+  const value = parseCanonical(text2);
+  if (!plainRecord2(value) || !exactKeys4(value, ["v", "requestId", "admission", "execution", "containment", "observation", "recovery"], ["reason", "result"]) || value.v !== OPERATION_PROTOCOL_VERSION || typeof value.requestId !== "string" || !REQUEST_ID.test(value.requestId) || !ADMISSION_STATES.includes(value.admission) || !EXECUTION_STATES.includes(value.execution) || !CONTAINMENT_STATES.includes(value.containment) || !OBSERVATION_STATES.includes(value.observation) || !RECOVERY_STATES.includes(value.recovery) || value.reason !== void 0 && !DELEGATION_REASONS.includes(value.reason) || value.result !== void 0 && !validResult(value.result)) refuse("protocol-invalid");
+  const response = value;
+  if (!consistentAxes(response)) refuse("protocol-invalid");
+  return deepFreeze(response);
+}
+function refusalResponse(requestId, admission, reason) {
+  return Object.freeze({
+    requestId: REQUEST_ID.test(requestId) ? requestId : "invalid",
+    admission,
+    execution: "not-started",
+    containment: "not-applicable",
+    observation: "unavailable",
+    recovery: "new-operation-required",
+    reason
+  });
+}
+function validRunGrant(value) {
+  return plainRecord2(value) && HEX32.test(value.runId) && typeof value.role === "string" && value.role !== "" && HEX64.test(value.callerCorrelation) && typeof value.worktree === "string" && value.worktree !== "" && Array.isArray(value.tools) && value.tools.length > 0 && value.tools.every((tool) => DELEGATED_TOOLS.includes(tool)) && new Set(value.tools).size === value.tools.length && Number.isSafeInteger(value.maxOperations) && value.maxOperations > 0 && value.maxOperations <= MAX_OPERATIONS_PER_GRANT && Number.isFinite(value.expiresAtMonotonicMs);
+}
+var JOURNAL_RECORD_VERSION = 1;
+var JOURNAL_PHASES = Object.freeze(["claimed", "started", "observed"]);
+var OPERATION_ID = /^[0-9a-f]{64}$/u;
+var TARGET_HASH = /^(?:[0-9a-f]{64}|absent|unreadable)$/u;
+function decodeJournalRecord(text2) {
+  if (typeof text2 !== "string" || Buffer.byteLength(text2, "utf8") > 8192) refuse("protocol-invalid");
+  const value = parseCanonical(text2);
+  if (!plainRecord2(value)) refuse("protocol-invalid");
+  const observed = value.phase === "observed";
+  if (!exactKeys4(
+    value,
+    [
+      "v",
+      "phase",
+      "operationId",
+      "runId",
+      "callerCorrelation",
+      "role",
+      "tool",
+      "digest",
+      "profile",
+      "recordedAt",
+      ...observed ? ["execution", "containment"] : []
+    ],
+    ["target", "targetHash", "requestId", "consentSource", "permissionCorrelation", "processId"]
+  ) || value.v !== JOURNAL_RECORD_VERSION || !JOURNAL_PHASES.includes(value.phase) || typeof value.operationId !== "string" || !OPERATION_ID.test(value.operationId) || typeof value.runId !== "string" || !HEX32.test(value.runId) || typeof value.callerCorrelation !== "string" || !HEX64.test(value.callerCorrelation) || !boundedText(value.role, 128) || value.role === "" || !DELEGATED_TOOLS.includes(value.tool) || typeof value.digest !== "string" || !HEX64.test(value.digest) || value.profile !== DELEGATION_PROFILE || !boundedText(value.recordedAt, 32) || Number.isNaN(Date.parse(value.recordedAt)) || value.requestId !== void 0 && (typeof value.requestId !== "string" || !REQUEST_ID.test(value.requestId)) || value.consentSource !== void 0 && value.consentSource !== "parent-human-confirmation" || value.permissionCorrelation !== void 0 && (typeof value.permissionCorrelation !== "string" || !HEX64.test(value.permissionCorrelation)) || value.processId !== void 0 && (value.tool !== "bash" || value.phase === "claimed" || value.processId !== null && (!Number.isSafeInteger(value.processId) || value.processId <= 0)) || value.phase === "started" && (value.tool !== "bash" || value.processId === void 0) || value.target !== void 0 && (!boundedText(value.target, 4096) || value.target === "") || value.targetHash !== void 0 && (typeof value.targetHash !== "string" || !TARGET_HASH.test(value.targetHash)) || observed && (!["completed", "failed", "outcome-unknown"].includes(value.execution) || !CONTAINMENT_STATES.includes(value.containment))) refuse("protocol-invalid");
+  return deepFreeze(value);
+}
+function encodeJournalRecord(record2) {
+  const text2 = canonicalJson(JSON.parse(JSON.stringify(record2)));
+  decodeJournalRecord(text2);
+  return text2;
+}
+function operationId(runId, requestId) {
+  if (!HEX32.test(runId) || !REQUEST_ID.test(requestId)) refuse("protocol-invalid");
+  return createHash8("sha256").update(`${runId}
+${requestId}`, "utf8").digest("hex");
+}
+
 // src/runner.ts
 var MAX_TASK_BYTES = 65536;
 var MAX_JSONL_LINE_BYTES = 65536;
@@ -8279,7 +8658,7 @@ function rpcConfirmation(id) {
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
-function exactKeys4(value, allowed, required = allowed) {
+function exactKeys5(value, allowed, required = allowed) {
   return Object.keys(value).every((key) => allowed.includes(key)) && required.every((key) => Object.prototype.hasOwnProperty.call(value, key));
 }
 function boundedString2(value) {
@@ -8302,13 +8681,13 @@ function validContentBlock(value, kind) {
   if (!isRecord(value) || typeof value.type !== "string") return false;
   switch (value.type) {
     case "text":
-      return exactKeys4(value, ["type", "text", "textSignature"], ["type", "text"]) && boundedString2(value.text) && (value.textSignature === void 0 || boundedString2(value.textSignature));
+      return exactKeys5(value, ["type", "text", "textSignature"], ["type", "text"]) && boundedString2(value.text) && (value.textSignature === void 0 || boundedString2(value.textSignature));
     case "image":
-      return (kind === "user" || kind === "toolResult") && exactKeys4(value, ["type", "data", "mimeType"]) && boundedString2(value.data) && boundedString2(value.mimeType);
+      return (kind === "user" || kind === "toolResult") && exactKeys5(value, ["type", "data", "mimeType"]) && boundedString2(value.data) && boundedString2(value.mimeType);
     case "thinking":
-      return kind === "assistant" && exactKeys4(value, ["type", "thinking", "thinkingSignature", "redacted"], ["type", "thinking"]) && boundedString2(value.thinking) && (value.thinkingSignature === void 0 || boundedString2(value.thinkingSignature)) && (value.redacted === void 0 || typeof value.redacted === "boolean");
+      return kind === "assistant" && exactKeys5(value, ["type", "thinking", "thinkingSignature", "redacted"], ["type", "thinking"]) && boundedString2(value.thinking) && (value.thinkingSignature === void 0 || boundedString2(value.thinkingSignature)) && (value.redacted === void 0 || typeof value.redacted === "boolean");
     case "toolCall":
-      return kind === "assistant" && exactKeys4(value, ["type", "id", "name", "arguments", "argumentsError", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"]) && boundedString2(value.id) && boundedString2(value.name) && validOpaqueJson(value.arguments) && (value.argumentsError === void 0 || boundedString2(value.argumentsError)) && (value.thoughtSignature === void 0 || boundedString2(value.thoughtSignature)) && (value.namespace === void 0 || boundedString2(value.namespace));
+      return kind === "assistant" && exactKeys5(value, ["type", "id", "name", "arguments", "argumentsError", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"]) && boundedString2(value.id) && boundedString2(value.name) && validOpaqueJson(value.arguments) && (value.argumentsError === void 0 || boundedString2(value.argumentsError)) && (value.thoughtSignature === void 0 || boundedString2(value.thoughtSignature)) && (value.namespace === void 0 || boundedString2(value.namespace));
     default:
       return false;
   }
@@ -8318,7 +8697,7 @@ function validContent(value, kind) {
   return Array.isArray(value) && value.length <= MAX_JSON_ARRAY && value.every((block) => validContentBlock(block, kind));
 }
 function validUsage(value) {
-  if (!isRecord(value) || !exactKeys4(
+  if (!isRecord(value) || !exactKeys5(
     value,
     ["input", "output", "cacheRead", "cacheWrite", "cacheWrite1h", "reasoning", "totalTokens", "cost"],
     ["input", "output", "cacheRead", "cacheWrite", "totalTokens", "cost"]
@@ -8327,48 +8706,48 @@ function validUsage(value) {
   if (value.cacheWrite1h !== void 0 && (typeof value.cacheWrite1h !== "number" || !Number.isFinite(value.cacheWrite1h))) return false;
   if (value.reasoning !== void 0 && (typeof value.reasoning !== "number" || !Number.isFinite(value.reasoning))) return false;
   const cost = value.cost;
-  return isRecord(cost) && exactKeys4(
+  return isRecord(cost) && exactKeys5(
     cost,
     ["input", "output", "cacheRead", "cacheWrite", "total", "totalFromProvider"],
     ["input", "output", "cacheRead", "cacheWrite", "total"]
   ) && ["input", "output", "cacheRead", "cacheWrite", "total"].every((key) => typeof cost[key] === "number" && Number.isFinite(cost[key])) && (cost.totalFromProvider === void 0 || typeof cost.totalFromProvider === "boolean");
 }
 function validDiagnostic(value) {
-  if (!isRecord(value) || !exactKeys4(value, ["type", "timestamp", "error", "details"], ["type", "timestamp"]) || !boundedString2(value.type) || typeof value.timestamp !== "number" || !Number.isFinite(value.timestamp)) return false;
+  if (!isRecord(value) || !exactKeys5(value, ["type", "timestamp", "error", "details"], ["type", "timestamp"]) || !boundedString2(value.type) || typeof value.timestamp !== "number" || !Number.isFinite(value.timestamp)) return false;
   if (value.error !== void 0) {
-    if (!isRecord(value.error) || !exactKeys4(value.error, ["name", "message", "stack", "code"], ["message"]) || !boundedString2(value.error.message) || value.error.name !== void 0 && !boundedString2(value.error.name) || value.error.stack !== void 0 && !boundedString2(value.error.stack) || value.error.code !== void 0 && !boundedString2(value.error.code) && (typeof value.error.code !== "number" || !Number.isFinite(value.error.code))) return false;
+    if (!isRecord(value.error) || !exactKeys5(value.error, ["name", "message", "stack", "code"], ["message"]) || !boundedString2(value.error.message) || value.error.name !== void 0 && !boundedString2(value.error.name) || value.error.stack !== void 0 && !boundedString2(value.error.stack) || value.error.code !== void 0 && !boundedString2(value.error.code) && (typeof value.error.code !== "number" || !Number.isFinite(value.error.code))) return false;
   }
   return value.details === void 0 || validOpaqueJson(value.details);
 }
 function validDeferredHandle(value) {
-  return isRecord(value) && exactKeys4(
+  return isRecord(value) && exactKeys5(
     value,
     ["provider", "modelId", "api", "id", "expiresAt", "pollAfterMs", "data"],
     ["provider", "modelId", "api", "id"]
   ) && ["provider", "modelId", "api", "id"].every((key) => boundedString2(value[key])) && (value.expiresAt === void 0 || typeof value.expiresAt === "number" && Number.isFinite(value.expiresAt)) && (value.pollAfterMs === void 0 || typeof value.pollAfterMs === "number" && Number.isFinite(value.pollAfterMs)) && (value.data === void 0 || validOpaqueJson(value.data));
 }
 function validNestedCalls(value) {
-  return isRecord(value) && exactKeys4(value, ["calls", "complete"]) && typeof value.complete === "boolean" && Array.isArray(value.calls) && value.calls.length <= MAX_JSON_ARRAY && value.calls.every((call) => isRecord(call) && exactKeys4(call, ["id", "name", "arguments", "argumentsBytes", "status", "durationMs", "error"], ["id", "name", "status"]) && boundedString2(call.id) && boundedString2(call.name) && (call.status === "ok" || call.status === "error" || call.status === "unfinished") && (call.arguments === void 0 || isRecord(call.arguments) && validOpaqueJson(call.arguments)) && (call.argumentsBytes === void 0 || typeof call.argumentsBytes === "number" && Number.isFinite(call.argumentsBytes)) && (call.durationMs === void 0 || typeof call.durationMs === "number" && Number.isFinite(call.durationMs)) && (call.error === void 0 || boundedString2(call.error)));
+  return isRecord(value) && exactKeys5(value, ["calls", "complete"]) && typeof value.complete === "boolean" && Array.isArray(value.calls) && value.calls.length <= MAX_JSON_ARRAY && value.calls.every((call) => isRecord(call) && exactKeys5(call, ["id", "name", "arguments", "argumentsBytes", "status", "durationMs", "error"], ["id", "name", "status"]) && boundedString2(call.id) && boundedString2(call.name) && (call.status === "ok" || call.status === "error" || call.status === "unfinished") && (call.arguments === void 0 || isRecord(call.arguments) && validOpaqueJson(call.arguments)) && (call.argumentsBytes === void 0 || typeof call.argumentsBytes === "number" && Number.isFinite(call.argumentsBytes)) && (call.durationMs === void 0 || typeof call.durationMs === "number" && Number.isFinite(call.durationMs)) && (call.error === void 0 || boundedString2(call.error)));
 }
 function validSystemMessage(value) {
   const sections = value.sections;
-  return exactKeys4(value, ["role", "content", "sections", "toolsAdded", "toolsRemoved", "timestamp"], ["role", "content", "timestamp"]) && validContent(value.content, "system") && (sections === void 0 || isRecord(sections) && Object.keys(sections).length <= MAX_JSON_KEYS && Object.keys(sections).every((key) => boundedString2(key) && (sections[key] === null || boundedString2(sections[key])))) && (value.toolsAdded === void 0 || Array.isArray(value.toolsAdded) && value.toolsAdded.length <= MAX_JSON_ARRAY && value.toolsAdded.every((tool) => isRecord(tool) && boundedString2(tool.name) && validOpaqueJson(tool))) && (value.toolsRemoved === void 0 || Array.isArray(value.toolsRemoved) && value.toolsRemoved.length <= MAX_JSON_ARRAY && value.toolsRemoved.every((tool) => isRecord(tool) && exactKeys4(tool, ["name"]) && boundedString2(tool.name))) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+  return exactKeys5(value, ["role", "content", "sections", "toolsAdded", "toolsRemoved", "timestamp"], ["role", "content", "timestamp"]) && validContent(value.content, "system") && (sections === void 0 || isRecord(sections) && Object.keys(sections).length <= MAX_JSON_KEYS && Object.keys(sections).every((key) => boundedString2(key) && (sections[key] === null || boundedString2(sections[key])))) && (value.toolsAdded === void 0 || Array.isArray(value.toolsAdded) && value.toolsAdded.length <= MAX_JSON_ARRAY && value.toolsAdded.every((tool) => isRecord(tool) && boundedString2(tool.name) && validOpaqueJson(tool))) && (value.toolsRemoved === void 0 || Array.isArray(value.toolsRemoved) && value.toolsRemoved.length <= MAX_JSON_ARRAY && value.toolsRemoved.every((tool) => isRecord(tool) && exactKeys5(tool, ["name"]) && boundedString2(tool.name))) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
 }
 function validMessage(value) {
   if (!isRecord(value) || typeof value.role !== "string") return false;
   if (value.role === "system") return validSystemMessage(value);
   if (value.role === "user") {
-    return exactKeys4(value, ["role", "content", "timestamp"]) && validContent(value.content, "user") && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    return exactKeys5(value, ["role", "content", "timestamp"]) && validContent(value.content, "user") && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "assistant") {
-    return exactKeys4(
+    return exactKeys5(
       value,
       ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp", "durationMs"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"]
     ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.providerThinkingLevel === void 0 || boundedString2(value.providerThinkingLevel)) && (value.thinkingLevel === void 0 || boundedString2(value.thinkingLevel)) && (value.endTurn === void 0 || typeof value.endTurn === "boolean") && (value.durationMs === void 0 || typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0) && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
-    return exactKeys4(
+    return exactKeys5(
       value,
       ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp", "durationMs"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"]
@@ -8386,7 +8765,7 @@ function validPartialAssistantMessage(value) {
     if (isRecord(block) && (block.type === "text" || block.type === "thinking") && Object.prototype.hasOwnProperty.call(block, "index")) {
       const allowed = block.type === "text" ? ["type", "text", "textSignature", "index"] : ["type", "thinking", "thinkingSignature", "redacted", "index"];
       const required = block.type === "text" ? ["type", "text", "index"] : ["type", "thinking", "index"];
-      if (!exactKeys4(block, allowed, required) || !Number.isSafeInteger(block.index) || block.index < 0) return false;
+      if (!exactKeys5(block, allowed, required) || !Number.isSafeInteger(block.index) || block.index < 0) return false;
       const { index: _index, ...withoutIndex } = block;
       if (!validContentBlock(withoutIndex, "assistant")) return false;
       normalized2.push(withoutIndex);
@@ -8397,7 +8776,7 @@ function validPartialAssistantMessage(value) {
       normalized2.push(block);
       continue;
     }
-    if (!exactKeys4(
+    if (!exactKeys5(
       block,
       ["type", "id", "name", "arguments", "thoughtSignature", "partialArgs", "streamIndex", "partialJson", "index"],
       ["type", "id", "name", "arguments"]
@@ -8414,7 +8793,7 @@ function validPartialAssistantMessage(value) {
 }
 function validAssistantEvent(value) {
   if (!isRecord(value) || typeof value.type !== "string") return false;
-  const exactWithOptionalPartial = (base) => "partial" in value ? exactKeys4(value, [...base, "partial"]) && validPartialAssistantMessage(value.partial) : exactKeys4(value, base);
+  const exactWithOptionalPartial = (base) => "partial" in value ? exactKeys5(value, [...base, "partial"]) && validPartialAssistantMessage(value.partial) : exactKeys5(value, base);
   const contentIndex = () => Number.isSafeInteger(value.contentIndex) && value.contentIndex >= 0;
   switch (value.type) {
     case "start":
@@ -8423,7 +8802,7 @@ function validAssistantEvent(value) {
     case "thinking_start":
       return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
     case "toolcall_start":
-      return ("id" in value || "toolName" in value ? exactKeys4(value, ["type", "contentIndex", "id", "toolName"]) && boundedString2(value.id) && boundedString2(value.toolName) : exactWithOptionalPartial(["type", "contentIndex"])) && contentIndex();
+      return ("id" in value || "toolName" in value ? exactKeys5(value, ["type", "contentIndex", "id", "toolName"]) && boundedString2(value.id) && boundedString2(value.toolName) : exactWithOptionalPartial(["type", "contentIndex"])) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
@@ -8434,9 +8813,9 @@ function validAssistantEvent(value) {
     case "toolcall_end":
       return exactWithOptionalPartial(["type", "contentIndex", "toolCall"]) && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
-      return exactKeys4(value, ["type", "reason", "message"]) && ["stop", "length", "toolUse", "deferred"].includes(value.reason) && validMessage(value.message) && value.message.role === "assistant";
+      return exactKeys5(value, ["type", "reason", "message"]) && ["stop", "length", "toolUse", "deferred"].includes(value.reason) && validMessage(value.message) && value.message.role === "assistant";
     case "error":
-      return exactKeys4(value, ["type", "reason", "error"]) && ["aborted", "error"].includes(value.reason) && validMessage(value.error) && value.error.role === "assistant";
+      return exactKeys5(value, ["type", "reason", "error"]) && ["aborted", "error"].includes(value.reason) && validMessage(value.error) && value.error.role === "assistant";
     default:
       return false;
   }
@@ -8457,43 +8836,43 @@ function parseChildJsonLine(line) {
       if (typeof record2.id !== "string" || record2.command !== "prompt" || typeof record2.success !== "boolean") invalidProtocol();
       if (record2.success === true) {
         const data = record2.data;
-        if (!exactKeys4(record2, ["type", "id", "command", "success", "data"], ["type", "id", "command", "success"]) || data !== void 0 && !(isRecord(data) && exactKeys4(data, ["disposition"]) && (data.disposition === "started" || data.disposition === "handled" || data.disposition === "queued"))) invalidProtocol();
-      } else if (!exactKeys4(record2, ["type", "id", "command", "success", "error"]) || typeof record2.error !== "string") invalidProtocol();
+        if (!exactKeys5(record2, ["type", "id", "command", "success", "data"], ["type", "id", "command", "success"]) || data !== void 0 && !(isRecord(data) && exactKeys5(data, ["disposition"]) && (data.disposition === "started" || data.disposition === "handled" || data.disposition === "queued"))) invalidProtocol();
+      } else if (!exactKeys5(record2, ["type", "id", "command", "success", "error"]) || typeof record2.error !== "string") invalidProtocol();
       break;
     case "agent_start":
     case "turn_start":
-      if (!exactKeys4(record2, ["type"])) invalidProtocol();
+      if (!exactKeys5(record2, ["type"])) invalidProtocol();
       break;
     case "agent_settled":
-      if (!exactKeys4(record2, ["type", "aborted"]) || typeof record2.aborted !== "boolean") invalidProtocol();
+      if (!exactKeys5(record2, ["type", "aborted"]) || typeof record2.aborted !== "boolean") invalidProtocol();
       break;
     case "agent_end":
-      if (!exactKeys4(record2, ["type", "messages", "willRetry"]) || !Array.isArray(record2.messages) || record2.messages.length > MAX_JSON_ARRAY || !record2.messages.every(validMessage) || typeof record2.willRetry !== "boolean") invalidProtocol();
+      if (!exactKeys5(record2, ["type", "messages", "willRetry"]) || !Array.isArray(record2.messages) || record2.messages.length > MAX_JSON_ARRAY || !record2.messages.every(validMessage) || typeof record2.willRetry !== "boolean") invalidProtocol();
       break;
     case "turn_end":
-      if (!exactKeys4(record2, ["type", "message", "toolResults"]) || !validMessage(record2.message) || !Array.isArray(record2.toolResults) || record2.toolResults.length > MAX_JSON_ARRAY || !record2.toolResults.every(validMessage)) invalidProtocol();
+      if (!exactKeys5(record2, ["type", "message", "toolResults"]) || !validMessage(record2.message) || !Array.isArray(record2.toolResults) || record2.toolResults.length > MAX_JSON_ARRAY || !record2.toolResults.every(validMessage)) invalidProtocol();
       break;
     case "message_start":
     case "message_end":
-      if (!exactKeys4(record2, ["type", "message"]) || !validMessage(record2.message) && !validPartialAssistantMessage(record2.message)) invalidProtocol();
+      if (!exactKeys5(record2, ["type", "message"]) || !validMessage(record2.message) && !validPartialAssistantMessage(record2.message)) invalidProtocol();
       break;
     case "message_update":
-      if ("message" in record2 ? !exactKeys4(record2, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record2.message) || !validAssistantEvent(record2.assistantMessageEvent) : "usage" in record2 ? !exactKeys4(record2, ["type", "usage", "assistantMessageEvent"]) || !validUsage(record2.usage) || !validAssistantEvent(record2.assistantMessageEvent) : !exactKeys4(record2, ["type", "assistantMessageEvent"]) || !validAssistantEvent(record2.assistantMessageEvent)) invalidProtocol();
+      if ("message" in record2 ? !exactKeys5(record2, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record2.message) || !validAssistantEvent(record2.assistantMessageEvent) : "usage" in record2 ? !exactKeys5(record2, ["type", "usage", "assistantMessageEvent"]) || !validUsage(record2.usage) || !validAssistantEvent(record2.assistantMessageEvent) : !exactKeys5(record2, ["type", "assistantMessageEvent"]) || !validAssistantEvent(record2.assistantMessageEvent)) invalidProtocol();
       break;
     case "tool_execution_start":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "parentToolCallId"], ["type", "toolCallId", "toolName", "args"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args)) invalidProtocol();
+      if (!exactKeys5(record2, ["type", "toolCallId", "toolName", "args", "parentToolCallId"], ["type", "toolCallId", "toolName", "args"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args)) invalidProtocol();
       break;
     case "tool_execution_update":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "partialResult", "parentToolCallId"], ["type", "toolCallId", "toolName", "args", "partialResult"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args) || !validOpaqueJson(record2.partialResult)) invalidProtocol();
+      if (!exactKeys5(record2, ["type", "toolCallId", "toolName", "args", "partialResult", "parentToolCallId"], ["type", "toolCallId", "toolName", "args", "partialResult"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args) || !validOpaqueJson(record2.partialResult)) invalidProtocol();
       break;
     case "tool_execution_end":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId", "durationMs"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || record2.durationMs !== void 0 && (typeof record2.durationMs !== "number" || !Number.isFinite(record2.durationMs) || record2.durationMs < 0) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
+      if (!exactKeys5(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId", "durationMs"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || record2.durationMs !== void 0 && (typeof record2.durationMs !== "number" || !Number.isFinite(record2.durationMs) || record2.durationMs < 0) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
       break;
     case "extension_error":
-      if (!exactKeys4(record2, ["type", "extensionPath", "event", "error"]) || typeof record2.extensionPath !== "string" || typeof record2.event !== "string" || typeof record2.error !== "string") invalidProtocol();
+      if (!exactKeys5(record2, ["type", "extensionPath", "event", "error"]) || typeof record2.extensionPath !== "string" || typeof record2.event !== "string" || typeof record2.error !== "string") invalidProtocol();
       break;
     case "extension_ui_request":
-      if (!exactKeys4(record2, ["type", "id", "method", "title", "message", "timeout"]) || typeof record2.id !== "string" || record2.id === "" || Buffer.byteLength(record2.id, "utf8") > 256 || record2.method !== "confirm" || typeof record2.title !== "string" || typeof record2.message !== "string" || record2.timeout !== CHILD_ATTESTATION_TIMEOUT_MS) invalidProtocol();
+      if (!exactKeys5(record2, ["type", "id", "method", "title", "message", "timeout"]) || typeof record2.id !== "string" || record2.id === "" || Buffer.byteLength(record2.id, "utf8") > 256 || record2.method !== "confirm" || typeof record2.title !== "string" || typeof record2.message !== "string" || record2.timeout !== CHILD_ATTESTATION_TIMEOUT_MS) invalidProtocol();
       break;
     default:
       invalidProtocol();
@@ -8560,6 +8939,7 @@ async function runPiChild(request, signal) {
   if (signal.aborted) return childFailure();
   const startedAt = Date.now();
   let broker;
+  let delegation;
   try {
     broker = await startInferenceBroker({ nonce });
   } catch {
@@ -8578,6 +8958,7 @@ async function runPiChild(request, signal) {
       parent: request.parentEnv ?? process.env,
       provider: launch.provider
     }, { baseUrl: broker.baseUrl, token: broker.token });
+    const sensitiveEnvironment = preparedEnvironment;
     broker.authorize({
       nonce,
       baseUrl: preparedEnvironment.upstream.baseUrl,
@@ -8586,7 +8967,7 @@ async function runPiChild(request, signal) {
       // The same predicate that suppresses a child echoing operator material through its final
       // assistant message now also guards the broker's response path, so the two halves of the
       // child boundary cannot drift apart.
-      containsSensitiveValue: preparedEnvironment.containsSensitiveValue
+      containsSensitiveValue: (text2) => sensitiveEnvironment.containsSensitiveValue(text2) || delegation !== void 0 && text2.includes(delegation.token)
     });
   } catch (error) {
     if (preparedEnvironment !== void 0) await preparedEnvironment.cleanup().catch(() => void 0);
@@ -8606,9 +8987,36 @@ async function runPiChild(request, signal) {
       return false;
     }
   };
-  const withEnvironmentCleanup = async (result3) => await cleanupEnvironment() ? result3 : childFailure("isolation-cleanup");
+  let delegationCleanup;
+  const closeDelegation = () => delegationCleanup ??= (async () => {
+    try {
+      delegation?.revoke();
+      await delegation?.close();
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+  const withEnvironmentCleanup = async (result3) => {
+    const delegationClosed = await closeDelegation();
+    const environmentClosed = await cleanupEnvironment();
+    const observedResult = !delegationClosed || !environmentClosed ? { ...childFailure("isolation-cleanup"), ...result3.terminal === "completed" && result3.output !== void 0 ? { output: result3.output } : {} } : result3;
+    const summary = delegation?.summary?.();
+    return summary === void 0 ? observedResult : { ...observedResult, delegation: summary };
+  };
   try {
     if (signal.aborted) return await withEnvironmentCleanup(childFailure());
+    if (request.openDelegation !== void 0) {
+      if (launch.launchKind === "internal-compaction") return await withEnvironmentCleanup(childFailure());
+      try {
+        delegation = await request.openDelegation(nonce, signal);
+      } catch {
+        return await withEnvironmentCleanup(childFailure());
+      }
+    }
+    const bootstrap = encodeBootstrapEnvelope({ nonce, ...delegation === void 0 ? {} : {
+      delegation: { endpoint: delegation.endpoint, token: delegation.token }
+    } });
     let child;
     try {
       child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
@@ -8700,7 +9108,7 @@ async function runPiChild(request, signal) {
         if (capability.destroyed === true || capability.writable === false) finishFailure("startup_failure");
         else {
           try {
-            capability.end(nonce, "utf8");
+            capability.end(bootstrap, "utf8");
           } catch {
             finishFailure("startup_failure");
           }
@@ -8772,7 +9180,7 @@ async function runPiChild(request, signal) {
           if (record2.type === "agent_end") {
             const messages = record2.messages;
             const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
-            const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
+            const finalOutput = successfulFinalAssistant(finalAssistant, launch, (text2) => preparedEnvironment.containsSensitiveValue(text2) || delegation !== void 0 && text2.includes(delegation.token));
             if (record2.willRetry !== false || finalOutput === void 0) {
               finishFailure("protocol_error");
               return;
@@ -8847,8 +9255,12 @@ async function runPiChild(request, signal) {
     });
     return await withEnvironmentCleanup(result3);
   } finally {
-    await cleanupEnvironment();
-    await closeBroker();
+    try {
+      await closeDelegation();
+    } finally {
+      await cleanupEnvironment();
+      await closeBroker();
+    }
   }
 }
 
@@ -8929,12 +9341,15 @@ function roleLaunch(runtime, role, task, timeoutMs) {
     charterPath: resolve12(runtime.packageRoot, role.charterPath),
     task,
     timeoutMs,
+    ...role.classification !== "author" || runtime.openDelegation === void 0 ? {} : {
+      openDelegation: (runId, signal) => runtime.openDelegation(role, runId, signal)
+    },
     ...runtime.parentEnv === void 0 ? {} : { parentEnv: runtime.parentEnv },
     ...runtime.platform === void 0 ? {} : { platform: runtime.platform }
   };
 }
 function parseStructuredOutput(result3, maxBytes) {
-  if (result3.terminal !== "completed" || typeof result3.output !== "string") return void 0;
+  if (typeof result3.output !== "string") return void 0;
   const outputBytes = Buffer.byteLength(result3.output, "utf8");
   if (outputBytes > maxBytes) {
     return { role: "", state: "oversized", outputBytes };
@@ -8958,12 +9373,16 @@ function parseStructuredOutput(result3, maxBytes) {
     summary: record2.summary,
     outputBytes,
     ...result3.pid === void 0 ? {} : { pid: result3.pid },
-    ...result3.correlationId === void 0 ? {} : { correlationId: result3.correlationId }
+    ...result3.correlationId === void 0 ? {} : { correlationId: result3.correlationId },
+    ...result3.delegation === void 0 ? {} : { effects: result3.delegation }
   };
 }
 function publicChild(child) {
   const { outputBytes: _outputBytes, ...result3 } = child;
-  return Object.freeze(result3);
+  return Object.freeze({
+    ...result3,
+    followupCapture: Object.freeze({ durable: false, reason: "parent-context-unavailable" })
+  });
 }
 function overallState(children) {
   const priority = [
@@ -8983,7 +9402,12 @@ function enforceAggregateLimit(children, maximum) {
   let total = 0;
   return children.map((child) => {
     if (!JUDGMENT_STATES.has(child.state)) return child;
-    if (total + child.outputBytes > maximum) return { role: child.role, state: "oversized", outputBytes: child.outputBytes };
+    if (total + child.outputBytes > maximum) return {
+      role: child.role,
+      state: "oversized",
+      outputBytes: child.outputBytes,
+      ...child.effects === void 0 ? {} : { effects: child.effects }
+    };
     total += child.outputBytes;
     return child;
   });
@@ -9048,6 +9472,7 @@ function createDispatcher(dependencies) {
       const startedAt = Date.now();
       try {
         const result3 = await dependencies.runChild(roleLaunch(request.runtime, role, task, limits.timeoutMs), controller.signal);
+        const observedEffects = result3.delegation === void 0 ? {} : { effects: result3.delegation };
         await appendDispatchAudit({
           cwd: request.runtime.cwd,
           role: role.name,
@@ -9060,11 +9485,12 @@ function createDispatcher(dependencies) {
           ...result3.stderrBytes === void 0 ? {} : { stderrBytes: result3.stderrBytes },
           ...result3.diagnostic === void 0 ? {} : { diagnostic: result3.diagnostic }
         });
-        if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
-        if (timedOut) return { role: role.name, state: "timeout", outputBytes: 0 };
-        if (result3.terminal === "degraded") return { role: role.name, state: "degraded", outputBytes: 0 };
         const parsed = parseStructuredOutput(result3, limits.maxChildOutputBytes);
-        return parsed === void 0 ? { role: role.name, state: "protocol_error", outputBytes: 0 } : { ...parsed, role: role.name };
+        const material = parsed !== void 0 && JUDGMENT_STATES.has(parsed.state) ? parsed : void 0;
+        if (signal.aborted) return { ...material, role: role.name, state: "cancelled", outputBytes: material?.outputBytes ?? 0, ...observedEffects };
+        if (timedOut) return { ...material, role: role.name, state: "timeout", outputBytes: material?.outputBytes ?? 0, ...observedEffects };
+        if (result3.terminal === "degraded") return { ...material, role: role.name, state: "degraded", outputBytes: material?.outputBytes ?? 0, ...observedEffects };
+        return parsed === void 0 ? { role: role.name, state: "protocol_error", outputBytes: 0, ...observedEffects } : { ...parsed, role: role.name, ...observedEffects };
       } catch {
         if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
         if (timedOut) return { role: role.name, state: "timeout", outputBytes: 0 };
@@ -9131,7 +9557,7 @@ function activityIds(count, create) {
   }
 }
 function exactDataRecord(value, allowed) {
-  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes8.isProxy(value)) return void 0;
+  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes9.isProxy(value)) return void 0;
   if (Object.getPrototypeOf(value) !== Object.prototype) return void 0;
   const keys = Reflect.ownKeys(value);
   if (keys.length > allowed.size || keys.some((key) => typeof key !== "string" || !allowed.has(key))) return void 0;
@@ -9144,7 +9570,7 @@ function exactDataRecord(value, allowed) {
   return Object.freeze(fields);
 }
 function fixedRoles(value) {
-  if (!Array.isArray(value) || utilTypes8.isProxy(value)) return void 0;
+  if (!Array.isArray(value) || utilTypes9.isProxy(value)) return void 0;
   const length = Object.getOwnPropertyDescriptor(value, "length");
   if (length === void 0 || !("value" in length) || !Number.isSafeInteger(length.value) || length.value === 0 || length.value > DISPATCH_POLICY.maxRoles) return void 0;
   const roles = [];
@@ -9221,7 +9647,7 @@ function createDispatchTool(dependencies) {
           content: [{ type: "text", text: JSON.stringify(fixedResult("degraded")) }],
           details: fixedResult("degraded")
         };
-        const runtime = await dependencies.resolveRuntime(context);
+        const runtime = await dependencies.resolveRuntime(context, _toolCallId);
         const request = parseToolRequest(params, runtime);
         if (authorization !== true && !authorization.isCurrent(authorization.lease)) {
           result3 = fixedResult("degraded");
@@ -9268,9 +9694,1036 @@ function createDispatchTool(dependencies) {
   };
 }
 
+// src/parent-delegation.ts
+import { createHash as createHash9 } from "node:crypto";
+
+// src/delegation-session.ts
+import { randomBytes as randomBytes4 } from "node:crypto";
+import { createServer as createServer2 } from "node:http";
+function createDelegationSession(options) {
+  if (!validRunGrant(options.grant)) throw new Error("Invalid parent delegation grant.");
+  const grant = deepFreeze(structuredClone(options.grant));
+  const token = randomBytes4(32).toString("hex");
+  const controller = new AbortController();
+  const now = options.now ?? (() => performance.now());
+  const sequence = createSequenceChecker();
+  const requests = /* @__PURE__ */ new Map();
+  const outcomes = /* @__PURE__ */ new Map();
+  let tail = Promise.resolve();
+  const revoke = () => controller.abort();
+  options.signal?.addEventListener("abort", revoke, { once: true });
+  if (options.signal?.aborted) revoke();
+  const current = () => {
+    try {
+      return options.isCurrent() === true;
+    } catch {
+      return false;
+    }
+  };
+  const monitor = setInterval(() => {
+    if (!current() || now() >= grant.expiresAtMonotonicMs) revoke();
+  }, 50);
+  monitor.unref();
+  const refusal = (requestId, reason, admission = "denied") => decodeOperationResponse(encodeOperationResponse(refusalResponse(requestId, admission, reason)));
+  const authorityFailure = (id) => {
+    if (controller.signal.aborted || !current()) return refusal(id, "grant-revoked", "revoked");
+    if (now() >= grant.expiresAtMonotonicMs) return refusal(id, "grant-expired", "expired");
+    return void 0;
+  };
+  return Object.freeze({
+    token,
+    revoke,
+    summary() {
+      const values = [...outcomes.values()];
+      return Object.freeze({
+        profile: DELEGATION_PROFILE,
+        observation: "parent-recorded",
+        requested: requests.size,
+        completed: values.filter((r) => r.execution === "completed").length,
+        failed: values.filter((r) => r.execution === "failed").length,
+        refused: values.filter((r) => r.admission !== "admitted").length,
+        unknown: values.filter((r) => r.execution === "outcome-unknown").length,
+        unsettled: requests.size - outcomes.size,
+        containmentUnverified: values.filter((r) => r.containment === "unverified").length
+      });
+    },
+    async settle() {
+      revoke();
+      clearInterval(monitor);
+      await tail;
+      options.signal?.removeEventListener("abort", revoke);
+    },
+    async handle(presented, text2) {
+      if (!tokenMatches(token, presented)) return refusal("invalid", "token-invalid");
+      let request;
+      try {
+        request = decodeOperationRequest(text2);
+      } catch {
+        return refusal("invalid", "protocol-invalid");
+      }
+      const denied = authorityFailure(request.requestId);
+      if (denied !== void 0) return denied;
+      const prior = requests.get(request.requestId);
+      if (prior !== void 0) return prior.digest === request.digest ? await prior.response : refusal(request.requestId, "operation-id-reused");
+      if (!grant.tools.includes(request.tool)) return refusal(request.requestId, "tool-not-delegated");
+      if (requests.size >= grant.maxOperations) return refusal(request.requestId, "grant-exhausted");
+      if (!sequence.accept(request.seq)) return refusal(request.requestId, "sequence-invalid");
+      const response = tail.then(async () => {
+        const stopped = authorityFailure(request.requestId);
+        if (stopped !== void 0) return stopped;
+        try {
+          const result3 = await options.execute(request, controller.signal);
+          return decodeOperationResponse(encodeOperationResponse(result3));
+        } catch {
+          return decodeOperationResponse(encodeOperationResponse({
+            requestId: request.requestId,
+            admission: "admitted",
+            execution: "outcome-unknown",
+            containment: "unverified",
+            observation: "unavailable",
+            recovery: "read-only-reconciliation",
+            reason: "executor-failed"
+          }));
+        }
+      });
+      requests.set(request.requestId, { digest: request.digest, response });
+      void response.then((outcome) => outcomes.set(request.requestId, outcome));
+      tail = response;
+      return await response;
+    }
+  });
+}
+async function startDelegationChannel(options) {
+  const session = createDelegationSession(options);
+  const server = createServer2(async (request, response) => {
+    const deny = () => {
+      response.writeHead(403);
+      response.end();
+      request.resume();
+    };
+    const auth = request.headers.authorization;
+    if (request.method !== "POST" || request.url !== "/v1/operation" || request.headers.origin !== void 0 || typeof auth !== "string" || !tokenMatches(session.token, auth.startsWith("Bearer ") ? auth.slice(7) : void 0)) {
+      deny();
+      return;
+    }
+    const chunks = [];
+    let bytes = 0;
+    try {
+      for await (const raw of request) {
+        const chunk = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);
+        bytes += chunk.length;
+        if (bytes > MAX_OPERATION_REQUEST_BYTES) {
+          response.writeHead(413);
+          response.end();
+          request.destroy();
+          return;
+        }
+        chunks.push(chunk);
+      }
+      const result3 = await session.handle(session.token, Buffer.concat(chunks).toString("utf8"));
+      response.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+      response.end(encodeOperationResponse(result3));
+    } catch {
+      if (!response.headersSent) response.writeHead(400);
+      response.end();
+    }
+  });
+  server.requestTimeout = 3e4;
+  server.headersTimeout = 1e4;
+  server.maxHeadersCount = 16;
+  server.maxConnections = 8;
+  try {
+    await new Promise((resolve18, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", resolve18);
+    });
+    const address = server.address();
+    if (address === null || typeof address === "string") throw new Error("Unavailable channel address.");
+    return Object.freeze({
+      endpoint: `http://127.0.0.1:${address.port}/v1/operation`,
+      token: session.token,
+      summary: session.summary,
+      revoke: session.revoke,
+      close: async () => {
+        session.revoke();
+        server.closeAllConnections();
+        await new Promise((resolve18) => server.close(() => resolve18()));
+        await session.settle();
+      }
+    });
+  } catch (error) {
+    session.revoke();
+    server.close();
+    throw error;
+  }
+}
+
+// src/parent-delegation.ts
+async function openParentDelegation(options) {
+  if (options.role.classification !== "author" || options.parentToolCallId.trim() === "" || !options.isCurrent() || !await options.enabled() || options.signal.aborted) throw new Error("Parent delegation authority is unavailable.");
+  const tools = options.role.tools.filter((tool) => tool !== "read");
+  const grant = deepFreeze({
+    runId: options.runId,
+    role: options.role.name,
+    callerCorrelation: createHash9("sha256").update(options.parentToolCallId).digest("hex"),
+    worktree: options.worktree,
+    tools,
+    maxOperations: MAX_OPERATIONS_PER_GRANT,
+    expiresAtMonotonicMs: performance.now() + 12e4
+  });
+  const channel = await startDelegationChannel({
+    grant,
+    isCurrent: options.isCurrent,
+    signal: options.signal,
+    execute: async (request, signal) => {
+      if (!options.isCurrent() || !await options.enabled()) return refusalResponse(request.requestId, "revoked", "grant-revoked");
+      let outcome;
+      const gated = await options.gate(request, signal, async (approved) => {
+        outcome = await options.executor.execute({
+          grant,
+          requestId: request.requestId,
+          tool: request.tool,
+          params: approved,
+          digest: request.digest,
+          toolCallId: `${grant.callerCorrelation}:${request.requestId}`,
+          signal,
+          permissionCorrelation: createHash9("sha256").update(`${options.parentToolCallId}:${request.requestId}`).digest("hex"),
+          ...options.commandBinding === void 0 ? {} : { shellBinding: options.commandBinding },
+          isCurrent: async () => options.isCurrent() && await options.enabled()
+        });
+        return { content: outcome.result?.content ?? [], isError: outcome.execution !== "completed" };
+      }, request.tool === "bash" ? `Parent shell binding: ${JSON.stringify(options.commandBinding ?? "unavailable")}` : void 0);
+      return gated.admitted && outcome !== void 0 ? outcome : refusalResponse(
+        request.requestId,
+        gated.reason === "no-parent-ui" ? "unavailable" : "denied",
+        gated.reason ?? "permission-denied"
+      );
+    }
+  });
+  let observing = false;
+  const monitor = setInterval(() => {
+    if (observing) return;
+    observing = true;
+    void options.enabled().then((enabled) => {
+      try {
+        if (!enabled || !options.isCurrent()) channel.revoke();
+      } catch {
+        channel.revoke();
+      }
+    }, () => channel.revoke()).finally(() => {
+      observing = false;
+    });
+  }, 250);
+  monitor.unref();
+  return Object.freeze({
+    endpoint: channel.endpoint,
+    token: channel.token,
+    revoke: channel.revoke,
+    summary: channel.summary,
+    close: async () => {
+      clearInterval(monitor);
+      await channel.close();
+    }
+  });
+}
+
+// src/delegation-journal.ts
+import { constants as fsConstants2 } from "node:fs";
+import { createHash as createHash10 } from "node:crypto";
+import { lstat as lstat4, mkdir as mkdir2, open as open4, opendir, realpath as realpath6 } from "node:fs/promises";
+import { isAbsolute as isAbsolute8, resolve as resolve13 } from "node:path";
+var JOURNAL_SEGMENTS = ["codearbiter", "pi-delegation", "v1"];
+var OPERATION_ID2 = /^[0-9a-f]{64}$/u;
+var RECORD_FILE = /^([0-9a-f]{64})\.(claimed|started|observed)\.json$/u;
+var MAX_SCAN_RECORDS = 4096;
+var MAX_GIT_POINTER_BYTES = 4096;
+var STORAGE_SCHEMA = "codearbiter.pi-delegation-storage/1";
+async function boundedNames(root) {
+  const names = [];
+  const directory = await opendir(root);
+  for await (const entry of directory) {
+    if (names.length >= MAX_SCAN_RECORDS) throw new Error("Delegation journal scan exceeded bounds.");
+    names.push(entry.name);
+  }
+  return names;
+}
+async function plainDirectory(path) {
+  try {
+    const stats = await lstat4(path);
+    if (!stats.isDirectory() || stats.isSymbolicLink()) return false;
+    const canonical = await realpath6(path);
+    const lexical = resolve13(path);
+    return process.platform === "win32" ? canonical.toLowerCase() === lexical.toLowerCase() : canonical === lexical;
+  } catch {
+    return false;
+  }
+}
+async function readBounded(path, limit) {
+  let handle;
+  try {
+    const stats = await lstat4(path);
+    if (!stats.isFile() || stats.isSymbolicLink() || stats.nlink !== 1 || stats.size > limit) return void 0;
+    handle = await open4(path, fsConstants2.O_RDONLY | (fsConstants2.O_NOFOLLOW ?? 0));
+    const opened = await handle.stat();
+    if (!opened.isFile() || opened.nlink !== 1 || opened.dev !== stats.dev || opened.ino !== stats.ino || opened.size > limit) return void 0;
+    const bytes = Buffer.alloc(limit + 1);
+    const result3 = await handle.read(bytes, 0, bytes.length, 0);
+    if (result3.bytesRead > limit) return void 0;
+    const after = await lstat4(path);
+    if (!after.isFile() || after.isSymbolicLink() || after.nlink !== 1 || after.dev !== opened.dev || after.ino !== opened.ino || after.size !== opened.size || after.mtimeMs !== opened.mtimeMs) return void 0;
+    return bytes.subarray(0, result3.bytesRead).toString("utf8");
+  } catch {
+    return void 0;
+  } finally {
+    await handle?.close().catch(() => void 0);
+  }
+}
+async function resolveGitCommonDir(worktree) {
+  try {
+    const root = await realpath6(worktree);
+    const dotGit = resolve13(root, ".git");
+    const stats = await lstat4(dotGit);
+    if (stats.isSymbolicLink()) return void 0;
+    if (stats.isDirectory()) return await realpath6(dotGit);
+    if (!stats.isFile()) return void 0;
+    const pointer = await readBounded(dotGit, MAX_GIT_POINTER_BYTES);
+    const match = pointer === void 0 ? null : /^gitdir: (.+?)\r?\n?$/u.exec(pointer);
+    if (match === null) return void 0;
+    const gitDir = isAbsolute8(match[1]) ? match[1] : resolve13(root, match[1]);
+    if (!await plainDirectory(gitDir)) return void 0;
+    const common = await readBounded(resolve13(gitDir, "commondir"), MAX_GIT_POINTER_BYTES);
+    const commonMatch = common === void 0 ? null : /^([^\r\n\0]+)\r?\n?$/u.exec(common);
+    if (commonMatch === null) return void 0;
+    const commonPath = commonMatch[1];
+    if (commonPath.trim() !== commonPath || /[\u0000-\u001f\u007f]/u.test(commonPath)) return void 0;
+    const commonDir = isAbsolute8(commonPath) ? commonPath : resolve13(gitDir, commonPath);
+    return await plainDirectory(commonDir) ? await realpath6(commonDir) : void 0;
+  } catch {
+    return void 0;
+  }
+}
+async function ensureJournalRoot(commonDir, existingOnly = false) {
+  let cursor = commonDir;
+  for (const segment of JOURNAL_SEGMENTS) {
+    cursor = resolve13(cursor, segment);
+    if (!existingOnly) {
+      try {
+        await mkdir2(cursor);
+      } catch (error) {
+        if (error.code !== "EEXIST") return void 0;
+      }
+    }
+    if (!await plainDirectory(cursor)) return void 0;
+  }
+  try {
+    const canonical = await realpath6(cursor);
+    return lexicallyInside(canonical, commonDir) ? canonical : void 0;
+  } catch {
+    return void 0;
+  }
+}
+async function syncDirectory(path) {
+  if (process.platform === "win32") return;
+  const handle = await open4(path, fsConstants2.O_RDONLY);
+  try {
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+}
+async function createExclusive(root, name, text2, io) {
+  const path = resolve13(root, name);
+  let handle;
+  try {
+    handle = await open4(path, fsConstants2.O_CREAT | fsConstants2.O_EXCL | fsConstants2.O_WRONLY | (fsConstants2.O_NOFOLLOW ?? 0), 384);
+  } catch (error) {
+    return error.code === "EEXIST" ? "exists" : "failed";
+  }
+  try {
+    await io.afterCreate?.(path);
+    await handle.writeFile(text2, "utf8");
+    await handle.sync();
+    const stats = await handle.stat();
+    if (!stats.isFile() || stats.nlink !== 1) return "failed";
+  } catch {
+    return "failed";
+  } finally {
+    await handle.close().catch(() => void 0);
+  }
+  try {
+    await syncDirectory(root);
+  } catch {
+    return "failed";
+  }
+  return "created";
+}
+async function readRecord(root, name, identity2) {
+  const path = resolve13(root, name);
+  try {
+    const stats = await lstat4(path);
+    if (!stats.isFile() || stats.isSymbolicLink() || stats.nlink !== 1 || stats.size > 16384) {
+      return { present: true, unreadable: true };
+    }
+  } catch (error) {
+    return error.code === "ENOENT" ? { present: false, unreadable: false } : { present: true, unreadable: true };
+  }
+  try {
+    const text2 = await readBounded(path, 16384);
+    if (text2 === void 0) return { present: true, unreadable: true };
+    const stored = JSON.parse(text2);
+    if (stored === null || Array.isArray(stored) || typeof stored !== "object" || canonicalJson(stored) !== text2 || Object.keys(stored).sort().join(",") !== "record,repositoryId,schema,worktreeId" || stored.schema !== STORAGE_SCHEMA || stored.repositoryId !== identity2.repositoryId || typeof stored.worktreeId !== "string" || !OPERATION_ID2.test(stored.worktreeId)) {
+      return { present: true, unreadable: true };
+    }
+    if (stored.worktreeId !== identity2.worktreeId) return { present: true, unreadable: false, foreign: true };
+    const record2 = decodeJournalRecord(canonicalJson(stored.record));
+    if (name !== `${record2.operationId}.${record2.phase}.json`) return { present: true, unreadable: true };
+    return { record: record2, present: true, unreadable: false };
+  } catch {
+    return { present: true, unreadable: true };
+  }
+}
+function sameClaim(claim, outcome) {
+  return claim.phase === "claimed" && (outcome.phase === "observed" || outcome.phase === "started") && ["operationId", "runId", "callerCorrelation", "role", "tool", "digest", "profile", "target", "requestId", "consentSource", "permissionCorrelation"].every((key) => claim[key] === outcome[key]);
+}
+async function openDelegationJournal(worktree, io = {}) {
+  const commonDir = await resolveGitCommonDir(worktree);
+  if (commonDir === void 0) return void 0;
+  const root = await ensureJournalRoot(commonDir, io.existingOnly);
+  if (root === void 0) return void 0;
+  const canonicalWorktree = await realpath6(worktree);
+  const rootIdentity = await lstat4(root);
+  const pathIdentity = (path) => createHash10("sha256").update(process.platform === "win32" ? path.toLowerCase() : path).digest("hex");
+  const identity2 = Object.freeze({ repositoryId: pathIdentity(commonDir), worktreeId: pathIdentity(canonicalWorktree) });
+  const readOwned = (name) => readRecord(root, name, identity2);
+  const encodeStored = (record2) => canonicalJson({ schema: STORAGE_SCHEMA, ...identity2, record: JSON.parse(encodeJournalRecord(record2)) });
+  const stillOwned = async () => {
+    try {
+      const current = await lstat4(root);
+      return current.dev === rootIdentity.dev && current.ino === rootIdentity.ino && await plainDirectory(root) && await realpath6(root) === root && await realpath6(worktree) === canonicalWorktree && await resolveGitCommonDir(worktree) === commonDir;
+    } catch {
+      return false;
+    }
+  };
+  return Object.freeze({
+    root,
+    identity: identity2,
+    async claim(record2) {
+      if (record2.phase !== "claimed" || !OPERATION_ID2.test(record2.operationId) || !await stillOwned()) {
+        return { state: "unavailable" };
+      }
+      let text2;
+      try {
+        text2 = encodeStored(record2);
+      } catch {
+        return { state: "unavailable" };
+      }
+      try {
+        const names = await boundedNames(root);
+        if (!names.includes(`${record2.operationId}.claimed.json`) && names.length >= MAX_SCAN_RECORDS - 3) {
+          return { state: "unavailable" };
+        }
+      } catch {
+        return { state: "unavailable" };
+      }
+      const outcome = await createExclusive(root, `${record2.operationId}.claimed.json`, text2, io);
+      if (outcome === "created") return { state: "claimed" };
+      if (outcome === "exists") {
+        const claim = await readOwned(`${record2.operationId}.claimed.json`);
+        const observed = await readOwned(`${record2.operationId}.observed.json`);
+        if (claim.foreign || observed.foreign) return { state: "unavailable" };
+        return {
+          state: "exists",
+          claim: claim.record,
+          observed: claim.record !== void 0 && observed.record !== void 0 && sameClaim(claim.record, observed.record) ? observed.record : void 0
+        };
+      }
+      return { state: "unavailable" };
+    },
+    async observe(record2) {
+      if (record2.phase !== "observed" || !OPERATION_ID2.test(record2.operationId) || !await stillOwned()) return false;
+      const claim = await readOwned(`${record2.operationId}.claimed.json`);
+      if (claim.record === void 0 || !sameClaim(claim.record, record2)) return false;
+      let text2;
+      try {
+        text2 = encodeStored(record2);
+      } catch {
+        return false;
+      }
+      return await createExclusive(root, `${record2.operationId}.observed.json`, text2, io) === "created";
+    },
+    async started(record2) {
+      if (record2.phase !== "started" || !OPERATION_ID2.test(record2.operationId) || !await stillOwned()) return false;
+      const claim = await readOwned(`${record2.operationId}.claimed.json`);
+      if (claim.record === void 0 || !sameClaim(claim.record, record2)) return false;
+      let text2;
+      try {
+        text2 = encodeStored(record2);
+      } catch {
+        return false;
+      }
+      return await createExclusive(root, `${record2.operationId}.started.json`, text2, io) === "created";
+    },
+    async read(operationId2) {
+      if (!OPERATION_ID2.test(operationId2) || !await stillOwned()) return { unreadable: true };
+      const claim = await readOwned(`${operationId2}.claimed.json`);
+      const observed = await readOwned(`${operationId2}.observed.json`);
+      const mismatched = observed.record !== void 0 && (claim.record === void 0 || !sameClaim(claim.record, observed.record));
+      return {
+        ...claim.record === void 0 ? {} : { claim: claim.record },
+        ...observed.record === void 0 || mismatched ? {} : { observed: observed.record },
+        unreadable: claim.unreadable || observed.unreadable || mismatched || claim.foreign === true || observed.foreign === true
+      };
+    },
+    async unresolved() {
+      let names;
+      if (!await stillOwned()) throw new Error("Delegation journal scan unavailable.");
+      try {
+        names = await boundedNames(root);
+      } catch {
+        throw new Error("Delegation journal scan unavailable or exceeded bounds.");
+      }
+      const ids = /* @__PURE__ */ new Set();
+      const observedIds = /* @__PURE__ */ new Set();
+      for (const name of names) {
+        const match = RECORD_FILE.exec(name);
+        if (match === null) continue;
+        ids.add(match[1]);
+        if (match[2] === "observed") observedIds.add(match[1]);
+      }
+      const result3 = [];
+      for (const id of ids) {
+        const claim = await readOwned(`${id}.claimed.json`);
+        const observed = observedIds.has(id) ? await readOwned(`${id}.observed.json`) : void 0;
+        const started = await readOwned(`${id}.started.json`);
+        if (claim.foreign || observed?.foreign || started.foreign) continue;
+        if (observed?.record !== void 0 && claim.record !== void 0 && sameClaim(claim.record, observed.record) && observed.record.execution !== "outcome-unknown" && observed.record.containment !== "unverified" && !claim.unreadable && !started.unreadable && (started.record === void 0 || sameClaim(claim.record, started.record))) continue;
+        result3.push(Object.freeze({
+          operationId: id,
+          claim: claim.record,
+          ...started.record === void 0 || claim.record === void 0 || !sameClaim(claim.record, started.record) ? {} : { started: started.record },
+          ...observed?.record === void 0 ? {} : { observed: observed.record }
+        }));
+      }
+      return Object.freeze(result3);
+    }
+  });
+}
+async function readDelegationRecovery(worktree) {
+  const unavailable2 = () => ({ state: "unavailable", count: 0, operationIds: [] });
+  const commonDir = await resolveGitCommonDir(worktree);
+  if (commonDir === void 0) return unavailable2();
+  let cursor = commonDir;
+  for (const segment of JOURNAL_SEGMENTS) {
+    cursor = resolve13(cursor, segment);
+    try {
+      const observed = await lstat4(cursor);
+      if (!observed.isDirectory() || observed.isSymbolicLink()) return unavailable2();
+    } catch (error) {
+      return error.code === "ENOENT" ? { state: "clear", count: 0, operationIds: [] } : unavailable2();
+    }
+  }
+  try {
+    const journal = await openDelegationJournal(worktree, { existingOnly: true });
+    if (journal === void 0) return unavailable2();
+    const operations = await journal.unresolved();
+    return {
+      state: operations.length === 0 ? "clear" : "pending",
+      count: operations.length,
+      operationIds: operations.slice(0, 8).map((operation) => operation.operationId)
+    };
+  } catch {
+    return unavailable2();
+  }
+}
+
+// src/delegated-executor.ts
+import { createHash as createHash11 } from "node:crypto";
+import { constants as fsConstants3 } from "node:fs";
+import { lstat as lstat5, open as open5, realpath as realpath7 } from "node:fs/promises";
+import { isAbsolute as isAbsolute9, relative as relative4, resolve as resolve14, sep } from "node:path";
+var DEFAULT_BASH_TIMEOUT_SECONDS = 120;
+var MAX_BASH_TIMEOUT_SECONDS2 = 600;
+var OUTPUT_TRUNCATED = "\n[codeArbiter: output truncated]";
+var MAX_OBSERVED_TARGET_BYTES = 16 * 1024 * 1024;
+var WINDOWS_COMMAND_BASELINE = [
+  "SystemRoot",
+  "WINDIR",
+  "ComSpec",
+  "PATH",
+  "PATHEXT",
+  "TEMP",
+  "TMP",
+  "USERPROFILE",
+  "HOMEDRIVE",
+  "HOMEPATH",
+  "APPDATA",
+  "LOCALAPPDATA",
+  "ProgramFiles",
+  "ProgramFiles(x86)",
+  "ProgramData",
+  "ProgramW6432",
+  "NUMBER_OF_PROCESSORS",
+  "PROCESSOR_ARCHITECTURE",
+  "OS",
+  "SystemDrive",
+  "USERNAME"
+];
+var POSIX_COMMAND_BASELINE = ["HOME", "USER", "LOGNAME", "SHELL", "PATH", "TMPDIR", "LANG", "LC_ALL", "TERM"];
+function credentialBlindHostEnvironment(parent, platform = process.platform) {
+  const names = platform === "win32" ? WINDOWS_COMMAND_BASELINE : POSIX_COMMAND_BASELINE;
+  const env = {};
+  const lookup = new Map(Object.keys(parent).map((key) => [platform === "win32" ? key.toLowerCase() : key, key]));
+  for (const name of names) {
+    const actual = lookup.get(platform === "win32" ? name.toLowerCase() : name);
+    const value = actual === void 0 ? void 0 : parent[actual];
+    if (typeof value === "string" && value.length > 0 && value.length <= 32768 && !value.includes("\0")) env[name] = value;
+  }
+  for (const providerNames of Object.values(PI_PROVIDER_ENV)) for (const name of providerNames) delete env[name];
+  return env;
+}
+function credentialBlindCommandEnvironment(parent, platform = process.platform) {
+  return { ...credentialBlindHostEnvironment(parent, platform), CODEARBITER_DELEGATED: "1" };
+}
+function sha256(bytes) {
+  return createHash11("sha256").update(bytes).digest("hex");
+}
+async function admitTarget(worktree, raw, platform = process.platform) {
+  if (typeof raw !== "string" || raw === "" || raw.length > 4096 || /[\u0000-\u001f\u007f]/u.test(raw)) return void 0;
+  if (platform === "win32") {
+    if (/^[\\/]{2}/u.test(raw) || /^[A-Za-z]:(?![\\/])/u.test(raw) || raw.slice(2).includes(":")) return void 0;
+  }
+  let root;
+  try {
+    root = await realpath7(worktree);
+  } catch {
+    return void 0;
+  }
+  const absolute = isAbsolute9(raw) ? resolve14(raw) : resolve14(root, raw);
+  if (!lexicallyInside(absolute, root) || absolute === root) return void 0;
+  const rel = relative4(root, absolute);
+  const parts = rel.split(sep);
+  if (parts.some((part) => part === "" || part === ".." || part.toLowerCase() === ".git")) return void 0;
+  let cursor = root;
+  for (let index = 0; index < parts.length; index += 1) {
+    cursor = resolve14(cursor, parts[index]);
+    let stats;
+    try {
+      stats = await lstat5(cursor);
+    } catch (error) {
+      if (error.code === "ENOENT") break;
+      return void 0;
+    }
+    if (stats.isSymbolicLink()) return void 0;
+    const last = index === parts.length - 1;
+    if (last ? !stats.isFile() || stats.nlink !== 1 : !stats.isDirectory()) return void 0;
+    try {
+      if (!lexicallyInside(await realpath7(cursor), root)) return void 0;
+    } catch {
+      return void 0;
+    }
+  }
+  return Object.freeze({ absolute, relative: rel.split(sep).join("/") });
+}
+async function observeTarget(path) {
+  let handle;
+  try {
+    const stats = await lstat5(path);
+    if (!stats.isFile() || stats.isSymbolicLink() || stats.nlink !== 1 || stats.size > MAX_OBSERVED_TARGET_BYTES) return "unreadable";
+    handle = await open5(path, fsConstants3.O_RDONLY | (fsConstants3.O_NOFOLLOW ?? 0));
+    const opened = await handle.stat();
+    if (!opened.isFile() || opened.nlink !== 1 || opened.dev !== stats.dev || opened.ino !== stats.ino || opened.size !== stats.size || opened.size > MAX_OBSERVED_TARGET_BYTES) return "unreadable";
+    const digest = createHash11("sha256");
+    const chunk = Buffer.alloc(64 * 1024);
+    let offset = 0;
+    while (true) {
+      const read = await handle.read(chunk, 0, chunk.length, offset);
+      if (read.bytesRead === 0) break;
+      offset += read.bytesRead;
+      if (offset > opened.size || offset > MAX_OBSERVED_TARGET_BYTES) return "unreadable";
+      digest.update(chunk.subarray(0, read.bytesRead));
+    }
+    const after = await lstat5(path);
+    if (offset !== opened.size || after.isSymbolicLink() || after.nlink !== 1 || after.dev !== opened.dev || after.ino !== opened.ino || after.size !== opened.size || after.mtimeMs !== opened.mtimeMs) return "unreadable";
+    return digest.digest("hex");
+  } catch (error) {
+    return error.code === "ENOENT" ? "absent" : "unreadable";
+  } finally {
+    await handle?.close().catch(() => void 0);
+  }
+}
+function boundedText2(text2) {
+  text2 = redactSecrets2(text2);
+  if (Buffer.byteLength(text2, "utf8") <= MAX_OPERATION_RESULT_TEXT_BYTES) return text2;
+  const budget = MAX_OPERATION_RESULT_TEXT_BYTES - Buffer.byteLength(OUTPUT_TRUNCATED, "utf8");
+  let cut = Buffer.from(text2, "utf8").subarray(0, budget).toString("utf8");
+  if (cut.endsWith("\uFFFD")) cut = cut.slice(0, -1);
+  return cut + OUTPUT_TRUNCATED;
+}
+function resultFromNative(value) {
+  const record2 = value;
+  const blocks = Array.isArray(record2?.content) ? record2.content : [];
+  const text2 = blocks.flatMap((block) => {
+    const item = block;
+    return item?.type === "text" && typeof item.text === "string" ? [item.text] : [];
+  }).join("\n");
+  return Object.freeze({
+    content: Object.freeze([Object.freeze({ type: "text", text: boundedText2(text2 === "" ? "Done." : text2) })]),
+    isError: record2?.isError === true
+  });
+}
+function axes(requestId, execution, containment, observation, recovery, extra = {}) {
+  return Object.freeze({ requestId, admission: "admitted", execution, containment, observation, recovery, ...extra });
+}
+function createDelegatedExecutor(ports) {
+  const platform = ports.platform ?? process.platform;
+  const now = ports.now ?? (() => /* @__PURE__ */ new Date());
+  let tail = Promise.resolve();
+  let containmentHeld = false;
+  const stopped = (request) => {
+    const cancelled = request.signal.aborted;
+    if (!cancelled && performance.now() < request.grant.expiresAtMonotonicMs) return void 0;
+    return Object.freeze({
+      requestId: request.requestId,
+      admission: cancelled ? "cancelled" : "expired",
+      execution: "not-started",
+      containment: "not-applicable",
+      observation: "unavailable",
+      recovery: "new-operation-required",
+      reason: cancelled ? "grant-revoked" : "grant-expired"
+    });
+  };
+  const revalidate = async (request) => {
+    let live = true;
+    try {
+      live = request.isCurrent === void 0 || await request.isCurrent() === true;
+    } catch {
+      live = false;
+    }
+    if (!live) return Object.freeze({
+      requestId: request.requestId,
+      admission: "revoked",
+      execution: "not-started",
+      containment: "not-applicable",
+      observation: "unavailable",
+      recovery: "new-operation-required",
+      reason: "grant-revoked"
+    });
+    return stopped(request);
+  };
+  const record2 = (request, phase, extra) => Object.freeze({
+    v: 1,
+    phase,
+    operationId: operationId(request.grant.runId, request.requestId),
+    runId: request.grant.runId,
+    callerCorrelation: request.grant.callerCorrelation,
+    role: request.grant.role,
+    tool: request.tool,
+    digest: request.digest,
+    profile: DELEGATION_PROFILE,
+    recordedAt: now().toISOString(),
+    requestId: request.requestId,
+    ...request.permissionCorrelation === void 0 ? {} : {
+      consentSource: "parent-human-confirmation",
+      permissionCorrelation: request.permissionCorrelation
+    },
+    ...extra
+  });
+  const claim = async (request, extra) => {
+    const claimed = await ports.journal.claim(record2(request, "claimed", extra));
+    if (claimed.state === "claimed") return void 0;
+    if (claimed.state === "unavailable") {
+      return axes(request.requestId, "not-started", "not-applicable", "unavailable", "read-only-reconciliation", { reason: "journal-unavailable" });
+    }
+    if (claimed.claim !== void 0 && claimed.claim.digest !== request.digest) {
+      return axes(request.requestId, "not-started", "not-applicable", "unavailable", "new-operation-required", { reason: "operation-id-reused" });
+    }
+    const observed = claimed.observed;
+    if (observed?.execution === "completed" || observed?.execution === "failed") {
+      return observed.execution === "completed" ? axes(
+        request.requestId,
+        "completed",
+        observed.containment ?? "not-applicable",
+        "target-state-only",
+        "none",
+        { result: { content: [{ type: "text", text: "Already applied by an earlier identical request; not re-executed." }], isError: false } }
+      ) : axes(request.requestId, "failed", observed.containment ?? "not-applicable", "target-state-only", "new-operation-required", { reason: "executor-failed" });
+    }
+    return axes(request.requestId, "outcome-unknown", "unverified", "unavailable", "read-only-reconciliation", { reason: "journal-unknown" });
+  };
+  const finish = async (request, reply, extra) => {
+    const execution = reply.execution === "completed" || reply.execution === "failed" ? reply.execution : reply.execution === "not-started" ? "failed" : "outcome-unknown";
+    const persisted = await ports.journal.observe(record2(request, "observed", {
+      ...extra,
+      execution,
+      containment: reply.containment
+    }));
+    if (persisted) return reply;
+    return axes(
+      request.requestId,
+      "outcome-unknown",
+      reply.containment === "running" ? "unverified" : reply.containment,
+      "unavailable",
+      "read-only-reconciliation",
+      { reason: "journal-unknown" }
+    );
+  };
+  const fileOperation = async (request) => {
+    const target = await admitTarget(request.grant.worktree, request.params.path, platform);
+    if (target === void 0) {
+      return Object.freeze({
+        requestId: request.requestId,
+        admission: "denied",
+        execution: "not-started",
+        containment: "not-applicable",
+        observation: "unavailable",
+        recovery: "new-operation-required",
+        reason: "target-invalid"
+      });
+    }
+    const before = await observeTarget(target.absolute);
+    if (before === "unreadable") {
+      return Object.freeze({
+        requestId: request.requestId,
+        admission: "denied",
+        execution: "not-started",
+        containment: "not-applicable",
+        observation: "unavailable",
+        recovery: "new-operation-required",
+        reason: "target-invalid"
+      });
+    }
+    const stop = await claim(request, { target: target.relative, targetHash: before });
+    if (stop !== void 0) return stop;
+    const cancelled = await revalidate(request);
+    if (cancelled !== void 0) return await finish(request, cancelled, { target: target.relative, targetHash: before });
+    const recheck = await admitTarget(request.grant.worktree, request.params.path, platform);
+    if (recheck === void 0 || recheck.absolute !== target.absolute || await observeTarget(target.absolute) !== before) {
+      return await finish(request, axes(
+        request.requestId,
+        "failed",
+        "not-applicable",
+        "stale",
+        "new-operation-required",
+        { reason: "target-invalid" }
+      ), { target: target.relative, targetHash: before });
+    }
+    let native;
+    try {
+      const cancelled2 = await revalidate(request);
+      if (cancelled2 !== void 0) return await finish(request, cancelled2, { target: target.relative, targetHash: before });
+      const definition = (request.tool === "write" ? ports.write : ports.edit)(request.grant.worktree);
+      native = await definition.execute(request.toolCallId, { ...request.params, path: target.absolute }, request.signal);
+    } catch {
+      const after2 = await observeTarget(target.absolute);
+      const changed = after2 !== before;
+      const reply2 = changed ? axes(request.requestId, "outcome-unknown", "not-applicable", "target-state-only", "read-only-reconciliation") : axes(request.requestId, "failed", "not-applicable", "target-state-only", "new-operation-required", {
+        reason: "executor-failed",
+        result: { content: [{ type: "text", text: "Parent executor failed; inspect the target before a new attempt." }], isError: true }
+      });
+      return await finish(request, reply2, { target: target.relative, targetHash: after2 });
+    }
+    const after = await observeTarget(target.absolute);
+    const result3 = resultFromNative(native);
+    const exact = request.tool === "write" && after === sha256(Buffer.from(request.params.content, "utf8"));
+    if (!result3.isError && request.tool === "write" && !exact) {
+      return await finish(request, axes(
+        request.requestId,
+        "outcome-unknown",
+        "not-applicable",
+        "target-state-only",
+        "read-only-reconciliation",
+        { reason: "executor-failed" }
+      ), { target: target.relative, targetHash: after });
+    }
+    const reply = result3.isError ? axes(request.requestId, "failed", "not-applicable", "target-state-only", "new-operation-required", { reason: "executor-failed", result: result3 }) : axes(request.requestId, "completed", "not-applicable", exact ? "exact" : "target-state-only", "none", { result: result3 });
+    return await finish(request, reply, { target: target.relative, targetHash: after });
+  };
+  const commandOperation = async (request) => {
+    const shell = request.shellBinding === void 0 ? await ports.shell() : request.shellBinding ?? void 0;
+    const launch = shell === void 0 ? void 0 : piShellLaunch({
+      shellPath: shell.shellPath,
+      command: request.params.command,
+      ...shell.commandPrefix === void 0 ? {} : { commandPrefix: shell.commandPrefix }
+    });
+    if (launch === void 0) {
+      return Object.freeze({
+        requestId: request.requestId,
+        admission: "unavailable",
+        execution: "not-started",
+        containment: "not-applicable",
+        observation: "unavailable",
+        recovery: "new-operation-required",
+        reason: "executor-unavailable"
+      });
+    }
+    const stop = await claim(request, {});
+    if (stop !== void 0) return stop;
+    const cancelled = await revalidate(request);
+    if (cancelled !== void 0) return await finish(request, cancelled, {});
+    const timeoutSeconds = Math.min(MAX_BASH_TIMEOUT_SECONDS2, request.params.timeout ?? DEFAULT_BASH_TIMEOUT_SECONDS);
+    let tree;
+    try {
+      tree = await (ports.openTree ?? openProcessTree)(launch.command, launch.args, {
+        cwd: request.grant.worktree,
+        env: credentialBlindCommandEnvironment(ports.environment, platform),
+        stdio: ["pipe", "pipe", "pipe", "pipe"]
+      });
+    } catch {
+      return await finish(request, axes(
+        request.requestId,
+        "failed",
+        "not-applicable",
+        "unavailable",
+        "new-operation-required",
+        { reason: "executor-unavailable" }
+      ), {});
+    }
+    const chunks = [];
+    let captured = 0;
+    let truncated = false;
+    const capture = (chunk) => {
+      const bytes = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+      if (captured >= MAX_OPERATION_RESULT_TEXT_BYTES) {
+        truncated = true;
+        return;
+      }
+      const slice = bytes.subarray(0, MAX_OPERATION_RESULT_TEXT_BYTES - captured);
+      if (slice.length < bytes.length) truncated = true;
+      captured += slice.length;
+      chunks.push(slice);
+    };
+    const { child, cleanup } = tree;
+    let ended;
+    const exit = new Promise((resolveExit) => {
+      child.stdout.on("data", capture);
+      child.stderr.on("data", capture);
+      child.once("error", () => resolveExit(null));
+      child.once("close", (code2) => resolveExit(code2));
+    });
+    const processId = Number.isSafeInteger(child.pid) && child.pid > 0 ? child.pid : null;
+    const retireSpawned = async (retired) => {
+      const termination2 = await cleanup.terminate(retired.admission === "expired" ? "timeout" : "cancelled").catch(() => void 0);
+      const containment2 = termination2?.verified === true ? "verified-stopped" : "unverified";
+      containmentHeld ||= containment2 === "unverified";
+      return await finish(request, axes(
+        request.requestId,
+        "outcome-unknown",
+        containment2,
+        "unavailable",
+        containmentHeld ? "dependent-resource-held" : "read-only-reconciliation",
+        { reason: retired.reason }
+      ), { processId });
+    };
+    const afterSpawn = await revalidate(request);
+    if (afterSpawn !== void 0) return await retireSpawned(afterSpawn);
+    if (!await ports.journal.started(record2(request, "started", { processId }))) {
+      const stopped2 = await cleanup.terminate("cancelled").catch(() => void 0);
+      const containment2 = stopped2?.verified === true ? "verified-stopped" : "unverified";
+      containmentHeld ||= containment2 === "unverified";
+      return await finish(request, axes(
+        request.requestId,
+        "outcome-unknown",
+        containment2,
+        "unavailable",
+        containmentHeld ? "dependent-resource-held" : "read-only-reconciliation",
+        { reason: "journal-unknown" }
+      ), { processId });
+    }
+    const beforeRelease = await revalidate(request) ?? stopped(request);
+    if (beforeRelease !== void 0) return await retireSpawned(beforeRelease);
+    try {
+      const capability = child.stdio[3];
+      capability?.end?.();
+      if (launch.stdin !== void 0) child.stdin.end(launch.stdin, "utf8");
+      else child.stdin.end();
+    } catch {
+    }
+    let timer;
+    const aborted = new Promise((resolveAbort) => {
+      if (request.signal.aborted) resolveAbort("cancelled");
+      else request.signal.addEventListener("abort", () => resolveAbort("cancelled"), { once: true });
+    });
+    const timedOut = new Promise((resolveTimeout) => {
+      timer = setTimeout(() => resolveTimeout("timeout"), timeoutSeconds * 1e3);
+    });
+    let code = null;
+    const first = await Promise.race([exit.then((value) => ({ value })), aborted, timedOut]);
+    if (timer !== void 0) clearTimeout(timer);
+    if (typeof first === "object") {
+      ended = "exited";
+      code = first.value;
+    } else ended = first;
+    const termination = await cleanup.terminate(ended === "exited" ? "completed" : ended).catch(() => void 0);
+    const containment = termination?.verified === true ? "verified-stopped" : "unverified";
+    if (containment === "unverified") containmentHeld = true;
+    if (ended !== "exited") await Promise.race([exit, new Promise((r) => setTimeout(r, 2e3))]);
+    let output = Buffer.concat(chunks).toString("utf8");
+    if (truncated) output = boundedText2(output + OUTPUT_TRUNCATED);
+    if (ended !== "exited") {
+      return await finish(request, axes(
+        request.requestId,
+        "outcome-unknown",
+        containment,
+        "unavailable",
+        containment === "verified-stopped" ? "read-only-reconciliation" : "dependent-resource-held",
+        { reason: containment === "unverified" ? "containment-unverified" : "executor-failed" }
+      ), { processId });
+    }
+    const text2 = boundedText2(`${output}${output.endsWith("\n") || output === "" ? "" : "\n"}[exit code ${code ?? "unknown"}]`);
+    const result3 = Object.freeze({ content: Object.freeze([Object.freeze({ type: "text", text: text2 })]), isError: code !== 0 });
+    const reply = code === 0 ? axes(request.requestId, "completed", containment, "exact", containmentHeld ? "dependent-resource-held" : "none", { result: result3 }) : axes(request.requestId, "failed", containment, "exact", containmentHeld ? "dependent-resource-held" : "new-operation-required", { result: result3 });
+    return await finish(request, reply, { processId });
+  };
+  return {
+    async execute(request) {
+      const execution = tail.then(async () => {
+        const stop = await revalidate(request);
+        if (stop !== void 0) return stop;
+        try {
+          const pending = await ports.journal.unresolved();
+          containmentHeld ||= pending.some((operation) => operation.claim === void 0 || operation.observed?.containment === "unverified" || operation.claim.tool === "bash" && operation.observed === void 0);
+          const currentId = operationId(request.grant.runId, request.requestId);
+          const target = request.tool === "bash" ? void 0 : await admitTarget(request.grant.worktree, request.params.path, platform);
+          const samePath3 = (a, b) => platform === "win32" ? a.toLowerCase() === b.toLowerCase() : a === b;
+          const dependent = pending.some((operation) => operation.operationId !== currentId && operation.claim?.tool !== "bash" && (request.tool === "bash" || target !== void 0 && operation.claim?.target !== void 0 && samePath3(target.relative, operation.claim.target)));
+          if (dependent) return { ...axes(
+            request.requestId,
+            "not-started",
+            "not-applicable",
+            "unavailable",
+            "dependent-resource-held",
+            { reason: "journal-unknown" }
+          ), admission: "unavailable" };
+        } catch {
+          return { ...axes(
+            request.requestId,
+            "not-started",
+            "not-applicable",
+            "unavailable",
+            "dependent-resource-held",
+            { reason: "journal-unavailable" }
+          ), admission: "unavailable" };
+        }
+        if (containmentHeld) return { ...axes(
+          request.requestId,
+          "not-started",
+          "not-applicable",
+          "unavailable",
+          "dependent-resource-held",
+          { reason: "containment-unverified" }
+        ), admission: "unavailable" };
+        if (request.tool === "bash") return await commandOperation(request);
+        return await fileOperation(request);
+      });
+      tail = execution.catch(() => void 0);
+      return await execution;
+    }
+  };
+}
+
 // src/farm.ts
-import { realpath as realpath6, readdir, stat as stat2 } from "node:fs/promises";
-import { resolve as resolve13 } from "node:path";
+import { realpath as realpath8, readdir, stat as stat2 } from "node:fs/promises";
+import { resolve as resolve15 } from "node:path";
 var FARM_OUTPUT_LIMIT = 65536;
 var FARM_ENVIRONMENT = /^(?:FARM_[A-Z0-9_]+|PATH|PATHEXT|SystemRoot|WINDIR|TEMP|TMP)$/iu;
 var SOURCE_CLOCK_TOLERANCE_MS = 1e3;
@@ -9293,26 +10746,26 @@ function farmEnvironment(source) {
   return selected;
 }
 async function resolveBackend(packageRoot) {
-  const canonicalPackage = await realpath6(packageRoot);
-  const checkoutRoot = await realpath6(resolve13(canonicalPackage, "..", ".."));
-  const expectedPackage = await realpath6(resolve13(checkoutRoot, "plugins", "ca-pi"));
+  const canonicalPackage = await realpath8(packageRoot);
+  const checkoutRoot = await realpath8(resolve15(canonicalPackage, "..", ".."));
+  const expectedPackage = await realpath8(resolve15(checkoutRoot, "plugins", "ca-pi"));
   if (canonicalPackage !== expectedPackage) throw new Error("package");
-  const backendRoot = await realpath6(resolve13(checkoutRoot, "plugins", "ca", "tools"));
-  const backend = await realpath6(resolve13(backendRoot, "farm.js"));
+  const backendRoot = await realpath8(resolve15(checkoutRoot, "plugins", "ca", "tools"));
+  const backend = await realpath8(resolve15(backendRoot, "farm.js"));
   if (!lexicallyInside(backend, checkoutRoot) || !lexicallyInside(backend, backendRoot)) throw new Error("containment");
   const backendInfo = await stat2(backend);
   if (!backendInfo.isFile()) throw new Error("file");
   const sourceNames = (await readdir(backendRoot, { withFileTypes: true })).filter((entry) => entry.isFile() && entry.name.endsWith(".ts")).map((entry) => entry.name);
   if (!sourceNames.includes("farm.ts")) throw new Error("source");
-  const sourceStats = await Promise.all(sourceNames.map(async (name) => await stat2(resolve13(backendRoot, name))));
+  const sourceStats = await Promise.all(sourceNames.map(async (name) => await stat2(resolve15(backendRoot, name))));
   if (sourceStats.some((source) => source.mtimeMs > backendInfo.mtimeMs + SOURCE_CLOCK_TOLERANCE_MS)) {
     throw new Error("stale");
   }
   return { backend, backendRoot, checkoutRoot };
 }
 async function resolvePlan(projectRoot, planPath) {
-  const canonicalProject = await realpath6(projectRoot);
-  const canonicalPlan = await realpath6(planPath);
+  const canonicalProject = await realpath8(projectRoot);
+  const canonicalPlan = await realpath8(planPath);
   if (!lexicallyInside(canonicalPlan, canonicalProject) || !(await stat2(canonicalPlan)).isFile()) throw new Error("plan");
   return { projectRoot: canonicalProject, planPath: canonicalPlan };
 }
@@ -9349,7 +10802,7 @@ function waitForFarm(child, signal, createCleanup) {
   });
 }
 async function runFarmPreview(input, signal, dependencies = {}) {
-  const expectedBackend = resolve13(input.packageRoot, "..", "ca", "tools", "farm.js");
+  const expectedBackend = resolve15(input.packageRoot, "..", "ca", "tools", "farm.js");
   let backend;
   try {
     ({ backend } = await resolveBackend(input.packageRoot));
@@ -9371,7 +10824,7 @@ async function runFarmPreview(input, signal, dependencies = {}) {
   if (signal.aborted) return result2(backend, "cancelled");
   let nodePath;
   try {
-    nodePath = await realpath6(input.nodePath);
+    nodePath = await realpath8(input.nodePath);
   } catch {
     return result2(backend, "degraded", { message: "shared farm backend could not be started" });
   }
@@ -9411,7 +10864,7 @@ async function runFarmPreview(input, signal, dependencies = {}) {
 function createFarmPreviewTool(dependencies) {
   const run = dependencies.run ?? runFarmPreview;
   const degraded = (message) => result2(
-    resolve13(dependencies.packageRoot, "..", "ca", "tools", "farm.js"),
+    resolve15(dependencies.packageRoot, "..", "ca", "tools", "farm.js"),
     "degraded",
     { message }
   );
@@ -9441,7 +10894,7 @@ function createFarmPreviewTool(dependencies) {
           output = await run({
             packageRoot: dependencies.packageRoot,
             projectRoot: context.cwd,
-            planPath: resolve13(context.cwd, params.plan),
+            planPath: resolve15(context.cwd, params.plan),
             nodePath: dependencies.nodePath,
             environment: dependencies.environment,
             authorization,
@@ -9461,7 +10914,7 @@ function createFarmPreviewTool(dependencies) {
 
 // src/compaction.ts
 import { randomUUID as randomUUID6 } from "node:crypto";
-import { resolve as resolve14 } from "node:path";
+import { resolve as resolve16 } from "node:path";
 var MAX_CONVERSATION_BYTES = 48e3;
 var MAX_SUMMARY_BYTES = 16e3;
 var MAX_PREVIOUS_SUMMARY_BYTES = 8e3;
@@ -9693,7 +11146,7 @@ async function handleBeforeCompact(rawEvent, context, runner) {
       model,
       tools: Object.freeze([]),
       cwd: context.cwd,
-      charterPath: resolve14(context.packageRoot, COMPACTION_CHARTER),
+      charterPath: resolve16(context.packageRoot, COMPACTION_CHARTER),
       conversation,
       ...event.preparation.previousSummary === void 0 ? {} : {
         previousSummary: redactedBounded(event.preparation.previousSummary, MAX_PREVIOUS_SUMMARY_BYTES)
@@ -9799,7 +11252,7 @@ var COMMAND_WORKFLOW_ORDER = [
   "extend",
   "help"
 ];
-function plainRecord2(value) {
+function plainRecord3(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value) && Object.getPrototypeOf(value) === Object.prototype;
 }
 function sameStrings2(actual, expected) {
@@ -9810,7 +11263,7 @@ function validLegacyRoutes(value) {
 }
 function commandCatalogEntries(value) {
   const envelopeKeys = ["commands", "compatibility", "schemaVersion", "visibilityOrder", "workflowOrder"];
-  if (!plainRecord2(value) || !sameStrings2(Object.keys(value).sort(), envelopeKeys) || value.schemaVersion !== 1 || !Array.isArray(value.visibilityOrder) || !sameStrings2(value.visibilityOrder, COMMAND_VISIBILITY_ORDER) || !Array.isArray(value.workflowOrder) || !sameStrings2(value.workflowOrder, COMMAND_WORKFLOW_ORDER) || !plainRecord2(value.compatibility) || !plainRecord2(value.commands)) {
+  if (!plainRecord3(value) || !sameStrings2(Object.keys(value).sort(), envelopeKeys) || value.schemaVersion !== 1 || !Array.isArray(value.visibilityOrder) || !sameStrings2(value.visibilityOrder, COMMAND_VISIBILITY_ORDER) || !Array.isArray(value.workflowOrder) || !sameStrings2(value.workflowOrder, COMMAND_WORKFLOW_ORDER) || !plainRecord3(value.compatibility) || !plainRecord3(value.commands)) {
     throw new Error("codeArbiter Pi command catalog envelope is invalid; run /ca-doctor.");
   }
   const commands = value.commands;
@@ -9824,7 +11277,7 @@ function commandCatalogEntries(value) {
       throw new Error(`codeArbiter Pi command catalog entry ${name} is invalid; run /ca-doctor.`);
     };
     const value2 = commands[name];
-    if (!plainRecord2(value2)) {
+    if (!plainRecord3(value2)) {
       throw new Error(`codeArbiter Pi command catalog entry ${name} is invalid; run /ca-doctor.`);
     }
     const raw = value2;
@@ -9870,6 +11323,8 @@ function commandCatalogEntries(value) {
   return Object.freeze(entries);
 }
 var PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";
+var PI_PERSONA_UNAVAILABLE_STATUS = "codeArbiter host: pi degraded - persona unavailable; run /ca-doctor";
+var PI_PERSONA_UNAVAILABLE_PROMPT = "codeArbiter persona unavailable; governance instructions are not loaded. Run /ca-doctor.";
 function hasAffirmativeProjectTrust(context) {
   try {
     return context.isProjectTrusted?.() === true;
@@ -9891,10 +11346,11 @@ function installPiDispatch(pi, options) {
         return void 0;
       }
     },
-    resolveRuntime: (context) => {
+    resolveRuntime: (context, parentToolCallId) => {
       if (typeof context.cwd !== "string" || typeof context.model?.provider !== "string" || context.model.provider.trim() === "" || typeof context.model.id !== "string" || context.model.id.trim() === "") {
         throw new Error("Pi dispatch runtime context is unavailable.");
       }
+      const lease = currentLifecycle();
       return {
         nodePath: process.execPath,
         piCliPath: options.piCliPath,
@@ -9902,9 +11358,19 @@ function installPiDispatch(pi, options) {
         model: context.model.id,
         cwd: context.cwd,
         packageRoot: options.packageRoot,
-        childExtensionPath: resolve15(options.packageRoot, "extensions", "codearbiter-child.js"),
+        childExtensionPath: resolve17(options.packageRoot, "extensions", "codearbiter-child.js"),
         parentEnv: process.env,
-        platform: process.platform
+        platform: process.platform,
+        ...options.openDelegation === void 0 || parentToolCallId === void 0 || lease === void 0 ? {} : {
+          openDelegation: (role, runId, signal) => options.openDelegation(
+            context,
+            parentToolCallId,
+            role,
+            runId,
+            signal,
+            () => currentLifecycle() === lease && hasAffirmativeProjectTrust(context)
+          )
+        }
       };
     },
     ...options.currentActivity === void 0 ? {} : { activity: options.currentActivity },
@@ -9938,7 +11404,7 @@ function appendPrompt(current, persona, state) {
 var MAX_OS_ENV_VALUE_BYTES = 32768;
 function boundedPiEnvironment(environment) {
   try {
-    if (environment === null || typeof environment !== "object" || utilTypes9.isProxy(environment)) return void 0;
+    if (environment === null || typeof environment !== "object" || utilTypes10.isProxy(environment)) return void 0;
     const names = Object.keys(environment);
     if (names.length > MAX_JOB_ENV_ENTRIES) return void 0;
     const entries = [];
@@ -9954,9 +11420,9 @@ function boundedPiEnvironment(environment) {
 }
 async function canonicalExecutable2(candidate) {
   try {
-    const canonical = await realpath7(candidate);
-    const stats = await lstat4(canonical);
-    return isAbsolute8(canonical) && stats.isFile() && !stats.isSymbolicLink() ? canonical : void 0;
+    const canonical = await realpath9(candidate);
+    const stats = await lstat6(canonical);
+    return isAbsolute10(canonical) && stats.isFile() && !stats.isSymbolicLink() ? canonical : void 0;
   } catch {
     return void 0;
   }
@@ -9964,14 +11430,14 @@ async function canonicalExecutable2(candidate) {
 async function resolvePiBackgroundShell(configured, environment = process.env, platform = process.platform) {
   if (configured !== void 0) {
     if (typeof configured !== "string" || configured.length === 0 || configured.length > 4096 || configured.includes("\0")) return void 0;
-    return await canonicalExecutable2(isAbsolute8(configured) ? configured : resolve15(configured));
+    return await canonicalExecutable2(isAbsolute10(configured) ? configured : resolve17(configured));
   }
   const candidates = [];
   const pathDirectories = [];
   if (platform === "win32") {
     for (const key of ["ProgramFiles", "ProgramFiles(x86)"]) {
       const root = environment[key];
-      if (typeof root === "string" && root.length <= 4096) candidates.push(resolve15(root, "Git", "bin", "bash.exe"));
+      if (typeof root === "string" && root.length <= 4096) candidates.push(resolve17(root, "Git", "bin", "bash.exe"));
     }
   } else {
     candidates.push("/bin/bash");
@@ -9982,7 +11448,7 @@ async function resolvePiBackgroundShell(configured, environment = process.env, p
     for (const directory of pathValue.split(delimiter).slice(0, 512)) {
       if (directory.length > 0 && directory.length <= 4096) {
         pathDirectories.push(directory);
-        candidates.push(resolve15(directory, executable));
+        candidates.push(resolve17(directory, executable));
       }
     }
   }
@@ -9992,7 +11458,7 @@ async function resolvePiBackgroundShell(configured, environment = process.env, p
   }
   if (platform !== "win32") {
     for (const directory of pathDirectories) {
-      const canonical = await canonicalExecutable2(resolve15(directory, "sh"));
+      const canonical = await canonicalExecutable2(resolve17(directory, "sh"));
       if (canonical !== void 0) return canonical;
     }
     return await canonicalExecutable2("/bin/sh");
@@ -10015,8 +11481,8 @@ function ownershipStatus(pi, dependencies, nativePlanRegistered = false, nativeJ
 var PERSONA_SENTINEL = "<!-- codearbiter:persona-sentinel -->";
 async function loadPersonaFrom(packageRoot) {
   const [safetyCore, body] = await Promise.all([
-    readFile6(resolve15(packageRoot, "includes", "safety-core.md"), "utf8"),
-    readFile6(resolve15(packageRoot, "arbiter.md"), "utf8")
+    readFile6(resolve17(packageRoot, "includes", "safety-core.md"), "utf8"),
+    readFile6(resolve17(packageRoot, "arbiter.md"), "utf8")
   ]);
   return `${safetyCore.replace(/\n+$/, "")}
 
@@ -10028,7 +11494,15 @@ ${PERSONA_SENTINEL}
 function installParent(pi, dependencies) {
   let enabled = false;
   let persona = "";
+  let personaReady = false;
+  let personaFailed = false;
+  let personaLoad;
   let state = "";
+  let workflowRecovery;
+  let workflowPresentation;
+  let workflowRead;
+  const workflowUiDelivered = /* @__PURE__ */ new Set();
+  const workflowPromptDelivered = /* @__PURE__ */ new Set();
   let ownershipDegraded;
   let bridgeDegraded;
   let commandInvocationDegraded;
@@ -10073,7 +11547,7 @@ function installParent(pi, dependencies) {
     noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR")
   });
   const readActivation = dependencies.readActivation ?? isEnabled;
-  dependencies.installDispatch?.(() => readyLifecycle, currentActivity2);
+  dependencies.installDispatch?.(() => personaReady ? readyLifecycle : void 0, currentActivity2);
   dependencies.installCompaction?.(() => readyLifecycle);
   dependencies.installFarmPreview?.(() => readyLifecycle);
   const publishStatus = (context, text2) => {
@@ -10085,13 +11559,77 @@ function installParent(pi, dependencies) {
     readyLifecycle = void 0;
     enabled = false;
     persona = "";
+    personaReady = false;
+    personaFailed = false;
+    personaLoad = void 0;
     state = "";
+    workflowRecovery = void 0;
+    workflowPresentation = void 0;
+    workflowRead = void 0;
+    workflowUiDelivered.clear();
+    workflowPromptDelivered.clear();
     ownershipDegraded = void 0;
     bridgeDegraded = void 0;
     commandInvocationDegraded = void 0;
     footerActivationEnabled = false;
   };
-  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? bridgeDegraded;
+  const observeWorkflowRecovery = (lifecycle, context) => {
+    if (dependencies.readWorkflowRecovery === void 0 || !enabled || readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return Promise.resolve();
+    if (workflowRead?.lifecycle === lifecycle) return workflowRead.promise;
+    const entry = { lifecycle, promise: Promise.resolve() };
+    workflowRead = entry;
+    entry.promise = (async () => {
+      let observed;
+      try {
+        observed = await dependencies.readWorkflowRecovery(context);
+      } catch {
+      }
+      if (!enabled || readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
+      if (observed !== void 0) workflowRecovery = observed;
+      const notice = observed?.notice ?? "codeArbiter: workflow recovery observation unavailable. Inspect with the installed workflow-recovery.py scan; independent authorized work continues.";
+      const key = observed?.fingerprint ?? `unavailable:${workflowRecovery?.fingerprint ?? "unknown"}`;
+      workflowPresentation = { notice: observed === void 0 && workflowRecovery?.notice ? `${workflowRecovery.notice} ${notice}` : notice, key };
+      if (context.hasUI === true && notice !== "" && !workflowUiDelivered.has(key)) {
+        try {
+          context.ui.notify(notice, "warning");
+          workflowUiDelivered.add(key);
+        } catch {
+        }
+      }
+    })().finally(() => {
+      if (workflowRead === entry) workflowRead = void 0;
+    });
+    return entry.promise;
+  };
+  const personaDegraded = () => enabled && personaFailed && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : void 0;
+  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
+  const ensurePersona = (lifecycle) => {
+    if (personaReady) return Promise.resolve(true);
+    if (personaLoad?.lifecycle === lifecycle) return personaLoad.promise;
+    const entry = { lifecycle, promise: Promise.resolve(false) };
+    personaLoad = entry;
+    entry.promise = (async () => {
+      let loaded;
+      try {
+        loaded = await dependencies.loadPersona();
+      } catch {
+        if (activeLifecycle === lifecycle) personaFailed = true;
+        return false;
+      } finally {
+        if (personaLoad === entry) personaLoad = void 0;
+      }
+      if (activeLifecycle !== lifecycle) return false;
+      if (typeof loaded !== "string" || loaded.trim() === "") {
+        personaFailed = true;
+        return false;
+      }
+      persona = loaded;
+      personaReady = true;
+      personaFailed = false;
+      return true;
+    })();
+    return entry.promise;
+  };
   const doctorHealth = (context) => {
     const footerHealth = footer.health();
     const backgroundExpected = footerHealth.expected && enabled;
@@ -10197,9 +11735,31 @@ function installParent(pi, dependencies) {
       context.ui.notify(bridgeDegraded, "error");
       throw new Error(bridgeDegraded, { cause: error });
     }
-    try {
-      persona = await dependencies.loadPersona();
+    void observeWorkflowRecovery(lifecycle, context);
+    if (!await ensurePersona(lifecycle)) {
       if (!isCurrent()) return;
+      context.ui.notify(PI_PERSONA_UNAVAILABLE_STATUS, "error");
+    }
+    if (!isCurrent()) return;
+    if (dependencies.readDelegationRecovery !== void 0) {
+      void dependencies.readDelegationRecovery(context.cwd).then((recovery) => {
+        if (!isCurrent() || !hasAffirmativeProjectTrust(context)) return;
+        if (recovery.state === "pending") context.ui.notify(
+          `Pi delegation has ${recovery.count} unresolved operation(s). Run /ca-doctor; inspect retained outcomes before any new attempt.`,
+          "warning"
+        );
+        else if (recovery.state === "unavailable") context.ui.notify(
+          "Pi delegation recovery observation is unavailable. Run /ca-doctor before retrying an uncertain effect.",
+          "warning"
+        );
+      }).catch(() => {
+        if (isCurrent() && hasAffirmativeProjectTrust(context)) context.ui.notify(
+          "Pi delegation recovery observation is unavailable. Run /ca-doctor before retrying an uncertain effect.",
+          "warning"
+        );
+      });
+    }
+    try {
       const response = await dependencies.bridge.call({ version: 1, event: "session_start", cwd: context.cwd }, context.signal ?? neverAborted);
       if (!isCurrent()) return;
       state = response.context ?? "host: pi";
@@ -10221,7 +11781,14 @@ function installParent(pi, dependencies) {
     const lifecycle = readyLifecycle;
     if (!enabled || lifecycle === void 0) return;
     ownershipDegraded = ownershipStatus(pi, dependencies, nativePlanRegistered, nativeJobsRegistered);
-    if (degradedStatus() !== void 0) publishStatus(context, degradedStatus());
+    await observeWorkflowRecovery(lifecycle, context);
+    if (readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
+    const personaWasReady = personaReady;
+    await ensurePersona(lifecycle);
+    if (readyLifecycle !== lifecycle) return;
+    if (degradedStatus() !== void 0 || personaWasReady !== personaReady) {
+      publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
+    }
     try {
       const response = await dependencies.bridge.call({
         version: 1,
@@ -10242,7 +11809,16 @@ function installParent(pi, dependencies) {
       publishStatus(context, degradedStatus());
     }
     const systemPrompt = typeof event.systemPrompt === "string" ? event.systemPrompt : "";
-    return { systemPrompt: appendPrompt(systemPrompt, persona, state) };
+    if (readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
+    const recoveryText = workflowPresentation !== void 0 && !workflowPromptDelivered.has(workflowPresentation.key) ? workflowPresentation.notice : "";
+    const result3 = { systemPrompt: appendPrompt(
+      systemPrompt,
+      personaReady ? persona : PI_PERSONA_UNAVAILABLE_PROMPT,
+      recoveryText === "" ? state : `${state}
+${recoveryText}`
+    ) };
+    if (workflowPresentation !== void 0 && recoveryText !== "") workflowPromptDelivered.add(workflowPresentation.key);
+    return result3;
   });
   pi.on("agent_start", (_event, context) => {
     if (enabled) publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
@@ -10327,39 +11903,39 @@ function createPiFooterMetricsLoader(runtime) {
     if (loaded !== void 0) return loaded;
     pending ??= (async () => {
       try {
-        const runtimeRoot = await realpath7(runtime.packageRoot);
-        const moduleEntry = await realpath7(runtime.moduleEntry);
+        const runtimeRoot = await realpath9(runtime.packageRoot);
+        const moduleEntry = await realpath9(runtime.moduleEntry);
         if (!lexicallyInside(moduleEntry, runtimeRoot)) throw new Error("runtime entry outside package");
         const runtimeRequire = createRequire2(moduleEntry);
         const resolvedEntry = runtimeRequire.resolve("@earendil-works/pi-tui");
-        const unresolvedRoot = resolve15(runtimeRoot, "node_modules", "@earendil-works", "pi-tui");
-        const rootInfo = await lstat4(unresolvedRoot);
+        const unresolvedRoot = resolve17(runtimeRoot, "node_modules", "@earendil-works", "pi-tui");
+        const rootInfo = await lstat6(unresolvedRoot);
         if (!rootInfo.isDirectory() || rootInfo.isSymbolicLink()) {
           throw new Error("TUI package root is linked or non-directory");
         }
-        const expectedRoot = await realpath7(unresolvedRoot);
+        const expectedRoot = await realpath9(unresolvedRoot);
         if (!lexicallyInside(expectedRoot, runtimeRoot)) throw new Error("TUI package root outside runtime");
         const [entryInfo, manifestInfo] = await Promise.all([
-          lstat4(resolvedEntry),
-          lstat4(resolve15(expectedRoot, "package.json"))
+          lstat6(resolvedEntry),
+          lstat6(resolve17(expectedRoot, "package.json"))
         ]);
         if (!entryInfo.isFile() || entryInfo.isSymbolicLink() || !manifestInfo.isFile() || manifestInfo.isSymbolicLink() || manifestInfo.size > 4096) {
           throw new Error("runtime-owned TUI files are invalid");
         }
-        const canonicalEntry = await realpath7(resolvedEntry);
+        const canonicalEntry = await realpath9(resolvedEntry);
         if (!lexicallyInside(canonicalEntry, expectedRoot)) throw new Error("TUI entry outside owner package");
-        const manifest = JSON.parse(await readFile6(resolve15(expectedRoot, "package.json"), "utf8"));
+        const manifest = JSON.parse(await readFile6(resolve17(expectedRoot, "package.json"), "utf8"));
         if (manifest.name !== "@earendil-works/pi-tui") throw new Error("TUI package owner mismatch");
         const tuiModule = await import(pathToFileURL2(canonicalEntry).href);
         if (typeof tuiModule.visibleWidth !== "function" || typeof tuiModule.truncateToWidth !== "function") {
           throw new Error("TUI export shape mismatch");
         }
         const [rootAfter, entryAfter, manifestAfter, canonicalRootAfter, canonicalEntryAfter] = await Promise.all([
-          lstat4(unresolvedRoot),
-          lstat4(resolvedEntry),
-          lstat4(resolve15(expectedRoot, "package.json")),
-          realpath7(unresolvedRoot),
-          realpath7(resolvedEntry)
+          lstat6(unresolvedRoot),
+          lstat6(resolvedEntry),
+          lstat6(resolve17(expectedRoot, "package.json")),
+          realpath9(unresolvedRoot),
+          realpath9(resolvedEntry)
         ]);
         if (!rootAfter.isDirectory() || rootAfter.isSymbolicLink() || rootAfter.dev !== rootInfo.dev || rootAfter.ino !== rootInfo.ino || !entryAfter.isFile() || entryAfter.isSymbolicLink() || entryAfter.dev !== entryInfo.dev || entryAfter.ino !== entryInfo.ino || !manifestAfter.isFile() || manifestAfter.isSymbolicLink() || manifestAfter.dev !== manifestInfo.dev || manifestAfter.ino !== manifestInfo.ino || canonicalRootAfter !== expectedRoot || canonicalEntryAfter !== canonicalEntry) {
           throw new Error("TUI package identity changed during load");
@@ -10392,11 +11968,11 @@ async function codeArbiterPi(pi) {
   if (direction !== null) throw new Error(direction);
   const runtime = await loadPiRuntime(runtimeIdentity);
   const loadFooterMetrics = createPiFooterMetricsLoader(runtime);
-  const modulePath = await realpath7(fileURLToPath5(import.meta.url));
+  const modulePath = await realpath9(fileURLToPath5(import.meta.url));
   let packageRoot = dirname7(modulePath);
   while (true) {
     try {
-      const manifest = JSON.parse(await readFile6(resolve15(packageRoot, "package.json"), "utf8"));
+      const manifest = JSON.parse(await readFile6(resolve17(packageRoot, "package.json"), "utf8"));
       if (manifest.name === "@arbiterforge/ca-pi") break;
     } catch {
     }
@@ -10405,7 +11981,7 @@ async function codeArbiterPi(pi) {
     packageRoot = parent;
   }
   const catalog = commandCatalogEntries(
-    JSON.parse(await readFile6(resolve15(packageRoot, "generated", "command-catalog.json"), "utf8"))
+    JSON.parse(await readFile6(resolve17(packageRoot, "generated", "command-catalog.json"), "utf8"))
   );
   const toolClasses = loadPiToolClasses(define_CODEARBITER_PI_TOOL_CLASSES_default);
   const rawPermissionSurfaces = define_CODEARBITER_PI_PERMISSION_POLICY_SURFACES_default;
@@ -10426,14 +12002,13 @@ async function codeArbiterPi(pi) {
   let pythonResolutionAttempted = false;
   let concreteBridge;
   let unavailableBridge;
-  const shouldAuditBridgeFailure = (request) => request.event !== "footer_usage_update" && request.event !== "footer_status_snapshot";
   const bridge = {
     call: async (request, signal) => {
       const selectedPython = pythonCommand;
       const selectedGit = gitExecutable;
       if (selectedPython === void 0 || selectedGit === void 0) {
         unavailableBridge ??= new BridgeClient({
-          bridgeScript: resolve15(packageRoot, "hooks", "pi-bridge.py"),
+          bridgeScript: resolve17(packageRoot, "hooks", "pi-bridge.py"),
           packageRoot,
           pythonExecutable: void 0,
           gitExecutable: void 0,
@@ -10443,7 +12018,7 @@ async function codeArbiterPi(pi) {
         return await unavailableBridge.call(request, signal);
       }
       concreteBridge ??= new BridgeClient({
-        bridgeScript: resolve15(packageRoot, "hooks", "pi-bridge.py"),
+        bridgeScript: resolve17(packageRoot, "hooks", "pi-bridge.py"),
         packageRoot,
         pythonExecutable: selectedPython?.executable,
         pythonPrefixArgs: selectedPython?.prefixArgs,
@@ -10474,6 +12049,7 @@ async function codeArbiterPi(pi) {
     }
   };
   const enforcement = new EnforcementInstaller();
+  const delegatedExecutors = /* @__PURE__ */ new Map();
   enforcement.ensureBootstrap(pi, toolClasses);
   installParent(pi, {
     bridge,
@@ -10485,6 +12061,8 @@ async function codeArbiterPi(pi) {
     },
     enforcementReadiness: enforcement,
     loadPersona: async () => await loadPersonaFrom(packageRoot),
+    readWorkflowRecovery: (context) => readWorkflowRecoverySnapshot(bridge, context, { enabled: true }),
+    readDelegationRecovery,
     resetBridge,
     prepareFooterBridge: (cwd) => {
       prepareBridgeIdentity(cwd);
@@ -10495,7 +12073,64 @@ async function codeArbiterPi(pi) {
       packageRoot,
       piCliPath: runtime.cliEntry,
       currentLifecycle,
-      currentActivity: currentActivity2
+      currentActivity: currentActivity2,
+      openDelegation: async (context, parentToolCallId, role, runId, signal, isCurrent) => {
+        if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
+          throw new Error("Parent delegation unavailable (no-parent-ui).");
+        }
+        if (typeof context.cwd !== "string" || !isCurrent()) throw new Error("Parent delegation context is unavailable.");
+        const worktree = await realpath9(context.cwd);
+        const observeCommandBinding = async () => {
+          const settings = runtime.SettingsManager.create(worktree, runtime.getAgentDir(), { projectTrusted: true });
+          const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
+          if (shellPath === void 0) return null;
+          return Object.freeze({ shellPath, commandPrefix: settings.getShellCommandPrefix() });
+        };
+        const commandBinding = await observeCommandBinding();
+        const commandIdentity = JSON.stringify(commandBinding);
+        let executor = delegatedExecutors.get(worktree);
+        if (executor === void 0) {
+          executor = (async () => {
+            const journal = await openDelegationJournal(worktree);
+            if (journal === void 0) throw new Error("Parent delegation journal is unavailable.");
+            return createDelegatedExecutor({
+              journal,
+              write: (root) => runtime.createWriteToolDefinition(root),
+              edit: (root) => runtime.createEditToolDefinition(root),
+              shell: async () => {
+                const settings = runtime.SettingsManager.create(worktree, runtime.getAgentDir(), { projectTrusted: true });
+                const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
+                return shellPath === void 0 ? void 0 : { shellPath, commandPrefix: settings.getShellCommandPrefix() };
+              },
+              environment: process.env
+            });
+          })();
+          delegatedExecutors.set(worktree, executor);
+          executor.catch(() => {
+            delegatedExecutors.delete(worktree);
+          });
+        }
+        return await openParentDelegation({
+          runId,
+          role,
+          parentToolCallId,
+          worktree,
+          signal,
+          isCurrent,
+          commandBinding,
+          enabled: async () => await isEnabled(worktree) && JSON.stringify(await observeCommandBinding()) === commandIdentity,
+          executor: await executor,
+          gate: async (request, operationSignal, effect, description) => await enforcement.executeDelegated(
+            request.tool,
+            `${parentToolCallId}:${request.requestId}`,
+            request.params,
+            operationSignal,
+            context,
+            effect,
+            description
+          )
+        });
+      }
     }),
     installCompaction: (currentLifecycle) => installPiCompaction(pi, {
       packageRoot,
@@ -10506,7 +12141,7 @@ async function codeArbiterPi(pi) {
           nodePath: process.execPath,
           piCliPath: runtime.cliEntry,
           packageRoot,
-          childExtensionPath: resolve15(packageRoot, "extensions", "codearbiter-child.js"),
+          childExtensionPath: resolve17(packageRoot, "extensions", "codearbiter-child.js"),
           parentEnv: process.env,
           platform: process.platform
         }
@@ -10537,7 +12172,7 @@ async function codeArbiterPi(pi) {
       resolveLaunch: async (cwd) => {
         const settings = runtime.SettingsManager.create(cwd, runtime.getAgentDir(), { projectTrusted: true });
         const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
-        const env = boundedPiEnvironment(process.env);
+        const env = boundedPiEnvironment(credentialBlindHostEnvironment(process.env, process.platform));
         if (shellPath === void 0 || env === void 0) return void 0;
         const commandPrefix = settings.getShellCommandPrefix();
         return Object.freeze({
@@ -10611,19 +12246,38 @@ async function codeArbiterPi(pi) {
         backgroundInitialized: health.background.initialized,
         backgroundHealthy: health.background.healthy,
         projectTrustRequired: enabledForDoctor,
-        childPath: resolve15(packageRoot, "extensions", "codearbiter-child.js"),
+        childPath: resolve17(packageRoot, "extensions", "codearbiter-child.js"),
         wrapperSourcePath: modulePath,
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "4ca7f0d1ae2c1459e003b3b578d6eb27ae1681fc86f8bfc65e5300832834b060"
+        childFingerprint: "1fd82a0bb78bd58c143765a7f5f9222df1100ed30f6a192e112ee12fadd962eb"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,
         projectTrusted: trustedForDoctor,
         executeBash: async () => await enforcement.runDoctorWrapperSelfTest(context.signal)
       });
-      return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest]);
+      const recovery = enabledForDoctor && trustedForDoctor ? await readDelegationRecovery(context.cwd) : void 0;
+      const recoveryText = recovery === void 0 ? "not inspected (project trust or activation unavailable)" : recovery.state === "clear" ? "no unresolved retained operations observed" : recovery.state === "unavailable" ? "observation unavailable; unknown outcomes remain unknown" : `${recovery.count} unresolved operation(s); read-only observation required, never automatic effect replay
+` + recovery.operationIds.join("\n");
+      const parentUI = context.mode === "tui" && context.hasUI === true && typeof context.ui?.confirm === "function";
+      return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest, {
+        id: "author-delegation",
+        state: parentUI ? "healthy" : "degraded",
+        message: `${parentUI ? "per-operation parent confirmation available; executor and journal checked for each live author run" : "unavailable (no-parent-ui); read-only reviewer capability remains separate"}. Execution uses trusted-host-exact-operation-v1 with host filesystem/network access. Source capability is not packaged-author qualification.`,
+        remediation: "Use a trusted parent TUI for concrete operation confirmation; require exact supported-host author qualification before promotion."
+      }, {
+        id: "delegation-recovery",
+        state: recovery?.state === "pending" || recovery?.state === "unavailable" ? "degraded" : "healthy",
+        message: recoveryText,
+        remediation: "Inspect retained observations before retrying dependent effects; never replay uncertain operations automatically."
+      }, {
+        id: "private-artifact-approval",
+        state: "healthy",
+        message: `${privateApprovalCapability(runtimeIdentity.version).state} on Pi ${runtimeIdentity.version}; legacy private entry is runtime-gated to ${PRIVATE_APPROVAL_LEGACY_PI_VERSION}. This does not qualify host-observed approval or grant delegation authority.`,
+        remediation: "Treat this optional legacy capability separately from ordinary author delegation."
+      }]);
     },
     installEnforcement: (cwd, context, getMode, backgroundToolFactory) => {
       const guardPi = pi;

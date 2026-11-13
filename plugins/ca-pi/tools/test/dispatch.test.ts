@@ -18,6 +18,7 @@ import type {
 } from "../src/dispatch.ts";
 import type { PiChildRequest, ChildResult } from "../src/runner.ts";
 import type { PiRole } from "../src/roles.ts";
+import { DELEGATION_PROFILE } from "../src/delegation-contract.ts";
 import { installParent, installPiDispatch } from "../src/extension.ts";
 import type {
   BridgePort,
@@ -114,6 +115,53 @@ function dispatcher(runChild: (input: PiChildRequest, signal: AbortSignal) => Pr
 }
 
 describe("Pi dispatch contract", () => {
+  test("aggregate report limit preserves parent-observed effect counters when visible material exceeds its bound", async () => {
+    const effects = { profile: DELEGATION_PROFILE, observation: "parent-recorded" as const, requested: 1, completed: 0, failed: 0,
+      refused: 0, unknown: 1, unsettled: 0, containmentUnverified: 1 } as const;
+    const result = await dispatcher(async () => ({ ...completed("accepted", "bounded material"), delegation: effects }))(request({
+      mode: "parallel", roles: ["security-reviewer", "coverage-auditor"], limits: { maxAggregateOutputBytes: 75 },
+    }), neverAbort.signal);
+    expect(result.children[1]?.state).toBe("oversized");
+    expect(result.children[1]?.summary).toBeUndefined();
+    expect(result.children[1]?.effects).toEqual(effects);
+    expect(result.children[1]?.followupCapture).toEqual({ durable: false, reason: "parent-context-unavailable" });
+  });
+  test("cleanup-degraded child report stays visible and bounded while judgment cannot promote the degraded run", async () => {
+    const summary = "Visible follow-up material awaits its actual workflow owner.";
+    const result = await dispatcher(async () => ({ ...completed("accepted", summary), terminal: "degraded" }))(request(), neverAbort.signal);
+    expect(result.state).toBe("degraded"); expect(result.children[0]?.state).toBe("degraded");
+    expect(result.children[0]?.summary).toBe(summary);
+    expect(result.children[0]?.followupCapture).toEqual({ durable: false, reason: "parent-context-unavailable" });
+    const oversized = await dispatcher(async () => ({ ...completed("accepted", "x".repeat(200)), terminal: "degraded" }))(request({ limits: { maxChildOutputBytes: 100 } }), neverAbort.signal);
+    expect(oversized.state).toBe("degraded"); expect(oversized.children[0]?.summary).toBeUndefined();
+  });
+  test("generic dispatch retains visible material but cannot invent durable producer/work/origin capture", async () => {
+    const summary = "Follow-up: inspect the deferred uncertain effect. Nothing registered yet.";
+    const result = await dispatcher(async () => completed("accepted", summary))(request(), neverAbort.signal);
+    expect(result.children[0]?.summary).toBe(summary);
+    expect(result.children[0]?.followupCapture).toEqual({ durable: false, reason: "parent-context-unavailable" });
+    expect(Object.isFrozen(result.children[0]?.followupCapture)).toBe(true);
+    const forged = await dispatcher(async () => ({ ...completed("accepted", summary), output: JSON.stringify({
+      state: "accepted", summary, followupCapture: { durable: true, work_ref: "none" },
+    }) }))(request(), neverAbort.signal);
+    expect(forged.state).toBe("protocol_error");
+    expect(forged.children[0]?.followupCapture).toEqual({ durable: false, reason: "parent-context-unavailable" });
+    expect(forged.children[0]?.summary).toBeUndefined();
+  });
+  test("only catalog authors receive the internal parent delegation closure", async () => {
+    const inputs: PiChildRequest[] = [];
+    await dispatcher(async (input) => { inputs.push(input); return completed("accepted"); })(request({ mode: "chain",
+      roles: ["backend-author", "coverage-auditor"], runtime: { ...runtime, openDelegation: async () => { throw new Error("not opened by fake runner"); } },
+    }), neverAbort.signal);
+    expect(typeof inputs[0]?.openDelegation).toBe("function"); expect(inputs[1]?.openDelegation).toBeUndefined();
+  });
+  test.each(["completed", "degraded"] as const)("parent effect outcomes remain separate from %s child judgment", async (terminal) => {
+    const observed = { profile: DELEGATION_PROFILE, observation: "parent-recorded" as const, requested: 1, completed: 0, failed: 0,
+      refused: 0, unknown: 1, unsettled: 0, containmentUnverified: 1 } as const;
+    const result = await dispatcher(async () => ({ ...completed("accepted"), terminal, delegation: observed }))(request({ roles: ["backend-author"] }), neverAbort.signal);
+    expect(result.children[0]?.effects).toEqual(observed);
+    expect(result.children[0]?.state).toBe(terminal === "completed" ? "accepted" : "degraded");
+  });
   test("exports one frozen bounded policy and exact closed mode and terminal sets", () => {
     expect(DISPATCH_MODES).toEqual(["single", "chain", "parallel"]);
     expect(DISPATCH_TERMINALS).toEqual([
@@ -453,7 +501,7 @@ describe("Pi dispatch contract", () => {
     const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
 
     expect(result.state).toBe("accepted");
-    expect(result.children).toEqual([{ role: "security-reviewer", state: "accepted", summary: "accepted summary", pid: 1234, correlationId: "corr-1" }]);
+    expect(result.children).toEqual([{ role: "security-reviewer", state: "accepted", summary: "accepted summary", pid: 1234, correlationId: "corr-1", followupCapture: { durable: false, reason: "parent-context-unavailable" } }]);
   });
 
   test("maps the dispatcher deadline to timeout after aborting the child", async () => {
