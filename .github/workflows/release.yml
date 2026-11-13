@@ -459,3 +459,47 @@ jobs:
           title-prefix: ca-sandbox
           source-commit: ${{ needs.preflight.outputs.source }}
           github-token: ${{ github.token }}
+
+  # R-04: after every target job settles (success, failure or skip), observe
+  # the declared first-containing Releases that start the command-route
+  # compatibility clock and persist that observation. It is non-mutating:
+  # it never fails, retries or undoes a publication, an unreadable API is
+  # recorded as unknown, and it grants no alias-removal authority.
+  route-publication-observation:
+    name: "[CHECK] | [RELEASE] | Route publication observation"
+    needs: [preflight, release-ca, release-codex, release-pi, release-sandbox]
+    if: ${{ always() && needs.preflight.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # Draft Releases are only visible to a token with push access; this job
+      # only reads (GET) and writes nothing to the repository.
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/heads/main
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+      - name: Observe declared first-containing Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.preflight.outputs.source }}
+        run: |
+          set -uo pipefail
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+            > "$RUNNER_TEMP/route-releases.json"
+          LIST_EXIT=$?
+          python3 .github/scripts/check_command_route_release_state.py record \
+            --releases "$RUNNER_TEMP/route-releases.json" --releases-exit "$LIST_EXIT" \
+            --source "$SOURCE" --run-id "$GITHUB_RUN_ID" \
+            --output "$RUNNER_TEMP/route-publication-observation.json" \
+            --summary "$GITHUB_STEP_SUMMARY"
+      - name: Retain the route publication observation
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: route-publication-observation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/route-publication-observation.json
+          if-no-files-found: error
+          retention-days: 90

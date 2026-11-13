@@ -3332,7 +3332,8 @@ jobs:
         # RA-11: exact taxonomy, frozen route inventory, byte-preserved legacy
         # workflows, additive canonical modes, stable first-containing Release
         # declarations, and hermetic release-state classification. Live GitHub
-        # Release observation belongs to release.yml's post-publication audit.
+        # Release observation is release.yml's route-publication-observation
+        # job (R-04), which records and never gates publication.
         run: |
           python3 .github/scripts/check_command_route_release_state.py declarations
           python3 .github/scripts/test_command_route_release_state.py

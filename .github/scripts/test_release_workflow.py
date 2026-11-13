@@ -159,6 +159,21 @@ class SourceSelectionTest(unittest.TestCase):
         self.assertIn(f"`{OLD}`", text)
         self.assertIn("actions/runs/41", text)
 
+    def test_route_publication_is_observed_after_every_target_settles(self):
+        # R-04 / C-F04: the compatibility clock gets actual observation
+        # evidence, wired after all target jobs regardless of their outcome,
+        # and the observer never mutates or gates publication.
+        job = jobs()["route-publication-observation"]
+        self.assertIn("needs: [preflight, release-ca, release-codex, release-pi, release-sandbox]", job)
+        self.assertIn("always() && needs.preflight.result == 'success'", job)
+        self.assertIn("check_command_route_release_state.py record", job)
+        self.assertIn("--releases-exit \"$LIST_EXIT\"", job)
+        self.assertIn("upload-artifact", job)
+        self.assertNotIn("--method", job)
+        self.assertNotIn("set -e", job.replace("set -uo pipefail", ""))
+        for name in RELEASE_JOBS:
+            self.assertNotIn("route-publication-observation", jobs()[name])
+
     def test_no_successful_ci_is_refused(self):
         with self.assertRaisesRegex(self.rs.SelectionError, "no successful push CI run"):
             self.rs.select("workflow_dispatch", runs={"workflow_runs": []})
