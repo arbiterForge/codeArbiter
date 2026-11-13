@@ -17,6 +17,13 @@ from pathlib import Path
 DIRECT = 'python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"'
 ISOLATION = 'python .github/scripts/test_suite_hermeticity.py'
 GUARD = 'python .github/scripts/test_hook_ci_partition.py'
+GO_SETUP = '''      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+'''
 # sha256(compact JSON of the ordered pre-partition command list). This binds
 # the guard to all 65 reviewed command steps without duplicating the workflow here.
 # Release-workflow and Codex identity regressions run in separate native steps.
@@ -79,7 +86,7 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':64,'isolation':1,'guard':1,'setup':2}
+        expected_counts={'contracts':64,'isolation':1,'guard':1,'setup':3}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
     require(pre.count(MATRIX)==1,'Expected exactly the reviewed four-cell matrix')
@@ -99,7 +106,8 @@ def validate(
         if cmd is None:
             counters['setup']+=1
             require(not predicates,'Shared setup must run in every cell')
-            require('uses: actions/checkout@' in step or 'uses: actions/setup-python@' in step,'Review new setup actions before partitioning')
+            require('uses: actions/checkout@' in step or 'uses: actions/setup-python@' in step
+                    or step == GO_SETUP,'Review new setup actions before partitioning')
             if 'uses: actions/checkout@' in step:
                 for field in ('fetch-depth: 0','fetch-tags: true','persist-credentials: false'):
                     require(field in step,f'Checkout lost {field}')
@@ -115,7 +123,8 @@ def validate(
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
         require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
     require(counters['guard']==1,'Expected one mandatory partition validation')
-    require(counters['setup']==2,'Expected checkout plus Python setup')
+    require(counters['setup']==3,'Expected checkout plus Python and pinned native Go setup')
+    require(step_blocks(block).count(GO_SETUP)==1,'Expected one exact native reader toolchain setup')
     require(counters==expected_counts,'Expected reviewed command partition')
     require(command_digest(commands)==expected_digest,'Existing hook command inventory or order changed')
     gate=job_block(text,'ci-passed')
@@ -128,6 +137,7 @@ def fixture() -> str:
     pre="jobs:\n  hooks:\n    needs: changes\n    if: needs.changes.outputs.hooks == 'true'\n    strategy:\n      fail-fast: false\n      matrix:\n"+MATRIX+"    runs-on: ${{ matrix.os }}\n    timeout-minutes: 20\n    steps:\n"
     pre+='      - uses: actions/checkout@'+'1'*40+'\n        with:\n          fetch-depth: 0\n          fetch-tags: true\n          persist-credentials: false\n'
     pre+='      - uses: actions/setup-python@'+'2'*40+'\n'
+    pre+=GO_SETUP
     pre+='      - name: guard\n        run: '+GUARD+'\n'
     for kind,cmd in [('contracts','python contract.py'),('isolation',ISOLATION)]:
         pre+=f"      - name: {kind}\n        if: matrix.partition == 'all' || matrix.partition == '{kind}'\n        run: {cmd}\n"
@@ -136,7 +146,7 @@ def fixture() -> str:
 
 class PartitionContractTests(unittest.TestCase):
     fixture_digest=command_digest(['python contract.py',ISOLATION])
-    fixture_counts={'contracts':1,'isolation':1,'guard':1,'setup':2}
+    fixture_counts={'contracts':1,'isolation':1,'guard':1,'setup':3}
     def bad(self, before: str, after: str):
         with self.assertRaises(ValueError): validate(fixture().replace(before,after,1),self.fixture_digest,self.fixture_counts)
     def test_valid_four_cell_contract(self): self.assertEqual(validate(fixture(),self.fixture_digest,self.fixture_counts)['isolation'],1)
@@ -149,6 +159,10 @@ class PartitionContractTests(unittest.TestCase):
     def test_softened_check_fails(self): self.bad('      - name: isolation\n','      - name: isolation\n        continue-on-error: true\n')
     def test_missing_full_history_fails(self): self.bad('fetch-depth: 0','fetch-depth: 1')
     def test_missing_tags_fails(self): self.bad('fetch-tags: true','fetch-tags: false')
+    def test_missing_native_toolchain_fails(self): self.bad(GO_SETUP,'')
+    def test_changed_native_toolchain_pin_fails(self): self.bad('setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e','setup-go@'+'3'*40)
+    def test_changed_native_toolchain_version_fails(self): self.bad('go-version: "1.27.1"','go-version: "latest"')
+    def test_conditional_native_toolchain_fails(self): self.bad(GO_SETUP,GO_SETUP.replace('        with:', '        if: false\n        with:'))
     def test_lost_gate_dependency_fails(self): self.bad('      - hooks\n','')
     def test_lost_gate_result_fails(self): self.bad('needs.hooks.result','needs.other.result')
     def test_missing_hermetic_suite_fails(self): self.bad(ISOLATION,'python different.py')

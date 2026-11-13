@@ -2181,6 +2181,12 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Resolve the pinned upstream Pi version from repository policy
         # package.test.ts discovers the live Pi package root from PATH, so this
         # job needs a real Pi installed. The version is READ from the repo's own
@@ -2552,7 +2558,6 @@ jobs:
         with:
           python-version: "3.x"
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         with:
           go-version: "1.27.1"
           check-latest: false
