@@ -1875,6 +1875,32 @@ class WorkflowContractTest(unittest.TestCase):
                     f"a {event} touching only docs.yml never runs docs.yml",
                 )
 
+    def test_docs_pull_request_selection_covers_every_push_input(self):
+        # R-05 / C-F05: the voice gate's two rule implementations selected
+        # push builds only, so a PR changing just the rule skipped the gate
+        # that enforces it.  Validation inputs are one set for both events;
+        # deliberate event differences live in event/branch admission and the
+        # deploy condition, never in which inputs validate.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        push = set(event_trigger_paths(docs, "push"))
+        pull_request = set(event_trigger_paths(docs, "pull_request"))
+        for owned in (".github/scripts/check_site_voice.py", "core/pysrc/_sloplib.py"):
+            with self.subTest(path=owned):
+                self.assertIn(owned, pull_request, f"a PR touching only {owned} skips its gate")
+        self.assertEqual(push, pull_request)
+
+    def test_docs_validation_triggers_never_grant_deploy(self):
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(docs)
+        self.assertIn(
+            "if: contains(fromJSON('[\"push\",\"workflow_run\",\"workflow_dispatch\"]'), "
+            "github.event_name) && github.ref == 'refs/heads/main'", jobs["deploy"])
+        self.assertRegex(docs, r"(?m)^permissions:\n  contents: read$")
+        for name, body in jobs.items():
+            if name != "deploy":
+                self.assertNotIn("pages: write", body, name)
+                self.assertNotIn("id-token: write", body, name)
+
     def test_docs_release_applicability_inputs_trigger_full_history_builds(self):
         docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
         required_inputs = {
