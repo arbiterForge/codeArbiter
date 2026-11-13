@@ -36,6 +36,8 @@
  * share one frozen base commit. Scratch worktrees and reports are written, but
  * canary never commits, creates task branches, or changes integration refs.
  */
+import { createRunDirectory, refIdentity, repositoryIdentity, writeEffect, recoverReceipt, type FarmEffect } from "./farm-recovery.ts";
+import { parseArtifactReleaseManifest } from './artifact-manifest.ts';
 import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
@@ -125,6 +127,8 @@ export type Plan = {
 // every worker died with an opaque non-JSON parse error.
 export const DEFAULT_API_BASE_URL = "https://opencode.ai/zen/v1";
 
+let effectContext: { dir:string; runId:string; repository:string } | undefined;
+const taskEffects = new Map<string,FarmEffect>();
 const ENV = {
   // Model: plan.meta.model (set by subagent-driven-development before dispatch),
   // then FARM_MODEL env var override. Fails at startup if neither is set.
@@ -268,10 +272,11 @@ async function installedArtifactBinary(): Promise<InstalledArtifactBinary> {
   const manifestPath = path.join(installation, "release.json");
   const pinnedManifest = await pinnedRegular(manifestPath, 65_536);
   let manifest: unknown;
-  try { manifest = JSON.parse(pinnedManifest.bytes.toString("utf8")); }
+  try { manifest = parseArtifactReleaseManifest(pinnedManifest.bytes.toString("utf8")); }
   finally { await pinnedManifest.handle.close(); }
   if (!manifest || typeof manifest !== "object" || Array.isArray(manifest) ||
-      !exactKeys(manifest as Record<string, unknown>, ["format", "version", "protocol", "schema_version", "binaries"]))
+      !(exactKeys(manifest as Record<string, unknown>, ["format", "version", "protocol", "schema_version", "binaries"]) ||
+        exactKeys(manifest as Record<string, unknown>, ["format", "version", "protocol", "schema_version", "binaries", "context_qualification"])))
     throw new Error("artifact release manifest has an unexpected shape");
   const release = manifest as Record<string, unknown>;
   if (release.format !== ARTIFACT_RELEASE_FORMAT || release.protocol !== ARTIFACT_PROTOCOL ||
@@ -693,13 +698,15 @@ export function assertContainedWorktree(wt: string): string {
 // SHELL_* config + run() from ./exec.ts (non-login shell so user dotfiles don't
 // bleed in; cmd.exe /c with verbatim args on Windows).
 // --------------------------------------------------------------------------
-export async function runGate(cwd: string, commands: string[]) {
+export type GateResult = { ok: true } | { ok: false; failed: string; tail: string;
+  cleanupFailed?: boolean; timedOut?: boolean; commandCode?: number; processId?:number };
+export async function runGate(cwd: string, commands: string[], runner:typeof run = run): Promise<GateResult> {
   for (const cmd of commands) {
     // T-06: bound each gate/setup command by the wall-clock timeout so a hung
     // command is killed and surfaces as a gate failure instead of wedging the
     // worker. The killed RunResult carries code!=0 (124), so the existing
     // non-zero branch below treats it exactly like any other gate failure.
-    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
+    const r = await runner(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
     if (r.code !== 0)
       // FINDING 2: the raw gate stdout+stderr tail flows into priorFailure and
       // is injected into the next worker prompt (buildPrompt), crossing the
@@ -707,7 +714,9 @@ export async function runGate(cwd: string, commands: string[]) {
       // redaction as injected file bodies before it leaves runGate, so a
       // secret-shaped string a test/gate happens to print is never transmitted.
       // (redactSecrets is a hoisted function declaration — callable here.)
-      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out).slice(-3500) };
+      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out).slice(-3500),
+        ...(r.cleanupFailed ? { cleanupFailed: true } : {}),
+        ...(r.timedOut ? { timedOut: true } : {}), commandCode: r.code, ...(r.processId?{processId:r.processId}:{}) };
   }
   return { ok: true as const };
 }
@@ -1317,21 +1326,28 @@ export const httpWorker: Worker = {
 // unit-testable without a repo. Parse STDOUT only (#91): a git stderr line —
 // the Windows core.safecrlf `warning: ... LF will be replaced by CRLF` notably —
 // must never be mistaken for a changed file path.
+export class DriftUnavailable extends Error {
+  readonly state = "unavailable";
+  constructor(readonly trackedCode:number, readonly untrackedCode:number) {
+    super(`drift observation unavailable (tracked=${trackedCode}, untracked=${untrackedCode}); inspect before dependent mutation`);
+  }
+}
 export async function checkDrift(
   cwd: string,
   allowed: Set<string>,
   gitRunner: GitRunner = git,
 ): Promise<string[]> {
-  const tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
-  const untracked = await gitRunner(
-    ["ls-files", "--others", "--exclude-standard", "-z"],
-    cwd,
-  );
-  const changed: string[] = [];
-  if (tracked.code === 0)
-    changed.push(...tracked.stdout.trim().split("\n").filter(Boolean));
-  if (untracked.code === 0)
-    changed.push(...untracked.stdout.split("\0").filter(Boolean));
+  let tracked: Awaited<ReturnType<GitRunner>>;
+  let untracked: Awaited<ReturnType<GitRunner>>;
+  for (let attempt=0;;attempt++) {
+    tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
+    untracked = await gitRunner(["ls-files", "--others", "--exclude-standard", "-z"], cwd);
+    if (tracked.code === 0 && untracked.code === 0) break;
+    if (attempt >= 1) throw new DriftUnavailable(tracked.code,untracked.code);
+  }
+  if (tracked.stdout.includes("\0") || (untracked.stdout && !untracked.stdout.endsWith("\0")))
+    throw new DriftUnavailable(tracked.code,untracked.code);
+  const changed = [...tracked.stdout.trim().split("\n").filter(Boolean), ...untracked.stdout.split("\0").filter(Boolean)];
   return [...new Set(changed)].filter((f) => !allowed.has(f));
 }
 
@@ -1427,7 +1443,13 @@ async function resetWorktree(wt: string) {
 // tasks or runs). It covers the setup commands plus the content hashes of the
 // task's declared `setupInputs`, so a baseline that moves under the worktree —
 // regenerate-on-conflict resets onto a NEW integration HEAD — reinstalls.
-export type SetupState = { key: string | null };
+export type SetupState = { key: string | null; failure?:GateResult };
+function gateFailureFields(gate:GateResult|undefined): {containment?:"unknown";gateOutcome?:Result["gateOutcome"]} {
+  if(!gate || gate.ok) return {};
+  return {gateOutcome:{commandCode:gate.commandCode,processId:gate.processId,interrupt:gate.timedOut?"timeout":"none",
+    containment:gate.cleanupFailed?"unknown":gate.timedOut?"verified-stopped":"not-required"},
+    ...(gate.cleanupFailed?{containment:"unknown" as const}:{})};
+}
 
 async function setupFingerprint(wt: string, t: Task, deps: RunTaskDeps): Promise<string> {
   const parts = [JSON.stringify(t.setup ?? [])];
@@ -1443,17 +1465,18 @@ async function runSetupPhases(
   deps: RunTaskDeps,
   state: SetupState,
 ): Promise<string | null> {
+  state.failure=undefined;
   if (t.setup && t.setup.length > 0) {
     const key = await setupFingerprint(wt, t, deps);
     if (key !== state.key) {
       const r = await deps.runGate(wt, t.setup);
-      if (!r.ok) return redactSecrets(`setup failed: ${r.failed}\n${r.tail}`);
+      if (!r.ok) {state.failure=r;return redactSecrets(`setup failed: ${r.failed}\n${r.tail}`);}
       state.key = key;
     }
   }
   if (t.setupEachAttempt && t.setupEachAttempt.length > 0) {
     const r = await deps.runGate(wt, t.setupEachAttempt);
-    if (!r.ok) return redactSecrets(`setup failed (setupEachAttempt): ${r.failed}\n${r.tail}`);
+    if (!r.ok) {state.failure=r;return redactSecrets(`setup failed (setupEachAttempt): ${r.failed}\n${r.tail}`);}
   }
   return null;
 }
@@ -1499,6 +1522,8 @@ type Result = {
   // could not be verified released, so a green status is never unqualified:
   // the leak travels with the result, into the receipt, and into the exit code.
   cleanup?: CleanupOutcome[];
+  containment?: "unknown";
+  gateOutcome?: { commandCode?:number; processId?:number; interrupt:"timeout"|"none"; containment:"unknown"|"verified-stopped"|"not-required" };
 };
 
 // observability-003 (T-07c): a run-id minted once at main() startup.
@@ -1669,6 +1694,7 @@ export async function atomicWriteFile(
 //   consumer never infers completeness from a silently short file, follows a
 //   patch link that was never written, or reads a stale pointer as this run's.
 export type RunArtifactHealth = {
+  effects?: {errors:string[]};
   stream: { errors: string[] };
   diffs: {
     unavailable: { id: string; reason: string }[];
@@ -1691,6 +1717,7 @@ export type RunArtifactHealth = {
 
 export function newRunArtifactHealth(): RunArtifactHealth {
   return {
+    effects: {errors:[]},
     stream: { errors: [] },
     diffs: { unavailable: [], unavailableTotal: 0, latestMirrorErrors: [] },
     report: { latestMirrorErrors: [] },
@@ -1821,27 +1848,12 @@ export async function prepareWorktree(
   from: string,
   gitFn: GitRunner = git,
 ): Promise<string | null> {
-  // #163: fail closed before the recursive delete — the resolved path must be
-  // strictly inside the allowed (in-repo) farm worktree root. This is the
-  // load-bearing guard: `rm(wt, {recursive, force})` below is the exact
-  // destructive op an out-of-repo root + plausible task id would weaponize.
-  try {
-    assertContainedWorktree(wt);
-  } catch (e) {
-    return e instanceof Error ? e.message : String(e);
-  }
-  // Clean any stale worktree dir and branch so a re-run doesn't trip over the
-  // leftovers of a prior run (git worktree add -b fails if the branch exists).
-  //
-  // #515: the whole sequence is taken under the worktree lock, not just the
-  // `add`. The removal and the add both write the shared registry, so leaving
-  // either outside would still let one worker observe another mid-write. The
-  // containment guard above stays OUTSIDE deliberately — a rejected path must
-  // not queue behind other workers to be told it was never allowed.
+  // Validate containment before claiming an unused worktree/branch namespace.
+  // Existing resources are refused by Git; no pre-clean or branch deletion.
+  try { assertContainedWorktree(wt); }
+  catch(error) { return error instanceof Error ? error.message : String(error); }
+  // Registry writers serialize; rejected paths never queue behind another claim.
   return withWorktreeLock(async () => {
-    await gitFn(["worktree", "remove", "--force", wt]).catch(() => {});
-    await rm(wt, { recursive: true, force: true }).catch(() => {});
-    await gitFn(["branch", "-D", branch]).catch(() => {});
     const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
     if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
     return null;
@@ -2152,12 +2164,14 @@ export async function writeFilesInto(wt: string, files: Array<{ path: string; co
 // acceptance receipt or a plan-controlled bypass.
 type OutputAssessment =
   | { kind: "pass"; warning?: string; mutationScore: number | null }
-  | { kind: "fatal"; note: string; unsafe?: boolean }
+  | { kind: "fatal"; note: string; unsafe?: boolean; containment?: "unknown";gateOutcome?:Result["gateOutcome"] }
   | { kind: "drift"; note: string; drift: string[] }
   | { kind: "gate"; note: string }
   | { kind: "risk"; note: string; mutationScore: number | null };
 
 type SampleOutcome = {
+  containment?: "unknown";
+  gateOutcome?:Result["gateOutcome"];
   green: boolean;
   filesWritten: string[];
   files: Array<{ path: string; contents: string }>;
@@ -2220,8 +2234,13 @@ async function bestOfN(
         if (prep) return { ...base, note: prep };
         // Each sample gets a FRESH worktree, so its setup cache starts empty and
         // dies with the sample — a sample never reuses another worktree's install.
-        const setupNote = await runSetupPhases(wt, t, deps, { key: null });
-        if (setupNote) return { ...base, note: setupNote };
+        const sampleSetup:SetupState={key:null};
+        const setupNote = await runSetupPhases(wt, t, deps, sampleSetup);
+        if (setupNote) {
+          const failure=gateFailureFields(sampleSetup.failure);
+          return { ...base, note: setupNote, ...failure,
+            ...(failure.containment==="unknown"?{retryable:false as const}:{}) };
+        }
         const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
         const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
         const pt = w.promptTokens ?? 0;
@@ -2240,10 +2259,16 @@ async function bestOfN(
         // Retain this candidate before a later qualification exception or teardown.
         // This snapshot is retry context only; it cannot make the sample green.
         base.inScope = await captureInScope(wt, t, w.filesWritten);
-        const drift = await deps.checkDrift(wt, allowed);
+        let drift:string[];
+        try { drift=await deps.checkDrift(wt,allowed); }
+        catch(error) {return {...base,retryable:false as const,note:`drift observation unavailable: ${redactSecrets(msgOf(error)).slice(0,200)}`};}
         if (drift.length > 0)
           return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
         const gate = await deps.runGate(wt, t.gate.commands);
+        if (!gate.ok && gate.cleanupFailed)
+          return { ...base, retryable: false, containment: "unknown" as const,
+            gateOutcome:{commandCode:gate.commandCode,processId:gate.processId,interrupt:gate.timedOut?"timeout" as const:"none" as const,containment:"unknown" as const},
+            note: `gate containment unknown: ${gate.failed}`, promptTokens: pt, completionTokens: ct };
         if (!gate.ok)
           return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
         const inScope = await captureInScope(wt, t, w.filesWritten);
@@ -2253,7 +2278,7 @@ async function bestOfN(
         // failure OUTCOME, not reject — so Promise.all below never rejects and the
         // cleanup loop always removes every scratch worktree (M1: no leak on the
         // exception path). `base` already carries this sample's wt/branch.
-        return { ...base, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
+        return { ...base, ...(e instanceof DriftUnavailable ? {retryable:false as const} : {}), note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
       }
     });
 
@@ -2293,13 +2318,18 @@ async function bestOfN(
     // Attempt EVERY owned sample's verified cleanup even when qualification
     // throws. Keep all failure records; teardown is not qualification evidence.
     for (const outcome of outcomes) {
+      if (outcome.containment === "unknown") {
+        cleanup.push({ ok: false, target: outcome.wt, attempts: 0,
+          detail: "gate containment unknown; worktree and branch retained for inspection" });
+        continue;
+      }
       cleanup.push(await removeWorktreeVerified(deps.git, outcome.wt));
       if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, outcome.branch));
     }
   }
   const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0)
     ?? outcomes.find((o) => !o.green) ?? null;
-  const deferred = outcomes.find((o) => o.retryable === false) ?? null;
+  const deferred = outcomes.find(o=>o.containment==="unknown") ?? outcomes.find((o) => o.retryable === false) ?? null;
   return { winner, fatal, bestFailure, deferred, promptTokens, completionTokens, cleanup };
 }
 
@@ -2362,11 +2392,25 @@ export async function runTask(
   };
   // Every return below routes through finish() so the cleanup record rides
   // along regardless of which exit the task takes.
-  const finish = (r: Result): Result => (cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r);
+  let lastGateOutcome: Result["gateOutcome"];
+  const finish = (r: Result): Result => ({...r, ...(!r.gateOutcome && lastGateOutcome?{gateOutcome:lastGateOutcome}:{}), ...(cleanupIssues.length?{cleanup:[...cleanupIssues]}:{})});
 
+  const effect: FarmEffect | undefined = !evaluation && effectContext ? {
+    schema:1, runId:effectContext.runId, taskId:t.id, repository:effectContext.repository,
+    branch, integration:ENV.integration, worktree:wt, attempt:0, stage:"prepared",
+  } : undefined;
+  const persistEffect = async () => {
+    if (effect && effectContext) { await writeEffect(effectContext.dir,effect); taskEffects.set(t.id,effect); }
+  };
+  if(effect) {
+    const base=await refIdentity(deps.git,`refs/heads/${ENV.integration}`);
+    if(!base) return finish({id:t.id,status:"escalate",attempts:0,branch,worktree:wt,note:"task baseline identity unavailable"});
+    effect.base=base;
+  }
+  await persistEffect();
   const prepErr = evaluation
     ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git)
-    : await deps.prepareWorktree(branch, wt, ENV.integration);
+    : await deps.prepareWorktree(branch, wt, effect?.base?.commit ?? ENV.integration);
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
 
@@ -2400,9 +2444,16 @@ export async function runTask(
     const after = await deps.fileHash(path.resolve(wt, t.test.path));
     if (testHashBefore !== null && after !== testHashBefore)
       return { kind: "fatal", note: `tampered test: ${t.test.path}` };
-    const drift = await deps.checkDrift(wt, allowed);
+    let drift: string[];
+    try { drift = await deps.checkDrift(wt, allowed); }
+    catch (error) { return { kind: "fatal", note: redactSecrets(msgOf(error)).slice(0, 300) }; }
     if (drift.length) return { kind: "drift", drift, note: `drift: ${drift.join(", ")}` };
     const gate = await deps.runGate(wt, t.gate.commands);
+    if (!gate.ok) lastGateOutcome={commandCode:gate.commandCode,processId:gate.processId,interrupt:gate.timedOut?"timeout":"none",
+      containment:gate.cleanupFailed?"unknown":gate.timedOut?"verified-stopped":"not-required"};
+    if (!gate.ok && gate.cleanupFailed)
+      return { kind: "fatal", note: `gate containment unknown: ${gate.failed}`,
+        containment: "unknown" };
     if (!gate.ok)
       return { kind: "gate", note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`) };
 
@@ -2458,6 +2509,7 @@ export async function runTask(
   };
 
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
+    if (effect) { effect.attempt=attempt; await persistEffect(); }
     if (attempt > 1 && !rebasedForRetry) {
       // F2: snapshot the failed attempt's in-scope output BEFORE the reset wipes
       // it, so the next attempt refines against what it wrote rather than
@@ -2471,6 +2523,7 @@ export async function runTask(
       // inherited baseline, which must not be mislabeled "your previous attempt".
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t, lastFilesWritten) : [];
       try {
+        await deps.checkDrift(wt,allowed); // unavailable observation cannot authorize a reset
         await deps.resetWorktree(wt); // never accumulate stale files
       } catch (e) {
         // A failed reset cannot admit another worker. Return the evidence we
@@ -2492,7 +2545,7 @@ export async function runTask(
     // so it escalates immediately rather than burning a worker retry.
     const setupNote = await runSetupPhases(wt, t, deps, setupState);
     if (setupNote)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens });
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, ...gateFailureFields(setupState.failure), promptTokens, completionTokens });
 
     // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
     // reset above — so the test source and existing in-scope file contents
@@ -2535,7 +2588,7 @@ export async function runTask(
             // cannot contaminate it. Ignored setup caches retain existing policy.
             await deps.resetWorktree(wt);
             const setup = await runSetupPhases(wt, t, deps, setupState);
-            if (setup) return { kind: "fatal", note: setup };
+            if (setup) return { kind: "fatal", note: setup, ...gateFailureFields(setupState.failure) };
           }
           materialized = true;
           await writeFilesInto(wt, candidate.files);
@@ -2549,12 +2602,12 @@ export async function runTask(
       if (sel.fatal) {
         const fatal = sel.fatal.assessment;
         return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
-          note: sel.fatal.note, filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
+          note: sel.fatal.note, ...(fatal?.kind==="fatal"?{containment:fatal.containment,gateOutcome:fatal.gateOutcome}:{}), filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
           promptTokens, completionTokens });
       }
-      if (!sel.winner && sel.deferred) {
+      if (sel.deferred?.containment === "unknown" || (!sel.winner && sel.deferred)) {
         return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
-          note: sel.deferred.note, filesWritten: sel.deferred.filesWritten, promptTokens, completionTokens });
+          note: sel.deferred!.note, containment: sel.deferred!.containment, gateOutcome:sel.deferred!.gateOutcome, filesWritten: sel.deferred!.filesWritten, promptTokens, completionTokens });
       }
       if (!sel.winner) {
         lastFilesWritten = sel.bestFailure?.filesWritten ?? [];
@@ -2574,7 +2627,8 @@ export async function runTask(
     const checked = assessment ?? await assessOutput(worker.filesWritten);
     if (checked.kind === "fatal")
       return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
-        note: checked.note, filesWritten: checked.unsafe ? [] : worker.filesWritten, promptTokens, completionTokens });
+        note: checked.note, containment: checked.containment,
+        filesWritten: checked.unsafe ? [] : worker.filesWritten, promptTokens, completionTokens });
     if (checked.kind === "drift") {
       if (!driftedOnce && attempt <= limit) {
         driftedOnce = true;
@@ -2616,6 +2670,7 @@ export async function runTask(
     });
     let diffstat: string;
     try {
+      await deps.checkDrift(wt,allowed); // fresh observation before dependent index/commit effects
       let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
       let stageAttempts = 1;
       // Repeating the identical explicit-path stage is idempotent. Let brief
@@ -2627,13 +2682,38 @@ export async function runTask(
         staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
       }
       if (staged.code !== 0) return integrationFailure(`stage failed after ${stageAttempts} attempts: ${staged.out}`);
+      if (effect) {
+        const tree=await deps.git(["write-tree"],wt);
+        if(tree.code!==0 || !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(tree.stdout.trim())) return integrationFailure("commit precondition tree unavailable");
+        effect.expectedTree=tree.stdout.trim(); effect.stage="commit-pending"; await persistEffect();
+      }
       const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
       if (commit.code !== 0) return integrationFailure(`commit failed: ${redactSecrets(commit.out).slice(0, 200)}`);
+      if(effect) {
+        const identity=await refIdentity(deps.git,"HEAD",wt);
+        if(!identity || identity.tree!==effect.expectedTree) return integrationFailure("committed candidate identity unavailable or changed");
+        effect.candidate=identity; effect.stage="committed"; await persistEffect();
+      }
       diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
 
       const merged = await deps.withMergeLock(async () => {
-        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
-        if (m.code === 0) return null;
+        if(effect) {
+          const before=await refIdentity(deps.git,"HEAD",integrationWorktree);
+          if(!before) return {kind:"fatal" as const,note:"integration identity unavailable before merge"};
+          const candidateNow=await refIdentity(deps.git,`refs/heads/${branch}`);
+          if(!candidateNow || candidateNow.commit!==effect.candidate?.commit || candidateNow.tree!==effect.candidate.tree)
+            return {kind:"fatal" as const,note:"task branch changed after candidate qualification; inspect before a new attempt"};
+          effect.integrationBefore=before; effect.stage="merge-pending"; await persistEffect();
+        }
+        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, effect?.candidate?.commit ?? branch], integrationWorktree);
+        if (m.code === 0) {
+          if(effect) {
+            const after=await refIdentity(deps.git,"HEAD",integrationWorktree);
+            if(!after) return {kind:"fatal" as const,note:"merge effect observation unavailable; recover receipt before retry"};
+            effect.integrationAfter=after; effect.stage="merged"; await persistEffect();
+          }
+          return null;
+        }
         // Keep rollback and its read-back inside the integration lock. A merge
         // refusal with no recoverable MERGE_HEAD is not evidence of a conflict
         // that can be repaired by regenerating code.
@@ -3210,6 +3290,15 @@ export function selectReadyTasks(
 // --------------------------------------------------------------------------
 async function main() {
   const args = process.argv.slice(2);
+  const recoveryIndex=args.indexOf("--recover-receipt");
+  if(recoveryIndex!==-1) {
+    try {
+      const id=assertSafeRunId(args[recoveryIndex+1] ?? "");
+      const receipt=await recoverReceipt(runArtifactDir(id),id,git);
+      console.log(JSON.stringify(receipt,null,2));
+      return;
+    } catch(error) { console.error(`receipt recovery refused: ${msgOf(error).slice(0,400)}`); process.exitCode=3; return; }
+  }
   const canary = args.includes("--canary");
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
   // #412: plan.json is untrusted input. parsePlan enforces the runtime contract
@@ -3268,7 +3357,10 @@ async function main() {
 
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
-  await mkdir(runDir, { recursive: true });
+  try {
+    await createRunDirectory(ENV.reportDir,runId);
+    effectContext={dir:runDir,runId,repository:await repositoryIdentity(git)};
+  } catch(error) { console.error(msgOf(error)); process.exitCode=1; return; }
 
   const health = newRunArtifactHealth();
 
@@ -3304,7 +3396,7 @@ async function main() {
   let publishError: unknown = null;
 
   try {
-    const branchResult = await git(["branch", "-f", ENV.integration, ENV.base]);
+    const branchResult = await git(["branch", ENV.integration, ENV.base]);
     if (branchResult.code !== 0)
       throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
 
@@ -3313,8 +3405,6 @@ async function main() {
     // the first mid-merge. Scope it to the run directory alongside the run's
     // receipts.
     integrationWorktree = path.resolve(runDir, "integration-wt");
-    await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
-    await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {});
     const wtResult = await git(["worktree", "add", integrationWorktree, ENV.integration]);
     if (wtResult.code !== 0)
       throw new Error(`could not create integration worktree: ${wtResult.out}`);
@@ -3388,6 +3478,18 @@ async function main() {
       if (aborted && r.status === "escalate" && !/run aborted/.test(r.note ?? "")) {
         r.note = r.note ? `${r.note} (run aborted by circuit breaker while in flight)` : "escalate: run aborted (in flight)";
       }
+      const effect=taskEffects.get(id);
+      if(effect && effectContext) {
+        effect.stage="settled"; effect.result={status:r.status,cleanup:r.cleanup,containment:r.containment,attempts:r.attempts};
+        try { await writeEffect(effectContext.dir,effect); }
+        catch(error) {
+          // Receipt debt cannot abandon independent in-flight authors or tear
+          // their integration worktree away. Retain the observed task result,
+          // drain the scheduler, and fail receipt publication independently.
+          publishError ??= error;
+          noteArtifactError((health.effects??={errors:[]}).errors,`effect receipt unavailable: ${redactSecrets(msgOf(error)).slice(0,200)}`);
+        }
+      }
       done.set(id, r);
       // Streaming rail (AC-08 / D7): append this settled task as one JSONL line
       // the moment it settles, so a pipelined consumer can act in completion
@@ -3411,6 +3513,12 @@ async function main() {
       const culprit = deps.find((d) => escalated.has(d));
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
+  } catch(error) {
+    for(const task of plan.tasks) {
+      if(!done.has(task.id) && !blocked.some(item=>item.id===task.id))
+        blocked.push({id:task.id,reason:`run interrupted before settlement: ${redactSecrets(msgOf(error)).slice(0,200)}`});
+    }
+    throw error;
   } finally {
     // reliability-004 (T-07a): only remove the integration worktree if it was
     // actually assigned. An early throw (e.g. the integration branch could not
@@ -3436,6 +3544,17 @@ async function main() {
         // throw HERE would propagate out of the finally and mask an in-flight
         // exception — the exact failure mode reliability-004 fixed above.
         health.cleanup.failures.push({ target: integrationWorktree, detail: `teardown threw: ${msgOf(e)}` });
+      }
+    }
+    if(effectContext && taskEffects.size) {
+      const finalIntegration=await refIdentity(git,`refs/heads/${ENV.integration}`);
+      if(finalIntegration) {
+        for(const effect of taskEffects.values()) {
+          effect.finalIntegration=finalIntegration;
+          effect.runCleanup={verified:health.cleanup.failures.length===0,failures:health.cleanup.failures.slice(0,25)};
+          try { await writeEffect(effectContext.dir,effect); }
+          catch(error) {publishError ??= error; noteArtifactError((health.effects??={errors:[]}).errors,`final effect receipt unavailable: ${redactSecrets(msgOf(error)).slice(0,200)}`);}
+        }
       }
     }
     // #387: the report is still written from the `finally` (so an abort or a
@@ -3481,7 +3600,7 @@ async function main() {
   const exitCode = publishError ? 3 : runOutcome;
   const latestReportErrors = health.report.latestMirrorErrors;
   const summary = [
-    aborted ? `\nABORTED by circuit breaker — escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
+    aborted ? `\nABORTED by circuit breaker — escalation rate exceeded ${ENV.abortEscalationRate}. Inspect the recorded task failures before choosing any new attempt or model.` : ``,
     `\nDone. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
@@ -3491,8 +3610,8 @@ async function main() {
       ? [
           `\nCLEANUP DEGRADED — ${leaks.length} resource(s) could not be released and re-verified:`,
           ...leaks.map((l) => `  - ${l.target} (${l.owner}): ${l.detail}`),
-          `Git may still register these worktrees, or the directories may still be on disk. The next run's`,
-          `pre-cleanup is destructive and best-effort, so clear them before re-running. Exit is non-zero for this alone.`,
+          `Git may still register these worktrees, or the directories may still be on disk. Preserve them for inspection.`,
+          `Use receipt recovery and explicit new resource identities; a new run will not discard these resources. Exit is non-zero for this alone.`,
         ].join("\n")
       : ``,
     // The success breadcrumb is SUPPRESSED when the authoritative publication
@@ -3589,6 +3708,7 @@ async function writeReport(
   const streamComplete = health.stream.errors.length === 0;
   const artifacts = {
     run_dir: runDir,
+    effects:{dir:path.join(runDir,"effects"),complete:(health.effects?.errors.length ?? 0)===0,errors:health.effects?.errors ?? []},
     stream: {
       path: path.join(runDir, "farm-results.jsonl"),
       latest: path.join(ENV.reportDir, "farm-results.jsonl"),

@@ -1,19 +1,183 @@
 #!/usr/bin/env node
 
+// farm-recovery.ts
+import { mkdir, open, rename, readFile, readdir, lstat, realpath } from "node:fs/promises";
+import { randomBytes } from "node:crypto";
+import path from "node:path";
+var hash = /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/;
+var safe = /^(?!\.{1,2}$)[A-Za-z0-9._-]{1,64}$/;
+async function refIdentity(git2, ref, cwd) {
+  const r = await git2(["rev-parse", "--verify", `${ref}^{commit}`], cwd);
+  const t = await git2(["rev-parse", "--verify", `${ref}^{tree}`], cwd);
+  const commit = r.stdout.trim(), tree = t.stdout.trim();
+  return r.code === 0 && t.code === 0 && hash.test(commit) && hash.test(tree) ? { commit, tree } : null;
+}
+async function repositoryIdentity(git2) {
+  const result = await git2(["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+  if (result.code !== 0 || !result.stdout.trim()) throw new Error("farm repository identity unavailable");
+  return realpath(path.resolve(result.stdout.trim()));
+}
+async function createRunDirectory(root, runId) {
+  if (!safe.test(runId) || /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)/i.test(runId)) throw new Error("invalid run identity");
+  await mkdir(path.join(root, "runs"), { recursive: true });
+  const dir = path.join(root, "runs", runId);
+  try {
+    await mkdir(dir);
+  } catch {
+    throw new Error(`farm run identity already exists or cannot be claimed: ${runId}; use --recover-receipt ${runId} to inspect effects, or an explicit new attempt identity`);
+  }
+  await mkdir(path.join(dir, "effects"));
+  return dir;
+}
+async function durableWrite(file, value) {
+  const temp = `${file}.${randomBytes(8).toString("hex")}.tmp`;
+  const handle = await open(temp, "wx", 384);
+  try {
+    await handle.writeFile(JSON.stringify(value, null, 2) + "\n");
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  await rename(temp, file);
+}
+async function writeEffect(dir, effect) {
+  if (!safe.test(effect.taskId)) throw new Error("invalid effect task identity");
+  const history = path.join(dir, "effects", "history");
+  await mkdir(history, { recursive: true });
+  await durableWrite(path.join(history, `${effect.taskId}-${effect.attempt}-${effect.stage}-${randomBytes(8).toString("hex")}.json`), effect);
+  await durableWrite(path.join(dir, "effects", `${effect.taskId}.json`), effect);
+}
+function validIdentity(v) {
+  return !!v && typeof v === "object" && hash.test(v.commit) && hash.test(v.tree);
+}
+function same(a, b) {
+  return !!a && !!b && a.commit === b.commit && a.tree === b.tree;
+}
+async function recoverReceipt(dir, runId, git2) {
+  const run2 = await lstat(dir);
+  const effects = path.join(dir, "effects");
+  if (!run2.isDirectory() || run2.isSymbolicLink() || (await lstat(effects)).isSymbolicLink()) throw new Error("unverified recovery directory");
+  const repository = await repositoryIdentity(git2);
+  const results = [];
+  const files = (await readdir(effects)).filter((f) => f.endsWith(".json")).sort();
+  for (const file of files) {
+    if (!safe.test(file.slice(0, -5)) || (await lstat(path.join(effects, file))).isSymbolicLink()) throw new Error("invalid recovery record path");
+    const bytes = await readFile(path.join(effects, file), "utf8");
+    if (bytes.length > 128 * 1024) throw new Error("oversized recovery record");
+    const record = JSON.parse(bytes);
+    if (record.schema !== 1 || record.runId !== runId || record.repository !== repository || `${record.taskId}.json` !== file || typeof record.branch !== "string" || !record.branch.startsWith("farm/") || typeof record.integration !== "string" || !["prepared", "commit-pending", "committed", "merge-pending", "merged", "settled"].includes(record.stage) || record.candidate !== void 0 && !validIdentity(record.candidate) || record.integrationAfter !== void 0 && !validIdentity(record.integrationAfter) || record.finalIntegration !== void 0 && !validIdentity(record.finalIntegration)) throw new Error("incompatible or unverified recovery record");
+    const candidate = await refIdentity(git2, `refs/heads/${record.branch}`);
+    const integration = await refIdentity(git2, `refs/heads/${record.integration}`);
+    const candidateMatches = same(candidate, record.candidate);
+    let integrated = candidateMatches && same(integration, record.integrationAfter);
+    let finalMatches = same(integration, record.finalIntegration ?? record.integrationAfter);
+    if (candidateMatches && integration && validIdentity(record.integrationAfter) && finalMatches && record.finalIntegration) {
+      const ancestor = await git2(["merge-base", "--is-ancestor", record.integrationAfter.commit, integration.commit]);
+      integrated = ancestor.code === 0;
+    }
+    if (!integrated && record.stage === "merge-pending" && candidateMatches && integration && validIdentity(record.integrationBefore)) {
+      const parents = await git2(["show", "-s", "--format=%P", integration.commit]);
+      const observed = parents.stdout.trim().split(/\s+/);
+      integrated = parents.code === 0 && observed.length === 2 && observed[0] === record.integrationBefore.commit && observed[1] === candidate.commit;
+    }
+    const cleanupVerified = record.stage === "settled" && record.runCleanup?.verified === true && !record.result?.cleanup && record.result?.containment !== "unknown";
+    results.push({
+      taskId: record.taskId,
+      stage: record.stage,
+      author: "not-invoked",
+      candidate,
+      integration,
+      candidateMatches,
+      runCleanup: record.runCleanup ?? { verified: false, failures: [] },
+      merge: integrated ? "observed" : "unknown",
+      cleanup: cleanupVerified ? "recorded-verified" : "unknown",
+      status: integrated && finalMatches && cleanupVerified && record.result?.status === "green" ? "green" : "unknown",
+      nextAction: integrated ? "inspect remaining cleanup and receipt obligations" : "inspect retained refs; new author attempt requires an explicit new identity"
+    });
+  }
+  const receipt = { schema: 1, run_id: runId, recovery: "receipt-only", repository, results, empty: files.length === 0 };
+  await durableWrite(path.join(dir, `farm-recovered-${randomBytes(8).toString("hex")}.json`), receipt);
+  return receipt;
+}
+
+// ../../../core/artifact-release-manifest.json
+var artifact_release_manifest_default = {
+  contract: "codearbiter.native-manifest-contract/1",
+  format: "codearbiter.artifact-release/0.1.0",
+  protocol: "codearbiter.artifact-api/0.1.0",
+  schema_version: "0.3.2",
+  required: ["format", "version", "protocol", "schema_version", "binaries"],
+  optional: ["context_qualification"],
+  platforms: ["linux/amd64", "linux/arm64", "darwin/amd64", "darwin/arm64", "windows/amd64", "windows/arm64"],
+  binary_fields: ["file", "sha256", "native_tested"],
+  context_fields: ["source_commit", "workflow", "run_id", "binary_sha256", "observation_sha256", "module_sha256", "native_cases"],
+  workflow: ".github/workflows/ci.yml",
+  native_cases: ["TestContextBoundedRender", "TestContextDocumentContract", "TestContextMarkdownPreservation", "TestContextMutationAdmission", "TestContextRecoveryAndPaths", "TestContextRepresentationBoundary"]
+};
+
+// artifact-manifest.ts
+function object(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function keys(value, expected) {
+  return Object.keys(value).length === expected.length && expected.every((key) => Object.hasOwn(value, key));
+}
+var digest = (value) => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+function validateArtifactReleaseManifest(value) {
+  if (!object(value) || !artifact_release_manifest_default.required.every((key) => Object.hasOwn(value, key)) || Object.keys(value).some((key) => ![...artifact_release_manifest_default.required, ...artifact_release_manifest_default.optional].includes(key)))
+    throw new Error("artifact release manifest has an unexpected shape");
+  if (value.format !== artifact_release_manifest_default.format || value.protocol !== artifact_release_manifest_default.protocol || value.schema_version !== artifact_release_manifest_default.schema_version || (typeof value.version !== "string" || !value.version.trim()))
+    throw new Error("artifact release manifest identity is unsupported");
+  if (!object(value.binaries) || Object.keys(value.binaries).length === 0 || Object.keys(value.binaries).some((key) => !artifact_release_manifest_default.platforms.includes(key)))
+    throw new Error("artifact release manifest platform map is invalid");
+  const binaries = value.binaries;
+  for (const [platform, entry] of Object.entries(binaries)) {
+    if (!object(entry) || !keys(entry, artifact_release_manifest_default.binary_fields) || typeof entry.native_tested !== "boolean" || !digest(entry.sha256) || entry.file !== "ca-artifact-" + platform.replace("/", "-") + (platform.startsWith("windows/") ? ".exe" : ""))
+      throw new Error("artifact release manifest binary entry is invalid");
+  }
+  if (!Object.hasOwn(value, "context_qualification")) return value;
+  const context = value.context_qualification;
+  if (!object(context) || Object.keys(context).some((platform) => !Object.hasOwn(binaries, platform)))
+    throw new Error("artifact context qualification platform map is invalid");
+  for (const [platform, entry] of Object.entries(context)) {
+    if (!object(entry) || !keys(entry, artifact_release_manifest_default.context_fields) || typeof entry.source_commit !== "string" || !/^[0-9a-f]{40}$/.test(entry.source_commit) || entry.workflow !== artifact_release_manifest_default.workflow || typeof entry.run_id !== "string" || !/^[1-9][0-9]*$/.test(entry.run_id) || !digest(entry.binary_sha256) || !digest(entry.observation_sha256) || !digest(entry.module_sha256) || entry.binary_sha256 !== binaries[platform].sha256 || binaries[platform].native_tested !== true || JSON.stringify(entry.native_cases) !== JSON.stringify(artifact_release_manifest_default.native_cases))
+      throw new Error("artifact context qualification binding is invalid");
+  }
+  return value;
+}
+function parseArtifactReleaseManifest(text) {
+  if (Buffer.byteLength(text, "utf8") > 65536) throw new Error("native manifest exceeds bounded input");
+  const value = JSON.parse(text);
+  const tokens = text.match(/"(?:\\[\s\S]|[^"\\])*"|[{}\[\]:,]|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null/g) ?? [];
+  const stack = [];
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i] === "{") stack.push(/* @__PURE__ */ new Set());
+    else if (tokens[i] === "[") stack.push(null);
+    else if (tokens[i] === "}" || tokens[i] === "]") stack.pop();
+    else if (tokens[i + 1] === ":" && tokens[i].startsWith('"')) {
+      const key = JSON.parse(tokens[i]);
+      const seen = stack.at(-1);
+      if (seen?.has(key)) throw new Error("duplicate native manifest key");
+      seen?.add(key);
+    }
+  }
+  return validateArtifactReleaseManifest(value);
+}
+
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, mkdtemp, chmod, rm, rmdir, stat, lstat as lstat2, realpath as realpath2, rename, open as open2 } from "node:fs/promises";
+import { readFile as readFile3, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3 } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes as randomBytes2 } from "node:crypto";
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { realpathSync } from "node:fs";
-import path3 from "node:path";
+import path4 from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 // exec.ts
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { readFile as readFile2 } from "node:fs/promises";
+import path2 from "node:path";
 var EXIT_TIMEOUT = 124;
 var EXIT_TIMEOUT_UNCLEAN = 125;
 var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
@@ -40,7 +204,7 @@ var GATE_TIMEOUT_MS = numEnv("FARM_GATE_TIMEOUT_MS", 3e5, { min: 1e3 });
 var KILL_VERIFY_DEFAULT_MS = 1e4;
 function taskkillPath() {
   const root = process.env.SystemRoot ?? process.env.windir ?? "C:\\Windows";
-  return path.join(root, "System32", "taskkill.exe");
+  return path2.join(root, "System32", "taskkill.exe");
 }
 function pidPresent(target) {
   try {
@@ -165,6 +329,7 @@ function run(cmd, args, cwd, opts = {}, timeoutMs = 0, kill = treeKill) {
             stdout,
             stderr: stderr + note,
             timedOut: true,
+            processId: c.pid,
             ...k.ok ? {} : { cleanupFailed: true }
           });
         })();
@@ -184,7 +349,7 @@ function run(cmd, args, cwd, opts = {}, timeoutMs = 0, kill = treeKill) {
 }
 async function readWorktreeFile(wt, relPath) {
   try {
-    return await readFile(path.resolve(wt, relPath), "utf8");
+    return await readFile2(path2.resolve(wt, relPath), "utf8");
   } catch {
     return null;
   }
@@ -267,8 +432,8 @@ import { performance } from "node:perf_hooks";
 
 // worktree-fs.ts
 import { constants } from "node:fs";
-import { lstat, mkdir, open, realpath } from "node:fs/promises";
-import path2 from "node:path";
+import { lstat as lstat2, mkdir as mkdir2, open as open2, realpath as realpath2 } from "node:fs/promises";
+import path3 from "node:path";
 var UNSAFE_MESSAGE = "unsafe worktree path rejected";
 var UnsafeWorktreePathError = class extends Error {
   constructor() {
@@ -286,23 +451,23 @@ function isMissing(error) {
   return error?.code === "ENOENT";
 }
 function contained(root, candidate) {
-  const relative = path2.relative(root, candidate);
-  return relative === "" || !relative.startsWith(`..${path2.sep}`) && relative !== ".." && !path2.isAbsolute(relative);
+  const relative = path3.relative(root, candidate);
+  return relative === "" || !relative.startsWith(`..${path3.sep}`) && relative !== ".." && !path3.isAbsolute(relative);
 }
-async function canonicalizeAncestors(target, resolvePath = realpath) {
-  const resolved = path2.resolve(target);
-  const leaf = path2.basename(resolved);
+async function canonicalizeAncestors(target, resolvePath = realpath2) {
+  const resolved = path3.resolve(target);
+  const leaf = path3.basename(resolved);
   const missing = [];
-  let cursor = path2.dirname(resolved);
+  let cursor = path3.dirname(resolved);
   for (; ; ) {
     try {
       const real = await resolvePath(cursor);
-      return path2.join(real, ...missing.slice().reverse(), leaf);
+      return path3.join(real, ...missing.slice().reverse(), leaf);
     } catch (error) {
       if (!isMissing(error)) throw error;
-      const parent = path2.dirname(cursor);
+      const parent = path3.dirname(cursor);
       if (parent === cursor) return resolved;
-      missing.push(path2.basename(cursor));
+      missing.push(path3.basename(cursor));
       cursor = parent;
     }
   }
@@ -316,71 +481,71 @@ function safeRegularFile(metadata) {
 async function writeWorktreeFile(worktree, relPath, contents, testHooks = {}) {
   let handle;
   try {
-    const rootMetadata = await lstat(worktree);
+    const rootMetadata = await lstat2(worktree);
     if (!rootMetadata.isDirectory() || rootMetadata.isSymbolicLink()) unsafe();
-    const canonicalRoot = await realpath(worktree);
+    const canonicalRoot = await realpath2(worktree);
     const verifiedDirectories = [
-      { path: canonicalRoot, metadata: await lstat(canonicalRoot) }
+      { path: canonicalRoot, metadata: await lstat2(canonicalRoot) }
     ];
     const verifyDirectories = async () => {
       for (const verified of verifiedDirectories) {
-        const current = await lstat(verified.path);
+        const current = await lstat2(verified.path);
         if (!current.isDirectory() || current.isSymbolicLink() || !sameFile(current, verified.metadata)) unsafe();
-        if (!contained(canonicalRoot, await realpath(verified.path))) unsafe();
+        if (!contained(canonicalRoot, await realpath2(verified.path))) unsafe();
       }
     };
-    const requested = path2.isAbsolute(relPath) ? await canonicalizeAncestors(relPath) : relPath;
-    const target = path2.resolve(canonicalRoot, requested);
-    const relative = path2.relative(canonicalRoot, target);
-    if (relative === "" || relative === ".." || relative.startsWith(`..${path2.sep}`) || path2.isAbsolute(relative)) unsafe();
-    const segments = relative.split(path2.sep);
+    const requested = path3.isAbsolute(relPath) ? await canonicalizeAncestors(relPath) : relPath;
+    const target = path3.resolve(canonicalRoot, requested);
+    const relative = path3.relative(canonicalRoot, target);
+    if (relative === "" || relative === ".." || relative.startsWith(`..${path3.sep}`) || path3.isAbsolute(relative)) unsafe();
+    const segments = relative.split(path3.sep);
     let parent = canonicalRoot;
     for (const segment of segments.slice(0, -1)) {
       if (segment === "" || segment === "." || segment === "..") unsafe();
-      const candidate = path2.join(parent, segment);
+      const candidate = path3.join(parent, segment);
       let metadata;
       try {
-        metadata = await lstat(candidate);
+        metadata = await lstat2(candidate);
       } catch (error) {
         if (!isMissing(error)) throw error;
         try {
-          await mkdir(candidate, { mode: 448 });
+          await mkdir2(candidate, { mode: 448 });
         } catch (mkdirError) {
           if (mkdirError?.code !== "EEXIST") throw mkdirError;
         }
-        metadata = await lstat(candidate);
+        metadata = await lstat2(candidate);
       }
       if (!metadata.isDirectory() || metadata.isSymbolicLink()) unsafe();
-      const canonicalCandidate = await realpath(candidate);
+      const canonicalCandidate = await realpath2(candidate);
       if (!contained(canonicalRoot, canonicalCandidate)) unsafe();
       verifiedDirectories.push({ path: candidate, metadata });
       parent = candidate;
     }
     await verifyDirectories();
-    const canonicalParent = await realpath(parent);
+    const canonicalParent = await realpath2(parent);
     if (!contained(canonicalRoot, canonicalParent)) unsafe();
     let before;
     try {
-      before = await lstat(target);
+      before = await lstat2(target);
     } catch (error) {
       if (!isMissing(error)) throw error;
     }
     if (before !== void 0 && !safeRegularFile(before)) unsafe();
-    if (before !== void 0 && !contained(canonicalRoot, await realpath(target))) unsafe();
+    if (before !== void 0 && !contained(canonicalRoot, await realpath2(target))) unsafe();
     const noFollow = typeof constants.O_NOFOLLOW === "number" ? constants.O_NOFOLLOW : 0;
     const flags = before === void 0 ? constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | noFollow : constants.O_RDWR | noFollow;
-    handle = await open(target, flags, 384);
+    handle = await open2(target, flags, 384);
     const opened = await handle.stat();
-    const atPath = await lstat(target);
+    const atPath = await lstat2(target);
     if (!safeRegularFile(opened) || !safeRegularFile(atPath) || !sameFile(opened, atPath)) unsafe();
     await verifyDirectories();
-    if (!contained(canonicalRoot, await realpath(parent))) unsafe();
-    if (!contained(canonicalRoot, await realpath(target))) unsafe();
+    if (!contained(canonicalRoot, await realpath2(parent))) unsafe();
+    if (!contained(canonicalRoot, await realpath2(target))) unsafe();
     await testHooks.beforeFinalAuthorization?.();
     await verifyDirectories();
-    if (!contained(canonicalRoot, await realpath(parent))) unsafe();
-    if (!contained(canonicalRoot, await realpath(target))) unsafe();
-    const finalAtPath = await lstat(target);
+    if (!contained(canonicalRoot, await realpath2(parent))) unsafe();
+    if (!contained(canonicalRoot, await realpath2(target))) unsafe();
+    const finalAtPath = await lstat2(target);
     const finalOpened = await handle.stat();
     if (!safeRegularFile(finalOpened) || !safeRegularFile(finalAtPath) || !sameFile(finalOpened, finalAtPath)) unsafe();
     await handle.truncate(0);
@@ -737,6 +902,8 @@ async function mutationCheck(wt, task) {
 
 // farm.ts
 var DEFAULT_API_BASE_URL = "https://opencode.ai/zen/v1";
+var effectContext;
+var taskEffects = /* @__PURE__ */ new Map();
 var ENV = {
   // Model: plan.meta.model (set by subagent-driven-development before dispatch),
   // then FARM_MODEL env var override. Fails at startup if neither is set.
@@ -803,19 +970,19 @@ function artifactPlatform() {
   const magic = system === "linux" ? [Buffer.from([127, 69, 76, 70])] : system === "windows" ? [Buffer.from("MZ")] : [Buffer.from([207, 250, 237, 254]), Buffer.from([202, 254, 186, 190]), Buffer.from([190, 186, 254, 202])];
   return { key: `${system}/${arch}`, file, magic };
 }
-var exactKeys = (value, keys) => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
-var sameArtifactPath = (left, right) => process.platform === "win32" ? path3.resolve(left).toLocaleLowerCase() === path3.resolve(right).toLocaleLowerCase() : path3.resolve(left) === path3.resolve(right);
+var exactKeys = (value, keys2) => Object.keys(value).length === keys2.length && keys2.every((key) => Object.hasOwn(value, key));
+var sameArtifactPath = (left, right) => process.platform === "win32" ? path4.resolve(left).toLocaleLowerCase() === path4.resolve(right).toLocaleLowerCase() : path4.resolve(left) === path4.resolve(right);
 async function trustedInstallationDirectory(requested) {
-  const absolute = path3.resolve(requested);
-  const resolved = await realpath2(absolute).catch(() => "");
+  const absolute = path4.resolve(requested);
+  const resolved = await realpath3(absolute).catch(() => "");
   if (!resolved || !sameArtifactPath(absolute, resolved))
     throw new Error("artifact installation must be a real directory without linked ancestors");
   let current = absolute;
   for (; ; ) {
-    const info = await lstat2(current).catch(() => null);
+    const info = await lstat3(current).catch(() => null);
     if (!info?.isDirectory() || info.isSymbolicLink())
       throw new Error("artifact installation must be a real directory without linked ancestors");
-    const parent = path3.dirname(current);
+    const parent = path4.dirname(current);
     if (parent === current) break;
     current = parent;
   }
@@ -823,7 +990,7 @@ async function trustedInstallationDirectory(requested) {
 }
 async function pinnedRegular(pathname, maximum) {
   const noFollow = process.platform === "win32" ? 0 : fsConstants.O_NOFOLLOW;
-  const handle = await open2(pathname, fsConstants.O_RDONLY | noFollow).catch(() => null);
+  const handle = await open3(pathname, fsConstants.O_RDONLY | noFollow).catch(() => null);
   if (!handle) throw new Error("install the bounded pinned artifact payload; no PATH fallback is permitted");
   try {
     const info = await handle.stat();
@@ -836,17 +1003,17 @@ async function pinnedRegular(pathname, maximum) {
   }
 }
 async function installedArtifactBinary() {
-  const installation = path3.resolve(path3.dirname(fileURLToPath(import.meta.url)), "..", "helpers", "artifacts");
+  const installation = path4.resolve(path4.dirname(fileURLToPath(import.meta.url)), "..", "helpers", "artifacts");
   await trustedInstallationDirectory(installation);
-  const manifestPath = path3.join(installation, "release.json");
+  const manifestPath = path4.join(installation, "release.json");
   const pinnedManifest = await pinnedRegular(manifestPath, 65536);
   let manifest;
   try {
-    manifest = JSON.parse(pinnedManifest.bytes.toString("utf8"));
+    manifest = parseArtifactReleaseManifest(pinnedManifest.bytes.toString("utf8"));
   } finally {
     await pinnedManifest.handle.close();
   }
-  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest) || !exactKeys(manifest, ["format", "version", "protocol", "schema_version", "binaries"]))
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest) || !(exactKeys(manifest, ["format", "version", "protocol", "schema_version", "binaries"]) || exactKeys(manifest, ["format", "version", "protocol", "schema_version", "binaries", "context_qualification"])))
     throw new Error("artifact release manifest has an unexpected shape");
   const release = manifest;
   if (release.format !== ARTIFACT_RELEASE_FORMAT || release.protocol !== ARTIFACT_PROTOCOL || release.schema_version !== ARTIFACT_SCHEMA_VERSION || typeof release.version !== "string" || !release.version)
@@ -861,10 +1028,10 @@ async function installedArtifactBinary() {
   const entry = rawEntry;
   if (entry.file !== platform.file || entry.native_tested !== true || typeof entry.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(entry.sha256))
     throw new Error("artifact payload platform entry is invalid or not native-qualified");
-  const binaryPath = path3.join(installation, platform.file);
+  const binaryPath = path4.join(installation, platform.file);
   const pinned = await pinnedRegular(binaryPath, 32 << 20);
-  const realBinary = await realpath2(binaryPath).catch(() => "");
-  if (!realBinary || !sameArtifactPath(path3.dirname(realBinary), installation)) {
+  const realBinary = await realpath3(binaryPath).catch(() => "");
+  if (!realBinary || !sameArtifactPath(path4.dirname(realBinary), installation)) {
     await pinned.handle.close();
     throw new Error("artifact executable resolves outside its pinned installation");
   }
@@ -933,7 +1100,7 @@ async function releaseWindowsPinGuard(guard) {
 async function windowsPinGuard(binary) {
   const systemRoot = process.env.SystemRoot || process.env.WINDIR;
   if (!systemRoot) throw new Error("Windows system root is unavailable for pinned artifact launch");
-  const powershell = path3.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
+  const powershell = path4.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
   const guard = spawn3(powershell, ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", WINDOWS_PIN_GUARD], {
     env: { CA_ARTIFACT_BINARY: binary.path, CA_ARTIFACT_SHA256: binary.sha256 },
     stdio: ["pipe", "pipe", "pipe"]
@@ -986,12 +1153,12 @@ async function runPinnedArtifact(binary, root, request) {
   }
   if (!binary.handle) throw new Error("artifact executable descriptor was not retained");
   if (process.platform === "darwin") {
-    const logicalDirectory = await mkdtemp(path3.join(tmpdir(), "codearbiter-artifact-"));
-    const directory = await realpath2(logicalDirectory);
-    const executable = path3.join(directory, "ca-artifact");
+    const logicalDirectory = await mkdtemp(path4.join(tmpdir(), "codearbiter-artifact-"));
+    const directory = await realpath3(logicalDirectory);
+    const executable = path4.join(directory, "ca-artifact");
     let staged;
     try {
-      staged = await open2(
+      staged = await open3(
         executable,
         fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW,
         384
@@ -1054,21 +1221,21 @@ function artifactResult(operation, stdout, status) {
   return value.result;
 }
 async function verifyFarmArtifactBoundary(planPath, phase, expectedProjectionSha256, effective) {
-  const absolutePlan = path3.resolve(planPath);
+  const absolutePlan = path4.resolve(planPath);
   const htmlPath = absolutePlan.endsWith(".plan.json") ? `${absolutePlan.slice(0, -".plan.json".length)}.html` : "";
   const htmlInfo = htmlPath ? await stat(htmlPath).catch(() => null) : null;
   const root = repoTopLevel();
   const [bindingDirectory, markerDirectory] = await Promise.all([
-    stat(path3.join(root, ".codearbiter", ".artifacts", "farm-bindings")).catch(() => null),
-    stat(path3.join(root, ".codearbiter", ".artifacts", "farm-markers")).catch(() => null)
+    stat(path4.join(root, ".codearbiter", ".artifacts", "farm-bindings")).catch(() => null),
+    stat(path4.join(root, ".codearbiter", ".artifacts", "farm-markers")).catch(() => null)
   ]);
   if (!htmlInfo && !bindingDirectory && !markerDirectory) return { typed: false };
-  const relative = path3.relative(root, absolutePlan);
-  if (!relative || path3.isAbsolute(relative) || relative === ".." || relative.startsWith(`..${path3.sep}`))
+  const relative = path4.relative(root, absolutePlan);
+  if (!relative || path4.isAbsolute(relative) || relative === ".." || relative.startsWith(`..${path4.sep}`))
     throw new Error("HTML-backed farm projection must live inside the current repository");
   const request = {
     protocol: ARTIFACT_PROTOCOL,
-    projection_path: relative.split(path3.sep).join("/"),
+    projection_path: relative.split(path4.sep).join("/"),
     phase
   };
   if (phase === "dispatch") {
@@ -1127,8 +1294,8 @@ function createLimiter(max) {
 var workerLimit = createLimiter(ENV.concurrency);
 var NOSIGN = ["-c", "commit.gpgsign=false"];
 function isInside(root, target) {
-  const rel = path3.relative(root, target);
-  return rel === "" || !rel.startsWith("..") && !path3.isAbsolute(rel);
+  const rel = path4.relative(root, target);
+  return rel === "" || !rel.startsWith("..") && !path4.isAbsolute(rel);
 }
 function repoTopLevel() {
   try {
@@ -1137,37 +1304,37 @@ function repoTopLevel() {
       timeout: 5e3
     });
     const top = (out.stdout || "").trim();
-    if (out.status === 0 && top) return path3.resolve(top);
+    if (out.status === 0 && top) return path4.resolve(top);
   } catch {
   }
-  return path3.resolve(process.cwd());
+  return path4.resolve(process.cwd());
 }
-function canonicalize(target, label, realpath3 = realpathSync.native) {
-  const resolved = path3.resolve(target);
+function canonicalize(target, label, realpath4 = realpathSync.native) {
+  const resolved = path4.resolve(target);
   const missing = [];
   let cursor = resolved;
   for (; ; ) {
     try {
-      const real = realpath3(cursor);
-      return missing.length ? path3.join(real, ...missing.slice().reverse()) : real;
+      const real = realpath4(cursor);
+      return missing.length ? path4.join(real, ...missing.slice().reverse()) : real;
     } catch (error) {
       const code = error.code;
       if (code !== "ENOENT" && code !== "ENOTDIR")
         throw new Error(
           `${label} '${resolved}' could not be canonicalized (${code ?? "unknown error"}) while checking worktree containment, so it is refused (#163 fail-closed, #539).`
         );
-      const parent = path3.dirname(cursor);
+      const parent = path4.dirname(cursor);
       if (parent === cursor) return resolved;
-      missing.push(path3.basename(cursor));
+      missing.push(path4.basename(cursor));
       cursor = parent;
     }
   }
 }
 function validateWorktreeRoot(rawRoot, repo, external) {
-  const root = path3.resolve(rawRoot);
+  const root = path4.resolve(rawRoot);
   if (!external && !isInside(canonicalize(repo, "the repository root"), canonicalize(rawRoot, "FARM_WORKTREE_ROOT")))
     throw new Error(
-      `FARM_WORKTREE_ROOT resolves to '${root}', outside the repository root '${path3.resolve(repo)}'. farm recursively deletes task worktrees under this root, so an out-of-repo root is refused (#163). Point it inside the repo, or set FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1 to override.`
+      `FARM_WORKTREE_ROOT resolves to '${root}', outside the repository root '${path4.resolve(repo)}'. farm recursively deletes task worktrees under this root, so an out-of-repo root is refused (#163). Point it inside the repo, or set FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1 to override.`
     );
   return root;
 }
@@ -1186,18 +1353,26 @@ function _resetAllowedWorktreeRoot() {
 }
 function assertContainedWorktree(wt) {
   const root = allowedWorktreeRoot();
-  const abs = path3.resolve(wt);
+  const abs = path4.resolve(wt);
   if (abs === root || !isInside(root, abs))
     throw new Error(
       `refusing to operate on worktree path '${abs}': it must be strictly inside the allowed farm worktree root '${root}' (#163).`
     );
   return abs;
 }
-async function runGate(cwd, commands) {
+async function runGate(cwd, commands, runner = run) {
   for (const cmd of commands) {
-    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
+    const r = await runner(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
     if (r.code !== 0)
-      return { ok: false, failed: cmd, tail: redactSecrets(r.out).slice(-3500) };
+      return {
+        ok: false,
+        failed: cmd,
+        tail: redactSecrets(r.out).slice(-3500),
+        ...r.cleanupFailed ? { cleanupFailed: true } : {},
+        ...r.timedOut ? { timedOut: true } : {},
+        commandCode: r.code,
+        ...r.processId ? { processId: r.processId } : {}
+      };
   }
   return { ok: true };
 }
@@ -1338,12 +1513,12 @@ function extractFileBlocks(content) {
   const blocks = [];
   let i = 0;
   while (i < lines.length) {
-    const open3 = lines[i].match(/^\s*```(.*)$/);
-    if (!open3) {
+    const open4 = lines[i].match(/^\s*```(.*)$/);
+    if (!open4) {
       i++;
       continue;
     }
-    const info = open3[1].trim();
+    const info = open4[1].trim();
     const body = [];
     i++;
     while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) {
@@ -1552,11 +1727,11 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, samp
   const filesWritten = [];
   for (const { path: filePath, body } of blocks) {
     const cleanPath = filePath.trim();
-    const absPath = path3.resolve(cwd, cleanPath);
+    const absPath = path4.resolve(cwd, cleanPath);
     if (!isInside(cwd, absPath)) {
       return { ok: false, filesWritten, error: redactSecrets(`path escapes worktree: ${cleanPath}`), ...tokens };
     }
-    const rel = path3.relative(cwd, absPath).split(path3.sep).join("/");
+    const rel = path4.relative(cwd, absPath).split(path4.sep).join("/");
     if (forbidden.has(rel)) {
       return { ok: false, filesWritten, error: redactSecrets(`worker tried to write read-only path: ${rel}`), ...tokens };
     }
@@ -1584,26 +1759,37 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, samp
 var httpWorker = {
   apply: (ctx) => runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden, ctx.sampling)
 };
+var DriftUnavailable = class extends Error {
+  constructor(trackedCode, untrackedCode) {
+    super(`drift observation unavailable (tracked=${trackedCode}, untracked=${untrackedCode}); inspect before dependent mutation`);
+    this.trackedCode = trackedCode;
+    this.untrackedCode = untrackedCode;
+  }
+  trackedCode;
+  untrackedCode;
+  state = "unavailable";
+};
 async function checkDrift(cwd, allowed, gitRunner = git) {
-  const tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
-  const untracked = await gitRunner(
-    ["ls-files", "--others", "--exclude-standard", "-z"],
-    cwd
-  );
-  const changed = [];
-  if (tracked.code === 0)
-    changed.push(...tracked.stdout.trim().split("\n").filter(Boolean));
-  if (untracked.code === 0)
-    changed.push(...untracked.stdout.split("\0").filter(Boolean));
+  let tracked;
+  let untracked;
+  for (let attempt = 0; ; attempt++) {
+    tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
+    untracked = await gitRunner(["ls-files", "--others", "--exclude-standard", "-z"], cwd);
+    if (tracked.code === 0 && untracked.code === 0) break;
+    if (attempt >= 1) throw new DriftUnavailable(tracked.code, untracked.code);
+  }
+  if (tracked.stdout.includes("\0") || untracked.stdout && !untracked.stdout.endsWith("\0"))
+    throw new DriftUnavailable(tracked.code, untracked.code);
+  const changed = [...tracked.stdout.trim().split("\n").filter(Boolean), ...untracked.stdout.split("\0").filter(Boolean)];
   return [...new Set(changed)].filter((f) => !allowed.has(f));
 }
 function postApplySweep(cwd, filesWritten, forbidden) {
   for (const f of filesWritten) {
-    const absPath = path3.resolve(cwd, f);
+    const absPath = path4.resolve(cwd, f);
     if (!isInside(cwd, absPath)) {
       return `path escapes worktree: ${f}`;
     }
-    const rel = path3.relative(cwd, absPath).split(path3.sep).join("/");
+    const rel = path4.relative(cwd, absPath).split(path4.sep).join("/");
     if (forbidden.has(rel)) {
       return `worker wrote read-only path: ${rel}`;
     }
@@ -1612,7 +1798,7 @@ function postApplySweep(cwd, filesWritten, forbidden) {
 }
 async function fileHash(p) {
   try {
-    const buf = await readFile2(p);
+    const buf = await readFile3(p);
     return createHash("sha256").update(buf).digest("hex");
   } catch {
     return null;
@@ -1625,31 +1811,50 @@ async function resetWorktree(wt) {
       throw new Error(`worktree reset failed: ${redactSecrets(result.out).slice(0, 300)}`);
   }
 }
+function gateFailureFields(gate) {
+  if (!gate || gate.ok) return {};
+  return {
+    gateOutcome: {
+      commandCode: gate.commandCode,
+      processId: gate.processId,
+      interrupt: gate.timedOut ? "timeout" : "none",
+      containment: gate.cleanupFailed ? "unknown" : gate.timedOut ? "verified-stopped" : "not-required"
+    },
+    ...gate.cleanupFailed ? { containment: "unknown" } : {}
+  };
+}
 async function setupFingerprint(wt, t, deps) {
   const parts = [JSON.stringify(t.setup ?? [])];
   for (const rel of t.setupInputs ?? [])
-    parts.push(`${rel}=${await deps.fileHash(path3.resolve(wt, rel)) ?? "absent"}`);
+    parts.push(`${rel}=${await deps.fileHash(path4.resolve(wt, rel)) ?? "absent"}`);
   return createHash("sha256").update(parts.join("\0")).digest("hex");
 }
 async function runSetupPhases(wt, t, deps, state) {
+  state.failure = void 0;
   if (t.setup && t.setup.length > 0) {
     const key = await setupFingerprint(wt, t, deps);
     if (key !== state.key) {
       const r = await deps.runGate(wt, t.setup);
-      if (!r.ok) return redactSecrets(`setup failed: ${r.failed}
+      if (!r.ok) {
+        state.failure = r;
+        return redactSecrets(`setup failed: ${r.failed}
 ${r.tail}`);
+      }
       state.key = key;
     }
   }
   if (t.setupEachAttempt && t.setupEachAttempt.length > 0) {
     const r = await deps.runGate(wt, t.setupEachAttempt);
-    if (!r.ok) return redactSecrets(`setup failed (setupEachAttempt): ${r.failed}
+    if (!r.ok) {
+      state.failure = r;
+      return redactSecrets(`setup failed (setupEachAttempt): ${r.failed}
 ${r.tail}`);
+    }
   }
   return null;
 }
 function mintRunId() {
-  return randomBytes(8).toString("hex");
+  return randomBytes2(8).toString("hex");
 }
 var msgOf = (e) => e instanceof Error ? e.message : String(e);
 var SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,64}$/;
@@ -1666,12 +1871,12 @@ function assertSafeRunId(id) {
   return id;
 }
 function runArtifactDir(runId) {
-  return path3.join(ENV.reportDir, "runs", runId);
+  return path4.join(ENV.reportDir, "runs", runId);
 }
 async function renameWithRetry(from, to, attempts = 4) {
   for (let i = 0; ; i++) {
     try {
-      await rename(from, to);
+      await rename2(from, to);
       return;
     } catch (e) {
       const code = e.code ?? "";
@@ -1681,12 +1886,12 @@ async function renameWithRetry(from, to, attempts = 4) {
   }
 }
 async function atomicWriteFile(dest, data, deps = {}) {
-  const tmp = path3.join(
-    path3.dirname(dest),
-    `.${path3.basename(dest)}.${process.pid}-${randomBytes(4).toString("hex")}.tmp`
+  const tmp = path4.join(
+    path4.dirname(dest),
+    `.${path4.basename(dest)}.${process.pid}-${randomBytes2(4).toString("hex")}.tmp`
   );
   const priorMode = await stat(dest).then((s) => s.mode & 511).catch(() => void 0);
-  const fh = await (deps.open ?? open2)(tmp, "wx");
+  const fh = await (deps.open ?? open3)(tmp, "wx");
   try {
     await fh.writeFile(data, "utf8");
     await fh.sync();
@@ -1709,6 +1914,7 @@ async function atomicWriteFile(dest, data, deps = {}) {
 }
 function newRunArtifactHealth() {
   return {
+    effects: { errors: [] },
     stream: { errors: [] },
     diffs: { unavailable: [], unavailableTotal: 0, latestMirrorErrors: [] },
     report: { latestMirrorErrors: [] },
@@ -1721,14 +1927,14 @@ function projectPlanMetaForReport(meta) {
 }
 var MAX_RECORDED_ARTIFACT_ERRORS = 10;
 function noteArtifactError(bucket, message) {
-  const safe = redactSecrets(message);
-  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(safe);
+  const safe2 = redactSecrets(message);
+  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(safe2);
   else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
 }
 function noteUnavailableDiff(diffs, id, reason) {
-  const safe = redactSecrets(reason);
+  const safe2 = redactSecrets(reason);
   diffs.unavailableTotal += 1;
-  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason: safe });
+  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason: safe2 });
   else if (diffs.unavailable.length === MAX_RECORDED_ARTIFACT_ERRORS)
     diffs.unavailable.push({
       id: "(suppressed)",
@@ -1753,16 +1959,10 @@ function withWorktreeLock(fn) {
 async function prepareWorktree(branch, wt, from, gitFn = git) {
   try {
     assertContainedWorktree(wt);
-  } catch (e) {
-    return e instanceof Error ? e.message : String(e);
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error);
   }
   return withWorktreeLock(async () => {
-    await gitFn(["worktree", "remove", "--force", wt]).catch(() => {
-    });
-    await rm(wt, { recursive: true, force: true }).catch(() => {
-    });
-    await gitFn(["branch", "-D", branch]).catch(() => {
-    });
     const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
     if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
     return null;
@@ -1772,7 +1972,7 @@ var CLEANUP_ATTEMPTS = 3;
 var CLEANUP_DELAY_MS = 150;
 function samePath(a, b) {
   const norm = (p) => {
-    const r = path3.resolve(p);
+    const r = path4.resolve(p);
     return process.platform === "win32" ? r.toLowerCase() : r;
   };
   return norm(a) === norm(b);
@@ -1900,7 +2100,7 @@ function effectiveSampling(samples) {
 }
 async function writeFilesInto(wt, files) {
   for (const f of files) {
-    const abs = path3.resolve(wt, f.path);
+    const abs = path4.resolve(wt, f.path);
     if (!isInside(wt, abs)) throw new UnsafeWorktreePathError();
     await writeWorktreeFile(wt, f.path, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
   }
@@ -1909,7 +2109,7 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
   const taskBranch = evaluation?.baseCommit ?? `farm/${t.id}`;
   const runSample = (k) => workerLimit.run(async () => {
     const branch = evaluation?.baseCommit ?? `farm/${t.id}__s${k}`;
-    const wt = evaluation ? path3.join(evaluation.worktreeRoot, `sample-${k}`) : path3.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+    const wt = evaluation ? path4.join(evaluation.worktreeRoot, `sample-${k}`) : path4.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
     const base = {
       green: false,
       filesWritten: [],
@@ -1923,9 +2123,18 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
     try {
       const prep = evaluation ? await prepareEvaluationWorktree(wt, taskBranch, deps.git) : await deps.prepareWorktree(branch, wt, taskBranch);
       if (prep) return { ...base, note: prep };
-      const setupNote = await runSetupPhases(wt, t, deps, { key: null });
-      if (setupNote) return { ...base, note: setupNote };
-      const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
+      const sampleSetup = { key: null };
+      const setupNote = await runSetupPhases(wt, t, deps, sampleSetup);
+      if (setupNote) {
+        const failure = gateFailureFields(sampleSetup.failure);
+        return {
+          ...base,
+          note: setupNote,
+          ...failure,
+          ...failure.containment === "unknown" ? { retryable: false } : {}
+        };
+      }
+      const testHashBefore = await deps.fileHash(path4.resolve(wt, t.test.path));
       const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
       const pt = w.promptTokens ?? 0;
       const ct = w.completionTokens ?? 0;
@@ -1942,21 +2151,36 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       };
       const sweep = postApplySweep(wt, w.filesWritten, forbidden);
       if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
-      const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
+      const testHashAfter = await deps.fileHash(path4.resolve(wt, t.test.path));
       if (testHashBefore !== null && testHashAfter !== testHashBefore)
         return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
       base.inScope = await captureInScope(wt, t, w.filesWritten);
-      const drift = await deps.checkDrift(wt, allowed);
+      let drift;
+      try {
+        drift = await deps.checkDrift(wt, allowed);
+      } catch (error) {
+        return { ...base, retryable: false, note: `drift observation unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}` };
+      }
       if (drift.length > 0)
         return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
       const gate = await deps.runGate(wt, t.gate.commands);
+      if (!gate.ok && gate.cleanupFailed)
+        return {
+          ...base,
+          retryable: false,
+          containment: "unknown",
+          gateOutcome: { commandCode: gate.commandCode, processId: gate.processId, interrupt: gate.timedOut ? "timeout" : "none", containment: "unknown" },
+          note: `gate containment unknown: ${gate.failed}`,
+          promptTokens: pt,
+          completionTokens: ct
+        };
       if (!gate.ok)
         return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: redactSecrets(`failed: ${gate.failed}
 ${gate.tail}`), promptTokens: pt, completionTokens: ct };
       const inScope = await captureInScope(wt, t, w.filesWritten);
       return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
     } catch (e) {
-      return { ...base, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
+      return { ...base, ...e instanceof DriftUnavailable ? { retryable: false } : {}, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
     }
   });
   const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
@@ -1991,12 +2215,21 @@ ${gate.tail}`), promptTokens: pt, completionTokens: ct };
     }
   } finally {
     for (const outcome of outcomes) {
+      if (outcome.containment === "unknown") {
+        cleanup.push({
+          ok: false,
+          target: outcome.wt,
+          attempts: 0,
+          detail: "gate containment unknown; worktree and branch retained for inspection"
+        });
+        continue;
+      }
       cleanup.push(await removeWorktreeVerified(deps.git, outcome.wt));
       if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, outcome.branch));
     }
   }
   const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
-  const deferred = outcomes.find((o) => o.retryable === false) ?? null;
+  const deferred = outcomes.find((o) => o.containment === "unknown") ?? outcomes.find((o) => o.retryable === false) ?? null;
   return { winner, fatal, bestFailure, deferred, promptTokens, completionTokens, cleanup };
 }
 async function prepareEvaluationWorktree(wt, from, gitFn) {
@@ -2012,7 +2245,7 @@ async function prepareEvaluationWorktree(wt, from, gitFn) {
 }
 async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps(), evaluation) {
   const branch = evaluation?.baseCommit ?? `farm/${t.id}`;
-  const wt = evaluation ? path3.join(evaluation.worktreeRoot, "task") : path3.resolve(ENV.worktreeRoot, t.id);
+  const wt = evaluation ? path4.join(evaluation.worktreeRoot, "task") : path4.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
@@ -2023,11 +2256,35 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const noteCleanup = (...outcomes) => {
     for (const c of outcomes) if (!c.ok) cleanupIssues.push(c);
   };
-  const finish = (r) => cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r;
-  const prepErr = evaluation ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git) : await deps.prepareWorktree(branch, wt, ENV.integration);
+  let lastGateOutcome;
+  const finish = (r) => ({ ...r, ...!r.gateOutcome && lastGateOutcome ? { gateOutcome: lastGateOutcome } : {}, ...cleanupIssues.length ? { cleanup: [...cleanupIssues] } : {} });
+  const effect = !evaluation && effectContext ? {
+    schema: 1,
+    runId: effectContext.runId,
+    taskId: t.id,
+    repository: effectContext.repository,
+    branch,
+    integration: ENV.integration,
+    worktree: wt,
+    attempt: 0,
+    stage: "prepared"
+  } : void 0;
+  const persistEffect = async () => {
+    if (effect && effectContext) {
+      await writeEffect(effectContext.dir, effect);
+      taskEffects.set(t.id, effect);
+    }
+  };
+  if (effect) {
+    const base = await refIdentity(deps.git, `refs/heads/${ENV.integration}`);
+    if (!base) return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: "task baseline identity unavailable" });
+    effect.base = base;
+  }
+  await persistEffect();
+  const prepErr = evaluation ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git) : await deps.prepareWorktree(branch, wt, effect?.base?.commit ?? ENV.integration);
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
-  let testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
+  let testHashBefore = await deps.fileHash(path4.resolve(wt, t.test.path));
   let priorFailure;
   let rebasedForRetry = false;
   let driftedOnce = false;
@@ -2043,12 +2300,29 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const assessOutput = async (filesWritten) => {
     const sweep = postApplySweep(wt, filesWritten, forbidden);
     if (sweep) return { kind: "fatal", note: sweep };
-    const after = await deps.fileHash(path3.resolve(wt, t.test.path));
+    const after = await deps.fileHash(path4.resolve(wt, t.test.path));
     if (testHashBefore !== null && after !== testHashBefore)
       return { kind: "fatal", note: `tampered test: ${t.test.path}` };
-    const drift = await deps.checkDrift(wt, allowed);
+    let drift;
+    try {
+      drift = await deps.checkDrift(wt, allowed);
+    } catch (error) {
+      return { kind: "fatal", note: redactSecrets(msgOf(error)).slice(0, 300) };
+    }
     if (drift.length) return { kind: "drift", drift, note: `drift: ${drift.join(", ")}` };
     const gate = await deps.runGate(wt, t.gate.commands);
+    if (!gate.ok) lastGateOutcome = {
+      commandCode: gate.commandCode,
+      processId: gate.processId,
+      interrupt: gate.timedOut ? "timeout" : "none",
+      containment: gate.cleanupFailed ? "unknown" : gate.timedOut ? "verified-stopped" : "not-required"
+    };
+    if (!gate.ok && gate.cleanupFailed)
+      return {
+        kind: "fatal",
+        note: `gate containment unknown: ${gate.failed}`,
+        containment: "unknown"
+      };
     if (!gate.ok)
       return { kind: "gate", note: redactSecrets(`failed: ${gate.failed}
 ${gate.tail}`) };
@@ -2097,9 +2371,14 @@ ${gate.tail}`) };
     return { kind: "pass", warning: risk === "warn" ? note : void 0, mutationScore: score };
   };
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
+    if (effect) {
+      effect.attempt = attempt;
+      await persistEffect();
+    }
     if (attempt > 1 && !rebasedForRetry) {
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t, lastFilesWritten) : [];
       try {
+        await deps.checkDrift(wt, allowed);
         await deps.resetWorktree(wt);
       } catch (e) {
         return finish({
@@ -2119,7 +2398,7 @@ ${gate.tail}`) };
     rebasedForRetry = false;
     const setupNote = await runSetupPhases(wt, t, deps, setupState);
     if (setupNote)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens });
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, ...gateFailureFields(setupState.failure), promptTokens, completionTokens });
     const injected = await buildEnrichment(wt, t, priorInScope);
     const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0;
     const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
@@ -2168,7 +2447,7 @@ ${gate.tail}`) };
           if (materialized) {
             await deps.resetWorktree(wt);
             const setup = await runSetupPhases(wt, t, deps, setupState);
-            if (setup) return { kind: "fatal", note: setup };
+            if (setup) return { kind: "fatal", note: setup, ...gateFailureFields(setupState.failure) };
           }
           materialized = true;
           await writeFilesInto(wt, candidate.files);
@@ -2190,12 +2469,13 @@ ${gate.tail}`) };
           branch,
           worktree: wt,
           note: sel.fatal.note,
+          ...fatal?.kind === "fatal" ? { containment: fatal.containment, gateOutcome: fatal.gateOutcome } : {},
           filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
           promptTokens,
           completionTokens
         });
       }
-      if (!sel.winner && sel.deferred) {
+      if (sel.deferred?.containment === "unknown" || !sel.winner && sel.deferred) {
         return finish({
           id: t.id,
           status: "escalate",
@@ -2203,6 +2483,8 @@ ${gate.tail}`) };
           branch,
           worktree: wt,
           note: sel.deferred.note,
+          containment: sel.deferred.containment,
+          gateOutcome: sel.deferred.gateOutcome,
           filesWritten: sel.deferred.filesWritten,
           promptTokens,
           completionTokens
@@ -2228,6 +2510,7 @@ ${gate.tail}`) };
         branch,
         worktree: wt,
         note: checked.note,
+        containment: checked.containment,
         filesWritten: checked.unsafe ? [] : worker.filesWritten,
         promptTokens,
         completionTokens
@@ -2305,6 +2588,7 @@ ${gate.tail}`) };
     });
     let diffstat;
     try {
+      await deps.checkDrift(wt, allowed);
       let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
       let stageAttempts = 1;
       while (staged.code !== 0 && stageAttempts < 3) {
@@ -2313,12 +2597,45 @@ ${gate.tail}`) };
         staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
       }
       if (staged.code !== 0) return integrationFailure(`stage failed after ${stageAttempts} attempts: ${staged.out}`);
+      if (effect) {
+        const tree = await deps.git(["write-tree"], wt);
+        if (tree.code !== 0 || !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(tree.stdout.trim())) return integrationFailure("commit precondition tree unavailable");
+        effect.expectedTree = tree.stdout.trim();
+        effect.stage = "commit-pending";
+        await persistEffect();
+      }
       const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
       if (commit.code !== 0) return integrationFailure(`commit failed: ${redactSecrets(commit.out).slice(0, 200)}`);
+      if (effect) {
+        const identity = await refIdentity(deps.git, "HEAD", wt);
+        if (!identity || identity.tree !== effect.expectedTree) return integrationFailure("committed candidate identity unavailable or changed");
+        effect.candidate = identity;
+        effect.stage = "committed";
+        await persistEffect();
+      }
       diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
       const merged = await deps.withMergeLock(async () => {
-        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
-        if (m.code === 0) return null;
+        if (effect) {
+          const before = await refIdentity(deps.git, "HEAD", integrationWorktree);
+          if (!before) return { kind: "fatal", note: "integration identity unavailable before merge" };
+          const candidateNow = await refIdentity(deps.git, `refs/heads/${branch}`);
+          if (!candidateNow || candidateNow.commit !== effect.candidate?.commit || candidateNow.tree !== effect.candidate.tree)
+            return { kind: "fatal", note: "task branch changed after candidate qualification; inspect before a new attempt" };
+          effect.integrationBefore = before;
+          effect.stage = "merge-pending";
+          await persistEffect();
+        }
+        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, effect?.candidate?.commit ?? branch], integrationWorktree);
+        if (m.code === 0) {
+          if (effect) {
+            const after = await refIdentity(deps.git, "HEAD", integrationWorktree);
+            if (!after) return { kind: "fatal", note: "merge effect observation unavailable; recover receipt before retry" };
+            effect.integrationAfter = after;
+            effect.stage = "merged";
+            await persistEffect();
+          }
+          return null;
+        }
         const aborted = await deps.git(["merge", "--abort"], integrationWorktree);
         if (aborted.code !== 0) return {
           kind: "fatal",
@@ -2349,7 +2666,7 @@ ${gate.tail}`) };
         const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], wt);
         if (head.code !== 0 || head.stdout.trim() !== merged.base)
           return integrationFailure("merge recovery failed: task did not reach the pinned integration commit");
-        const refreshedTest = await deps.fileHash(path3.resolve(wt, t.test.path));
+        const refreshedTest = await deps.fileHash(path4.resolve(wt, t.test.path));
         if (testHashBefore !== null && refreshedTest === null)
           return integrationFailure("merge recovery failed: protected test is unavailable on the new baseline");
         testHashBefore = refreshedTest;
@@ -2489,7 +2806,7 @@ function validate(plan) {
     for (const rel of inputs) {
       if (!rel || typeof rel !== "string")
         throw new Error(`${label}: setupInputs entries must be non-empty strings`);
-      if (rel.includes("..") || path3.isAbsolute(rel))
+      if (rel.includes("..") || path4.isAbsolute(rel))
         throw new Error(`${label}: setupInputs entry "${rel}" must be a relative path with no ".." segments`);
     }
   };
@@ -2510,10 +2827,10 @@ function validate(plan) {
       throw new Error(`task ${t.id}: filesInScope is required (array of relative paths)`);
     if (!t.gate || !Array.isArray(t.gate.commands))
       throw new Error(`task ${t.id}: gate.commands is required (array of strings)`);
-    if (t.test.path.includes("..") || path3.isAbsolute(t.test.path))
+    if (t.test.path.includes("..") || path4.isAbsolute(t.test.path))
       throw new Error(`task ${t.id}: test.path must be a relative path with no ".." segments`);
     for (const f of t.filesInScope)
-      if (f.includes("..") || path3.isAbsolute(f))
+      if (f.includes("..") || path4.isAbsolute(f))
         throw new Error(`task ${t.id}: filesInScope entry "${f}" must be a relative path with no ".." segments`);
     for (const cmd of t.gate.commands) {
       if (!cmd || typeof cmd !== "string")
@@ -2625,8 +2942,8 @@ async function runCanary(plan) {
     process.exit(1);
   }
   const scratchRoot = allowedWorktreeRoot();
-  await mkdir2(scratchRoot, { recursive: true });
-  await mkdir2(ENV.reportDir, { recursive: true });
+  await mkdir3(scratchRoot, { recursive: true });
+  await mkdir3(ENV.reportDir, { recursive: true });
   const task = [...plan.tasks].filter((t) => (t.deps ?? []).length === 0).sort((a, b) => a.filesInScope.length - b.filesInScope.length)[0] ?? plan.tasks[0];
   const { survivors, skipped } = await screenEntitlements(
     ENV.candidateModels,
@@ -2638,8 +2955,8 @@ async function runCanary(plan) {
   const results = [];
   for (const model of survivors) {
     const t0 = Date.now();
-    const trialRoot = await mkdtemp(path3.join(scratchRoot, "canary-"));
-    const wt = path3.join(trialRoot, "task");
+    const trialRoot = await mkdtemp(path4.join(scratchRoot, "canary-"));
+    const wt = path4.join(trialRoot, "task");
     let r;
     const cleanup = [];
     try {
@@ -2678,7 +2995,7 @@ async function runCanary(plan) {
     results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note, cleanup });
   }
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
-  await atomicWriteFile(path3.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, baseCommit, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  await atomicWriteFile(path4.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, baseCommit, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
   const cleanupComplete = results.every((r) => r.cleanup.length === 0);
   const summary = [
     "\nCanary results (best first):",
@@ -2707,12 +3024,25 @@ function selectReadyTasks(byId, pending, running, done) {
 }
 async function main() {
   const args = process.argv.slice(2);
+  const recoveryIndex = args.indexOf("--recover-receipt");
+  if (recoveryIndex !== -1) {
+    try {
+      const id = assertSafeRunId(args[recoveryIndex + 1] ?? "");
+      const receipt = await recoverReceipt(runArtifactDir(id), id, git);
+      console.log(JSON.stringify(receipt, null, 2));
+      return;
+    } catch (error) {
+      console.error(`receipt recovery refused: ${msgOf(error).slice(0, 400)}`);
+      process.exitCode = 3;
+      return;
+    }
+  }
   const canary = args.includes("--canary");
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
   let plan;
   let projectionSha256;
   try {
-    const planBytes = await readFile2(planPath);
+    const planBytes = await readFile3(planPath);
     projectionSha256 = createHash("sha256").update(planBytes).digest("hex");
     plan = parsePlan(JSON.parse(planBytes.toString("utf8")));
     validate(plan);
@@ -2743,12 +3073,19 @@ async function main() {
     return process.exit(1);
   }
   const runDir = runArtifactDir(runId);
-  await mkdir2(ENV.worktreeRoot, { recursive: true });
-  await mkdir2(ENV.reportDir, { recursive: true });
-  await mkdir2(runDir, { recursive: true });
+  await mkdir3(ENV.worktreeRoot, { recursive: true });
+  await mkdir3(ENV.reportDir, { recursive: true });
+  try {
+    await createRunDirectory(ENV.reportDir, runId);
+    effectContext = { dir: runDir, runId, repository: await repositoryIdentity(git) };
+  } catch (error) {
+    console.error(msgOf(error));
+    process.exitCode = 1;
+    return;
+  }
   const health = newRunArtifactHealth();
-  const resultsStream = path3.join(runDir, "farm-results.jsonl");
-  const latestStream = path3.join(ENV.reportDir, "farm-results.jsonl");
+  const resultsStream = path4.join(runDir, "farm-results.jsonl");
+  const latestStream = path4.join(ENV.reportDir, "farm-results.jsonl");
   const streamLines = [];
   const noteStreamFailure = (what, e) => {
     const m = `${what}: ${msgOf(e)}`;
@@ -2762,14 +3099,10 @@ async function main() {
   let aborted = false;
   let publishError = null;
   try {
-    const branchResult = await git(["branch", "-f", ENV.integration, ENV.base]);
+    const branchResult = await git(["branch", ENV.integration, ENV.base]);
     if (branchResult.code !== 0)
       throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
-    integrationWorktree = path3.resolve(runDir, "integration-wt");
-    await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
-    });
-    await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {
-    });
+    integrationWorktree = path4.resolve(runDir, "integration-wt");
     const wtResult = await git(["worktree", "add", integrationWorktree, ENV.integration]);
     if (wtResult.code !== 0)
       throw new Error(`could not create integration worktree: ${wtResult.out}`);
@@ -2804,7 +3137,7 @@ async function main() {
                   status: "escalate",
                   attempts: 0,
                   branch: `farm/${id2}`,
-                  worktree: path3.resolve(ENV.worktreeRoot, id2),
+                  worktree: path4.resolve(ENV.worktreeRoot, id2),
                   note: `crashed: ${e?.message ?? e}${e?.stack ? `
 ${String(e.stack).slice(0, 1500)}` : ""}`
                 }
@@ -2820,6 +3153,17 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
       if (aborted && r.status === "escalate" && !/run aborted/.test(r.note ?? "")) {
         r.note = r.note ? `${r.note} (run aborted by circuit breaker while in flight)` : "escalate: run aborted (in flight)";
       }
+      const effect = taskEffects.get(id);
+      if (effect && effectContext) {
+        effect.stage = "settled";
+        effect.result = { status: r.status, cleanup: r.cleanup, containment: r.containment, attempts: r.attempts };
+        try {
+          await writeEffect(effectContext.dir, effect);
+        } catch (error) {
+          publishError ??= error;
+          noteArtifactError((health.effects ??= { errors: [] }).errors, `effect receipt unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`);
+        }
+      }
       done.set(id, r);
       const line = JSON.stringify(r) + "\n";
       streamLines.push(line);
@@ -2834,6 +3178,12 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
       const culprit = deps.find((d) => escalated.has(d));
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
+  } catch (error) {
+    for (const task of plan.tasks) {
+      if (!done.has(task.id) && !blocked.some((item) => item.id === task.id))
+        blocked.push({ id: task.id, reason: `run interrupted before settlement: ${redactSecrets(msgOf(error)).slice(0, 200)}` });
+    }
+    throw error;
   } finally {
     if (integrationWorktree) {
       try {
@@ -2841,6 +3191,21 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
         if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
       } catch (e) {
         health.cleanup.failures.push({ target: integrationWorktree, detail: `teardown threw: ${msgOf(e)}` });
+      }
+    }
+    if (effectContext && taskEffects.size) {
+      const finalIntegration = await refIdentity(git, `refs/heads/${ENV.integration}`);
+      if (finalIntegration) {
+        for (const effect of taskEffects.values()) {
+          effect.finalIntegration = finalIntegration;
+          effect.runCleanup = { verified: health.cleanup.failures.length === 0, failures: health.cleanup.failures.slice(0, 25) };
+          try {
+            await writeEffect(effectContext.dir, effect);
+          } catch (error) {
+            publishError ??= error;
+            noteArtifactError((health.effects ??= { errors: [] }).errors, `final effect receipt unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`);
+          }
+        }
       }
     }
     try {
@@ -2861,7 +3226,7 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
   const latestReportErrors = health.report.latestMirrorErrors;
   const summary = [
     aborted ? `
-ABORTED by circuit breaker \u2014 escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
+ABORTED by circuit breaker \u2014 escalation rate exceeded ${ENV.abortEscalationRate}. Inspect the recorded task failures before choosing any new attempt or model.` : ``,
     `
 Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
@@ -2872,8 +3237,8 @@ Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
       `
 CLEANUP DEGRADED \u2014 ${leaks.length} resource(s) could not be released and re-verified:`,
       ...leaks.map((l) => `  - ${l.target} (${l.owner}): ${l.detail}`),
-      `Git may still register these worktrees, or the directories may still be on disk. The next run's`,
-      `pre-cleanup is destructive and best-effort, so clear them before re-running. Exit is non-zero for this alone.`
+      `Git may still register these worktrees, or the directories may still be on disk. Preserve them for inspection.`,
+      `Use receipt recovery and explicit new resource identities; a new run will not discard these resources. Exit is non-zero for this alone.`
     ].join("\n") : ``,
     // The success breadcrumb is SUPPRESSED when the authoritative publication
     // failed — pointing an operator at a farm-report.md that is not there is
@@ -2886,19 +3251,19 @@ CLEANUP DEGRADED \u2014 ${leaks.length} resource(s) could not be released and re
 RECEIPT PUBLICATION FAILED \u2014 run ${runId} could not publish its complete authoritative report under ${runDir}: ${msgOf(publishError)}`,
       `The tasks themselves finished ${runOutcome === 0 ? "green" : "with escalations/blocks/unreleased worktrees"}, but this run's durable receipt is missing or incomplete,`,
       `so it cannot be reliably reconciled or audited. Inspect ${runDir} for whatever did land.`,
-      `${path3.join(ENV.reportDir, "farm-report.json")} / .md were NOT refreshed and do not describe run ${runId}.`,
+      `${path4.join(ENV.reportDir, "farm-report.json")} / .md were NOT refreshed and do not describe run ${runId}.`,
       `Exiting 3 (receipt failure) rather than ${runOutcome} (task outcome).`
     ].join("\n") : latestReportErrors.length ? (
       // Non-fatal, and stated as such. The authoritative receipt is
       // unaffected; what the operator must not assume is that the shared
       // path now describes THIS run.
       [
-        `Report: ${path3.join(runDir, "farm-report.md")}`,
+        `Report: ${path4.join(runDir, "farm-report.md")}`,
         `WARNING: the latest convenience pointer under ${ENV.reportDir} could not be refreshed for this run:`,
         ...latestReportErrors.map((m) => `  - ${m}`),
-        `The authoritative receipt above is unaffected, but ${path3.join(ENV.reportDir, "farm-report.json")} does not describe run ${runId}.`
+        `The authoritative receipt above is unaffected, but ${path4.join(ENV.reportDir, "farm-report.json")} does not describe run ${runId}.`
       ].join("\n")
-    ) : `Report: ${path3.join(runDir, "farm-report.md")}  (latest: ${path3.join(ENV.reportDir, "farm-report.md")})`,
+    ) : `Report: ${path4.join(runDir, "farm-report.md")}  (latest: ${path4.join(ENV.reportDir, "farm-report.md")})`,
     ""
   ].join("\n");
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
@@ -2906,15 +3271,15 @@ RECEIPT PUBLICATION FAILED \u2014 run ${runId} could not publish its complete au
 }
 async function writeReport(plan, results, blocked, aborted, runId, health) {
   const runDir = runArtifactDir(runId);
-  const diffsDir = path3.join(runDir, "diffs");
-  const latestDiffsDir = path3.join(ENV.reportDir, "diffs");
+  const diffsDir = path4.join(runDir, "diffs");
+  const latestDiffsDir = path4.join(ENV.reportDir, "diffs");
   const unavailable = health.diffs.unavailable;
   const patchPath = /* @__PURE__ */ new Map();
   let diffsDirError = null;
-  await mkdir2(diffsDir, { recursive: true }).catch((e) => {
+  await mkdir3(diffsDir, { recursive: true }).catch((e) => {
     diffsDirError = msgOf(e);
   });
-  await mkdir2(latestDiffsDir, { recursive: true }).catch(
+  await mkdir3(latestDiffsDir, { recursive: true }).catch(
     (e) => noteArtifactError(health.diffs.latestMirrorErrors, `mkdir: ${msgOf(e)}`)
   );
   for (const r of results) {
@@ -2928,7 +3293,7 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
       continue;
     }
     if (!d.out.trim()) continue;
-    const dest = path3.join(diffsDir, `${r.id}.patch`);
+    const dest = path4.join(diffsDir, `${r.id}.patch`);
     try {
       await atomicWriteFile(dest, d.out);
       patchPath.set(r.id, dest);
@@ -2936,7 +3301,7 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
       noteUnavailableDiff(health.diffs, r.id, `patch write failed: ${msgOf(e)}`);
       continue;
     }
-    await atomicWriteFile(path3.join(latestDiffsDir, `${r.id}.patch`), d.out).catch(
+    await atomicWriteFile(path4.join(latestDiffsDir, `${r.id}.patch`), d.out).catch(
       (e) => noteArtifactError(health.diffs.latestMirrorErrors, `${r.id}: ${msgOf(e)}`)
     );
   }
@@ -2946,9 +3311,10 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
   const streamComplete = health.stream.errors.length === 0;
   const artifacts = {
     run_dir: runDir,
+    effects: { dir: path4.join(runDir, "effects"), complete: (health.effects?.errors.length ?? 0) === 0, errors: health.effects?.errors ?? [] },
     stream: {
-      path: path3.join(runDir, "farm-results.jsonl"),
-      latest: path3.join(ENV.reportDir, "farm-results.jsonl"),
+      path: path4.join(runDir, "farm-results.jsonl"),
+      latest: path4.join(ENV.reportDir, "farm-results.jsonl"),
       complete: streamComplete,
       errors: health.stream.errors
     },
@@ -3006,18 +3372,18 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
       return `- **${r.id}** \u2014 ${r.warning} (${p ? `diff: \`${p}\`` : "diff evidence unavailable"})`;
     })
   ].join("\n");
-  await atomicWriteFile(path3.join(runDir, "farm-report.json"), json);
-  await atomicWriteFile(path3.join(runDir, "farm-report.md"), md);
+  await atomicWriteFile(path4.join(runDir, "farm-report.json"), json);
+  await atomicWriteFile(path4.join(runDir, "farm-report.md"), md);
   for (const [dest, data] of [
-    [path3.join(ENV.reportDir, "farm-report.json"), json],
-    [path3.join(ENV.reportDir, "farm-report.md"), md]
+    [path4.join(ENV.reportDir, "farm-report.json"), json],
+    [path4.join(ENV.reportDir, "farm-report.md"), md]
   ])
     await atomicWriteFile(dest, data).catch(
       (e) => noteArtifactError(health.report.latestMirrorErrors, `${dest}: ${msgOf(e)}`)
     );
 }
 var _thisFile = fileURLToPath(import.meta.url);
-var _entryFile = path3.resolve(process.argv[1] ?? "");
+var _entryFile = path4.resolve(process.argv[1] ?? "");
 if (_thisFile === _entryFile) {
   main().catch((e) => {
     console.error(e);
@@ -3026,6 +3392,7 @@ if (_thisFile === _entryFile) {
 }
 export {
   DEFAULT_API_BASE_URL,
+  DriftUnavailable,
   MAX_RECORDED_ARTIFACT_ERRORS,
   PLAN_SHAPE,
   SAFE_RUN_ID,
