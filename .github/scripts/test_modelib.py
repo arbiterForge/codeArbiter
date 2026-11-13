@@ -725,8 +725,8 @@ class TestPersonaSentinel(unittest.TestCase):
 # ---------------------------------------------------------------------------
 class TestContextDomainVocabulary(unittest.TestCase):
     def _context_text(self):
-        root = pathlib.Path(__file__).resolve().parents[2]
-        return (root / ".codearbiter" / "CONTEXT.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        return context_text("project")
 
     def test_context_defines_the_term_mode(self):
         text = self._context_text()
