@@ -128,10 +128,6 @@
     "sha256": "cecff00f7a7563baf0fd3f8c613a16ec0cf0cf05de1af09b98376c1b99c3007c",
     "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk\\independent-security-review.json"
   },
-  "windows-contracts-original.log": {
-    "sha256": "91067820d44f616b306df592f9160fbf617798e38465be8ab32248edc231d878",
-    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-transport-peer-l8a7x3zv\\windows-original.log"
-  },
   "pi-independent-auth-crypto-review.json": {
     "sha256": "69af88d7967efe14cfd57e20762e2251e698ee17a74f36bd5b79b56b0c24ea6c",
     "original_sha256": "26ec2d790de7ae6193bdefa3f8806f11b7024665e537adb128301fc2181b5163",
@@ -156,5 +152,12 @@
   "sandbox-catalog-freeze.json": {
     "sha256": "1189b6336b5a21870f450884a7449f86b321f8edf7cb46cd53d4bb61754e1e89",
     "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-sbx-remaining-qualified-abnsjdl_\\catalog-correction\\freeze.json"
+  },
+  "windows-contracts-transcript.json": {
+    "sha256": "fd8b97d1ae1a9501c66c9aa6a5467f1053a9da35b603133d6e1b6162f04a4f7a",
+    "original_sha256": "91067820d44f616b306df592f9160fbf617798e38465be8ab32248edc231d878",
+    "original_retention_commit": "38ec577c7fac71d4cf0c22b2c199d1e703c1bb4b",
+    "original_retention_path": "docs/state-contracts-major/execution/evidence/ci-6083-followup/windows-contracts-original.log",
+    "origin": "Lossless JSON-lines projection of original retained transcript; original bytes remain immutable in recorded Git commit and original Temp file."
   }
 }
