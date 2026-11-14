@@ -33,6 +33,56 @@
         "installed:claude:workflow"
       ],
       "scope": "Original extracted installed helper workflow and three context fixture cases on Linux amd64. No public parent, TUI, provider or physical consent claim."
+    },
+    {
+      "id": "codex-live-0.143.0",
+      "job": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "codex-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "codex-cli:CODEX-HOST-MARKETPLACE",
+        "codex-cli:CODEX-HOST-INSTALL",
+        "codex-cli:CODEX-HOST-LIST",
+        "codex-cli:CODEX-HOST-ENABLED",
+        "codex-cli:CODEX-HOST-VERSION",
+        "codex-cli:CODEX-HOST-RESOLVED-VERSION",
+        "codex-cli:CODEX-HOST-HOOKS-INSTALLED",
+        "codex-cli:CODEX-HOST-HOOKS-MATCH",
+        "codex-cli:CODEX-HOST-HOOK-SCRIPTS",
+        "codex-cli:CODEX-HOST-AGENT-ROUTES",
+        "codex-cli:CODEX-HOST-PACKAGE-MEMBERS",
+        "codex-cli:CODEX-HOST-ARTIFACT-CAPABILITY"
+      ],
+      "cells": [
+        "installed:codex:0.143.0"
+      ],
+      "scope": "Original credential-free retained-package Codex CLI install/readback, full exact cache/resources and native capability exchange. No provider turn, hook firing or physical consent qualification."
+    },
+    {
+      "id": "codex-live-0.145.0",
+      "job": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "codex-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "codex-cli:CODEX-HOST-MARKETPLACE",
+        "codex-cli:CODEX-HOST-INSTALL",
+        "codex-cli:CODEX-HOST-LIST",
+        "codex-cli:CODEX-HOST-ENABLED",
+        "codex-cli:CODEX-HOST-VERSION",
+        "codex-cli:CODEX-HOST-RESOLVED-VERSION",
+        "codex-cli:CODEX-HOST-HOOKS-INSTALLED",
+        "codex-cli:CODEX-HOST-HOOKS-MATCH",
+        "codex-cli:CODEX-HOST-HOOK-SCRIPTS",
+        "codex-cli:CODEX-HOST-AGENT-ROUTES",
+        "codex-cli:CODEX-HOST-PACKAGE-MEMBERS",
+        "codex-cli:CODEX-HOST-ARTIFACT-CAPABILITY"
+      ],
+      "cells": [
+        "installed:codex:0.145.0"
+      ],
+      "scope": "Original credential-free retained-package Codex CLI install/readback, full exact cache/resources and native capability exchange. No provider turn, hook firing or physical consent qualification."
     }
   ]
 }

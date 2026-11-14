@@ -421,10 +421,8 @@ def _read_archive_json(archive: tarfile.TarFile, member: tarfile.TarInfo, deadli
     return json.loads(b"".join(chunks).decode("utf-8"))
 
 
-def _download_registry_tarball(
-    package_name: str, version: str, tarball: str, integrity: str, destination: Path,
-    *, deadline: float, byte_budget: int, require_shrinkwrap: bool = False,
-) -> dict[str, Any]:
+def _download_registry_archive_bytes(tarball: str, integrity: str, destination: Path, *, deadline: float, byte_budget: int) -> None:
+    """Bounded approved HTTPS/SHA512 byte transport, not package admission."""
     parsed = urlsplit(tarball)
     if not _approved_registry_url(tarball):
         raise ValueError("candidate tarball download is not on the approved registry")
@@ -465,6 +463,13 @@ def _download_registry_tarball(
     if not hmac.compare_digest(digest.digest(), expected):
         destination.unlink(missing_ok=True)
         raise ValueError("candidate registry tarball does not match preflight integrity")
+
+
+def _download_registry_tarball(
+    package_name: str, version: str, tarball: str, integrity: str, destination: Path,
+    *, deadline: float, byte_budget: int, require_shrinkwrap: bool = False,
+) -> dict[str, Any]:
+    _download_registry_archive_bytes(tarball, integrity, destination, deadline=deadline, byte_budget=byte_budget)
     try:
         with destination.open("rb") as raw_archive, tarfile.open(
             fileobj=_DeadlineReader(

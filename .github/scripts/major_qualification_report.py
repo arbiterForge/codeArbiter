@@ -310,13 +310,18 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads):
                         "native module tests cannot qualify an upstream host")
             producers = {"source-test": ("python-test-result-observer", "vitest-json-observer"),
                          "native-module": ("go-named-ci20-join",)}
-            if group["proof_kind"] == "retained-archive-cli":
-                from retained_archive_cli_observation import admit
+            if group["proof_kind"] in ("retained-archive-cli", "live-host"):
+                if group["proof_kind"] == "retained-archive-cli":
+                    from retained_archive_cli_observation import admit
+                else:
+                    from codex_live_report_profile import admit
                 if group["observation"] not in installed_admissions:
                     installed_admissions[group["observation"]] = admit(
                         observed, req=req, job_id=job_id, authenticated_payloads=payloads, repo=ROOT)
                 admitted = installed_admissions[group["observation"]]
                 require(group["payload_name"] == admitted["primary_payload_name"], "cold primary payload differs")
+                require(group["proof_kind"] != "live-host" or cell in admitted["installed_cells"],
+                        "Codex live profile cannot qualify this cell")
                 require(not cell.startswith("installed:") or cell in admitted["installed_cells"],
                         "cold profile cannot qualify this upstream installed cell")
                 require(cell != "task:PI-D07", "cold profile cannot qualify packaged Pi authorship")
@@ -387,7 +392,7 @@ def authenticated_payload(metadata, req, consumed_root):
     archive = readiness.artifact_bytes(metadata, req)
     members = readiness.members(archive)
     root = Path(consumed_root).resolve(strict=True)
-    native_bindings = []
+    native_bindings, documents = [], {}
     for member in members:
         path = root
         for part in PurePosixPath(member["path"]).parts:
@@ -395,16 +400,22 @@ def authenticated_payload(metadata, req, consumed_root):
             info = path.lstat()
             require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
                     "consumed payload contains a link or reparse point")
-        require(path.is_file() and path.stat().st_size <= 64 * 1024 * 1024
-                and hashlib.sha256(path.read_bytes()).hexdigest() == member["sha256"],
+        require(path.is_file() and path.stat().st_size <= 64 * 1024 * 1024,
+                "executed payload member is not a bounded regular file")
+        content = path.read_bytes()
+        require(len(content) <= 64 * 1024 * 1024
+                and hashlib.sha256(content).hexdigest() == member["sha256"],
                 "executed payload differs from authenticated archive")
+        if member["path"] == "artifact-package-cohort.json":
+            require(len(content) <= 8 * 1024 * 1024, "cohort document exceeds bound")
+            documents[member["path"]] = content
         if path.name == "ci20-native-tested.json":
             binding = load_json(path)
             require(binding.get("format") == native_binding_owner.FORMAT,
                     "consumed native stamp has the wrong format")
             native_bindings.append(binding)
     return {"artifact_id": metadata["id"], "archive_sha256": readiness.digest(archive),
-            "members": members, "native_bindings": native_bindings}
+            "members": members, "native_bindings": native_bindings, "documents": documents}
 
 
 def validate_emitter_environment():

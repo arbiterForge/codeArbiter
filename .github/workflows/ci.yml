@@ -426,6 +426,16 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.github/actionlint.yaml'
             codex-resources:
+              - '.github/scripts/observe_codex_installed_cli.py'
+              - '.github/scripts/_codex_cli_profile.py'
+              - '.github/scripts/test_observe_codex_installed_cli.py'
+              - '.github/scripts/check_codex_host.py'
+              - '.github/scripts/codex_runtime_acquisition.py'
+              - '.github/scripts/coordinate_codex_host.py'
+              - '.github/scripts/codex_live_report_profile.py'
+              - '.github/scripts/test_codex_ci_wiring.py'
+              - '.github/scripts/pi_host_locks.py'
+              - '.github/fixtures/codex-host-runtime-linux.json'
               - '.github/fixtures/codex-skill-resources/**'
               - '.github/scripts/check_codex_skill_resources.py'
               - '.github/scripts/check_codex_static_package.py'
@@ -1773,6 +1783,10 @@ jobs:
           python-version: "3.x"
       - name: Test Codex static package and resource contracts
         run: python .github/scripts/test_codex_skill_resources.py
+      - name: Test closed Codex observer and acquisition contracts
+        run: |
+          python .github/scripts/test_observe_codex_installed_cli.py
+          python .github/scripts/test_codex_ci_wiring.py
       - name: Test the trusted static Codex package contract
         run: python .github/scripts/test_codex_static_package.py
       - name: Test the trusted static candidate boundary
@@ -3787,6 +3801,103 @@ jobs:
           # (the docker-gate discipline from #406).
           CA_REQUIRE_CODEX: "1"
         run: python3 .github/scripts/check_codex_host.py
+
+  codex-installed-package:
+    name: "[CHECK] | [CDX ] | Installed retained package <codex: ${{ matrix.codex-version }}>"
+    # Evidence producer only. Existing codex-host remains the unchanged required
+    # source/fork/merge-group lane. Any failure here fails the whole normal run;
+    # final readiness additionally requires this exact named job and v3 report.
+    needs: [changes, artifact-package-assembly]
+    if: >-
+      needs.changes.outputs.artifacts == 'true' &&
+      needs.artifact-package-assembly.result == 'success' &&
+      github.repository == 'arbiterForge/codeArbiter' &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts')
+    strategy:
+      fail-fast: false
+      matrix:
+        codex-version: ["0.143.0", "0.145.0"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.x"
+      - name: Select explicit committed program marker
+        id: program
+        shell: bash
+        run: |
+          if [ -f .github/integration-candidate.json ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Download original promoted payloads for Codex
+        if: steps.program.outputs.enabled == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: artifact-host-payloads-${{ github.sha }}
+          path: ${{ runner.temp }}/codex-stage
+      - name: Download original release packages for Codex
+        if: steps.program.outputs.enabled == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: artifact-release-packages-${{ github.sha }}
+          path: ${{ runner.temp }}/codex-packages
+      - name: Observe the original retained Codex CLI installation
+        id: codex-qualification
+        if: steps.program.outputs.enabled == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          codex_workspace_parent="$(dirname "$GITHUB_WORKSPACE")"
+          python -I -B .github/scripts/coordinate_codex_host.py \
+            --repo . --stage "${{ runner.temp }}/codex-stage" \
+            --package-root "${{ runner.temp }}/codex-packages" \
+            --codex-version "${{ matrix.codex-version }}" \
+            --workspace "$codex_workspace_parent/codex-observer-${{ matrix.codex-version }}-${{ github.run_attempt }}" \
+            --output-root "${{ runner.temp }}/codex-observation-${{ matrix.codex-version }}"
+          python - "${{ runner.temp }}/codex-observation-${{ matrix.codex-version }}/qualification.json" <<'PY'
+          import json, os, sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              job_id = json.load(stream)["job_id"]
+          assert type(job_id) is int and job_id > 0
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              stream.write("artifact_name=major-qualification-" + str(job_id) + "\n")
+          PY
+      - name: Retain original Codex coordinator and execution records
+        if: ${{ !cancelled() && steps.program.outputs.enabled == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installed-codex-observation-${{ matrix.codex-version }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/codex-observation-${{ matrix.codex-version }}/**/*.json
+            ${{ runner.temp }}/codex-observation-${{ matrix.codex-version }}/**/*.log
+            ${{ runner.temp }}/codex-observation-${{ matrix.codex-version }}/**/*.raw
+          if-no-files-found: warn
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Upload major qualification report
+        if: steps.codex-qualification.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.codex-qualification.outputs.artifact_name }}
+          path: ${{ runner.temp }}/codex-observation-${{ matrix.codex-version }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
 
   prose-codex:
     name: "[CHECK] | [CDX ] | Reference graph"
