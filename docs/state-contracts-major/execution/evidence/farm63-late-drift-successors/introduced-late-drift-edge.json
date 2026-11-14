@@ -1,0 +1,21 @@
+{
+  "transition_id": "FARM-PRESTAGE-DRIFT:01",
+  "machine_id": "S26",
+  "owner": "farm",
+  "task_ids": [
+    "FARM-R03"
+  ],
+  "treatment": "INTRODUCED_PRESTAGE_DRIFT_REFUSAL",
+  "contract": {
+    "from": "quality checks passed; candidate ready before staging",
+    "event": "fresh pre-stage drift observation completes",
+    "guard": "successful current observation contains out-of-scope path(s), even if earlier assessment was clean",
+    "to": "task escalated; candidate retained",
+    "effects": "Return existing bounded/redacted integrationFailure before git add/commit/merge. No cleanup, reset or second author is authorized by this observation.",
+    "failure_retry": "No automatic retry or resource removal. Fresh clean observation retains prior ordinary stage path; unavailable observation retains existing refusal. This is cooperative observation, not an atomic filesystem pin."
+  },
+  "source_refs": [
+    "0d7c0f2be54e8547e2e4356a558fd653d2aed08c:plugins/ca/tools/farm.ts#runTask"
+  ],
+  "rationale": "Frozen S24 initial/repeated drift and S26 rollback rows do not describe this newly introduced post-quality admission refusal. Analytical transition only; no new wire event/API."
+}

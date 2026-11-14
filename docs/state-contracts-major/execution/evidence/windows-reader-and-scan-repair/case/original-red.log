@@ -1,0 +1,18 @@
+test_windows_case_variant_host_lookup_is_not_absent (test_state_contracts_integration.IntegrationIntegrityTest.test_windows_case_variant_host_lookup_is_not_absent) ... FAIL
+
+======================================================================
+FAIL: test_windows_case_variant_host_lookup_is_not_absent (test_state_contracts_integration.IntegrationIntegrityTest.test_windows_case_variant_host_lookup_is_not_absent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-case-absence-fix-svvscu3k\.github\scripts\test_state_contracts_integration.py", line 394, in test_windows_case_variant_host_lookup_is_not_absent
+    self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "STALE")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'APPLICABLE' != 'STALE'
+- APPLICABLE
++ STALE
+
+
+----------------------------------------------------------------------
+Ran 1 test in 9.505s
+
+FAILED (failures=1)

@@ -1,0 +1,82 @@
+{
+  "schema": "codearbiter.p02-execution-source-join/1",
+  "actual_execution_epoch": "6a636870bc23f5079700faf58a234d19f6823eca plus two declared Temp WIP files",
+  "qualified_source_subject": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+  "original_fixture_source": "6a636870bc23f5079700faf58a234d19f6823eca",
+  "fixture_added_rows": 47,
+  "code_and_inert_data_inputs": [
+    {
+      "path": ".github/scripts/check_state_contracts_integration.py",
+      "sha256": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+      "basis": "Original copy/base digest captured; current unchanged Temp support copy literally equals Git6a and142e. No separate pre/post runtime capture of this support file is claimed."
+    },
+    {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "sha256": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250",
+      "basis": "Two WIP bytes captured by original35 observer before/after assertions and final author freeze; exact Temp bytes now literal Git142e. Original source epoch6a plus these WIP bytes, not a run at HEAD142e."
+    },
+    {
+      "path": ".github/scripts/major_readiness.py",
+      "sha256": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+      "basis": "Two WIP bytes captured by original35 observer before/after assertions and final author freeze; exact Temp bytes now literal Git142e. Original source epoch6a plus these WIP bytes, not a run at HEAD142e."
+    },
+    {
+      "path": ".github/scripts/_boundedproc.py",
+      "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      "basis": "Original copy/base digest captured; current unchanged Temp support copy literally equals Git6a and142e. No separate pre/post runtime capture of this support file is claimed."
+    },
+    {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "basis": "Original copy/base digest captured; current unchanged Temp support copy literally equals Git6a and142e. No separate pre/post runtime capture of this support file is claimed."
+    },
+    {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "basis": "Original copy/base digest captured; current unchanged Temp support copy literally equals Git6a and142e. No separate pre/post runtime capture of this support file is claimed."
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+      "basis": "Retrospective immutable Git6a-to142e identity plus current literal owner file join; original fixture/read path inspected. No before/after file snapshot claimed."
+    },
+    {
+      "path": "docs/state-contracts-major/execution/tools/coverage_ledger.py",
+      "sha256": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+      "basis": "Retrospective immutable Git6a-to142e identity plus current literal owner file join; original fixture/read path inspected. No before/after file snapshot claimed."
+    },
+    {
+      "path": "docs/state-contracts-major/MANIFEST.json",
+      "sha256": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+      "basis": "Retrospective immutable Git6a-to142e identity plus current literal owner file join; original fixture/read path inspected. No before/after file snapshot claimed."
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+      "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+      "basis": "Retrospective immutable Git6a-to142e identity plus current literal owner file join; original fixture/read path inspected. No before/after file snapshot claimed."
+    }
+  ],
+  "frozen_corpus": {
+    "manifest_ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+    "manifest_path": "docs/state-contracts-major/MANIFEST.json",
+    "sha256": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "files": 105,
+    "all105_source_and_subject_Git_bytes_match_manifest": true,
+    "retention": "Reuse existing frozen corpus; no duplicate3MB copy."
+  },
+  "fixture_parameters": [
+    {
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "docs/state-contracts-major/execution/progress.json",
+      "sha256": "51a0eec8c6a96939bf614932dffaefec7b36af635188797707ac00acc5e323dd"
+    },
+    {
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "docs/state-contracts-major/execution/coverage-ledger.json",
+      "sha256": "d2a872e18f37ae5bc8ed0a57d83f3348bca9e557f80acbb95a701bd360741f3a"
+    }
+  ],
+  "ci_impact": "Not imported or called. The workflow tests read ci.yml and execute its selected merge shell; no ci_impact dependency included.",
+  "readiness37": "Separate run not borrowed into these six P02 rows.",
+  "capture_limits": "Only two WIP inputs have direct original execution hash checks; support copies have original copy digests and later literal joins. Other owner/data joins were inspected after execution. Original full environment snapshot was not captured; runner explicitly set CODEARBITER_TEST_SOURCE_REPO to Gov and did not explicitly inject CODEARBITER_TEST_CI_PATH. No before/after capture or runtime identity is fabricated."
+}

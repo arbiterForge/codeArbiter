@@ -4,14 +4,14 @@
   "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "89333ff30221f3b7a145de055a9d7a8d2eb42500 plus retained repair-check records in this commit",
+  "head": "1e06da1b6483591350b090c8eed4a6f37f277d55 plus reconciled component observations in this commit",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T03:10:33.897240+00:00",
+  "recorded_at": "2026-11-14T03:54:03.633224+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1724,21 +1724,35 @@
       "owner": "program-integrity",
       "status": "OPEN",
       "source": "89333ff30221f3b7a145de055a9d7a8d2eb42500",
-      "detail": "Reconcile legacy runtime proofs with genuine retained module fingerprints and relevant owned lookup observations, or execute only missing scoped acceptance. Do not convert positive-file cones into unobserved completeness or rewrite original results. New reader correctly reports150UNKNOWN/86STALE/131APPLICABLE among367authentic records; these counts are current applicability, not changed recorded progress."
+      "detail": "Reconcile legacy runtime proofs with genuine retained module fingerprints and relevant owned lookup observations, or execute only missing scoped acceptance. Do not convert positive-file cones into unobserved completeness or rewrite original results. New reader correctly reports150UNKNOWN/86STALE/131APPLICABLE among367authentic records; these counts are current applicability, not changed recorded progress. Current final draft preserves368 authentic recorded dispositions:240APPLICABLE/128UNKNOWN/0STALE. The128 remaining unknown runtime-native scopes await genuine current native/module/lookup observations; source preservation is not promoted to runtime completeness."
     },
     {
       "id": "DEF-FARM-LATE-DRIFT-01",
       "owner": "farm",
-      "status": "IMPLEMENTED_UNQUALIFIED",
+      "status": "DONE",
       "source": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
-      "detail": "Actual first-clean/second-dirty regression incorrectly called add/commit/merge. Minimal existing escalation guard now refuses dirty and unavailable final drift without reset or new author attempt. Genuine1RED/2controls to3GREEN; focused475PASS1skip; owning941PASS3originalWindowsSKIP,lines74.04branches73.03; typecheck/build and independent reviewPASS. Hosted exact-source union remains pending."
+      "detail": "Actual first-clean/second-dirty regression incorrectly called add/commit/merge. Minimal existing escalation guard now refuses dirty and unavailable final drift without reset or new author attempt. Genuine1RED/2controls to3GREEN; focused475PASS1skip; owning941PASS3originalWindowsSKIP,lines74.04branches73.03; typecheck/build and independent reviewPASS. Hosted exact-source union remains pending. Exact6a replacement Ubuntu/Windows coverage union jobs passed, including Windows132311177597; scoped source and generated artifact unchanged in later reader/scanner repairs. No whole Farm task closure inferred."
     },
     {
       "id": "QUAL-SBX-REAL-OVERFLOW-01",
       "owner": "sandbox",
-      "status": "IMPLEMENTED_UNQUALIFIED",
+      "status": "DONE",
       "source": "ff0907d5faddbd8210d54f202db2d5611b353dba",
-      "detail": "One real Docker acceptance case uses actual output overflow to verify exact target stopped while independent owned survivor remains running. Local16unitPASS/typecheckPASS; both realDocker cases skipped because daemon unavailable. Required hosted ca-sandbox-tools must execute the new case; no local Docker acceptance claim."
+      "detail": "One real Docker acceptance case uses actual output overflow to verify exact target stopped while independent owned survivor remains running. Local16unitPASS/typecheckPASS; both realDocker cases skipped because daemon unavailable. Required hosted ca-sandbox-tools must execute the new case; no local Docker acceptance claim. Actual required hosted job132311178278 in run43550337422 passed395/395 with no skips; its original log explicitly reports the real overflow target-only/survivor assertion PASS515ms. Event6a, checkout43eb identical tree; logSHAfb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6. This closes only this owned acceptance case, not program readiness."
+    },
+    {
+      "id": "DEF-P02-WINDOWS-LOOKUP-01",
+      "owner": "program-integrity",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "detail": "ActualWindows inert _HOST.py loads through lowercase _host.py lookup but literal Git names hid it. Closed explicit path_style descriptors now resolve each actual ancestor under supported ASCIIWindows comparison; ambiguity/nonASCII comparisons refuse; POSIXUTF8 remainsliteral. ActualRED then35integration/37readinessPASS; source bytes exactly match later142e. Required replacement hosted observation pending."
+    },
+    {
+      "id": "DEF-HOOK-ORDINARY-ADMISSION-01",
+      "owner": "hooks-workflows",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED→GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending."
     }
   ],
   "new_transition_rows": [
@@ -3026,6 +3040,25 @@
       "to": "checks missing",
       "effects": "Return missing; absent/blank record fields cannot match absent/blank requirements into green",
       "on_reject": "A corrected name still requires existing exact-name/exact-head complete-success evidence; correction grants no authority"
+    },
+    {
+      "transition_id": "FARM-PRESTAGE-DRIFT:01",
+      "machine_id": "S26",
+      "owner": "farm",
+      "task_ids": [
+        "FARM-R03"
+      ],
+      "treatment": "INTRODUCED_PRESTAGE_DRIFT_REFUSAL",
+      "source_refs": [
+        "0d7c0f2be54e8547e2e4356a558fd653d2aed08c:plugins/ca/tools/farm.ts#runTask"
+      ],
+      "from": "quality checks passed; candidate ready before staging",
+      "event": "fresh pre-stage drift observation completes",
+      "guard": "successful current observation contains out-of-scope path(s), even if earlier assessment was clean",
+      "to": "task escalated; candidate retained",
+      "effects": "Return existing bounded/redacted integrationFailure before git add/commit/merge. No cleanup, reset or second author is authorized by this observation.",
+      "failure_retry": "No automatic retry or resource removal. Fresh clean observation retains prior ordinary stage path; unavailable observation retains existing refusal. This is cooperative observation, not an atomic filesystem pin.",
+      "note": "Frozen S24 initial/repeated drift and S26 rollback rows do not describe this newly introduced post-quality admission refusal. Analytical transition only; no new wire event/API."
     }
   ],
   "evidence_records": [
@@ -3228,6 +3261,21 @@
       "what": "Actual current reader and history",
       "observed": "On committed89333ff3 the owning immutable-Git checker authenticates all367recorded cells (240TESTED127PRESERVED) and reports131APPLICABLE/86STALE/150UNKNOWN. Another1785baseline cells remainPLANNED. UNKNOWN includes legacy missing module/host-lookup completeness; it is not passed qualification and does not alter original recorded progress. This checkpoint is not whole-program/installed/publication completion.",
       "date": "2026-11-14"
+    },
+    {
+      "what": "Completed6a hosted scope and remaining failure",
+      "observed": "Run43550337422 completedFAILURE only at Windowsisolation largeordinary hookadmission and its derived mergegate. Docs43550337416PASS; programintegrityall3OSPASS; FarmWindowscoverageunionPASS; recoveryall3OSPASS; all native6platform jobs and requiredSandbox395testspassed, including privatepeer firewall and realoutputoverflow with independentsurvivor. None ofthese component successes makes the failed overallrun green.",
+      "date": "2026-11-14"
+    },
+    {
+      "what": "Case-aware owned lookup correction",
+      "observed": "142e072b fixes genuineWindows casevariant negative lookup, with explicit closed pathsemantics and failclosed ambiguity/unsupportedUnicodecomparison. Retained P02six uses original35 actual6a+twoTemp sourcebytes joinedliterally to142e, fixture6a105/47 and support/data retrospectivejoins separatelydisclosed; no fabricatedbefore/aftercaptures.",
+      "date": "2026-11-14"
+    },
+    {
+      "what": "Final source-bound component reconciliation",
+      "observed": "Farm63 existing cells refreshed from actual941 outcomes/sourceclause delta with one analytical late-dirty pre-stage edge; oldreferences remain anchored6a history. Sandbox17 refreshed by44actualselected cases/24literal inputs;34unselected registered casesexcluded. FinalWR38ran onceatcommitted1e06 with100literal inputs and freshsuccessfulphysical/immutable Windowslookupabsence before/after. Original6a observation remains preserved, never backdated as a committed historyref. Current368 recorded cells are241TESTED127PRESERVED;240current-applicable128unknown, no stale currentrefs. Another1785baseline cells remainPLANNED. This is partial qualification, no installed/publication completion.",
+      "date": "2026-11-14"
     }
   ],
   "scoped_blockers": [
@@ -3239,7 +3287,7 @@
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push the completed coherent repair and original-check batch once, then observe every selected exact-head replacement check to completion.",
+    "Push the case-aware reader, shared scanner and final component observations as one replacement batch, then watch the exact-head required checks including hostedWindowsPY3.15 ordinary3s admission.",
     "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
     "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
     "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
@@ -3262,8 +3310,8 @@
     "number": 1103,
     "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
     "base": "major/state-contracts",
-    "observed_head": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+    "observed_head": "6a636870bc23f5079700faf58a234d19f6823eca",
     "next": "Push coherent repairs once and observe exact-head replacement CI. Merge1103 only with its required aggregate green, using true merge and approved named auto-deletion. Keep1098 draft/unmerged to main; no release authority.",
-    "local_source_head": "89333ff30221f3b7a145de055a9d7a8d2eb42500"
+    "local_source_head": "1e06da1b6483591350b090c8eed4a6f37f277d55"
   }
 }

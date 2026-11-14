@@ -1,0 +1,303 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools actual Windows35-case owning integration run from Temp6a source copy plus two exact WIP inputs, joined byte-for-byte to committed142e subject; original run not relabelled as execution at HEAD142e"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/check_state_contracts_integration.py": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+    ".github/scripts/test_state_contracts_integration.py": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/workflows/ci.yml": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+  },
+  "execution_context": {
+    "actual_execution_source": "6a636870bc23f5079700faf58a234d19f6823eca",
+    "actual_execution_input_epoch": "Copied6a support sources plus two WIP reader/test files with exact142e Git bytes",
+    "qualified_subject": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+    "fixture_git_source": "6a636870bc23f5079700faf58a234d19f6823eca",
+    "fixture_metadata_added_rows": 47,
+    "test_source_repo_override": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "ci_source_override_capture": "No explicit CI override injected by runner; ambient full environment was not snapshotted.",
+    "capture_classification_ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/source-join.json",
+    "source_binding": "Two WIP direct hashes plus original support-copy captures and retrospective immutable joins as enumerated; no fabricated before/after captures for omitted dependencies.",
+    "limits": "Synthetic admission fixtures; observed local Windows behavior only. Fixture source6a47 parameters anchored, distinct from future metadata."
+  },
+  "disposition_ids": [
+    "disposition:added_transitions:P02:added-stale-history",
+    "disposition:added_transitions:P02:added-unknown-input",
+    "disposition:added_transitions:P02:added-original-tamper",
+    "disposition:added_transitions:P02:added-frozen-anchor",
+    "disposition:added_transitions:P02:added-origin-mix",
+    "disposition:added_transitions:P02:added-selected-gate"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_state_contracts_integration"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-case-absence-fix-svvscu3k\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 88.59324840002228
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/raw/original-35.stderr.log",
+      "sha256": "b23bba8bb0b42a19b19eecb5959843c17ace38837b7fff0e1b36181b2e68c2f7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/raw/original-35-result.json",
+      "sha256": "96a6c33d433d2d203e1e63aa9ed31985c75ff2c1949dfa6830b8a4138ae88bae"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/raw/original-input-epoch.json",
+      "sha256": "b026a3052c409b4ff9659b99c7875bc58e0ff06adec4664f0e4db4bbfa1421c6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/raw/original-final-freeze.json",
+      "sha256": "9ea488bbd0c954ebb33c1ea6573668f7bf85b61988470ec5411403a5f8648ca2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/source-join.json",
+      "sha256": "98afc4851943b38f86ca6ad985e254ddffed80523917706c0f0c6980c41ad20d"
+    }
+  ],
+  "scope": "Successor for exactly six already-TESTED P02 rows. Same original35 real disposable Git/Windows Bash fixture assertions; source subject142e established through explicit byte joins to actual Temp6a-plus-two-WIP execution, with capture gaps disclosed. No new runtime/native/host/provider/publication or whole-program qualification.",
+  "semantic_groups": [
+    {
+      "id": "P02:added-stale-history",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-stale-history"
+      ],
+      "observed_named_cases": [
+        "test_stale_history_passes_integration_but_strict_publication_refuses",
+        "test_original_proof_passes_and_records_applicable",
+        "test_planned_and_implemented_partial_program_pass_without_publication"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-unknown-input",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-unknown-input"
+      ],
+      "observed_named_cases": [
+        "test_unavailable_current_input_is_unknown_not_passed_applicability"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-original-tamper",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-original-tamper"
+      ],
+      "observed_named_cases": [
+        "test_changed_original_input_refuses_even_when_current_source_stale",
+        "test_changed_original_raw_proof_refuses_even_when_current_source_stale"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-frozen-anchor",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-frozen-anchor"
+      ],
+      "observed_named_cases": [
+        "test_frozen_intake_changed_bytes_refuse",
+        "test_rehashed_frozen_file_and_manifest_cannot_rebaseline"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-origin-mix",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-origin-mix"
+      ],
+      "observed_named_cases": [
+        "test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "test_publication_rejects_hosted_identity_fields_on_local_raw_path"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-selected-gate",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-selected-gate"
+      ],
+      "observed_named_cases": [
+        "test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "test_metadata_only_paths_select_integrity_without_full_hooks",
+        "test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ],
+      "result": "PASSED"
+    }
+  ],
+  "historical_evidence_unchanged": true,
+  "original_named_results": [
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_absence_lookup_descriptor_requires_closed_supported_style",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_added_and_removed_native_members_are_stale_not_relabelled",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_added_transition_requires_matching_declared_population",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_declared_absence_already_present_at_original_refuses",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_explicit_owned_absence_becoming_present_is_stale",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_failed_candidate_inventory_is_unknown_not_absent",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_forged_original_module_scope_refuses_historical_authentication",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_legacy_runtime_native_positive_scope_is_unknown_not_complete",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_missing_and_extra_population_refuse",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_missing_commands_and_scope_refuse",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_source_conformance_remains_declared_positive_scope",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unknown_owner_status_task_and_bad_reference_refuse",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unrelated_host_addition_does_not_invalidate_native_membership",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unsupported_git_membership_objects_are_unknown",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unsupported_or_unowned_scope_declarations_refuse",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_valid_declared_scope_and_absence_are_applicable",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_windows_ambiguous_ancestor_lookup_refuses",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_windows_case_variant_host_lookup_is_not_absent",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_windows_lookup_resolves_each_actual_ancestor_name",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_windows_non_ascii_comparison_refuses_but_posix_is_literal",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+      "status": "passed"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate",
+      "status": "passed"
+    }
+  ],
+  "historical_evidence_refs": [
+    {
+      "kind": "test",
+      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+      "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+    }
+  ]
+}

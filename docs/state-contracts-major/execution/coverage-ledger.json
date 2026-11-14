@@ -3281,9 +3281,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "evidence_history": [
@@ -3300,6 +3300,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -3502,9 +3509,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "evidence_history": [
@@ -3521,6 +3528,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -17803,9 +17817,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean.",
@@ -17830,6 +17844,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -17876,9 +17897,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "Journal publication failure escalates affected result yet drains independent in-flight work; real independent merge/result survives. Stream/effects receipt health remain separate.",
@@ -17903,6 +17924,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -17991,9 +18019,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown.",
@@ -18018,6 +18046,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18050,9 +18085,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean.",
@@ -18077,6 +18112,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18095,9 +18137,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry.",
@@ -18115,6 +18157,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18133,9 +18182,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry.",
@@ -18153,6 +18202,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18241,9 +18297,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "Failed128 and malformed successful Git readback are unavailable, never []. A bounded retry accepts only an actually successful current observation; unavailable sample drift preserves candidate evidence, buys no reset/new author.",
@@ -18268,6 +18324,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18314,9 +18377,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof.",
@@ -18341,6 +18404,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18401,9 +18471,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
@@ -18421,6 +18491,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18439,9 +18516,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
@@ -18459,6 +18536,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18477,9 +18561,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
@@ -18497,6 +18581,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18515,9 +18606,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
@@ -18535,6 +18626,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18553,9 +18651,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
@@ -18573,6 +18671,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18591,9 +18696,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
-     "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/remapped3-tested.json",
+     "sha256": "c58e0a8a4cca1a472e8940819e5c22574ab12a5de09366ec7b97119acbae1961"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -18611,6 +18716,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
+     "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18629,9 +18741,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -18649,6 +18761,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18667,9 +18786,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
@@ -18687,6 +18806,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18747,9 +18873,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
@@ -18767,6 +18893,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18785,9 +18918,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
@@ -18805,6 +18938,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18823,9 +18963,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
@@ -18843,6 +18983,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18861,9 +19008,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
@@ -18881,6 +19028,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18899,9 +19053,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -18919,6 +19073,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18937,9 +19098,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -18949,6 +19110,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18967,9 +19135,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -18979,6 +19147,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -18997,9 +19172,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19009,6 +19184,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19027,9 +19209,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19039,6 +19221,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19057,9 +19246,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19069,6 +19258,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19087,9 +19283,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19099,6 +19295,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19117,9 +19320,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19129,6 +19332,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19147,9 +19357,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19159,6 +19369,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19177,9 +19394,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19189,6 +19406,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19207,9 +19431,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19219,6 +19443,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19237,9 +19468,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19249,6 +19480,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19267,9 +19505,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19279,6 +19517,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19297,9 +19542,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19309,6 +19554,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19327,9 +19579,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19339,6 +19591,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19357,9 +19616,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19369,6 +19628,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19387,9 +19653,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19399,6 +19665,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19417,9 +19690,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19429,6 +19702,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19447,9 +19727,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19459,6 +19739,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19477,9 +19764,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19489,6 +19776,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19507,9 +19801,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Original bytes are restored through in-loop and final paths after mutations; deadline-before-test does not invent a measured run. This narrow row is restoration only, not heuristic intent or verified kill coverage.",
@@ -19527,6 +19821,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19545,9 +19846,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19557,6 +19858,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19601,9 +19909,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "A verified-gone cleanup returns124/timedOut and no cleanupFailed, distinct from125 unknown. Mocked process verification tests establish result semantics; no POSIX descendant or nonroot execution claim.",
@@ -19621,6 +19929,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19635,9 +19950,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof.",
@@ -19662,6 +19977,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19690,9 +20012,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -19710,6 +20032,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19728,9 +20057,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
-     "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/remapped3-tested.json",
+     "sha256": "c58e0a8a4cca1a472e8940819e5c22574ab12a5de09366ec7b97119acbae1961"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -19748,6 +20077,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
+     "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19780,9 +20116,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
-     "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/remapped3-tested.json",
+     "sha256": "c58e0a8a4cca1a472e8940819e5c22574ab12a5de09366ec7b97119acbae1961"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -19800,6 +20136,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
+     "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19818,9 +20161,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/cleanup14-tested.json",
-     "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/cleanup14-tested.json",
+     "sha256": "9e21e3ab80502e62b59bbae3f242f6cd465338397990fbb4aa9ffdb1465c93dc"
     }
    ],
    "evidence_history": [
@@ -19830,6 +20173,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/cleanup7-tested.json",
      "sha256": "31cff51d4da668b5dbdff741913a067c460455ba4d01ad14938ad8092803a2b0",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/cleanup14-tested.json",
+     "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19848,9 +20198,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
@@ -19868,6 +20218,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19886,9 +20243,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19898,6 +20255,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19916,9 +20280,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19928,6 +20292,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19946,9 +20317,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19958,6 +20329,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -19976,9 +20354,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -19988,6 +20366,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20006,9 +20391,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
-     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm25-preserved.json",
+     "sha256": "df36bf329d4e7ace0c5cab1249073dcdc0b88a31f26a6162a2ee920479ff2ddd"
     }
    ],
    "evidence_history": [
@@ -20018,6 +20403,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
      "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+     "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20036,9 +20428,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
-     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
+     "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37"
     }
    ],
    "candidate_contract_note": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown.",
@@ -20063,6 +20455,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
      "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+     "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20174,9 +20573,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
@@ -20194,6 +20593,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20207,9 +20613,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
@@ -20227,6 +20633,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20240,9 +20653,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
@@ -20260,6 +20673,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20273,9 +20693,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
@@ -20293,6 +20713,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -20306,9 +20733,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
-     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm24-preserved.json",
+     "sha256": "f5652103a5c830345a68916edd5abe24f331a4dc99820456503093e44ca09dd5"
     }
    ],
    "candidate_contract_note": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
@@ -20326,6 +20753,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/preserved-successor.json",
      "sha256": "ce8657ab71daca181b235f229fb2fac475ce14d624435d729916f42709d301c4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+     "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21491,9 +21925,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome.",
@@ -21511,6 +21945,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21527,9 +21968,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome.",
@@ -21547,6 +21988,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21576,9 +22024,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit.",
@@ -21596,6 +22044,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21843,9 +22298,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Controlled Docker failure130 after token container creation triggers exact independent rm+ps without cancelled signal; failed removal/observation retain containerId, original commandCode and cleanup unknown. Dummy token only; no real provider/token-host qualification.",
@@ -21863,6 +22318,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21888,9 +22350,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
@@ -21908,6 +22370,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21922,9 +22391,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
@@ -21942,6 +22411,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21956,9 +22432,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
@@ -21976,6 +22452,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -21990,9 +22473,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
@@ -22010,6 +22493,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22024,9 +22514,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
@@ -22044,6 +22534,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22069,9 +22566,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22089,6 +22586,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22104,9 +22608,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22124,6 +22628,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22139,9 +22650,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22159,6 +22670,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22174,9 +22692,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22194,6 +22712,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22209,9 +22734,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22229,6 +22754,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22244,9 +22776,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22264,6 +22796,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -22279,9 +22818,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
-     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+     "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
     }
    ],
    "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
@@ -22299,6 +22838,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
      "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
      "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+    },
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+     "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28651,9 +29197,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
-     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+     "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8"
     }
    ],
    "evidence_history": [
@@ -28663,6 +29209,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
      "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28677,9 +29230,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
-     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+     "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8"
     }
    ],
    "evidence_history": [
@@ -28689,6 +29242,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
      "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28703,9 +29263,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
-     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+     "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8"
     }
    ],
    "evidence_history": [
@@ -28715,6 +29275,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
      "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28729,9 +29296,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
-     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+     "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8"
     }
    ],
    "evidence_history": [
@@ -28741,6 +29308,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
      "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28755,9 +29329,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
-     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+     "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8"
     }
    ],
    "evidence_history": [
@@ -28767,6 +29341,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
      "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28781,9 +29362,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
-     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48"
+     "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+     "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8"
     }
    ],
    "evidence_history": [
@@ -28793,6 +29374,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
      "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+     "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28808,9 +29396,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28820,6 +29408,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28835,9 +29430,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28847,6 +29442,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28862,9 +29464,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28874,6 +29476,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28889,9 +29498,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28901,6 +29510,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28917,9 +29533,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28929,6 +29545,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28944,9 +29567,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28956,6 +29579,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28971,9 +29601,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -28983,6 +29613,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -28998,9 +29635,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29010,6 +29647,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29025,9 +29669,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29037,6 +29681,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29052,9 +29703,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29064,6 +29715,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29079,9 +29737,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29091,6 +29749,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29106,9 +29771,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29118,6 +29783,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29133,9 +29805,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29145,6 +29817,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29160,9 +29839,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29172,6 +29851,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29188,9 +29874,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29200,6 +29886,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29215,9 +29908,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29227,6 +29920,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29243,9 +29943,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29255,6 +29955,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29270,9 +29977,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29282,6 +29989,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29297,9 +30011,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29309,6 +30023,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29325,9 +30046,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29337,6 +30058,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29352,9 +30080,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29364,6 +30092,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29379,9 +30114,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
-     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881"
+     "commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/canonical-runtime.json",
+     "sha256": "2568b7a5a67b82ceae058821f89356e6aa9fbe8f5da1426e9ff68aa344152d1d"
     }
    ],
    "evidence_history": [
@@ -29391,6 +30126,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+     "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29404,9 +30146,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
-     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/cleanup14-tested.json",
-     "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc"
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/cleanup14-tested.json",
+     "sha256": "9e21e3ab80502e62b59bbae3f242f6cd465338397990fbb4aa9ffdb1465c93dc"
     }
    ],
    "evidence_history": [
@@ -29416,6 +30158,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/cleanup7-tested.json",
      "sha256": "31cff51d4da668b5dbdff741913a067c460455ba4d01ad14938ad8092803a2b0",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+     "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/cleanup14-tested.json",
+     "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29429,9 +30178,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/cleanup14-tested.json",
+     "sha256": "9e21e3ab80502e62b59bbae3f242f6cd465338397990fbb4aa9ffdb1465c93dc"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
      "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/cleanup14-tested.json",
-     "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc"
+     "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc",
+     "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
     }
    ]
   },
@@ -29464,6 +30222,22 @@
      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
      "ref": "docs/state-contracts-major/execution/evidence/release-bindings-b7a75fca/classifier-tested.json",
      "sha256": "b68befd72a0393408fdfbd237e5af2d9015c6a5a9242e9795239dba1eb33a515"
+    }
+   ]
+  },
+  "FARM-PRESTAGE-DRIFT:01": {
+   "owner": "farm",
+   "treatment": "INTRODUCED_PRESTAGE_DRIFT_REFUSAL",
+   "task_ids": [
+    "FARM-R03"
+   ],
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/late-drift-tested.json",
+     "sha256": "03e0b2534e43ad94ec596a562f7bce5664a4bd92ef6737001e5387c64bcdc5b1"
     }
    ]
   }

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "plugins/ca/hooks/tests",
+    "-p",
+    "test_crypto_context.py",
+    "-k",
+    "test_ordinary_context_derives_no_unused_approval_identities",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0
+}

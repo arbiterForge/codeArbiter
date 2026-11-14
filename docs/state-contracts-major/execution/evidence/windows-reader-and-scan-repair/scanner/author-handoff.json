@@ -1,0 +1,62 @@
+{
+  "state": "FROZEN_IMPLEMENTED_LOCAL_VERIFIED_HOSTED_TIMING_PENDING",
+  "debug_disposition": "confirmed_code_defect",
+  "diagnosis_scope": "Avoidable shared scanner identity/token-window work is directly measured and deterministic; exact hosted3.15 timeout cause/contribution remains not locally reproduced.",
+  "hosted_failure": {
+    "run": 43550337422,
+    "job": 132311178288,
+    "source": "6a636870bc23f5079700faf58a234d19f6823eca",
+    "runtime": "CPython3.15.2 Windows",
+    "raw_path": "C:/Users/brenn/AppData/Local/Temp/ca-1103-6a636870-isolation-132311178288-original.log",
+    "raw_sha256": "fdde245e276f98e6baba9cb64afc70281218a2462ed02e5fc13479b98d1e6e59",
+    "failed_case": "test_large_ordinary_context_has_bounded_admission",
+    "both_hooks": "pre-bash/git-enforce3second timeout",
+    "unchanged": true
+  },
+  "actual_local_epoch": {
+    "HEAD": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+    "five_working_source_edits": {
+      "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca-codex/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca-pi/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca/hooks/tests/test_crypto_context.py": "b1817a36fec50f7b9810de90a729bb89add7ea0620f0322da017b92dc2653b72"
+    },
+    "clean_checkout_claimed": false,
+    "runtime": "CPython3.14.6 Windows amd64"
+  },
+  "baseline": {
+    "actual_each_hook_seconds": [
+      0.6885076999897137,
+      0.6869121000636369
+    ],
+    "3second_failure_reproduced": false,
+    "hermetic_one_case_1_642seconds": "PASS; fakehome unchanged",
+    "scanner_profile": "1.94M calls0.711s;40008 identities with0 findings"
+  },
+  "fix": "Derive line identities only after a real crypto/secret regex finding; inspect full6-token import window only after its exact NAME/from prefix. Whole staged-candidate digest, regexes, contextual hashes/refusals and ordering unchanged.",
+  "evidence": {
+    "deterministic_work_oracle": "Same final test genuine40008!=0 RED\u21920 GREEN; positive actual finding keeps exact bound identity",
+    "decision_equivalence": "18 existing-shape vectors,36 public source/diff observations equal ordered findings/digests/candidates",
+    "existing39_preservation": "39 method ASTs and unchanged3s subprocess assertion; one new oracle makes40",
+    "owning_run": "40PASS once74.60s, ResourceWarning wrapper and pristine home,202 inputs stable",
+    "profile_after": "1.38M calls0.557s on same200KB source diff; diagnostic sample only",
+    "sync": "Normal sync3generated copies; --check98x3 byte identical",
+    "syntax": "Five Python sources compile in memory",
+    "diff_check": "PASS"
+  },
+  "coverage": "Python hooks have no coverage tooling per current canonical tech-stack. Existing40 boundary assertions, deterministic negative work oracle and decision equivalence are critical-path proof; no numeric coverage invented.",
+  "authority_and_limits": [
+    "No policy/bound/testpopulation reduction, context truncation or approval-marker creation. No3.15 install or network/provider effects.",
+    "All original39 methods preserved; hosted Windows3.15 unchanged3second acceptance stillPENDING exact replacementCI.",
+    "The original diagnostic baseline files and initial test draft RED remain retained; final-red test correction fixed positive-control field names BEFOREproduction, then genuine40008 RED repeated. Only final-red\u2192green sequence is admitted.",
+    "No new runtime operation/schema/API/workstore; no staging/commit/push by author."
+  ],
+  "source_hashes": {
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca-codex/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca-pi/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/tests/test_crypto_context.py": "b1817a36fec50f7b9810de90a729bb89add7ea0620f0322da017b92dc2653b72"
+  }
+}

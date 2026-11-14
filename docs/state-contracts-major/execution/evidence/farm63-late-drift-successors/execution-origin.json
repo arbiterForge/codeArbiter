@@ -1,0 +1,294 @@
+{
+  "schema": "codearbiter-exact-tested-source-join/1",
+  "actual_execution_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+  "actual_execution_working_edits": {
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+    "plugins/ca/tools/state-contracts.test.ts": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69"
+  },
+  "actual_execution_clean": false,
+  "actual_context_before": {
+    "HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+    "status": " M plugins/ca/tools/farm.js\n M plugins/ca/tools/farm.ts\n M plugins/ca/tools/state-contracts.test.ts\n"
+  },
+  "actual_context_after": {
+    "HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+    "status": " M plugins/ca-sandbox/tools/deadline.test.ts\nM  plugins/ca/tools/farm.js\nM  plugins/ca/tools/farm.ts\nM  plugins/ca/tools/state-contracts.test.ts\n"
+  },
+  "later_exact_source_commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "current_retaining_candidate": "6a636870bc23f5079700faf58a234d19f6823eca",
+  "execution_at_later_source_commit_claimed": false,
+  "captured_before": {
+    "plugins/ca/tools/.env.example": {
+      "sha256": "753100c15653ae97e5971f72cce14be88ebdc56b62b5286998d748da26024d11",
+      "size_bytes": 3321
+    },
+    "plugins/ca/tools/__fixtures__/simple.plan.json": {
+      "sha256": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "size_bytes": 643
+    },
+    "plugins/ca/tools/artifact-manifest.test.ts": {
+      "sha256": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd",
+      "size_bytes": 1047
+    },
+    "plugins/ca/tools/artifact-manifest.ts": {
+      "sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "size_bytes": 3879
+    },
+    "plugins/ca/tools/exec.test.ts": {
+      "sha256": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+      "size_bytes": 21259
+    },
+    "plugins/ca/tools/exec.ts": {
+      "sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "size_bytes": 16986
+    },
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": {
+      "sha256": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+      "size_bytes": 11083
+    },
+    "plugins/ca/tools/farm-dist.test.ts": {
+      "sha256": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+      "size_bytes": 14030
+    },
+    "plugins/ca/tools/farm-recovery.test.ts": {
+      "sha256": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead",
+      "size_bytes": 6130
+    },
+    "plugins/ca/tools/farm-recovery.ts": {
+      "sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "size_bytes": 8863
+    },
+    "plugins/ca/tools/farm-surface.test.ts": {
+      "sha256": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+      "size_bytes": 57838
+    },
+    "plugins/ca/tools/farm.js": {
+      "sha256": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "size_bytes": 149290
+    },
+    "plugins/ca/tools/farm.test.ts": {
+      "sha256": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "size_bytes": 151633
+    },
+    "plugins/ca/tools/farm.ts": {
+      "sha256": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "size_bytes": 200323
+    },
+    "plugins/ca/tools/farm.unit.test.ts": {
+      "sha256": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "size_bytes": 213351
+    },
+    "plugins/ca/tools/mutation.test.ts": {
+      "sha256": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+      "size_bytes": 52228
+    },
+    "plugins/ca/tools/mutation.ts": {
+      "sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "size_bytes": 27098
+    },
+    "plugins/ca/tools/package-lock.json": {
+      "sha256": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "size_bytes": 64167
+    },
+    "plugins/ca/tools/package.json": {
+      "sha256": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "size_bytes": 1024
+    },
+    "plugins/ca/tools/plan-contract.test.ts": {
+      "sha256": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+      "size_bytes": 19000
+    },
+    "plugins/ca/tools/plan.schema.json": {
+      "sha256": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "size_bytes": 6506
+    },
+    "plugins/ca/tools/redactor.test.ts": {
+      "sha256": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d",
+      "size_bytes": 16947
+    },
+    "plugins/ca/tools/redactor.ts": {
+      "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "size_bytes": 6993
+    },
+    "plugins/ca/tools/state-contracts.test.ts": {
+      "sha256": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69",
+      "size_bytes": 10411
+    },
+    "plugins/ca/tools/tsconfig.json": {
+      "sha256": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "size_bytes": 421
+    },
+    "plugins/ca/tools/vitest.config.ts": {
+      "sha256": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "size_bytes": 1152
+    },
+    "plugins/ca/tools/worktree-fs.test.ts": {
+      "sha256": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+      "size_bytes": 24259
+    },
+    "plugins/ca/tools/worktree-fs.ts": {
+      "sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+      "size_bytes": 8279
+    },
+    "core/artifact-release-manifest.json": {
+      "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "size_bytes": 864
+    }
+  },
+  "captured_after": {
+    "plugins/ca/tools/.env.example": {
+      "sha256": "753100c15653ae97e5971f72cce14be88ebdc56b62b5286998d748da26024d11",
+      "size_bytes": 3321
+    },
+    "plugins/ca/tools/__fixtures__/simple.plan.json": {
+      "sha256": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "size_bytes": 643
+    },
+    "plugins/ca/tools/artifact-manifest.test.ts": {
+      "sha256": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd",
+      "size_bytes": 1047
+    },
+    "plugins/ca/tools/artifact-manifest.ts": {
+      "sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "size_bytes": 3879
+    },
+    "plugins/ca/tools/exec.test.ts": {
+      "sha256": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+      "size_bytes": 21259
+    },
+    "plugins/ca/tools/exec.ts": {
+      "sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "size_bytes": 16986
+    },
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": {
+      "sha256": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+      "size_bytes": 11083
+    },
+    "plugins/ca/tools/farm-dist.test.ts": {
+      "sha256": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+      "size_bytes": 14030
+    },
+    "plugins/ca/tools/farm-recovery.test.ts": {
+      "sha256": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead",
+      "size_bytes": 6130
+    },
+    "plugins/ca/tools/farm-recovery.ts": {
+      "sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "size_bytes": 8863
+    },
+    "plugins/ca/tools/farm-surface.test.ts": {
+      "sha256": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+      "size_bytes": 57838
+    },
+    "plugins/ca/tools/farm.js": {
+      "sha256": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "size_bytes": 149290
+    },
+    "plugins/ca/tools/farm.test.ts": {
+      "sha256": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "size_bytes": 151633
+    },
+    "plugins/ca/tools/farm.ts": {
+      "sha256": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "size_bytes": 200323
+    },
+    "plugins/ca/tools/farm.unit.test.ts": {
+      "sha256": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "size_bytes": 213351
+    },
+    "plugins/ca/tools/mutation.test.ts": {
+      "sha256": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+      "size_bytes": 52228
+    },
+    "plugins/ca/tools/mutation.ts": {
+      "sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "size_bytes": 27098
+    },
+    "plugins/ca/tools/package-lock.json": {
+      "sha256": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "size_bytes": 64167
+    },
+    "plugins/ca/tools/package.json": {
+      "sha256": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "size_bytes": 1024
+    },
+    "plugins/ca/tools/plan-contract.test.ts": {
+      "sha256": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+      "size_bytes": 19000
+    },
+    "plugins/ca/tools/plan.schema.json": {
+      "sha256": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "size_bytes": 6506
+    },
+    "plugins/ca/tools/redactor.test.ts": {
+      "sha256": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d",
+      "size_bytes": 16947
+    },
+    "plugins/ca/tools/redactor.ts": {
+      "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "size_bytes": 6993
+    },
+    "plugins/ca/tools/state-contracts.test.ts": {
+      "sha256": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69",
+      "size_bytes": 10411
+    },
+    "plugins/ca/tools/tsconfig.json": {
+      "sha256": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "size_bytes": 421
+    },
+    "plugins/ca/tools/vitest.config.ts": {
+      "sha256": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "size_bytes": 1152
+    },
+    "plugins/ca/tools/worktree-fs.test.ts": {
+      "sha256": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+      "size_bytes": 24259
+    },
+    "plugins/ca/tools/worktree-fs.ts": {
+      "sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+      "size_bytes": 8279
+    },
+    "core/artifact-release-manifest.json": {
+      "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "size_bytes": 864
+    }
+  },
+  "all29_stable_and_literal_source_join": true,
+  "command": {
+    "mode": "coverage",
+    "argv": [
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+      "run",
+      "coverage",
+      "--",
+      "--reporter=json",
+      "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\coverage-tests.json"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+    "started_utc": "2026-11-14T02:57:42.795034+00:00",
+    "finished_utc": "2026-11-14T03:02:06.211665+00:00",
+    "seconds": 263.4215792999603,
+    "exit_code": 0,
+    "before_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+    "after_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+    "full_input_count": 29,
+    "input_changes": [],
+    "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "node_version": "v24.22.1",
+    "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+  },
+  "named_run_counts": {
+    "passed": 941,
+    "skipped": 3,
+    "failed": 0
+  },
+  "platform": "windows/amd64",
+  "original_report_sha256": "73f45e0c1d3903f17a9540be10f76e925fae9969cf03fdf09e02394331574152",
+  "runtime_process_observation": {
+    "raw_file_present": false,
+    "original_tool_transcript_observed": "Vitest main85744 and worker66816 executable paths were SafeNode; npx dispatcher93300 used ProgramFiles node. The attempted later JSON save did not retain a file, so no raw process-list hash is fabricated."
+  },
+  "limits": "Windows local only. Three original skips stay unqualified; supported-host union/Docker/provider/installed/release/task completion not claimed. Command runtime identity is retained by original command result; no claim every intervening helper used one executable."
+}

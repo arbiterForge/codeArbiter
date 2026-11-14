@@ -1,0 +1,15 @@
+test_ordinary_context_derives_no_unused_approval_identities (test_crypto_context.CryptoContextHookTest.test_ordinary_context_derives_no_unused_approval_identities) ... FAIL
+
+======================================================================
+FAIL: test_ordinary_context_derives_no_unused_approval_identities (test_crypto_context.CryptoContextHookTest.test_ordinary_context_derives_no_unused_approval_identities)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\plugins\ca\hooks\tests\test_crypto_context.py", line 501, in test_ordinary_context_derives_no_unused_approval_identities
+    self.assertEqual(identities.call_count, 0)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 40008 != 0
+
+----------------------------------------------------------------------
+Ran 1 test in 0.765s
+
+FAILED (failures=1)
