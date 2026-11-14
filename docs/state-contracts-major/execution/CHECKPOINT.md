@@ -1,3 +1,17 @@
+# Current delivery checkpoint (2026-11-14)
+
+Program work is on child PR #1107 into `major/state-contracts`. The current prepared code source is `f3ea8d065ab990ed9b3c9c58c541780449714b43` in the preserved governance checkout. PR #1098 remains draft and held from main for Brennon's full testing. Publication is not authorized.
+
+- Implemented: authenticated Codex/Pi/Sandbox observers, six matching native installed-report routes, Farm common-directory locking, target-local mapped failures, conservative batched read guards, upload diagnostics, and Sandbox cancellation/known-container recovery. The shipped Sandbox CLI was rebuilt from the reviewed source.
+- Observed: native routing 41 pure controls; Sandbox final-boundary 5 controls; watch compatibility 13 and site version drift 4 controls; new Pi shutdown diagnostic 11 controls with 3 plain Node processes. These are source-bound scopes, not full installed or program qualification.
+- Integrity before the last diagnostic-only update: 105 immutable intake files and 1,227 authenticated advanced records; 1,031 applicable, 195 stale, one unknown. Finite S48 source conformance is preserved. Whole tasks, live/model behavior, physical consent and scenarios remain separate.
+- Retained CI observations come from b015b25b. Its generated-surface watch snapshot, site external-version allowlist and stale Sandbox bundle failures have prepared corrections. Windows Pi completed RPC and entered its JS exit callback but did not reach observed OS exit within 30 seconds. Its cause remains unresolved. The next closed marker observes termination-call entry and never changes natural exit/failure/time bounds.
+- Retained diagnosis: [manifest](evidence/pi-b015-unresolved-shutdown/manifest.json), original validated handoff, authenticated metadata, decoded archive members, failure JSON and lossless original job log. Do not infer a compile-cache cause from the JS trace.
+- Next: deliver the current source through #1107, require exact-head checks, then inspect actual trusted normal installed cohorts after child merge. Keep the Pi HTTP policy decision pending. Continue remaining accepted work; do not mark the whole program complete from ledger totals.
+- Preserve author/primary/acceptance checkouts and local recovery metadata. The user allows local branch deletion after merge; remote child auto-deletion still needs its named approval. Never open the original handoff ZIP.
+
+## Preserved checkpoint history
+
 # Current CI repair checkpoint (2026-11-13)
 
 - Delivery PR: #1103 into major/state-contracts. Source head55509ec5 produced original run43498670196 (actual checkout e4ecd09d, identical source tree). Its failures remain retained.

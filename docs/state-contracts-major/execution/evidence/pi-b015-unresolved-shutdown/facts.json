@@ -1,0 +1,187 @@
+{
+  "schema": "codearbiter-pi-b015-exit-facts/1",
+  "source_commit": "b015b25b442f0587ed2892e9567cbee65bbdfb0f",
+  "current_root_HEAD": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+  "test_current_equals_hosted_source": true,
+  "test_sha256": "ab1228f243825f7fa38b194af2298d3bb50f73bb79986a6155ba059d4079092c",
+  "run_metadata": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\run.json",
+    "sha256": "0fedaa694cf5876a532db2796d6b9c233a318680229e506b0c8295f305721101"
+  },
+  "job_metadata": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\job.json",
+    "sha256": "658d6fff1a9a44523714c3e7e16dda9f424324351f8d21cc3b9c136cee2ba9ed"
+  },
+  "artifact_metadata": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\artifact.json",
+    "sha256": "b887b1cc66af53b3bba4de87d10c2e1994bc05487bb6aa5c97eec03e5f8fd720"
+  },
+  "archive": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\diagnostics.zip",
+    "sha256": "57c8db56ef59b99df5ad41980e7db9a7741c896cbfe3272e6419b5cfe613f1ba",
+    "bytes": 4395,
+    "API_digest_equal": true,
+    "job_log_finalized_ID_digest_equal": true
+  },
+  "failing_member": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\rpc-shutdown-govdd5nz.json",
+    "sha256": "7b67df6e44250ec502b27f5394c4423d41d697f1b360b9963d8022b795448727",
+    "projection": {
+      "schemaVersion": 2,
+      "outcome": "failure",
+      "trace": {
+        "schemaVersion": 1,
+        "pid": 1808,
+        "node": "v22.19.0",
+        "platform": "win32",
+        "phases": [
+          {
+            "phase": "started",
+            "elapsedMs": 3,
+            "stdinEnded": false,
+            "resources": [
+              "PipeWrap"
+            ]
+          },
+          {
+            "phase": "stdin_end",
+            "elapsedMs": 2265,
+            "stdinEnded": true,
+            "resources": [
+              "PipeWrap",
+              "PipeWrap",
+              "PipeWrap"
+            ]
+          },
+          {
+            "phase": "session_shutdown_observer",
+            "elapsedMs": 2266,
+            "stdinEnded": true,
+            "resources": [
+              "PipeWrap",
+              "PipeWrap",
+              "PipeWrap"
+            ]
+          },
+          {
+            "phase": "process_exit",
+            "elapsedMs": 2267,
+            "stdinEnded": true,
+            "resources": [
+              "PipeWrap",
+              "PipeWrap",
+              "PipeWrap"
+            ],
+            "exitCode": 0
+          }
+        ]
+      },
+      "protocol": {
+        "schemaVersion": 1,
+        "events": [
+          {
+            "phase": "spawned",
+            "elapsedMs": 0
+          },
+          {
+            "phase": "send_commands",
+            "elapsedMs": 1
+          },
+          {
+            "phase": "send_invoke",
+            "elapsedMs": 1
+          },
+          {
+            "phase": "receive_commands",
+            "elapsedMs": 1993
+          },
+          {
+            "phase": "agent_settled",
+            "elapsedMs": 2299
+          },
+          {
+            "phase": "send_capture",
+            "elapsedMs": 2299
+          },
+          {
+            "phase": "receive_capture",
+            "elapsedMs": 2300
+          },
+          {
+            "phase": "collection_complete",
+            "elapsedMs": 2300
+          },
+          {
+            "phase": "stdin_closed",
+            "elapsedMs": 2300
+          },
+          {
+            "phase": "shutdown_timeout",
+            "elapsedMs": 32311
+          },
+          {
+            "phase": "error",
+            "elapsedMs": 32312
+          }
+        ],
+        "recordCount": 23,
+        "recordCountSaturated": false,
+        "commandsSeen": true,
+        "stateSeen": false,
+        "agentSettledSeen": true,
+        "captureSeen": true,
+        "collection": "complete",
+        "eofClosed": true,
+        "processExited": false,
+        "exitCode": null
+      }
+    }
+  },
+  "source_log": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\1107-b015-pi-windows-job-132571421707.log",
+    "sha256": "f95bb714a90dc8b8842998cba2bb10aea5f99e9b6e5e0b98a8dfa6d62d3f1edb",
+    "failure_lines": [
+      476,
+      481,
+      505,
+      506
+    ],
+    "partition_summary": [
+      {
+        "line": 514,
+        "text": "2026-11-14T20:20:08.4566933Z {\"step\": 3, \"command\": \"test_pi_package.py[rpc-observed]\", \"result\": \"passed\"}"
+      },
+      {
+        "line": 515,
+        "text": "2026-11-14T20:20:08.4567372Z {\"step\": 4, \"command\": \"test_pi_package.py[rpc]\", \"result\": \"passed\"}"
+      },
+      {
+        "line": 516,
+        "text": "2026-11-14T20:20:08.4567985Z {\"piVersion\": \"1.5.0\", \"blocking\": true, \"result\": \"failed\", \"step\": 5, \"command\": \"test_pi_package.py[shutdown]\"}"
+      }
+    ]
+  },
+  "PID_binding": "No independent parentPid scalar is present in v2. The actual timeout follows the observed phase gate; source195-230 checks rpc_shutdown_phase_complete(trace,process.pid), which requires exact tracePID identity and ordered success before natural remaining30s wait. Wrong/stale PID would yield phase-gate assertion rather than this TimeoutExpired29.949s. Same unique home-enabled path is in failing Popen command.",
+  "runtime_direct4_current_hashes": {
+    "bundle/cli.js": "e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774",
+    "bundle/cli-runtime.js": "74a9d5d094ebe3209a1db904f84ec05b59ed0fa202346ec3762ee3162170baa9",
+    "bundle/chunks/chunk-44DLKSKE.js": "e52d27d064df05fe8ec15f05db07d7c895051597551a0d62b2fe77208d88e942",
+    "node.EXE": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362"
+  },
+  "runtime_limit": "Direct4 hashes match successful same-job companion runtimeIdentity and cached ordinary local runtime. Failing artifact itself lacks four hashes; complete hosted imported graph and Python native state not captured.",
+  "unrelated_failure_artifacts": "Other v2 files in this archive are expected failure fixtures (including deliberate process post-exit hang/exit3/decode error); do not count them as additional failing Pi workloads.",
+  "local_replay": "Not run; a pass/fail-only repeat would not distinguish remaining synchronous exit callback from native AtExit/cache/worker/libuv shutdown.",
+  "primary_source_urls": {
+    "JSexit": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/lib/internal/process/per_thread.js#L217-L228",
+    "ReallyExit": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/node_process_methods.cc#L450-L459",
+    "CacheAtExit": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/env.cc#L1056-L1099",
+    "CachePersist": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/compile_cache.cc#L279-L403",
+    "NativeShutdown": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/api/environment.cc#L892-L908"
+  },
+  "limits": [
+    "Observer marks JSexit callback entry, not its return, native shutdown entry or OSexit.",
+    "PipeWrap resources neither prove threadpool/compilecache cause nor prove leaked work survives process.exit.",
+    "Samejob matching observed2/raw13PASS; later observeddiscovery failed. No generic regression attribution to those already-passing paths.",
+    "No runtime replay, code edit, install, thirdCIretry, credential/provider/API mutation or Gov/index/cache write."
+  ]
+}
