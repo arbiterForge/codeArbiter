@@ -48,12 +48,12 @@ RECOVERY_COMMANDS = (
     'python .github/scripts/test_review_resubmission.py',
 )
 # sha256(compact JSON of the ordered pre-partition command list). This binds
-# the guard to all 73 reviewed command steps without duplicating the workflow here.
+# the guard to all 75 reviewed command steps without duplicating the workflow here.
 # Release-workflow and Codex identity regressions run in separate native steps.
 # The guard matrix, ca-codex adapter and dual-host store suites have no direct
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
-COMMANDS_SHA256 = '95ab7756bb2e806ede61b407931e152433a4f382dec79ed3fb250b3e9d3e98df'
+COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
 HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n"
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
@@ -110,7 +110,7 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':72,'isolation':1,'guard':1,'setup':3,'native_setup':1}
+        expected_counts={'contracts':74,'isolation':1,'guard':1,'setup':3,'native_setup':1}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
     require(pre.count(MATRIX)==1,'Expected exactly the reviewed four-cell matrix')

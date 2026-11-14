@@ -139,6 +139,36 @@ def workflow_jobs(text: str) -> dict[str, str]:
     return jobs
 
 
+def reviewed_cold_event_guards(block: str) -> set[str]:
+    """Only the reviewed producer alternatives may omit merge-group evidence.
+
+    The original non-push cold execution remains required for merge groups.
+    Match each exact predicate to its one owning step; copying it onto another
+    test step cannot create an event-gating exemption.
+    """
+    push = ("github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
+            "github.ref == 'refs/heads/major/state-contracts') && "
+            "hashFiles('.github/integration-candidate.json') != ''")
+    expected = {
+        "Cold-execute the complete exact-package claude workflow": "${{ !cancelled() && !(" + push + ") }}",
+        "Observe the original exact-package claude workflow": "${{ !cancelled() && " + push + " }}",
+        "Emit installed Claude qualification report": (
+            "github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
+            "github.ref == 'refs/heads/major/state-contracts') && matrix.platform == 'linux/amd64' "
+            "&& steps.cold_claude_observed.outcome == 'success' "
+            "&& hashFiles('.github/integration-candidate.json') != ''"),
+    }
+    steps = re.split(r"(?m)^      - name: ", block)[1:]
+    all_conditions = re.findall(r"(?m)^\s+if: ([^\n]+)$", block)
+    for name, predicate in expected.items():
+        matches = [step for step in steps if step.splitlines()[0] == name]
+        if (len(matches) != 1
+                or re.findall(r"(?m)^        if: ([^\n]+)$", matches[0]) != [predicate]
+                or all_conditions.count(predicate) != 1):
+            raise ValueError("cold producer event predicate is missing, changed or reused")
+    return set(expected.values())
+
+
 def checkout_fetch_depth(job: str) -> str | None:
     """Return the checkout step's structured ``with.fetch-depth`` value.
 
@@ -765,6 +795,35 @@ class EvaluationTest(unittest.TestCase):
         self.assertEqual(
             [check.id for check in result.selected], ["pi-adapter", "pi-latest"]
         )
+
+
+class ReviewedColdEventGuardTest(unittest.TestCase):
+    def block(self):
+        return workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-package-cold"]
+
+    def test_only_actual_three_owned_producer_predicates_are_allowed(self):
+        self.assertEqual(len(reviewed_cold_event_guards(self.block())), 3)
+
+    def test_changing_original_merge_group_path_refuses(self):
+        block = self.block().replace("!cancelled() && !(github.event_name", "!cancelled() && (github.event_name", 1)
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(block)
+
+    def test_copying_a_producer_predicate_to_job_level_refuses(self):
+        block = self.block()
+        predicate = next(value for value in reviewed_cold_event_guards(block)
+                         if value.startswith("${{ !cancelled() && github.event_name"))
+        changed, count = re.subn(r"(?m)^    if: [^\n]+$", "    if: " + predicate, block, count=1)
+        self.assertEqual(count, 1)
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(changed)
+
+    def test_copying_a_producer_predicate_to_another_test_step_refuses(self):
+        block = self.block()
+        predicate = next(value for value in reviewed_cold_event_guards(block) if value.startswith("github.event_name"))
+        block += "      - name: unrelated required test\n        if: " + predicate + "\n        run: python required.py\n"
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(block)
 
 
 class MapValidationTest(unittest.TestCase):
@@ -2668,6 +2727,7 @@ class WorkflowContractTest(unittest.TestCase):
         misbased: list[str] = []
         for job_id in enforced:
             block = jobs.get(job_id, "")
+            cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
@@ -2679,6 +2739,8 @@ class WorkflowContractTest(unittest.TestCase):
                         "github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.expected_platform == 'windows/amd64' && hashFiles('.github/integration-candidate.json') != ''"):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
+                    continue
+                if condition in cold_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue
