@@ -90,6 +90,30 @@ function alive(pid: number): boolean {
   }
 }
 
+type MetadataState = { kind: "present"; bytes: string } | { kind: "absent" };
+function observeMetadata(file: string): MetadataState {
+  try { return { kind: "present", bytes: readFileSync(file).toString("hex") }; }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return { kind: "absent" };
+    throw error;
+  }
+}
+
+it("Farm interruption metadata observation distinguishes real absence, retained bytes and read failure", () => {
+  const root = realpathSync(mkdtempSync(path.join(tmpdir(), "farm-metadata-observation-")));
+  try {
+    expect(observeMetadata(path.join(root, "missing"))).toEqual({ kind: "absent" });
+    const present = path.join(root, "MERGE_HEAD");
+    writeFileSync(present, "owned candidate identity\n");
+    expect(observeMetadata(present)).toEqual({ kind: "present", bytes: Buffer.from("owned candidate identity\n").toString("hex") });
+    const unreadable = path.join(root, "directory"); mkdirSync(unreadable);
+    expect(() => observeMetadata(unreadable)).toThrow();
+  } finally {
+    if (path.dirname(root) !== realpathSync(tmpdir())) throw new Error("retain unexpected metadata fixture root");
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 function originalFiles(root: string): Record<string, string> {
   const result: Record<string, string> = {};
   function walk(dir: string) {
@@ -282,10 +306,14 @@ for (const entry of ["source", "bundle"] as const) {
       expect(f.git("rev-parse", "farm/integration")).toBe(f.base);
       const metadata = (name: string) => f.git("-C", integration, "rev-parse", "--path-format=absolute", "--git-path", name);
       const mergeHead = metadata("MERGE_HEAD"), index = metadata("index");
-      // Git has staged the merge before this hook, but publishes MERGE_HEAD
-      // only after the hook refuses; observe both sides of that boundary.
-      expect(existsSync(mergeHead)).toBe(false);
+      // The staged index is the pre-commit effect. Git's MERGE_HEAD may be
+      // unpublished when producer death closes its pipes (POSIX SIGPIPE).
+      // Preserve the state actually observed, never infer a completed merge.
+      const beforeMergeMetadata = observeMetadata(mergeHead);
+      if (beforeMergeMetadata.kind === "present")
+        expect(Buffer.from(beforeMergeMetadata.bytes, "hex").toString("utf8").trim()).toBe(effect.candidate.commit);
       expect(f.git("-C", integration, "diff", "--cached", "--name-only")).toBe("src/task.ts");
+      expect(f.git("-C", integration, "diff", "--cached", "--exit-code", effect.candidate.commit, "--")).toBe("");
       // Kill the real producer while the merge is staged but uncommitted. The
       // owned hook then refuses commit, leaving Git's actual pending merge for
       // inspection. This does not claim parent death stopped detached Git.
@@ -295,10 +323,16 @@ for (const entry of ["source", "bundle"] as const) {
       await until(() => !alive(observed.pid) && !alive(observed.hookParentPid) ? true : undefined,
         () => "owned pre-merge hook/Git has not settled", 5_000);
       expect(f.git("rev-parse", "farm/integration")).toBe(f.base);
-      expect(readFileSync(mergeHead, "utf8").trim()).toBe(effect.candidate.commit);
-      const pending = () => ({ mergeHead: readFileSync(mergeHead).toString("hex"), index: readFileSync(index).toString("hex"),
+      const afterMergeMetadata = observeMetadata(mergeHead);
+      if (afterMergeMetadata.kind === "present")
+        expect(Buffer.from(afterMergeMetadata.bytes, "hex").toString("utf8").trim()).toBe(effect.candidate.commit);
+      const pending = () => ({ mergeHead: observeMetadata(mergeHead), index: readFileSync(index).toString("hex"),
         implementation: readFileSync(path.join(integration, "src/task.ts"), "utf8") });
       const effects = pending();
+      expect(effects.mergeHead).toEqual(afterMergeMetadata);
+      expect(f.git("-C", integration, "diff", "--cached", "--name-only")).toBe("src/task.ts");
+      expect(f.git("-C", integration, "diff", "--cached", "--exit-code", effect.candidate.commit, "--")).toBe("");
+      expect(effects.implementation).toBe("export const value = 7;\n");
       const refs = f.git("show-ref"), registry = f.git("worktree", "list", "--porcelain"), originals = originalFiles(f.runDir);
       expect(existsSync(path.join(f.runDir, "farm-report.json"))).toBe(false);
       const recovered = await Promise.all([f.start(entry, ["--recover-receipt", "interrupted"], false).result,
