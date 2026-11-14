@@ -172,6 +172,66 @@ class FakeProjectGithub(FakeGithub):
         return result
 
 
+class TransportResponseJSONTest(unittest.TestCase):
+    def invoke(self, route, raw):
+        transport = _workgithub.GithubTransport()
+        response = mock.MagicMock()
+        response.status = 200
+        response.read.return_value = raw
+        transport._opener = mock.MagicMock()
+        transport._opener.open.return_value.__enter__.return_value = response
+        if route == "REST":
+            return transport.request("GET", "/repos/arbiterForge/disposable/issues/7",
+                                     None, "fixture-token")
+        return transport.graphql(_workgithub._PROJECT_USER_LOOKUP,
+                                 {"login": "fixture", "number": 1}, "fixture-token")
+
+    def test_actual_remote_parser_failures_are_sanitized_for_both_transports(self):
+        previous = sys.get_int_max_str_digits() if hasattr(sys, "get_int_max_str_digits") else None
+        if previous is not None:
+            sys.set_int_max_str_digits(640)
+        try:
+            bodies = [("syntax", b'{"fixture-private-response-detail":'),
+                      ("unicode", b'"\xff"')]
+            if previous is not None:
+                bodies.append(("integer-limit", b'1' * 1000))
+            for route in ("REST", "GraphQL"):
+                for name, body in bodies:
+                    with self.subTest(route=route, body=name):
+                        with self.assertRaises(_workgithub.WorkSyncError) as raised:
+                            self.invoke(route, body)
+                        self.assertEqual(raised.exception.code, "INVALID_REMOTE_RESPONSE")
+                        self.assertEqual(str(raised.exception), "GitHub returned invalid JSON")
+                        self.assertNotIn("fixture-private-response-detail", str(raised.exception))
+        finally:
+            if previous is not None:
+                sys.set_int_max_str_digits(previous)
+
+    def test_parser_depth_failure_is_sanitized_without_hiding_other_types(self):
+        # Parser versions differ in depth support; inject its documented
+        # failure at the actual parsing seam rather than reject valid JSON.
+        for route in ("REST", "GraphQL"):
+            with self.subTest(route=route), mock.patch.object(
+                    _workgithub.json, "loads", side_effect=RecursionError("fixture-private-parser-detail")):
+                with self.assertRaises(_workgithub.WorkSyncError) as raised:
+                    self.invoke(route, b'{}')
+                self.assertEqual(raised.exception.code, "INVALID_REMOTE_RESPONSE")
+                self.assertEqual(str(raised.exception), "GitHub returned invalid JSON")
+
+    def test_programmer_type_error_at_parser_is_not_swallowed(self):
+        for route in ("REST", "GraphQL"):
+            with self.subTest(route=route), self.assertRaises(TypeError):
+                self.invoke(route, [])  # An opener violating its bytes contract.
+
+    def test_valid_json_and_existing_shape_guards_remain(self):
+        self.assertEqual(self.invoke("REST", b'{"number":7}'), (200, {"number": 7}))
+        self.assertEqual(self.invoke("GraphQL", b'{"data":{}}'), {"data": {}})
+        for route, body in (("REST", b'[]'), ("GraphQL", b'{"errors":[{}]}')):
+            with self.subTest(route=route), self.assertRaises(_workgithub.WorkSyncError) as raised:
+                self.invoke(route, body)
+            self.assertEqual(raised.exception.code, "INVALID_REMOTE_RESPONSE")
+
+
 class GithubWorkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -1507,6 +1567,74 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(current["provider_effect"], pending)
         self.assertEqual(transport.patches, [])
         self.assertEqual(transport.field_updates, 0)
+
+    def _malformed_real_transport(self):
+        transport = _workgithub.GithubTransport()
+        response = mock.MagicMock()
+        response.status = 200
+        response.read.return_value = b'{"fixture-private-response-detail":'
+        transport._opener = mock.MagicMock()
+        transport._opener.open.return_value.__enter__.return_value = response
+        return transport
+
+    def test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target(self):
+        transport, pending = self._mapped_targets_ready_for_transport_failure()
+        real_transport = self._malformed_real_transport()
+        original_request = transport.request
+        failed = False
+
+        def malformed_first_issue_read(method, path, body, token):
+            nonlocal failed
+            if not failed and method == "GET" and path.endswith("/issues/7"):
+                failed = True
+                return real_transport.request(method, path, body, token)
+            return original_request(method, path, body, token)
+
+        with mock.patch.object(transport, "request", side_effect=malformed_first_issue_read):
+            first = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                            transport, lambda _: "fixture-token")
+        self.assertTrue(failed)
+        self.assertFalse(first["ok"])
+        self.assertEqual(first["targets"]["issue"], {
+            "status": "failed", "code": "INVALID_REMOTE_RESPONSE",
+            "error": "GitHub returned invalid JSON"})
+        self.assertNotIn("fixture-private-response-detail", str(first))
+        self.assertEqual(first["targets"]["project"]["status"], "synchronized")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"], pending)
+        self.assertEqual(transport.patches, [])
+        self.assertEqual(transport.field_updates, 1)
+        again = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertTrue(again["ok"])
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend(self):
+        transport, pending = self._mapped_targets_ready_for_transport_failure()
+        real_transport = self._malformed_real_transport()
+        original_request = transport.request
+
+        def malformed_patch_readback(method, path, body, token):
+            value = original_request(method, path, body, token)
+            if method == "PATCH":
+                return real_transport.request(method, path, body, token)
+            return value
+
+        with mock.patch.object(transport, "request", side_effect=malformed_patch_readback):
+            first = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                            transport, lambda _: "fixture-token")
+        self.assertFalse(first["ok"])
+        self.assertEqual(first["targets"]["issue"]["code"], "OUTCOME_UNKNOWN")
+        self.assertNotIn("fixture-private-response-detail", str(first))
+        self.assertEqual(first["targets"]["project"]["status"], "synchronized")
+        self.assertEqual(self.client.call("work-get", {"work_id": self.work_id})["provider_effect"]["status"],
+                         "outcome_unknown")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        again = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertFalse(again["ok"])
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(transport.field_updates, 1)
 
     def test_project_lost_add_response_reconciles_without_duplicate_issue_or_item(self):
         transport = FakeProjectGithub(fail_add_after_apply=True)

@@ -326,8 +326,8 @@ def _admit(observation, *, expected, authenticated_payloads):
         require(all(v is True for v in case["cleanup"].values()), "Sandbox owned cleanup incomplete")
         expected_tails = (
             [["exec", identity, "--", "sh", "-c", "printf SBX_INSTALLED_EXEC"]],
-            [["exec", identity, "--", "sh", "-c", "printf SBX_INSTALLED_COPY > /tmp/result"],
-             ["cp", identity + ":/tmp/result", fixture["host_dir"].rstrip("/\\") + "/result"]],
+            [["exec", identity, "--", "cat", "/work/repo/result"],
+             ["cp", identity + ":/work/repo/result", fixture["host_dir"].rstrip("/\\") + "/result"]],
             [["destroy", identity]],
         )[index]
         require(isinstance(case["commands"], list) and len(case["commands"]) == len(expected_tails),
@@ -355,6 +355,7 @@ def _admit(observation, *, expected, authenticated_payloads):
         elif index == 1:
             require(results[0].get("id") == identity and type(results[0].get("exitCode")) is int
                     and results[0].get("exitCode") == 0
+                    and results[0].get("stdout") == "SBX_INSTALLED_COPY"
                     and case["checks"]["copy_sha256"] == sha(b"SBX_INSTALLED_COPY"),
                     "Sandbox actual copy bytes absent")
         else:

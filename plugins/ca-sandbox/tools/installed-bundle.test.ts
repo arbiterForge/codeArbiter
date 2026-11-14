@@ -3,8 +3,8 @@ import { expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
-  appendFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync,
-  readFileSync, realpathSync, rmSync,
+  appendFileSync, chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync,
+  readFileSync, realpathSync, rmSync, writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -168,26 +168,32 @@ function runCase(name: string, effect: (fixture: Fixture, commands: Command[]) =
     throw error;
   } finally {
     try {
-      // Do not touch any object outside the three exact per-fixture labels.
-      // A startup failure may have created the volume but no container.
-      if (cleanupAllowed) {
-        cleanup = ownCleanup(fixture);
-        expect(cleanup.container_absent && cleanup.volume_absent && cleanup.owned_only).toBe(true);
+      try {
+        // Do not touch any object outside the three exact per-fixture labels.
+        // A startup failure may have created the volume but no container.
+        if (cleanupAllowed) {
+          cleanup = ownCleanup(fixture);
+          expect(cleanup.container_absent && cleanup.volume_absent && cleanup.owned_only).toBe(true);
+        }
+        expect(hash(readFileSync(bundle))).toBe(bundleBefore);
+      } finally {
+        if (trace) {
+          const info = lstatSync(trace);
+          expect(info.isFile() && !info.isSymbolicLink() && info.nlink === 1).toBe(true);
+          appendFileSync(trace, JSON.stringify({
+            format: "codearbiter.sandbox-bundle-case/1", name: GROUP + " " + name,
+            plugin_root: plugin, bundle_sha256: bundleBefore, node: process.execPath,
+            image, fixture, commands, checks, cleanup,
+          }) + "\n", { encoding: "utf8" });
+        }
+        const resolved = realpathSync(hostDir);
+        expect(path.dirname(resolved)).toBe(realpathSync(fixtureBase));
+        rmSync(resolved, { recursive: true, force: false });
       }
-      expect(hash(readFileSync(bundle))).toBe(bundleBefore);
-    } finally {
-      if (trace) {
-        const info = lstatSync(trace);
-        expect(info.isFile() && !info.isSymbolicLink() && info.nlink === 1).toBe(true);
-        appendFileSync(trace, JSON.stringify({
-          format: "codearbiter.sandbox-bundle-case/1", name: GROUP + " " + name,
-          plugin_root: plugin, bundle_sha256: bundleBefore, node: process.execPath,
-          image, fixture, commands, checks, cleanup,
-        }) + "\n", { encoding: "utf8" });
-      }
-      const resolved = realpathSync(hostDir);
-      expect(path.dirname(resolved)).toBe(realpathSync(fixtureBase));
-      rmSync(resolved, { recursive: true, force: false });
+    } catch (cleanupError) {
+      // The original effect error is already propagating. A second failure
+      // must not hide it or turn the incomplete cleanup receipt into success.
+      if (!failed) throw cleanupError;
     }
   }
   expect(failed).toBe(false);
@@ -208,14 +214,19 @@ d(GROUP, () => {
 
   it("copies out through the shipped CLI", () => {
     runCase("copies out through the shipped CLI", (fixture, commands) => {
+      const seed = path.join(fixture.host_dir, "seed");
+      writeFileSync(seed, "SBX_INSTALLED_COPY", { encoding: "utf8", flag: "wx", mode: 0o644 });
+      chmodSync(seed, 0o644); // Readable by UID1000 after Docker copies it as root.
+      docker(["cp", seed, fixture.container + ":/work/repo/result"]);
       const result = JSON.parse(actualCli([
-        "exec", fixture.id, "--", "sh", "-c", "printf SBX_INSTALLED_COPY > /tmp/result",
+        "exec", fixture.id, "--", "cat", "/work/repo/result",
       ], commands).stdout_utf8);
       expect(result.id).toBe(fixture.id);
       expect(result.exitCode).toBe(0);
+      expect(result.stdout).toBe("SBX_INSTALLED_COPY");
       const target = path.join(fixture.host_dir, "result");
       expect(existsSync(target)).toBe(false);
-      actualCli(["cp", fixture.id + ":/tmp/result", target], commands);
+      actualCli(["cp", fixture.id + ":/work/repo/result", target], commands);
       expect(readFileSync(target, "utf8")).toBe("SBX_INSTALLED_COPY");
       return { exec_marker: false, copy_sha256: hash(readFileSync(target)), destroy_empty: false };
     });

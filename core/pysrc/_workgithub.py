@@ -96,6 +96,14 @@ class _NoRedirect(request.HTTPRedirectHandler):
         return None
 
 
+def _remote_json(raw):
+    """Decode bounded response bytes without exposing provider content."""
+    try:
+        return json.loads(raw)
+    except (ValueError, RecursionError):
+        raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub returned invalid JSON") from None
+
+
 class GithubTransport:
     """Bounded official GitHub API transport; redirects never receive tokens."""
 
@@ -125,7 +133,7 @@ class GithubTransport:
                 data = response.read((1 << 20) + 1)
                 if len(data) > 1 << 20:
                     raise WorkSyncError("REMOTE_RESPONSE_TOO_LARGE", "GitHub response exceeds the issue read bound")
-                value = json.loads(data)
+                value = _remote_json(data)
                 if type(value) is not dict and not ("/files?" in path and type(value) is list):
                     raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub returned an unexpected response")
                 return response.status, value
@@ -173,7 +181,7 @@ class GithubTransport:
                 raw = response.read((1 << 20) + 1)
                 if len(raw) > 1 << 20:
                     raise WorkSyncError("REMOTE_RESPONSE_TOO_LARGE", "GitHub Projects response exceeds the read bound")
-                value = json.loads(raw)
+                value = _remote_json(raw)
                 if response.status != 200 or type(value) is not dict or value.get("errors") or type(value.get("data")) is not dict:
                     raise WorkSyncError("INVALID_REMOTE_RESPONSE", "GitHub Projects returned an error or incomplete response")
                 return value

@@ -17,7 +17,7 @@ describe('assistive candidate versus retained historical routes',()=>{
     expect(createHash('sha256').update(historical).digest('hex'))
       .toBe('13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50');
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('b7a75fcab005d9ab3c29618d59559da2edee3283');
+    expect(update.revision).toBe('6fe32cc68c2d8fdef3c7938fc19dbd5c524de5f0');
     expect(update.changes).toHaveLength(new Set([...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(MAJOR_SOURCE_BLOBS)]).size);
     expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(ASSISTIVE_SOURCE_BLOBS)));
     expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(MAJOR_SOURCE_BLOBS)));

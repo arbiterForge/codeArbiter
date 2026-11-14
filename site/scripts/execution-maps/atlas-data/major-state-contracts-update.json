@@ -1,5 +1,5 @@
 {
-  "revision": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "revision": "6fe32cc68c2d8fdef3c7938fc19dbd5c524de5f0",
   "title": "State-contract program: inspected source changes",
   "summary": "Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims. Real user stops and host permissions remain effective. This source review covers progress preservation, discovery capture, bounded recovery, scoped conflicts, generator and manifest contracts; it is not installed-host certification.",
   "changes": [
@@ -420,6 +420,16 @@
         "f-recovery",
         "r-c2",
         "c-review"
+      ]
+    },
+    {
+      "path": "core/pysrc/_bashguardlib.py",
+      "blob": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3",
+      "summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Ambiguous syntax retains conservative whole-command checks. Protected-write refusals, command owners and authority gates remain in place.",
+      "nodes": [
+        "f-recovery",
+        "c-read",
+        "c-proof"
       ]
     }
   ]

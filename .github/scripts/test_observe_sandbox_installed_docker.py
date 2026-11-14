@@ -101,10 +101,9 @@ def fixture(root):
             command(["exec", identity, "--", "sh", "-c", "printf SBX_INSTALLED_EXEC"],
                     json.dumps({"id": identity, "exitCode": 0, "stdout": "SBX_INSTALLED_EXEC"}))
         elif index == 1:
-            command(["exec", identity, "--", "sh", "-c",
-                     "printf SBX_INSTALLED_COPY > /tmp/result"],
-                    json.dumps({"id": identity, "exitCode": 0, "stdout": ""}))
-            command(["cp", identity + ":/tmp/result", temporary + "/result"], "")
+            command(["exec", identity, "--", "cat", "/work/repo/result"],
+                    json.dumps({"id": identity, "exitCode": 0, "stdout": "SBX_INSTALLED_COPY"}))
+            command(["cp", identity + ":/work/repo/result", temporary + "/result"], "")
         else:
             command(["destroy", identity], json.dumps({"id": identity, "failureCount": 0,
                     "remainingContainers": [], "remainingVolumes": []}))
@@ -150,6 +149,32 @@ def fixture(root):
 
 
 class SandboxProfileTests(unittest.TestCase):
+    def test_copy_profile_refuses_legacy_tmpfs_source_even_with_correct_marker_hash(self):
+        owner = self.subject()
+        with tempfile.TemporaryDirectory(prefix="sbx-unit-copy-tmpfs-") as raw:
+            expected, observed, auth = fixture(Path(raw))
+            case = observed["installed_binding"]["witnesses"][1]
+            prefix = case["commands"][0]["argv"][:2]
+            identity = case["fixture"]["id"]
+            case["commands"][0]["argv"] = [*prefix, "exec", identity, "--", "sh", "-c",
+                                           "printf SBX_INSTALLED_COPY > /tmp/result"]
+            case["commands"][0]["stdout_utf8"] = json.dumps({"id": identity, "exitCode": 0, "stdout": ""})
+            case["commands"][1]["argv"] = [*prefix, "cp", identity + ":/tmp/result",
+                                           case["fixture"]["host_dir"] + "/result"]
+            with self.assertRaises(ValueError):
+                owner.admit(observed, expected=expected, authenticated_payloads=auth)
+
+    def test_copy_profile_requires_actual_exec_marker_in_addition_to_copied_hash(self):
+        owner = self.subject()
+        with tempfile.TemporaryDirectory(prefix="sbx-unit-copy-marker-") as raw:
+            expected, observed, auth = fixture(Path(raw))
+            case = observed["installed_binding"]["witnesses"][1]
+            identity = case["fixture"]["id"]
+            case["commands"][0]["stdout_utf8"] = json.dumps({"id": identity, "exitCode": 0,
+                                                              "stdout": "WRONG COPY MARKER"})
+            with self.assertRaises(ValueError):
+                owner.admit(observed, expected=expected, authenticated_payloads=auth)
+
     def subject(self):
         subject = load("_sandbox_docker_profile")
         self.assertIsNotNone(subject, "the closed installed Sandbox profile is not implemented")
