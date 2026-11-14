@@ -1,0 +1,49 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_colorlib.py": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+    "core/pysrc/_fmtlib.py": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+    "core/pysrc/_sessionlib.py": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+    "core/pysrc/_subagentslib.py": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+    "core/pysrc/_usagelib.py": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:claude-accounting:01",
+    "disposition:transitions:hooks:claude-accounting:02",
+    "disposition:transitions:hooks:claude-accounting:03",
+    "disposition:transitions:hooks:claude-accounting:04",
+    "disposition:transitions:hooks:claude-accounting:05",
+    "disposition:transitions:hooks:claude-accounting:06",
+    "disposition:transitions:hooks:claude-accounting:07",
+    "disposition:transitions:hooks:claude-accounting:08",
+    "disposition:transitions:hooks:session-accounting:01",
+    "disposition:transitions:hooks:session-accounting:02",
+    "disposition:transitions:hooks:session-accounting:03",
+    "disposition:transitions:hooks:session-accounting:04",
+    "disposition:transitions:hooks:session-accounting:05",
+    "disposition:transitions:hooks:pi-accounting:01",
+    "disposition:transitions:hooks:pi-accounting:02",
+    "disposition:transitions:hooks:pi-accounting:03",
+    "disposition:machines:hooks:claude-accounting",
+    "disposition:machines:hooks:session-accounting"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/accounting/source-inspection.json",
+      "sha256": "079d930014a4e247529f1af793027db39bc8faa279045559d22b9a63491bf97f"
+    }
+  ],
+  "scope": "accounting: 16 whole transition clauses and 2 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/accounting/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

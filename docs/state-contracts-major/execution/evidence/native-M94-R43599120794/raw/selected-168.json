@@ -1,0 +1,1183 @@
+{
+  "schema": "codearbiter.original-selected-go-parents/1",
+  "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "run_id": 43599120794,
+  "selected": [
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContentEvidencePathRejectsSensitiveComponents",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextDocumentContract",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextFinalizationNegativeControls",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextFinalizationPositiveControls",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMutationAdmission",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextRecoveryAndPaths",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestDoesNotTraverseExcludedBoundaries",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestFileLimitIncludesNonmatchingFiles",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestNestedRegularEntries",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestScopeOrderAndOwnershipBoundaries",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestTracksNamesSeparatelyFromContent",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestOrdinaryContextAdoptionRecoveryPreservesHistory",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestStoredPreviewContractRejectsMalformedRecords",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestRecognizedOutputsCoverEveryDerivedKind",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotExecutableFromIndexMode",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitProbeFailureFailsClosed",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotProgressOnlyUpdateKeepsIdentity",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotRejectsDifferingScans",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotShipSetMembership",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotTrackedSymlinkIsUnsafePath",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotUnreadableDotGitFailsClosed",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDecisionRemainsAUserChoiceNotAToolResult",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftWorkNeedsNoApprovalOrContextTicket",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveLegacyReadPreservesBytesAndNewFieldsRequireNewSchema",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveReportedReviewCannotMasqueradeAsReceiptedReview",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveResumePreservesStopsAndRejectsDuplicateStart",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveSelectionUsesDependenciesNotCheckpointOrder",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAuthorizedFarmEnrichment",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCanaryPreflightRequiresExactBaseBytes",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextApplyRequestShapes",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextAuthorityExactPreviewFixture",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryAdoptsMissingAndLegacyProvenance",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryCreateReplayAndIntegrity",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryFinalization",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryRejectsAmbiguousUnsafeOrForgedRequests",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextPreviewComposesWithStrictConsumers",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentCreateAdoptUpdate",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentOnboardingFinalization",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentSelectionPreservesControls",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCycleViewGroupsCanonicalWorkWithoutCopyingIt",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmAuthorizationRejectsLegacyObservationLaundering",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionBinding",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionBindingIncludesOrderedPendingDependencies",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionRefreshSelectsCurrentBinding",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmSealRejectsMatchingOpenShapeForgery",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestGeneratedWorkViewIsNotCanonical",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreCreatesOnlyLockMetadata",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreIsIdempotent",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInterruptedRetirementRecoversExactly",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverPreservesSettingsAndScopeBlocks",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRefusesUnmappedSections",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRefusesUnrecordedContent",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRetryKeepsLaterWorkAndStaleApplyFails",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeBootstrapsPortableProjectBeforeFirstWork",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeRejectsOrphanAndKeepsLegacyOwner",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRefusesTheSameRecordChangedTwice",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRewritesIncomingEditReferences",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01BaselineOrdinaryWorkKeepsReportedFailuresExplicit",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01TaskLabelBasesAreDistinct",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationSharedClassification",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationWriterExclusion",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProjectViewPresentsBoundedCanonicalWork",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProjectViewShowsBoundedRecordedArchitecture",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadsNeverMigrate",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRecordReorderRejectsInvalidCheckpointDependencyOrder",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRecordReorderRejectsMalformedOrStaleRequestsAtomically",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReservedPreviewOutputsFailClosed",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetirementKindMustNameAnActualCollection",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckedTaskKeepsTypedHistory",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckpointKeepsScopeBaseline",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestStaleContextPreviewRemainsRecognizedButCannotApply",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextShowsStopsAndUnfinishedDependencies",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT01FiniteOptInMap",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTypedRecordReorder",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUntypedTombstoneDoesNotOwnHistory",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRecoveryPreservesLaterBoardEdit",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesStaleBoardAndUncoveredRows",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesTamperedSourceMeaning",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkContextShowsBlockedPlanTaskAndUnresolvedReportWithoutChangingIt",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectBindingChangeDoesNotSend",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectConcurrentSyncHasOneClaim",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectDeferredClaimRequiresMergeObservation",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectLostCreateResponseRemainsUnknown",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkIssueAdoptionRequiresUnboundIdentityAndExactRepository",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkListPagesArchiveAndRejectsChangedMembership",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginRetryFindsArchivedIdentity",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginRetryRepairsMissingAttachmentAfterArchive",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewSelectsActualPlanTaskWithoutPromotingChecks",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchPinsContinuationAndKeepsRenderValidation",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchRejectsInvalidWholeSelection",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchRejectsOversizedLaterRecordBeforeDelivery",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchWholeRecordParityAndPages",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestOutlineDirectPageParity",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationEmptyPlan",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationPinsContinuationAndRender",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationRejectsIncompleteOrOversizedSelection",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationRejectsInvalidRequests",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationWholeArraysAndPages",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestCreateRaceDoesNotOverwrite",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestInvalidJournalFilenameNamesEntry",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalRemovedBetweenListAndReadBlocksWithPath",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObstructedTransactionNamesOffendingEntry",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedJournalAfterSizeBlocksReplayAndRecovery",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPartialJournalStageRequiresManualReconciliation",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPathEscapeAndSymlink",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPreJournalIOFailureHasBoundedPublicDiagnostic",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestSupportedBackendDeclarationMatchesBuiltBackend",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestTransactionalCAS",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnparseableFinalJournalNamesPathAndBlocksRecovery",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnsupportedPlatformDiagnosticIsTruthful",
+      "selected_population": 1,
+      "observed": [
+        "pass"
+      ]
+    }
+  ]
+}

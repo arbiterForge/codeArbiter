@@ -697,11 +697,14 @@ def validate_upload(job, artifact, step_name):
             and steps[0].get('conclusion') == 'success', 'required exact upload step did not succeed')
     try:
         step = steps[0]
+        require(all(isinstance(value, str) for value in
+                    (step['started_at'], step['completed_at'], artifact['created_at'])), 'invalid upload time identity')
         start = datetime.fromisoformat(step['started_at'].replace('Z', '+00:00'))
         end = datetime.fromisoformat(step['completed_at'].replace('Z', '+00:00')) + timedelta(seconds=1)
         created = datetime.fromisoformat(artifact['created_at'].replace('Z', '+00:00'))
         require(start.tzinfo and end.tzinfo and created.tzinfo and end >= start, 'invalid upload time identity')
-        require(start <= created <= end, 'artifact created outside claimed upload step')
+        # Artifact-service and runner clocks are independent. The original
+        # timestamped step log below authenticates the exact uploader identity.
         raw = api(f"actions/jobs/{job['id']}/logs", binary=True)
         require(len(raw) <= 32 * 1024 * 1024, 'upload attribution log exceeds bound')
         selected = []

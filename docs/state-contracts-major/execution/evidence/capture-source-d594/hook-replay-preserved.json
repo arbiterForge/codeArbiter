@@ -1,0 +1,130 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/capture-hook-proof.ts": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+    "site/scripts/capture/fixture.ts": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+    "site/scripts/capture/harness.ts": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+    "site/scripts/capture/normalize.ts": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+    "site/scripts/capture/py-runner.py": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SX01:01",
+    "disposition:transitions:SX01:02",
+    "disposition:transitions:SX01:03",
+    "disposition:transitions:SX01:04",
+    "disposition:transitions:SX01:05",
+    "disposition:transitions:SX01:06",
+    "disposition:transitions:SX01:07"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/capture-source-d594/inspection.json",
+      "sha256": "5e37324188d6806b25d927e1305c3c1253cda486a9d51b2ef4fba83c611ce0f6"
+    }
+  ],
+  "scope": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:SX01:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 202,
+          "end": 225,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "Owned capture fixture gets project/home/tmp, explicit allowlisted hook environment and fixed Git identity; activation/audit sink committed and note left untracked. Prefix/direct-temp-parent cleanup guard inspected; no actual execution asserted.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    },
+    {
+      "cell": "disposition:transitions:SX01:02",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 227,
+          "end": 239,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "Synthetic PreToolUse/Bash payload names a staging command and fixture cwd. Only Python hook entry executes; requested staging command is not executed. Status/index/gate observations are read, explicitly direct replay rather than installed discovery.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    },
+    {
+      "cell": "disposition:transitions:SX01:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 241,
+          "end": 280,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "Before record require returned exit2 plus H-03 stderr, exact staged-list equality, untracked note and BLOCK H-03 audit text. Failures throw. Raw entry SHA, hostDiscoveryProven false and commandExecuted false are fixed; imported module list not persisted as full proof.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    },
+    {
+      "cell": "disposition:transitions:SX01:04",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 188,
+          "end": 289,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "Comparison excludes capturedAt and normalizes volatile text. Equal prior evidence without force returns before media/record changes; force bypasses optimization. Previous media assets are not read back by this branch.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    },
+    {
+      "cell": "disposition:transitions:SX01:05",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 128,
+          "end": 159,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "After replay guards, owned frame root hosts sharp frames/concat. Fixed MP4/WebM calls require exit0; poster awaited. Failure precedes JSON record write, so prior record remains retryable though media can be partially replaced. External encoder runtime is not qualified.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    },
+    {
+      "cell": "disposition:transitions:SX01:06",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 344,
+          "end": 353,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "Media renderer awaited before hook-proof.json is written last. Failure cannot commit a new matching record and suppress retry. Ordered output is not an atomic media-plus-record transaction.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    },
+    {
+      "cell": "disposition:transitions:SX01:07",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 354,
+          "end": 361,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287"
+        }
+      ],
+      "semantic_assessment": "Nested finally invokes fixture.dispose then frame deletion even if fixture disposal throws. No catch relabels cleanup failure successful; no physical removal result claimed.",
+      "limits": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result."
+    }
+  ],
+  "excluded_cells": []
+}

@@ -61,6 +61,34 @@ describe("version facts", () => {
     expect(() => loadVersionFacts(withPiSupport(versions))).toThrow(/pi\.supported/);
   });
 
+  const codexHostJob = `  codex-host:
+    strategy:
+      matrix:
+        codex-version: ["0.143.0", "0.145.0"]
+`;
+  const otherCodexJob = `  other-codex-observer:
+    strategy:
+      matrix:
+        codex-version: ["9.8.7"]
+`;
+  const withWorkflow = (text: string) => withSource(".github/workflows/ci.yml", () => `jobs:\n${text}`);
+
+  it("scopes Codex versions to the source host job despite other matrices", () => {
+    const facts = loadVersionFacts(withWorkflow(codexHostJob + otherCodexJob));
+    expect(facts["codex.ci"].value).toBe("0.143.0 and 0.145.0");
+    expect(loadVersionFacts(withWorkflow((codexHostJob + otherCodexJob).replaceAll("\n", "\r\n")))["codex.ci"].value)
+      .toBe("0.143.0 and 0.145.0");
+  });
+
+  it.each([
+    ["missing source host job", otherCodexJob],
+    ["duplicate source host jobs", codexHostJob + codexHostJob],
+    ["missing owning matrix", "  codex-host:\n    runs-on: ubuntu-latest\n" + otherCodexJob],
+    ["duplicate identical owning matrix", codexHostJob + '        codex-version: ["0.143.0", "0.145.0"]\n' + otherCodexJob],
+  ])("rejects %s without borrowing another job's matrix", (_label, text) => {
+    expect(() => loadVersionFacts(withWorkflow(text))).toThrow(/codex\.ci.*exactly one/);
+  });
+
   it("rejects a Codex minimum that disagrees with the lowest CI-verified host", () => {
     expect(() => loadVersionFacts(withSource(
       "plugins/ca-codex/.codex-plugin/plugin.json",

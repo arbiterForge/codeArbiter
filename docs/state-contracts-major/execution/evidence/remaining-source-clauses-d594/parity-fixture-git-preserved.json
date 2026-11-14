@@ -1,0 +1,45 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-only immutable source-clause guard/effect/retry inspection after9ab"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T05:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+      "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+    }
+  ],
+  "scope": "Only fixed init/add/fixture-commit failure propagation. No fixture creation, host discovery, enforcement parity or actual Git result.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:T05:02",
+      "witnesses": [
+        {
+          "path": "tools/codex-parity-fixture.py",
+          "start": 148,
+          "end": 161,
+          "file_sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b"
+        }
+      ],
+      "semantic_assessment": "Each fixed Git init/add/fixture-authored commit is checked independently and any nonzero returns failure; generated files/earlier Git steps are not rolled back. Identity uses command-local fixture author settings.",
+      "limits": "No fixture or host was launched by this inspection; no actual Git parity/persona/gate behavior acceptance.",
+      "frozen_row_sha256": "3b34bd0c0ef8ddbdfcab80ce511f4e261927e2239c097df08451acb2281663fa",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "dependency_boundary": "Only fixed init/add/fixture-commit failure propagation. No fixture creation, host discovery, enforcement parity or actual Git result.",
+  "excluded_cells": []
+}

@@ -1,0 +1,720 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "tribunal-run-leads",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_tribunalinventorylib.py": {
+      "source_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+      "baseline_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_tribunalrunlib.py": {
+      "source_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+      "baseline_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/tribunal.py": {
+      "source_sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+      "baseline_sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:tribunal-run:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 610,
+          "end": 632,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "New valid unique run directory; fingerprint before/after allocation exact; exclusive source binding then initial append-only event; failure can leave orphan directory, no automatic current run claim.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "7cc68466ae133d431ab5a2d61af9e1d60653b59fca0215b348b47a06dec02e2e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 355,
+          "end": 386,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 650,
+          "end": 663,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Allowed event names, source-current writable state and nonterminal cursor checked under lock; fsynced append; wave-triaged strictly increases; no full lens-order requirement.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "9a06c409dba7e999ec0e5415f07cde6a5c4e7d5a2d5928b0c2eb60eb6adc1ea6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:03",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 355,
+          "end": 386,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 650,
+          "end": 663,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "HOLD: report-written advances follow-up after source-current check, but event-specific report path/required fields are not validated; append_event allows arbitrary nonreserved fields and cursor checks event name only.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "de57397deca5fbd8cf192992ba28e3488ba2670f4f9608fc60c061663e78cf6d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 367,
+          "end": 386,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 650,
+          "end": 663,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Follow-up cursor permits one issues-filed OR filing-skipped terminal choice; second conflicting/duplicate filing event rejected before append.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "0a85a8f3f8caf72b34643c63cc85ceef09949bfac37def77f5bac619c73103cd",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 367,
+          "end": 386,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 650,
+          "end": 663,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Exactly one telemetry-sent OR telemetry-skipped event; duplicate rejected; helper only fsynced event append, no network effect.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "0d03b71d3b5114c9a38b81a85ab2cc949aa92ab5d3fe22684209c19156b5da53",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 355,
+          "end": 386,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Completion allowed only in follow-up after both filing and telemetry terminal choices; terminal cursor rejects later event.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "36822df9dc9291b06c0aa90978d9d01bc3b3c76b03d8ffef65e7424675da795d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 355,
+          "end": 386,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 650,
+          "end": 663,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Nonterminal abort bypasses current-source writable check intentionally, but cursor still rejects terminal restart/further events.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "4477e26e72126e5defc377666e3ee0d99c5cabb07e05d5d54fe8ffbb4e185462",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-run:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 230,
+          "end": 286,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 340,
+          "end": 429,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Bind repo/common dir/HEAD/mode+content index/worktree/untracked/submodule fingerprints and scope/evidence selectors; only owned active run excluded; legacy/malformed/probe failure/drift explicitly refuse resume.",
+      "machine_id": "hooks:tribunal-run",
+      "baseline_clause_sha256": "f802efe526f1f01b1e86df115bdb6bdba24df9112b0f459f51fea911419b8d4b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "start_run",
+          "lines": "610-632"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_cursor",
+          "lines": "355-386"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "_status",
+          "lines": "389-429"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_event",
+          "lines": "650-663"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "resume_status",
+          "lines": "636-638"
+        },
+        {
+          "path": "core/pysrc/tribunal.py",
+          "symbol": "module",
+          "lines": "1-120"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-lock-leads:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 432,
+          "end": 523,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Owned OS guard plus exclusive write-lock serialize event/lead/triage mutation; held lock refuses, finally removes only matching nonlinked owned inode.",
+      "machine_id": "hooks:tribunal-lock-leads",
+      "baseline_clause_sha256": "b9796688f712470f443943fa2b7ff7a16031a952dfe728ea9e2346b86f16d9d7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "recover_lock",
+          "lines": "527-539"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "write_lead",
+          "lines": "686-695"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "dispose_lead",
+          "lines": "726-735"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "triage_eligibility",
+          "lines": "823-824"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_triage",
+          "lines": "828-840"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-lock-leads:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 527,
+          "end": 586,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Explicit true confirmation, exact lock digest, free OS guard+lock, current recoverable audit/follow-up state and valid lead/triage logs required; identity+bytes rechecked then matching lock archived, no blind stale deletion.",
+      "machine_id": "hooks:tribunal-lock-leads",
+      "baseline_clause_sha256": "8ffd557f30dfb3cff31e395816ea07a13243d233d98c5ac523f6dcab038b5101",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "recover_lock",
+          "lines": "527-539"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "write_lead",
+          "lines": "686-695"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "dispose_lead",
+          "lines": "726-735"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "triage_eligibility",
+          "lines": "823-824"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_triage",
+          "lines": "828-840"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-lock-leads:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 673,
+          "end": 695,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Valid source-lens-prefixed lead ID and writable source-bound run; _write exclusive O_EXCL creates immutable lead, existing refuses.",
+      "machine_id": "hooks:tribunal-lock-leads",
+      "baseline_clause_sha256": "e5f84f172e2e483e2cb7d5ddda80c5e5c43a9d4cb31a677459782abc3d7fe467",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "recover_lock",
+          "lines": "527-539"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "write_lead",
+          "lines": "686-695"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "dispose_lead",
+          "lines": "726-735"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "triage_eligibility",
+          "lines": "823-824"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_triage",
+          "lines": "828-840"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-lock-leads:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 698,
+          "end": 735,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Known lead and valid closed disposition/rationale under writable run; append history retained, last valid record projects current disposition.",
+      "machine_id": "hooks:tribunal-lock-leads",
+      "baseline_clause_sha256": "6bcdb825f80b7b2f840e295cad37312b4320c283874f8726625e90ff1fddbece",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "recover_lock",
+          "lines": "527-539"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "write_lead",
+          "lines": "686-695"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "dispose_lead",
+          "lines": "726-735"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "triage_eligibility",
+          "lines": "823-824"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_triage",
+          "lines": "828-840"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-lock-leads:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 738,
+          "end": 824,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "Finite confidence/locations/evidence/claim types validated; keep/combine high-or-critical original OR final requires counterargument and independent confirmed/narrowed verification; refuted/inconclusive ineligible; design-choice-only decision-required.",
+      "machine_id": "hooks:tribunal-lock-leads",
+      "baseline_clause_sha256": "83a5cdadd579b7262846d26f699e664a53ca0b2f885f1ba9050b0581c6189f2b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "recover_lock",
+          "lines": "527-539"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "write_lead",
+          "lines": "686-695"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "dispose_lead",
+          "lines": "726-735"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "triage_eligibility",
+          "lines": "823-824"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_triage",
+          "lines": "828-840"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-lock-leads:06",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 319,
+          "end": 442,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "start": 828,
+          "end": 840,
+          "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+        }
+      ],
+      "conformance": "HOLD: eligibility/current-run/fsynced append supported and repeated IDs not forbidden;8MiB limit checks existing log read and individual new record separately, not combined post-append size, so promised bounded total log is not enforced.",
+      "machine_id": "hooks:tribunal-lock-leads",
+      "baseline_clause_sha256": "0105f8d0858d882781a682deecb48084237a80c8e5036a417d0ee1cd65311915",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "recover_lock",
+          "lines": "527-539"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "write_lead",
+          "lines": "686-695"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "dispose_lead",
+          "lines": "726-735"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "triage_eligibility",
+          "lines": "823-824"
+        },
+        {
+          "path": "core/pysrc/_tribunalrunlib.py",
+          "symbol": "append_triage",
+          "lines": "828-840"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

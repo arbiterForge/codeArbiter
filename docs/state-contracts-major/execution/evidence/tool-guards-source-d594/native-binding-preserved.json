@@ -1,0 +1,89 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C03:02",
+    "disposition:transitions:C03:03",
+    "disposition:transitions:C03:04",
+    "disposition:transitions:C04:03"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/inspection.json",
+      "sha256": "fd288169463c568339689052c03f8edb17aac28bae27f80fc82cb02ac3d41687"
+    }
+  ],
+  "scope": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C03:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 119,
+          "end": 206,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Verify restricts consumers to declared bridge/authority/engine jobs; recomputes source/run/workflow/toolchain/native-platform/module and candidate-byte identity. Only same-run positive producer attempt not later than current is substituted; complete dictionary must match. A mismatch throws before restoring only the verified POSIX binary execute bit.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:C03:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 209,
+          "end": 235,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Recorded verification is final-issuer-only, closed record fields; source/run/workflow/module/platform/toolchain/manifest/binary identities must match and native Go digest must be canonical hex. Same-run earlier attempt may be reused. No foreign binary execution occurs in recorded(), and this remains recorded producer data rather than a new native run.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:C03:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 67,
+          "end": 116,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Candidate root must be an unlinked directory with exactly release.json and the exact platform binary. Manifest is bounded duplicate-free JSON with exact five fields and compatible advertised versions; platform entry is exact and native_tested is literal True, filename/digest exact. Leaf symlink/reparse/nonregular/oversize inputs and changed bytes throw; this does not assert all ancestor links are rejected.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:C04:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 264,
+          "end": 276,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Bounded duplicate-free needs JSON requires the exact seven declared stage names, each dictionary with result success, and changes.outputs.artifacts literal true. Missing/extra/duplicate/skipped/cancelled/failed stage or no artifact selection refuses; no omission-based pass.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    }
+  ],
+  "excluded_cells": [
+    "C03:01",
+    "C04:04"
+  ]
+}

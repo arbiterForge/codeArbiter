@@ -282,22 +282,32 @@ def event_trigger_paths(workflow: str, event: str) -> list[str]:
     return _globs(match.group("body"), '"')
 
 
+def npm_step_directories(workflow: str):
+    """Bind each actual step to its override or owning job default."""
+    for job_id, body in workflow_jobs(workflow).items():
+        default = re.search(
+            r"(?m)^    defaults:\n      run:\n        working-directory: (?P<dir>\S+)", body)
+        for step in re.findall(r"(?ms)^      - .*?(?=^      - |\Z)", body):
+            override = re.search(r"(?m)^        working-directory: (?P<dir>\S+)", step)
+            selected = override or default
+            yield job_id, selected.group("dir") if selected else ".", step
+
+
 def npm_install_jobs(workflow: str) -> dict[str, str]:
     """Every job that runs `npm ci`, mapped to the directory it installs into.
 
     Derived from the workflow rather than listed by hand: a hardcoded job list
     is exactly how a newly added graph slips in unaudited, which is the defect
-    #403 was.  The directory comes from the job's `defaults.run.working-
-    directory`, which is how every npm job in this repo scopes itself.
+    #403 was. A step override takes precedence over the job default. Refuse
+    multiple distinct install graphs rather than losing one in this mapping.
     """
     installs: dict[str, str] = {}
-    for job_id, body in workflow_jobs(workflow).items():
-        if not re.search(r"(?m)^\s*(?:-\s+)?(?:run: )?npm ci\b", body):
+    for job_id, directory, step in npm_step_directories(workflow):
+        if not re.search(r"(?m)^\s*(?:-\s+)?(?:run: )?npm ci\b", step):
             continue
-        directory = re.search(
-            r"(?ms)^    defaults:\n      run:\n        working-directory: (?P<dir>\S+)", body
-        )
-        installs[job_id] = directory.group("dir") if directory else "."
+        if job_id in installs and installs[job_id] != directory:
+            raise ValueError("multiple npm install graphs in job: " + job_id)
+        installs[job_id] = directory
     return installs
 
 
@@ -311,14 +321,13 @@ def unaudited_npm_graphs(workflow: str) -> list[str]:
     directory.  Deriving the rule this way keeps that fact CHECKED instead of
     asserted in a comment, and makes a brand-new graph fail on arrival.
     """
-    jobs = workflow_jobs(workflow)
     installs = npm_install_jobs(workflow)
     audited = {
         directory
-        for job_id, directory in installs.items()
-        if f"run: {NPM_AUDIT_GATE}" in jobs[job_id]
+        for _, directory, step in npm_step_directories(workflow)
+        if f"run: {NPM_AUDIT_GATE}" in step
         # The accepted-advisory form is the site graph's alone.
-        or (directory == "site" and f"run: {SITE_AUDIT_GATE}" in jobs[job_id])
+        or (directory == "site" and f"run: {SITE_AUDIT_GATE}" in step)
     }
     return [
         f"{job_id} installs {directory}, which nothing audits"
@@ -751,6 +760,34 @@ def valid_map():
         path = Path(temporary) / "impact-map.json"
         path.write_text(json.dumps(map_document()), encoding="utf-8")
         return module.load_map(path)
+
+
+class NpmWorkingDirectoryTest(unittest.TestCase):
+    def workflow(self, steps, default="site"):
+        return ("jobs:\n  fixture:\n    defaults:\n      run:\n"
+                f"        working-directory: {default}\n    steps:\n" + steps)
+
+    def test_install_step_overrides_job_default(self):
+        text = self.workflow("      - run: npm ci --ignore-scripts\n"
+                             "        working-directory: plugins/ca-sandbox/tools\n")
+        self.assertEqual(npm_install_jobs(text), {"fixture": "plugins/ca-sandbox/tools"})
+
+    def test_audit_step_cannot_cover_a_different_installed_graph(self):
+        text = self.workflow("      - run: npm ci --ignore-scripts\n"
+                             "        working-directory: plugins/ca-sandbox/tools\n"
+                             f"      - run: {NPM_AUDIT_GATE}\n")
+        self.assertEqual(unaudited_npm_graphs(text), [
+            "fixture installs plugins/ca-sandbox/tools, which nothing audits"])
+        text += (f"      - run: {NPM_AUDIT_GATE}\n"
+                 "        working-directory: plugins/ca-sandbox/tools\n")
+        self.assertEqual(unaudited_npm_graphs(text), [])
+
+    def test_multiple_install_graphs_cannot_be_silently_collapsed(self):
+        text = self.workflow("      - run: npm ci --ignore-scripts\n"
+                             "      - run: npm ci --ignore-scripts\n"
+                             "        working-directory: plugins/ca-sandbox/tools\n")
+        with self.assertRaises(ValueError):
+            npm_install_jobs(text)
 
 
 class CheckNameTest(unittest.TestCase):
@@ -1899,8 +1936,8 @@ class WorkflowContractTest(unittest.TestCase):
         # above already allows).
         dev_audited = {
             directory
-            for job_id, directory in installs.items()
-            if f"run: {NPM_AUDIT_DEV_GATE}" in jobs[job_id]
+            for _, directory, step in npm_step_directories(ci)
+            if f"run: {NPM_AUDIT_DEV_GATE}" in step
         }
         for job_id, directory in sorted(tools_graphs.items()):
             with self.subTest(job=job_id, directory=directory):

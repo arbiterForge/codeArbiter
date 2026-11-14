@@ -297,4 +297,91 @@ class PhysicalSourceTest(unittest.TestCase):
                     owner.physical_members(root)
             finally:link.rmdir() if os.name=="nt" else link.unlink()
 
+
+
+class ColdCliDiagnosticTest(unittest.TestCase):
+    def render_cli_error(self, error):
+        import ast
+        import contextlib
+        import io
+        import retained_archive_cli_observation as owner
+        tree = ast.parse(Path(owner.__file__).read_bytes())
+        branch = next(node for node in tree.body if isinstance(node, ast.If)
+                      and isinstance(node.test, ast.Compare)
+                      and isinstance(node.test.left, ast.Name)
+                      and node.test.left.id == "__name__")
+        def fail():
+            raise error
+        namespace = dict(vars(owner), __name__="__main__", main=fail)
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as stopped:
+            exec(compile(ast.Module(body=[branch], type_ignores=[]), owner.__file__, "exec"), namespace)
+        self.assertEqual(stopped.exception.code, 1)
+        expected = hashlib.sha256(str(error).encode("utf-8", errors="replace")).hexdigest()
+        self.assertIn("diagnostic_sha256=" + expected, stderr.getvalue())
+        return stderr.getvalue()
+
+    def chained(self, cause):
+        outer = ValueError("upload attribution unavailable or malformed")
+        outer.__cause__ = cause
+        return outer
+
+    def test_cli_distinguishes_underlying_upload_log_command_failure(self):
+        output = self.render_cli_error(self.chained(ValueError("readiness observation failed: gh")))
+        self.assertIn("code=UPLOAD_LOG_COMMAND_FAILED;", output)
+
+    def test_cli_distinguishes_fixed_timeouts_and_attribution_rejections(self):
+        for containment in ("exited", "terminated", "unconfirmed"):
+            with self.subTest(containment=containment):
+                error = self.chained(ValueError("readiness observation timed out; containment=" + containment))
+                self.assertIn("code=UPLOAD_LOG_TIMEOUT;", self.render_cli_error(error))
+        for reason in ("required exact upload step did not succeed",
+                       "artifact created outside claimed upload step",
+                       "upload attribution log exceeds bound",
+                       "claimed upload step did not run the pinned artifact uploader",
+                       "artifact ID/name/digest not finalized by claimed upload job"):
+            with self.subTest(reason=reason):
+                self.assertIn("code=UPLOAD_ATTRIBUTION_REJECTED;",
+                              self.render_cli_error(self.chained(ValueError(reason))))
+
+    def test_cli_classifies_fixed_metadata_and_encoding_failures(self):
+        cases = [(KeyError("created_at"), "UPLOAD_METADATA_INVALID"),
+                 (ValueError("invalid upload time identity"), "UPLOAD_METADATA_INVALID"),
+                 (ValueError("Invalid isoformat string: 'fixture-private-value'"), "UPLOAD_METADATA_INVALID"),
+                 (UnicodeDecodeError("utf8", b"\xff", 0, 1, "invalid start"), "UPLOAD_LOG_MALFORMED")]
+        for cause, code in cases:
+            with self.subTest(code=code):
+                output = self.render_cli_error(self.chained(cause))
+                self.assertIn("code=" + code + ";", output)
+                self.assertNotIn("fixture-private-value", output)
+
+    def test_cli_unknown_secret_and_unrelated_command_failures_stay_unknown(self):
+        private = "fixture-private-canary https://example.invalid/?auth=fixture-value"
+        for error in (self.chained(ValueError(private)), ValueError(private),
+                      ValueError("readiness observation failed: gh"),
+                      self.chained(KeyError(private))):
+            with self.subTest(error_type=type(error).__name__):
+                output = self.render_cli_error(error)
+                self.assertIn("code=UNKNOWN;", output)
+                self.assertNotIn(private, output)
+                self.assertNotIn("example.invalid", output)
+
+    def test_cli_cyclic_or_oversized_cause_chain_is_bounded(self):
+        cycle = self.chained(ValueError("unknown"))
+        cycle.__cause__.__cause__ = cycle
+        self.assertIn("code=UNKNOWN;", self.render_cli_error(cycle))
+        chain = self.chained(ValueError("readiness observation failed: gh"))
+        for _ in range(20):
+            wrapper = ValueError("unknown wrapper")
+            wrapper.__cause__ = chain
+            chain = wrapper
+        self.assertIn("code=UNKNOWN;", self.render_cli_error(chain))
+
+    def test_cli_unknown_cause_string_is_never_rendered(self):
+        class UnsafeString(ValueError):
+            def __str__(self):
+                raise AssertionError("unknown cause string must not be evaluated")
+        self.assertIn("code=UNKNOWN;", self.render_cli_error(self.chained(UnsafeString("untrusted"))))
+
+
 if __name__ == "__main__": unittest.main(verbosity=2)

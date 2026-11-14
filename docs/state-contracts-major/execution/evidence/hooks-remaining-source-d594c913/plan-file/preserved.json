@@ -1,0 +1,29 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:plan-file:02",
+    "disposition:transitions:hooks:plan-file:03",
+    "disposition:transitions:hooks:plan-file:04",
+    "disposition:transitions:hooks:plan-file:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/source-inspection.json",
+      "sha256": "b9213908146b823e2c5bfe4d7ce901acf33410e6c2006504de83995e65cc1262"
+    }
+  ],
+  "scope": "plan-file: 4 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

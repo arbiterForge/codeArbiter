@@ -38,7 +38,7 @@
  */
 import { createRunDirectory, refIdentity, repositoryIdentity, writeEffect, recoverReceipt, type FarmEffect } from "./farm-recovery.ts";
 import { parseArtifactReleaseManifest } from './artifact-manifest.ts';
-import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, unlink, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
@@ -1832,8 +1832,70 @@ function withMergeLock<T>(fn: () => Promise<T>): Promise<T> {
 // drop FARM_CONCURRENCY below 6 to dodge this) is satisfied rather than dodged.
 let worktreeChain: Promise<unknown> = Promise.resolve();
 
-export function withWorktreeLock<T>(fn: () => Promise<T>): Promise<T> {
-  const next = worktreeChain.then(fn, fn);
+// The queue above coordinates one process only. Separate Farm runs share Git's
+// physical common directory even when their checkouts/worktree roots differ.
+// This cooperative sidecar never steals a stale/foreign claim: interruption can
+// leave administration unavailable until the retained owner is inspected.
+type WorktreeLockOptions = { timeoutMs?: number; onContention?: () => void };
+async function withCommonWorktreeLock<T>(fn: () => Promise<T>, opts: WorktreeLockOptions): Promise<T> {
+  const found = await git(["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+  const reported = found.stdout.trim();
+  if (found.code !== 0 || !path.isAbsolute(reported) || /[\r\n]/.test(reported))
+    throw new Error("Git common directory unavailable for worktree administration");
+  const common = realpathSync.native(reported);
+  if (!(await stat(common)).isDirectory()) throw new Error("Git common directory is not a directory");
+  const lock = path.join(common, "codearbiter-farm-worktrees.lock");
+  const timeoutMs = opts.timeoutMs ?? 15_000;
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 0) throw new Error("invalid worktree lock deadline");
+  const deadline = performance.now() + timeoutMs;
+  let handle: FileHandle;
+  for (;;) {
+    try {
+      handle = await open(lock, fsConstants.O_RDWR | fsConstants.O_CREAT | fsConstants.O_EXCL | (fsConstants.O_NOFOLLOW ?? 0), 0o600);
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      opts.onContention?.();
+      if (performance.now() >= deadline)
+        throw new Error("Git worktree administration busy or retained lock present; no lock owner was removed");
+      await sleep(Math.min(25, Math.max(0, deadline - performance.now())));
+    }
+  }
+  let primaryFailed = false;
+  let owned: { dev: bigint; ino: bigint } | undefined;
+  const owner = JSON.stringify({ pid: process.pid, token: randomBytes(16).toString("hex") });
+  try {
+    owned = await handle.stat({ bigint: true });
+    await handle.writeFile(owner, "utf8");
+    return await fn();
+  } catch (error) {
+    primaryFailed = true;
+    throw error;
+  } finally {
+    let releaseError: unknown;
+    try {
+      const current = await lstat(lock, { bigint: true });
+      const bytes = Buffer.alloc(Buffer.byteLength(owner) + 1);
+      const read = await handle.read(bytes, 0, bytes.length, 0);
+      if (!owned || !current.isFile() || current.isSymbolicLink() || current.nlink !== 1n
+          || current.dev !== owned.dev || current.ino !== owned.ino
+          || read.bytesRead !== Buffer.byteLength(owner) || bytes.subarray(0, read.bytesRead).toString("utf8") !== owner)
+        throw new Error("worktree lock ownership changed");
+      await unlink(lock);
+    } catch (error) {
+      releaseError = error;
+    }
+    try { await handle.close(); } catch (error) { releaseError ??= error; }
+    if (releaseError) {
+      if (!primaryFailed) throw new Error("Git worktree administration lock release unverified; retained ownership requires inspection", { cause: releaseError });
+      console.error("Git worktree administration lock release unverified; primary failure preserved and retained ownership requires inspection");
+    }
+  }
+}
+
+export function withWorktreeLock<T>(fn: () => Promise<T>, opts: WorktreeLockOptions = {}): Promise<T> {
+  const invoke = () => withCommonWorktreeLock(fn, opts);
+  const next = worktreeChain.then(invoke, invoke);
   worktreeChain = next.catch(() => {});
   return next;
 }
@@ -1853,11 +1915,11 @@ export async function prepareWorktree(
   try { assertContainedWorktree(wt); }
   catch(error) { return error instanceof Error ? error.message : String(error); }
   // Registry writers serialize; rejected paths never queue behind another claim.
-  return withWorktreeLock(async () => {
+  try { return await withWorktreeLock(async () => {
     const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
     if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
     return null;
-  });
+  }); } catch (error) { return `worktree administration unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`; }
 }
 
 // --------------------------------------------------------------------------
@@ -1968,7 +2030,8 @@ export async function removeWorktreeVerified(
     // The backoff below is deliberately OUTSIDE the lock: holding it across a
     // sleep would park every other worker behind this one's retry schedule,
     // turning a bounded local delay into a global stall.
-    const { registered, observation } = await withWorktreeLock(async () => {
+    let observed: { registered: boolean | null; observation: WorktreePathObservation };
+    try { observed = await withWorktreeLock(async () => {
       const rmR = await gitFn(["worktree", "remove", "--force", wt]);
       if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
       let reg = await stillRegistered(gitFn, wt);
@@ -1984,7 +2047,11 @@ export async function removeWorktreeVerified(
         reg = await stillRegistered(gitFn, wt);
       }
       return { registered: reg, observation };
-    });
+    }); } catch (error) {
+      return { ok: false, target: wt, attempts: i - 1,
+        detail: `worktree administration unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}` };
+    }
+    const { registered, observation } = observed;
     // An unreadable path cannot authorize prune or another destructive attempt.
     // Keep its ownership unresolved for explicit recovery instead.
     if (observation.kind === "unknown") {
@@ -2379,10 +2446,10 @@ async function prepareEvaluationWorktree(wt: string, from: string, gitFn: GitRun
   }
   // No pre-clean and no -b: evaluation may never reset/delete an existing branch.
   // The caller owns the fresh namespace; a collision fails without replacing it.
-  return withWorktreeLock(async () => {
+  try { return await withWorktreeLock(async () => {
     const added = await gitFn(["worktree", "add", "--detach", wt, from]);
     return added.code === 0 ? null : `canary worktree add failed: ${redactSecrets(added.out).slice(0, 200)}`;
-  });
+  }); } catch (error) { return `canary worktree administration unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`; }
 }
 
 export async function runTask(
@@ -3432,16 +3499,17 @@ async function main() {
   let publishError: unknown = null;
 
   try {
-    const branchResult = await git(["branch", ENV.integration, ENV.base]);
-    if (branchResult.code !== 0)
-      throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
-
     // #397: the integration worktree is per-run scratch that lived at a shared,
     // run-agnostic path — a second farm process force-removed it out from under
     // the first mid-merge. Scope it to the run directory alongside the run's
     // receipts.
     integrationWorktree = path.resolve(runDir, "integration-wt");
-    const wtResult = await git(["worktree", "add", integrationWorktree, ENV.integration]);
+    const wtResult = await withWorktreeLock(async () => {
+      const branchResult = await git(["branch", ENV.integration, ENV.base]);
+      if (branchResult.code !== 0)
+        throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
+      return git(["worktree", "add", integrationWorktree, ENV.integration]);
+    });
     if (wtResult.code !== 0)
       throw new Error(`could not create integration worktree: ${wtResult.out}`);
 

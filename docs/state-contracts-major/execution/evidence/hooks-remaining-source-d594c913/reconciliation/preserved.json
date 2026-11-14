@@ -1,0 +1,40 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_reconciliationlib.py": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/artifact-reconcile.py": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:reconciliation:01",
+    "disposition:transitions:hooks:reconciliation:02",
+    "disposition:transitions:hooks:reconciliation:03",
+    "disposition:transitions:hooks:reconciliation:04",
+    "disposition:transitions:hooks:reconciliation:05",
+    "disposition:transitions:hooks:reconciliation:06",
+    "disposition:transitions:hooks:reconciliation:07",
+    "disposition:transitions:hooks:reconciliation:08",
+    "disposition:machines:hooks:reconciliation"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "sha256": "e282cb0b69926004b38eb6a552bdfab635ec740d7f99c26a907683976e98cf05"
+    }
+  ],
+  "scope": "reconciliation: 8 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

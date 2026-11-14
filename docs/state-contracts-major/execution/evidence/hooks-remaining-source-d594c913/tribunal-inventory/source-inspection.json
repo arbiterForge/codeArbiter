@@ -1,0 +1,106 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "tribunal-inventory",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_tribunalinventorylib.py": {
+      "source_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+      "baseline_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:tribunal-inventory:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "start": 78,
+          "end": 173,
+          "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251"
+        },
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "start": 243,
+          "end": 544,
+          "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251"
+        }
+      ],
+      "conformance": "Bounded safe Git/file inventory disables external protocols/lazy fetch; collects tracked paths and explicit manifest declarations, filename-convention relationships labeled; import_call_graph unavailable/no parser, judgment not performed.",
+      "machine_id": "hooks:tribunal-inventory",
+      "baseline_clause_sha256": "2845c44aa0b82fa6b3b62465b14021fc5c4b6243ebccb8150c5882fa6a38e81a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "symbol": "module",
+          "lines": "1-653"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-inventory:02",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "start": 579,
+          "end": 613,
+          "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251"
+        }
+      ],
+      "conformance": "HOLD: selected recognized profile and fresh-context/inline-limited labels supported, but unavailable model/reasoning override inherits configured setting and reports limited608–612; baseline promises refusal rather than inherited selection.",
+      "machine_id": "hooks:tribunal-inventory",
+      "baseline_clause_sha256": "e4d3979539af428e7fcf8434419773c606e9d95ea89e5f418ca99671efdd6b8b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "symbol": "module",
+          "lines": "1-653"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-inventory:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "start": 616,
+          "end": 653,
+          "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251"
+        }
+      ],
+      "conformance": "Closed heuristic inputs and bytes/4, declared profile weights6/3/1, allowances and0.5–2x band; measured_usage/priceNone; concurrency affects duration/peak only, not token estimate.",
+      "machine_id": "hooks:tribunal-inventory",
+      "baseline_clause_sha256": "d36b1121aeaab3c4049f9eb4ef4734518d489228585cfdb589416c0a4c6918eb",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_tribunalinventorylib.py",
+          "symbol": "module",
+          "lines": "1-653"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

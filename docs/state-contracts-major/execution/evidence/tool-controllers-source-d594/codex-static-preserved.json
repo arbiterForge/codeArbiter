@@ -1,0 +1,101 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/scripts/check_codex_skill_resources.py": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+    ".github/scripts/check_codex_static_package.py": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+    ".github/scripts/verify_codex_candidate_provenance.py": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+    ".github/scripts/verify_codex_static_candidate.py": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C12:01",
+    "disposition:transitions:C12:02",
+    "disposition:transitions:C12:03",
+    "disposition:transitions:C12:04",
+    "disposition:transitions:C12:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/inspection.json",
+      "sha256": "0e80a53fd8c7ac14f17fe1b4ab3fa467597a83546beb2d99cdbe79fe13553a02"
+    }
+  ],
+  "scope": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C12:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_static_candidate.py",
+          "start": 25,
+          "end": 110,
+          "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+        }
+      ],
+      "semantic_assessment": "Exact lowercase40 commit must resolve to the same Git commit and exact tree. Fixed git archive selects only plugins/ca-codex into an owned temporary ZIP; wrapper loads its checker from fixed sibling trusted location, not candidate. Git/archive failure refuses, archive has byte limit, no candidate script import occurs.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/check_codex_static_package.py",
+          "start": 59,
+          "end": 296,
+          "file_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618"
+        }
+      ],
+      "semantic_assessment": "Bounded inert package reader rejects unsafe/colliding ZIP/file population and malformed duplicate/nonfinite JSON; frontmatter validates required identities/quoting. ca-codex name/SemVer, closed hook fields/grammar, approved complete canonical hook digest and present target files are checked. Resource closure rejects escaped/unresolved reads and deterministic sorted path/content manifests yield hashes. No current candidate PASS is claimed.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_static_candidate.py",
+          "start": 93,
+          "end": 132,
+          "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+        }
+      ],
+      "semantic_assessment": "After bounded static contract returns, each supplied archive/package/resource expected digest must be lowercase64hex and exactly observed; mismatch raises. Success result includes exact source/tree and identities/version/counts. Temporary archive exits context before result, and no live hook execution evidence is claimed.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_candidate_provenance.py",
+          "start": 29,
+          "end": 151,
+          "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0"
+        }
+      ],
+      "semantic_assessment": "Legacy wrapper independently requires exact commit/tree, fixed plugin-only Git ZIP and digest expectations, loads trusted resource-checker candidate_static_contract and returns its selected-resource/read counts. It remains a distinct inert wrapper; it never loads executable code from candidate archive.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:05",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_static_candidate.py",
+          "start": 146,
+          "end": 167,
+          "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+        }
+      ],
+      "semantic_assessment": "Main catches OSError/ValueError/KeyError from identity/schema/digest checks, emits FAIL/errors in JSON mode plus stderr and returns1; success return0 follows completed verifier. No publication/API effect is present in this static CLI. Other unexpected failures are not relabeled PASS.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    }
+  ],
+  "excluded_cells": []
+}

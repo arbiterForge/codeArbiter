@@ -1,0 +1,127 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: split-only successor reusing actual original d594 clause inspection; current physical bytes checked, no rerun"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56"
+    }
+  ],
+  "scope": "Original finite conditional source clauses only, narrowed to actual tag-reconciliation control cone; no execution or broader task/machine claim.",
+  "dependency_boundary": "Same original inspected direct code/guard/data scope; unrelated CI source removed because this cone does not read it. No runtime observation or imported authority is created by splitting.",
+  "inputs": {
+    ".github/scripts/check_tag_immutability.py": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+    ".github/scripts/reconcile_tag_receipt.py": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+    ".github/scripts/tag_publication_receipt.py": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C20:01",
+    "disposition:transitions:C20:02",
+    "disposition:transitions:C20:03",
+    "disposition:transitions:C20:04"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C20:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 33,
+          "end": 88,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 98,
+          "end": 143,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 192,
+          "end": 212,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "Closed exact expected/receipt source identities are compared; inputs are bounded regular paths with link/reparse and duplicate/nonfinite JSON rejection. Both source ledgers are hash-joined and their original/legacy inventories validated disjoint before reconciliation. Provenance authentication is still an external caller prerequisite.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "a8cfbef1f832e21836825c72872edfb485b4589c0e448f38b65e13b693871414",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 89,
+          "end": 95,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 214,
+          "end": 222,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "An already-recorded tag with equal object/type/commit returns None, rechecks both input byte preimages and exits without creating a candidate. Conflicting identity raises, never replacing history.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "9405a71aa9cae98868556b25a6d5c16ba0b76356d173fd33c2314f7179d0df5f",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 83,
+          "end": 95,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "After disjointness and legacy refusal, absent original tag is appended only to deepcopy(manifest); source dictionaries/files are not mutated by reconcile. No tag/ref/release operation is performed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "8a43097533b955a3577d9b35a6d353a145366ffaffe0e97705b61d4bf18c65df",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 146,
+          "end": 162,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 214,
+          "end": 226,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "Both original byte preimages are reread immediately before exclusive link publication of the bounded candidate. Drift/existing output aborts; source ledgers remain unchanged and candidate adoption is separate. Cooperative filesystem boundary is retained.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "745b763466180c38c9aa937eaa126780d75c09d947c6541ad7e192d30cb62870",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "original_inspection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-tool-source-clauses-d594\\inspection.json",
+    "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+  }
+}

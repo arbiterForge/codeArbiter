@@ -476,28 +476,52 @@ class UploadAttributionTest(unittest.TestCase):
                      '2026-11-13T15:00:02Z Artifact major-qualification-20 successfully finalized. Artifact ID 30\n').encode()
 
     def check(self, job=None, artifact=None, logs=None):
-        with mock.patch.object(owner, 'api', return_value=self.logs if logs is None else logs):
+        with mock.patch.object(owner, 'api', return_value=self.logs if logs is None else logs) as fetch:
             owner.validate_upload(job or self.job, artifact or self.artifact, 'Upload major qualification report')
+            fetch.assert_called_once_with(f"actions/jobs/{(job or self.job)['id']}/logs", binary=True)
 
     def test_exact_successful_upload_has_original_attribution(self):
         self.check()
+
+    def test_artifact_service_clock_offset_does_not_override_authenticated_step_log(self):
+        # Original observed service/runner timestamps; IDs/digest use inert fixtures.
+        step=dict(self.job['steps'][0],started_at='2026-11-14T13:44:04Z',completed_at='2026-11-14T13:44:07Z')
+        artifact=dict(self.artifact,created_at='2026-11-14T13:44:15Z')
+        logs=self.logs.replace(b'2026-11-13T15:00:00Z',b'2026-11-14T13:44:04Z').replace(b'2026-11-13T15:00:01Z',b'2026-11-14T13:44:05Z').replace(b'2026-11-13T15:00:02Z',b'2026-11-14T13:44:06Z')
+        self.check(job=dict(self.job,steps=[step]),artifact=artifact,logs=logs)
 
     def test_original_actions_log_utf8_bom_is_accepted(self):
         self.check(logs=b'\xef\xbb\xbf' + self.logs)
 
     def test_report_name_and_json_job_id_do_not_replace_successful_upload_step(self):
         for steps in ([], [dict(self.job['steps'][0], conclusion='skipped')],
-                      [dict(self.job['steps'][0], name='Unrelated upload')]):
+                      [dict(self.job['steps'][0], name='Unrelated upload')], self.job['steps']*2):
             with self.assertRaises(owner.ReadinessError):
                 self.check(job=dict(self.job, steps=steps))
 
     def test_another_jobs_artifact_or_different_digest_or_window_refuses(self):
         for artifact in (dict(self.artifact, id=31), dict(self.artifact, digest='sha256:'+'b'*64),
-                         dict(self.artifact, created_at='2026-11-13T16:00:00Z')):
+                         dict(self.artifact, name='another-artifact')):
             with self.assertRaises(owner.ReadinessError):
                 self.check(artifact=artifact)
+        # Runner log timestamps, rather than the independent API creation clock,
+        # must place each exact action/digest/finalization inside this step.
+        for stamp in (b'15:00:00Z', b'15:00:01Z', b'15:00:02Z'):
+            with self.subTest(stamp=stamp), self.assertRaises(owner.ReadinessError):
+                self.check(logs=self.logs.replace(stamp, b'16:00:00Z'))
         with self.assertRaises(owner.ReadinessError):
             self.check(logs=self.logs.replace(owner.UPLOAD_ACTION.encode(), b'actions/other@unknown'))
+
+    def test_metadata_and_step_timestamps_still_require_wellformed_aware_values(self):
+        for value in ('not-a-time', '2026-11-13T15:00:01', '', None, 17, {}):
+            with self.subTest(created_at=value), self.assertRaises(owner.ReadinessError):
+                self.check(artifact=dict(self.artifact, created_at=value))
+        missing=dict(self.artifact);del missing['created_at']
+        with self.assertRaises(owner.ReadinessError):self.check(artifact=missing)
+        for field,value in (('started_at','2026-11-13T15:00:00'), ('completed_at','invalid'),
+                            ('started_at',None), ('completed_at','2026-11-13T14:59:00Z')):
+            with self.subTest(field=field,value=value), self.assertRaises(owner.ReadinessError):
+                self.check(job=dict(self.job, steps=[dict(self.job['steps'][0], **{field:value})]))
 
 
 class QuestionEntryTest(unittest.TestCase):

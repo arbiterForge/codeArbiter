@@ -273,14 +273,32 @@ def validate_selections(document):
     return document["groups"]
 
 
-def build_report(req, *, job_name, job_id, selections, observations, payloads):
+def build_report(req, *, job_name, job_id, selections, observations, payloads,
+                 producer_job=None, runtime_acquisitions=None):
     require(type(job_id) is int and job_id > 0, "positive actual job identity required")
     groups = validate_selections(selections)
     # One declared original-package role is source-bound; no general formatting
     # or caller-provided replacement expressions are accepted.
     require(isinstance(req["source_commit"], str) and readiness.SHA.fullmatch(req["source_commit"]), "exact report source required")
-    groups = [dict(g, payload_name="artifact-release-packages-" + req["source_commit"])
-              if g["payload_name"] == "artifact-release-packages-{source_commit}" else g for g in groups]
+    resolved = []
+    for group in groups:
+        if group["payload_name"] == "artifact-release-packages-{source_commit}":
+            group = dict(group, payload_name="artifact-release-packages-" + req["source_commit"])
+        elif group["payload_name"] == "artifact-sandbox-plugin-{source_commit}-{run_attempt}":
+            # Resolve only the selected owning job, using actual API job context.
+            # An observation's attempt or arbitrary format string is never input.
+            if group["job"] == job_name:
+                require(isinstance(producer_job, dict)
+                        and type(producer_job.get("id")) is int and producer_job["id"] == job_id
+                        and producer_job.get("name") == job_name
+                        and type(producer_job.get("run_id")) is int and producer_job["run_id"] == req["ci_run_id"]
+                        and producer_job.get("status") == "in_progress"
+                        and type(producer_job.get("run_attempt")) is int and 0 < producer_job["run_attempt"] <= 9999,
+                        "actual original Sandbox job attempt required")
+                group = dict(group, payload_name="artifact-sandbox-plugin-" + req["source_commit"]
+                             + "-" + str(producer_job["run_attempt"]))
+        resolved.append(group)
+    groups = resolved
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
     require(expected, "job has no required mapped cells")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
@@ -310,13 +328,36 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads):
                         "native module tests cannot qualify an upstream host")
             producers = {"source-test": ("python-test-result-observer", "vitest-json-observer"),
                          "native-module": ("go-named-ci20-join",)}
-            if group["proof_kind"] == "retained-archive-cli":
-                from retained_archive_cli_observation import admit
+            if group["proof_kind"] in ("retained-archive-cli", "live-host"):
+                if group["proof_kind"] == "retained-archive-cli":
+                    from retained_archive_cli_observation import admit
+                elif (observed.get("producer") == "pi-installed-rpc-observer-v1"
+                      and isinstance(observed.get("installed_binding"), dict)
+                      and observed["installed_binding"].get("profile") == "pi-installed-rpc-v1"):
+                    from pi_live_report_profile import admit
+                elif (observed.get("producer") == "sandbox-installed-docker-observer-v1"
+                      and isinstance(observed.get("installed_binding"), dict)
+                      and observed["installed_binding"].get("profile") == "sandbox-installed-docker-v1"):
+                    from sandbox_live_report_profile import admit
+                else:
+                    from codex_live_report_profile import admit
                 if group["observation"] not in installed_admissions:
+                    extra = {}
+                    if observed.get("producer") == "sandbox-installed-docker-observer-v1":
+                        extra = {"producer_job": producer_job,
+                                 "runtime_acquisition": (runtime_acquisitions or {}).get(group["observation"])}
+                    elif (observed.get("producer") == "pi-installed-rpc-observer-v1"
+                          and isinstance(observed.get("installed_binding"), dict)
+                          and observed["installed_binding"].get("profile") == "pi-installed-rpc-v1"):
+                        extra = {"runtime_acquisition": (runtime_acquisitions or {}).get(group["observation"])}
                     installed_admissions[group["observation"]] = admit(
-                        observed, req=req, job_id=job_id, authenticated_payloads=payloads, repo=ROOT)
+                        observed, req=req, job_id=job_id, authenticated_payloads=payloads, repo=ROOT, **extra)
+                require(installed_admissions[group["observation"]]["tests"] == observed.get("tests"),
+                        "installed outcomes differ from closed observer admission")
                 admitted = installed_admissions[group["observation"]]
                 require(group["payload_name"] == admitted["primary_payload_name"], "cold primary payload differs")
+                require(group["proof_kind"] != "live-host" or cell in admitted["installed_cells"],
+                        "closed live profile cannot qualify this cell")
                 require(not cell.startswith("installed:") or cell in admitted["installed_cells"],
                         "cold profile cannot qualify this upstream installed cell")
                 require(cell != "task:PI-D07", "cold profile cannot qualify packaged Pi authorship")
@@ -367,8 +408,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads):
         result = {"cell": cell, "result": "PASSED", "commands": evidence,
                   "selected_population": len(selected), "executed_population": len(executed)}
         if installed_payloads:
-            require(identity in installed_payloads and len(installed_payloads) == 2,
-                    "cold report requires both distinct original payloads")
+            require(identity in installed_payloads and 1 <= len(installed_payloads) <= 2,
+                    "installed report requires one or two distinct original payloads")
             result["payload_artifact_ids"] = sorted(installed_payloads)
         else:
             result["payload_artifact_id"] = identity
@@ -387,7 +428,7 @@ def authenticated_payload(metadata, req, consumed_root):
     archive = readiness.artifact_bytes(metadata, req)
     members = readiness.members(archive)
     root = Path(consumed_root).resolve(strict=True)
-    native_bindings = []
+    native_bindings, documents = [], {}
     for member in members:
         path = root
         for part in PurePosixPath(member["path"]).parts:
@@ -395,16 +436,22 @@ def authenticated_payload(metadata, req, consumed_root):
             info = path.lstat()
             require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
                     "consumed payload contains a link or reparse point")
-        require(path.is_file() and path.stat().st_size <= 64 * 1024 * 1024
-                and hashlib.sha256(path.read_bytes()).hexdigest() == member["sha256"],
+        require(path.is_file() and path.stat().st_size <= 64 * 1024 * 1024,
+                "executed payload member is not a bounded regular file")
+        content = path.read_bytes()
+        require(len(content) <= 64 * 1024 * 1024
+                and hashlib.sha256(content).hexdigest() == member["sha256"],
                 "executed payload differs from authenticated archive")
+        if member["path"] == "artifact-package-cohort.json":
+            require(len(content) <= 8 * 1024 * 1024, "cohort document exceeds bound")
+            documents[member["path"]] = content
         if path.name == "ci20-native-tested.json":
             binding = load_json(path)
             require(binding.get("format") == native_binding_owner.FORMAT,
                     "consumed native stamp has the wrong format")
             native_bindings.append(binding)
     return {"artifact_id": metadata["id"], "archive_sha256": readiness.digest(archive),
-            "members": members, "native_bindings": native_bindings}
+            "members": members, "native_bindings": native_bindings, "documents": documents}
 
 
 def validate_emitter_environment():
@@ -459,6 +506,7 @@ def main(argv=None):
             payloads[name] = authenticated_payload(found[0], req, path)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
+                              producer_job=matching[0],
                               observations=observations, payloads=payloads)
         new_output(args.output, report)
         return 0

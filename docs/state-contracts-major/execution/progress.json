@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "acf1aeeafc44696fbac966cba7eb999e14857514 plus reviewed original-M acceptance overlay; source observer implementations remain in progress",
+  "head": "dc1bbbf7 plus scoped framework followups and67 additional evidence dispositions",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T11:39:25.048730+00:00",
+  "recorded_at": "2026-11-14T16:32:37.449405+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -597,7 +597,7 @@
         "Owning test lacked real npm-script producer zero-workspace shape; added root-only script+0matrix, preserved30/31/32. ZeroWindows shape has4base files; nested adds prefix helper for5base files."
       ],
       "tested": [
-        "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32\u21924/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
+        "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32→4/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
       ],
       "remaining": [
         "CurrentPOSIX0/30/31/32 producer/platform and historicalprofile matrix are owned by affected hosted/native qualification. Refreshed full native input binding requires newtestsource currentbuild; native owner running it. Do not mark all HOOK-F04 platform qualification complete from this Windows pass."
@@ -1635,7 +1635,7 @@
       "owner": "sandbox",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Observed active program implementation/qualification failure,2026-11-13",
-      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
+      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9REDÃ¢â€ â€™GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
       "current_detail": "Profile2 adds bounded Go/nonworkspaceRust alongside explicitNode/Python with pinned runtime stages and material-input cache binding. AlloriginalfourDockerfixtures retained;123localPASS7DockerSKIP, realhostedpending."
     },
     {
@@ -1765,7 +1765,7 @@
       "owner": "hooks-workflows",
       "status": "DONE",
       "source": "1e06da1b6483591350b090c8eed4a6f37f277d55",
-      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED\u2192GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
+      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED→GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
       "current_detail": "Actual exact6083 hosted Windows isolation job132323671933 succeeded, including unchanged ordinary3s admission criterion. This closes only the scanner work-allocation defect; whole run failed independently."
     },
     {
@@ -3502,7 +3502,7 @@
       "recorded_at": "2026-11-14T07:31:05.349374+00:00",
       "kind": "COLD_CLOSED_DIAGNOSTIC_EXTENSION",
       "source_epoch": "ce3 source export + explicit Temp-author diagnostic overlay; current a0 owning preimages match",
-      "detail": "Fixed host/builtin family/subtype/audit event-site-depth symbols replace an opaque unknown-only record when supported. Unknown custom properties cannot escape the public emission fallback; arbitrary error text/paths/argv/environment/audit payloads remain excluded. Genuine feature/privacy RED\u219214focusedPASS, exactguard/admission AST parity and strictlegacyv1/v2 decoder controls retained; independentcomplete+narrow privacy reviews pass. Source and10-case closedregistry registered; underlyingWindowsARM cold commit-proof cause remainsUNKNOWN. No native/full56/package acceptance claimed.",
+      "detail": "Fixed host/builtin family/subtype/audit event-site-depth symbols replace an opaque unknown-only record when supported. Unknown custom properties cannot escape the public emission fallback; arbitrary error text/paths/argv/environment/audit payloads remain excluded. Genuine feature/privacy RED→14focusedPASS, exactguard/admission AST parity and strictlegacyv1/v2 decoder controls retained; independentcomplete+narrow privacy reviews pass. Source and10-case closedregistry registered; underlyingWindowsARM cold commit-proof cause remainsUNKNOWN. No native/full56/package acceptance claimed.",
       "source_freeze_sha256": "3fd16b4172357349752fec4ddaf3b683eafe90a704764367d3604b77ae5b532c",
       "proof_impact": "Fifteen current channel TESTED rows bind changed tools/build-host-packages.py. Their old execution epochs remain retained; current applicability must be inspected after commit and renewed only from actual owning execution."
     },
@@ -3554,6 +3554,30 @@
       "kind": "SEARCH_INITIALIZATION_AND_FINITE_SETTINGS_PROGRESS_ACCEPTANCE",
       "source": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
       "detail": "Real pending-options bug: original1targetRED+4diagnostic positives; minimal shared init/cache-after-options repair, unchanged original five test calls, added rejection/retry control,6GREEN+targettsc. Independent scoped reviewPASS. Actual committed component16 PASS,8source/runtime8/HEAD/index stable; renew8 oldbrowser rows and admit6 remainingS55edges plus finite11-edge component-machine S55, with explicit source-clause timer/meta limits and no production index/layout/platform union. Separate corrected actual10 settings cases at7f PASS0.125s with14 positive immutable/physical inputs incl actual present Claude _host.py and canonical durability before/after; Windows case-insensitive lookup inventories stable. Admit only HOOK-F05 and uninstall04/05. Original3bd capture retained as diagnostic history with incomplete declared host lookup, never admitted; false-absence preflight refused before any extra child. No retrospective absence or reader relaxation. Separate actual10 Go parents/31outcomes at3bd with250 stable inputs prove six ADR0046 operation clauses; Root admits finite N-F03, retains three NT09/SEQ07 composed/strict/legacy/installed gaps. No whole task/scenario/native candidate/installed/program completion."
+    },
+    {
+      "recorded_at": "2026-11-14T15:56:05.932424+00:00",
+      "kind": "FINITE_SOURCE_CONTRACT_ADMISSION",
+      "source": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "detail": "Admit433 source-only dispositions:396 transitions and37 complete machines across native, hooks, Pi and site/tool control cones. Original scoped source inspections and105 frozen intake bytes retained; every declared source input checked against source commit, committed child head and physical current file. No runtime/model/host/task/scenario/user-consent/publication completion. Farm caller2 and CI-dependent C10:02/03 remain held; other mismatch/decision holds remain PLANNED."
+    },
+    {
+      "recorded_at": "2026-11-14T15:56:05.932424+00:00",
+      "kind": "CHILD1107_ACTUAL_CI_REPAIRS",
+      "source": "59fdd8a068dc3cc095a7961d3fcfa7c6ffe9efca",
+      "detail": "59fdd8a0 fixes source Codex fixture bytecode drift, docs version matrix ownership and Sandbox candidate intent; generator and candidate readiness have real hosted success. Actual Sandbox missing pinned image and Farm cross-process Git-admin race under focused repair. No blind full-suite reruns;1098 remains draft/held from main. Separate H-18 read-only compound command false-positive diagnosed for framework repair."
+    },
+    {
+      "recorded_at": "2026-11-14T16:32:37.449405+00:00",
+      "kind": "FINITE_SOURCE_AND_NATIVE_FINDING_ACCEPTANCE",
+      "source": "dc1bbbf7b32e57c03da43ecc55c679cc6a6138c5",
+      "detail": "Admit66 further source-only clauses from completed155-row site/tooling inspection;32 precise discrepancy/dependency holds stay explicit. Admit whole nativefinding N-F05 TESTED from original successful M94 six-platform artifacts, including real read-only Windows fixtures and bounded read/scoped-currentness observations; all249sourceinputs match. No new native execution, task/machine promotion or whole-program completion."
+    },
+    {
+      "recorded_at": "2026-11-14T16:32:37.449405+00:00",
+      "kind": "FRAMEWORK_READER_AND_MAPPED_TARGET_REPAIRS",
+      "source": "dc1bbbf7b32e57c03da43ecc55c679cc6a6138c5",
+      "detail": "Expected provider read errors now return sanitized per-target failure, preserve pending intent and let independent targets continue without resending completed targets. Canonical guard and allthreehostcopies scope simple read-only statements correctly; complex syntax/redirection remains conservative. Original regression REDs, affected GREENs and focused independent reviews retained. A redirect bypass in an unintegrated prototype was caught and fixed; only cleared successor admitted. Actual dc1Windows coverage has3newfixturefailures/956pass/3skip; portable retained-owner fixture repair and new hosted observation pending."
     }
   ],
   "scoped_blockers": [
@@ -3566,16 +3590,21 @@
       "id": "PI-HTTP-ENDPOINT-POLICY",
       "scope": "Selected Pi upstream transport contract and S10/S11",
       "detail": "Awaiting explicit user choice between currentCON004 HTTPS rule and acceptedADR0018/0019 HTTP compatibility. No side selected or source changed; independent work remains authorized."
+    },
+    {
+      "id": "COLD-OBSERVER-M863-REFUSAL",
+      "scope": "Retained cold-package observer normal-CI qualification",
+      "detail": "M863 trusted normal run43606646328 cold observers refused upload attribution with generic hash on allsixplatforms. Archived finalmetadata/logs pass old/current predicates; actual historical cause remains unknown. No blind retry or clock-closure claim; closed safe diagnostic categories being added before next actual normal run. Existing ordinary cold commands and original raw failure remain separate."
     }
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push the coherent footer/acceptance/closed-diagnostic/evidence batch once and watch exact-head CI; original WindowsARM cause remains unknown. Merge1103 by true merge only after its required aggregate passes, retaining1098/main/publication hold.",
-    "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
-    "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
-    "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
+    "Deliver the committed Codex/Pi/Sandbox observer pipelines through one child PR and observe exact-head CI, then actual trusted normal installed jobs.",
+    "Admit the original M94 native finite successor observations; retain the artifact service timestamp refusal until the owning upload reader is corrected and reviewed.",
+    "Continue row-specific acceptance and missing behavior. Source preservation does not establish runtime/model compliance or whole-task qualification.",
+    "Retain the unresolved Pi endpoint decision and unavailable parent-UI/physical-consent acceptance; never merge1098 to main or publish without the user testing hold being lifted."
   ],
-  "delivery_state": "PR1103_NEXT_DIAGNOSTIC_SOURCE_BATCH_AWAITING_EXACT_HEAD_CI_MAIN_HOLD",
+  "delivery_state": "CHILD1107_WINDOWS_FIXTURE_AND_FRAMEWORK_FOLLOWUP_PENDING_CI",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3589,14 +3618,7 @@
       "rule": "Since ruleset 27158575, every change to major/state-contracts lands through a child branch PR whose base is major/state-contracts (including execution-record updates)."
     }
   ],
-  "delivery_pr": {
-    "number": 1103,
-    "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
-    "base": "major/state-contracts",
-    "observed_head": "6a636870bc23f5079700faf58a234d19f6823eca",
-    "next": "Push coherent repairs once and observe exact-head replacement CI. Merge1103 only with its required aggregate green, using true merge and approved named auto-deletion. Keep1098 draft/unmerged to main; no release authority.",
-    "local_source_head": "1e06da1b6483591350b090c8eed4a6f37f277d55"
-  },
+  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1107",
   "integrator_observations": [
     {
       "id": "M46e29-original-acceptance",
@@ -3617,6 +3639,36 @@
         "M244-member native module is historical at F245; original observations are not relabeled current.",
         "Finite dispositions do not complete tasks, installed host policy cells or whole publication reports.",
         "Doctor remains DEGRADED; real parentUI/physical consent and Pi endpoint policy remain open."
+      ]
+    },
+    {
+      "id": "host-observers-and-finite-source-preservation",
+      "source_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35",
+      "facts": [
+        "1106 merged as863db5ff after92 passing checks; one failed macOS Intel recovery job rerun passed, original failure retained.",
+        "Normal integration M94 push43599120794 succeeded.",
+        "Codex producer14/wiring13; Pi producer14/wiring17; Sandbox producer20/wiring11; workflow67 and composed original report20 controls passed at their recorded source scopes.",
+        "Independent five CodeQL test-fixture false-positive dispositions recorded; parent CodeQL is green.",
+        "70 transitions and16 machines admitted as finite source PRESERVED on unchanged79 committed inputs."
+      ],
+      "limits": [
+        "No actual newly wired installed host job execution claimed.",
+        "No task/scenario/physical consent/program/publication completion."
+      ]
+    },
+    {
+      "id": "native-M94-R43599120794-finite-renewal",
+      "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+      "normal_push_run": 43599120794,
+      "run_attempt": 1,
+      "facts": [
+        "Original Windows native480 selected/observed;477 passed and3 platform skips. All168 cited pure parents passed once.",
+        "Renew120 finite Go TESTED rows against the actual245-member module; oldM46 proofs remain in evidence_history.",
+        "Separate12 Go parent facts and2 actual Windows authority consumers retained for eight mixed rows; their old current-status claims are not silently refreshed."
+      ],
+      "limits": [
+        "One Darwin builder upload attribution is still refused pending the independently reviewed service-clock reader correction.",
+        "No installed/native whole-task/scenario/program/publication completion."
       ]
     }
   ],

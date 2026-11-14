@@ -1,0 +1,46 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_contextmergelib.py": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/resolve-append-only-conflict.py": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+    "core/pysrc/resolve-context-conflict.py": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:append-conflict:01",
+    "disposition:transitions:hooks:append-conflict:02",
+    "disposition:transitions:hooks:append-conflict:03",
+    "disposition:transitions:hooks:append-conflict:04",
+    "disposition:transitions:hooks:append-conflict:05",
+    "disposition:transitions:hooks:legacy-context-recovery:01",
+    "disposition:transitions:hooks:legacy-context-recovery:02",
+    "disposition:transitions:hooks:legacy-context-recovery:03",
+    "disposition:transitions:hooks:legacy-context-recovery:04",
+    "disposition:transitions:hooks:legacy-context-recovery:05",
+    "disposition:machines:hooks:append-conflict",
+    "disposition:machines:hooks:legacy-context-recovery"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-conflict-recovery/source-inspection.json",
+      "sha256": "0ff303a8abdeefb281cd56115f54e31c1d8cbc8685b84bbe890323b867f7d1ab"
+    }
+  ],
+  "scope": "legacy-conflict-recovery: 10 whole transition clauses and 2 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-conflict-recovery/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/scripts/coverage_union.py": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C09:03",
+    "disposition:transitions:C09:04",
+    "disposition:transitions:C09:05",
+    "disposition:transitions:C09:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/inspection.json",
+      "sha256": "fd288169463c568339689052c03f8edb17aac28bae27f80fc82cb02ac3d41687"
+    }
+  ],
+  "scope": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C09:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 216,
+          "end": 309,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Verify admits only exact present-host triples of provenance JSON, checked JSON and blob, rejects unexpected/missing entries and recomputes snapshot plus blob/provenance hashes. Normalize requires unique known host and identical commit/tree/Vitest/source/config maps; exactly one admitted host produces PARTIAL and a fresh normalized output directory.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C09:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 107,
+          "end": 258,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Both distinct expected hosts must each pass closed triples/identity checks; bounded flatted decoding validates references/depth/cycles, source paths, coverage map/count keys and locations; layout mismatch refuses. Host count two produces UNION only after normalization under identical declared source identities.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C09:05",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 285,
+          "end": 309,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Verify checks exact available triple filenames, rejects unexpected entries and explicitly refuses no complete hosts before creating output. Thus an empty merge input cannot pass this function; workflow-level subsequent handling is not observed.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C09:06",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 148,
+          "end": 309,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Negative counts are admitted only for the specified implicit-else placeholder; combination preserves any positive hit instead of letting negative artifacts cancel it. Destination must not exist and files use exclusive create. Writes are sequential and can leave partial scratch output on I/O failure; exception prevents a successful result, with no atomic multi-file publication claim.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    }
+  ],
+  "excluded_cells": [
+    "C09:01",
+    "C09:02"
+  ]
+}

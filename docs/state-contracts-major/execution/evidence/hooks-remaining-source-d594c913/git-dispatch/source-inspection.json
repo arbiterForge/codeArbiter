@@ -1,0 +1,640 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "git-dispatch",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_durabilitylib.py": {
+      "source_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+      "baseline_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_githooks.py": {
+      "source_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "baseline_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:git-install:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 169,
+          "end": 196,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 428,
+          "end": 508,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1070,
+          "end": 1128,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Selected manifest/package safe-name metadata and resolved Git dropin/hooks dir identify own registry; ephemeral enforcer path is not pinned; write own .path and matching seen marker. Source registration contract, no cryptographic install authentication claim.",
+      "machine_id": "hooks:git-install",
+      "baseline_clause_sha256": "ddc1c18d29af961f58d63b0467c412383e42dd4cf21c78c3a3913193f44844ac",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install",
+          "lines": "1070-1241"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "uninstall",
+          "lines": "1244-1286"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_cached_hooks_dir",
+          "lines": "931-953"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-install:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 855,
+          "end": 1008,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1104,
+          "end": 1119,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Fast path only default cached hooksdir with unchanged global config mtime token, no local hooksPath/include and exact managed shims; refresh own registry+seen only; uncertainty falls through full resolution.",
+      "machine_id": "hooks:git-install",
+      "baseline_clause_sha256": "45234a80ccb97642b557f7161bb37f54207a15e8caceaae0f75bfd6e654c9eb5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install",
+          "lines": "1070-1241"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "uninstall",
+          "lines": "1244-1286"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_cached_hooks_dir",
+          "lines": "931-953"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-install:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1163,
+          "end": 1182,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Corresponding existing unmanaged hook is reported and skipped; managed sentinel required before replacement; no blanket overwrite.",
+      "machine_id": "hooks:git-install",
+      "baseline_clause_sha256": "14986fbbd026bca39a9ae83c4088108b7374e6fec07071e001b3eb13719f867f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install",
+          "lines": "1070-1241"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "uninstall",
+          "lines": "1244-1286"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_cached_hooks_dir",
+          "lines": "931-953"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-install:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1155,
+          "end": 1230,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Shared install lock serializes phase plan/write/chmod; failure attempts rollback and swallows rollback errors while warning says rolled-back; actual pair requires inspection, not claimed guaranteed atomicity.",
+      "machine_id": "hooks:git-install",
+      "baseline_clause_sha256": "2afaba18f4e5cc848bc4728b11f7ec78ec976cd0e72d6a291b48c049d311610b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install",
+          "lines": "1070-1241"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "uninstall",
+          "lines": "1244-1286"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_cached_hooks_dir",
+          "lines": "931-953"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-install:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1155,
+          "end": 1160,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1233,
+          "end": 1241,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Unavailable install lock leaves phase shims untouched; registry/cache/seen refresh may occur after; next install retry remains possible.",
+      "machine_id": "hooks:git-install",
+      "baseline_clause_sha256": "f3daa67d5c7f8cdaee154eb98db3ed8aa5c498203cd32cea571eaedf566336f0",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install",
+          "lines": "1070-1241"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "uninstall",
+          "lines": "1244-1286"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_cached_hooks_dir",
+          "lines": "931-953"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-install:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1244,
+          "end": 1286,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Only own plugin .path/.seen removed and trusted identity only when matching owner; shared precommit/prepush remain for siblings.",
+      "machine_id": "hooks:git-install",
+      "baseline_clause_sha256": "7744d7a614d577eda5b2fb123155ae359584205ed8adc147e01f4e3319bf37e4",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install",
+          "lines": "1070-1241"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "uninstall",
+          "lines": "1244-1286"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_cached_hooks_dir",
+          "lines": "931-953"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 287,
+          "end": 334,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 362,
+          "end": 419,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 640,
+          "end": 663,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Finite cross-host drive path candidates resolve existing enforcer and skip legacy versioned registration; POSIX raw C:/ spelling withheld, no relative drive fallback for that grammar.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "fce7427a1a5c0dca394b630472be69b168750eb5316e82c6cf05a31792db97d6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 533,
+          "end": 612,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 809,
+          "end": 827,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Seen file must equal registered path to be confirmed; maximum confirmed mtime wins, stale/unknown competing entries skip; no time-based expiry.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "4fbb2bac6ff2f682fc3b5d3aab1f776a1ca726955a26ac4944aa10361ad81c7d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 673,
+          "end": 714,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Both trusted executable paths yield three-line python/git/owner atomic identity; one missing preserves existing complete identity else refuses; neither supplied leaves identity unchanged.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "abd158376da6a78b4841fbc6f5fc5fe7e8d9ac0784021b93084d3d7b1061c92c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 775,
+          "end": 799,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Present identity requires regular file, exactly3lines/nonempty owner and resolvable Python/Git; invalid identity exits1 before PATH fallback; selected paths exported.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "b81c36d5e73aba0be3b99ee9a542eb4ac17893f373a3db390be3d38205a87bf6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 797,
+          "end": 833,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Legacy identity-absent branch probes python3 else python; unresolved/no enforcer ends fail-closed; no sibling-execution qualification.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "dacc1a4be3ffe5bf107c313ce07f70ce9db17a9cf6b774e9937515a6eacf2d4b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 754,
+          "end": 763,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 809,
+          "end": 833,
+          "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+        }
+      ],
+      "conformance": "Valid newline-terminated pre-push input captured once and printf-replayed identically to each chosen enforcer; first nonzero exits, zero selected enforcers fail closed.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "39fdd9cb2e3e1a73dbc8e99b44e904fd35ec05aafa24637c765d0ca17c286a90",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    },
+    {
+      "id": "hooks:git-dispatch:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 38,
+          "end": 102,
+          "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+        }
+      ],
+      "conformance": "Root override environment removed, alternate index preserved only explicit option; absent selected alternate index returns restage/recreate guidance, invalid trusted absolute executable raises; source utility contract only.",
+      "machine_id": "hooks:git-dispatch",
+      "baseline_clause_sha256": "6ef5d1dcf849e3b98dc45443e69e8d988c1983a74c2896d180483545bb0fadac",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_refresh_trusted_identity",
+          "lines": "688-714"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "stale_registered_plugins",
+          "lines": "615-637"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "live_registered_plugins",
+          "lines": "640-663"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "_shim",
+          "lines": "717-834"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "symbol": "module",
+          "lines": "1-578"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:git-dispatch",
+      "constituents": [
+        "hooks:git-dispatch:01",
+        "hooks:git-dispatch:02",
+        "hooks:git-dispatch:03",
+        "hooks:git-dispatch:04",
+        "hooks:git-dispatch:05",
+        "hooks:git-dispatch:06",
+        "hooks:git-dispatch:07"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:git-install",
+      "constituents": [
+        "hooks:git-install:01",
+        "hooks:git-install:02",
+        "hooks:git-install:03",
+        "hooks:git-install:04",
+        "hooks:git-install:05",
+        "hooks:git-install:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "update-notice",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_updatelib.py": {
+      "source_sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+      "baseline_sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/hostapi.py": {
+      "source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "baseline_sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/update-refresh.py": {
+      "source_sha256": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+      "baseline_sha256": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:update-notice:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 165,
+          "end": 198,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        }
+      ],
+      "conformance": "Validated target/prefix/single-line command descriptor selects independent cache series; unsupported descriptor returnsNone, never sibling fallback.",
+      "machine_id": "hooks:update-notice",
+      "baseline_clause_sha256": "d99d64189a97f2d9562f9ac513fcd59f947f1a3cd09512c20d3fabff6978d61b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "symbol": "module",
+          "lines": "1-458"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "symbol": "module",
+          "lines": "1-51"
+        }
+      ]
+    },
+    {
+      "id": "hooks:update-notice:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 238,
+          "end": 250,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        }
+      ],
+      "conformance": "Missing, malformed or nonfinite timestamp stale; finite now-minus-check>=day stale; future finite timestamp remains fresh.",
+      "machine_id": "hooks:update-notice",
+      "baseline_clause_sha256": "d6aee207fdeac09e7ed3ead4ef8b86e9776d930777b9401067519b206fae070d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "symbol": "module",
+          "lines": "1-458"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "symbol": "module",
+          "lines": "1-51"
+        }
+      ]
+    },
+    {
+      "id": "hooks:update-notice:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 360,
+          "end": 412,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        }
+      ],
+      "conformance": "Under cache lock re-read freshness, reserve checked_at, atomic-write/readback before releasing and fetching; unverifiable reservation or unavailable lock returns cache without fetch.",
+      "machine_id": "hooks:update-notice",
+      "baseline_clause_sha256": "8647bc9a682668f9b23d2ac709a85d8a0b1e7591cd4c550a884c4dc7792aa850",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "symbol": "module",
+          "lines": "1-458"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "symbol": "module",
+          "lines": "1-51"
+        }
+      ]
+    },
+    {
+      "id": "hooks:update-notice:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 253,
+          "end": 357,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        }
+      ],
+      "conformance": "Initial and redirect HTTPS guards; at most10pages, known truncated enumeration returnsNone; stable numeric exact-prefix maximum only; network/decode exceptions returnNone.",
+      "machine_id": "hooks:update-notice",
+      "baseline_clause_sha256": "3ccb919e84dab75d1286807d8bd6c916e635e78c0c9540d7cd980cd2bc62eaae",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "symbol": "module",
+          "lines": "1-458"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "symbol": "module",
+          "lines": "1-51"
+        }
+      ]
+    },
+    {
+      "id": "hooks:update-notice:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 414,
+          "end": 458,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        }
+      ],
+      "conformance": "Fetch errors yieldNone; reacquire and merge latest monotonically while preserving other host rows and maximum finite checked_at, retaining daily reservation.",
+      "machine_id": "hooks:update-notice",
+      "baseline_clause_sha256": "25feba91d1f912c5fdbfdb4d2ca4dd5abfcd2ac059c2bec7bb9ad9e1ebc53f80",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "symbol": "module",
+          "lines": "1-458"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "symbol": "module",
+          "lines": "1-51"
+        }
+      ]
+    },
+    {
+      "id": "hooks:update-notice:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 130,
+          "end": 162,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        },
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "start": 201,
+          "end": 210,
+          "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "start": 26,
+          "end": 51,
+          "sha256": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c"
+        }
+      ],
+      "conformance": "Leadingv/pre/build suffix normalization feeds padded numeric tuple comparison; newer version gets host-specific advisory; detached wrapper catches failure and returns0.",
+      "machine_id": "hooks:update-notice",
+      "baseline_clause_sha256": "6c6fec93664e8b513a3434aac2b020dfba0232b13b3c94b0b8ce6f43a33ddb03",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_updatelib.py",
+          "symbol": "module",
+          "lines": "1-458"
+        },
+        {
+          "path": "core/pysrc/update-refresh.py",
+          "symbol": "module",
+          "lines": "1-51"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:update-notice",
+      "constituents": [
+        "hooks:update-notice:01",
+        "hooks:update-notice:02",
+        "hooks:update-notice:03",
+        "hooks:update-notice:04",
+        "hooks:update-notice:05",
+        "hooks:update-notice:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

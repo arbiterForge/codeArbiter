@@ -385,6 +385,9 @@ def run_rpc_commands(
         "PI_CODING_AGENT_DIR": str(agent_dir),
         "PI_OFFLINE": "1",
         "PI_TELEMETRY": "0",
+        # Installed-package proof owns a complete inventory. The real Python
+        # bridge must not add untracked bytecode to those original bytes.
+        "PYTHONDONTWRITEBYTECODE": "1",
         "TEMP": str(temp_dir),
         "TMP": str(temp_dir),
         "USERPROFILE": str(home),

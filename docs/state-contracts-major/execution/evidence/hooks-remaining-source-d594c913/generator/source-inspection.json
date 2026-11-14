@@ -1,0 +1,1716 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "generator",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "site/scripts/generator/build-index.ts": {
+      "source_sha256": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+      "baseline_sha256": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/collect-sources.ts": {
+      "source_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+      "baseline_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "site/scripts/generator/curated-drift.ts": {
+      "source_sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+      "baseline_sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/derive-name.ts": {
+      "source_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+      "baseline_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "site/scripts/generator/extract-hook-gates.ts": {
+      "source_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+      "baseline_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "site/scripts/generator/forge-status.ts": {
+      "source_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+      "baseline_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "site/scripts/generator/format-tools-list.ts": {
+      "source_sha256": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+      "baseline_sha256": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/host-command-catalog.ts": {
+      "source_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+      "baseline_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "site/scripts/generator/landing-stats.ts": {
+      "source_sha256": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+      "baseline_sha256": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/load-curated.ts": {
+      "source_sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+      "baseline_sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/markdown-fences.ts": {
+      "source_sha256": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+      "baseline_sha256": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/model-tier.ts": {
+      "source_sha256": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+      "baseline_sha256": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/normalize-source.ts": {
+      "source_sha256": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+      "baseline_sha256": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/parse-doc.ts": {
+      "source_sha256": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+      "baseline_sha256": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/parse-fields.ts": {
+      "source_sha256": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+      "baseline_sha256": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/plugin-workflow-pairs.ts": {
+      "source_sha256": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+      "baseline_sha256": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-agent-page.ts": {
+      "source_sha256": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+      "baseline_sha256": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-changelog.ts": {
+      "source_sha256": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+      "baseline_sha256": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-command-page.ts": {
+      "source_sha256": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+      "baseline_sha256": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-gates-table.ts": {
+      "source_sha256": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+      "baseline_sha256": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-lens-page.ts": {
+      "source_sha256": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+      "baseline_sha256": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-reader-fields.ts": {
+      "source_sha256": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+      "baseline_sha256": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-reference-lead.ts": {
+      "source_sha256": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+      "baseline_sha256": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-related-links.ts": {
+      "source_sha256": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+      "baseline_sha256": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-skill-page.ts": {
+      "source_sha256": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+      "baseline_sha256": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/render-source-embed.ts": {
+      "source_sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+      "baseline_sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/source-ref.ts": {
+      "source_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+      "baseline_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "site/scripts/generator/split-frontmatter.ts": {
+      "source_sha256": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+      "baseline_sha256": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/truncate-description.ts": {
+      "source_sha256": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+      "baseline_sha256": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/types.ts": {
+      "source_sha256": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+      "baseline_sha256": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/workflow-pairs.ts": {
+      "source_sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+      "baseline_sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "site/scripts/generator/yaml-quote.ts": {
+      "source_sha256": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+      "baseline_sha256": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "generator:markdown:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "start": 8,
+          "end": 11,
+          "sha256": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034"
+        }
+      ],
+      "conformance": "Leading BOM stripped once and CRLF globally normalized; other text remains. parseDoc deliberately does not normalize on its own.",
+      "machine_id": "generator:markdown",
+      "baseline_clause_sha256": "255638aeabb303132b9e63967161014e6ed0c9ad93ae8c2b84b7f600cf4afa3b",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79"
+        }
+      ]
+    },
+    {
+      "id": "generator:markdown:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "start": 13,
+          "end": 41,
+          "sha256": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b"
+        }
+      ],
+      "conformance": "Exact first/closing delimiter extracts flat block and trims only leading empty body lines; missing/unclosed block returns null with original body.",
+      "machine_id": "generator:markdown",
+      "baseline_clause_sha256": "f222624bac339f87e9df0c18f5039a0245cf6d014919597befbb434f3ef36532",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79"
+        }
+      ]
+    },
+    {
+      "id": "generator:markdown:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "start": 10,
+          "end": 43,
+          "sha256": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56"
+        }
+      ],
+      "conformance": "First colon, trimmed fields and one matching quote pair; blank/colonless ignored and repeated assignment overwrites. No nested-YAML rejection guarantee.",
+      "machine_id": "generator:markdown",
+      "baseline_clause_sha256": "faa3bb0686f502db201410b7a4625ff26b856f4ad3a6662ce7273f918809927e",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79"
+        }
+      ]
+    },
+    {
+      "id": "generator:markdown:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "start": 10,
+          "end": 30,
+          "sha256": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7"
+        }
+      ],
+      "conformance": "Admitted0–3-space backtick/tilde opener stores exact character/length and marks opening line fenced; contents have no procedural interpretation.",
+      "machine_id": "generator:markdown",
+      "baseline_clause_sha256": "730f24f5581cfab843d899adaaa1647a2ac494e2f1e30f56c3e22647c35bea78",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79"
+        }
+      ]
+    },
+    {
+      "id": "generator:markdown:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "start": 31,
+          "end": 39,
+          "sha256": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7"
+        }
+      ],
+      "conformance": "Closing must match character, minimum length and whitespace suffix; failed closer remains fenced, absent closer carries through EOF.",
+      "machine_id": "generator:markdown",
+      "baseline_clause_sha256": "5e69e675e4ee8504fdfef35ca14a40d061aa5bdc323e40a61529ed916774732e",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79"
+        }
+      ]
+    },
+    {
+      "id": "generator:markdown:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "start": 51,
+          "end": 79,
+          "sha256": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7"
+        }
+      ],
+      "conformance": "ATX reader ignores fenced lines and returns level/text/index with trailing hashes removed; optional demotion affects only levels1–5.",
+      "machine_id": "generator:markdown",
+      "baseline_clause_sha256": "2969308748ca426e224a00e0f33cd0582064e977cb78f16e0b181b74282f0689",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "start": 70,
+          "end": 168,
+          "sha256": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f"
+        }
+      ],
+      "conformance": "Loader validates schema/taxonomy order/metadata and exact route set plus bidirectional alias closure; malformed/missing/unknown/duplicate/alias-target errors throw.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "4930fee2a346db7fcce4a006fe4a5b161dcc8a105e057b7e86deafbc45caadea",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "start": 18,
+          "end": 39,
+          "sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a"
+        }
+      ],
+      "conformance": "Frontmatter/fenced headings skipped; first H1 claims only a bare lowercase identifier. /ca: text or no admitted heading yields no claimed owner.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "75f333daff351970769fad27e31c6baaf9d9f1328ec72b98c172e1ad4586ad0a",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "start": 49,
+          "end": 115,
+          "sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a"
+        }
+      ],
+      "conformance": "Every claim must name one shipped skill with one command owner; problems aggregate. Alias visibility retains page, other visibility merges. Catalog required only after nonempty claims.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "d52c4cc19a57425c4c0f1d32316ca252154adc8be86b2332637633f937708a07",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "start": 117,
+          "end": 134,
+          "sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a"
+        }
+      ],
+      "conformance": "Pure derived pair-role map sets merged/alias-owner or default internal-only; it neither enables nor disables a runtime skill.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "6b6726e3a86d8bbbf05a4c731e3be9ea8ce34794f689b1f038508339fec383d2",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "start": 137,
+          "end": 193,
+          "sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a"
+        }
+      ],
+      "conformance": "Merged redirects are base-aware; historical supplied -2 set resolves directly to final command/skill. Alias owner remains live and later skills are not automatically historical.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "5028aa1f38c728369304e02ae4f35c7d7c9d9792551ad723eb91aa496c46468e",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "start": 52,
+          "end": 138,
+          "sha256": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0"
+        }
+      ],
+      "conformance": "Fixed type order, sorted sidebar titles and declared visibility/workflow groups produce pure return values; commands missing catalog or assignment throw.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "e9325ed80a8b550dcb43dbfcf0487ed5ee866e6d7256c830e896057520695571",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "start": 170,
+          "end": 199,
+          "sha256": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f"
+        }
+      ],
+      "conformance": "Definition-specific caller counts Set(extracted tags), core/alias catalog entries, md agents excludingINDEX and skill directories. Changed extractor masking is explicit dependency boundary: no unchanged gate number, old extraction behavior or runtime message equivalence claimed.",
+      "machine_id": "generator:catalog-graph",
+      "baseline_clause_sha256": "2d4cddfaea66ac67afb04bbe075f1a52e89d023eb1305a7c7099af589085eb16",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "start": 261,
+          "end": 282,
+          "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b"
+        }
+      ],
+      "conformance": "Only absent optional directory yields empty map; present .md files are actually read/parsed and malformed input propagates rather than being treated absent.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "35fd90bbf6943d5401a53e7f10fe973e57da4dbb3b48f9c336bd6d46ef75659a",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "start": 45,
+          "end": 127,
+          "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b"
+        },
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "start": 228,
+          "end": 244,
+          "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b"
+        }
+      ],
+      "conformance": "BOM/CRLF normalized; frontmatter/nonempty entity required, minimal related syntax and gate accumulation until next item/dedent. Recognized incomplete gate throws; unsupported unrelated nesting is not broadly rejected.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "e613d10c1c23f3dc94ea7c290710dfcf5e42b3714a03578d19a75f4131d9e711",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "start": 278,
+          "end": 308,
+          "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b"
+        }
+      ],
+      "conformance": "Declared entity keys map; second same entity immediately throws while all orphan filenames accumulate. No independent location-equals-entity guarantee is invented.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "892c568c013535d03d41208cebb7e8232506dcd5e3ec74312dbf49b9d9da8f3c",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "start": 147,
+          "end": 225,
+          "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b"
+        },
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "start": 296,
+          "end": 315,
+          "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b"
+        }
+      ],
+      "conformance": "Column0 nonempty required reader fields use shared shape spec; block scalars reject, workflow Example outside fences must have content, retired heading is rejected. Missing/empty errors aggregate.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "2e505f03e206c906600b74548315304d1c82fa1bd056d8f39ffc9061fa86f59b",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "start": 69,
+          "end": 110,
+          "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "start": 124,
+          "end": 155,
+          "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7"
+        }
+      ],
+      "conformance": "Recognized /ca command is checked against catalog; nearest same-line command owns subsequent flags. Unknown commands are errors; missing command source skips additional flag attribution.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "94260c4e11282e968cd8b5f231c5d2d9852fa6db8a0fda59cc2b7626665a16e7",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "start": 80,
+          "end": 94,
+          "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "start": 138,
+          "end": 157,
+          "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7"
+        }
+      ],
+      "conformance": "Without same-line command, carried code-block command or own command under Usage supplies owner. Whole-token flag presence checked in supplied command+skill text; known intervening foreign program or no owner skips attribution.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "17ac2f6f25293f72306d15f4418fdb89b77f330dd75248aa7c4674c2939d07bd",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "start": 114,
+          "end": 158,
+          "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7"
+        }
+      ],
+      "conformance": "Outside fence or on delimiter the carried command resets; this scanner checks source-text mention, not flag implementation or execution.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "6290863dda09b4b0ed2404ae2aab0829f742c74545be67ef6666e707833a783d",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "start": 164,
+          "end": 177,
+          "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7"
+        }
+      ],
+      "conformance": "No misses returns; any detected command/flag misses throw one aggregate with each file/line/token, rather than silently publishing drift.",
+      "machine_id": "generator:curated-validation",
+      "baseline_clause_sha256": "4b056a0a85afe7753de38ac67210c9d6c700c7a93f22fe2dd4f558d9247e8307",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297"
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "start": 22,
+          "end": 60,
+          "sha256": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "start": 30,
+          "end": 129,
+          "sha256": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "start": 21,
+          "end": 66,
+          "sha256": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0"
+        }
+      ],
+      "conformance": "Kind renderers assemble supplied description/reader/curated/merged/gate/related/compatibility/source layers and omit absent optional sections. They return text, never execute workflows.",
+      "machine_id": "generator:rendering",
+      "baseline_clause_sha256": "e997a609be74ce446754071c1f241aabfac201cd000407fc6f692650a2877834",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25"
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "start": 10,
+          "end": 56,
+          "sha256": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "start": 5,
+          "end": 11,
+          "sha256": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508"
+        }
+      ],
+      "conformance": "Plain/code text HTML-escapes, emphasis is applied after escape; relative or http/https/mailto targets require no whitespace/control/DEL. Unsafe hyperlink token is escaped text.",
+      "machine_id": "generator:rendering",
+      "baseline_clause_sha256": "08907505fab9eca020dd674a061544d3377b5f58bc4c259bc68cf42ee944ea22",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25"
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "start": 20,
+          "end": 100,
+          "sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299"
+        }
+      ],
+      "conformance": "Longest backtick run+1 with floor4 contains unmodified source in collapsed search-excluded details; real source-ref helper selects valid SHA or main. No execution or parent-disk-write claim.",
+      "machine_id": "generator:rendering",
+      "baseline_clause_sha256": "522c089117202cdd6d317907beafbea1aa44f8c1325ddffb781fbf94749d3142",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25"
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "start": 16,
+          "end": 74,
+          "sha256": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02"
+        }
+      ],
+      "conformance": "Normalize/remove leading H1 and translate public Claude placeholder wording while linking the generic reviewer; returned documentation does not prove host dispatch.",
+      "machine_id": "generator:rendering",
+      "baseline_clause_sha256": "0034f692f11438e33fe9ddb31f1db6791bcbf209cad7eccbacc0be1be1aaa3f4",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25"
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "start": 23,
+          "end": 66,
+          "sha256": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238"
+        }
+      ],
+      "conformance": "First version heading strips preamble or falls back to trimmed whole text; pull links absolutized and sibling histories appended. No release metadata validation or rewritten timeline claimed.",
+      "machine_id": "generator:rendering",
+      "baseline_clause_sha256": "0c79699f15db2f218574f81bd788785548d555010a07f102d44c93b2c413ae48",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25"
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "start": 8,
+          "end": 19,
+          "sha256": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "start": 15,
+          "end": 22,
+          "sha256": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "start": 8,
+          "end": 27,
+          "sha256": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "start": 11,
+          "end": 25,
+          "sha256": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "start": 15,
+          "end": 37,
+          "sha256": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508"
+        }
+      ],
+      "conformance": "Pure formatting preserves defined known-tier labels/default/unknown value, comma tools, sentence abbreviation handling, backslash-before-quote YAML escaping and public placeholders. No persistent workflow state effect.",
+      "machine_id": "generator:rendering",
+      "baseline_clause_sha256": "542760989cdbacb743e5c8f6659056f2c45a14513bbbcdd155015859239c052b",
+      "baseline_span_refs": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "generator:catalog-graph",
+      "constituents": [
+        "generator:catalog-graph:01",
+        "generator:catalog-graph:02",
+        "generator:catalog-graph:03",
+        "generator:catalog-graph:04",
+        "generator:catalog-graph:05",
+        "generator:catalog-graph:06",
+        "generator:catalog-graph:07"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "generator:curated-validation",
+      "constituents": [
+        "generator:curated-validation:01",
+        "generator:curated-validation:02",
+        "generator:curated-validation:03",
+        "generator:curated-validation:04",
+        "generator:curated-validation:05",
+        "generator:curated-validation:06",
+        "generator:curated-validation:07",
+        "generator:curated-validation:08"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "generator:markdown",
+      "constituents": [
+        "generator:markdown:01",
+        "generator:markdown:02",
+        "generator:markdown:03",
+        "generator:markdown:04",
+        "generator:markdown:05",
+        "generator:markdown:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "generator:rendering",
+      "constituents": [
+        "generator:rendering:01",
+        "generator:rendering:02",
+        "generator:rendering:03",
+        "generator:rendering:04",
+        "generator:rendering:05",
+        "generator:rendering:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

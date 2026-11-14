@@ -11,6 +11,10 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ## [0.2.0] - 2026-11-13
 
+### Added
+
+- Add a trusted CI path that checks the retained Sandbox CLI's exec, copy-out and scoped destroy commands against its shipped package.
+
 ### Changed
 
 - Reuse images through a V2 cache identity that includes the builder, target platform and effective build profile, then verify the cache label and immutable image ID. Temporary checkout names no longer change that identity.
@@ -19,6 +23,8 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Fixed
 
+- Seed copy qualification data on its owned volume and preserve primary failures if fixture cleanup also fails.
+- Compare complete container identities when checking cleanup ownership in shipped CLI qualification.
 - Refuse failed manifest, daemon and resource observations instead of treating them as absence. Failed or cancelled creation retains exact resource references when independent cleanup cannot confirm removal.
 - Use bounded, cancellable process paths for clone and host staging, and report uncertain helper or staging cleanup.
 

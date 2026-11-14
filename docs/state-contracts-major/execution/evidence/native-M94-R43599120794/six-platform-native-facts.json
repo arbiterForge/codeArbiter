@@ -1,0 +1,1164 @@
+{
+  "schema": "codearbiter.original-six-platform-native-facts/1",
+  "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "run_id": 43599120794,
+  "scope": "Original builder and final receipt source/tool/module/manifest/binary/member observations; API upload attribution remains independently gated.",
+  "platforms": [
+    {
+      "platform": "linux/amd64",
+      "builder_job_id": 132463972506,
+      "builder_upload": {
+        "status": "PASS"
+      },
+      "builder_artifact_id": 14116013510,
+      "builder_archive_sha256": "aa45ed746caa286340e9dfe8052823b38feeceac0f14d4e278996a2cfbbbb0d2",
+      "qualified_job_id": 132477046517,
+      "qualified_upload": {
+        "status": "PASS"
+      },
+      "qualified_artifact_id": 14118041559,
+      "qualified_archive_sha256": "964ef84bb57263621a4805680f73962296f7f7c34c6ff28a66d4b7f028ffb4e6",
+      "native_binding": {
+        "binary_sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+        "manifest_sha256": "f3ec6c5ddda59a536466f6f29e15b58fccaabdabdb7848fe82dfee669c17be1d",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "linux/amd64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "qualified_receipt": {
+        "format": "codearbiter.artifact-qualification/0.1.0",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "workflow": ".github/workflows/ci.yml",
+        "run_id": "43599120794",
+        "job": "artifact-engine",
+        "platform": "linux/amd64",
+        "binary_sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "native_tests": [
+          "artifact-bridge",
+          "artifact-conformance",
+          "artifact-native",
+          "artifact-package",
+          "go-test",
+          "go-vet"
+        ],
+        "context_native": {
+          "cases": [
+            {
+              "exit_code": 0,
+              "name": "TestContextBoundedRender",
+              "source_sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "f41f593fa3c8279b5c58d5158b8dfe7909bced7cbc3affdeea8f8999f81366f8",
+              "subtests": [
+                "legacy_exact_bytes_and_determinism",
+                "bounded_map_role_and_limits",
+                "duplicate_singular_identity_rejected",
+                "command_state_and_root_cwd",
+                "managed_declaration_stays_inert_and_preserves_human_bytes",
+                "missing_template_is_parseable_and_present_empty_rejects",
+                "selection_cannot_forge_span_or_ownership"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextDocumentContract",
+              "source_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "9369c25084387d8d3ee61a5cf5a987ffa8d164ee2a221c56723c581e4a571ac3",
+              "subtests": [
+                "valid_typed_five_documents",
+                "unknown_document_and_payload",
+                "unrecognized_fields_and_normative_claim",
+                "command_state_and_invocation",
+                "document_entry_scope",
+                "canonical_schema_and_disabled_kind"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMarkdownPreservation",
+              "source_sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "c9b0391c1433116c25683f0674fef66bb9b535369b2f74148f406293c16f684d",
+              "subtests": [
+                "legacy_context_lf_unknown_section",
+                "legacy_context_crlf_roundtrip",
+                "legacy_code_map_real_bullet",
+                "inert_tech_stack_command",
+                "known_coding_and_security_lines",
+                "mixed_unowned_eol_preserved",
+                "duplicate_known_headings_rejected",
+                "ambiguous_map_anchor_rejected",
+                "unsupported_and_malformed_unchanged",
+                "generated_comment_is_syntax_only",
+                "created_template_field_markers",
+                "invalid_field_markers_rejected",
+                "non_sh_fence_does_not_create_command",
+                "candidate_span_update_preserves_unowned_bytes",
+                "partial_title_and_indented_marker_rejected",
+                "four_tick_unknown_fence_preserved",
+                "mixed_legacy_and_managed_identity_rejected",
+                "two_managed_singular_identities_rejected",
+                "independent_fact_claims_same_field_allowed"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMutationAdmission",
+              "source_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "93012b03a79a02a1c814f45e9bc3479cd2cff9dd1c3df7a7b3a694333cac0b66",
+              "subtests": [
+                "membership_python_parity_all_seven",
+                "approved_field_update_preserves_human_neighbors",
+                "stale_document_and_provenance_pair_do_not_mutate",
+                "provenance_only_update_refuses_without_mutation",
+                "conflicting_document_provenance_identity_rejected",
+                "v2_text_and_array_compatibility",
+                "changed_source_evidence_and_membership_fail_closed",
+                "current_membership_evidence_allows_scoped_update",
+                "sensitive_content_evidence_is_refused",
+                "new_human_file_blocks_missing_creation",
+                "missing_authority_and_hash_only_do_not_admit",
+                "explicit_creation_and_adoption_are_distinct",
+                "factual_claim_uses_existing_v2_field_ownership",
+                "unowned_or_unsupported_provenance_is_preserved",
+                "operation_id_reuse_with_different_request_rejected",
+                "replay_returns_historical_outcome_after_source_change"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRecoveryAndPaths",
+              "source_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "8f1d66a50fb5070998f33f191a0c22e5faae3de63112c96abfda45554776421a",
+              "subtests": [
+                "interruptions_before_and_after_each_replacement",
+                "lost_response_replay_and_duplicate_operation_ids",
+                "divergent_human_edits_preserve_pending_transaction",
+                "symlink_target_fails_before_context_mutation",
+                "case_alias_preserves_human_file",
+                "case_colliding_transaction_paths_rejected_before_journal",
+                "unsupported_journal_blocks_context_write_without_replacement"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRepresentationBoundary",
+              "source_sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "ffd15a2042b97070f8f566c572926647ee9219741c3ad9c5ebe31eb83b70f3a4",
+              "subtests": [
+                "html_spec_plan_identity",
+                "unknown_representation_rejected",
+                "inactive_optional_malformed_is_isolated",
+                "legacy_duplicate_remains_error"
+              ]
+            }
+          ],
+          "format": "codearbiter.context-native-observation/0.1.0",
+          "go_sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+          "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386"
+        }
+      },
+      "original_parent_population": {
+        "selected": 563,
+        "observed": 563,
+        "counts": {
+          "pass": 561,
+          "skip": 2
+        }
+      },
+      "required180_missing_or_nonpass": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock"
+      ],
+      "new_read_mode_parent": [
+        "pass"
+      ],
+      "raw_member_joins": true,
+      "same_run_source_tool_module_manifest_binary_joins": true,
+      "major_report_uploaded": false,
+      "major_report_limit": "Actual main-only major qualification report steps skipped on integration PUSH; original native/qualification receipts are retained, no readiness report is fabricated."
+    },
+    {
+      "platform": "linux/arm64",
+      "builder_job_id": 132463972557,
+      "builder_upload": {
+        "status": "PASS"
+      },
+      "builder_artifact_id": 14116655258,
+      "builder_archive_sha256": "ed4c7b58187193a917d8b0eeef0fdd44f9f26ab19be1fd4554c14a68d6c5ba4f",
+      "qualified_job_id": 132477046517,
+      "qualified_upload": {
+        "status": "PASS"
+      },
+      "qualified_artifact_id": 14118071515,
+      "qualified_archive_sha256": "f7d852ea87b181c138f81253971fec9900bfbeac78c31708913340be75e80694",
+      "native_binding": {
+        "binary_sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "1675694ef690db0f18fbe7046a886170904bede1d9db6ec96ae27945c1705c64",
+        "manifest_sha256": "5396976cf555c33d4e18100ea8c714b852800be1d0230423a163efe3be311f38",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "linux/arm64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "qualified_receipt": {
+        "format": "codearbiter.artifact-qualification/0.1.0",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "workflow": ".github/workflows/ci.yml",
+        "run_id": "43599120794",
+        "job": "artifact-engine",
+        "platform": "linux/arm64",
+        "binary_sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "native_tests": [
+          "artifact-bridge",
+          "artifact-conformance",
+          "artifact-native",
+          "artifact-package",
+          "go-test",
+          "go-vet"
+        ],
+        "context_native": {
+          "cases": [
+            {
+              "exit_code": 0,
+              "name": "TestContextBoundedRender",
+              "source_sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "2670ee3cdd704b694ab66699903f8cf8eaf6fe67bed5a0b6e548e2ad95330b50",
+              "subtests": [
+                "legacy_exact_bytes_and_determinism",
+                "bounded_map_role_and_limits",
+                "duplicate_singular_identity_rejected",
+                "command_state_and_root_cwd",
+                "managed_declaration_stays_inert_and_preserves_human_bytes",
+                "missing_template_is_parseable_and_present_empty_rejects",
+                "selection_cannot_forge_span_or_ownership"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextDocumentContract",
+              "source_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "e8532cb9e948f32883dbc5eb4e5ebae3578e06f2c351984dd42b812420aad370",
+              "subtests": [
+                "valid_typed_five_documents",
+                "unknown_document_and_payload",
+                "unrecognized_fields_and_normative_claim",
+                "command_state_and_invocation",
+                "document_entry_scope",
+                "canonical_schema_and_disabled_kind"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMarkdownPreservation",
+              "source_sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "20f444ceafa55d9583c2d85f5a005c488ecd11c0ddc1b1229d3835aab3627675",
+              "subtests": [
+                "legacy_context_lf_unknown_section",
+                "legacy_context_crlf_roundtrip",
+                "legacy_code_map_real_bullet",
+                "inert_tech_stack_command",
+                "known_coding_and_security_lines",
+                "mixed_unowned_eol_preserved",
+                "duplicate_known_headings_rejected",
+                "ambiguous_map_anchor_rejected",
+                "unsupported_and_malformed_unchanged",
+                "generated_comment_is_syntax_only",
+                "created_template_field_markers",
+                "invalid_field_markers_rejected",
+                "non_sh_fence_does_not_create_command",
+                "candidate_span_update_preserves_unowned_bytes",
+                "partial_title_and_indented_marker_rejected",
+                "four_tick_unknown_fence_preserved",
+                "mixed_legacy_and_managed_identity_rejected",
+                "two_managed_singular_identities_rejected",
+                "independent_fact_claims_same_field_allowed"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMutationAdmission",
+              "source_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "c1734667e3ebbc4cbbd30aa425aa622749cf398a401efcb39e2eac0263faadf0",
+              "subtests": [
+                "membership_python_parity_all_seven",
+                "approved_field_update_preserves_human_neighbors",
+                "stale_document_and_provenance_pair_do_not_mutate",
+                "provenance_only_update_refuses_without_mutation",
+                "conflicting_document_provenance_identity_rejected",
+                "v2_text_and_array_compatibility",
+                "changed_source_evidence_and_membership_fail_closed",
+                "current_membership_evidence_allows_scoped_update",
+                "sensitive_content_evidence_is_refused",
+                "new_human_file_blocks_missing_creation",
+                "missing_authority_and_hash_only_do_not_admit",
+                "explicit_creation_and_adoption_are_distinct",
+                "factual_claim_uses_existing_v2_field_ownership",
+                "unowned_or_unsupported_provenance_is_preserved",
+                "operation_id_reuse_with_different_request_rejected",
+                "replay_returns_historical_outcome_after_source_change"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRecoveryAndPaths",
+              "source_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "f3260e134dc953875cd54bb95ca54edcf7d01574df8e1947dd9f90e18354bbee",
+              "subtests": [
+                "interruptions_before_and_after_each_replacement",
+                "lost_response_replay_and_duplicate_operation_ids",
+                "divergent_human_edits_preserve_pending_transaction",
+                "symlink_target_fails_before_context_mutation",
+                "case_alias_preserves_human_file",
+                "case_colliding_transaction_paths_rejected_before_journal",
+                "unsupported_journal_blocks_context_write_without_replacement"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRepresentationBoundary",
+              "source_sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "f762ec711f39eab78cb526ebee49c4cd963b63e0d0670b34852d72ee98997e4d",
+              "subtests": [
+                "html_spec_plan_identity",
+                "unknown_representation_rejected",
+                "inactive_optional_malformed_is_isolated",
+                "legacy_duplicate_remains_error"
+              ]
+            }
+          ],
+          "format": "codearbiter.context-native-observation/0.1.0",
+          "go_sha256": "1675694ef690db0f18fbe7046a886170904bede1d9db6ec96ae27945c1705c64",
+          "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386"
+        }
+      },
+      "original_parent_population": {
+        "selected": 563,
+        "observed": 563,
+        "counts": {
+          "pass": 561,
+          "skip": 2
+        }
+      },
+      "required180_missing_or_nonpass": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock"
+      ],
+      "new_read_mode_parent": [
+        "pass"
+      ],
+      "raw_member_joins": true,
+      "same_run_source_tool_module_manifest_binary_joins": true,
+      "major_report_uploaded": false,
+      "major_report_limit": "Actual main-only major qualification report steps skipped on integration PUSH; original native/qualification receipts are retained, no readiness report is fabricated."
+    },
+    {
+      "platform": "windows/amd64",
+      "builder_job_id": 132463972537,
+      "builder_upload": {
+        "status": "PASS"
+      },
+      "builder_artifact_id": 14116138817,
+      "builder_archive_sha256": "3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf",
+      "qualified_job_id": 132477046517,
+      "qualified_upload": {
+        "status": "PASS"
+      },
+      "qualified_artifact_id": 14117951727,
+      "qualified_archive_sha256": "d703a928e85bd14dd6d357ca96f0df67baf30937f79ed35d88b0609bbabfa1c3",
+      "native_binding": {
+        "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+        "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "windows/amd64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "qualified_receipt": {
+        "format": "codearbiter.artifact-qualification/0.1.0",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "workflow": ".github/workflows/ci.yml",
+        "run_id": "43599120794",
+        "job": "artifact-engine",
+        "platform": "windows/amd64",
+        "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "native_tests": [
+          "artifact-bridge",
+          "artifact-conformance",
+          "artifact-native",
+          "artifact-package",
+          "go-test",
+          "go-vet"
+        ],
+        "context_native": {
+          "cases": [
+            {
+              "exit_code": 0,
+              "name": "TestContextBoundedRender",
+              "source_sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "9cc563252bff4fe1da9896bc2938a35e803c5135dc0fdcf6786185a1893e3750",
+              "subtests": [
+                "legacy_exact_bytes_and_determinism",
+                "bounded_map_role_and_limits",
+                "duplicate_singular_identity_rejected",
+                "command_state_and_root_cwd",
+                "managed_declaration_stays_inert_and_preserves_human_bytes",
+                "missing_template_is_parseable_and_present_empty_rejects",
+                "selection_cannot_forge_span_or_ownership"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextDocumentContract",
+              "source_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "fca066701ad0c326c86729a714e828e15813e4aaa855d9e9b760732cacea2a87",
+              "subtests": [
+                "valid_typed_five_documents",
+                "unknown_document_and_payload",
+                "unrecognized_fields_and_normative_claim",
+                "command_state_and_invocation",
+                "document_entry_scope",
+                "canonical_schema_and_disabled_kind"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMarkdownPreservation",
+              "source_sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "77902b32cf908a3253ca819c1cf61b91eaca1474847473de90a3aa2da2d2ba8d",
+              "subtests": [
+                "legacy_context_lf_unknown_section",
+                "legacy_context_crlf_roundtrip",
+                "legacy_code_map_real_bullet",
+                "inert_tech_stack_command",
+                "known_coding_and_security_lines",
+                "mixed_unowned_eol_preserved",
+                "duplicate_known_headings_rejected",
+                "ambiguous_map_anchor_rejected",
+                "unsupported_and_malformed_unchanged",
+                "generated_comment_is_syntax_only",
+                "created_template_field_markers",
+                "invalid_field_markers_rejected",
+                "non_sh_fence_does_not_create_command",
+                "candidate_span_update_preserves_unowned_bytes",
+                "partial_title_and_indented_marker_rejected",
+                "four_tick_unknown_fence_preserved",
+                "mixed_legacy_and_managed_identity_rejected",
+                "two_managed_singular_identities_rejected",
+                "independent_fact_claims_same_field_allowed"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMutationAdmission",
+              "source_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "9a407e08614a164254bbe158bc4139571f224c82c7c8c0daed2ba4750f155737",
+              "subtests": [
+                "membership_python_parity_all_seven",
+                "approved_field_update_preserves_human_neighbors",
+                "stale_document_and_provenance_pair_do_not_mutate",
+                "provenance_only_update_refuses_without_mutation",
+                "conflicting_document_provenance_identity_rejected",
+                "v2_text_and_array_compatibility",
+                "changed_source_evidence_and_membership_fail_closed",
+                "current_membership_evidence_allows_scoped_update",
+                "sensitive_content_evidence_is_refused",
+                "new_human_file_blocks_missing_creation",
+                "missing_authority_and_hash_only_do_not_admit",
+                "explicit_creation_and_adoption_are_distinct",
+                "factual_claim_uses_existing_v2_field_ownership",
+                "unowned_or_unsupported_provenance_is_preserved",
+                "operation_id_reuse_with_different_request_rejected",
+                "replay_returns_historical_outcome_after_source_change"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRecoveryAndPaths",
+              "source_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "7a1a8a17a17ba81c012dda7d6fab8045e4c23fc2e52fda72e2c7f476b6c9ecd3",
+              "subtests": [
+                "interruptions_before_and_after_each_replacement",
+                "lost_response_replay_and_duplicate_operation_ids",
+                "divergent_human_edits_preserve_pending_transaction",
+                "symlink_target_fails_before_context_mutation",
+                "case_alias_preserves_human_file",
+                "case_colliding_transaction_paths_rejected_before_journal",
+                "unsupported_journal_blocks_context_write_without_replacement"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRepresentationBoundary",
+              "source_sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "b2fcfcaafb0709c04e2ae35d5fc3608fd12fe588830f9edd61ec1f42081501d4",
+              "subtests": [
+                "html_spec_plan_identity",
+                "unknown_representation_rejected",
+                "inactive_optional_malformed_is_isolated",
+                "legacy_duplicate_remains_error"
+              ]
+            }
+          ],
+          "format": "codearbiter.context-native-observation/0.1.0",
+          "go_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+          "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386"
+        }
+      },
+      "original_parent_population": {
+        "selected": 480,
+        "observed": 480,
+        "counts": {
+          "pass": 477,
+          "skip": 3
+        }
+      },
+      "required180_missing_or_nonpass": [],
+      "new_read_mode_parent": [
+        "pass"
+      ],
+      "raw_member_joins": true,
+      "same_run_source_tool_module_manifest_binary_joins": true,
+      "major_report_uploaded": false,
+      "major_report_limit": "Actual main-only major qualification report steps skipped on integration PUSH; original native/qualification receipts are retained, no readiness report is fabricated."
+    },
+    {
+      "platform": "windows/arm64",
+      "builder_job_id": 132463972608,
+      "builder_upload": {
+        "status": "PASS"
+      },
+      "builder_artifact_id": 14116009344,
+      "builder_archive_sha256": "0931c0e3efe3cb914a4c818398798f2e5a280019fdd34e0ac39e0c875f0846a3",
+      "qualified_job_id": 132477046517,
+      "qualified_upload": {
+        "status": "PASS"
+      },
+      "qualified_artifact_id": 14118281060,
+      "qualified_archive_sha256": "8b0a2133a50cc2dd3514497575b4e29cb65aa8ef796b0e54eacbc0174fe21f09",
+      "native_binding": {
+        "binary_sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "854e5383bc5d7fa3f3a58268a3c1ca45d9ddc1ec3f34b53f4234fd6b59e79a46",
+        "manifest_sha256": "99076d0ccb9724e105cf11e3b835dcad5d91e6a699c79ae89d58a2ed6535a677",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "windows/arm64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "qualified_receipt": {
+        "format": "codearbiter.artifact-qualification/0.1.0",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "workflow": ".github/workflows/ci.yml",
+        "run_id": "43599120794",
+        "job": "artifact-engine",
+        "platform": "windows/arm64",
+        "binary_sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "native_tests": [
+          "artifact-bridge",
+          "artifact-conformance",
+          "artifact-native",
+          "artifact-package",
+          "go-test",
+          "go-vet"
+        ],
+        "context_native": {
+          "cases": [
+            {
+              "exit_code": 0,
+              "name": "TestContextBoundedRender",
+              "source_sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "b6010dcd3681bf9db7ed704a5d4c5a00d6bd1a7a901bc5f89f02218b4bd4c0a8",
+              "subtests": [
+                "legacy_exact_bytes_and_determinism",
+                "bounded_map_role_and_limits",
+                "duplicate_singular_identity_rejected",
+                "command_state_and_root_cwd",
+                "managed_declaration_stays_inert_and_preserves_human_bytes",
+                "missing_template_is_parseable_and_present_empty_rejects",
+                "selection_cannot_forge_span_or_ownership"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextDocumentContract",
+              "source_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "8e517ffa6deffa1a5b762183f7f286b916cda66df35b5bc4b576c2a67ec3a884",
+              "subtests": [
+                "valid_typed_five_documents",
+                "unknown_document_and_payload",
+                "unrecognized_fields_and_normative_claim",
+                "command_state_and_invocation",
+                "document_entry_scope",
+                "canonical_schema_and_disabled_kind"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMarkdownPreservation",
+              "source_sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "e5380a94607eb5c18cd26fad9d0507fc66a665988150fbbbf555732bcfd97409",
+              "subtests": [
+                "legacy_context_lf_unknown_section",
+                "legacy_context_crlf_roundtrip",
+                "legacy_code_map_real_bullet",
+                "inert_tech_stack_command",
+                "known_coding_and_security_lines",
+                "mixed_unowned_eol_preserved",
+                "duplicate_known_headings_rejected",
+                "ambiguous_map_anchor_rejected",
+                "unsupported_and_malformed_unchanged",
+                "generated_comment_is_syntax_only",
+                "created_template_field_markers",
+                "invalid_field_markers_rejected",
+                "non_sh_fence_does_not_create_command",
+                "candidate_span_update_preserves_unowned_bytes",
+                "partial_title_and_indented_marker_rejected",
+                "four_tick_unknown_fence_preserved",
+                "mixed_legacy_and_managed_identity_rejected",
+                "two_managed_singular_identities_rejected",
+                "independent_fact_claims_same_field_allowed"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMutationAdmission",
+              "source_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "720ccaae92fa3a283cf8449b31e6ab038a1fa0d6adebce83cf7c6400917e4be4",
+              "subtests": [
+                "membership_python_parity_all_seven",
+                "approved_field_update_preserves_human_neighbors",
+                "stale_document_and_provenance_pair_do_not_mutate",
+                "provenance_only_update_refuses_without_mutation",
+                "conflicting_document_provenance_identity_rejected",
+                "v2_text_and_array_compatibility",
+                "changed_source_evidence_and_membership_fail_closed",
+                "current_membership_evidence_allows_scoped_update",
+                "sensitive_content_evidence_is_refused",
+                "new_human_file_blocks_missing_creation",
+                "missing_authority_and_hash_only_do_not_admit",
+                "explicit_creation_and_adoption_are_distinct",
+                "factual_claim_uses_existing_v2_field_ownership",
+                "unowned_or_unsupported_provenance_is_preserved",
+                "operation_id_reuse_with_different_request_rejected",
+                "replay_returns_historical_outcome_after_source_change"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRecoveryAndPaths",
+              "source_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "78a5fa33faed32df20dae62eccf22cd0344d1e536baf44eae9b16733a14bcb82",
+              "subtests": [
+                "interruptions_before_and_after_each_replacement",
+                "lost_response_replay_and_duplicate_operation_ids",
+                "divergent_human_edits_preserve_pending_transaction",
+                "symlink_target_fails_before_context_mutation",
+                "case_alias_preserves_human_file",
+                "case_colliding_transaction_paths_rejected_before_journal",
+                "unsupported_journal_blocks_context_write_without_replacement"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRepresentationBoundary",
+              "source_sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "f80c21401fefc663c16905cbecaae41dba32f1710c0cbac436573fa7009c8dd1",
+              "subtests": [
+                "html_spec_plan_identity",
+                "unknown_representation_rejected",
+                "inactive_optional_malformed_is_isolated",
+                "legacy_duplicate_remains_error"
+              ]
+            }
+          ],
+          "format": "codearbiter.context-native-observation/0.1.0",
+          "go_sha256": "854e5383bc5d7fa3f3a58268a3c1ca45d9ddc1ec3f34b53f4234fd6b59e79a46",
+          "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386"
+        }
+      },
+      "original_parent_population": {
+        "selected": 480,
+        "observed": 480,
+        "counts": {
+          "pass": 477,
+          "skip": 3
+        }
+      },
+      "required180_missing_or_nonpass": [],
+      "new_read_mode_parent": [
+        "pass"
+      ],
+      "raw_member_joins": true,
+      "same_run_source_tool_module_manifest_binary_joins": true,
+      "major_report_uploaded": false,
+      "major_report_limit": "Actual main-only major qualification report steps skipped on integration PUSH; original native/qualification receipts are retained, no readiness report is fabricated."
+    },
+    {
+      "platform": "darwin/amd64",
+      "builder_job_id": 132463972516,
+      "builder_upload": {
+        "status": "REFUSED",
+        "reason": "upload attribution unavailable or malformed"
+      },
+      "builder_artifact_id": 14116259119,
+      "builder_archive_sha256": "e4345dbb86a747451016f4834cc0c74f09dcc676317c96760b35b243c923869f",
+      "qualified_job_id": 132477046517,
+      "qualified_upload": {
+        "status": "PASS"
+      },
+      "qualified_artifact_id": 14118390566,
+      "qualified_archive_sha256": "cc5df4ebea6601a2c761d46bed17741fbb25a2fa1df04283a3a557ffca8243fb",
+      "native_binding": {
+        "binary_sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "285418143831d996755c236ca0938ad317b22edeeb1d61bfa082f50550399fe3",
+        "manifest_sha256": "b209be590ba80ee2cb730734e4fcd3a7fa0a6b64f44f95831756ffb6aac787fd",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "darwin/amd64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "qualified_receipt": {
+        "format": "codearbiter.artifact-qualification/0.1.0",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "workflow": ".github/workflows/ci.yml",
+        "run_id": "43599120794",
+        "job": "artifact-engine",
+        "platform": "darwin/amd64",
+        "binary_sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "native_tests": [
+          "artifact-bridge",
+          "artifact-conformance",
+          "artifact-native",
+          "artifact-package",
+          "go-test",
+          "go-vet"
+        ],
+        "context_native": {
+          "cases": [
+            {
+              "exit_code": 0,
+              "name": "TestContextBoundedRender",
+              "source_sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "b218097ea761017f18ac15b2b106f80e02e487f0cbdfe8b51a0d02f4c675e25a",
+              "subtests": [
+                "legacy_exact_bytes_and_determinism",
+                "bounded_map_role_and_limits",
+                "duplicate_singular_identity_rejected",
+                "command_state_and_root_cwd",
+                "managed_declaration_stays_inert_and_preserves_human_bytes",
+                "missing_template_is_parseable_and_present_empty_rejects",
+                "selection_cannot_forge_span_or_ownership"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextDocumentContract",
+              "source_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "55a53ffbf752b824c8e80f70b4e02ecdd03f23836c1377f514c554fc4c136c67",
+              "subtests": [
+                "valid_typed_five_documents",
+                "unknown_document_and_payload",
+                "unrecognized_fields_and_normative_claim",
+                "command_state_and_invocation",
+                "document_entry_scope",
+                "canonical_schema_and_disabled_kind"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMarkdownPreservation",
+              "source_sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "695f3bcf1aa6595ad2f51c033c97ded4d534fce537de8fc6e649f25bf8358498",
+              "subtests": [
+                "legacy_context_lf_unknown_section",
+                "legacy_context_crlf_roundtrip",
+                "legacy_code_map_real_bullet",
+                "inert_tech_stack_command",
+                "known_coding_and_security_lines",
+                "mixed_unowned_eol_preserved",
+                "duplicate_known_headings_rejected",
+                "ambiguous_map_anchor_rejected",
+                "unsupported_and_malformed_unchanged",
+                "generated_comment_is_syntax_only",
+                "created_template_field_markers",
+                "invalid_field_markers_rejected",
+                "non_sh_fence_does_not_create_command",
+                "candidate_span_update_preserves_unowned_bytes",
+                "partial_title_and_indented_marker_rejected",
+                "four_tick_unknown_fence_preserved",
+                "mixed_legacy_and_managed_identity_rejected",
+                "two_managed_singular_identities_rejected",
+                "independent_fact_claims_same_field_allowed"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMutationAdmission",
+              "source_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "603a84c18a5d1e72c24c9ccd0f7ec1eff9516098c854665d200b3c446408b979",
+              "subtests": [
+                "membership_python_parity_all_seven",
+                "approved_field_update_preserves_human_neighbors",
+                "stale_document_and_provenance_pair_do_not_mutate",
+                "provenance_only_update_refuses_without_mutation",
+                "conflicting_document_provenance_identity_rejected",
+                "v2_text_and_array_compatibility",
+                "changed_source_evidence_and_membership_fail_closed",
+                "current_membership_evidence_allows_scoped_update",
+                "sensitive_content_evidence_is_refused",
+                "new_human_file_blocks_missing_creation",
+                "missing_authority_and_hash_only_do_not_admit",
+                "explicit_creation_and_adoption_are_distinct",
+                "factual_claim_uses_existing_v2_field_ownership",
+                "unowned_or_unsupported_provenance_is_preserved",
+                "operation_id_reuse_with_different_request_rejected",
+                "replay_returns_historical_outcome_after_source_change"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRecoveryAndPaths",
+              "source_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "aea8fb54cae977ae0e2216ece65fddc055bddeb293f55e3c6cd68f3ca6052f09",
+              "subtests": [
+                "interruptions_before_and_after_each_replacement",
+                "lost_response_replay_and_duplicate_operation_ids",
+                "divergent_human_edits_preserve_pending_transaction",
+                "symlink_target_fails_before_context_mutation",
+                "case_alias_preserves_human_file",
+                "case_colliding_transaction_paths_rejected_before_journal",
+                "unsupported_journal_blocks_context_write_without_replacement"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRepresentationBoundary",
+              "source_sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "2d1a1a7df88bf66ce26a19ab6231a96a44e147c382ce20fa432a7e33eece8833",
+              "subtests": [
+                "html_spec_plan_identity",
+                "unknown_representation_rejected",
+                "inactive_optional_malformed_is_isolated",
+                "legacy_duplicate_remains_error"
+              ]
+            }
+          ],
+          "format": "codearbiter.context-native-observation/0.1.0",
+          "go_sha256": "285418143831d996755c236ca0938ad317b22edeeb1d61bfa082f50550399fe3",
+          "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386"
+        }
+      },
+      "original_parent_population": {
+        "selected": 472,
+        "observed": 472,
+        "counts": {
+          "pass": 469,
+          "skip": 3
+        }
+      },
+      "required180_missing_or_nonpass": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock"
+      ],
+      "new_read_mode_parent": [
+        "pass"
+      ],
+      "raw_member_joins": true,
+      "same_run_source_tool_module_manifest_binary_joins": true,
+      "major_report_uploaded": false,
+      "major_report_limit": "Actual main-only major qualification report steps skipped on integration PUSH; original native/qualification receipts are retained, no readiness report is fabricated."
+    },
+    {
+      "platform": "darwin/arm64",
+      "builder_job_id": 132463972660,
+      "builder_upload": {
+        "status": "PASS"
+      },
+      "builder_artifact_id": 14115739497,
+      "builder_archive_sha256": "40781aee10f14c34f06ff7c574053473a0080df987736960a36acf2da19c1e2b",
+      "qualified_job_id": 132477046517,
+      "qualified_upload": {
+        "status": "PASS"
+      },
+      "qualified_artifact_id": 14118415352,
+      "qualified_archive_sha256": "1e2adf0c838d778c6027ff445c2c95bde3402e87671ac5c5f3af7b4309be78d7",
+      "native_binding": {
+        "binary_sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "132b69336a1f809932a8a20b0201dbbb980e86e3a323ae32e893639d83d71598",
+        "manifest_sha256": "dfd53095377896a6756869d3fdbf9c572b0177b1f6cc147268f7579bd694c813",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "darwin/arm64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "qualified_receipt": {
+        "format": "codearbiter.artifact-qualification/0.1.0",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "workflow": ".github/workflows/ci.yml",
+        "run_id": "43599120794",
+        "job": "artifact-engine",
+        "platform": "darwin/arm64",
+        "binary_sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "native_tests": [
+          "artifact-bridge",
+          "artifact-conformance",
+          "artifact-native",
+          "artifact-package",
+          "go-test",
+          "go-vet"
+        ],
+        "context_native": {
+          "cases": [
+            {
+              "exit_code": 0,
+              "name": "TestContextBoundedRender",
+              "source_sha256": "d3056c1dbca2dce7db1d0fe9d094318cd47b6c537295cdfe809bec5ea9999393",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "d416793a4399144bd265ad0d38ccf32aadb14413a578220c7b21a65be23ea811",
+              "subtests": [
+                "legacy_exact_bytes_and_determinism",
+                "bounded_map_role_and_limits",
+                "duplicate_singular_identity_rejected",
+                "command_state_and_root_cwd",
+                "managed_declaration_stays_inert_and_preserves_human_bytes",
+                "missing_template_is_parseable_and_present_empty_rejects",
+                "selection_cannot_forge_span_or_ownership"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextDocumentContract",
+              "source_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "7a646384f61c0475a27d046cd0d3df9595e1e3665e9987c0c78c06cc357315bb",
+              "subtests": [
+                "valid_typed_five_documents",
+                "unknown_document_and_payload",
+                "unrecognized_fields_and_normative_claim",
+                "command_state_and_invocation",
+                "document_entry_scope",
+                "canonical_schema_and_disabled_kind"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMarkdownPreservation",
+              "source_sha256": "2c516daa833d6467e4cd0058978dafd1885329b553f99aafd9698d7bf890128e",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "79a4f5904feac4eead1ed11e7a9872ca8ab63905890f8b22cdc31c4ff26272db",
+              "subtests": [
+                "legacy_context_lf_unknown_section",
+                "legacy_context_crlf_roundtrip",
+                "legacy_code_map_real_bullet",
+                "inert_tech_stack_command",
+                "known_coding_and_security_lines",
+                "mixed_unowned_eol_preserved",
+                "duplicate_known_headings_rejected",
+                "ambiguous_map_anchor_rejected",
+                "unsupported_and_malformed_unchanged",
+                "generated_comment_is_syntax_only",
+                "created_template_field_markers",
+                "invalid_field_markers_rejected",
+                "non_sh_fence_does_not_create_command",
+                "candidate_span_update_preserves_unowned_bytes",
+                "partial_title_and_indented_marker_rejected",
+                "four_tick_unknown_fence_preserved",
+                "mixed_legacy_and_managed_identity_rejected",
+                "two_managed_singular_identities_rejected",
+                "independent_fact_claims_same_field_allowed"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextMutationAdmission",
+              "source_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "d3db590cf6faf6d70b67253b7b11abef87b51ebd60a44a618c8541f0578351fb",
+              "subtests": [
+                "membership_python_parity_all_seven",
+                "approved_field_update_preserves_human_neighbors",
+                "stale_document_and_provenance_pair_do_not_mutate",
+                "provenance_only_update_refuses_without_mutation",
+                "conflicting_document_provenance_identity_rejected",
+                "v2_text_and_array_compatibility",
+                "changed_source_evidence_and_membership_fail_closed",
+                "current_membership_evidence_allows_scoped_update",
+                "sensitive_content_evidence_is_refused",
+                "new_human_file_blocks_missing_creation",
+                "missing_authority_and_hash_only_do_not_admit",
+                "explicit_creation_and_adoption_are_distinct",
+                "factual_claim_uses_existing_v2_field_ownership",
+                "unowned_or_unsupported_provenance_is_preserved",
+                "operation_id_reuse_with_different_request_rejected",
+                "replay_returns_historical_outcome_after_source_change"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRecoveryAndPaths",
+              "source_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "69887806e83db31a3286d667d9e8064b3188cbba5937b829b4495c447f9cda81",
+              "subtests": [
+                "interruptions_before_and_after_each_replacement",
+                "lost_response_replay_and_duplicate_operation_ids",
+                "divergent_human_edits_preserve_pending_transaction",
+                "symlink_target_fails_before_context_mutation",
+                "case_alias_preserves_human_file",
+                "case_colliding_transaction_paths_rejected_before_journal",
+                "unsupported_journal_blocks_context_write_without_replacement"
+              ]
+            },
+            {
+              "exit_code": 0,
+              "name": "TestContextRepresentationBoundary",
+              "source_sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "1f1a5ab9c765c3ebd0c8beeb96271664e993651e47f92295c23f468ae1d152b6",
+              "subtests": [
+                "html_spec_plan_identity",
+                "unknown_representation_rejected",
+                "inactive_optional_malformed_is_isolated",
+                "legacy_duplicate_remains_error"
+              ]
+            }
+          ],
+          "format": "codearbiter.context-native-observation/0.1.0",
+          "go_sha256": "132b69336a1f809932a8a20b0201dbbb980e86e3a323ae32e893639d83d71598",
+          "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386"
+        }
+      },
+      "original_parent_population": {
+        "selected": 472,
+        "observed": 472,
+        "counts": {
+          "pass": 469,
+          "skip": 3
+        }
+      },
+      "required180_missing_or_nonpass": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock"
+      ],
+      "new_read_mode_parent": [
+        "pass"
+      ],
+      "raw_member_joins": true,
+      "same_run_source_tool_module_manifest_binary_joins": true,
+      "major_report_uploaded": false,
+      "major_report_limit": "Actual main-only major qualification report steps skipped on integration PUSH; original native/qualification receipts are retained, no readiness report is fabricated."
+    }
+  ],
+  "upload_clock_refusals": [
+    {
+      "platform": "darwin/amd64",
+      "kind": "builder",
+      "artifact_id": 14116259119,
+      "name": "ci20-native-tested-macos-15-intel",
+      "archive_sha256": "e4345dbb86a747451016f4834cc0c74f09dcc676317c96760b35b243c923869f",
+      "api_created_at": "2026-11-14T13:44:15Z",
+      "api_updated_at": "2026-11-14T13:44:15Z",
+      "actual_job_id": 132463972516,
+      "actual_job_started_at": "2026-11-14T13:37:19Z",
+      "actual_job_completed_at": "2026-11-14T13:44:25Z",
+      "actual_step": {
+        "name": "Share the real tested candidate with this workflow run",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-14T13:44:04Z",
+        "completed_at": "2026-11-14T13:44:07Z"
+      },
+      "original_finalized_line": "2026-11-14T13:44:07.1276540Z Artifact ci20-native-tested-macos-15-intel successfully finalized. Artifact ID 14116259119",
+      "original_digest_line": "2026-11-14T13:44:06.5947400Z SHA256 digest of uploaded artifact is e4345dbb86a747451016f4834cc0c74f09dcc676317c96760b35b243c923869f",
+      "original_pinned_action_line": "2026-11-14T13:44:04.1149590Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "exact_name_ID_digest_match_API": true,
+      "current_approved_owner_result": {
+        "status": "REFUSED",
+        "reason": "upload attribution unavailable or malformed"
+      },
+      "interpretation": "Original worker log finalized within its exact step; service artifact created timestamp is later. Refusal remains pending owner repair; no fuzz or tolerance imposed."
+    }
+  ],
+  "official_major_report_count": 0,
+  "no_new_execution": true
+}

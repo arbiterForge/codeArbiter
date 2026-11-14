@@ -1,0 +1,415 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "legacy-conflict-recovery",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_appendonlyconflictlib.py": {
+      "source_sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+      "baseline_sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_contextmergelib.py": {
+      "source_sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+      "baseline_sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_protectedlib.py": {
+      "source_sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "baseline_sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_protectedstatelib.py": {
+      "source_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "baseline_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_provenancelib.py": {
+      "source_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "baseline_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/resolve-append-only-conflict.py": {
+      "source_sha256": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+      "baseline_sha256": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/resolve-context-conflict.py": {
+      "source_sha256": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+      "baseline_sha256": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:append-conflict:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 78,
+          "end": 205,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        },
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 250,
+          "end": 269,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        }
+      ],
+      "conformance": "Only supported regular H05 target, exactly100644 stages1/2/3, canonical UTF8 LF bytes, both nonempty appended suffixes; validated rendering and ordered base+ours+theirs union; ambiguity/nonappend refuses.",
+      "machine_id": "hooks:append-conflict",
+      "baseline_clause_sha256": "25c5102f625524dfbc2e975363a91d8eb7c3cf6a21e39dc26fa268050e39b6b9",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "symbol": "module",
+          "lines": "1-461"
+        },
+        {
+          "path": "core/pysrc/resolve-append-only-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:append-conflict:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 231,
+          "end": 247,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        },
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 348,
+          "end": 377,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        }
+      ],
+      "conformance": "Reason nonempty<=500 and safe configured email generate immediate attributed H05 row; non-overrides target requires clean/unmerged-free overrides sink; missing identity refuses.",
+      "machine_id": "hooks:append-conflict",
+      "baseline_clause_sha256": "2dc823d03a399b0b59cedc1965fad1d567e21b231d1995edff1c6962c7e4b21d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "symbol": "module",
+          "lines": "1-461"
+        },
+        {
+          "path": "core/pysrc/resolve-append-only-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:append-conflict:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 378,
+          "end": 409,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        }
+      ],
+      "conformance": "Repository lock then sorted per-path audit locks; recheck target stages/worktree and each sink preimage before publication; contention/drift refuses.",
+      "machine_id": "hooks:append-conflict",
+      "baseline_clause_sha256": "8bd616afd5f09e5d4e6351f4687f2a9758406c4d9395fbf8f0bae97fb3eecddd",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "symbol": "module",
+          "lines": "1-461"
+        },
+        {
+          "path": "core/pysrc/resolve-append-only-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:append-conflict:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 286,
+          "end": 333,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        },
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 403,
+          "end": 421,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        }
+      ],
+      "conformance": "Hardlink witness compares original before and after replacement; concurrent append triggers witnessed restoration; exact changed paths staged and index bytes/conflict removal verified.",
+      "machine_id": "hooks:append-conflict",
+      "baseline_clause_sha256": "227096e7acfc680dd800d3f6055c16cb2d548e40a18c6873a86e7194023f9a60",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "symbol": "module",
+          "lines": "1-461"
+        },
+        {
+          "path": "core/pysrc/resolve-append-only-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:append-conflict:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 336,
+          "end": 345,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        },
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "start": 422,
+          "end": 440,
+          "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0"
+        }
+      ],
+      "conformance": "On publish/add/readback error restore retained originals or observed concurrent bytes, then original index stages; rollback errors can propagate; no multi-file atomicity or guaranteed recovery claim.",
+      "machine_id": "hooks:append-conflict",
+      "baseline_clause_sha256": "4410c341033a0c6b67ec75fa34fb07b86690ea946660b94ed8d8020353704fe4",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_appendonlyconflictlib.py",
+          "symbol": "module",
+          "lines": "1-461"
+        },
+        {
+          "path": "core/pysrc/resolve-append-only-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-context-recovery:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "start": 97,
+          "end": 158,
+          "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c"
+        }
+      ],
+      "conformance": "Exact trusted root, one HEAD/MERGE_HEAD/base and stage equality against actual commits; legacy provenance on all sides and journal ownership exactlyFalse; bind index/worktree/provenance/head/stages; unsafe/altered rendering refuses.",
+      "machine_id": "hooks:legacy-context-recovery",
+      "baseline_clause_sha256": "5571b85b06d12fdc1f10377f129375dc6ac5eebe5e1b1e97de45cb1911a03de5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "symbol": "module",
+          "lines": "1-452"
+        },
+        {
+          "path": "core/pysrc/resolve-context-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-context-recovery:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "start": 161,
+          "end": 176,
+          "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c"
+        }
+      ],
+      "conformance": "Exact inspection binding rechecked under exclusive index.lock; shared witnessed atomic writer installs HEAD side only; no staging.",
+      "machine_id": "hooks:legacy-context-recovery",
+      "baseline_clause_sha256": "bd30a3931673a0360014ef439b3adabc6e5caccdecf2d1b6f4bab59bcd79730b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "symbol": "module",
+          "lines": "1-452"
+        },
+        {
+          "path": "core/pysrc/resolve-context-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-context-recovery:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "start": 294,
+          "end": 416,
+          "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c"
+        }
+      ],
+      "conformance": "Current worktree must equal generated merge/diff3/zdiff3 rendering;<=32 consistent nonnested blocks and explicit ours/theirs each preserve other bytes; rebind under index.lock before atomic write, no semantic merge inference.",
+      "machine_id": "hooks:legacy-context-recovery",
+      "baseline_clause_sha256": "f0fa162f15929c3ce5e0f77928333b96ac0199295cb586734fcea5792f7e0f77",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "symbol": "module",
+          "lines": "1-452"
+        },
+        {
+          "path": "core/pysrc/resolve-context-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-context-recovery:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "start": 179,
+          "end": 247,
+          "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c"
+        }
+      ],
+      "conformance": "Unique recognized version/date claims; safe exact manifests, legacy provenance/current ownership and current index/HEAD bound with actual date; conflicts/malformed/native uncertainty refuse.",
+      "machine_id": "hooks:legacy-context-recovery",
+      "baseline_clause_sha256": "11913a00ed877e65dc099d8b0697b652534256c9ebc80c3b2c442627214884d6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "symbol": "module",
+          "lines": "1-452"
+        },
+        {
+          "path": "core/pysrc/resolve-context-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-context-recovery:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "start": 250,
+          "end": 291,
+          "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c"
+        }
+      ],
+      "conformance": "Select1–4 existing unique literal fields, require exact before and manifest version/date after; recheck binding under index.lock and replace only match spans, report afterSHA and stagedFalse.",
+      "machine_id": "hooks:legacy-context-recovery",
+      "baseline_clause_sha256": "c430387425e7aafbc9c4cd5247c94c94eceae22fdde2c5fbb83dae369e94b79b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextmergelib.py",
+          "symbol": "module",
+          "lines": "1-452"
+        },
+        {
+          "path": "core/pysrc/resolve-context-conflict.py",
+          "symbol": "module",
+          "lines": "1-8"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:append-conflict",
+      "constituents": [
+        "hooks:append-conflict:01",
+        "hooks:append-conflict:02",
+        "hooks:append-conflict:03",
+        "hooks:append-conflict:04",
+        "hooks:append-conflict:05"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:legacy-context-recovery",
+      "constituents": [
+        "hooks:legacy-context-recovery:01",
+        "hooks:legacy-context-recovery:02",
+        "hooks:legacy-context-recovery:03",
+        "hooks:legacy-context-recovery:04",
+        "hooks:legacy-context-recovery:05"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-only immutable source-clause guard/effect/retry inspection after9ab"
+  },
+  "inputs": {
+    "core/artifacts/testdata/reference/plan.json": "7d1a2e86dde48210cdc7362ea3270746cd2b6caf4468c464eb3ae4f5becd5356",
+    "core/artifacts/testdata/reference/spec.json": "993ab984404fd92339bd42bd62d30a3db5f28a2311ad087740ee24d0c855cff3",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/create-artifact-examples.py": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T06:01",
+    "disposition:transitions:T06:02",
+    "disposition:transitions:T06:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+      "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+    }
+  ],
+  "scope": "Only caller command construction/draft binding/report ordering. Current reference data are inputs and may evolve; no native schema compatibility, compiled binary effects, strict response type validation or actual approvals/task acceptance.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:T06:01",
+      "witnesses": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "start": 16,
+          "end": 45,
+          "file_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+        }
+      ],
+      "semantic_assessment": "Output must be absent or empty; binary resolves strictly; fixed reviewed reference JSON supplies deterministic spec create operation/identity and normative data to subprocess. Command nonzero/not-ok throws, leaving earlier owned partial output.",
+      "limits": "Conditional native command-construction contract only. No binary execution, reference semantic equivalence or existing store overwrite journey.",
+      "frozen_row_sha256": "c7002f9fcdd0fc647e9bc9e1782e8ef03c3b7bb34cd5684b57442e5b347b908a",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:T06:02",
+      "witnesses": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "start": 46,
+          "end": 54,
+          "file_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+        }
+      ],
+      "semantic_assessment": "Successful identity result supplies exact normative_sha256 to plan.spec_ref and explicit draft_preview binding; plan create uses exact spec ID. No approval operation is issued.",
+      "limits": "No actual identity/hash/approval/native result or current runtime compatibility claim.",
+      "frozen_row_sha256": "0ea418b188f6bebe5de1fffd9e5c8744c989e86cce9ab7327adce5cfd6cc3fdf",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:T06:04",
+      "witnesses": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "start": 55,
+          "end": 65,
+          "file_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+        }
+      ],
+      "semantic_assessment": "Report stores identities, validation, all_ready derived from returned valid flags, approvals_issued0 and accepted count0, then writes scratch JSON/prints. Write failure leaves prior native outputs; no acceptance or authority receipt is minted.",
+      "limits": "No report/binary output was produced by this source inspection; not a native qualification or human approval.",
+      "frozen_row_sha256": "0c40bdd06f10273840826d41847603463d7db2108749751b8004da0d37fc913f",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "dependency_boundary": "Only caller command construction/draft binding/report ordering. Current reference data are inputs and may evolve; no native schema compatibility, compiled binary effects, strict response type validation or actual approvals/task acceptance.",
+  "excluded_cells": [
+    {
+      "id": "T06:03",
+      "reason": "Frozen ok=true strict admission is stronger than actual body.get(ok) truthiness (valid isFalse is strict). No current native runtime/result producer is executed here; do not qualify a stronger closed type guard from the unchanged wrapper."
+    }
+  ]
+}

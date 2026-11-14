@@ -400,6 +400,15 @@ EXPECTED_SUITES = {
         "test_remote_status_change_refuses_stale_update_before_claim",
         "test_transport_refuses_unlisted_token_destinations",
         "test_uncertain_status_mismatch_needs_explicit_remote_acceptance",
+        "test_actual_remote_parser_failures_are_sanitized_for_both_transports",
+        "test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend",
+        "test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target",
+        "test_mapped_preclaim_programmer_error_is_not_swallowed",
+        "test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
+        "test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+        "test_parser_depth_failure_is_sanitized_without_hiding_other_types",
+        "test_programmer_type_error_at_parser_is_not_swallowed",
+        "test_valid_json_and_existing_shape_guards_remain",
     },
 }
 

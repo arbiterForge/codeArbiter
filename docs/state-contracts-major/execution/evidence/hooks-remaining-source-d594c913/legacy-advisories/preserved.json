@@ -1,0 +1,44 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/boardsync.py": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:legacy-advisories:01",
+    "disposition:transitions:hooks:legacy-advisories:02",
+    "disposition:transitions:hooks:legacy-advisories:03",
+    "disposition:transitions:hooks:legacy-advisories:04",
+    "disposition:transitions:hooks:legacy-advisories:05",
+    "disposition:transitions:hooks:legacy-advisories:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "sha256": "dd9b2484426682a96c19e207fe4d8274ab2d7dcead5b85c454c9aecdeb28a855"
+    }
+  ],
+  "scope": "legacy-advisories: 6 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

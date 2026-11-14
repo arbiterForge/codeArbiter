@@ -1,0 +1,1300 @@
+{
+  "format": "codearbiter.pi-finite-source-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "observed_head": "9ab2be5e14cf8c2001d392dd3436d9ed3caf3efd",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "inventory_sha256": "3301ac8433fb60912207c1f2adf4766b93cad72c09807809aeeafb5751bd9361",
+  "rows": [
+    {
+      "id": "S03:02",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "9d4351f70d66e6bff973e4a303f2603381d02b2469c3e7c11b829eeb00dde18b",
+      "guard": "Normalized plan-mode state, exact existing task ID and FORWARD status table; fixed slug/kind bridge and expectedHash CAS.",
+      "effect": "Only the matching status cell advances; accepted stays accepted. Canonical Python operation locks and rechecks selected snapshot before publish.",
+      "failure_retry": "Illegal/backward/unknown moves refuse. This is exported legacy-plan operation semantics, not a new public parent edit route or HTML authoring qualification.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+          "lines": [
+            281,
+            354
+          ],
+          "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+          "span_sha256": "fb56dc0e6e4eb6a52ca4ff7ed9df0e724c9c740abfd68601c2b7370834f3bd5b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+          "lines": [
+            472,
+            523
+          ],
+          "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+          "span_sha256": "219f2c93e6acc4e4aa254c101ee861308a1a34fc9b95095ee9bb52ff9caf1f18"
+        },
+        {
+          "path": "plugins/ca-pi/hooks/_planfilelib.py",
+          "lines": [
+            607,
+            668
+          ],
+          "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+          "span_sha256": "afa5bb04e94a0ec9f3b7ba8927daae4df7c7a059bb118a8c60bfb7c30aa080d1"
+        }
+      ]
+    },
+    {
+      "id": "S03:04",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "48109a42412de85195b5363b8d2d0252172e531dc6b594bdf38372830b8f116e",
+      "guard": "A returned committed status is distinguished from observed content/readback validity.",
+      "effect": "Lost observation returns ok:false,committed:true; changed postcommit content reconciles only exact task identities when possible.",
+      "failure_retry": "No blind write replay is asserted; failed observation remains uncertain and the caller must re-observe.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+          "lines": [
+            523,
+            542
+          ],
+          "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+          "span_sha256": "c1f95138e55612b70e1e67c0015b09fbe3d18c58b4754882327155a89fc09e35"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+          "lines": [
+            375,
+            384
+          ],
+          "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+          "span_sha256": "715cf094a811d19974e3826dcf2994aaea7c0a886d2b0242d9a0f62582e15324"
+        }
+      ]
+    },
+    {
+      "id": "S03:09",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "0b3788ec8c357dbead9e8f6943872e87bcf4b89ff50184849fcc47a2f9a9650d",
+      "guard": "Status cannot reconcile a current owned file or restore cannot validate the same owner/session/file.",
+      "effect": "Status clears owned state on failed read; restore clears before validating and only reattaches a validated state. Unowned mode is execute.",
+      "failure_retry": "This preserves the explicitly frozen loss-of-restriction fallback; it does not imply approval or repair the separate S03:07 restriction gap.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/native-plan.ts",
+          "lines": [
+            255,
+            272
+          ],
+          "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+          "span_sha256": "c0f82c8957f2d687884c8d695e459ba1f51eff3e4fd47db996154253fb496cc7"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-plan.ts",
+          "lines": [
+            345,
+            365
+          ],
+          "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+          "span_sha256": "ae2d332d88a835d6848a4a8ff86eb7a2b708e6a0aae327cf41059c5be93ad66c"
+        }
+      ]
+    },
+    {
+      "id": "S04:02",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "0364915cc1ee5ff884f63520a3ada2a255de72d792c563e5064d8050d2104a23",
+      "guard": "Current authorization is checked before spawn and again after awaited cleanup readiness before stdin release.",
+      "effect": "Owned streams append through bounded tail logic; stdin ends with launch input; active transition arms the per-job timer.",
+      "failure_retry": "Readiness/stale authorization/startup failure settles through verified cleanup instead of admitting active work.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            769,
+            849
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "aa6c9d8e4caa686d4ddfe4a8b4bea53b2b1f2296db4a950a297073c565c103b4"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            223,
+            305
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "3a58d4947c6bc3bf74482fa1a0fcf46e31c596be3d5efb38eab32133086d17bf"
+        }
+      ]
+    },
+    {
+      "id": "S04:03",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "ca7381f4fb87536ef2eea53a080798f981d064a914c69c5b74f60912cc17d811",
+      "guard": "The close callback chooses completed only for code0; settle requires verified cleanup.",
+      "effect": "Terminal transition freezes snapshots, decrements nonterminal capacity and retains/prunes terminal results.",
+      "failure_retry": "Duplicate settling reuses one promise; unverified cleanup cannot publish completed.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            806,
+            815
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "6874b9ca813689a22492fc7fcfbacc093dccdac3f84d90359fc09dbec6b75a07"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            886,
+            905
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "99e3416aaacec7185e6d1bcf865a43aa33e636ab3b6d2efc8fcfe1852ed92ddb"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            390,
+            421
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "11847bfde16082e852b2af3668ab4c13b96f43cec2fa1ac4825557fd7f265860"
+        }
+      ]
+    },
+    {
+      "id": "S04:04",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "9bb4258b37c047c852f91e859075537b4c6229a49050748049671ff3bd243a4a",
+      "guard": "Error/nonzero routes choose failed and settle still requires cleanup verification.",
+      "effect": "Fixed failure state and sanitized bounded output are retained; terminal transition releases manager capacity.",
+      "failure_retry": "Unknown containment latches unhealthy without a false terminal success. No complete-secret-filter or process-host qualification is asserted.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            806,
+            815
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "6874b9ca813689a22492fc7fcfbacc093dccdac3f84d90359fc09dbec6b75a07"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            886,
+            905
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "99e3416aaacec7185e6d1bcf865a43aa33e636ab3b6d2efc8fcfe1852ed92ddb"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            223,
+            233
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "2f691b751d6eba4d8abfc8c8c3532df90c477d07db6e3330ebbce9025718212f"
+        }
+      ]
+    },
+    {
+      "id": "S04:05",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "ac8905f59a4f9088cde53cf47139eb12a7f879871a1454c69e8c6cc5d7921f80",
+      "guard": "Cancel requires an existing owned slot; timeout is armed only for an admitted job.",
+      "effect": "Both call the same settle path, terminate the owned tree and transition terminal state only after verified cleanup.",
+      "failure_retry": "Repeated cancellation/close shares settling; missing or failed ownership does not become clean.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            840,
+            867
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "62575add172965ef2a36333413b0df1221604527e7851df159d2a9508c854d0e"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            886,
+            905
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "99e3416aaacec7185e6d1bcf865a43aa33e636ab3b6d2efc8fcfe1852ed92ddb"
+        }
+      ]
+    },
+    {
+      "id": "S04:07",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "554e41ae74f93919ff172c1bd07f0f314908d655020cedb95f5b5c969179c95f",
+      "guard": "Default recent limit32 and validated maximum64 are independent of the active-job count.",
+      "effect": "Only oldest retained terminal IDs are removed and their output is cleared; nonterminal records are not selected by pruning.",
+      "failure_retry": "Unknown options refuse; no runtime retention stress claim.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            140,
+            143
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "76e89729d8f95077097bdc02263a8a2626a63afdd37872906bf0eb76abf47e4b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            201,
+            217
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "8ede448a5893124371e4489a99a030f4182c612c4a6e1ade3f2b14a17529b923"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            558,
+            569
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "93d41b53da466f844ab5e2a9dd9c6c621761298754dc24724e0fd044e2f8d47c"
+        }
+      ]
+    },
+    {
+      "id": "S05:01",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "358b2993bf454e81064e7aa05e6c68ad5ed417db74b6251e856867d2a719f565",
+      "guard": "Controller stable() combines lifecycle, exact parent trust/session/cwd, command/tool ownership, audit and runtime health.",
+      "effect": "Four-slot reservation is recorded synchronously before resolveLaunch or runtime spawn awaits; runtime records pending ownership before openTree.",
+      "failure_retry": "Stale authority or failed spawn refuses and releases only its reservation; pending ownership is retained for stop.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            109,
+            158
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "6eddbd4376426cd3b45eac5e47eedcffd3a7b230bceaade3e8c805fe7c4b709b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            304,
+            350
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "e0bb42d12bd6a86d8834b636d2b62d3021e56df62d8752a5ab1370f329c40049"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            783,
+            800
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "6c3a54e53d5622fcf1034d489767c8fdbc2bbb827155b58d763e8bdfb70db5d2"
+        }
+      ]
+    },
+    {
+      "id": "S05:02",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "dbc13a477d86b4a37076819c55bd4a8c40723e4025e09563d68700bba465ae19",
+      "guard": "Managed readiness and current authorization must both hold immediately before stdin release.",
+      "effect": "Streams/terminal observers are attached to the owned slot, stdin closes with bounded launch input, active state and deadline follow.",
+      "failure_retry": "Late stop/readiness failure settles instead of announcing admitted work.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            806,
+            849
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "91c043c0bdaf867ffb9ff3a285ab1f64983026fb53c833689b60c1c2c0a2b1c3"
+        }
+      ]
+    },
+    {
+      "id": "S05:03",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "f48015c1da60c81e060f9fde424e2486a0c9217e2511741d3a70c492b4f9f2b3",
+      "guard": "Launch may already have produced a child when the audit callback refuses.",
+      "effect": "Controller cancels that exact job, drops its launch bookkeeping, degrades and returns failure without a started result.",
+      "failure_retry": "This is an explicit audit-failure branch; absence of an optional audit callback is not claimed as a successful durable audit.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            355,
+            380
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "65d988d0cced2f2dadc9cf9b64dc037b9b264fe99ecbb759dfa485e334b2378d"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            128,
+            135
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "c75e671fa73e2c807afea7ed40cea11f2bf4697c184f26971fb3d113d7cfd72c"
+        }
+      ]
+    },
+    {
+      "id": "S05:04",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "429d0afd6c9b40c9dd7e40141349b757e74d77dee7b41975e1428ead0ca6342c",
+      "guard": "An existing slot.settling promise is reused.",
+      "effect": "Timer clears; owned tree termination is awaited; stop awaits all pending spawn ownership before settling slots.",
+      "failure_retry": "The cached promise does not create an independent cleanup retry after a failure.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            859,
+            868
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "f998690818e0460b979d3df9881303c7c36cf66af4ae63b4bbfda02cb4cebece"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            886,
+            905
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "99e3416aaacec7185e6d1bcf865a43aa33e636ab3b6d2efc8fcfe1852ed92ddb"
+        }
+      ]
+    },
+    {
+      "id": "S05:05",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "49547d685725c4abb806f9adede1caf877af0e3460057c8fedcc7422cc992775",
+      "guard": "Only verified containment reaches the terminal manager transition; watcher additionally requires terminal state and runtime health.",
+      "effect": "Watcher attempts terminal audit, notifies only current stable ownership and releases the reservation in finally.",
+      "failure_retry": "Audit failure is kept separate from actual process outcome and follows S05:07; notification is not guaranteed after ownership retirement.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            891,
+            905
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "f51fce650e3c637963c2a371c7249e2493bedb643fb96e320ce0dc198b48b8d2"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            160,
+            205
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "6c85fcf1fb3a3eff71fd8c6dfb50cef31f38f7f5d766f59b9456c9235939b04f"
+        }
+      ]
+    },
+    {
+      "id": "S05:06",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "87c63110d3e294f6c3e6715bbd72ba853b3515045b66e307949390c99f5b6ae2",
+      "guard": "Cleanup returning unverified/throwing is not a terminal success.",
+      "effect": "Runtime health latches false and the owned slot is retained; native stable() prevents ordinary further actions.",
+      "failure_retry": "Cached settling returns the same failure; recovery requires a fresh runtime/reload, not a second ordinary action.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            891,
+            905
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "f51fce650e3c637963c2a371c7249e2493bedb643fb96e320ce0dc198b48b8d2"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            121,
+            135
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "c80ebb2d027ead8554d08553f889498991792528c5a43a0a25e71ca271e3e32a"
+        }
+      ]
+    },
+    {
+      "id": "S05:07",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "bb53b1701f1b03f110ab83f819689b1bbf5f2efd15af9b11594cf93a474715ef",
+      "guard": "A real terminal snapshot can exist while its terminal audit callback refuses.",
+      "effect": "auditHealthy becomes false, controller degrades and suppresses success notice while retaining process-state separation.",
+      "failure_retry": "Reservation cleanup still occurs in finally; no false assertion that the process itself failed.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            167,
+            204
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "aac94e9730353120c5876bc498c56e7f711b59cc566753c88e7532f626349858"
+        }
+      ]
+    },
+    {
+      "id": "S05:08",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "a7af8ffa5fc5effa18b7b91d993bfd8720b9dfb91eb7adc21289b8c22a1617b3",
+      "guard": "Native stop invalidates owned first; runtime stop latches stopping reason before awaiting pending spawns.",
+      "effect": "Stop waits runtime cleanup, pending audits, watchers and reservation completions before attempting dispose.",
+      "failure_retry": "Any failed cleanup/health/audit outcome keeps unhealthy; it is not silently cleared on shutdown.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            389,
+            413
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "10da7ca4fc1b3dedcd4a86a720bd22aa078c288d9eef294c682af66640bebb31"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            859,
+            883
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "83bf4890738bbf37b003a1b3f76ccc4cc49fb6eb698af5c11af1c477b34d2eb9"
+        }
+      ]
+    },
+    {
+      "id": "S05:09",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "cffd2d7e661a167000323620696c84cd2a5cd98d828f5f1ae0b03469a2073856",
+      "guard": "Dispose succeeds only after stop is clean and runtime healthy.",
+      "effect": "Manager is disposed only after verified cleanup; next valid activate obtains a new runtime from the production factory.",
+      "failure_retry": "Unhealthy controller cannot reactivate in place. This is source resource ownership, not an installed new-session liveness result.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            876,
+            883
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "2d1956082cc531a9f43f43174998e0ebfe12407b0166eba887862d65e5411a32"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "lines": [
+            269,
+            295
+          ],
+          "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+          "span_sha256": "3c70fa78a73aa635a2263166b389ed86e93653ba3ecf33fc55f7cb4ece172cb3"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "lines": [
+            1143,
+            1158
+          ],
+          "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+          "span_sha256": "4a5d685afa1a551fc78c6a8b070bbf4caa11d790631ede0cd112a1e1f2c029dc"
+        }
+      ]
+    },
+    {
+      "id": "S13:01",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "66f281894e043b3fa15969bc803f19bb3cebbfa7ce91c1a9a8f112b4e6b54c81",
+      "guard": "Canonical executable/cwd and detached POSIX spawn establish a child process-group ownership convention; ready requires positive PID.",
+      "effect": "openProcessTree returns both spawned child and mandatory cleanup handle.",
+      "failure_retry": "Invalid PID refuses cleanup readiness. No actual OS process-group or same-PID-reuse qualification is asserted.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            392,
+            401
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "90d74af5a38f7022b999515861d7014305c5dd10314da61589c6fbab76a83199"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            860,
+            869
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "ba7262601cb5aeec9504b946db4f4ed0fe434aad97391cf4b82ee05db9021b3f"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            916,
+            935
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "6d3612ac5323871c6134c89c8f8467df948708ff7ec34bc36b594a3dbe11c6bf"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            990,
+            1005
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "9274d6e07b4a5abe0f46a77e026ccc34da556f11092e372f7e14f843268af132"
+        }
+      ]
+    },
+    {
+      "id": "S13:02",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "3560b52cb3318c2d2aca756b6295baa2d68700b4e558b4f7177d8c2796f7c43a",
+      "guard": "Windows guard requires exact STARTING/COMPILED/PID_ACCEPTED/ATTACHED sequence with bounded idle and ceiling.",
+      "effect": "Inert supervisor is attached before any launch/control pipe is released; malformed or oversized protocol latches refusal.",
+      "failure_retry": "15s idle/30s ceiling and64-byte queued protocol bounds remain source constants, not a successful Windows timing observation.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            31,
+            42
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "bccac98f2f672ef6eebacb38e3d1014d4d70d4e742d9e567b0b9fed7bb141719"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            351,
+            394
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "8d7f34394424e39b6a056882e7dcc6defdc79e62a8330cd072d91de455e16809"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            618,
+            643
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "2b1c11f6ec7f38bd209aa171cc4b465937ceca6abf08d379038c602ae7cc5aa2"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            880,
+            905
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "fa3ec6b58f8bc3e6a6dc27192a6c7079280d8bf31db58675ea9ec045eb468ee6"
+        }
+      ]
+    },
+    {
+      "id": "S13:03",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "7950b6f2091c866ff9e222aac43396981c99a2d65b953613ef4f6b6767d79b81",
+      "guard": "Launch/control/environment records enforce3MiB,16B exact START,256 entries/262144B bounds.",
+      "effect": "Only after attachment are launch/control bytes written; child starts once, STARTED PID is checked and root watch armed.",
+      "failure_retry": "Invalid or reused START refuses. No TLS, native API or installed host claim.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            15,
+            24
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "4d5c4a84eb0c01824dca6634f38c42a03111be4c6650755cac6a999344468fe7"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            47,
+            74
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "433424fc43843393dd4268a9e3cadf1e505475509fa5662682880fa5885bdaa1"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            155,
+            175
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "5946cf89f65921cb1eacfc11230c1d0ac76cc6463293a40d109f78007a5ffa3e"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            896,
+            919
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "5c9d9927fe9bb494486aee74f2dfc9915c772a3924d7fb86c6ea1a4f5e038f58"
+        }
+      ]
+    },
+    {
+      "id": "S13:04",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "2b6d582de35701c0c1436ed3c5edfda4f8d2027079a177a34249665d308bd60b",
+      "guard": "Wrong order, missing attachment, invalid PID or failed watch cannot return a ready managed child.",
+      "effect": "Supervisor/job close and leash-end refusal paths execute before success return; supervisor emits bounded refusal then exits70.",
+      "failure_retry": "Cleanup is attempted; this finite source edge does not claim actual host absence after every refusal.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            880,
+            919
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "f1583f9439b4e740492000c19f2ac502fff1ecfc7924f77899f3b8c241000221"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            226,
+            242
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "128dac3e274ecc566ab8fe628dd4e9c907eee5c32a0bcede03f1333e3ccdcdb5"
+        }
+      ]
+    },
+    {
+      "id": "S13:05",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "6bc570d1efd20ca50d117cf4348fa68887f400f0d6e0ca5b19eb313a13520c0c",
+      "guard": "Positive PID and bounded cleanup timing gate the first termination request.",
+      "effect": "POSIX sends group TERM, waits500ms default, escalates KILL and verifies2s default; Windows closes JobObject and checks child+supervisor.",
+      "failure_retry": "One cached promise owns termination; repeated calls do not start a new independent cleanup attempt.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            13,
+            17
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "239aca595bc54010c971886bd5d36179607b7cd5dce406cda46cfe84db7976ad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            954,
+            1005
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "9925e630179527f8ca62b255cda3d0e3c5aa9e2a7548433dbbaa46505b509346"
+        }
+      ]
+    },
+    {
+      "id": "S13:06",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "07e15e9eba6f0ac8952cdfa21e5a3d9d756dd1fdbe335a5057e1fc05b977c44d",
+      "guard": "Only verified absence returns verified:true.",
+      "effect": "POSIX wait and Windows jobClosed/actualGone/supervisorGone jointly govern success; later terminate calls reuse result.",
+      "failure_retry": "Verification failure is retained rather than reported clean.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            954,
+            1005
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "9925e630179527f8ca62b255cda3d0e3c5aa9e2a7548433dbbaa46505b509346"
+        }
+      ]
+    },
+    {
+      "id": "S13:07",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "4368a8438064e506dcc143d0f83274239505f119729fc24fb4d87add5bb93737",
+      "guard": "Invalid identity, unknown guard readiness, remaining liveness or thrown checks refuse/fail.",
+      "effect": "Returned verified:false is kept distinct from clean; the background caller transitions terminal state only for verified:true.",
+      "failure_retry": "Cached termination cannot itself retry unresolved cleanup.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            963,
+            1005
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "ab090691fcec5e7bf6340bb9c480a4f5b315f7cd5f6dde51e73c70b8bdeb4316"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "lines": [
+            893,
+            901
+          ],
+          "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+          "span_sha256": "a5dd0d3af6a26965ca150c4a2d42dcbaf3765cae6c15c68743c76e64a1289cf9"
+        }
+      ]
+    },
+    {
+      "id": "S13:08",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "83f50fbf27b281ae422e96e126db557b9eb53da4ab1b83562b53347f13ae5d8b",
+      "guard": "Parent leash end/error or disconnect invokes the fail-closed supervisor handler.",
+      "effect": "Supervisor schedules70 and closes held pipes; native JobObject is kill-on-close and parent-watch finally closes the job handle.",
+      "failure_retry": "Source describes intended cleanup; no new actual parent-death or all-descendant-kill observation.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            105,
+            113
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "152b267d2d9fae5cd7aded723894b216a1d74cbb8f044511bd84d561469715c2"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            150,
+            154
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "55a77d4696d5807b15097a219a06fe9db46d484ec60a4181c139294819111f56"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            50,
+            110
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "83244d4eb501d8c85b20394ab5d8d610b14b665630074d0a99d972dc9f5279df"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "lines": [
+            170,
+            190
+          ],
+          "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+          "span_sha256": "bc10bf5aaf0772a47c1ed5db48aab71572b16cc4e691e400283fcd209fbbf190"
+        }
+      ]
+    },
+    {
+      "id": "S13:09",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "048fbd20390654398dc809d635e5e014ebc3e9b59eaaa058e2f34027aabe1184",
+      "guard": "Child exit is finalized once after proxy readiness, preserving observed numeric code.",
+      "effect": "Readable/writable drains have500ms caps; missing code maps71 and refusal flush has the same bound before70.",
+      "failure_retry": "This is source drain/return-code behavior; the separate historical raw Pi EOF shutdown remains unresolved.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            114,
+            145
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "d1d5989020258cd9ef5f1bb876d159bee2d74803a9b5058f36836b8a8ce3c69a"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            179,
+            203
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "dda0e59737b18c75cc3755ed9087df794a3995762b8aab9fd9260ce47859a0df"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+          "lines": [
+            226,
+            242
+          ],
+          "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+          "span_sha256": "128dac3e274ecc566ab8fe628dd4e9c907eee5c32a0bcede03f1333e3ccdcdb5"
+        }
+      ]
+    },
+    {
+      "id": "S17:02",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "fd4d0d79b700e2e3b9ee338fd1c7176f71a5546a33d279ff590c6da516346806",
+      "guard": "Already-compacted tail, zero candidate prefix or a prior exact plan fingerprint returns undefined.",
+      "effect": "No summarize/child call occurs on these branches.",
+      "failure_retry": "No-op does not mutate conversation or fabricate a summary.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            278,
+            301
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "d4ab0dc27d1954561f392e181cc50261b02d27773d75f75ba5c06ff248525a70"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            397,
+            407
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "1c249a763f21977ce1964bb2d33903d0391c0c2052c811c39d2d43dcd576fc1e"
+        }
+      ]
+    },
+    {
+      "id": "S17:03",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "34ee10af08714f337355a02d0c714c92ce62c5ae1ce532042435d4a4297c3d37",
+      "guard": "Plan boundary/protected IDs/unique actions/metrics/fingerprint pass validPlan before summarize.",
+      "effect": "Conversation is redacted/bounded48000B, prior summary8000B, custom instructions4096B. Internal compaction requests empty tools/skills; runner enforces and emits --no-tools.",
+      "failure_retry": "Failed plan or child result suppresses proposal. Endpoint-policy S10/S11 and actual provider isolation remain outside this disposition.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            208,
+            243
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "b2d3decd19896c18f1d7c6dc3c958380fa55d8d780e7b4642b6c6fc8b2287a04"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            253,
+            275
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "9f0452c1c911fc52121253c312fdb734796c43c705a7aa2e804cd34d6da8f7d0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            406,
+            423
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "3427e5b285e5f6b05219ae7ca8afd78b42f920536ae76b70946fedda7adab879"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "lines": [
+            129,
+            148
+          ],
+          "sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "19bfba16eaead796b5d3c239ec306ac89bd5ff0965e2e4a79b0b7640776ec728"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "lines": [
+            255,
+            275
+          ],
+          "sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "110b15bee265fa463b7c19dd6a384f97459b60f597aaa22bb3af2634dfde1556"
+        }
+      ]
+    },
+    {
+      "id": "S17:04",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "b2b09170abab1f2c6eb0fa4d23985cb41d519589b958507a5dd19394729fa790",
+      "guard": "Successful nonempty summary is bounded/redacted16000B; abort is rechecked and installer compares captured lifecycle after await.",
+      "effect": "Return immutable compaction proposal with exact validated plan fingerprint; only host receives the proposal for context replacement.",
+      "failure_retry": "No active session manager is forwarded and no direct conversation write exists here; not installed host/provider qualification.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            422,
+            439
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "ef848f7c144a7015ce85f938da34657affaba58579f2e020be7243d4e1d98dbd"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            490,
+            502
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "29c24f4b903c2d8bf68d2791066255ab0a2c7f31a051d607764859ccd0d914c1"
+        }
+      ]
+    },
+    {
+      "id": "S17:05",
+      "proposed_status": "PRESERVED",
+      "scope": "finite source conformance only",
+      "frozen_clause_sha256": "46e2c2740f91f332b9fef7bd73483aabe63034a3d315216f65dbe1e806a89a5f",
+      "guard": "Malformed event/plan, aborted signal, failed child or invalid summary cannot return a proposal.",
+      "effect": "Fixed sanitized error or suppressed stale lease leaves context mutation with the host; no partial helper mutation.",
+      "failure_retry": "No automatic fallback provider or partial-summary success is asserted.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            383,
+            444
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "0e3c5f497b024dece7c9bfd94f69f371ffa38d8aac8f800fbb399ac6791b77de"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/compaction.ts",
+          "lines": [
+            490,
+            502
+          ],
+          "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+          "span_sha256": "29c24f4b903c2d8bf68d2791066255ab0a2c7f31a051d607764859ccd0d914c1"
+        }
+      ]
+    }
+  ],
+  "withheld": [
+    {
+      "id": "S03:03",
+      "status": "WITHHELD",
+      "reason": "Exported operatePlanFile returns reconciled state/content, but this inspection did not establish the frozen persisted-state/hash recording route; no missing-caller defect inferred."
+    },
+    {
+      "id": "S03:07",
+      "status": "WITHHELD",
+      "reason": "Previously withheld full restriction-return clause remains unsupported for retired ownership; mode() can fall back execute. No new defect label or code proposal."
+    },
+    {
+      "id": "S10:01",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S10:02",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S10:03",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S10:04",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S10:05",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S10:06",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S10:07",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:01",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:02",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:03",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:04",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:05",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:06",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S11:07",
+      "status": "WITHHELD",
+      "reason": "Root hold: unresolved CON004 vs accepted ADR0018/0019 endpoint policy. No edge in these machines proposed."
+    },
+    {
+      "id": "S17:01",
+      "status": "WITHHELD",
+      "reason": "8192 is passed as maxBytes and Python keep_recent is semantic-turn policy; this does not establish the frozen8192-descriptor/final10-message formulation."
+    },
+    {
+      "id": "S17:06",
+      "status": "WITHHELD",
+      "reason": "Current confirmed-compaction handler validates and audits but no16-confirmation-identity cache/dedup is present in inspected handler/caller;16constant is audit metric cap. Frozen-clause qualification gap pending maintained acceptance review."
+    },
+    {
+      "id": "S17:07",
+      "status": "WITHHELD",
+      "reason": "Current confirmed-compaction handler validates and audits but no16-confirmation-identity cache/dedup is present in inspected handler/caller;16constant is audit metric cap. Frozen-clause qualification gap pending maintained acceptance review."
+    }
+  ],
+  "input_bindings": {
+    "core/pysrc/_prunelib.py": {
+      "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+      "bytes": 58271,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/hooks/_planfilelib.py": {
+      "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+      "bytes": 28296,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/hooks/pi-bridge.py": {
+      "sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+      "bytes": 23604,
+      "baseline_equal": false,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/activity.ts": {
+      "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "bytes": 8980,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/audit-sink.ts": {
+      "sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+      "bytes": 8336,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/background-jobs.ts": {
+      "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+      "bytes": 37964,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/bridge.ts": {
+      "sha256": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+      "bytes": 45663,
+      "baseline_equal": false,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/command-ownership.ts": {
+      "sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "bytes": 9913,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/compaction.ts": {
+      "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+      "bytes": 22497,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/contracts.ts": {
+      "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+      "bytes": 7509,
+      "baseline_equal": false,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/extension.ts": {
+      "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "bytes": 64790,
+      "baseline_equal": false,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/native-background.ts": {
+      "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+      "bytes": 18809,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/native-plan.ts": {
+      "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+      "bytes": 16091,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/path-boundary.ts": {
+      "sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+      "bytes": 2993,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/plan-mode.ts": {
+      "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+      "bytes": 25588,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/policy.ts": {
+      "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "bytes": 12721,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/process-tree.ts": {
+      "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+      "bytes": 51594,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/redaction.ts": {
+      "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+      "bytes": 4571,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/runner.ts": {
+      "sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+      "bytes": 56027,
+      "baseline_equal": false,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/session-identity.ts": {
+      "sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+      "bytes": 1455,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/src/windows-supervisor.ts": {
+      "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+      "bytes": 10979,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    },
+    "plugins/ca/tools/redactor.ts": {
+      "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "bytes": 6993,
+      "baseline_equal": true,
+      "current_head_equal": true,
+      "physical_equal": true
+    }
+  },
+  "dependency_review": {
+    "unchanged_dependencies": [
+      "core/pysrc/_prunelib.py",
+      "plugins/ca-pi/hooks/_planfilelib.py",
+      "plugins/ca-pi/tools/src/activity.ts",
+      "plugins/ca-pi/tools/src/audit-sink.ts",
+      "plugins/ca-pi/tools/src/background-jobs.ts",
+      "plugins/ca-pi/tools/src/command-ownership.ts",
+      "plugins/ca-pi/tools/src/compaction.ts",
+      "plugins/ca-pi/tools/src/native-background.ts",
+      "plugins/ca-pi/tools/src/native-plan.ts",
+      "plugins/ca-pi/tools/src/path-boundary.ts",
+      "plugins/ca-pi/tools/src/plan-mode.ts",
+      "plugins/ca-pi/tools/src/policy.ts",
+      "plugins/ca-pi/tools/src/process-tree.ts",
+      "plugins/ca-pi/tools/src/redaction.ts",
+      "plugins/ca-pi/tools/src/session-identity.ts",
+      "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "plugins/ca/tools/redactor.ts"
+    ],
+    "changed_dependency_scopes": {
+      "runner.ts": "Re-read internal-compaction empty-tools/skills/charter and --no-tools route129..276; no transport/endpoint admission claim.",
+      "extension.ts": "Re-read currentLifecycle compaction caller1121..1138 and background runtime factory1143..1158; no general extension/mode/doctor claim.",
+      "bridge.ts": "Re-read fixed plan-file request/response529..555 and Python legacy pair/CAS dispatch; new recovery/footer codecs do not substitute file-operation authority."
+    }
+  },
+  "limits": [
+    "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+    "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+    "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+    "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+    "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+  ]
+}

@@ -1,0 +1,442 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "legacy-advisories",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_activationlib.py": {
+      "source_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "baseline_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_arbiterstatelib.py": {
+      "source_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "baseline_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_entrylib.py": {
+      "source_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "baseline_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_intentlib.py": {
+      "source_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "baseline_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_modelib.py": {
+      "source_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+      "baseline_sha256": "18160bf037e41b9b0f0e720fb3a9c997c08f9a59bfb7ac409716004c30b7a9de",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_pathnorm.py": {
+      "source_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "baseline_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_scopelib.py": {
+      "source_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "baseline_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_sloplib.py": {
+      "source_sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+      "baseline_sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_taskboardlib.py": {
+      "source_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "baseline_sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/boardsync.py": {
+      "source_sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+      "baseline_sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/hostapi.py": {
+      "source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "baseline_sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/post-write-edit.py": {
+      "source_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "baseline_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:legacy-advisories:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "start": 35,
+          "end": 118,
+          "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b"
+        }
+      ],
+      "conformance": "Read-only task ID/drift report; malformed report returns error text, outer read failure substitutes empty board/log and can report no drift.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "c800c5a95f437c4f6c9433a37d606f4f59660b1d2a3b8639161dbd6b41aaa4ec",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-advisories:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "start": 103,
+          "end": 112,
+          "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b"
+        },
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "start": 162,
+          "end": 184,
+          "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1"
+        }
+      ],
+      "conformance": "Native/unsafe/dual-owner predicate bypasses legacy drift sweep and names work.py list or owner-conflict recovery; no native status inferred.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "2864a427f03822d62c3c40828c5d687ea16d65fec60aee8e32737110a191ce60",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-advisories:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "start": 73,
+          "end": 184,
+          "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "start": 284,
+          "end": 287,
+          "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319"
+        }
+      ],
+      "conformance": "Distinctive-token overlap between scope/checkbox and acceptance lists drives heuristic findings with1 or no findings0; not semantic intent satisfaction.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "bac559378d6f7306e1b564170879689a39b93a222d7672849d6f0deb05404ff5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-advisories:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "start": 169,
+          "end": 172,
+          "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "start": 237,
+          "end": 282,
+          "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319"
+        }
+      ],
+      "conformance": "HTML passed to Markdown function explicitly requests validation; path CLI validates ready shape, criteria and final identity match, malformed/drift fails2. Native-interface source only.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "79a29a6be8e2524d5daacfe1f07f2dde20f4cb87f8c66dd4c7b1a108e94bbd1a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-advisories:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "start": 124,
+          "end": 211,
+          "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd"
+        }
+      ],
+      "conformance": "Named ADR/dependency/CI/deploy/auth/crypto/secret/prose patterns emit reminders only, no block or undo; no auth runtime qualification.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "be4f757e8a86bad5b3e820421842aaeee86163e8f2119158b399c56442d63ca1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-advisories:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "start": 68,
+          "end": 121,
+          "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd"
+        }
+      ],
+      "conformance": "Schema2 plus maximum decision-file mtime cache; inspect first26lines, exclude rejected/superseded; read/write cache errors ignored. No hash-based freshness claim.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "7df134362741863082fbbfae67553ec705a5ec07370332026a13f2697398dd8c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    },
+    {
+      "id": "hooks:legacy-advisories:07",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "start": 139,
+          "end": 240,
+          "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b"
+        }
+      ],
+      "conformance": "HOLD: literal baseline says CONTROLS.md, but source exclusively reads .codearbiter/security-controls.md; custom +/- scope globs and controls-mtime cache are otherwise supported. Needs path-specific baseline clarification.",
+      "machine_id": "hooks:legacy-advisories",
+      "baseline_clause_sha256": "491fbf186eca69e05c685056ce2d27f1f13be610e2eca96b0424f18d363100c2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/boardsync.py",
+          "symbol": "module",
+          "lines": "1-139"
+        },
+        {
+          "path": "core/pysrc/_intentlib.py",
+          "symbol": "module",
+          "lines": "1-291"
+        },
+        {
+          "path": "core/pysrc/post-write-edit.py",
+          "symbol": "module",
+          "lines": "1-231"
+        },
+        {
+          "path": "core/pysrc/_scopelib.py",
+          "symbol": "module",
+          "lines": "1-262"
+        },
+        {
+          "path": "core/pysrc/_sloplib.py",
+          "symbol": "module",
+          "lines": "1-244"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

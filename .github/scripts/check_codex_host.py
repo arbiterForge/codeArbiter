@@ -168,7 +168,10 @@ def _installed_member_errors(plugin_root: Path, metadata_path: Path) -> list[str
 
 def check_install(home: Path, *, marketplace_source: Path = REPO,
                   require_artifact_capability: bool = False,
-                  qualified_npm_metadata: Path | None = None) -> list[dict]:
+                  qualified_npm_metadata: Path | None = None,
+                  expected_plugin_root: Path | None = None,
+                  artifact_exchange_observer=None,
+                  capability_observer=None) -> list[dict]:
     """Install the CHECKED-OUT plugin through the real host and read it back."""
     results: list[dict] = []
 
@@ -217,7 +220,8 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
     # reports no version at all, or resolves a DIFFERENT one - which a stale
     # marketplace snapshot can genuinely cause, since `plugin marketplace
     # upgrade` exists precisely because a snapshot can lag its source.
-    want = expected_version()
+    want = (expected_version() if expected_plugin_root is None else
+            json.loads((expected_plugin_root / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))["version"])
     record("CODEX-HOST-VERSION", bool(want) and fields[3:4] == [want],
            f"expected version {want!r} in {row.strip()!r}")
 
@@ -237,7 +241,8 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
     if cached:
         try:
             declared = json.loads(cached[0].read_text(encoding="utf-8"))["hooks"]
-            source = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))["hooks"]
+            expected_hooks = HOOKS_JSON if expected_plugin_root is None else expected_plugin_root / "hooks/hooks.json"
+            source = json.loads(expected_hooks.read_text(encoding="utf-8"))["hooks"]
             record("CODEX-HOST-HOOKS-MATCH", set(declared) == set(source),
                    f"installed {sorted(declared)} vs source {sorted(source)}")
         except (ValueError, KeyError) as error:
@@ -292,7 +297,7 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
         # copy, not the source checkout, so a dropped agents/ subtree or an
         # index/resource mismatch cannot pass through a successful install.
         expected_stats, expected_errors = expected_route_stats(
-            REPO / "plugins" / "ca-codex"
+            REPO / "plugins" / "ca-codex" if expected_plugin_root is None else expected_plugin_root
         )
         route_errors, route_stats = validate_agent_routes(plugin_root, expected_stats)
         route_errors = expected_errors + route_errors
@@ -335,11 +340,40 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
             if spec is None or spec.loader is None:
                 raise RuntimeError("installed artifact bridge is unavailable")
             bridge = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(bridge)
+            if expected_plugin_root is None:
+                spec.loader.exec_module(bridge)
+            else:
+                # Retained mode must not satisfy an installed dependency from
+                # a coordinator's already-imported source helper. Restore the
+                # caller's module after binding the installed function globals.
+                parser_path = plugin_root / "hooks" / "_artifactmanifestlib.py"
+                if parser_path.is_symlink() or not parser_path.is_file():
+                    raise RuntimeError("installed manifest parser is unavailable")
+                parser_spec = importlib.util.spec_from_file_location("_artifactmanifestlib", parser_path)
+                if parser_spec is None or parser_spec.loader is None:
+                    raise RuntimeError("installed manifest parser is unavailable")
+                parser = importlib.util.module_from_spec(parser_spec)
+                previous_parser = sys.modules.get("_artifactmanifestlib")
+                try:
+                    sys.modules["_artifactmanifestlib"] = parser
+                    parser_spec.loader.exec_module(parser)
+                    spec.loader.exec_module(bridge)
+                finally:
+                    if previous_parser is None:
+                        sys.modules.pop("_artifactmanifestlib", None)
+                    else:
+                        sys.modules["_artifactmanifestlib"] = previous_parser
+            if artifact_exchange_observer is not None:
+                original_exchange = bridge._bounded_child
+                def observed_exchange(*args, **kwargs):
+                    return artifact_exchange_observer(original_exchange, *args, **kwargs)
+                bridge._bounded_child = observed_exchange
             client = bridge.ArtifactClient(
                 home, bridge.helper_installation(str(bridge_path))
             )
             capabilities = client.call("capabilities")
+            if capability_observer is not None:
+                capability_observer(capabilities)
             capable = (
                 isinstance(capabilities, dict)
                 and capabilities.get("repository_operations_available") is True
