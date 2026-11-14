@@ -1,0 +1,54 @@
+{
+  "schema": "codearbiter.original-local-python-observation/1",
+  "script": ".github\\scripts\\test_generated_output.py",
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "win32",
+  "results": [
+    {
+      "id": "__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker",
+      "status": "PASSED",
+      "seconds": 0.009274399955756962
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication",
+      "status": "PASSED",
+      "seconds": 0.0016272999346256256
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_contract_generator_rename_failure_preserves_importable_canonical_helper",
+      "status": "PASSED",
+      "seconds": 0.02376640005968511
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_foreign_target_refuses_and_handwritten_files_survive",
+      "status": "PASSED",
+      "seconds": 0.01009689993225038
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges",
+      "status": "PASSED",
+      "seconds": 0.02259760000742972
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set",
+      "status": "PASSED",
+      "seconds": 0.0036292000440880656
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal",
+      "status": "PASSED",
+      "seconds": 0.011220300104469061
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect",
+      "status": "PASSED",
+      "seconds": 0.018501500017009676
+    },
+    {
+      "id": "__main__.GeneratedOutputTests.test_windows_junction_ancestor_and_owner_refuse_before_any_effect",
+      "status": "PASSED",
+      "seconds": 0.032840600004419684
+    }
+  ],
+  "exit_code": 0
+}

@@ -1,0 +1,620 @@
+{
+  "schema": "codearbiter.workflow-source-clause-inspection/1",
+  "observer": "/root/packaging_site_tools",
+  "source_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "Thirteen finite WF08/09/10 instruction clauses only; no actual runtime/model/user/review/audit/installed acceptance.",
+  "source_comparisons": [
+    {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "declared_owner": true,
+      "baseline_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+      "current_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/agents/finding-triage.md",
+      "declared_owner": true,
+      "baseline_sha256": "a0a41240e40e965cee18665115c16dc6bb08795a727ea95e4c627c8106b232f5",
+      "current_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "declared_owner": true,
+      "baseline_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+      "current_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/audit.md",
+      "declared_owner": true,
+      "baseline_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+      "current_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "declared_owner": true,
+      "baseline_sha256": "135cd2ed3043ea8f6dc77fce3743d7bd6c296b05779f57fc9d0f8ed99a0664bd",
+      "current_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/chore.md",
+      "declared_owner": true,
+      "baseline_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+      "current_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/fix.md",
+      "declared_owner": true,
+      "baseline_sha256": "ff6ebf14613e7cd5b3ce49b746cf62259f7dc954740fe31538643e8ed3b891ca",
+      "current_sha256": "ff6ebf14613e7cd5b3ce49b746cf62259f7dc954740fe31538643e8ed3b891ca",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/review.md",
+      "declared_owner": true,
+      "baseline_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+      "current_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/spike.md",
+      "declared_owner": true,
+      "baseline_sha256": "725b3708cedfe808763162f5b836310275144780fafeb436d3b0f7d8d6b1edb0",
+      "current_sha256": "725b3708cedfe808763162f5b836310275144780fafeb436d3b0f7d8d6b1edb0",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/review-matrix.md",
+      "declared_owner": true,
+      "baseline_sha256": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a",
+      "current_sha256": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "declared_owner": true,
+      "baseline_sha256": "32255b3322e3794259fa3631a68db0eefd265cc8d95ba2deda7793d7980a9860",
+      "current_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "declared_owner": true,
+      "baseline_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+      "current_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/skills/refactor/SKILL.md",
+      "declared_owner": true,
+      "baseline_sha256": "da111f62ea3381e35b85dda0ff9bc4afccc7b4bcf8b1f940b7f7153f996835dd",
+      "current_sha256": "da111f62ea3381e35b85dda0ff9bc4afccc7b4bcf8b1f940b7f7153f996835dd",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "declared_owner": false,
+      "baseline_sha256": "05419cf635d82a4889c2f964654bf2337e0ab878bc6e1fc4786c50d8e7dd31be",
+      "current_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/helper-invocation.md",
+      "declared_owner": false,
+      "baseline_sha256": "75467678ab56e1871b1aeb1b1b08b15273b7cd3c65b7d4928020570b426ca9cc",
+      "current_sha256": "75467678ab56e1871b1aeb1b1b08b15273b7cd3c65b7d4928020570b426ca9cc",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/fresh-verification.md",
+      "declared_owner": false,
+      "baseline_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+      "current_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/verification-boundary.md",
+      "declared_owner": false,
+      "baseline_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+      "current_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "declared_owner": false,
+      "baseline_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+      "current_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "declared_owner": false,
+      "baseline_sha256": "0bd6ba72760ef2049659d92c8421b9ed2f1ada6d74ad3c200daeaf9bb7bf4dd0",
+      "current_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "declared_owner": false,
+      "baseline_sha256": "08da4951730682366ba752f581902d0466afb8dca918e86a0f094997f0c2570b",
+      "current_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "declared_owner": false,
+      "baseline_sha256": "1210c52496d96a20ffac942852c2ca764599df9b8562014f17889d16e25ee9d9",
+      "current_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/smarts/core.md",
+      "declared_owner": false,
+      "baseline_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+      "current_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/safety-core.md",
+      "declared_owner": false,
+      "baseline_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "current_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/arbiter.md",
+      "declared_owner": false,
+      "baseline_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "current_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "declared_owner": false,
+      "baseline_sha256": "eb5eea0172f2bb591c3be252bfa3ba66529a412eb3ad0a1448a531213e981d53",
+      "current_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/commands/conflict.md",
+      "declared_owner": false,
+      "baseline_sha256": "ea96bc18a20f8096211ffea954456d41593bdbdc139cafd3bf1a8a0bdb8e819b",
+      "current_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/surface/agents/dependency-reviewer.md",
+      "declared_owner": false,
+      "baseline_sha256": "57fb62d414bf7b4578d155deea13343c7f795f79a72e77734585f12bd623d506",
+      "current_sha256": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/pysrc/debug-handoff.py",
+      "declared_owner": false,
+      "baseline_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+      "current_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/pysrc/_debughandofflib.py",
+      "declared_owner": false,
+      "baseline_sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+      "current_sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": "core/pysrc/_contextselectlib.py",
+      "declared_owner": false,
+      "baseline_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "current_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "whole_file_identical": true,
+      "baseline_absence_expected": false
+    },
+    {
+      "path": ".codearbiter/context/security-controls.html",
+      "declared_owner": false,
+      "baseline_sha256": null,
+      "current_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "whole_file_identical": false,
+      "baseline_absence_expected": true
+    },
+    {
+      "path": ".codearbiter/security-controls.md",
+      "declared_owner": false,
+      "baseline_sha256": "0c3c3b13ddfad25d67f9113d653d797d6b5d9d8e391744d9e090c431c9122255",
+      "current_sha256": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+      "whole_file_identical": false,
+      "baseline_absence_expected": false
+    }
+  ],
+  "row_specific_mapping": [
+    {
+      "cell": "disposition:transitions:WF-08:01",
+      "preserved_source_clause": "Authorized fix binds actual defect, same named target RED and current evidence; one internal debug prerequisite returns to same caller without public recursion or fabricated feature artifacts.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/fix.md",
+          "start": 8,
+          "end": 34,
+          "file_sha256": "ff6ebf14613e7cd5b3ce49b746cf62259f7dc954740fe31538643e8ed3b891ca"
+        },
+        {
+          "path": "core/surface/commands/fix.md",
+          "start": 61,
+          "end": 96,
+          "file_sha256": "ff6ebf14613e7cd5b3ce49b746cf62259f7dc954740fe31538643e8ed3b891ca"
+        },
+        {
+          "path": "core/surface/commands/fix.md",
+          "start": 109,
+          "end": 112,
+          "file_sha256": "ff6ebf14613e7cd5b3ce49b746cf62259f7dc954740fe31538643e8ed3b891ca"
+        }
+      ],
+      "semantic_assessment": "Read actual valid-packet/caller-authority/current-source/RED obligations. Private bounded validator/semantic helper remain whole-baseline identical. Changed debug corrected-submission prose still rejects each prior attempt and requires changed facts/same installed validator; it supplies no repair authority or false RED.",
+      "limits": "No diagnosis, validator runtime, actual repair/RED-GREEN, work mutation, delegated delivery or host proof executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-08:02",
+      "preserved_source_clause": "Classify docs/deps/revert accurately; no behavioral code smuggled as chore; dependency bump keeps manifest+lock and mandatory review; route substantive behavior to feature/fix.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/chore.md",
+          "start": 8,
+          "end": 55,
+          "file_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31"
+        }
+      ],
+      "semantic_assessment": "Whole chore owner unchanged. Current dependency maintenance-only MEDIUM rule changes reviewer severity vocabulary, not mandatory dependency review or affected checks. Explicitly not preserving obsolete WF09:06 HIGH contradiction.",
+      "limits": "No actual dependency/registry/license/vulnerability/revert/docs change, scan, review or commit accepted."
+    },
+    {
+      "cell": "disposition:transitions:WF-08:03",
+      "preserved_source_clause": "Authorized exact surface, clean named inputs and direct-test/coverage baseline precede restructure; new seam conditional; preserve old assertions and behavior, no new side effect; actual parity/lint/coverage must pass.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/refactor/SKILL.md",
+          "start": 9,
+          "end": 40,
+          "file_sha256": "da111f62ea3381e35b85dda0ff9bc4afccc7b4bcf8b1f940b7f7153f996835dd"
+        },
+        {
+          "path": "core/surface/skills/refactor/SKILL.md",
+          "start": 42,
+          "end": 88,
+          "file_sha256": "da111f62ea3381e35b85dda0ff9bc4afccc7b4bcf8b1f940b7f7153f996835dd"
+        },
+        {
+          "path": "core/surface/skills/refactor/SKILL.md",
+          "start": 90,
+          "end": 137,
+          "file_sha256": "da111f62ea3381e35b85dda0ff9bc4afccc7b4bcf8b1f940b7f7153f996835dd"
+        }
+      ],
+      "semantic_assessment": "Read complete unchanged owner plus unchanged freshness/local-hosted/maturity rules. New TDD recovery bookkeeping is excluded; current-format context supplies commands, never an invented threshold or permission. No source equality used as runtime parity.",
+      "limits": "No real behavioral equivalence, coverage metric, characterization, lint/type result or code restructure qualified."
+    },
+    {
+      "cell": "disposition:transitions:WF-08:04",
+      "preserved_source_clause": "Explicit bounded question/timebox and disposable branch; findings-only transfer; no spike code merge/PR/wholesale adoption; implementation returns through feature/TDD; secret/irreversible controls survive.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/spike.md",
+          "start": 8,
+          "end": 41,
+          "file_sha256": "725b3708cedfe808763162f5b836310275144780fafeb436d3b0f7d8d6b1edb0"
+        }
+      ],
+      "semantic_assessment": "Whole source read, including confirmed question, timebox expiry and findings-only exit. Unchanged safety-core per-resource deletion/irreversibility still binds; a spike is not blanket cleanup consent.",
+      "limits": "No actual experiment/question/user choice/branch/delete/findings transfer executed; no runtime adoption or deletion permission."
+    },
+    {
+      "cell": "disposition:transitions:WF-09:01",
+      "preserved_source_clause": "Caller supplies unit list/kind/completion contract; disjoint writes or verified isolation/serialization; bounded waves default4, all deferred units visible.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+          "start": 11,
+          "end": 38,
+          "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44"
+        }
+      ],
+      "semantic_assessment": "Read actual role/path/capacity instructions. Host real capacity and authority remain prerequisites; source never establishes OS isolation or actual dispatch. Shared paths cannot be accepted merely from labels.",
+      "limits": "No child launched, actual host capacity/context delivery/filesystem isolation or collision protection executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-09:02",
+      "preserved_source_clause": "Retain every observed unit terminal result/diagnostic/partial state; errored is not complete; contradictions and relevant later failure stay visible, unknown cannot become PASS.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+          "start": 40,
+          "end": 56,
+          "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44"
+        }
+      ],
+      "semantic_assessment": "Whole collection body unchanged; current evidence must expose command/cwd/source/output/exit, as unchanged fresh-verification specifies. New corrected review submission lineage is separate and never rewrites old child terminal result.",
+      "limits": "No actual agent/provider/process outcome, proving command or terminal evidence observed for a project."
+    },
+    {
+      "cell": "disposition:transitions:WF-09:03",
+      "preserved_source_clause": "Only explicit review batch uses triage/verdict funnel; author/scout result collection returns directly. Every finding keeps reviewer/severity/location/control/disposition/owner context; incomplete/no-finding units accounted.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+          "start": 58,
+          "end": 77,
+          "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44"
+        },
+        {
+          "path": "core/surface/agents/finding-triage.md",
+          "start": 12,
+          "end": 60,
+          "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4"
+        },
+        {
+          "path": "core/surface/agents/finding-triage.md",
+          "start": 99,
+          "end": 105,
+          "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4"
+        }
+      ],
+      "semantic_assessment": "Changed triage now explicitly keeps any HIGH blocking and forbids regrading; generic applicability/accounting boundary preserved. New severity correction is acknowledged rather than pretending the old WF09:06 contradiction remains.",
+      "limits": "No actual reviewer batch, severity judgment, applicability decision, independent result or authorization certificate produced."
+    },
+    {
+      "cell": "disposition:transitions:WF-09:04",
+      "preserved_source_clause": "Complete triaged input required; INCOMPLETE wins over blocking verdict without dropping blockers; otherwise current blockers determine BLOCKING_FINDINGS, only no blocker/no missing unit yields PASS.",
+      "witnesses": [
+        {
+          "path": "core/surface/agents/verdict-aggregator.md",
+          "start": 12,
+          "end": 33,
+          "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f"
+        },
+        {
+          "path": "core/surface/agents/verdict-aggregator.md",
+          "start": 58,
+          "end": 64,
+          "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f"
+        }
+      ],
+      "semantic_assessment": "Full verdict owner unchanged. Current stricter HIGH disposition enters as actual triaged input, not a silent waiver. Generic preservation covers completeness/ordering/finding retention, not the superseded maintenance-HIGH branch.",
+      "limits": "No actual review acceptance, findings completeness, supplied severity truth or merge readiness established."
+    },
+    {
+      "cell": "disposition:transitions:WF-09:05",
+      "preserved_source_clause": "Resolve inbound diff once without checkout/mutation; choose path-matched read-only reviewers; missing GitHub/auth fails rather than reviewing wrong diff; external comment separately authorized, never approve/request-changes.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/review.md",
+          "start": 8,
+          "end": 15,
+          "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c"
+        },
+        {
+          "path": "core/surface/commands/review.md",
+          "start": 21,
+          "end": 59,
+          "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c"
+        },
+        {
+          "path": "core/surface/commands/review.md",
+          "start": 60,
+          "end": 87,
+          "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c"
+        }
+      ],
+      "semantic_assessment": "Whole review body unchanged. Read explicit context packet information/not-authority/advisory boundaries; same source/epoch required. Whole policy read is mandatory, operative scope stub alone insufficient. Optional reader provenance does not fabricate local rules.",
+      "limits": "No PR fetch/API/review posting, actual approval, context delivery, native instruction enforcement or review result executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-10:01",
+      "preserved_source_clause": "Current project/evidence review feeds complete triage/verdict then separate checkpoint persistence; unknown/incomplete results survive; checkpoint surfaces findings, not maturity promotion or a new implementation gate.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/checkpoint.md",
+          "start": 8,
+          "end": 28,
+          "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e"
+        },
+        {
+          "path": "core/surface/commands/checkpoint.md",
+          "start": 48,
+          "end": 53,
+          "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e"
+        },
+        {
+          "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+          "start": 58,
+          "end": 67,
+          "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44"
+        }
+      ],
+      "semantic_assessment": "Read full current owner. Added discovery recovery registration is explicitly excluded; old fleet/triage/report identity and nonpromotion boundary remain. HIGH labels stay visible without treating checkpoint output as blanket permission.",
+      "limits": "No full-codebase sweep, model findings, actual maturity assessment, source coverage or live checkpoint acceptance performed."
+    },
+    {
+      "cell": "disposition:transitions:WF-10:02",
+      "preserved_source_clause": "Only explicit checkpoint writer uses observed reviewed commit/UTC start/dirty flag; unknowns not replaced by now; dated suffix avoids overwrite; preserve every finding; override-count baseline is integer after report.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/checkpoint.md",
+          "start": 26,
+          "end": 35,
+          "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e"
+        },
+        {
+          "path": "core/surface/agents/checkpoint-aggregator.md",
+          "start": 12,
+          "end": 41,
+          "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d"
+        },
+        {
+          "path": "core/surface/agents/checkpoint-aggregator.md",
+          "start": 45,
+          "end": 50,
+          "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d"
+        },
+        {
+          "path": "core/surface/agents/checkpoint-aggregator.md",
+          "start": 114,
+          "end": 119,
+          "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d"
+        }
+      ],
+      "semantic_assessment": "Read unchanged checkpoint-aggregator full body and caller flow. New checkpoint capture exception does not authorize source/log/code rewrites or generic review persistence.",
+      "limits": "No actual report/marker/count write, filename atomicity, filesystem durability, date or historical observation established."
+    },
+    {
+      "cell": "disposition:transitions:WF-10:03",
+      "preserved_source_clause": "Resolve exact commit/time window; latest valid checkpoint anchors must resolve and be ancestor of HEAD with dirty flag retained; missing/invalid anchor requires explicit window, never filename/counter inference.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/audit.md",
+          "start": 13,
+          "end": 35,
+          "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750"
+        }
+      ],
+      "semantic_assessment": "Full audit owner unchanged; source clauses directly retain range/source identities and unknowns. Current policy append-only history/real source commitments is consistent, not an actual range execution proof.",
+      "limits": "No actual Git ancestor/range, date/ledger completeness or checkpoint source authenticated by this instruction packet."
+    },
+    {
+      "cell": "disposition:transitions:WF-10:04",
+      "preserved_source_clause": "Retained evidence feeds new nonoverwriting bounded audit packet; source logs/decisions/checkpoints stay read-only; override/low-confidence lines verbatim, empty sections explicit; old packet remains commit-bound history.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/audit.md",
+          "start": 8,
+          "end": 11,
+          "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750"
+        },
+        {
+          "path": "core/surface/commands/audit.md",
+          "start": 24,
+          "end": 45,
+          "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750"
+        }
+      ],
+      "semantic_assessment": "Read actual gathering/output/append suffix rules. Source contract preserved as instructions, not claimed automatic durable append or current factual audit completeness.",
+      "limits": "No actual audit write/data read, source mutation, raw secret handling execution or present-day verification performed."
+    }
+  ],
+  "changed_shared_guard_assessment": [
+    {
+      "paths": [
+        "core/surface/agents/finding-triage.md",
+        "core/surface/includes/reviewer-contract.md",
+        "core/surface/agents/dependency-reviewer.md"
+      ],
+      "assessment": "Actual changed rule unifies all HIGH blocking; sole maintenance-only risk is MEDIUM, mixed/security retains security severity. Read current triage and reviewer contract additions and dependency role lines56..68. WF09:06 obsolete maintenance-HIGH contradiction deliberately EXCLUDED, not preserved or runtime-qualified."
+    },
+    {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "lines": [
+        72,
+        106
+      ],
+      "assessment": "New corrected-review lineage preserves rejected originals, requires real changed condition/current target/fresh independent child and first terminal result; denies/unknown launch stay unavailable. This new submission mechanism is not qualified by baseline collection/triage rows."
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "lines": [
+        39,
+        49
+      ],
+      "assessment": "Added bounded discovery/harvest exception explicitly excluded. Original checkpoint review/accounting/persistence identity/nonpromotion clauses unchanged; no whole-file equality claim."
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "assessment": "Only bounded discovery and terminal recovery additions versus fd7; target-specific RED/characterization/parity/metrics/freshness requirements unchanged. Recovery behavior is excluded from this source packet."
+    },
+    {
+      "paths": [
+        "core/surface/skills/debug/SKILL.md",
+        "core/surface/skills/debug/references/preparation.md"
+      ],
+      "assessment": "Corrected submissions now explicit, still same installed validator, original refusal retained, changed shape/evidence/binding or restored operating condition required; no replay to evade denial or forged evidence. Fix owner still requires valid confirmed-code diagnosis, original caller authorization and actual target RED. No new debugging/runtime acceptance claim."
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "assessment": "Format-aware current narrative records and complete policy reads; notes/retired records not current policy, errors/missing content remain gaps. Already inspected read seam; source-only instruction preservation does not qualify native/installed reader execution."
+    },
+    {
+      "paths": [
+        "core/surface/includes/routing-table.md",
+        "core/surface/commands/conflict.md"
+      ],
+      "assessment": "Affected/dependent work pauses instead of unrelated global stop; disputed authority still unresolved and user/host global stops survive. No guessed bug/refactor scope, review result or audit choice introduced."
+    }
+  ],
+  "excluded_cells": [
+    {
+      "cell": "WF-09:06",
+      "reason": "Its literal old maintenance-HIGH/nonblocking contradiction is deliberately corrected by D-HIGH; needs changed-contract disposition, not source-preserved obsolete behavior."
+    }
+  ],
+  "policy_read_reuse": {
+    "current_source_path": ".codearbiter/context/security-controls.html",
+    "current_records": [
+      "CON-001",
+      "CON-002",
+      "CON-003",
+      "CON-004",
+      "CON-005",
+      "CON-006",
+      "CON-007",
+      "CON-008",
+      "CON-009",
+      "CON-010",
+      "CON-011",
+      "CON-012",
+      "CON-013",
+      "CON-014",
+      "CON-015",
+      "CON-016"
+    ],
+    "prior_complete_installedowner_export_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "operative_scope_stub": ".codearbiter/security-controls.md",
+    "all16current_and_identical_notes_read": true
+  },
+  "dependency_boundary": "Direct instruction bodies/shared guards and bounded debug/context-selector interfaces only. Their complete transitive native/host/process/filesystem execution is NOT qualified. A source rule is not proof a model followed it.",
+  "tests_run": 0,
+  "source_index_mutations": false
+}

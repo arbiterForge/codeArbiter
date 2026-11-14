@@ -1,0 +1,32 @@
+{
+  "result": "CONFIRMED",
+  "severity": "MEDIUM",
+  "scope": "Current-evidence applicability reports; not a demonstrated publication or authority bypass",
+  "finding": "Positive input hashes do not establish directory membership or negative-path lookup identity. An added Go init source changes a native module while the current owner reports an old complete-member proof APPLICABLE and strict disposition authentication accepts it.",
+  "counterexample": {
+    "raw": "result.json",
+    "raw_sha256": "cd352bd41f13616e8c9cb21a59c95895f8c61d67a7a5557adcd464b1d2b45d95",
+    "script": "reproduce.py",
+    "script_sha256": "5ca5658d8d042fee3b28274e0f49fcb28ca09d010b3ff26ad2310b5ebec1ee57",
+    "command": ["C:/Python314/python.exe", "-B", "C:/Users/brenn/AppData/Local/Temp/ca-proof-membership-audit-pqz0gqbv/reproduce.py"],
+    "exit_code": 0,
+    "proof_type": "Synthetic owning admission fixture only; never eligible for product ledger admission",
+    "observed": "All244 positive inputs unchanged; baseline/new-Go-member/new-host-lookup each APPLICABLE and strict authentication PASSED. Existing module hash changed on new Go member. No Go build/test or source execution."
+  },
+  "reviewed_sources": [
+    {"path": ".github/scripts/major_readiness.py", "sha256": "3bc43e5765ae067368fe2d7ae258c4c7ab47bb0081081f0db9b0ed1d79745b84", "symbols": ["authenticate_recorded_disposition", "authenticate_disposition"]},
+    {"path": ".github/scripts/check_state_contracts_integration.py", "sha256": "0913c941f25461ccb34f602e89e96bfedadb5eedca6adbaaca2f4a38100a1067", "symbols": ["validate"]},
+    {"path": ".github/scripts/_contextverificationlib.py", "sha256": "09cd4fcff6c484f6561162c5d5769e91775f62ae7c211757c82d7b84092e2fd4", "symbols": ["hash_go_module"]},
+    {"path": "core/pysrc/hostapi.py", "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4", "symbols": ["load_host"]}
+  ],
+  "contract_distinction": "The current positive-input schema can promise unchanged declared files only. Reporting APPLICABLE as a complete native dependency claim exceeds that basis when the actual compiler/read inputs include module membership. Historical TESTED/progress remains valid and unchanged. Host lookup absence is relevant to hostapi/producer assertions, not pure-Go assertions.",
+  "existing_owners": [
+    ".github/scripts/_contextverificationlib.py:hash_go_module binds bounded names and all module file bytes and rejects symlinks; it independently detects the repro addition.",
+    "tools/go_test_parallel.py captures the module hash before/after; ci20_native_binding, build-artifacts and build-host-packages join current module membership to native receipts.",
+    ".github/scripts/major_qualification_report.py requires the original observation source_commit/source_tree to equal the selected qualification source, preserving an independent publication barrier.",
+    "core/pysrc/_contextsnapshotlib.py already has bounded scope membership and absent/file preimages, but neither current disposition reader calls it; filesystem snapshots cannot be substituted for selected immutable Git candidate objects.",
+    "execution/tools/source_drift.py is explicitly only a cited-path worklist and does not close this dependency gap."
+  ],
+  "followup_boundary": "Reuse the existing native module-membership owner and recorded original module identity with immutable-Git candidate membership; separately check relevant optional lookup absence. Do not infer full closure from positive files, reset history, invalidate unrelated work, or introduce another approval authority. No schema/API/source implementation proposed or changed by this audit.",
+  "writes": "Temp audit packet and disposable owning Git fixture only; no Gov source/index/ledger/progress or frozen successor packet writes"
+}

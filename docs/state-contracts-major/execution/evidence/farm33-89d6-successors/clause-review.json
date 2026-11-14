@@ -1,0 +1,119 @@
+{
+  "schema": "codearbiter-farm33-source-applicability-review/1",
+  "prior_retaining_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+  "current_source": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "review_method": "Read each prior25 group claim/current clause and its exact source ownership. Seventeen transport/publication declarations remain unchanged to frozen fd7; runTask quality owner is byte-equivalent to the approved2c62 source; mutation/redactor/worktree-fs files are whole-byte unchanged. These equality observations corroborate clause review; they are not a current runtime verdict.",
+  "groups": [
+    {
+      "id": "mutation-eligibility-and-literal-risk",
+      "cells": [
+        "disposition:transitions:S28:01",
+        "disposition:transitions:S28:02"
+      ],
+      "current_clauses": [
+        "mutationCheck returns null when disabled/no first gate/no eligible mutants; no score or test claim is invented.",
+        "antiGamingCheck inspects exact typed literal evidence and <=5 code-line implementations; returned risk is a heuristic, not proof of human intent."
+      ],
+      "limits": "Model intent is not observable. These are unchanged source decisions and controlled local fixtures.",
+      "registration_change_assessment": "No S30 registration/cleanup-admission clause is borrowed by this group. Git registry comparison, null/unknown refusal and worktree removal do not change its selected HTTP/quality/mutation/publication guard. Any claim that work success implies cleanup success is expressly excluded."
+    },
+    {
+      "id": "mutation-hook-score-and-fatal-evidence",
+      "cells": [
+        "disposition:transitions:S28:03",
+        "disposition:transitions:S28:04",
+        "disposition:transitions:S28:05",
+        "disposition:transitions:S28:06"
+      ],
+      "current_clauses": [
+        "Configured hook uses scrubbed env/process-group runner and finite gate timeout. interpretMutationHookResult admits score only for code0 with no timeout/cleanupFailed.",
+        "runTask assessment retains explicit evaluated>=5 and score<=configured default0.1 floor; missing counts are not invented.",
+        "Malformed/error/timeout retains warning/adverse unverified evidence instead of fabricating positive score. cleanupFailed yields fatal before candidate switch, reset, stage, integrate or another author."
+      ],
+      "limits": "Real process containment on unsupported platforms remains separate. Hook diagnostics and failed stdout are not measured scores.",
+      "registration_change_assessment": "No S30 registration/cleanup-admission clause is borrowed by this group. Git registry comparison, null/unknown refusal and worktree removal do not change its selected HTTP/quality/mutation/publication guard. Any claim that work success implies cleanup success is expressly excluded."
+    },
+    {
+      "id": "mutation-budget-restoration-and-score-validity",
+      "cells": [
+        "disposition:transitions:S28:07",
+        "disposition:transitions:S28:08",
+        "disposition:transitions:S28:09",
+        "disposition:transitions:S28:10",
+        "disposition:transitions:S28:12"
+      ],
+      "current_clauses": [
+        "Original bytes are held in a Map. Default sample15 and launch budget30000ms remain configurable; guarded default-config edge does not claim hard maxima for operator overrides.",
+        "Mutant write precedes remaining-budget calculation; each gate launch is bounded by remaining time and shared gate limit. Immediate restore precedes next trial; finally restores all originals.",
+        "TimedOut/cleanupFailed stops launches, restores and excludes incomplete trials. Any ordinary nonzero is unclassified rejection, not a measured killed mutant. Earlier adverse upper-bound evidence remains.",
+        "All completed passes yield zero score only with >=3 evaluated trials; fewer returns null. Safe writer wraps unsafe/failed restoration as UnsafeWorktreePathError; assessment returns fatal without blind retry."
+      ],
+      "limits": "30 seconds bounds launch allowance, not completed cleanup latency. Windows POSIX permission/process-group branches remain unqualified; no compiler/assertion exit is promoted to mutation-kill proof.",
+      "registration_change_assessment": "No S30 registration/cleanup-admission clause is borrowed by this group. Git registry comparison, null/unknown refusal and worktree removal do not change its selected HTTP/quality/mutation/publication guard. Any claim that work success implies cleanup success is expressly excluded."
+    },
+    {
+      "id": "http-deadline-transport-retry",
+      "cells": [
+        "disposition:transitions:S27:01",
+        "disposition:transitions:S27:02",
+        "disposition:transitions:S27:03",
+        "disposition:transitions:S27:04",
+        "disposition:transitions:S27:09"
+      ],
+      "current_clauses": [
+        "callApi validates resolved HTTPS/loopback endpoint, creates fresh AbortController per attempt and default120000ms timer through response.text().",
+        "Pre-header network failures retry only within internal count; apiRetryDelay fallback caps at16000ms. Retry-After seconds/strict HTTP dates must fit local timer budget.",
+        "429/5xx excessive cooldown or exhausted internal retries returns retryable:false; runWorker preserves it and task policy does not buy another author request.",
+        "finally aborts active response stream and clears timer before return/backoff; identical request body is retained across internal retry."
+      ],
+      "limits": "Controlled fetch/local transport evidence only, no paid/live provider acceptance.120seconds is the configured default. No CLI external cancellation contract or response-byte cap is invented.",
+      "registration_change_assessment": "No S30 registration/cleanup-admission clause is borrowed by this group. Git registry comparison, null/unknown refusal and worktree removal do not change its selected HTTP/quality/mutation/publication guard. Any claim that work success implies cleanup success is expressly excluded."
+    },
+    {
+      "id": "http-body-validation-and-sanitized-result",
+      "cells": [
+        "disposition:transitions:S27:05",
+        "disposition:transitions:S27:06",
+        "disposition:transitions:S27:07",
+        "disposition:transitions:S27:08"
+      ],
+      "current_clauses": [
+        "Other non2xx returns sanitized status without consuming/reflection of upstream error body; it is not internally retried and ordinary outer policy may apply.",
+        "Successful body remains under the same temporal deadline. parseChatCompletion validates closed output shapes and safe nonnegative reported usage; runWorker validates contained/admitted files.",
+        "Post-header body failure is terminal for internal transport replay. Invalid shape/body returns bounded sanitized diagnostics; usage is preserved only when actually reported."
+      ],
+      "limits": "Bounded body means the frozen row's same-request time deadline; response.text has no separate byte cap. No live provider/model capability, inferred billing or outer quality-retry success claim.",
+      "registration_change_assessment": "No S30 registration/cleanup-admission clause is borrowed by this group. Git registry comparison, null/unknown refusal and worktree removal do not change its selected HTTP/quality/mutation/publication guard. Any claim that work success implies cleanup success is expressly excluded."
+    },
+    {
+      "id": "atomic-publication-and-independent-mirrors",
+      "cells": [
+        "disposition:transitions:S31:01",
+        "disposition:transitions:S31:02",
+        "disposition:transitions:S31:03",
+        "disposition:transitions:S31:04",
+        "disposition:transitions:S31:05"
+      ],
+      "current_clauses": [
+        "atomicWriteFile creates random same-directory wx tempfile, writes full UTF8 bytes, fsyncs file, applies prior mode, closes then renameWithRetry.",
+        "renameWithRetry has four-attempt default and only EPERM/EACCES/EBUSY bounded backoff. No directory fsync/crash-durability guarantee is claimed.",
+        "writeReport preserves JSON-before-Markdown as separate atomic publications. Latest reports/diffs use caught bounded error observations; they cannot invalidate already-published authoritative receipts."
+      ],
+      "limits": "Source-conformance establishes fsync/rename ordering; this is not a power-loss test. POSIX mode enforcement and complete multi-host crash behavior are not measured by Windows success.",
+      "registration_change_assessment": "No S30 registration/cleanup-admission clause is borrowed by this group. Git registry comparison, null/unknown refusal and worktree removal do not change its selected HTTP/quality/mutation/publication guard. Any claim that work success implies cleanup success is expressly excluded."
+    }
+  ],
+  "tested8": "The exact existing12 selector identities each passed in the new938 report; sources, test bodies, bundle/package/config and shared JSON are selected from actual captured27 and literally join89d6. Old931/2c62 results remain immutable history, not relabelled as this run.",
+  "changed_helpers_excluded": [
+    "samePath",
+    "stillRegistered",
+    "removeWorktreeVerified",
+    "S30 guards and any general physical cleanup success claim"
+  ],
+  "unpromoted_gaps": [
+    "No selected25 source clause was found to depend on changed registration semantics. Physical process containment/nonroot/platform/provider/publication gaps remain as previously recorded.",
+    "S28 sample15/budget30seconds and score0.1 are the frozen guarded/default configuration, not new hard maxima against operator configuration.",
+    "S27 body bound is the same temporal request deadline, not a new byte cap.",
+    "S31 fsync ordering is source conformance, not power-loss/directory-fsync or current POSIX mode qualification."
+  ]
+}

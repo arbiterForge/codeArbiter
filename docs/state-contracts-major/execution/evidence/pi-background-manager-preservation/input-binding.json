@@ -1,0 +1,27 @@
+{
+  "source_commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "checked_candidate_head": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+  "inputs": {
+    "plugins/ca-pi/tools/src/background-jobs.ts": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+    "plugins/ca-pi/tools/test/background-jobs.test.ts": "b52ede11e88ab574ca6989841b96be274daecd7ddf611164bc35debb49063c3b",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+    "plugins/ca-pi/tools/src/windows-supervisor.ts": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3"
+  },
+  "owning_source_whole_baseline_equal": true,
+  "source_commit_and_candidate_all_input_blobs_equal": true,
+  "original_component_artifact_input_map_verified": true,
+  "component_observation_pointer": {
+    "local_path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-component-selector-join-cwc56952/component-observations.json",
+    "sha256": "59171661fe8dbc4e1617b5f2fb326bd23828ea5575766bcbe7b36b9ee0863fb2"
+  },
+  "limits": [
+    "Only S04:01,06,08 proposed source-clause PRESERVED; no machine/task/scenario closure.",
+    "Original hosted tests support component assertions only; run43532123830 was pull_request/cancelled aggregate, so no final successful integration-push hosted gate promotion.",
+    "Runtime process-tree readiness, actual cleanup, cancel/timeout, file effects and installed package authoring remain separate from manager state erasure.",
+    "Source-conformance supplements manager-only assertions for S04:06 runtime duplicate cancel path; does not claim a newly executed race test.",
+    "Existing current3688 cold3/recovery10/RPC proof and old09038 diagnostic TUI are separate; none executes these manager scenarios by suite counters."
+  ]
+}
