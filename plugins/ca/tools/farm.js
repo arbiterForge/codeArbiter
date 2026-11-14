@@ -1998,15 +1998,25 @@ var CLEANUP_ATTEMPTS = 3;
 var CLEANUP_DELAY_MS = 150;
 function samePath(a, b) {
   const norm = (p) => {
-    const r = path4.resolve(p);
+    let observed = false;
+    const r = canonicalize(p, "worktree registration path", (ancestor) => {
+      const physical = realpathSync.native(ancestor);
+      observed = true;
+      return physical;
+    });
+    if (!observed) throw new Error("worktree registration physical ancestor unavailable");
     return process.platform === "win32" ? r.toLowerCase() : r;
   };
   return norm(a) === norm(b);
 }
 async function stillRegistered(gitFn, wt) {
   const listed = await gitFn(["worktree", "list", "--porcelain"]);
-  if (listed.code !== 0) return true;
-  return listed.stdout.split("\n").filter((l) => l.startsWith("worktree ")).some((l) => samePath(l.slice("worktree ".length).trim(), wt));
+  if (listed.code !== 0) return null;
+  try {
+    return listed.stdout.split("\n").filter((l) => l.startsWith("worktree ")).some((l) => samePath(l.slice("worktree ".length).trim(), wt));
+  } catch {
+    return null;
+  }
 }
 async function observeWorktreePath(p) {
   try {
@@ -2028,7 +2038,7 @@ async function removeWorktreeVerified(gitFn, wt, opts = {}) {
       if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
       let reg = await stillRegistered(gitFn, wt);
       const observation2 = await observeWorktreePath(wt);
-      if (reg && observation2.kind === "absent") {
+      if (reg === true && observation2.kind === "absent") {
         await gitFn(["worktree", "prune"]);
         reg = await stillRegistered(gitFn, wt);
       }
@@ -2040,6 +2050,14 @@ async function removeWorktreeVerified(gitFn, wt, opts = {}) {
         target: wt,
         attempts: i,
         detail: `filesystem observation unavailable (${observation.code}); cleanup remains unverified`
+      };
+    }
+    if (registered === null) {
+      return {
+        ok: false,
+        target: wt,
+        attempts: i,
+        detail: "worktree registration observation unavailable; cleanup remains unverified"
       };
     }
     const present = observation.kind === "present";

@@ -1891,10 +1891,19 @@ const CLEANUP_DELAY_MS = 150;
 
 // Path comparison for `git worktree list --porcelain` output. git prints
 // forward slashes even on Windows, and Windows paths are case-insensitive, so
-// compare RESOLVED, normalized forms rather than raw strings.
+// compare physical forms, including the existing ancestor of a missing target.
+// A lexical alias mismatch is not proof that Git released the same resource.
 function samePath(a: string, b: string): boolean {
   const norm = (p: string) => {
-    const r = path.resolve(p);
+    let observed = false;
+    const r = canonicalize(p, "worktree registration path", (ancestor) => {
+      const physical = realpathSync.native(ancestor);
+      observed = true;
+      return physical;
+    });
+    // Containment may use canonicalize's lexical fallback for an absent volume;
+    // registration absence needs an actual physical identity observation.
+    if (!observed) throw new Error("worktree registration physical ancestor unavailable");
     return process.platform === "win32" ? r.toLowerCase() : r;
   };
   return norm(a) === norm(b);
@@ -1904,13 +1913,18 @@ function samePath(a: string, b: string): boolean {
 // exit code — is the authority: a removal that "failed" but left git with no
 // registration and no directory has still released ownership, and a removal
 // that "succeeded" while git keeps the registration has not.
-async function stillRegistered(gitFn: GitRunner, wt: string): Promise<boolean> {
+// null is an unknown observation, never permission to prune or retry removal.
+async function stillRegistered(gitFn: GitRunner, wt: string): Promise<boolean | null> {
   const listed = await gitFn(["worktree", "list", "--porcelain"]);
-  if (listed.code !== 0) return true; // cannot verify ⇒ do not claim success
-  return listed.stdout
-    .split("\n")
-    .filter((l) => l.startsWith("worktree "))
-    .some((l) => samePath(l.slice("worktree ".length).trim(), wt));
+  if (listed.code !== 0) return null;
+  try {
+    return listed.stdout
+      .split("\n")
+      .filter((l) => l.startsWith("worktree "))
+      .some((l) => samePath(l.slice("worktree ".length).trim(), wt));
+  } catch {
+    return null; // unavailable physical identity cannot prove a mismatch
+  }
 }
 
 type WorktreePathObservation =
@@ -1965,7 +1979,7 @@ export async function removeWorktreeVerified(
       // blanket call would also deregister an unrelated worktree whose path is
       // merely unreachable right now (an unmounted volume, a temporarily denied
       // directory). Narrow it to the condition it is actually needed for.
-      if (reg && observation.kind === "absent") {
+      if (reg === true && observation.kind === "absent") {
         await gitFn(["worktree", "prune"]);
         reg = await stillRegistered(gitFn, wt);
       }
@@ -1976,6 +1990,10 @@ export async function removeWorktreeVerified(
     if (observation.kind === "unknown") {
       return { ok: false, target: wt, attempts: i,
         detail: `filesystem observation unavailable (${observation.code}); cleanup remains unverified` };
+    }
+    if (registered === null) {
+      return { ok: false, target: wt, attempts: i,
+        detail: "worktree registration observation unavailable; cleanup remains unverified" };
     }
     const present = observation.kind === "present";
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
