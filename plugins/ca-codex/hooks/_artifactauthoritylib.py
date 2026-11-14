@@ -43,6 +43,7 @@ import shlex
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -2482,6 +2483,254 @@ def _resolved_directory(value: Any) -> Path:
     return path
 
 
+class _WindowsJobObservation:
+    """Retain private-job creation identities before termination hides live PIDs."""
+    MAX_PROCESSES = 16384
+
+    def __init__(self, kernel32: Any, ntdll: Any, job: Any):
+        import ctypes
+        from ctypes import wintypes
+        self.ctypes, self.wintypes = ctypes, wintypes
+        self.kernel32, self.ntdll, self.job = kernel32, ntdll, job
+        self.lock, self.stop = threading.Lock(), threading.Event()
+        self.records, self.latest = [], {}
+        self.failure, self.process, self.leader_seen = None, None, False
+        self.port = None
+        self.key = 1
+        kernel32.CreateIoCompletionPort.argtypes = [wintypes.HANDLE, wintypes.HANDLE, ctypes.c_size_t, wintypes.DWORD]
+        kernel32.CreateIoCompletionPort.restype = wintypes.HANDLE
+        kernel32.GetQueuedCompletionStatus.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD), ctypes.POINTER(ctypes.c_size_t), ctypes.POINTER(ctypes.c_void_p), wintypes.DWORD]
+        kernel32.GetQueuedCompletionStatus.restype = wintypes.BOOL
+        kernel32.PostQueuedCompletionStatus.argtypes = [wintypes.HANDLE, wintypes.DWORD, ctypes.c_size_t, ctypes.c_void_p]
+        kernel32.PostQueuedCompletionStatus.restype = wintypes.BOOL
+        kernel32.IsProcessInJob.argtypes = [wintypes.HANDLE, wintypes.HANDLE, ctypes.POINTER(wintypes.BOOL)]
+        kernel32.IsProcessInJob.restype = wintypes.BOOL
+        kernel32.GetProcessId.argtypes = [wintypes.HANDLE]
+        kernel32.GetProcessId.restype = wintypes.DWORD
+        kernel32.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+        kernel32.GetProcessTimes.restype = wintypes.BOOL
+        kernel32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        kernel32.WaitForSingleObject.restype = wintypes.DWORD
+
+        class Attributes(ctypes.Structure):
+            _fields_ = [("Length", wintypes.ULONG), ("RootDirectory", wintypes.HANDLE),
+                ("ObjectName", ctypes.c_void_p), ("Attributes", wintypes.ULONG),
+                ("SecurityDescriptor", ctypes.c_void_p), ("SecurityQualityOfService", ctypes.c_void_p)]
+        class ClientId(ctypes.Structure):
+            _fields_ = [("UniqueProcess", wintypes.HANDLE), ("UniqueThread", wintypes.HANDLE)]
+        class PortBinding(ctypes.Structure):
+            _fields_ = [("CompletionKey", ctypes.c_void_p), ("CompletionPort", wintypes.HANDLE)]
+        self.Attributes, self.ClientId = Attributes, ClientId
+        ntdll.NtOpenProcess.argtypes = [ctypes.POINTER(wintypes.HANDLE), wintypes.DWORD, ctypes.POINTER(Attributes), ctypes.POINTER(ClientId)]
+        ntdll.NtOpenProcess.restype = wintypes.LONG
+        self.port = kernel32.CreateIoCompletionPort(wintypes.HANDLE(-1), None, 0, 1)
+        if not self.port:
+            raise AuthorityError("UNSUPPORTED_PROCESS_CONTAINMENT", "job observation port is unavailable")
+        binding = PortBinding(self.key, self.port)
+        if not kernel32.SetInformationJobObject(job, 7, ctypes.byref(binding), ctypes.sizeof(binding)):
+            kernel32.CloseHandle(self.port)
+            self.port = None
+            raise AuthorityError("UNSUPPORTED_PROCESS_CONTAINMENT", "job observation could not be bound")
+        self.thread = threading.Thread(target=self._collect, daemon=True)
+        self.thread.start()
+
+    def bind_leader(self, process: Any) -> None:
+        self.process = process  # Known CreateProcess HANDLE before assignment/resume.
+
+    def _fail(self, reason: str) -> None:
+        with self.lock:
+            if self.failure is None:
+                self.failure = reason
+
+    def check(self) -> None:
+        with self.lock:
+            failure = self.failure
+        if failure is not None:
+            raise AuthorityError("VERIFICATION_PROCESS_FAILED", failure)
+
+    def _new_process(self, pid: int) -> None:
+        c, w, k = self.ctypes, self.wintypes, self.kernel32
+        borrowed = self.process is not None and pid == self.process.pid and not self.leader_seen
+        gone, handle = False, None
+        if borrowed:
+            self.leader_seen = True
+            handle = int(self.process._handle)
+        else:
+            attributes = self.Attributes()
+            attributes.Length = c.sizeof(attributes)
+            identity = self.ClientId(pid, None)  # Fixed PID lookup, no object name/thread.
+            result = w.HANDLE()
+            status = self.ntdll.NtOpenProcess(c.byref(result), 0x00101000,
+                c.byref(attributes), c.byref(identity)) & 0xffffffff
+            if status == 0xC000000B and not result:  # STATUS_INVALID_CID, not an arbitrary failed open.
+                gone = True
+            elif status == 0 and result:
+                handle = result.value
+            else:
+                raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job member identity is unavailable")
+        creation = None
+        try:
+            if handle is not None:
+                member = w.BOOL()
+                if k.GetProcessId(handle) != pid or not k.IsProcessInJob(handle, self.job, c.byref(member)) or not member.value:
+                    raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job member identity differs")
+                times = [w.FILETIME() for _ in range(4)]
+                if not k.GetProcessTimes(handle, *(c.byref(t) for t in times)):
+                    raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job member creation identity is unavailable")
+                creation = (times[0].dwHighDateTime << 32) | times[0].dwLowDateTime
+            with self.lock:
+                if self.stop.is_set():
+                    return  # The local newly opened handle is closed below.
+                old = self.latest.get(pid)
+                if len(self.records) >= self.MAX_PROCESSES or (old is not None and not old["exited"] and not old["done"]):
+                    raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job creation history is ambiguous or over limit")
+                if old is not None and creation is not None and creation == old["creation"]:
+                    raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job creation identity repeated")
+                record = {"pid": pid, "creation": creation, "handle": handle,
+                    "borrowed": borrowed, "gone": gone, "exited": False, "done": False}
+                self.records.append(record)
+                self.latest[pid] = record
+                handle = None  # Ownership transferred to the record.
+        finally:
+            if handle is not None and not borrowed:
+                k.CloseHandle(handle)
+
+    def _collect(self) -> None:
+        c, w, k = self.ctypes, self.wintypes, self.kernel32
+        messages = 0
+        while not self.stop.is_set():
+            message, key, value = w.DWORD(), c.c_size_t(), c.c_void_p()
+            ok = k.GetQueuedCompletionStatus(self.port, c.byref(message), c.byref(key), c.byref(value), 20)
+            if self.stop.is_set():
+                return
+            if not ok:
+                if c.get_last_error() == 258 and not value.value:  # WAIT_TIMEOUT
+                    continue
+                self._fail("job observation transport failed")
+                return
+            messages += 1
+            if key.value != self.key or messages > self.MAX_PROCESSES * 4 + 16:
+                self._fail("job observation key or message bound differs")
+                return
+            if message.value == 4:  # ACTIVE_PROCESS_ZERO is NOT a rundown proof.
+                continue
+            pid = value.value
+            if not isinstance(pid, int) or not 0 < pid <= 0xffffffff:
+                self._fail("job observation process identity is invalid")
+                return
+            try:
+                if message.value == 6:  # NEW_PROCESS, private job source.
+                    self._new_process(pid)
+                elif message.value in (7, 8):  # EXIT_PROCESS / ABNORMAL_EXIT_PROCESS.
+                    with self.lock:
+                        record = self.latest.get(pid)
+                        if record is None:
+                            raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job exit lacks creation history")
+                        record["exited"] = True
+                else:
+                    raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job observation message is unsupported")
+            except Exception:
+                self._fail("job member observation could not be confirmed")
+                return
+
+    def wait_members(self, deadline: float) -> None:
+        c, w, k = self.ctypes, self.wintypes, self.kernel32
+        while True:
+            self.check()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job member rundown timed out")
+            with self.lock:
+                records = list(self.records)
+            for record in records:
+                if record["done"]:
+                    continue
+                if record["gone"]:
+                    # A vanished short-lived PID needs both private NEW and EXIT
+                    # history. Access denial/invalid arguments never count as gone.
+                    if record["exited"]:
+                        record["done"] = True
+                    continue
+                state = k.WaitForSingleObject(record["handle"], 0)
+                if state == 258:
+                    continue
+                if state != 0:
+                    raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job member wait is unavailable")
+                with self.lock:
+                    if record["borrowed"]:
+                        self.process._handle.Close()
+                    elif not k.CloseHandle(record["handle"]):
+                        raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job member handle release failed")
+                    record["handle"], record["done"] = None, True
+            accounting = _windows_job_accounting(k, self.job)
+            with self.lock:
+                complete = (len(self.records) == accounting.TotalProcesses
+                    and self.leader_seen and all(row["done"] for row in self.records))
+            if complete:
+                return
+            time.sleep(min(0.01, remaining))
+
+    def close(self, deadline: float) -> None:
+        self.stop.set()
+        # Closing a Windows completion port wakes its bounded pending receiver
+        # with ERROR_ABANDONED_WAIT_0; the stop bit prevents new ownership.
+        port, self.port = self.port, None
+        released = not port or bool(self.kernel32.CloseHandle(port))
+        self.thread.join(timeout=max(0.0, deadline - time.monotonic()))
+        with self.lock:
+            for record in self.records:
+                if record["handle"] is not None:
+                    if record["borrowed"]:
+                        self.process._handle.Close()
+                    else:
+                        released = bool(self.kernel32.CloseHandle(record["handle"])) and released
+                    record["handle"] = None
+            if self.process is not None:
+                self.process._handle.Close()  # Also covers a missing leader NEW message.
+        if self.thread.is_alive() or not released:
+            raise AuthorityError("VERIFICATION_PROCESS_FAILED", "job observation shutdown is unconfirmed")
+
+
+def _windows_job_accounting(kernel32: Any, job: Any) -> Any:
+    import ctypes
+    from ctypes import wintypes
+    class Accounting(ctypes.Structure):
+        _fields_ = [(name, ctypes.c_longlong) for name in (
+            "TotalUserTime", "TotalKernelTime", "ThisPeriodTotalUserTime", "ThisPeriodTotalKernelTime",
+        )] + [(name, wintypes.DWORD) for name in (
+            "TotalPageFaultCount", "TotalProcesses", "ActiveProcesses", "TotalTerminatedProcesses",
+        )]
+    kernel32.QueryInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int,
+        ctypes.c_void_p, wintypes.DWORD, ctypes.POINTER(wintypes.DWORD)]
+    kernel32.QueryInformationJobObject.restype = wintypes.BOOL
+    accounting = Accounting()
+    if not kernel32.QueryInformationJobObject(job, 1, ctypes.byref(accounting), ctypes.sizeof(accounting), None):
+        raise AuthorityError("VERIFICATION_PROCESS_FAILED", "Windows job rundown state is unavailable")
+    return accounting
+
+
+def _drain_windows_job(kernel32: Any, job: Any, process: Any, observation: Any, *,
+                       timeout_seconds: float = 10.0, deadline: float | None = None) -> None:
+    """Request termination, then prove actual member rundown before releasing job."""
+    if deadline is None:
+        deadline = time.monotonic() + timeout_seconds
+    if not kernel32.TerminateJobObject(job, 1):
+        raise AuthorityError("VERIFICATION_PROCESS_FAILED", "Windows job termination could not be confirmed")
+    try:
+        process.wait(timeout=max(0.0, deadline - time.monotonic()))
+    except subprocess.TimeoutExpired:
+        raise AuthorityError("VERIFICATION_PROCESS_FAILED", "Windows leader rundown timed out") from None
+    observation.wait_members(deadline)  # Signaled handles or paired, proven-gone history.
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise AuthorityError("VERIFICATION_PROCESS_FAILED", "Windows job rundown timed out")
+        accounting = _windows_job_accounting(kernel32, job)
+        if accounting.ActiveProcesses == 0:
+            return  # Accounting alone never substitutes for wait_members above.
+        time.sleep(min(0.01, remaining))
+
+
 def _run_contained(
     argv: list[str], *, cwd: str, env: dict[str, str], timeout_seconds: float = 1800.0
 ) -> subprocess.CompletedProcess:
@@ -2491,6 +2740,7 @@ def _run_contained(
     if not isinstance(timeout_seconds, (int, float)) or timeout_seconds <= 0:
         raise AuthorityError("INVALID_PROCESS_TIMEOUT", "process timeout must be positive")
     job = None
+    observation = None
     if os.name == "nt":
         import ctypes
         from ctypes import wintypes
@@ -2529,6 +2779,9 @@ def _run_contained(
         kernel32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
         kernel32.TerminateJobObject.argtypes = [wintypes.HANDLE, wintypes.UINT]
         kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        for name in ("SetInformationJobObject", "AssignProcessToJobObject",
+                     "TerminateJobObject", "CloseHandle"):
+            getattr(kernel32, name).restype = wintypes.BOOL
         ntdll.NtResumeProcess.argtypes = [wintypes.HANDLE]
         job = kernel32.CreateJobObjectW(None, None)
         if not job:
@@ -2539,11 +2792,13 @@ def _run_contained(
             kernel32.CloseHandle(job)
             raise AuthorityError("UNSUPPORTED_PROCESS_CONTAINMENT", "job limits could not be installed")
         try:
+            observation = _WindowsJobObservation(kernel32, ntdll, job)
             process = subprocess.Popen(
                 argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False,
                 creationflags=0x00000200 | 0x00000004,  # NEW_PROCESS_GROUP | SUSPENDED
             )
+            observation.bind_leader(process)
             if not kernel32.AssignProcessToJobObject(job, wintypes.HANDLE(int(process._handle))):
                 process.kill()
                 process.wait()
@@ -2552,8 +2807,13 @@ def _run_contained(
                 kernel32.TerminateJobObject(job, 1)
                 process.wait()
                 raise AuthorityError("UNSUPPORTED_PROCESS_CONTAINMENT", "suspended child could not resume")
-        except Exception:
+        except Exception as error:
             kernel32.CloseHandle(job)
+            if observation is not None:
+                try:
+                    observation.close(time.monotonic() + 10.0)
+                except Exception:
+                    error.__cause__ = AuthorityError("VERIFICATION_PROCESS_FAILED", "job observation shutdown is unconfirmed")
             raise
     else:
         process = subprocess.Popen(
@@ -2583,21 +2843,49 @@ def _run_contained(
     deadline = time.monotonic() + timeout_seconds
     try:
         while process.poll() is None:
+            if observation is not None:
+                observation.check()
             if overflow.is_set() or time.monotonic() >= deadline:
-                if os.name == "nt":
-                    kernel32.TerminateJobObject(job, 1)
-                else:
+                if os.name != "nt":
                     import signal
                     os.killpg(process.pid, signal.SIGKILL)
-                process.wait(timeout=10)
+                    process.wait(timeout=10)
                 if overflow.is_set():
                     raise AuthorityError("PROCESS_OUTPUT_TOO_LARGE", "process output exceeds 8 MiB")
                 raise AuthorityError("VERIFICATION_PROCESS_FAILED", "verification process timed out")
             time.sleep(0.02)
     finally:
+        primary_error = sys.exc_info()[1]
+        cleanup_error = None
         if job is not None:
-            kernel32.CloseHandle(job)  # KILL_ON_JOB_CLOSE ends surviving descendants.
-            job = None
+            cleanup_deadline = time.monotonic() + 10.0
+            try:
+                _drain_windows_job(kernel32, job, process, observation, deadline=cleanup_deadline)
+            except Exception:
+                # Closed diagnostics preserve the original output/timeout error
+                # without exposing arbitrary child argv or native error text.
+                cleanup_error = AuthorityError(
+                    "VERIFICATION_PROCESS_FAILED", "Windows job rundown could not be confirmed",
+                )
+            finally:
+                if process.returncode is None:
+                    try:
+                        kernel32.TerminateJobObject(job, 1)
+                        process.wait(timeout=max(0.0, cleanup_deadline - time.monotonic()))
+                    except Exception:
+                        if cleanup_error is None:
+                            cleanup_error = AuthorityError("VERIFICATION_PROCESS_FAILED", "Windows leader rundown is unconfirmed")
+                if observation is not None:
+                    try:
+                        observation.close(cleanup_deadline)
+                    except Exception:
+                        if cleanup_error is None:
+                            cleanup_error = AuthorityError("VERIFICATION_PROCESS_FAILED", "job observation shutdown is unconfirmed")
+                if not kernel32.CloseHandle(job) and cleanup_error is None:
+                    cleanup_error = AuthorityError(
+                        "VERIFICATION_PROCESS_FAILED", "Windows job handle could not be released",
+                    )
+                job = None
         elif process.poll() is not None:
             try:
                 import signal
@@ -2608,6 +2896,13 @@ def _run_contained(
             thread.join(timeout=10)
         process.stdout.close()
         process.stderr.close()
+        if cleanup_error is not None:
+            if primary_error is not None:
+                primary_error.__cause__ = cleanup_error
+            elif overflow.is_set():
+                raise AuthorityError("PROCESS_OUTPUT_TOO_LARGE", "process output exceeds 8 MiB") from cleanup_error
+            else:
+                raise cleanup_error
     if overflow.is_set():
         raise AuthorityError("PROCESS_OUTPUT_TOO_LARGE", "process output exceeds 8 MiB")
     return subprocess.CompletedProcess(argv, process.returncode, bytes(buffers["stdout"]), bytes(buffers["stderr"]))

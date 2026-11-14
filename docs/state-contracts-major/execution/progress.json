@@ -11,7 +11,7 @@
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T06:04:26.147777+00:00",
+  "recorded_at": "2026-11-14T06:14:28.857316+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1808,9 +1808,10 @@
     {
       "id": "DEF-WINDOWS-PROCESS-RUNDOWN-01",
       "owner": "authority-runtime",
-      "status": "IN_PROGRESS",
+      "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "0830 job132342773253 and retained local typed Win32 experiments",
-      "detail": "Parent0 and descendant exit code visible before descendant process object signals/cwd releases. Accounting-only drain and empty live PID list were empirically insufficient. Minimal identity-safe shared supervisor repair uses actual process-handle rundown observations; no deletion retries/ignore."
+      "detail": "Parent0 and descendant exit code visible before descendant process object signals/cwd releases. Accounting-only drain and empty live PID list were empirically insufficient. Minimal identity-safe shared supervisor repair uses actual process-handle rundown observations; no deletion retries/ignore.",
+      "current_detail": "Confirmed and repaired Windows Job Object rundown: exit-code visibility can precede descendant rundown and owned-cwd release. The shared authority supervisor now observes private job creation identities before launch, terminates its job and waits for identity-bound member completion; incomplete observation refuses. Genuine local rundown and fast-exit output-error counterexamples are retained;15 focused Windows checks and normal98-helper/three-host sync parity passed. Existing inherited pipe-reader shutdown bounds remain unchanged. Hosted/full-suite/installed acceptance remains owned by normal CI and the host proof owners."
     },
     {
       "id": "QUAL-REAL-EXECUTION-BOUNDARIES-01",
@@ -3412,6 +3413,22 @@
       "commit": "8ce1b2b1b7321d87a7927bac7ab6d6c61fdb0952",
       "main_parent": "3f1bd13762ed9f25320e58907f9bf98a81128504",
       "detail": "All upstream ADR implementations already matched child0830 executable bytes. Resolved23 version/generated/HTML-cache/test/history conflicts without executable/test/config/generated change. Retained published patch changelogs and completed work record; candidate4.0.0/0.30.0 and HTML ownership retained. Main itself not changed."
+    },
+    {
+      "recorded_at": "2026-11-14T06:14:28.857316+00:00",
+      "kind": "WINDOWS_SHARED_SUPERVISOR_REPAIR",
+      "detail": "Confirmed and repaired Windows Job Object rundown: exit-code visibility can precede descendant rundown and owned-cwd release. The shared authority supervisor now observes private job creation identities before launch, terminates its job and waits for identity-bound member completion; incomplete observation refuses. Genuine local rundown and fast-exit output-error counterexamples are retained;15 focused Windows checks and normal98-helper/three-host sync parity passed. Existing inherited pipe-reader shutdown bounds remain unchanged. Hosted/full-suite/installed acceptance remains owned by normal CI and the host proof owners.",
+      "evidence_root": "docs/state-contracts-major/execution/evidence/windows-job-rundown-repair",
+      "source_epoch": "Actual Temp overlay of0830 dependencies; exact five-file applied-byte join at4b2df3a1. No invented later-commit test run.",
+      "limits": [
+        "Final execution was one local Windows amd64 CPython3.14.6 run on an explicit Temp overlay of immutable0830 dependencies; not a run on the later Gov commit.",
+        "Final15 comprised13 new focused methods and2 existing authority methods; no full295-case authority suite, hosted Python3.14.10, POSIX, native rebuild, installed host, provider or parent UI observation.",
+        "Private job/process/completion-port shutdown uses one10-second deadline. Existing stdout/stderr reader joins retain their original per-reader10-second behavior; this packet does not establish a new bound for the entire inherited pipe lifecycle.",
+        "Initial diagnostics and regressions retain their original outcomes. The observed exit-code0 with Wait258 and first cwd WinError32 is not overwritten by successful later cleanup.",
+        "The real regression retains an inert duplicate job handle to exercise normal-return cleanup without relying on last-handle job-close timing. The separate original diagnostic observed the same unsignaled/cwd-busy defect without that instrumentation.",
+        "Unknown/dropped member observations, unavailable queries and deadline exhaustion refuse. No deletion retry, arbitrary PID termination, authority grant or cleanup-ignore behavior was introduced."
+      ],
+      "evidence_impact": "Thirty previously recorded TESTED cells directly bind the changed authority source. Their original source/result epochs remain intact; current applicability must become STALE until actual owning acceptance renews them. No source-only hash refresh or status promotion."
     }
   ],
   "scoped_blockers": [
@@ -3433,12 +3450,12 @@
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Finish the confirmed shared Windows process-rundown repair and affected generated parity; batch source/evidence once, then watch exact-head CI. Retain original failures and keep1098/main/publication held.",
+    "Push the coherent source/tests/evidence batch once; watch current exact-head CI, diagnose genuine failures and preserve original outcomes. Renew only affected runtime proof from actual owning acceptance; keep1098/main/publication held.",
     "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
     "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
     "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
   ],
-  "delivery_state": "PR1103_CURRENT_CI_RED_WINDOWS_REPAIR_LOCAL_SOURCE_BATCH_IN_PROGRESS_MAIN_HOLD",
+  "delivery_state": "PR1103_WINDOWS_REPAIR_BATCH_AWAITING_EXACT_HEAD_CI_MAIN_HOLD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [

@@ -380,7 +380,7 @@
     },
     {
       "path": "core/pysrc/_artifactauthoritylib.py",
-      "blob": "e934626f5bd03c04271d1299b0ba369be251a300",
+      "blob": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
       "summary": "A known correctable terminal review can receive a fresh linked request with current target, contract and explicit completion selections. Immutable separately versioned lineage supports exact operation replay across interruption. The old terminal request stays unchanged; a fresh independent child and actual first terminal observation remain required. Unknown failures, user/host denials and unresolved findings are not permission to retry.",
       "nodes": [
         "f-spec-review",

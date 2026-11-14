@@ -1,0 +1,31 @@
+{
+  "source": "0830b95752a05343563be027e513a2845a6c57df",
+  "method": "Successful immutable core/pysrc tree enumeration + exact Git blobs for module-level reachable local imports; no live mixed Gov bytes copied.",
+  "modules": {
+    "_artifactauthoritylib": {
+      "path": "core/pysrc/_artifactauthoritylib.py",
+      "sha256": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e"
+    },
+    "_artifactlib": {
+      "path": "core/pysrc/_artifactlib.py",
+      "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b"
+    },
+    "_artifactmanifestlib": {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    },
+    "_artifactpromptlib": {
+      "path": "core/pysrc/_artifactpromptlib.py",
+      "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9"
+    },
+    "_replylib": {
+      "path": "core/pysrc/_replylib.py",
+      "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+    },
+    "_gitexec": {
+      "path": "core/pysrc/_gitexec.py",
+      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+    }
+  },
+  "core_host_adapter": "No _host.py copied; none exists in immutable0830 core/pysrc inventory. This is diagnostic import scope, not disposition absence evidence."
+}
