@@ -1,5 +1,5 @@
 {
-  "revision": "6fe32cc68c2d8fdef3c7938fc19dbd5c524de5f0",
+  "revision": "74057c377ae7934fe7074443b7ab71f378798ef2",
   "title": "State-contract program: inspected source changes",
   "summary": "Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims. Real user stops and host permissions remain effective. This source review covers progress preservation, discovery capture, bounded recovery, scoped conflicts, generator and manifest contracts; it is not installed-host certification.",
   "changes": [
@@ -296,8 +296,8 @@
     },
     {
       "path": "core/surface/commands/watch.md",
-      "blob": "cb9f526f0f69931b64b10e030c66f4937c084c73",
-      "summary": "One detached GitHub CLI watch refreshes checks itself. The agent resumes on completion, diagnoses failures and never derives merge authority from green checks.",
+      "blob": "76da75f92d2f83207dfd1ba587425710567bac86",
+      "summary": "One detached GitHub CLI watch refreshes checks itself. Current check states and head binding determine the verdict; cancelled checks or an interrupted watch do not supply green verification. The refresh interval sets no elapsed-time deadline, and process exit alone never grants merge authority.",
       "nodes": [
         "r-watch",
         "o-watch-clean"
