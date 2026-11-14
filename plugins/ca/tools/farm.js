@@ -2643,7 +2643,9 @@ ${gate.tail}`) };
     });
     let diffstat;
     try {
-      await deps.checkDrift(wt, allowed);
+      const freshDrift = await deps.checkDrift(wt, allowed);
+      if (freshDrift.length)
+        return integrationFailure(`drift before staging: ${freshDrift.join(", ")}`);
       let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
       let stageAttempts = 1;
       while (staged.code !== 0 && stageAttempts < 3) {

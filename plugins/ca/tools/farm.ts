@@ -2704,7 +2704,9 @@ export async function runTask(
     });
     let diffstat: string;
     try {
-      await deps.checkDrift(wt,allowed); // fresh observation before dependent index/commit effects
+      const freshDrift = await deps.checkDrift(wt, allowed);
+      if (freshDrift.length)
+        return integrationFailure(`drift before staging: ${freshDrift.join(", ")}`);
       let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
       let stageAttempts = 1;
       // Repeating the identical explicit-path stage is idempotent. Let brief

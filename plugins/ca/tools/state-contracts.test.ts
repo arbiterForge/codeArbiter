@@ -101,6 +101,39 @@ it("FARM-R03 bounded read-only retry accepts only a successful current observati
   await expect(checkDrift("unused",new Set(),malformed)).rejects.toThrow(/unavailable/);
 });
 
+for (const observation of ["dirty", "unavailable", "clean"] as const) {
+  it(`FARM-R03 fresh pre-stage ${observation} drift controls dependent mutations`, async () => {
+    let probes = 0, authors = 0, resets = 0;
+    const calls: string[][] = [];
+    const task: Task = { id: "late-drift", description: "fixture", filesInScope: ["src/a.ts"],
+      test: { path: "test.ts" }, gate: { commands: ["gate"] }, maxRetries: 2 };
+    const deps: RunTaskDeps = {
+      worker: { apply: async () => { authors++; return { ok: true, filesWritten: ["src/a.ts"] }; } },
+      prepareWorktree: async () => null, resetWorktree: async () => { resets++; }, fileHash: async () => null,
+      checkDrift: async () => {
+        if (++probes === 1 || observation === "clean") return [];
+        if (observation === "unavailable") throw new Error("drift observation unavailable");
+        return ["outside.ts"];
+      },
+      runGate: async () => ({ ok: true }), antiGamingCheck: async () => ({ risk: "none" }),
+      mutationCheck: async () => null, withMergeLock: async fn => fn(),
+      git: async args => { calls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+    };
+    const result = await runTask(task, "fixture", "https://example.invalid", "", deps);
+    expect(probes).toBe(2);
+    expect(authors).toBe(1);
+    expect(resets).toBe(0);
+    if (observation === "clean") {
+      expect(result.status).toBe("green");
+      for (const command of ["add", "commit", "merge"]) expect(calls.some(args => args.includes(command))).toBe(true);
+    } else {
+      expect(calls).toEqual([]); // No stage/commit/merge or cleanup is authorized by dirty/unknown drift.
+      expect(result.status).toBe("escalate");
+      expect(result.note).toMatch(observation === "dirty" ? /drift.*outside\.ts/ : /drift.*unavailable/);
+    }
+  });
+}
+
 it("FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure", async () => {
   const gate=await runGate("unused",["fixture"],async()=>({code:125,out:"cleanup unavailable",stdout:"",stderr:"",timedOut:true,cleanupFailed:true,processId:321}));
   expect(gate).toMatchObject({ok:false,commandCode:125,timedOut:true,cleanupFailed:true,processId:321});
