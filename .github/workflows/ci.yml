@@ -2752,6 +2752,8 @@ jobs:
           python-version: "3.14"
       - name: Check partial-program coverage accounting
         run: python docs/state-contracts-major/execution/tools/coverage_ledger.py check
+      - name: Test bounded immutable Git object reads
+        run: python .github/scripts/test_immutable_git_blobs.py
       - name: Authenticate recorded program evidence and report applicability
         env:
           GH_TOKEN: ${{ github.token }}

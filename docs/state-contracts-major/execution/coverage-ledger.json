@@ -19116,7 +19116,8 @@
      "sha256": "bb35889fec43a2ea1b7dcbf63da08ddaa47dd400c25b2cf403130bea2cf36da1",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
     }
-   ]
+   ],
+   "candidate_contract_note": "The original M observation verifies the recorded bytes of the 273 original extracted members. It did not capture a complete post-run membership inventory proving no added files. The RPC child environment did not prevent Python bytecode cache writes. This finite route observation does not establish read-only installation or the required whole installed:pi:windows:1.5.0 cell."
   },
   "S20:02": {
    "owner": "pi",
@@ -19152,7 +19153,8 @@
      "sha256": "bb35889fec43a2ea1b7dcbf63da08ddaa47dd400c25b2cf403130bea2cf36da1",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
     }
-   ]
+   ],
+   "candidate_contract_note": "The original M observation verifies the recorded bytes of the 273 original extracted members. It did not capture a complete post-run membership inventory proving no added files. The RPC child environment did not prevent Python bytecode cache writes. This finite route observation does not establish read-only installation or the required whole installed:pi:windows:1.5.0 cell."
   },
   "S20:04": {
    "owner": "pi",
@@ -19219,7 +19221,8 @@
      "sha256": "466dad243175a578e02e0dcc0389cb95fd13d1b93d11aa2dbcdafa42f4fcaaf7",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
     }
-   ]
+   ],
+   "candidate_contract_note": "The original M observation verifies the recorded bytes of the 273 original extracted members. It did not capture a complete post-run membership inventory proving no added files. The RPC child environment did not prevent Python bytecode cache writes. This finite route observation does not establish read-only installation or the required whole installed:pi:windows:1.5.0 cell."
   },
   "S21:01": {
    "owner": "farm",

@@ -21,6 +21,8 @@ import sys
 import zipfile
 from _boundedproc import start, terminate_tree
 from _contextverificationlib import hash_go_module_entries, VerificationError
+from contextlib import contextmanager
+import _immutable_git_blobs
 
 REPOSITORY = "arbiterForge/codeArbiter"
 PROGRAM = "codearbiter-major-state-contracts"
@@ -62,7 +64,20 @@ def command(argv, cwd=None):
 
 
 def blob(repo, source, path):
-    return command(["git", "--no-lazy-fetch", "show", source + ":" + path], repo)
+    try:
+        return _immutable_git_blobs.read(repo, source, path)
+    except (OSError, _immutable_git_blobs.BlobReadError) as error:
+        raise ReadinessError(str(error)) from error
+
+
+@contextmanager
+def blob_transaction(repo):
+    """Share positive immutable bytes only during one owning validation."""
+    try:
+        with _immutable_git_blobs.transaction(repo):
+            yield
+    except (OSError, _immutable_git_blobs.BlobReadError) as error:
+        raise ReadinessError(str(error)) from error
 
 
 def candidate_marker(content):
@@ -475,6 +490,11 @@ def qualification_routes(required, tasks, progress, scenarios, disposition_jobs,
 
 
 def producer_requirements(repo, source, run_id):
+    with blob_transaction(repo):
+        return _producer_requirements(repo, source, run_id)
+
+
+def _producer_requirements(repo, source, run_id):
     """Declared finite routes, not program completion/publication authentication.
 
     Reading unfinished owner-routing metadata does not endorse its statuses or
@@ -519,6 +539,11 @@ def producer_requirements(repo, source, run_id):
 
 
 def requirements(repo, source, run_id):
+    with blob_transaction(repo):
+        return _requirements(repo, source, run_id)
+
+
+def _requirements(repo, source, run_id):
     require(SHA.fullmatch(source or ""), "exact source commit required")
     require(type(run_id) is int and run_id > 0, "positive exact CI run id required")
     loaded, authenticated = {}, {}
