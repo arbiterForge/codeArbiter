@@ -26,6 +26,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
+
 - Respect late Claude sandbox cancellation before reporting readiness, with scoped cleanup and token-safe errors.
 - Keep observed Sandbox container IDs available for recovery when cancellation cleanup discovery fails.
 - Qualify native installations from their matching cold-package executions and refuse source-only test substitutes.

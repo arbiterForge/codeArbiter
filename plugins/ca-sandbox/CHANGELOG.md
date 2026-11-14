@@ -23,6 +23,8 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Fixed
 
+- Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
+
 - Refuse Claude sandbox readiness after late cancellation and retain exact container cleanup results.
 - Retain the observed container ID in creation errors when cancellation cleanup cannot discover resources.
 - Honor cancellation observed after container start and run scoped compensation before returning a creation result.
