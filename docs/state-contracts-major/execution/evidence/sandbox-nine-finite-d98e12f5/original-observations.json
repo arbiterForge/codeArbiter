@@ -1,0 +1,700 @@
+{
+  "schema": "codearbiter.retained-named-observation-projection/1",
+  "historical_unchanged_path_observations": [
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12) installs @anthropic-ai/claude-code at a PINNED version (reproducible image)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12) disables the autoupdater so the pinned version stays put",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12) runs non-root and owns CLAUDE_HOME by the run uid (writable under --read-only)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — hardening parity with run.ts (architecture-002) carries every shared hardening flag the ordinary sandbox emits",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) passes only the token name in argv, never the reusable value",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) NEVER passes --privileged and NEVER mounts the docker socket",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) runs NON-ROOT and drops ALL capabilities, matching run.ts (token box is no softer)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) defaults egress to offline (the hard default — Spike B caveat)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) accepts an Anthropic-domains-only allowlist as the other permitted default",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) REFUSES an arbitrary wide-open network policy (no escaping the hard default)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) THROWS when the token volume would be co-mounted with an untrusted-code run",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) requires a non-empty image, token, and home volume",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "claude-inside [docker] — env-token auth + named-volume persistence (AC-12) builds the pinned claude image (DISABLE_AUTOUPDATER baked)",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "claude-inside [docker] — env-token auth + named-volume persistence (AC-12) claude -p with the DUMMY token reaches AUTH (real 401 Invalid bearer token)",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "claude-inside [docker] — env-token auth + named-volume persistence (AC-12) .claude state under the named-volume HOME persists across a restart",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "claude-inside [docker] — env-token auth + named-volume persistence (AC-12) the offline default truly has no egress (curl reaches nothing)",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall supplies the token only to the Docker run process environment",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall redacts a token echoed by a failing Docker client",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall redacts a token echoed by a failed firewall command and tears down without it",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall applies the firewall inside the box for anthropic-only",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall destroys the box when the firewall cannot be applied",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall does not exec anything extra for offline, which needs no rules",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall defaults to offline, so the guaranteed posture needs no opt-in",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall the firewall script it applies is the one network.ts produced",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — offline (AC-08, solid default) detaches the container from all networking via --network none",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — offline (AC-08, solid default) adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — offline (AC-08, solid default) requires no post-start cut (it was never connected)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — clone-then-cut (AC-08, solid default) brings the container UP on a network (so the clone/build can fetch)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — clone-then-cut (AC-08, solid default) schedules a post-start DETACH of the container from its network",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL) is flagged EXPERIMENTAL (Spike C: CDN drift + DNS-exfil hole)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL) attaches the custom bridge network and adds NET_ADMIN + NET_RAW caps",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL) emits an init-firewall script: default OUTPUT DROP + lo/established/DNS + resolved allow IPs",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL) requires at least one allow host",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildFirewallScript — pure script builder pins each provided IP on 80 and 443 with ACCEPT rules",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "buildFirewallScript — pure script builder refuses to build with no IPs (default-deny with nothing allowed is a footgun)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "applyNetworkPolicy — unknown policy throws on an unrecognized policy",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "network policy [docker] — AC-08 real egress behavior offline: curl github.com from inside FAILS (no egress)",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "network policy [docker] — AC-08 real egress behavior clone-then-cut: egress works at start, then post-cut egress FAILS",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "ef40-original",
+      "full_name": "network policy [docker] — AC-08 real egress behavior egress-allowlist (EXPERIMENTAL): curl github.com SUCCEEDS, curl example.com FAILS",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "origin": "142e-original",
+      "full_name": "#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+      "original_report_sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd"
+    },
+    {
+      "origin": "142e-original",
+      "full_name": "SBX-C02 treats overflow as lost observation and verifies target containment",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+      "original_report_sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd"
+    },
+    {
+      "origin": "142e-original",
+      "full_name": "SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+      "original_report_sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — every docker invocation carries a finite deadline still returns a result when the escalation itself fails",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — a real hung command terminates within its deadline a sleeping exec is killed at the deadline and leaves nothing running",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box",
+      "status": "skipped",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable aborts a call that would otherwise run to its deadline (AC-1)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable kills the child rather than merely resolving around it (AC-1)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "origin": "6a-deadline16-original",
+      "full_name": "#479 — an in-flight docker call is cancellable does not stop the container on an ordinary non-zero exec (AC-2)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "original_report_sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    }
+  ],
+  "current_committed_source_exact43GREEN": [
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses accepts the minimal invocation and defaults to the guaranteed posture",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses accepts the experimental allowlist posture explicitly",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses refuses any other egress posture, naming why",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses REFUSES --token, because argv is world-readable",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses REFUSES --source-volume before a container can exist",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses requires both the image and the home volume",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses refuses an unknown flag rather than ignoring it",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 parseClaudeCli — what the entry point refuses refuses a flag with no value",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract starts the box and prints only the container id",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract passes the token from the ENVIRONMENT, not from argv",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract exits with the usage code when the token is absent, and says where it comes from",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract never echoes the token, on any path",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract redacts the token if Docker includes it in a failure message",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract returns 1 and names the co-mount guard when it fires",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract returns 1 on an ordinary start failure, distinct from the usage code",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract never throws for a usage error; it returns a code",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 runClaudeInsideCli — the process contract the usage text states that this is skill-gated, not a sandbox subcommand",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12) installs @anthropic-ai/claude-code at a PINNED version (reproducible image)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12) disables the autoupdater so the pinned version stays put",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12) runs non-root and owns CLAUDE_HOME by the run uid (writable under --read-only)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — hardening parity with run.ts (architecture-002) carries every shared hardening flag the ordinary sandbox emits",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) passes only the token name in argv, never the reusable value",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) NEVER passes --privileged and NEVER mounts the docker socket",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) runs NON-ROOT and drops ALL capabilities, matching run.ts (token box is no softer)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — env-token auth, no host bind (AC-12) defaults egress to offline (the hard default — Spike B caveat)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) accepts an Anthropic-domains-only allowlist as the other permitted default",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) REFUSES an arbitrary wide-open network policy (no escaping the hard default)",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) THROWS when the token volume would be co-mounted with an untrusted-code run",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12) requires a non-empty image, token, and home volume",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall supplies the token only to the Docker run process environment",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall redacts a token echoed by a failing Docker client",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall redacts a token echoed by a failed firewall command and tears down without it",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall applies the firewall inside the box for anthropic-only",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall destroys the box when the firewall cannot be applied",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall does not exec anything extra for offline, which needs no rules",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall defaults to offline, so the guaranteed posture needs no opt-in",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "#377 - a token-bearing box never runs NET_ADMIN without its firewall the firewall script it applies is the one network.ts produced",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "SBX-C03 late successful Claude start cancellation refuses ready after offline run and retains exact cleanup truth",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "SBX-C03 late successful Claude start cancellation refuses ready after Anthropic run before firewall and retains exact cleanup truth",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "SBX-C03 late successful Claude start cancellation refuses ready after successful firewall and retains exact cleanup truth",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "SBX-C03 late successful Claude start cancellation refuses ready after successful firewall with unavailable cleanup and retains exact cleanup truth",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "full_name": "SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction",
+      "status": "passed",
+      "original_report": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "original_report_sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    }
+  ],
+  "original_4RED": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-vitest.json",
+    "sha256": "37a14d4040d0eea6cf4bcd6aae4d65bec8413b87b6d4dcf359814500094c3bd1",
+    "source_sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "oracle": "all4 returned fullCID as ordinary readiness instead of rejecting cancellation"
+  },
+  "new_executions_in_this_successor": 0,
+  "limits": "43GREEN/4RED are actual earlier author executions retained verbatim, not successor reruns. 4DockerSKIP+13filtered statecases remain unexecuted; historical357/16/44 totals not promoted."
+}

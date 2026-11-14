@@ -1,0 +1,397 @@
+{
+  "schema": "codearbiter-mapped-source-delta/1",
+  "old_source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "old_sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+  "current_sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+  "modified_definitions": [
+    "GithubTransport.graphql",
+    "GithubTransport.request",
+    "sync_mapped"
+  ],
+  "added_definitions": [
+    "_remote_json"
+  ],
+  "unchanged_definition_count": 36,
+  "whole_module_AST_equal_after_only_three_reviewed_transformations": true,
+  "transformations": [
+    "Remove new closed sanitized _remote_json helper.",
+    "Replace precisely two _remote_json response decoder calls with original json.loads.",
+    "Remove precisely one URLError/TimeoutError per-target sync_mapped handler."
+  ],
+  "review": [
+    "Fixed endpoint/GraphQL variable sets, token and redirect boundaries, 1MiB bounds, timeout15, shape checks remain exact.",
+    "All claim/send/readback/reconcile helpers are AST-identical. Malformed remote JSON now fails closed through fixed INVALID_REMOTE_RESPONSE; TypeError still propagates.",
+    "Expected preclaim URLError/TimeoutError now creates only a sanitized target failure and continues independent targets. It creates no claim/send/ack and leaves pending retry explicit.",
+    "Existing postclaim unknown, identity, revision/model, mapped intent and no blind retry guards are unchanged."
+  ],
+  "definitions": {
+    "WorkSyncError.__init__": {
+      "old_start": 89,
+      "old_end": 91,
+      "current_start": 89,
+      "current_end": 91,
+      "old_AST_sha256": "0000f17cefd194ab0cbad56cf5a57c0746de3bd2b8cb45e7f9619b54e3b48908",
+      "current_AST_sha256": "0000f17cefd194ab0cbad56cf5a57c0746de3bd2b8cb45e7f9619b54e3b48908",
+      "unchanged": true
+    },
+    "_NoRedirect.redirect_request": {
+      "old_start": 95,
+      "old_end": 96,
+      "current_start": 95,
+      "current_end": 96,
+      "old_AST_sha256": "f91eb5ed4525acb17187293e094cc43c27a5f5117eb94f66fab3bcafc56468b6",
+      "current_AST_sha256": "f91eb5ed4525acb17187293e094cc43c27a5f5117eb94f66fab3bcafc56468b6",
+      "unchanged": true
+    },
+    "_remote_json": {
+      "old_start": null,
+      "old_end": null,
+      "current_start": 99,
+      "current_end": 104,
+      "old_AST_sha256": null,
+      "current_AST_sha256": "a61d8ffffb67644fd99a8a44fd8f82a9fff87de2337cf0cb9b5cd87829fe81b6",
+      "unchanged": false
+    },
+    "GithubTransport.__init__": {
+      "old_start": 102,
+      "old_end": 103,
+      "current_start": 110,
+      "current_end": 111,
+      "old_AST_sha256": "7e693e10e7119db7308ec5eec28c6bbef6b0fb86eb883637a372db0f61f93ec1",
+      "current_AST_sha256": "7e693e10e7119db7308ec5eec28c6bbef6b0fb86eb883637a372db0f61f93ec1",
+      "unchanged": true
+    },
+    "GithubTransport.request": {
+      "old_start": 105,
+      "old_end": 134,
+      "current_start": 113,
+      "current_end": 142,
+      "old_AST_sha256": "4945469f930e3b8aee5474714e260dd69d3de9cb7591afa17d0c81c7153b7e60",
+      "current_AST_sha256": "95062eb3409a5ae1ff3950e39acb69def4ecd0cc2f06a9121c91fdf9ec949b0a",
+      "unchanged": false
+    },
+    "GithubTransport.graphql": {
+      "old_start": 136,
+      "old_end": 182,
+      "current_start": 144,
+      "current_end": 190,
+      "old_AST_sha256": "878d282c2d19e8b0ed6925f105861de1d502d4de446c09fd1a677ac48824c06d",
+      "current_AST_sha256": "d3f121e0acbd4f6002dc0814d0394b72c31b8d0ae3d1149a6c0dec0eadca230d",
+      "unchanged": false
+    },
+    "_origin_repository": {
+      "old_start": 185,
+      "old_end": 209,
+      "current_start": 193,
+      "current_end": 217,
+      "old_AST_sha256": "2d10cd57093e551e7ae48224470cd0e2e867e1f2dd4b959955d37c91a9616bcd",
+      "current_AST_sha256": "2d10cd57093e551e7ae48224470cd0e2e867e1f2dd4b959955d37c91a9616bcd",
+      "unchanged": true
+    },
+    "_selected": {
+      "old_start": 212,
+      "old_end": 219,
+      "current_start": 220,
+      "current_end": 227,
+      "old_AST_sha256": "e385f792616b71b51152ba68f0b23ae0a739f93f7b5e84064fdf4d0d0c6e8a9c",
+      "current_AST_sha256": "e385f792616b71b51152ba68f0b23ae0a739f93f7b5e84064fdf4d0d0c6e8a9c",
+      "unchanged": true
+    },
+    "_mapped_send_ready": {
+      "old_start": 222,
+      "old_end": 242,
+      "current_start": 230,
+      "current_end": 250,
+      "old_AST_sha256": "10979dbc5ddb3a2ab9efde5eb98bf63fe768a57589fa92e281dc5a6c695cd342",
+      "current_AST_sha256": "10979dbc5ddb3a2ab9efde5eb98bf63fe768a57589fa92e281dc5a6c695cd342",
+      "unchanged": true
+    },
+    "_credential": {
+      "old_start": 245,
+      "old_end": 250,
+      "current_start": 253,
+      "current_end": 258,
+      "old_AST_sha256": "9ef55726d6d76e3d676f7d3c57503b5007da72fa6b29d4428186980504faa5d4",
+      "current_AST_sha256": "9ef55726d6d76e3d676f7d3c57503b5007da72fa6b29d4428186980504faa5d4",
+      "unchanged": true
+    },
+    "_issue_path": {
+      "old_start": 253,
+      "old_end": 255,
+      "current_start": 261,
+      "current_end": 263,
+      "old_AST_sha256": "0e31deb1f175a3ceab07e1528aaf823500250542628f30939f0d74a630d62dac",
+      "current_AST_sha256": "0e31deb1f175a3ceab07e1528aaf823500250542628f30939f0d74a630d62dac",
+      "unchanged": true
+    },
+    "_verified_issue_data": {
+      "old_start": 258,
+      "old_end": 271,
+      "current_start": 266,
+      "current_end": 279,
+      "old_AST_sha256": "92df6ea31e77315c7c3dd1a95454012af138e8fd7a68cfbd6ec8ca31a60e55a4",
+      "current_AST_sha256": "92df6ea31e77315c7c3dd1a95454012af138e8fd7a68cfbd6ec8ca31a60e55a4",
+      "unchanged": true
+    },
+    "_verified_issue": {
+      "old_start": 274,
+      "old_end": 276,
+      "current_start": 282,
+      "current_end": 284,
+      "old_AST_sha256": "66e362987154f9ff00f2d2643079961b1d18580fbc62f0dee05b413560a3baf9",
+      "current_AST_sha256": "66e362987154f9ff00f2d2643079961b1d18580fbc62f0dee05b413560a3baf9",
+      "unchanged": true
+    },
+    "_verified_work_intent": {
+      "old_start": 279,
+      "old_end": 391,
+      "current_start": 287,
+      "current_end": 399,
+      "old_AST_sha256": "a5dda5fb1e033fd7440713128259a84e155dff68f8720cbf4010ea5ef0226c12",
+      "current_AST_sha256": "a5dda5fb1e033fd7440713128259a84e155dff68f8720cbf4010ea5ef0226c12",
+      "unchanged": true
+    },
+    "_verified_current_intent": {
+      "old_start": 394,
+      "old_end": 402,
+      "current_start": 402,
+      "current_end": 410,
+      "old_AST_sha256": "d33e4ba3700f0537628d831eb9445bd0eb663d09528649f3d1320ea8a8b61def",
+      "current_AST_sha256": "d33e4ba3700f0537628d831eb9445bd0eb663d09528649f3d1320ea8a8b61def",
+      "unchanged": true
+    },
+    "_verified_current_bindings": {
+      "old_start": 405,
+      "old_end": 424,
+      "current_start": 413,
+      "current_end": 432,
+      "old_AST_sha256": "f102dc56c51d3bc82946ee4953c01bdf9b6228bfae2a6eca54b4ebdbd5b0a3b5",
+      "current_AST_sha256": "f102dc56c51d3bc82946ee4953c01bdf9b6228bfae2a6eca54b4ebdbd5b0a3b5",
+      "unchanged": true
+    },
+    "_verified_merge": {
+      "old_start": 427,
+      "old_end": 467,
+      "current_start": 435,
+      "current_end": 475,
+      "old_AST_sha256": "5ba2db68c2f82a0ce22bf85321d16185e06ab5d3fcfde040e5084eccde1f89a1",
+      "current_AST_sha256": "5ba2db68c2f82a0ce22bf85321d16185e06ab5d3fcfde040e5084eccde1f89a1",
+      "unchanged": true
+    },
+    "sync": {
+      "old_start": 470,
+      "old_end": 548,
+      "current_start": 478,
+      "current_end": 556,
+      "old_AST_sha256": "2ed54b844429f21dc2a4248032396b13a0144d04f84346276cedf59cb5acbacd",
+      "current_AST_sha256": "2ed54b844429f21dc2a4248032396b13a0144d04f84346276cedf59cb5acbacd",
+      "unchanged": true
+    },
+    "reconcile_issue": {
+      "old_start": 551,
+      "old_end": 566,
+      "current_start": 559,
+      "current_end": 574,
+      "old_AST_sha256": "c3981217a01ed409c55c9e264ac766e62ab9697f59d9b400e825546ea7bd829d",
+      "current_AST_sha256": "c3981217a01ed409c55c9e264ac766e62ab9697f59d9b400e825546ea7bd829d",
+      "unchanged": true
+    },
+    "adopt_issue": {
+      "old_start": 569,
+      "old_end": 584,
+      "current_start": 577,
+      "current_end": 592,
+      "old_AST_sha256": "981a6eca9b7fdbe51bacc8502937939e84e06c2d41fc2843e19dcdd3c9b3d68e",
+      "current_AST_sha256": "981a6eca9b7fdbe51bacc8502937939e84e06c2d41fc2843e19dcdd3c9b3d68e",
+      "unchanged": true
+    },
+    "reconcile_status": {
+      "old_start": 587,
+      "old_end": 613,
+      "current_start": 595,
+      "current_end": 621,
+      "old_AST_sha256": "3a5cceaab94dde1aad9b3da6c4dcd86df745012b151fc5ed59b92e9cb8efd956",
+      "current_AST_sha256": "3a5cceaab94dde1aad9b3da6c4dcd86df745012b151fc5ed59b92e9cb8efd956",
+      "unchanged": true
+    },
+    "_project_selected": {
+      "old_start": 616,
+      "old_end": 629,
+      "current_start": 624,
+      "current_end": 637,
+      "old_AST_sha256": "aaf78b43c30b1d61e064c099ce7b66c429a5ca44827e0ec821c18f2157464b4f",
+      "current_AST_sha256": "aaf78b43c30b1d61e064c099ce7b66c429a5ca44827e0ec821c18f2157464b4f",
+      "unchanged": true
+    },
+    "_project_issue": {
+      "old_start": 632,
+      "old_end": 640,
+      "current_start": 640,
+      "current_end": 648,
+      "old_AST_sha256": "2a7a988198e4d179599a8cd86811bbe3e0b7800726df817f9d8818cf9c39c8e2",
+      "current_AST_sha256": "2a7a988198e4d179599a8cd86811bbe3e0b7800726df817f9d8818cf9c39c8e2",
+      "unchanged": true
+    },
+    "_graph_data": {
+      "old_start": 643,
+      "old_end": 646,
+      "current_start": 651,
+      "current_end": 654,
+      "old_AST_sha256": "1e3770e1fbfa5be4b17d9dde2999089ab152a06919594f2a68c220bfe334c592",
+      "current_AST_sha256": "1e3770e1fbfa5be4b17d9dde2999089ab152a06919594f2a68c220bfe334c592",
+      "unchanged": true
+    },
+    "discover_project": {
+      "old_start": 649,
+      "old_end": 675,
+      "current_start": 657,
+      "current_end": 683,
+      "old_AST_sha256": "87a91756a739349521c119182be692b70a5f6c20b6a14dce534763d789e1439c",
+      "current_AST_sha256": "87a91756a739349521c119182be692b70a5f6c20b6a14dce534763d789e1439c",
+      "unchanged": true
+    },
+    "_find_project_item": {
+      "old_start": 678,
+      "old_end": 714,
+      "current_start": 686,
+      "current_end": 722,
+      "old_AST_sha256": "47c6016ff6c9a99548b0fb15999bd6ed4ddfd8807ed685f7eff3374a1b2633c1",
+      "current_AST_sha256": "47c6016ff6c9a99548b0fb15999bd6ed4ddfd8807ed685f7eff3374a1b2633c1",
+      "unchanged": true
+    },
+    "_record_project": {
+      "old_start": 717,
+      "old_end": 725,
+      "current_start": 725,
+      "current_end": 733,
+      "old_AST_sha256": "0548f6838d9ba2536a101d614b78c782793e89db78f967a927d34028d1497133",
+      "current_AST_sha256": "0548f6838d9ba2536a101d614b78c782793e89db78f967a927d34028d1497133",
+      "unchanged": true
+    },
+    "project_fields": {
+      "old_start": 728,
+      "old_end": 777,
+      "current_start": 736,
+      "current_end": 785,
+      "old_AST_sha256": "7f9fae3cc635cbdb61f21efbb2d09fd3f15b84ed759eaad28a5bf32aa1584e42",
+      "current_AST_sha256": "7f9fae3cc635cbdb61f21efbb2d09fd3f15b84ed759eaad28a5bf32aa1584e42",
+      "unchanged": true
+    },
+    "observe_project_field": {
+      "old_start": 780,
+      "old_end": 798,
+      "current_start": 788,
+      "current_end": 806,
+      "old_AST_sha256": "e694368f8434bceddfb93b3bcae880e6bc84cc94b4c8b1257732f842df3cf7cd",
+      "current_AST_sha256": "e694368f8434bceddfb93b3bcae880e6bc84cc94b4c8b1257732f842df3cf7cd",
+      "unchanged": true
+    },
+    "stage_project_field": {
+      "old_start": 801,
+      "old_end": 828,
+      "current_start": 809,
+      "current_end": 836,
+      "old_AST_sha256": "136ffff4d3bd4c7ba3a8d48e1ab741559871fd0dd4927d431d70e81753c8650c",
+      "current_AST_sha256": "136ffff4d3bd4c7ba3a8d48e1ab741559871fd0dd4927d431d70e81753c8650c",
+      "unchanged": true
+    },
+    "sync_project": {
+      "old_start": 831,
+      "old_end": 870,
+      "current_start": 839,
+      "current_end": 878,
+      "old_AST_sha256": "ce06f678eb17e167a9db491f9013f06a563344b84c5d572fc63945e3cc37499e",
+      "current_AST_sha256": "ce06f678eb17e167a9db491f9013f06a563344b84c5d572fc63945e3cc37499e",
+      "unchanged": true
+    },
+    "reconcile_project": {
+      "old_start": 873,
+      "old_end": 902,
+      "current_start": 881,
+      "current_end": 910,
+      "old_AST_sha256": "c5e22eb13b1820b21365900c03cb8f73f98585b24cafa38d3e45f9a7c3d89f9d",
+      "current_AST_sha256": "c5e22eb13b1820b21365900c03cb8f73f98585b24cafa38d3e45f9a7c3d89f9d",
+      "unchanged": true
+    },
+    "_read_project_option": {
+      "old_start": 905,
+      "old_end": 965,
+      "current_start": 913,
+      "current_end": 973,
+      "old_AST_sha256": "315e9265211cd75760193457044fbc9e5346cc0f4033f5c24e3a984a192bbfc2",
+      "current_AST_sha256": "315e9265211cd75760193457044fbc9e5346cc0f4033f5c24e3a984a192bbfc2",
+      "unchanged": true
+    },
+    "_conflict_project_field": {
+      "old_start": 968,
+      "old_end": 976,
+      "current_start": 976,
+      "current_end": 984,
+      "old_AST_sha256": "55a9534799f73ce48f424ebe7d67649b7cae31f5417760435dd5c0487654f4dc",
+      "current_AST_sha256": "55a9534799f73ce48f424ebe7d67649b7cae31f5417760435dd5c0487654f4dc",
+      "unchanged": true
+    },
+    "sync_project_field": {
+      "old_start": 979,
+      "old_end": 1043,
+      "current_start": 987,
+      "current_end": 1051,
+      "old_AST_sha256": "2bd529f890a9061044cc6446d0f9c3e1df8e23a632d61ab2271a74d5d971af1b",
+      "current_AST_sha256": "2bd529f890a9061044cc6446d0f9c3e1df8e23a632d61ab2271a74d5d971af1b",
+      "unchanged": true
+    },
+    "_resume_mapped": {
+      "old_start": 1046,
+      "old_end": 1072,
+      "current_start": 1054,
+      "current_end": 1080,
+      "old_AST_sha256": "01a0322e78a974965935eb1eb2369ed7cfbf68793f3a19bd8860193039b1b9e0",
+      "current_AST_sha256": "01a0322e78a974965935eb1eb2369ed7cfbf68793f3a19bd8860193039b1b9e0",
+      "unchanged": true
+    },
+    "sync_mapped": {
+      "old_start": 1075,
+      "old_end": 1124,
+      "current_start": 1083,
+      "current_end": 1138,
+      "old_AST_sha256": "ec1a8b0d25f14af344de61abe43db70392f827414e0e3a6c15919b8d292356dd",
+      "current_AST_sha256": "3d639362ef76a366af9c9a34b0715ad485aec6c2e996dcb47be91e76e9cfa468",
+      "unchanged": false
+    },
+    "_verify_synchronized_mapped": {
+      "old_start": 1127,
+      "old_end": 1154,
+      "current_start": 1141,
+      "current_end": 1168,
+      "old_AST_sha256": "a0510cf364cc915eb0978a655957e010f7020542da9fba40598788e032248892",
+      "current_AST_sha256": "a0510cf364cc915eb0978a655957e010f7020542da9fba40598788e032248892",
+      "unchanged": true
+    },
+    "reconcile_project_field": {
+      "old_start": 1157,
+      "old_end": 1207,
+      "current_start": 1171,
+      "current_end": 1221,
+      "old_AST_sha256": "1503a14cb205752962e041bcb61bab6a9bd6d718d4d8d0c2ce4e42150fda0897",
+      "current_AST_sha256": "1503a14cb205752962e041bcb61bab6a9bd6d718d4d8d0c2ce4e42150fda0897",
+      "unchanged": true
+    },
+    "observe_pull": {
+      "old_start": 1210,
+      "old_end": 1279,
+      "current_start": 1224,
+      "current_end": 1293,
+      "old_AST_sha256": "d6a33410f5e010bc073344ed6d6b6390b3f26a6f917e6ded76ca814b721f22e3",
+      "current_AST_sha256": "d6a33410f5e010bc073344ed6d6b6390b3f26a6f917e6ded76ca814b721f22e3",
+      "unchanged": true
+    }
+  },
+  "changed_definition_quotes": {
+    "GithubTransport.graphql": "def graphql(self, query, variables, token):\n        variable_sets = {\n            _PROJECT_READ: {\"project\", \"issue\", \"after\"},\n            _PROJECT_ADD: {\"project\", \"issue\"},\n            _PROJECT_FIELD_READ: {\"project\", \"issue\", \"item\", \"field\", \"after\"},\n            _PROJECT_FIELD_UPDATE: {\"project\", \"item\", \"field\", \"option\"},\n            _PROJECT_FIELDS: {\"project\"},\n            _PROJECT_USER_LOOKUP: {\"login\", \"number\"},\n            _PROJECT_ORG_LOOKUP: {\"login\", \"number\"},\n        }\n        if query not in variable_sets or type(variables) is not dict:\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub GraphQL operation is outside the fixed Projects contract\")\n        if set(variables) != variable_sets[query]:\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub GraphQL variables are outside the fixed Projects contract\")\n        for key in (\"project\", \"issue\", \"item\", \"field\"):\n            if key in variables and (type(variables[key]) is not str or _GLOBAL_NODE_ID.fullmatch(variables[key]) is None):\n                raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub GraphQL node ID is invalid\")\n        if (\"after\" in variables and variables[\"after\"] is not None\n                and (type(variables[\"after\"]) is not str or len(variables[\"after\"]) > 512)):\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub GraphQL cursor is invalid\")\n        if \"option\" in variables and (type(variables[\"option\"]) is not str\n                                      or _OPTION_ID.fullmatch(variables[\"option\"]) is None):\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub GraphQL option ID is invalid\")\n        if \"login\" in variables and (type(variables[\"login\"]) is not str\n                                     or re.fullmatch(r\"[A-Za-z0-9][A-Za-z0-9-]{0,38}\", variables[\"login\"]) is None):\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub Projects owner is invalid\")\n        if \"number\" in variables and (type(variables[\"number\"]) is not int\n                                      or not 1 <= variables[\"number\"] <= 999_999_999):\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub Projects number is invalid\")\n        payload = json.dumps({\"query\": query, \"variables\": variables}, separators=(\",\", \":\")).encode(\"utf-8\")\n        req = request.Request(_BASE + \"/graphql\", data=payload, method=\"POST\", headers={\n            \"Accept\": \"application/vnd.github+json\", \"Content-Type\": \"application/json\",\n            \"Authorization\": \"Bearer \" + token, \"User-Agent\": \"codeArbiter-work\",\n            \"X-GitHub-Api-Version\": \"2022-11-28\",\n        })\n        try:\n            with self._opener.open(req, timeout=15) as response:\n                raw = response.read((1 << 20) + 1)\n                if len(raw) > 1 << 20:\n                    raise WorkSyncError(\"REMOTE_RESPONSE_TOO_LARGE\", \"GitHub Projects response exceeds the read bound\")\n                value = _remote_json(raw)\n                if response.status != 200 or type(value) is not dict or value.get(\"errors\") or type(value.get(\"data\")) is not dict:\n                    raise WorkSyncError(\"INVALID_REMOTE_RESPONSE\", \"GitHub Projects returned an error or incomplete response\")\n                return value\n        except error.HTTPError as exc:\n            exc.close()\n            raise WorkSyncError(\"GITHUB_HTTP\", f\"GitHub API returned HTTP {exc.code}\") from exc",
+    "GithubTransport.request": "def request(self, method, path, body, token):\n        allowed = {\n            \"GET\": (rf\"{_REPO_PATH}\", rf\"{_REPO_PATH}/issues/[1-9][0-9]*\",\n                    rf\"{_REPO_PATH}/pulls/[1-9][0-9]*\",\n                    rf\"{_REPO_PATH}/pulls/[1-9][0-9]*/files\\?per_page=100&page=([1-9]|[12][0-9]|30)\",\n                    rf\"{_REPO_PATH}/contents/\\.codearbiter/work/(?:transition-map|provider|project-provider)\\.json\",\n                    rf\"{_REPO_PATH}/contents/\\.codearbiter/work/WORK-[A-F0-9]{{32}}\\.html(?:\\?ref=[a-f0-9]{{40}})?\"),\n            \"POST\": (rf\"{_REPO_PATH}/issues\",),\n            \"PATCH\": (rf\"{_REPO_PATH}/issues/[1-9][0-9]*\",),\n        }\n        if not any(re.fullmatch(pattern, path) for pattern in allowed.get(method, ())):\n            raise WorkSyncError(\"UNSUPPORTED_REQUEST\", \"GitHub operation is outside the fixed endpoint set\")\n        payload = None if body is None else json.dumps(body, separators=(\",\", \":\")).encode(\"utf-8\")\n        req = request.Request(_BASE + path, data=payload, method=method, headers={\n            \"Accept\": \"application/vnd.github+json\", \"Content-Type\": \"application/json\",\n            \"Authorization\": \"Bearer \" + token, \"User-Agent\": \"codeArbiter-work\",\n            \"X-GitHub-Api-Version\": \"2022-11-28\",\n        })\n        try:\n            with self._opener.open(req, timeout=15) as response:\n                data = response.read((1 << 20) + 1)\n                if len(data) > 1 << 20:\n                    raise WorkSyncError(\"REMOTE_RESPONSE_TOO_LARGE\", \"GitHub response exceeds the issue read bound\")\n                value = _remote_json(data)\n                if type(value) is not dict and not (\"/files?\" in path and type(value) is list):\n                    raise WorkSyncError(\"INVALID_REMOTE_RESPONSE\", \"GitHub returned an unexpected response\")\n                return response.status, value\n        except error.HTTPError as exc:\n            exc.close()\n            raise WorkSyncError(\"GITHUB_HTTP\", f\"GitHub API returned HTTP {exc.code}\") from exc",
+    "sync_mapped": "def sync_mapped(root, client, work_id, transport=None, token_lookup=None, pull_number=None):\n    \"\"\"Explicitly attempt only the saved, mapping-owned targets for one work item.\"\"\"\n    transport = transport if transport is not None else GithubTransport()\n    token_lookup = token_lookup if token_lookup is not None else os.environ.get\n    mapping = client.call(\"work-transition-map-get\", {})\n    work = client.call(\"work-get\", {\"work_id\": work_id})\n    coordination = work.get(\"coordination\") or {}\n    if (not mapping.get(\"enabled\") or not coordination\n            or mapping.get(\"binding_generation\") != coordination.get(\"mapping_generation\")):\n        raise WorkSyncError(\"EFFECT_PAUSED\", \"No current enabled mapping owns this work transition\")\n    outcomes = {}\n    for target, effect_key, status_key, desired_key, sender in (\n            (\"issue\", \"provider_effect\", \"issue_status\", \"desired_issue_state\", sync),\n            (\"project\", \"project_effect\", \"project_status\", \"desired_project_option_id\", sync_project_field)):\n        if coordination.get(desired_key) is None:\n            outcomes[target] = {\"status\": \"not_requested\"}\n            continue\n        try:\n            work = client.call(\"work-get\", {\"work_id\": work_id})\n            status = (work.get(\"coordination\") or {}).get(status_key)\n            if status in (\"waiting_binding\", \"waiting_reconciliation\"):\n                try:\n                    _resume_mapped(root, client, work, transport, token_lookup, pull_number)\n                except ArtifactError as exc:\n                    if exc.code != \"COORDINATION_WAITING\":\n                        raise\n                work = client.call(\"work-get\", {\"work_id\": work_id})\n                status = (work.get(\"coordination\") or {}).get(status_key)\n            if target == \"project\" and status == \"awaiting_observation\":\n                _resume_mapped(root, client, work, transport, token_lookup, pull_number,\n                               observe_project=True)\n                work = client.call(\"work-get\", {\"work_id\": work_id})\n            effect = work.get(effect_key) or {}\n            if (effect.get(\"source_transition_id\") == coordination.get(\"transition_id\")\n                    and effect.get(\"status\") == \"synchronized\"):\n                _verify_synchronized_mapped(root, client, work_id, target, effect,\n                                            transport, token_lookup)\n                outcomes[target] = {\"status\": \"synchronized\"}\n                continue\n            if (effect.get(\"source_transition_id\") != coordination.get(\"transition_id\")\n                    or effect.get(\"status\") != \"pending\"):\n                outcomes[target] = {\"status\": (work.get(\"coordination\") or {}).get(status_key, \"unavailable\")}\n                continue\n            sender(root, client, work_id, transport=transport, token_lookup=token_lookup,\n                   pull_number=pull_number)\n            outcomes[target] = {\"status\": \"synchronized\"}\n        except (WorkSyncError, ArtifactError) as exc:\n            outcomes[target] = {\"status\": \"failed\", \"code\": exc.code, \"error\": str(exc)}\n        except (error.URLError, TimeoutError):\n            # Pre-claim reads may fail without a provider effect. Keep that\n            # target pending and continue independently mapped targets; never\n            # copy a transport exception that may contain credentials or URLs.\n            outcomes[target] = {\"status\": \"failed\", \"code\": \"GITHUB_UNAVAILABLE\",\n                                \"error\": \"GitHub read is unavailable; no successful target observation was recorded\"}\n    return {\"ok\": all(value[\"status\"] in (\"not_requested\", \"synchronized\") for value in outcomes.values()),\n            \"work_id\": work_id, \"transition_id\": coordination[\"transition_id\"], \"targets\": outcomes}",
+    "_remote_json": "def _remote_json(raw):\n    \"\"\"Decode bounded response bytes without exposing provider content.\"\"\"\n    try:\n        return json.loads(raw)\n    except (ValueError, RecursionError):\n        raise WorkSyncError(\"INVALID_REMOTE_RESPONSE\", \"GitHub returned invalid JSON\") from None"
+  },
+  "literal_source_diff": "--- \n+++ \n@@ -95,8 +95,16 @@\n     def redirect_request(self, req, fp, code, msg, headers, newurl):\n         return None\n \n \n+def _remote_json(raw):\n+    \"\"\"Decode bounded response bytes without exposing provider content.\"\"\"\n+    try:\n+        return json.loads(raw)\n+    except (ValueError, RecursionError):\n+        raise WorkSyncError(\"INVALID_REMOTE_RESPONSE\", \"GitHub returned invalid JSON\") from None\n+\n+\n class GithubTransport:\n     \"\"\"Bounded official GitHub API transport; redirects never receive tokens.\"\"\"\n \n     def __init__(self):\n@@ -124,9 +132,9 @@\n             with self._opener.open(req, timeout=15) as response:\n                 data = response.read((1 << 20) + 1)\n                 if len(data) > 1 << 20:\n                     raise WorkSyncError(\"REMOTE_RESPONSE_TOO_LARGE\", \"GitHub response exceeds the issue read bound\")\n-                value = json.loads(data)\n+                value = _remote_json(data)\n                 if type(value) is not dict and not (\"/files?\" in path and type(value) is list):\n                     raise WorkSyncError(\"INVALID_REMOTE_RESPONSE\", \"GitHub returned an unexpected response\")\n                 return response.status, value\n         except error.HTTPError as exc:\n@@ -172,9 +180,9 @@\n             with self._opener.open(req, timeout=15) as response:\n                 raw = response.read((1 << 20) + 1)\n                 if len(raw) > 1 << 20:\n                     raise WorkSyncError(\"REMOTE_RESPONSE_TOO_LARGE\", \"GitHub Projects response exceeds the read bound\")\n-                value = json.loads(raw)\n+                value = _remote_json(raw)\n                 if response.status != 200 or type(value) is not dict or value.get(\"errors\") or type(value.get(\"data\")) is not dict:\n                     raise WorkSyncError(\"INVALID_REMOTE_RESPONSE\", \"GitHub Projects returned an error or incomplete response\")\n                 return value\n         except error.HTTPError as exc:\n@@ -1119,8 +1127,14 @@\n                    pull_number=pull_number)\n             outcomes[target] = {\"status\": \"synchronized\"}\n         except (WorkSyncError, ArtifactError) as exc:\n             outcomes[target] = {\"status\": \"failed\", \"code\": exc.code, \"error\": str(exc)}\n+        except (error.URLError, TimeoutError):\n+            # Pre-claim reads may fail without a provider effect. Keep that\n+            # target pending and continue independently mapped targets; never\n+            # copy a transport exception that may contain credentials or URLs.\n+            outcomes[target] = {\"status\": \"failed\", \"code\": \"GITHUB_UNAVAILABLE\",\n+                                \"error\": \"GitHub read is unavailable; no successful target observation was recorded\"}\n     return {\"ok\": all(value[\"status\"] in (\"not_requested\", \"synchronized\") for value in outcomes.values()),\n             \"work_id\": work_id, \"transition_id\": coordination[\"transition_id\"], \"targets\": outcomes}\n \n \n"
+}

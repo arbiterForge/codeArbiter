@@ -1,0 +1,118 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/ci_repair_review: finite complete guard/effect/retry source renewal; no execution"
+  },
+  "inputs": {
+    ".github/scripts/test_work_github.py": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/_workadopt.py": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/source-inspection.json": "88082d609f36b2c52a7b336b84ee3456ce36c0ccf92173d6b95227d07038c64b"
+  },
+  "disposition_ids": [
+    "disposition:machines:hooks:taskwrite",
+    "disposition:transitions:hooks:taskwrite:01",
+    "disposition:transitions:hooks:taskwrite:02",
+    "disposition:transitions:hooks:taskwrite:03",
+    "disposition:transitions:hooks:taskwrite:04",
+    "disposition:transitions:hooks:taskwrite:05",
+    "disposition:transitions:hooks:taskwrite:06",
+    "disposition:transitions:hooks:taskwrite:07",
+    "disposition:transitions:hooks:taskwrite:08",
+    "disposition:transitions:hooks:work-owner:01",
+    "disposition:transitions:hooks:work-owner:02",
+    "disposition:transitions:hooks:work-owner:04",
+    "disposition:transitions:hooks:work-owner:05",
+    "disposition:transitions:hooks:work-owner:06",
+    "disposition:transitions:hooks:work-owner:07",
+    "disposition:transitions:hooks:work-owner:08",
+    "disposition:transitions:hooks:work-owner:09",
+    "disposition:transitions:hooks:work-owner:10"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "sha256": "c6142c9b77800d699fc8fcfe3cf93e93b9eaca10e769699abf8a7a3e1c6664b8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.json",
+      "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.log",
+      "sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.json",
+      "sha256": "25af662244ccdc0d8797cc0d2080d9aecde6f9a77047a0a605eac659585d5e45"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.log",
+      "sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.json",
+      "sha256": "99f21f37dc77cee3d1116ced4e5067ad6f6a79e54fd558329d2bf08de8e6ba17"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.log",
+      "sha256": "716d9d550a93a10171669807010fd18c499818aca4232cbb458f196914cc97ea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/prior-seven-source-reuse.json",
+      "sha256": "b53d61985795b05e8b14754887cfc1f38f7c9c8c4191291c8c924f7f41fbfdb5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/depth-oracle-correction.txt",
+      "sha256": "d78926b33017fdc764a1c7253b1a7858ca52630380643ea9ff0b91a994264b78"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/source-closure.json",
+      "sha256": "f8a1803bfcf09080e4454461d40546a47508cf465e4154c18cc99f507a104411"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-observations-source-join.json",
+      "sha256": "8bf34b0c5f1e88b83c8b0a463243975534eac404bfb1d0e72f4efa5fdfd0c912"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json",
+      "sha256": "ff773795181f6b92909c418f0eb1b32cea1bcd3049c34f34376df4d7edaba0be"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/input-bindings.json",
+      "sha256": "34aa3af0bc17fd311c4b3aed9219f3aedfdedfd08641c29834d464d7177b773c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/exact-stale-selection.json",
+      "sha256": "4eee1488882a45a31b1b64134920eb1d53d5051e83789c010689d62785f4ba7e"
+    }
+  ],
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+  "scope": "17 complete transition clauses and 1 exact constituent machines; current source PRESERVED only. Original6 parser,7 unchanged-path,3 native identity observations remain separately sourced corroboration, not unique-count or fresh-runtime qualification. S38 and all unselected rows untouched.",
+  "dependency_boundary": "All cited owners/dependencies have literal7eba and physical input bindings. Error decoder and preclaim catch changes are explicit; unchanged AST/call boundaries are named. No complete native module/host lookup membership, live provider, installed/platform, auth endpoint policy, task/scenario, publication or whole-program claim.",
+  "prior_evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+    "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+  }
+}

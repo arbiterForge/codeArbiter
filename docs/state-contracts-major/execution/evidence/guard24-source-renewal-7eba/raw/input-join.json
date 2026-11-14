@@ -1,0 +1,197 @@
+{
+  "schema": "codearbiter.source-input-join/1",
+  "state": "VERIFIED_IMMUTABLE_SOURCE_PHYSICAL_BYTES",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "object_store": "C:/Users/brenn/AppData/Local/Temp/ca-major-object-recovery-hpvs51lw/objects.git",
+  "object_owner": "Root recovered immutable database from exact origin; no local Govadmin repair",
+  "recovery_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\read-only-object-recovery.json",
+    "sha256": "ec390aa391a9426848a417a700a274fac9f7c17a5030b682aca071b1ff0d7252"
+  },
+  "inputs": {
+    "core/pysrc/_activationlib.py": {
+      "literal_git_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "physical_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "literal_git_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "physical_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_bashguardlib.py": {
+      "literal_git_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+      "physical_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_entrylib.py": {
+      "literal_git_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "physical_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_gitexec.py": {
+      "literal_git_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "physical_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_gitlib.py": {
+      "literal_git_sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+      "physical_sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "literal_git_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "physical_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_pathnorm.py": {
+      "literal_git_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "physical_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_protectedlib.py": {
+      "literal_git_sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "physical_sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_protectedstatelib.py": {
+      "literal_git_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "physical_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_readinjectlib.py": {
+      "literal_git_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+      "physical_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_scopelib.py": {
+      "literal_git_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "physical_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_sensitivelib.py": {
+      "literal_git_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "physical_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/_sloplib.py": {
+      "literal_git_sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+      "physical_sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/git-enforce.py": {
+      "literal_git_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+      "physical_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/hostapi.py": {
+      "literal_git_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "physical_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/post-write-edit.py": {
+      "literal_git_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "physical_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/pre-bash.py": {
+      "literal_git_sha256": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+      "physical_sha256": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/pre-edit.py": {
+      "literal_git_sha256": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+      "physical_sha256": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/pre-read.py": {
+      "literal_git_sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+      "physical_sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "core/pysrc/pre-write.py": {
+      "literal_git_sha256": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+      "physical_sha256": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+      "equal": true,
+      "role": "source_clause_owner_or_dependency"
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "literal_git_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "physical_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "equal": true,
+      "role": "governing_contract"
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "literal_git_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "physical_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "equal": true,
+      "role": "governing_contract"
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "literal_git_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "physical_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "equal": true,
+      "role": "governing_contract"
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "literal_git_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "physical_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "equal": true,
+      "role": "governing_contract"
+    },
+    ".codearbiter/context/security-controls.html": {
+      "literal_git_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "physical_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "equal": true,
+      "role": "governing_contract"
+    }
+  },
+  "original_owner_inputs": 21,
+  "added_governing_inputs": 5,
+  "changed_owner_input": {
+    "path": "core/pysrc/_bashguardlib.py",
+    "old": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "current": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+    "AST_delta": "Add_interp_statement_boundaries; change_interp_protected_write only. Full AST becomes original after replacing/removing exactly those2."
+  },
+  "old_record": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/preserved.json",
+    "sha256": "c590556737bacd80f9d579621ce28f737e59efd53f27ba86a8191c17e54f5cfe",
+    "literal7eba_equals_physical": true,
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+  },
+  "old_raw": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/source-inspection.json",
+    "sha256": "4653af7d5a90c9547b2e96c8c411bfdb66769e9228052577cb7fb7b63b9e9549",
+    "literal7eba_equals_physical": true
+  },
+  "ledger_sha256": "32e6a9b9baa35ed99df765c202213fb5340928017c2d9fe9ba5cfec8b0e84344",
+  "census": {
+    "guard_drift_any": 65,
+    "guard_only_drift_no_unavailable": 24,
+    "exclude_multi_drift": 41,
+    "selected_TESTED": 0,
+    "selected_PRESERVED": 24
+  },
+  "workspace_boundary": "Gov.git points to missing codeArbiter23. No localHEAD/index/clean-state assertion, no discovery-based absence inference; recovery objects identify7eba independently. No Git/worktree/admin mutation by author."
+}

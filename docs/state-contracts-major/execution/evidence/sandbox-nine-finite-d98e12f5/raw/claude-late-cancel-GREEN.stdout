@@ -1,0 +1,14 @@
+
+ RUN  v4.1.12 C:/Users/brenn/AppData/Local/Temp/ca-sandbox-claude-late-cancel/verification-project
+      Coverage enabled with v8
+
+ ✓ claude-inside.test.ts (29 tests | 4 skipped) 9ms
+ ✓ state-contracts.test.ts (14 tests | 13 skipped) 4ms
+ ✓ claude-inside-cli.test.ts (17 tests) 5ms
+
+ Test Files  3 passed (3)
+      Tests  43 passed | 17 skipped (60)
+   Start at  16:47:42
+   Duration  592ms (transform 94ms, setup 0ms, import 234ms, tests 18ms, environment 0ms)
+
+JSON report written to C:/Users/brenn/AppData/Local/Temp/ca-sandbox-claude-late-cancel/GREEN-vitest.json

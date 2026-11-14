@@ -1,0 +1,81 @@
+{
+  "scope": "Focused affected safeguard recheck only; actual pre-bash entry with exact successor module; fakehookJSON, no command strings executed",
+  "candidate_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+  "test_cases": 9,
+  "passed": 9,
+  "protected_bytes_unchanged": true,
+  "rows": [
+    {
+      "guard": "H-18",
+      "command_data": "python writer.py >& .codearbiter/CONTEXT.md",
+      "expected": 2,
+      "observed": 2,
+      "stdout": "",
+      "stderr": "BLOCKED [H-18]: .codearbiter/CONTEXT.md is the activation switch every enforcement hook reads (#159) \u2014 shell rewrites, edits, or deletions that could flip `arbiter: enabled` off or corrupt its frontmatter are prohibited. This repository is initialized; continue through /ca:context-check and its context-draft/context-apply writer.\n"
+    },
+    {
+      "guard": "H-18",
+      "command_data": "python writer.py 2>&1 .codearbiter/CONTEXT.md",
+      "expected": 2,
+      "observed": 2,
+      "stdout": "",
+      "stderr": "BLOCKED [H-18]: .codearbiter/CONTEXT.md is the activation switch every enforcement hook reads (#159) \u2014 shell rewrites, edits, or deletions that could flip `arbiter: enabled` off or corrupt its frontmatter are prohibited. This repository is initialized; continue through /ca:context-check and its context-draft/context-apply writer.\n"
+    },
+    {
+      "guard": "H-18",
+      "command_data": "& 'C:/runtime/python.exe' -B -X utf8 'C:/plugins/ca-codex/hooks/knowledge.py' read security-controls; Get-Content -Raw '.codearbiter/CONTEXT.md'",
+      "expected": 0,
+      "observed": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "guard": "H-05",
+      "command_data": "python writer.py >& .codearbiter/overrides.log",
+      "expected": 2,
+      "observed": 2,
+      "stdout": "",
+      "stderr": "BLOCKED [H-05]: The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log, decisions/decision-log.md) are append-only (ORCHESTRATOR \u00a77). Truncating, overwriting, or deleting the audit trail is prohibited. Use one tail-anchored Edit, or a shell-native UTF-8 no-BOM append: PowerShell 5.1 [IO.File]::AppendAllText(<path>, <line>, (New-Object Text.UTF8Encoding($false))); PowerShell 7 Add-Content -LiteralPath <path> -Value <line> -Encoding utf8NoBOM; Git Bash printf '%s\\n' <line> >> <path>.\n"
+    },
+    {
+      "guard": "H-05",
+      "command_data": "python writer.py 2>&1 .codearbiter/overrides.log",
+      "expected": 2,
+      "observed": 2,
+      "stdout": "",
+      "stderr": "BLOCKED [H-05]: The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log, decisions/decision-log.md) are append-only (ORCHESTRATOR \u00a77). Truncating, overwriting, or deleting the audit trail is prohibited. Use one tail-anchored Edit, or a shell-native UTF-8 no-BOM append: PowerShell 5.1 [IO.File]::AppendAllText(<path>, <line>, (New-Object Text.UTF8Encoding($false))); PowerShell 7 Add-Content -LiteralPath <path> -Value <line> -Encoding utf8NoBOM; Git Bash printf '%s\\n' <line> >> <path>.\n"
+    },
+    {
+      "guard": "H-05",
+      "command_data": "& 'C:/runtime/python.exe' -B -X utf8 'C:/plugins/ca-codex/hooks/knowledge.py' read security-controls; Get-Content -Raw '.codearbiter/overrides.log'",
+      "expected": 0,
+      "observed": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "guard": "H-11",
+      "command_data": "python writer.py >& .codearbiter/decisions/0001-seed.md",
+      "expected": 2,
+      "observed": 2,
+      "stdout": "",
+      "stderr": "BLOCKED [H-11]: ADR files under .codearbiter/decisions/ are authored only via /adr and are immutable history (ORCHESTRATOR \u00a76) \u2014 shell writes, edits, and deletions there are prohibited.\n"
+    },
+    {
+      "guard": "H-11",
+      "command_data": "python writer.py 2>&1 .codearbiter/decisions/0001-seed.md",
+      "expected": 2,
+      "observed": 2,
+      "stdout": "",
+      "stderr": "BLOCKED [H-11]: ADR files under .codearbiter/decisions/ are authored only via /adr and are immutable history (ORCHESTRATOR \u00a76) \u2014 shell writes, edits, and deletions there are prohibited.\n"
+    },
+    {
+      "guard": "H-11",
+      "command_data": "& 'C:/runtime/python.exe' -B -X utf8 'C:/plugins/ca-codex/hooks/knowledge.py' read security-controls; Get-Content -Raw '.codearbiter/decisions/0001-seed.md'",
+      "expected": 0,
+      "observed": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

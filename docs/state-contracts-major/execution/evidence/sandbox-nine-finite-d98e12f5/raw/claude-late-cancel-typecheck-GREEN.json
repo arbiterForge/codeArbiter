@@ -1,0 +1,14 @@
+{
+  "command": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\node_modules\\typescript\\bin\\tsc",
+    "--noEmit",
+    "--project",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\tsconfig-checked.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project",
+  "exit_code": 0,
+  "seconds": 1.9448867000000973,
+  "config_sha256": "bdc5df264528dccf38c41e12cd19b19346b7fbeb6b1c3c8422d1b08edd64611a",
+  "setup_correction": "Original external scoped config could not resolve node typeRoots; explicit existing private junction @types fixes config lookup without installing/changing source."
+}

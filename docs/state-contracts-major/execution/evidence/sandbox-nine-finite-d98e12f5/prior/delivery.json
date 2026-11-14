@@ -1,0 +1,38 @@
+{
+  "schema": "codearbiter.sandbox-finite-delivery/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "source_epoch": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "proposal": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-nine-finite-7eba2507\\cas-proposal.json",
+    "sha256": "54891e36cf537b1286399ae762c0c670ea03e60d34f42bfa975dcf8d4bac85c5"
+  },
+  "copy_files": [
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-nine-finite-7eba2507\\input-join.json",
+      "target": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/input-join.json",
+      "sha256": "5d2968b00dcffe547296bedf348e813333ee8d56e681f429ec11f07531c735b6"
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-nine-finite-7eba2507\\original-observations.json",
+      "target": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/original-observations.json",
+      "sha256": "7a5eb462b65b92d1fbcba2b7ff81f2516a494350d24cf352cb3a98c0bf04b711"
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-nine-finite-7eba2507\\preserved.json",
+      "target": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+      "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-nine-finite-7eba2507\\source-inspection.json",
+      "target": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/source-inspection.json",
+      "sha256": "1c4ae14839eb4c6262579e7ef4342a78dd21f3596e74fb33b5cf4474fefd4c70"
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-nine-finite-7eba2507\\raw\\deadline16-original.json",
+      "target": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/raw/deadline16-original.json",
+      "sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    }
+  ],
+  "summary": "8 healthy clauses+2 finite source machines; S51 late-success cancellation exactHOLD. No new tests/runtime/API effects. Physical/literal7eba bound through recovered origin object DB."
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/ci_repair_review: finite complete guard/effect/retry source renewal; no execution"
+  },
+  "inputs": {
+    ".github/scripts/test_work_github.py": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286",
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/source-inspection.json": "64161ad13771fa44f4e03baa179b8666debc920cc6b621af558e0c56977877cd"
+  },
+  "disposition_ids": [
+    "disposition:machines:S34",
+    "disposition:machines:S35",
+    "disposition:machines:S36",
+    "disposition:machines:S37",
+    "disposition:transitions:S34:01",
+    "disposition:transitions:S34:02",
+    "disposition:transitions:S34:03",
+    "disposition:transitions:S34:04",
+    "disposition:transitions:S34:05",
+    "disposition:transitions:S34:06",
+    "disposition:transitions:S34:07",
+    "disposition:transitions:S35:01",
+    "disposition:transitions:S35:02",
+    "disposition:transitions:S35:03",
+    "disposition:transitions:S35:04",
+    "disposition:transitions:S35:05",
+    "disposition:transitions:S36:01",
+    "disposition:transitions:S36:02",
+    "disposition:transitions:S36:03",
+    "disposition:transitions:S36:04",
+    "disposition:transitions:S36:05",
+    "disposition:transitions:S36:06",
+    "disposition:transitions:S36:07",
+    "disposition:transitions:S37:01",
+    "disposition:transitions:S37:02",
+    "disposition:transitions:S37:03",
+    "disposition:transitions:S37:04",
+    "disposition:transitions:S37:05",
+    "disposition:transitions:S37:06",
+    "disposition:transitions:S37:07",
+    "disposition:transitions:S37:08",
+    "disposition:transitions:S37:09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-provider/source-inspection.json",
+      "sha256": "7f182ad91cd2fe8307d280aa38bc73eccfddf5ddf6c131c3960b7ddcb86c98b4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.json",
+      "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.log",
+      "sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.json",
+      "sha256": "25af662244ccdc0d8797cc0d2080d9aecde6f9a77047a0a605eac659585d5e45"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.log",
+      "sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.json",
+      "sha256": "99f21f37dc77cee3d1116ced4e5067ad6f6a79e54fd558329d2bf08de8e6ba17"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.log",
+      "sha256": "716d9d550a93a10171669807010fd18c499818aca4232cbb458f196914cc97ea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/prior-seven-source-reuse.json",
+      "sha256": "b53d61985795b05e8b14754887cfc1f38f7c9c8c4191291c8c924f7f41fbfdb5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/depth-oracle-correction.txt",
+      "sha256": "d78926b33017fdc764a1c7253b1a7858ca52630380643ea9ff0b91a994264b78"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/source-closure.json",
+      "sha256": "f8a1803bfcf09080e4454461d40546a47508cf465e4154c18cc99f507a104411"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-observations-source-join.json",
+      "sha256": "8bf34b0c5f1e88b83c8b0a463243975534eac404bfb1d0e72f4efa5fdfd0c912"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json",
+      "sha256": "ff773795181f6b92909c418f0eb1b32cea1bcd3049c34f34376df4d7edaba0be"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/input-bindings.json",
+      "sha256": "34aa3af0bc17fd311c4b3aed9219f3aedfdedfd08641c29834d464d7177b773c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/exact-stale-selection.json",
+      "sha256": "4eee1488882a45a31b1b64134920eb1d53d5051e83789c010689d62785f4ba7e"
+    }
+  ],
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-provider/source-inspection.json",
+  "scope": "28 complete transition clauses and 4 exact constituent machines; current source PRESERVED only. Original6 parser,7 unchanged-path,3 native identity observations remain separately sourced corroboration, not unique-count or fresh-runtime qualification. S38 and all unselected rows untouched.",
+  "dependency_boundary": "All cited owners/dependencies have literal7eba and physical input bindings. Error decoder and preclaim catch changes are explicit; unchanged AST/call boundaries are named. No complete native module/host lookup membership, live provider, installed/platform, auth endpoint policy, task/scenario, publication or whole-program claim.",
+  "prior_evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+    "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+  }
+}
