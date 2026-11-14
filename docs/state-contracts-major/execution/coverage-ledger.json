@@ -17760,9 +17760,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "0830b95752a05343563be027e513a2845a6c57df",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
-     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
     }
    ]
   },
@@ -17779,9 +17779,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "0830b95752a05343563be027e513a2845a6c57df",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
-     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
     }
    ]
   },
@@ -17810,9 +17810,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "0830b95752a05343563be027e513a2845a6c57df",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
-     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
     }
    ]
   },
@@ -17829,9 +17829,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "0830b95752a05343563be027e513a2845a6c57df",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
-     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
     }
    ]
   },
@@ -17848,9 +17848,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "0830b95752a05343563be027e513a2845a6c57df",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
-     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
     }
    ]
   },
@@ -17863,8 +17863,15 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/footer-doctor2-tested.json",
+     "sha256": "4bfc13203de98f682ab4020b45ce361974f100781a6f83dd46feee128f97d8dc"
+    }
+   ]
   },
   "S19:01": {
    "owner": "pi",
@@ -18031,8 +18038,15 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/footer-doctor2-tested.json",
+     "sha256": "4bfc13203de98f682ab4020b45ce361974f100781a6f83dd46feee128f97d8dc"
+    }
+   ]
   },
   "S21:01": {
    "owner": "farm",
@@ -25464,8 +25478,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ]
   },
   "S76:02": {
    "owner": "packaging",
@@ -25478,9 +25499,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
-     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3",
+     "ref_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef"
     }
    ]
   },
@@ -25495,9 +25525,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
-     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3",
+     "ref_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef"
     }
    ]
   },
@@ -25512,11 +25551,21 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
-     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3",
+     "ref_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef"
     }
-   ]
+   ],
+   "candidate_contract_note": "BUILD-G01 replaces historical per-file .tmp-sync prescription with owned complete-set staging/journal and bounded rollback. No filesystem-crash atomicity or orphan deletion claimed."
   },
   "S76:05": {
    "owner": "packaging",
@@ -25529,9 +25578,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
-     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3",
+     "ref_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef"
     }
    ]
   },
@@ -25542,8 +25600,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ],
+   "candidate_contract_note": "Accepted BUILD-G01 deliberately replaces historical partial synchronization with successful owner-transaction rollback; does not claim all-filesystem-crash atomicity."
   },
   "S76:07": {
    "owner": "packaging",
@@ -25552,8 +25618,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+     "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+   ]
   },
   "S77:01": {
    "owner": "packaging",
@@ -30086,9 +30159,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-pi-isolation-tested.json",
-     "sha256": "f277f3bec9b61c0c70eb6db69f089f675af451ecad6c4a2294d20acb87db392d"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4"
     }
    ],
    "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
@@ -30105,9 +30178,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-pi-isolation-tested.json",
-     "sha256": "f277f3bec9b61c0c70eb6db69f089f675af451ecad6c4a2294d20acb87db392d"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4"
     }
    ],
    "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
@@ -30124,9 +30197,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-pi-isolation-tested.json",
-     "sha256": "f277f3bec9b61c0c70eb6db69f089f675af451ecad6c4a2294d20acb87db392d"
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4"
     }
    ],
    "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."

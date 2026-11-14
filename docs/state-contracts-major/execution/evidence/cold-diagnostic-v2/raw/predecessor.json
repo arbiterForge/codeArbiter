@@ -1,0 +1,6 @@
+{
+  "directory": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-v2-o52jgysl",
+  "freeze_sha256": "4922191ce17f3e3675557078c1a51f51a3b1e0d6f27780be11a7dd8391ef07bb",
+  "review_sha256": "4488304677ab33a1d5bb85dff231514681e264be006cd415c89a86c624d9deca",
+  "scope": "same-property-test final bounded successor; predecessor original files remain untouched"
+}

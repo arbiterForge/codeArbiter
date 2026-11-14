@@ -156,9 +156,11 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(completed.stdout, b"")
         self.assertTrue(completed.stderr.startswith(b"{"), "missing bounded installed-host failure record")
         record = json.loads(completed.stderr)
-        self.assertEqual(record, {"format": "codearbiter.installed-host-failure/0.1.0",
+        self.assertEqual(record, {"format": "codearbiter.installed-host-failure/0.2.0",
                                  "phase": "bootstrap", "step": "main",
-                                 "error": "FileNotFoundError", "code": "unclassified"})
+                                 "error": "FileNotFoundError", "code": "unclassified",
+                                 "host": "claude", "family": "filesystem",
+                                 "audit_event": "none", "audit_site": "none", "audit_depth": "none"})
         self.assertNotIn(missing.name.encode(), completed.stderr)
         message = str(PACKAGER._subprocess_failure("cold installed-host workflow", completed))
         self.assertIn("phase=bootstrap", message)
@@ -2192,6 +2194,174 @@ class PackageTests(unittest.TestCase):
                     trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                     output=self.base / f"tampered-{index}",
                     required_platforms=[native_platform], repo=REPO)
+
+
+class ColdFailureDiagnosticTests(unittest.TestCase):
+    """Native-free diagnostic transport, never package/installed admission."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.base = Path(temporary.name).resolve(strict=True)
+
+    @staticmethod
+    def v2(**changes):
+        value = {"format": "codearbiter.installed-host-failure/0.2.0",
+                 "phase": "commit-proof", "step": "enforce_runtime_event",
+                 "error": "RecursionError", "code": "unclassified", "host": "claude",
+                 "family": "recursion", "audit_event": "open",
+                 "audit_site": "path-guard", "audit_depth": "outer"}
+        return {**value, **changes}
+
+    def test_v2_builtin_subtypes_and_families_keep_no_messages(self):
+        for cls, family in ((RecursionError, "recursion"), (NotADirectoryError, "filesystem"),
+                            (MemoryError, "memory")):
+            with self.subTest(error=cls.__name__), mock.patch.object(INSTALLED_HOST, "_FAILURE_HOST", "pi", create=True):
+                try:
+                    raise cls("PrivateFixtureValue-message-and-path")
+                except Exception as error:
+                    record = INSTALLED_HOST.failure_record(error, phase="commit-proof")
+            self.assertEqual(record["error"], cls.__name__)
+            self.assertEqual(record["family"], family)
+            self.assertEqual(record["host"], "pi")
+            self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(record).encode()), record)
+            self.assertNotIn("PrivateFixtureValue", json.dumps(record))
+        with mock.patch.object(INSTALLED_HOST, "_FAILURE_ARTIFACT_TYPES", {_artifactlib.ArtifactError}):
+            record = INSTALLED_HOST.failure_record(
+                _artifactlib.ArtifactError("AUTHORITY_UNVERIFIED", "PrivateFixtureValue-native"), phase="commit-proof")
+        self.assertEqual((record["error"], record["family"], record["code"]),
+                         ("ArtifactError", "artifact", "AUTHORITY_UNVERIFIED"))
+        self.assertNotIn("PrivateFixtureValue", json.dumps(record))
+
+    def test_v2_arbitrary_and_forged_exception_names_remain_unclassified(self):
+        for name in ("PrivateFixtureValueClass", "RecursionError", "ArtifactError"):
+            error = type(name, (Exception,), {})("PrivateFixtureValue-message")
+            error.code = "AUTHORITY_UNVERIFIED"
+            error._cold_audit_failure = {"event": "PrivateFixtureValue-event", "site": "PrivateFixtureValue-site", "depth": "outer"}
+            record = INSTALLED_HOST.failure_record(error, phase="commit-proof")
+            self.assertEqual(record["error"], "unclassified")
+            self.assertEqual(record["family"], "unclassified")
+            self.assertEqual((record["audit_event"], record["audit_site"], record["audit_depth"]), ("none", "none", "none"))
+            self.assertNotIn("PrivateFixtureValue", json.dumps(record))
+
+    def test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields(self):
+        good = self.v2()
+        self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(good).encode()), good)
+        bad = [self.v2(host="PrivateFixtureValue"), self.v2(error="PrivateFixtureValue"),
+               self.v2(family="filesystem"), self.v2(audit_event="PrivateFixtureValue"),
+               self.v2(audit_site="PrivateFixtureValue"), self.v2(audit_depth="42"),
+               self.v2(extra="PrivateFixtureValue"), self.v2(audit_event="none"),
+               self.v2(audit_depth=1)]
+        for value in bad:
+            with self.subTest(value=value):
+                encoded = json.dumps(value).encode()
+                self.assertIsNone(INSTALLED_HOST.decode_failure(encoded))
+                completed = subprocess.CompletedProcess([], 1, b"", encoded)
+                for error in (INSTALLED_HOST.subprocess_failure("phase", completed), PACKAGER._subprocess_failure("cold", completed)):
+                    self.assertNotIn("PrivateFixtureValue", str(error))
+                    self.assertIn(hashlib.sha256(encoded).hexdigest(), str(error))
+        raw = json.dumps(good).encode()
+        self.assertIsNone(INSTALLED_HOST.decode_failure(raw[:-1] + b',"host":"pi"}'))
+        self.assertIsNone(INSTALLED_HOST.decode_failure(b" " * 4097 + raw))
+
+    def test_v2_nested_failure_survives_both_consumers_without_private_stderr(self):
+        record = self.v2()
+        raw = json.dumps(record).encode()
+        completed = subprocess.CompletedProcess([], 1, b"", raw)
+        nested = INSTALLED_HOST.subprocess_failure("phase", completed)
+        self.assertEqual(INSTALLED_HOST.failure_record(nested, phase="bootstrap"), record)
+        for error in (nested, PACKAGER._subprocess_failure("cold", completed)):
+            message = str(error)
+            for part in ("host=claude", "family=recursion", "error=RecursionError",
+                         "audit_event=open", "audit_site=path-guard", "audit_depth=outer"):
+                self.assertIn(part, message)
+        tainted = subprocess.CompletedProcess([], 1, b"", b"PrivateFixtureValue-arbitrary-stderr")
+        for error in (INSTALLED_HOST.subprocess_failure("phase", tainted), PACKAGER._subprocess_failure("cold", tainted)):
+            self.assertNotIn("PrivateFixtureValue", str(error))
+            self.assertIn(hashlib.sha256(tainted.stderr).hexdigest(), str(error))
+
+    def test_v2_keeps_exact_legacy_v1_decoder_and_nested_record(self):
+        legacy = {"format": "codearbiter.installed-host-failure/0.1.0", "phase": "commit-proof",
+                  "step": "enforce_runtime_event", "error": "unclassified", "code": "unclassified"}
+        self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(legacy).encode()), legacy)
+        completed = subprocess.CompletedProcess([], 1, b"", json.dumps(legacy).encode())
+        self.assertEqual(INSTALLED_HOST.failure_record(INSTALLED_HOST.subprocess_failure("legacy", completed), phase="bootstrap"), legacy)
+        self.assertIsNone(INSTALLED_HOST.decode_failure(json.dumps({**legacy, "host": "pi"}).encode()))
+
+    def audited_child(self, mode):
+        verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+        script = r'''
+import importlib.util,json,os,sys
+from pathlib import Path
+s=importlib.util.spec_from_file_location('owned_verifier',sys.argv[1]);v=importlib.util.module_from_spec(s);s.loader.exec_module(v)
+v._FAILURE_HOST='claude'
+original_context=v.__dict__.get('_closed_audit_context')
+if sys.argv[2]=='observer-failure':
+ def broken_context(_value):raise ValueError('PrivateFixtureValue-observer-error')
+ v._closed_audit_context=broken_context
+v.install_runtime_guard(Path(sys.executable).resolve(),binary_sha256='0'*64,permit_verifier_children=False)
+class NestedPath(os.PathLike):
+ def __fspath__(self):
+  sys.audit('socket.connect','PrivateFixtureValue-audit-payload')
+  return 'PrivateFixtureValue-path'
+class BrokenLibrary:
+ def __str__(self):raise NotADirectoryError('PrivateFixtureValue-message')
+try:
+ if sys.argv[2]=='nested':sys.audit('open',NestedPath(),'r',0)
+ elif sys.argv[2]=='builtin':sys.audit('ctypes.dlopen',BrokenLibrary())
+ else:sys.audit('socket.connect','PrivateFixtureValue-audit-payload')
+except Exception as error:
+ if sys.argv[2]=='observer-failure':v._closed_audit_context=original_context
+ print(json.dumps(v.failure_record(error,phase='commit-proof'),sort_keys=True))
+else:raise AssertionError('actual guard did not refuse inert audit control')
+'''
+        env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "TEMP", "TMP") if key in os.environ}
+        env.update(HOME=str(self.base), USERPROFILE=str(self.base), PATH=str(self.base))
+        result = subprocess.run([sys.executable, "-I", "-B", "-c", script, str(verifier), mode],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.base,
+                                timeout=10, check=False, env=env)
+        self.assertEqual(result.returncode, 0, f"diagnostic child failed; stderr_sha256={hashlib.sha256(result.stderr).hexdigest()}")
+        self.assertEqual(result.stderr, b"")
+        self.assertNotIn(b"PrivateFixtureValue", result.stdout)
+        return json.loads(result.stdout)
+
+    def test_v2_real_audit_denial_reports_closed_outer_context(self):
+        self.assertEqual(self.audited_child("network"), self.v2(error="RuntimeError", family="runtime", audit_event="network", audit_site="network-guard"))
+
+    def test_v2_real_nested_audit_retains_deepest_context(self):
+        self.assertEqual(self.audited_child("nested"), self.v2(error="RuntimeError", family="runtime", audit_event="network", audit_site="network-guard", audit_depth="nested"))
+
+    def test_v2_real_guard_builtin_failure_has_safe_subtype_and_site(self):
+        self.assertEqual(self.audited_child("builtin"), self.v2(error="NotADirectoryError", family="filesystem", audit_event="native-library", audit_site="library-guard"))
+
+    def test_v2_diagnostic_observer_failure_never_replaces_guard_failure(self):
+        self.assertEqual(self.audited_child("observer-failure"), self.v2(error="RuntimeError", family="runtime", audit_event="none", audit_site="none", audit_depth="none"))
+
+    def test_v2_custom_context_failure_keeps_closed_cli_output(self):
+        import contextlib
+        import io
+        def private_getter(_self):
+            raise ValueError("PrivateFixtureValue-property")
+        cases = [(field, type("PrivateFixtureValueError", (Exception,), {field: property(private_getter)})("PrivateFixtureValue-primary"), False)
+                 for field in ("_cold_audit_failure", "failure_record", "code")]
+        cases.append(("decoder", RuntimeError("PrivateFixtureValue-primary"), True))
+        for field, error, broken_decoder in cases:
+            with self.subTest(field=field):
+                output = io.StringIO()
+                with mock.patch.object(INSTALLED_HOST, "main", side_effect=error), \
+                     mock.patch.object(INSTALLED_HOST, "_FAILURE_PHASE", "commit-proof"), \
+                     mock.patch.object(INSTALLED_HOST, "_FAILURE_HOST", "pi"), \
+                     contextlib.ExitStack() as stack:
+                    if broken_decoder:
+                        stack.enter_context(mock.patch.object(INSTALLED_HOST, "_closed_audit_context", side_effect=ValueError("PrivateFixtureValue-decoder")))
+                    stack.enter_context(contextlib.redirect_stderr(output))
+                    self.assertEqual(INSTALLED_HOST.run_cli(), 1)
+                record = INSTALLED_HOST.decode_failure(output.getvalue().encode())
+                self.assertIsNotNone(record)
+                self.assertEqual(record["host"], "pi")
+                self.assertEqual(record["error"], "RuntimeError" if broken_decoder else "unclassified")
+                self.assertEqual((record["audit_event"], record["audit_site"], record["audit_depth"]), ("none", "none", "none"))
+                self.assertNotIn("PrivateFixtureValue", output.getvalue())
 
 
 if __name__ == "__main__":

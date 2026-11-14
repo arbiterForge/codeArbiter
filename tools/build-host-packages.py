@@ -81,7 +81,10 @@ def _subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> R
             spec.loader.exec_module(module)
             record = module.decode_failure(stderr)
             if record is not None:
-                detail = "; " + "; ".join(f"{key}={record[key]}" for key in ("phase", "step", "error", "code"))
+                keys = ("phase", "step", "error", "code")
+                if record["format"] == module._FAILURE_FORMAT:
+                    keys += ("host", "family", "audit_event", "audit_site", "audit_depth")
+                detail = "; " + "; ".join(f"{key}={record[key]}" for key in keys)
     except (OSError, ImportError, ValueError, AttributeError):
         pass
     return RuntimeError(

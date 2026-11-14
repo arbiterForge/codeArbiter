@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ast
 import base64
+import builtins
 import contextlib
 import hashlib
 import importlib.util
@@ -19,6 +20,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
 
 
 _BRIDGE_IMPORTS = frozenset({
@@ -183,8 +185,13 @@ def canonical_bytes(value: object) -> bytes:
                       separators=(",", ":")).encode("ascii")
 
 
-_FAILURE_FORMAT = "codearbiter.installed-host-failure/0.1.0"
+_FAILURE_V1_FORMAT = "codearbiter.installed-host-failure/0.1.0"
+_FAILURE_FORMAT = "codearbiter.installed-host-failure/0.2.0"
 _FAILURE_PHASE = "bootstrap"
+_FAILURE_HOST = "unclassified"
+_FAILURE_HOSTS = frozenset({"unclassified", "claude", "codex", "pi"})
+_FAILURE_AUDIT_LOCAL = threading.local()
+_FAILURE_ARTIFACT_TYPES: set[type[Exception]] = set()
 _FAILURE_PHASES = frozenset({
     "bootstrap", "assistive-progress", "assistive-readback", "author-dispatch",
     "reconcile-review", "accept", "commit-proof", "finalization-proof",
@@ -201,6 +208,54 @@ _FAILURE_ERRORS = frozenset({
     "TypeError", "KeyError", "OSError", "FileNotFoundError", "PermissionError",
     "TimeoutExpired", "JSONDecodeError", "UnicodeDecodeError", "ImportError", "ModuleNotFoundError",
 })
+_BUILTIN_FAILURE_FAMILIES = {
+    **dict.fromkeys(("OSError", "BlockingIOError", "BrokenPipeError", "ChildProcessError",
+        "ConnectionError", "ConnectionAbortedError", "ConnectionRefusedError", "ConnectionResetError",
+        "FileExistsError", "FileNotFoundError", "InterruptedError", "IsADirectoryError",
+        "NotADirectoryError", "PermissionError", "ProcessLookupError", "TimeoutError"), "filesystem"),
+    **dict.fromkeys(("RuntimeError", "NotImplementedError"), "runtime"),
+    **dict.fromkeys(("UnicodeError", "UnicodeDecodeError", "UnicodeEncodeError", "UnicodeTranslateError"), "unicode"),
+    **dict.fromkeys(("ImportError", "ModuleNotFoundError"), "import"),
+    **dict.fromkeys(("LookupError", "IndexError", "KeyError"), "lookup"),
+    **dict.fromkeys(("ArithmeticError", "OverflowError", "ZeroDivisionError", "FloatingPointError"), "arithmetic"),
+    **dict.fromkeys(("Exception", "ExceptionGroup", "AttributeError", "BufferError", "EOFError",
+        "IndentationError", "NameError", "ReferenceError", "StopAsyncIteration", "StopIteration",
+        "SyntaxError", "SystemError", "TabError", "UnboundLocalError", "Warning", "UserWarning",
+        "DeprecationWarning", "PendingDeprecationWarning", "SyntaxWarning", "RuntimeWarning",
+        "FutureWarning", "ImportWarning", "UnicodeWarning", "BytesWarning", "ResourceWarning",
+        "EncodingWarning"), "other-builtin"),
+    "RecursionError": "recursion", "MemoryError": "memory", "AssertionError": "assertion",
+    "TypeError": "type", "ValueError": "value",
+}
+# Bind real interpreter classes before loading an installed bridge. A custom
+# exception with a builtin-looking name is not that builtin exception.
+_BUILTIN_FAILURE_TYPES = {getattr(builtins, name): (name, family)
+    for name, family in _BUILTIN_FAILURE_FAMILIES.items()
+    if isinstance(getattr(builtins, name, None), type)}
+_FAILURE_ERROR_FAMILIES = {**_BUILTIN_FAILURE_FAMILIES,
+    "unclassified": "unclassified", "ArtifactError": "artifact",
+    "TimeoutExpired": "timeout", "JSONDecodeError": "json"}
+_FAILURE_AUDIT_EVENTS = frozenset({"none", "open", "listdir", "scandir", "network",
+    "process-escape", "native-library", "subprocess", "other"})
+_FAILURE_AUDIT_SITE_EVENTS = {
+    "path-guard": {"open", "listdir", "scandir"}, "network-guard": {"network"},
+    "process-guard": {"process-escape"}, "library-guard": {"native-library"},
+    "process-probe": {"subprocess"}, "binary-guard": {"subprocess"},
+    "verifier-guard": {"subprocess"}, "launch-guard": {"subprocess"},
+    "event-entry": _FAILURE_AUDIT_EVENTS - {"none"},
+}
+
+
+def _closed_audit_context(value: object) -> dict[str, str] | None:
+    if (not isinstance(value, dict) or set(value) != {"event", "site", "depth"}
+            or any(not isinstance(item, str) for item in value.values())):
+        return None
+    if value == {"event": "none", "site": "none", "depth": "none"}:
+        return value
+    if (value["event"] not in _FAILURE_AUDIT_SITE_EVENTS.get(value["site"], ())
+            or value["depth"] not in {"outer", "nested", "deep"}):
+        return None
+    return value
 # Fixed source-defined API codes only. Never echo arbitrary error text or paths.
 _FAILURE_CODES = frozenset({
     "unclassified",
@@ -263,19 +318,29 @@ def decode_failure(raw: bytes) -> dict[str, str] | None:
         value = json.loads(raw, object_pairs_hook=pairs)
     except (ValueError, UnicodeError, RecursionError):
         return None
-    if (not isinstance(value, dict)
-            or set(value) != {"format", "phase", "step", "error", "code"}
+    if not isinstance(value, dict):
+        return None
+    legacy = value.get("format") == _FAILURE_V1_FORMAT
+    fields = {"format", "phase", "step", "error", "code"}
+    if not legacy:
+        fields |= {"host", "family", "audit_event", "audit_site", "audit_depth"}
+    if (set(value) != fields
             or any(not isinstance(item, str) for item in value.values())
-            or value["format"] != _FAILURE_FORMAT
+            or value["format"] not in {_FAILURE_V1_FORMAT, _FAILURE_FORMAT}
             or value["phase"] not in _FAILURE_PHASES
             or value["step"] not in _FAILURE_STEPS
-            or value["error"] not in _FAILURE_ERRORS
+            or value["error"] not in (_FAILURE_ERRORS if legacy else _FAILURE_ERROR_FAMILIES)
             or value["code"] not in _FAILURE_CODES):
+        return None
+    if not legacy and (value["host"] not in _FAILURE_HOSTS
+            or value["family"] != _FAILURE_ERROR_FAMILIES[value["error"]]
+            or _closed_audit_context({"event": value["audit_event"], "site": value["audit_site"],
+                                     "depth": value["audit_depth"]}) is None):
         return None
     return value
 
 
-def failure_record(error: Exception, *, phase: str) -> dict[str, str]:
+def _project_failure_record(error: Exception, *, phase: str) -> dict[str, str]:
     """Keep only bounded symbols from the actual failure and owning frames."""
     nested = getattr(error, "failure_record", None)
     if isinstance(nested, dict):
@@ -285,7 +350,14 @@ def failure_record(error: Exception, *, phase: str) -> dict[str, str]:
             retained = None
         if retained is not None:
             return retained
-    name = type(error).__name__
+    name, family = _BUILTIN_FAILURE_TYPES.get(type(error), ("unclassified", "unclassified"))
+    if type(error) is subprocess.TimeoutExpired:
+        name, family = "TimeoutExpired", "timeout"
+    elif type(error) is json.JSONDecodeError:
+        name, family = "JSONDecodeError", "json"
+    elif (type(error) in _FAILURE_ARTIFACT_TYPES and isinstance(getattr(error, "code", None), str)
+          and error.code in _FAILURE_CODES):
+        name, family = "ArtifactError", "artifact"
     code = "unclassified"
     cause = error
     for _ in range(8):
@@ -303,15 +375,39 @@ def failure_record(error: Exception, *, phase: str) -> dict[str, str]:
                 and frame.tb_frame.f_code.co_name in _FAILURE_STEPS):
             step = frame.tb_frame.f_code.co_name
         frame = frame.tb_next
+    try:
+        context = _closed_audit_context(getattr(error, "_cold_audit_failure", None))
+    except Exception:
+        context = None  # Unknown error properties/diagnostics never become output.
+    context = context or {"event": "none", "site": "none", "depth": "none"}
     return {"format": _FAILURE_FORMAT,
             "phase": phase if phase in _FAILURE_PHASES else "bootstrap",
-            "step": step, "error": name if name in _FAILURE_ERRORS else "unclassified", "code": code}
+            "step": step, "error": name, "code": code, "family": family,
+            "host": _FAILURE_HOST if _FAILURE_HOST in _FAILURE_HOSTS else "unclassified",
+            "audit_event": context["event"], "audit_site": context["site"], "audit_depth": context["depth"]}
+
+
+def failure_record(error: Exception, *, phase: str) -> dict[str, str]:
+    """A broken/custom exception projection must never escape closed output."""
+    try:
+        return _project_failure_record(error, phase=phase)
+    except Exception:
+        # Do not read any property of the failed exception on this fallback.
+        # Its cause and arbitrary metadata are unknown; the proof still fails.
+        return {"format": _FAILURE_FORMAT,
+                "phase": phase if type(phase) is str and phase in _FAILURE_PHASES else "bootstrap",
+                "step": "entrypoint", "error": "unclassified", "code": "unclassified",
+                "host": _FAILURE_HOST if type(_FAILURE_HOST) is str and _FAILURE_HOST in _FAILURE_HOSTS else "unclassified",
+                "family": "unclassified", "audit_event": "none", "audit_site": "none", "audit_depth": "none"}
 
 
 def subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> AssertionError:
     stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
     record = decode_failure(stderr)
-    detail = ("; " + "; ".join(f"{key}={record[key]}" for key in ("phase", "step", "error", "code"))
+    keys = ("phase", "step", "error", "code")
+    if record is not None and record["format"] == _FAILURE_FORMAT:
+        keys += ("host", "family", "audit_event", "audit_site", "audit_depth")
+    detail = ("; " + "; ".join(f"{key}={record[key]}" for key in keys)
               if record is not None else "")
     error = AssertionError(
         f"{label} failed with exit {completed.returncode}; "
@@ -422,7 +518,9 @@ def enforce_runtime_event(
     permit_verifier_children: bool,
 ) -> None:
     """Audit-hook policy: no network and only the pinned expected processes."""
+    _audit_site = "event-entry"
     if event in {"open", "os.listdir", "os.scandir"} and details:
+        _audit_site = "path-guard"
         requested = details[0]
         if isinstance(requested, (str, bytes, os.PathLike)):
             if isinstance(requested, bytes):
@@ -432,17 +530,21 @@ def enforce_runtime_event(
             if path.is_relative_to(checkout) and path != Path(__file__).resolve(strict=True):
                 raise RuntimeError("installed-host verification forbids development checkout access")
     if event in _NETWORK_AUDIT_EVENTS:
+        _audit_site = "network-guard"
         raise RuntimeError("installed-host verification forbids network access")
     if event in {
         "os.system", "os.exec", "os.fork", "os.forkpty", "os.posix_spawn", "os.spawn",
     }:
+        _audit_site = "process-guard"
         raise RuntimeError("installed-host verification forbids process escape")
     if event == "ctypes.dlopen":
+        _audit_site = "library-guard"
         library = str(details[0]).casefold() if details else ""
         if library not in {"kernel32", "kernel32.dll"}:
             raise RuntimeError("installed-host verification forbids native-library escape")
     if event != "subprocess.Popen":
         return
+    _audit_site = "process-probe"
     executable, argv, _cwd, environment = details
     if native_git_probe_allowed(executable, argv, _cwd, environment):
         return
@@ -452,12 +554,14 @@ def enforce_runtime_event(
         binary_prefix = subprocess.list2cmdline([str(binary)])
         python_prefix = subprocess.list2cmdline([str(python)])
         if argv == binary_prefix or argv.startswith(binary_prefix + " "):
+            _audit_site = "binary-guard"
             if not native_environment_allowed(environment):
                 raise RuntimeError("native binary launch escaped its bounded host Git environment")
             return
         if permit_verifier_children and (
             argv == python_prefix or argv.startswith(python_prefix + " ")
         ):
+            _audit_site = "verifier-guard"
             verifier_token = subprocess.list2cmdline([str(verifier)])
             if (
                 verifier_token not in argv
@@ -467,14 +571,17 @@ def enforce_runtime_event(
             ):
                 raise RuntimeError("verifier child launch escaped its constrained environment")
             return
+        _audit_site = "launch-guard"
         raise RuntimeError("installed-host verification blocked an unreviewed process")
     launched = Path(executable).resolve(strict=True)
     arguments = [str(value) for value in argv]
     if launched == binary:
+        _audit_site = "binary-guard"
         if not arguments or Path(arguments[0]).resolve(strict=True) != binary or not native_environment_allowed(environment):
             raise RuntimeError("native binary launch escaped its bounded host Git environment")
         return
     if platform.system() == "Darwin" and native_environment_allowed(environment):
+        _audit_site = "binary-guard"
         requested = Path(executable).absolute()
         info = requested.lstat()
         temp_root = Path(tempfile.gettempdir()).resolve(strict=True)
@@ -491,6 +598,7 @@ def enforce_runtime_event(
         ):
             return
     if permit_verifier_children and launched == python:
+        _audit_site = "verifier-guard"
         if (
             len(arguments) < 4
             or arguments[1:3] != ["-I", "-B"]
@@ -501,6 +609,7 @@ def enforce_runtime_event(
         ):
             raise RuntimeError("verifier child launch escaped its constrained environment")
         return
+    _audit_site = "launch-guard"
     raise RuntimeError("installed-host verification blocked an unreviewed process")
 
 
@@ -508,13 +617,43 @@ def install_runtime_guard(
     binary: Path, *, binary_sha256: str, permit_verifier_children: bool
 ) -> None:
     def audit(event: str, details: tuple) -> None:
-        enforce_runtime_event(
-            event,
-            details,
-            binary=binary,
-            binary_sha256=binary_sha256,
-            permit_verifier_children=permit_verifier_children,
-        )
+        depth = getattr(_FAILURE_AUDIT_LOCAL, "depth", 0)
+        _FAILURE_AUDIT_LOCAL.depth = depth + 1
+        try:
+            enforce_runtime_event(
+                event, details, binary=binary, binary_sha256=binary_sha256,
+                permit_verifier_children=permit_verifier_children,
+            )
+        except Exception as error:
+            # Preserve the first/deepest closed context while the same error
+            # unwinds nested audit callbacks. Never retain details/payloads.
+            try:
+                prior = _closed_audit_context(getattr(error, "_cold_audit_failure", None))
+                if prior is None or prior["event"] == "none":
+                    category = {"open": "open", "os.listdir": "listdir", "os.scandir": "scandir",
+                        "subprocess.Popen": "subprocess", "ctypes.dlopen": "native-library"}.get(event, "other")
+                    if event in _NETWORK_AUDIT_EVENTS:
+                        category = "network"
+                    elif event in {"os.system", "os.exec", "os.fork", "os.forkpty", "os.posix_spawn", "os.spawn"}:
+                        category = "process-escape"
+                    site = "event-entry"
+                    frame = error.__traceback__
+                    for _ in range(64):
+                        if frame is None:
+                            break
+                        if (frame.tb_frame.f_code is enforce_runtime_event.__code__
+                                and frame.tb_frame.f_locals.get("_audit_site") in _FAILURE_AUDIT_SITE_EVENTS):
+                            site = frame.tb_frame.f_locals["_audit_site"]
+                        frame = frame.tb_next
+                    context = {"event": category, "site": site,
+                               "depth": "outer" if depth == 0 else "nested" if depth == 1 else "deep"}
+                    if _closed_audit_context(context) is not None:
+                        error._cold_audit_failure = context
+            except Exception:
+                pass  # Diagnostic collection cannot replace a guard failure.
+            raise
+        finally:
+            _FAILURE_AUDIT_LOCAL.depth = depth
 
     sys.addaudithook(audit)
 
@@ -569,6 +708,9 @@ def load_bridge(plugin_root: Path):
     spec.loader.exec_module(module)
     if not Path(module.__file__).resolve(strict=True).is_relative_to(plugin_root):
         raise AssertionError("artifact bridge escaped the extracted package root")
+    artifact_error = getattr(module, "ArtifactError", None)
+    if isinstance(artifact_error, type) and issubclass(artifact_error, Exception):
+        _FAILURE_ARTIFACT_TYPES.add(artifact_error)
     return module
 
 
@@ -1343,7 +1485,7 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
 
 
 def main() -> int:
-    global _FAILURE_PHASE
+    global _FAILURE_PHASE, _FAILURE_HOST
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", choices=("claude", "codex", "pi"), required=True)
     parser.add_argument("--plugin-root", type=Path, required=True)
@@ -1357,6 +1499,7 @@ def main() -> int:
     parser.add_argument("--phase", choices=("assistive-progress", "assistive-readback", "author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
     args = parser.parse_args()
     _FAILURE_PHASE = args.phase or "bootstrap"
+    _FAILURE_HOST = args.host
     args.plugin_root = args.plugin_root.resolve(strict=True)
     args.repository = args.repository.resolve(strict=True)
     if args.context_kind:
