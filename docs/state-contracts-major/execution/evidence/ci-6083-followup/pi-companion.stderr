@@ -1,0 +1,9 @@
+test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed (test_pi_package.PiPackageTests.test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed) ... ok
+test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments (test_pi_package.PiPackageTests.test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments) ... ok
+test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases (test_pi_package.PiPackageTests.test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases) ... ok
+test_rpc_shutdown_observer_does_not_force_exit_on_eof (test_pi_package.PiPackageTests.test_rpc_shutdown_observer_does_not_force_exit_on_eof) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 4.737s
+
+OK

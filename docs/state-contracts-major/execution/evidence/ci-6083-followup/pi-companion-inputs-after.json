@@ -1,0 +1,8 @@
+{
+  "HEAD": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+  "index": "447434597967be7219a0deebbc6b8a9e58b8a61f8cc014c149d027fa2d68cfa2",
+  "source_hashes": {
+    ".github/scripts/test_pi_package.py": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+    ".github/scripts/pi_cli_resolver.py": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "completion_fixture_test.go": {
+    "sha256": "d66fca2f772314af0a214c648543f1efc356b7674669408f963888c9bf4205b1",
+    "size_bytes": 6729
+  },
+  "completion_git_diagnostics_test.go": {
+    "sha256": "8a2ed4fa471d69d26fd16aadc482af9b7d658a4d5bee25c502191823c67f85e5",
+    "size_bytes": 8918
+  },
+  "freeze.json": {
+    "sha256": "b8da50e83fb4830d6e13a3a5e49485a258d2c95ed05a24469435c937b3e31d1e",
+    "size_bytes": 5535
+  },
+  "green.jsonl": {
+    "sha256": "0bf4805479699c4662172ea83b9acf10ae53180150bc6226cf21b86a17749f89",
+    "size_bytes": 31960
+  },
+  "green.stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size_bytes": 0
+  },
+  "red.jsonl": {
+    "sha256": "9a80ec55a6bab7f32af258aec194c3fb7e1195a7586c75fa0acae5429c785d9f",
+    "size_bytes": 2991
+  },
+  "red.stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size_bytes": 0
+  }
+}

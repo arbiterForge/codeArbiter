@@ -1,0 +1,11 @@
+test_sandbox_retains_original_named_results_without_filtering_console_run (test_ci_impact.WorkflowContractTest.test_sandbox_retains_original_named_results_without_filtering_console_run) ... ok
+test_sandbox_uploads_source_bound_original_json_and_requires_presence (test_ci_impact.WorkflowContractTest.test_sandbox_uploads_source_bound_original_json_and_requires_presence) ... ok
+test_sandbox_result_transport_guards_reject_incomplete_or_weakened_wiring (test_ci_impact.WorkflowContractTest.test_sandbox_result_transport_guards_reject_incomplete_or_weakened_wiring) ... ok
+test_the_required_sandbox_job_fails_when_docker_is_unavailable (test_ci_impact.WorkflowContractTest.test_the_required_sandbox_job_fails_when_docker_is_unavailable) ... ok
+test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel (test_ci_impact.WorkflowContractTest.test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel) ... ok
+test_every_real_container_sandbox_suite_routes_through_the_shared_docker_gate (test_ci_impact.WorkflowContractTest.test_every_real_container_sandbox_suite_routes_through_the_shared_docker_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.116s
+
+OK

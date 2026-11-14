@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "dephash.test.ts",
+    "--testNamePattern",
+    "^computeDepHash returns an identical hash for an identical manifest set$",
+    "--reporter=default",
+    "--reporter=github-actions",
+    "--reporter=json",
+    "--outputFile.json=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\report path with spaces\\original-unit.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools",
+  "exit_code": 0,
+  "seconds": 0.40099029999691993,
+  "selected_case": "computeDepHash returns an identical hash for an identical manifest set",
+  "passed": 1,
+  "failed": 0,
+  "JSON_file_exists": true,
+  "JSON_sha256": "8d07a9bde4a502f04544a55f353035e09db84736e4879e27f6416cddcfc80439",
+  "default_console_summary_preserved": true,
+  "node_version": "v24.22.1",
+  "vitest_version": "4.1.12",
+  "inputs_before_after": {
+    "plugins/ca-sandbox/tools/dephash.test.ts": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+    "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67"
+  },
+  "environment_keys": [
+    "COMSPEC",
+    "HOME",
+    "NO_COLOR",
+    "PATH",
+    "PATHEXT",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "scope": "Actual locked Vitest CLI multi-reporter smoke on one existing pure unit only; not Docker/full395/hosted npm-wrapper execution."
+}

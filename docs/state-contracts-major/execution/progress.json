@@ -11,7 +11,7 @@
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T03:54:03.633224+00:00",
+  "recorded_at": "2026-11-14T04:40:23.944757+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1638,7 +1638,8 @@
       "owner": "pi",
       "status": "IN_PROGRESS",
       "source": "Observed active program implementation/qualification failure,2026-11-13",
-      "detail": "Actual hosted Node22.19/Pi1.5 rawRPC EOF timedout30s. Isolated exactNode22.19 localcase passed25.227s; observedvariantpassed10.386s. Causeunknown, sanitizeddiagnostics beingadded; no runtimefix or budgetrelaxationclaimed."
+      "detail": "Actual hosted Node22.19/Pi1.5 rawRPC EOF timedout30s. Isolated exactNode22.19 localcase passed25.227s; observedvariantpassed10.386s. Causeunknown, sanitizeddiagnostics beingadded; no runtimefix or budgetrelaxationclaimed.",
+      "current_detail": "Original6083 Windows Pi1.5.0/Node22.19 raw EOF timed out30s; exact unchanged local replay passed12.299s. Cause UNRESOLVED. Separate passive-observed companion plus recorder/original raw/existing observer4PASS4.737s, all66 original methods and deadlines retained. Required hosted diagnostic pending; no runtime-fix claim."
     },
     {
       "id": "DEF-COLD-ARM-DIAGNOSTICS-01",
@@ -1750,9 +1751,45 @@
     {
       "id": "DEF-HOOK-ORDINARY-ADMISSION-01",
       "owner": "hooks-workflows",
-      "status": "IMPLEMENTED_UNQUALIFIED",
+      "status": "DONE",
       "source": "1e06da1b6483591350b090c8eed4a6f37f277d55",
-      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED→GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending."
+      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED→GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
+      "current_detail": "Actual exact6083 hosted Windows isolation job132323671933 succeeded, including unchanged ordinary3s admission criterion. This closes only the scanner work-allocation defect; whole run failed independently."
+    },
+    {
+      "id": "DEF-SITE-CAPTURE-BINDINGS-01",
+      "owner": "packaging",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "6083 docs43554311947",
+      "detail": "Four generated guide capture source hashes stale after approved shared scanner repair. Supported capture regeneration changes only source bindings; original output/argv/exit unchanged. Freshness4 and owning52 plus normal source/Atlas/diagram/audit chainPASS; next hosted site generation pending."
+    },
+    {
+      "id": "DEF-NATIVE-GIT-REGISTRATION-01",
+      "owner": "native",
+      "status": "IN_PROGRESS",
+      "source": "6083 job132323671335",
+      "detail": "Linux Git2.56.1 fixture worktree add failed opening owned registration locked path. Exact local four original tests passed; cause UNRESOLVED. Test-only bounded Trace2/read-only directory context now added, ambient private-field selectors cleared. Real inert-marker disclosure RED to GREEN; six tests18subcasesPASS25.331s. Original failure verdict and argv retained; no retry/prune/repair."
+    },
+    {
+      "id": "QUAL-SBX-NAMED-TRANSPORT-01",
+      "owner": "sandbox",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "ceba007c8274c1921d99fb86c6fa4c27edcc283b",
+      "detail": "Retain the existing single unfiltered Docker suite as original JSON artifact with default console and GitHub annotations. Pinned uploader/source-run-attempt binding/missing-file failure; authenticated reader unchanged. Two actualRED then six focusedGREEN, one existing unit multireporter smokePASS. Actual hosted upload pending."
+    },
+    {
+      "id": "DEF-CI-WINDOWS-CONTRACT-BUDGET-01",
+      "owner": "hooks-workflows",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "6083 job132323671915",
+      "detail": "Actual annotation confirms20minute aggregate timeout; previous full same partition passed19m47s. Only Windows contracts job budget25minutes; otherhookcells20/recovery15 and all original73 commands/per-test deadlines unchanged. Actual owning regressionRED then44partition/recovery checksGREEN; hosted wall effectiveness pending."
+    },
+    {
+      "id": "DOC-SBX-CATALOG-01",
+      "owner": "sandbox",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+      "detail": "Shipped COMMANDS.md omitted prior README/skill lifecycle corrections. Catalog now reflects actual optional builder fallback, --net grammar, separate Claude-inside, v2 full cache identity, temporary host staging, effective offline runtime and named/prune scope. Source-backed docs correction; original36CLI cases unchanged and three links valid. Final generated/hosted checks pending."
     }
   ],
   "new_transition_rows": [
@@ -3276,6 +3313,20 @@
       "what": "Final source-bound component reconciliation",
       "observed": "Farm63 existing cells refreshed from actual941 outcomes/sourceclause delta with one analytical late-dirty pre-stage edge; oldreferences remain anchored6a history. Sandbox17 refreshed by44actualselected cases/24literal inputs;34unselected registered casesexcluded. FinalWR38ran onceatcommitted1e06 with100literal inputs and freshsuccessfulphysical/immutable Windowslookupabsence before/after. Original6a observation remains preserved, never backdated as a committed historyref. Current368 recorded cells are241TESTED127PRESERVED;240current-applicable128unknown, no stale currentrefs. Another1785baseline cells remainPLANNED. This is partial qualification, no installed/publication completion.",
       "date": "2026-11-14"
+    },
+    {
+      "recorded_at": "2026-11-14T04:40:23.944757+00:00",
+      "kind": "CI_6083_FOLLOWUP",
+      "run_id": 43554312132,
+      "docs_run_id": 43554311947,
+      "event_head": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+      "detail": "Original exact-head run failed: four site capture bindings stale after scanner source repair; native Linux fixture Git worktree registration ENOENT; Windows Pi raw EOF30s timeout; Windows contracts exceeded20minute aggregate deadline. Structured artifact and merge gate failures are downstream. Windows isolation job132323671933 succeeded with original ordinary3s hook bound. Supported capture generation refreshed only four source bindings; native safe Trace2 and separate Pi passive companion improve observation, original causes remain unresolved. Sandbox original-result artifact producer added without weakening evidence admission. Required next exact-head hosted run remains pending.",
+      "evidence": "execution/evidence/ci-6083-followup/retained-files.json"
+    },
+    {
+      "kind": "BOUNDED_FOLLOWUP_SOURCE_SUCCESSORS",
+      "source": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+      "detail": "Thirteen finite native source clauses freshly reviewed at338ed remain PRESERVED with all244 source bytes and existing runtime gaps retained. Six P02 cells use genuine14selectedPASS15.612s at566375bb,11inputs stable;44partition support retains original338ed epoch. Initial35 failed one stale timeout assertion and is diagnostic only, excluded from TESTED witnesses. The exact changed assertion passed separately before commit. No new status/ID or baseline progress promotion."
     }
   ],
   "scoped_blockers": [
@@ -3283,16 +3334,21 @@
       "id": "P02-DEPENDENCY-MEMBERSHIP",
       "scope": "Final program qualification",
       "detail": "Shared reader defect implemented and locally checked in89333ff3; exact-head hosted observation and honest legacy dependency/absence scope migration remain required before final program qualification."
+    },
+    {
+      "id": "CI-6083-RED",
+      "scope": "PR1103 integration delivery",
+      "detail": "Required aggregate failed with original native ENOENT, Windows Pi EOF and Windows aggregate timeout; supported site capture bindings repaired locally. Diagnostics do not resolve original causes. Merge awaits successful exact-head replacement CI."
     }
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push the case-aware reader, shared scanner and final component observations as one replacement batch, then watch the exact-head required checks including hostedWindowsPY3.15 ordinary3s admission.",
+    "Push the coherent capture/diagnostic/producer/job-budget/catalog batch and retained scoped successors, then watch exact-head checks; original native/Pi causes remain unresolved until actual observations establish them.",
     "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
     "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
     "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
   ],
-  "delivery_state": "PR_OPEN_COHERENT_REPAIR_AWAITING_EXACT_HEAD_CI",
+  "delivery_state": "PR1103_REPAIR_BATCH_AWAITING_EXACT_HEAD_CI_MAIN_HOLD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
