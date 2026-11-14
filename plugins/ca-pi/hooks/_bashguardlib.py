@@ -1290,29 +1290,56 @@ def _at_command_position(cmd, start):
     return word.lower() in _COMMAND_PREFIXES or "=" in word
 
 
+def _interp_statement_boundaries(cmd):
+    """Narrow only simple, quote-balanced top-level command ownership.
+
+    The existing PowerShell layout also owns simple POSIX quote boundaries.
+    Escapes, here documents/strings, nested expressions and another shell's
+    command syntax retain the original whole-command conservative scan.
+    """
+    if len(cmd) > 32768 or any(marker in cmd for marker in (
+            "\\", "`", "^", "$(", "<", ">", "@'", '@"', "--%", "\u2018", "\u2019", "\u201c", "\u201d")):
+        return ()
+    if re.search(r"(?<![\w.])cmd(?:\.exe)?\b", cmd, re.I) or any(
+            match.group(1).lower() in ("sh", "bash", "zsh", "pwsh", "powershell")
+            for match in re.finditer(_INTERP_EXECUTABLE, cmd, re.I)):
+        return ()
+    try:
+        shlex.split(cmd, posix=False)
+    except ValueError:
+        return ()
+    layout = _powershell_layout(cmd)
+    if any(layout[5][index] and char in "()[]{}" for index, char in enumerate(cmd)):
+        return ()
+    return layout[3].get(0, ())
+
+
 def _interp_protected_write(cmd, interp_re, name_re):
     """True when an interpreter invocation can write the protected `name_re`
-    target: `interp_re` (token then name) matched, and after some interpreter
-    token that precedes the name either write intent appears, or the code it
+    target: `interp_re` (token then name) matched, and within a safely bounded
+    invocation after its interpreter either write intent appears, or the code it
     runs is not visible on the command line (a script, module or file, piped
     stdin, or a dotless argument in command position)."""
     if not interp_re.search(cmd):
         return False
     names = [m.start() for m in name_re.finditer(cmd)]
+    boundaries = _interp_statement_boundaries(cmd)
     for m in re.finditer(_INTERP_EXECUTABLE, cmd, re.I):
-        if not any(n >= m.end() for n in names):
+        boundary = bisect_left(boundaries, m.end())
+        end = boundaries[boundary] if boundary < len(boundaries) else len(cmd)
+        if not any(m.end() <= n < end for n in names):
             continue
         # Perl and Ruby calls need no parentheses (`open F, ">", p`,
         # `File.write p, ""`), which the lexical intent scan cannot see, so
         # they keep the conservative pre-#997 behavior.
         if m.group(1).lower() in ("perl", "ruby"):
             return True
-        if INTERP_WRITE_INTENT_RE.search(cmd, m.start()):
+        if INTERP_WRITE_INTENT_RE.search(cmd, m.start(), end):
             return True
-        operand = _interp_operand(cmd, m.end())
+        operand = _interp_operand(cmd[:end], m.end())
         if operand == "script":
             return True
-        if operand == "stdin" and "<<" not in cmd[m.end():]:
+        if operand == "stdin" and "<<" not in cmd[m.end():end]:
             return True
         if operand in ("word", "bare") and _at_command_position(cmd, m.start()):
             return True

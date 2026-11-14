@@ -1,0 +1,111 @@
+{
+  "schema": "codearbiter.readonly-adr-status-observation/1",
+  "subject_source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "adr": "0048-required-declared-pre-tag-checks",
+  "stored_status": "accepted",
+  "display": "Accepted/Planned",
+  "acceptance_events": [
+    {
+      "adr": "0048-required-declared-pre-tag-checks",
+      "blob_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+      "body_sha256": "e71d1fa217c86c1221dea032c7de343f3821e34b4b6f2b3aec16ddb3ae24d479",
+      "event": "acceptance",
+      "obligations": [
+        {
+          "id": "0048-required-declared-pre-tag-checks.status-01",
+          "section": "Status",
+          "text": "This is Accepted/Planned; delivery and qualification require separate evidence.",
+          "text_sha256": "7722846ec3360303a2a8508a2278c0b0f7fd615a9ebc51e693a4c4c85ad2c813"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.decision-01",
+          "section": "Decision",
+          "text": "Declared target pre-tag checks are required.",
+          "text_sha256": "8a351ed142a26fb5c3f67341cd14ddd41a9d0b59898c934e0c84934f36ca04a8"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.decision-02",
+          "section": "Decision",
+          "text": "A failed declared check blocks the affected candidate or publication; it must not become a warning.",
+          "text_sha256": "00fddc7f04ae35dc84ee70641af94f39fc94d839ab3d59c9845e64b12df344d2"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.decision-03",
+          "section": "Decision",
+          "text": "This supersedes only ADR-0040's advisory treatment of release-skill pre-tag proof.",
+          "text_sha256": "abeda91ed401aac783842bacac48fb6d1630ee7b05ce86266c3a4384d3d21be5"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.decision-04",
+          "section": "Decision",
+          "text": "Its independent per-target release behavior and other advisory checks retain their separately applicable decisions and later successors.",
+          "text_sha256": "5aa95103261becb05698e34e9745e0f07e334b6ca6d1728f007d6416ee6bca28"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.decision-05",
+          "section": "Decision",
+          "text": "The checks retain their existing declared-input, check-only, content-binding and clean-tree contracts.",
+          "text_sha256": "c4a71cc554d563dbac8d761f198c654cde4216aa57c94b9f9df27fb56b3a8f17"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.decision-06",
+          "section": "Decision",
+          "text": "Success grants no merge or publication authority and establishes no unrelated installed-host qualification.",
+          "text_sha256": "74f8bece0ec64037a138805bd209ab1657a094fbbd80e7be734e4aca95653f1b"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.consequences-01",
+          "section": "Consequences",
+          "text": "Declared targets, candidate preflight, the release owner and generated guidance must agree that these checks are required.",
+          "text_sha256": "fe68d5cfcedbe75d1e629fd70226d4e2bca7c28ba03f0565cc986d35b98d2eb8"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.consequences-02",
+          "section": "Consequences",
+          "text": "Correct failing inputs or checks without silently removing the gate.",
+          "text_sha256": "2ed9a1905c38edc69fc7a5601cc14a6295a6d40e7503bd92f6bbc3dfe1e78c43"
+        },
+        {
+          "id": "0048-required-declared-pre-tag-checks.risks-01",
+          "section": "Risks",
+          "text": "Preserve its actual failure and repair the owning implementation; bookkeeping success is not release evidence.",
+          "text_sha256": "558aaafaa956225c028a69df6a928d0d24b28f1572391e01d2815832400df6b5"
+        }
+      ],
+      "obligations_sealed": true,
+      "obligations_sha256": "3b5f3b9b52c7c75d848a540583034b4782cbbbaad965b05dfe5c72578ccddd70",
+      "recorded_at": "2026-11-13T18:15:16Z",
+      "reviewed_by": "/root/pi_program (Codex; independent ADR obligation completeness reviewer)",
+      "schema": "adr-lifecycle/v1",
+      "source_commit": "c925c2e532df1410c84cedf7a48558ea33e2f179"
+    }
+  ],
+  "committed_source_validation_errors": [],
+  "event_validation_errors": [],
+  "source_ancestry_errors": [],
+  "delivery_export": [
+    [],
+    [
+      "0048-required-declared-pre-tag-checks.status-01: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.decision-01: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.decision-02: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.decision-03: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.decision-04: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.decision-05: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.decision-06: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.consequences-01: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.consequences-02: no current implementation evidence; implementation input digest is missing or stale",
+      "0048-required-declared-pre-tag-checks.risks-01: no current implementation evidence; implementation input digest is missing or stale"
+    ]
+  ],
+  "current_blob_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+  "installed_owner_sources": {
+    "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.26.9\\hooks\\_adrlifecycle.py": "831e3e7e9adcff38ec425a4d1492a0e50056f9edec8c3a20a5df31e86f363930",
+    "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.26.9\\hooks\\_adrlifecyclegit.py": "4f2e5cd2b941a72f6c63c80736ee353711a99423fc9d7fac70729ac0e27d9bc5"
+  },
+  "limits": [
+    "Read-only status; no acceptance/lifecycle/source/index/marker writes.",
+    "No implementation/Verified claim: no48obligation delivery events provided.",
+    "No challenge record selected and no project age threshold supplied; unknown challenge evidence, no invented expiry."
+  ]
+}

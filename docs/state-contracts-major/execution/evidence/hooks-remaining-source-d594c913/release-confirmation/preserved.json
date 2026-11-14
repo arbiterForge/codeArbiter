@@ -1,0 +1,30 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/releasehash.py": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:release-confirmation:01",
+    "disposition:transitions:hooks:release-confirmation:02",
+    "disposition:transitions:hooks:release-confirmation:03",
+    "disposition:machines:hooks:release-confirmation"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/release-confirmation/source-inspection.json",
+      "sha256": "c3ff493141d9c8d82956ac222de3d4976b54dc017957dd044f7a6c67a2113be4"
+    }
+  ],
+  "scope": "release-confirmation: 3 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/release-confirmation/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

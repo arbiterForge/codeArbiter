@@ -1,0 +1,121 @@
+{
+  "schema": "codearbiter.accepted-policy-source-reconciliation/1",
+  "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "governance_status": "Accepted/Planned",
+  "decision_pending": false,
+  "adr_stem": "0048-required-declared-pre-tag-checks",
+  "user_attribution": {
+    "identity": "SUaDtL@users.noreply.github.com",
+    "choice": "required",
+    "original_recorded_choice": "2026-11-12 via Claude Code decision question, retained in progressD-GOV-PRETAG and DECISION0081",
+    "ratification": "DECISION0084,2026-11-13",
+    "authority_basis": "Existing committed owner-attributed acceptance; not inferred from this agent review or general program grant"
+  },
+  "acceptance_binding": {
+    "ledger_line": 48,
+    "source_commit": "c925c2e532df1410c84cedf7a48558ea33e2f179",
+    "blob_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+    "body_sha256": "e71d1fa217c86c1221dea032c7de343f3821e34b4b6f2b3aec16ddb3ae24d479",
+    "obligations_sha256": "3b5f3b9b52c7c75d848a540583034b4782cbbbaad965b05dfe5c72578ccddd70",
+    "obligations": 10,
+    "sealed": true,
+    "committed_source_and_ancestry_errors": []
+  },
+  "supersession": {
+    "predecessor": "0040-independent-per-target-release-with-consumer-safety-gates",
+    "resolution": "Explicit full stem, unique target; partial supersession only advisory pre-tag proof. ADR0044 separate Pi provenance successor and other advisory decisions remain active.",
+    "selected_ADR48_superseded_by": null
+  },
+  "source_conformance": [
+    {
+      "paths": [
+        ".github/scripts/check_auto_release_candidate.py"
+      ],
+      "spans": [
+        [
+          101,
+          154
+        ],
+        [
+          174,
+          196
+        ],
+        [
+          269,
+          289
+        ]
+      ],
+      "assessment": "CHECK_POLICY owns required pre-tag and separately required Pi provenance/advisory Codex classes. CI and release call the same owner. Required command nonzero raises CandidateError; CLI returns1; eligible targets run with restricted PATH/PY/SYSTEMROOT and600s enclosing timeout."
+    },
+    {
+      "paths": [
+        ".github/workflows/ci.yml"
+      ],
+      "spans": [
+        [
+          4438,
+          4455
+        ],
+        [
+          4509,
+          4509
+        ],
+        [
+          4559,
+          4580
+        ]
+      ],
+      "assessment": "Candidate job runs owner with --run-pre-tag; aggregate includes job and explicitly refuses any result except success. No advisory warning or continue-on-error for this gate."
+    },
+    {
+      "paths": [
+        ".github/workflows/release.yml"
+      ],
+      "spans": [
+        [
+          177,
+          193
+        ]
+      ],
+      "assessment": "Before a new tag only, release preflight calls --pre-tag-target and on failure marks only target ineligible plus separate failure list; check-only repair does not repeat completed existing-tag publication effects."
+    },
+    {
+      "paths": [
+        "core/surface/skills/release/SKILL.md",
+        "core/pysrc/_releaselib.py"
+      ],
+      "spans": [
+        [
+          356,
+          358
+        ],
+        [
+          626,
+          626
+        ]
+      ],
+      "assessment": "Canonical instructions require all declared checks via runner. Runner dispatches declared order, refuses unavailable/probe/nonzero/mutation states, while declaring no automatic merge/publication authority."
+    }
+  ],
+  "finding_scope": "C-F03 is a source-vs-accepted-policy conflict. The accepted successor and inspected current source now agree. This is source/decision conformance, not a new failing-check execution or full release qualification.",
+  "prior_test_evidence": {
+    "usable_current_named_raw_found": false,
+    "declared_test_sources": [
+      ".github/scripts/test_auto_release_candidate.py:PreTagPolicyTest (4 methods)",
+      ".github/scripts/test_release_workflow.py:test_pre_tag_checks_are_required_through_the_shared_owner + separate advisory/Pi provenance controls"
+    ],
+    "lane_summary": "Original lanes/release.json reported12candidate/45workflow tests at historical source97e1 without original selected raw outcomes; not used as a current TESTED receipt.",
+    "new_tests_run": 0
+  },
+  "accounting_corrections": [
+    "G-01/R-03 governance prerequisite is already accepted, not pending user policy.",
+    "Comment check_auto_release_candidate.py104/105 and old release lane pending wording are stale historical derivative commentary, not missing acceptance or enforcement."
+  ],
+  "limits": [
+    "No ADR/status/acceptance/lifecycle/index/marker or Gov write.",
+    "No ADR Implemented/Verified promotion: lifecycle export lists missing current implementation evidence for all10sealed obligations.",
+    "No taskG01/R03, whole38associated baseline rows, actual CI/pre-tag command/publication/host delivery closure.",
+    "Pi HTTP ADR0018/0019 pending choice remains separate and untouched.",
+    "Source-only conformance; generated host guidance parity and old raw test counts are not represented as executed current evidence."
+  ]
+}

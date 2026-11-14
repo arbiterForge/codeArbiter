@@ -1,0 +1,16 @@
+{
+  "schema": "codearbiter.farm-specific-delta-joins/1",
+  "old_source": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "source": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "files": {
+    "plugins/ca/tools/farm.ts": {
+      "main_unchanged_after_reversing_only_common_lock_startup_move": true,
+      "old_main_hash": "80d68b9080c8b0560e799b72094800c5188d76508f34c082031bdda3f5987a29"
+    },
+    "plugins/ca/tools/farm.js": {
+      "main_unchanged_after_reversing_only_common_lock_startup_move": true,
+      "old_main_hash": "16172a74b2edca46d8309124bd0f415867f90458c34749a45e3d744c7caf3ad4",
+      "mutationCheck_unchanged_after_bound_perf_hooks_alias": true
+    }
+  }
+}

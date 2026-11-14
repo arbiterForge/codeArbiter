@@ -1,0 +1,795 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "work-owner-taskwrite",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_activationlib.py": {
+      "source_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "baseline_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_arbiterstatelib.py": {
+      "source_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "baseline_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_modelib.py": {
+      "source_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+      "baseline_sha256": "18160bf037e41b9b0f0e720fb3a9c997c08f9a59bfb7ac409716004c30b7a9de",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_taskboardlib.py": {
+      "source_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "baseline_sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_workadopt.py": {
+      "source_sha256": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+      "baseline_sha256": "89f4a7eaa38ee10657af1fcdc9b3f2abaf9ddbbe2cc794cfd8fdd1726cca97c8",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_workgithub.py": {
+      "source_sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+      "baseline_sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_worklib.py": {
+      "source_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "baseline_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/hostapi.py": {
+      "source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "baseline_sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/taskwrite.py": {
+      "source_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "baseline_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/work.py": {
+      "source_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "baseline_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:work-owner:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 30,
+          "end": 48,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        }
+      ],
+      "conformance": "Regular legacy board and absent/empty safe native directory selects LegacyClient; unsafe board/native or dual populated owners refuse.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "96c373ab99f1cbf6087afc69cebafe2fa25fe2fb3c4aa3ecc24b67e28cb4f5a2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 26,
+          "end": 48,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        },
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "start": 162,
+          "end": 184,
+          "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1"
+        }
+      ],
+      "conformance": "Absent board selects pinned ArtifactClient; unsafe/uncertain state displayed as native-selected rather than healthy legacy. Manifest admission now additionally validates release shape, failing closed.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "89dcfcb068d5521b768a2a5eb5b2d0f87fa69ee8e95a86906594390efea2a4b6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:03",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 50,
+          "end": 52,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 208,
+          "end": 250,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "conformance": "HOLD: whole guard/effect includes deterministic origin-generated WORK ID, but create always supplies random explicit WORK ID at227; source-derived _id is fallback for older records without explicit ID. Origin idempotency and input_differs supported separately.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "97e81480e5084aa62e93eea1b277498a764c7186f4413668c22c7d79861dca6f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 90,
+          "end": 183,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 208,
+          "end": 217,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 312,
+          "end": 330,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "conformance": "Source duplicates are removed from authoritative lookup, counted unkeyed and creation/origin query refuses ambiguous identity rather than picking first.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "102d4ab9697fca26dc4c0f5d55dc745087897d11e04ce6c2c504b53e63c5543d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 81,
+          "end": 183,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "conformance": "Only physically identical complete/open-to-archive block with matching semantic fields coalesces and sets archive_pending; distinct duplicate ID refuses.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "a55e2941478206224b1b9613be97e081f8892369ef4b291b979b1c0a4571ba16",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 331,
+          "end": 366,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 350,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "conformance": "Require operation ID and exact boardSHA, re-read selected identity under board lock, invoke constrained action; stale SHA becomes REVISION_CONFLICT; echoed operation ID is no replay ledger.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "a97bd39547cc2fb20bda2aa83e3c260848b7bc5b68aaf5068d7929647047857b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 362,
+          "end": 402,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        }
+      ],
+      "conformance": "Legacy rejects native revision; native request takes expected revision+model together or reads both from one current record; half-pair refuses before call.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "b21cc06531cc23b1fe46cd54a204c44b285efed96a87efe489588d752a7036b6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 259,
+          "end": 311,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "conformance": "Bounded selected work/context returns context_complete false and no knowledge join; listing cursor binds sorted membership IDs only, content_snapshot false.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "6d4c5486cc9c5b8668a80dc30a190762d8510680115057670c801af739310916",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:09",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 423,
+          "end": 467,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        }
+      ],
+      "conformance": "Derived recognized HTML exact WORK path only; safe ancestors/regular recognized existing page required; temporary fsync and replace; unrecognized content preserved/refused.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "6788f4ca1ff51677d5012e49e0c7124fdc45dc61efb4d9fcda68ce37c09e5744",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:work-owner:10",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 312,
+          "end": 360,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 190,
+          "end": 207,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "conformance": "Native-only provider verbs delegate to owning _workgithub operations; legacy caller rejects GitHub effects and adapter rejects unsupported operations. Delegation conformance only, not provider state proof.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "3fc17f393f6a14db59cb408ac8b0ab9b386fd4c4984628bad049f3838dac618d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 211,
+          "end": 272,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 333,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 431,
+          "end": 446,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "conformance": "Under board lock recheck native owner and optional exact selected blockSHA; constrained taskboard transition returns nonzero on invalid/missing/no-change; atomic single-board replacement.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "18cc5035794c65a52a3e936aa0a0486a14941755131e846e839d94296e7ee7b1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 255,
+          "end": 272,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/_taskboardlib.py",
+          "start": 1281,
+          "end": 1344,
+          "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+        }
+      ],
+      "conformance": "Date validated and done transition stamps completion; ordinary queued->done rejected, origin-selected path permits queued->done by explicit transition_error condition.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "f987cd8815bff73df90d493bc54ca21a323e6451753ab7cf5a809cc31cc02436",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 242,
+          "end": 253,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 327,
+          "end": 331,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 368,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "conformance": "Rename/attach/reopen require bound WORK ID and boardSHA from caller; selected ID+origin checked under lock then constrained row edit.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "41e3fd098411c6fc493a578597dd8feb76c21bf6d116beec90a7cf598a043fec",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 403,
+          "end": 430,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/_taskboardlib.py",
+          "start": 931,
+          "end": 1028,
+          "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+        }
+      ],
+      "conformance": "Origin promotion scans open+archive first; existing source reused; operation ID found against a different source refuses before structured validated insertion.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "76603ac63dfa3b2d4d565c43bf9e05fc9350ecf2b11620349413c568202fb791",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 139,
+          "end": 208,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 389,
+          "end": 402,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "conformance": "Select done record and valid date or explicit undated allowance under lock; archive read OSError raises distinct exit3 before either write; pure transform determines output.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "eeff451d64f11d0a8b0f4b11115bff9e7180b156a79b2fe0b8a5034b17784609",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 202,
+          "end": 208,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 147,
+          "end": 165,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "conformance": "Write deduplicated done copy first; subsequent open write failure leaves exact copy recognized archive_pending; pair is deliberately not atomic.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "999dca3ca324f5533d0ca9b8f8778d852f6cd03ea8baab5e038bd8fe45a3926a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskboardlib.py",
+          "start": 1182,
+          "end": 1223,
+          "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 389,
+          "end": 442,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "conformance": "Archive transform skips already-archived copy while removing exact selected open block; caller publishes archive before open, retries preserve record.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "a6fcf4eca34d10d2e3bc0c8c24dd31a6e615ce0a85296171ec9d58a4393138f3",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    },
+    {
+      "id": "hooks:taskwrite:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 350,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "conformance": "Lock contention, changed owner, unreadable or stale selected block returns nonzero before transform/publication; retry only after reselect/lock release.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "b2f6d257fdf9fab31fd01c40982bc152c35027e5320d0f711bf80c7bfdece753",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:taskwrite",
+      "constituents": [
+        "hooks:taskwrite:01",
+        "hooks:taskwrite:02",
+        "hooks:taskwrite:03",
+        "hooks:taskwrite:04",
+        "hooks:taskwrite:05",
+        "hooks:taskwrite:06",
+        "hooks:taskwrite:07",
+        "hooks:taskwrite:08"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  },
+  "changed_dependency_symbol_conformance": {
+    "path": "core/pysrc/_taskboardlib.py",
+    "actual_comparison": {
+      "parse_board": true,
+      "origin_for_task": true,
+      "task_block": true,
+      "add_error": true,
+      "add_entry": true,
+      "archive_transform": true,
+      "already_archived": true,
+      "transition_error": true,
+      "set_state": true,
+      "edit_work_entry": true,
+      "promoted_entry": true,
+      "_find_task_line": true,
+      "_insert_under_section": true,
+      "_join": true,
+      "next_seq": true,
+      "validate_id": true
+    },
+    "boundary": "Inspected named parser/transform bodies match baseline AST; changed board classifier helpers outside this caller control cone are not declared equivalent."
+  }
+}

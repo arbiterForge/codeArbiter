@@ -1,0 +1,205 @@
+{
+  "schema": "codearbiter.source-clause-cas-proposal/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "updates": [
+    {
+      "section": "transitions",
+      "id": "S47:05",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "ad4e5a6a76591d503af2954fbdd4a77fc956767db1fe2a8b0afca7781966e7e9",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S50:02",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "8aaad0cf4c7074fb42fcc808ef8d3007c1b1d62114f6de1be0ece2c9034bea10",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S50:03",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "8aaad0cf4c7074fb42fcc808ef8d3007c1b1d62114f6de1be0ece2c9034bea10",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S50:04",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "8aaad0cf4c7074fb42fcc808ef8d3007c1b1d62114f6de1be0ece2c9034bea10",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S50:05",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "8aaad0cf4c7074fb42fcc808ef8d3007c1b1d62114f6de1be0ece2c9034bea10",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S50:06",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "8aaad0cf4c7074fb42fcc808ef8d3007c1b1d62114f6de1be0ece2c9034bea10",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S51:03",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "c1fca22d9ac0ae6a4f4f5420d770a226b6523e051a94a2932db0b3882f22065e",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "transitions",
+      "id": "S51:06",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "c1fca22d9ac0ae6a4f4f5420d770a226b6523e051a94a2932db0b3882f22065e",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "machines",
+      "id": "S47",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "ad4e5a6a76591d503af2954fbdd4a77fc956767db1fe2a8b0afca7781966e7e9",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    },
+    {
+      "section": "machines",
+      "id": "S50",
+      "expected_status": "PLANNED",
+      "expected_row_sha256": "8aaad0cf4c7074fb42fcc808ef8d3007c1b1d62114f6de1be0ece2c9034bea10",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "replace_active_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        }
+      ],
+      "append_evidence_history": [],
+      "candidate_contract_note": "Finite current complete guard/effect/retry source conformance, original unchanged-path named control facts, explicit planner/caller/experimental boundaries. No current runtime/installed/task/model claim."
+    }
+  ],
+  "holds": [
+    {
+      "section": "transitions",
+      "id": "S51:04",
+      "reason": "Actual missing late successful run/firewall cancellation check; Root author handoff pending"
+    },
+    {
+      "section": "machines",
+      "id": "S51",
+      "reason": "Whole machine cannot source-conform until04 gap repaired and meaningful controls observed"
+    }
+  ],
+  "counts": {
+    "new_preserved_clauses": 8,
+    "new_preserved_machines": 2,
+    "new_executions": 0
+  },
+  "unselected_rows_and_histories": "untouched"
+}

@@ -1,3 +1,16 @@
+# Current delivery checkpoint (2026-11-14)
+
+Child PR #1107 targets `major/state-contracts`. Current code is `d98e12f51d409cfd3cdb8c06b82e02eee0e3da61`; the original governance checkout now resolves Git through `D:/projects/codeArbiter/.git`. PR #1098 remains draft and held from main for Brennon testing. No publication authority.
+
+- Actual fixes cover Farm shared-registry locking, mapped-target failures, conservative read guards, authenticated installed-report routes, and Sandbox cancellation/known-container recovery. Latest Claude cancellation regression: four RED to 43 affected tests GREEN, strict TypeScript, rebuilt companion. Docker/runtime acceptance remains separate.
+- The previous #1107 head7eba finished 90 successful checks, six skips and two failures: the stale Impact predicate expectation and its dependent aggregate. All three Pi adapter jobs passed. Correction2263 passed five affected tests; historical Windows shutdown failures remain unexplained.
+- Current staged integrity passes: all 105 frozen intake files, 1,239 advanced records, 1,108 applicable, 130 stale and one unknown. This batch renews 74 guard/mapped source records and preserves nine more Sandbox clauses plus three machines. Original evidence/history remains intact; these counts do not qualify tasks, installed hosts, models or scenarios.
+- S38:04 has authentic controlled runtime observations but incomplete explicit native membership/host-lookup closure. Retain UNKNOWN. Pi endpoint policy remains awaiting the existing user decision.
+- Next: push this coherent correction batch, require exact-head hosted merge-readiness, then inspect actual installed observations from the trusted normal integration push. Continue receipt-bearing reconcile characterization and real parent-consent/lifecycle qualification. Never substitute fixture or source passes for those outcomes.
+- Preserve primary/author/acceptance checkouts, append-only audit records and recovery metadata. Local branch deletion after merge is authorized; remote child deletion still needs named approval. Never reopen the original handoff ZIP.
+
+## Preserved checkpoint history
+
 # Current CI repair checkpoint (2026-11-13)
 
 - Delivery PR: #1103 into major/state-contracts. Source head55509ec5 produced original run43498670196 (actual checkout e4ecd09d, identical source tree). Its failures remain retained.

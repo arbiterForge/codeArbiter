@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\overlay\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "farm-registry-lock.mutant.test.ts",
+    "-t",
+    "replacement ownership",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\negative-two.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\overlay\\plugins\\ca\\tools",
+  "exit_code": 1,
+  "stdout_sha256": "99a96b8de5349bd806048ce1848e22d8992e02182903fd530ad73120c075a842",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_production_before": {
+    "farm.ts": "0dda0868c34a6ddaf70edd3fc9bfaf1edb0d8746b40d3f4b92b8eb28c5283f88",
+    "farm.js": "bac2ae71c9371b36f8291a60d4190d91b358ce88df9d81e69c1c9651f67cad24"
+  },
+  "original_production_after": {
+    "farm.ts": "0dda0868c34a6ddaf70edd3fc9bfaf1edb0d8746b40d3f4b92b8eb28c5283f88",
+    "farm.js": "bac2ae71c9371b36f8291a60d4190d91b358ce88df9d81e69c1c9651f67cad24"
+  },
+  "test_source_sha256": "d6f199817ec65626d3e369225d3c84a30a46a3297ef7d72fc6f8ed3f2875ca93",
+  "mutants": {
+    "farm-release-guard-mutant.ts": "a10804c5f7d5a471e6a82bcd214ed08bd18a653e4e537b943963a8c25f8c59c3",
+    "farm-release-guard-mutant.js": "4986c3ea9ed149422156c59405c7d7861bd155e6c151debf669e82290e1080b2"
+  },
+  "mutation": "Only the private copied whole ownership guard is disabled. Test callback creates and acknowledges actual replacement before any refusal assertion."
+}

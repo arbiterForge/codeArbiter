@@ -1,0 +1,48 @@
+{
+  "state": "TEMP_ONLY_ONE_TEST_FILE_ROOT_CARRY_REQUIRED",
+  "path": "plugins/ca/tools/farm-registry-lock.test.ts",
+  "before_sha256": "221e5c98ee1136be63777f230936eb41fab61a8fd02502c5bb28fc51cf3d9905",
+  "after_sha256": "d6f199817ec65626d3e369225d3c84a30a46a3297ef7d72fc6f8ed3f2875ca93",
+  "patch_sha256": "8f25f0905e4e5a31931cb8ede18619eed453b889c8fe57578f9ad0ded78abcb0",
+  "production_pins": {
+    "plugins/ca/tools/farm.ts": "0dda0868c34a6ddaf70edd3fc9bfaf1edb0d8746b40d3f4b92b8eb28c5283f88",
+    "plugins/ca/tools/farm.js": "bac2ae71c9371b36f8291a60d4190d91b358ce88df9d81e69c1c9651f67cad24"
+  },
+  "actual_results": {
+    "affected_cases_passed": 7,
+    "failed": 0,
+    "runtime_skips": 0,
+    "typecheck_exit_code": 0,
+    "source_bundle_guard_removal_expected_assertion_failures": 2,
+    "stable_inputs": 32
+  },
+  "actual_hosted_RED": {
+    "private_original_sha256": "73c1e87ffb8c9ba855874ffc564b98c6539cb8596acfe4d0f30c06002f2d1d8c",
+    "projection": "hosted-red-projection.json"
+  },
+  "filesystem_observation": {
+    "platform": "win32",
+    "node": "v24.22.1",
+    "rename_open_retains_same_inode": true,
+    "foreign_is_distinct_inode": true,
+    "retained_owned_bytes": "owned-fixture",
+    "foreign_bytes": "foreign-fixture",
+    "after_close_both_preserved": true,
+    "local_delete_recreate": "succeeded"
+  },
+  "fix": "Rename open owned lock into fixture-private retained name; create distinct foreign basename with wx; verify original bytes and acknowledge established scenario before refusal assertion. Fresh metadata isolates independent controls; explicit missing-name read requires ENOENT.",
+  "preserved": [
+    "seven original test names",
+    "all refusal/ownership/primary-error assertions",
+    "source/bundle coverage",
+    "timeouts",
+    "production lock implementation",
+    "production generated bundle"
+  ],
+  "scope_limits": [
+    "Local Windows SafeNode24.22.1 only; repaired full hosted Windows path still pending next CI.",
+    "Local delete/recreate succeeded. Existing hosted failure is the genuine original RED, not falsely reproduced locally.",
+    "Isolated private mutants are intentional negative controls, never product replacements.",
+    "No full962 rerun, no production build/coverage measurement/review fleet."
+  ]
+}

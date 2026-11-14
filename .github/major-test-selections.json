@@ -30,9 +30,203 @@
         "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
       ],
       "cells": [
-        "installed:claude:workflow"
+        "installed:claude:workflow",
+        "installed:native:linux:amd64"
       ],
-      "scope": "Original extracted installed helper workflow and three context fixture cases on Linux amd64. No public parent, TUI, provider or physical consent claim."
+      "scope": "Original extracted installed helper workflow and three context fixture cases on Linux amd64. No public parent, TUI, provider or physical consent claim. Also qualifies the native package extracted and executed on Linux amd64, with its exact platform/binary/archive joins."
+    },
+    {
+      "id": "codex-live-0.143.0",
+      "job": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "codex-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "codex-cli:CODEX-HOST-MARKETPLACE",
+        "codex-cli:CODEX-HOST-INSTALL",
+        "codex-cli:CODEX-HOST-LIST",
+        "codex-cli:CODEX-HOST-ENABLED",
+        "codex-cli:CODEX-HOST-VERSION",
+        "codex-cli:CODEX-HOST-RESOLVED-VERSION",
+        "codex-cli:CODEX-HOST-HOOKS-INSTALLED",
+        "codex-cli:CODEX-HOST-HOOKS-MATCH",
+        "codex-cli:CODEX-HOST-HOOK-SCRIPTS",
+        "codex-cli:CODEX-HOST-AGENT-ROUTES",
+        "codex-cli:CODEX-HOST-PACKAGE-MEMBERS",
+        "codex-cli:CODEX-HOST-ARTIFACT-CAPABILITY"
+      ],
+      "cells": [
+        "installed:codex:0.143.0"
+      ],
+      "scope": "Original credential-free retained-package Codex CLI install/readback, full exact cache/resources and native capability exchange. No provider turn, hook firing or physical consent qualification."
+    },
+    {
+      "id": "codex-live-0.145.0",
+      "job": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "codex-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "codex-cli:CODEX-HOST-MARKETPLACE",
+        "codex-cli:CODEX-HOST-INSTALL",
+        "codex-cli:CODEX-HOST-LIST",
+        "codex-cli:CODEX-HOST-ENABLED",
+        "codex-cli:CODEX-HOST-VERSION",
+        "codex-cli:CODEX-HOST-RESOLVED-VERSION",
+        "codex-cli:CODEX-HOST-HOOKS-INSTALLED",
+        "codex-cli:CODEX-HOST-HOOKS-MATCH",
+        "codex-cli:CODEX-HOST-HOOK-SCRIPTS",
+        "codex-cli:CODEX-HOST-AGENT-ROUTES",
+        "codex-cli:CODEX-HOST-PACKAGE-MEMBERS",
+        "codex-cli:CODEX-HOST-ARTIFACT-CAPABILITY"
+      ],
+      "cells": [
+        "installed:codex:0.145.0"
+      ],
+      "scope": "Original credential-free retained-package Codex CLI install/readback, full exact cache/resources and native capability exchange. No provider turn, hook firing or physical consent qualification."
+    },
+    {
+      "id": "pi-live-linux",
+      "job": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "pi-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+      ],
+      "cells": [
+        "installed:pi:linux:1.5.0"
+      ],
+      "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
+    },
+    {
+      "id": "pi-live-windows",
+      "job": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "pi-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+      ],
+      "cells": [
+        "installed:pi:windows:1.5.0"
+      ],
+      "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
+    },
+    {
+      "id": "pi-live-darwin",
+      "job": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "pi-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+      ],
+      "cells": [
+        "installed:pi:darwin:1.5.0"
+      ],
+      "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
+    },
+    {
+      "id": "sandbox-installed-docker",
+      "job": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "payload_name": "artifact-sandbox-plugin-{source_commit}-{run_attempt}",
+      "observation": "sandbox-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/installed-bundle.test.ts:shipped sandbox bundle [docker] resolves exec through the shipped CLI",
+        "vitest:plugins/ca-sandbox/tools/installed-bundle.test.ts:shipped sandbox bundle [docker] copies out through the shipped CLI",
+        "vitest:plugins/ca-sandbox/tools/installed-bundle.test.ts:shipped sandbox bundle [docker] destroys its owned container and volume"
+      ],
+      "cells": [
+        "installed:sandbox:docker"
+      ],
+      "scope": "Three actual shipped CLI Docker cases using the complete authenticated original plain-plugin artifact. No create, provider, OAuth, marketplace/release or whole-Sandbox qualification."
+    },
+    {
+      "id": "native-cold-linux-arm64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:linux/arm64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:linux:arm64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on linux/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-windows-amd64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:windows/amd64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:windows:amd64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on windows/amd64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-windows-arm64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:windows/arm64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:windows:arm64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on windows/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-darwin-amd64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:darwin/amd64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:darwin:amd64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on darwin/amd64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-darwin-arm64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:darwin/arm64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:darwin:arm64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on darwin/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
     }
   ]
 }

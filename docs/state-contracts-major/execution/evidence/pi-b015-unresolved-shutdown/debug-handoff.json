@@ -1,0 +1,313 @@
+{
+  "protocol": "codearbiter.debug-handoff/1.0.0",
+  "case_id": "DBG-PiB015Exit20261114",
+  "request": {
+    "intent": "diagnosis_only",
+    "request_ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-b015-diagnosis-actor-input.txt",
+    "scope": "Read-only diagnosis of new b015 Windows observed-discovery natural OS-exit failure; no repair or qualification promotion.",
+    "restrictions": [
+      "No test/application/Node/cache flag or deadline changes. Preserve natural30s, phase10s, partition180s and raw assertions.",
+      "No CI retry, install, live provider/model/key, network effects beyond authorized diagnostic GitHubGET and official upstream reads.",
+      "Root alone Gov/Git/index/markers. Only own Temp diagnostics retained.",
+      "No reuse or rewrite of old rejected debug packets."
+    ]
+  },
+  "snapshots": [
+    {
+      "id": "S-01",
+      "repository": "arbiterForge/codeArbiter",
+      "worktree": "GitHubActions run43635526022 job132571421707",
+      "commit": "b015b25b442f0587ed2892e9567cbee65bbdfb0f",
+      "dirty_state": "unknown",
+      "runtime_identity": "Windows Nodev22.19.0 Pi1.5.0; exact failed Popen command/version in log; same-job successful direct4 hashes in artifacts.",
+      "fingerprint": null,
+      "fingerprint_recipe": null,
+      "limitations": "Hosted full source/runtime cleanliness not independently captured; run/job/source identity authenticated, failing test bytes joined current."
+    },
+    {
+      "id": "S-02",
+      "repository": "arbiterForge/codeArbiter",
+      "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+      "dirty_state": "unknown",
+      "runtime_identity": "Cached Windows Node22.19/Pi1.5 direct4 hashed by read-only file inspection; no execution in this case.",
+      "fingerprint": null,
+      "fingerprint_recipe": null,
+      "limitations": "Root active checkout may have unrelated staged work. Only test_pi_package and direct cached runtime identities checked; no whole-runtime/whole-tree claim."
+    }
+  ],
+  "symptom": {
+    "observed": "New b015 Windows observed-discovery fixture times out waiting30s for Node OS exit after complete RPC collection and successful matching-PID JSexit marker.",
+    "expected": "Existing original contract requires actual natural Node process exit within30seconds of stdin EOF; observed phase marker alone cannot pass it.",
+    "expected_evidence_ids": [
+      "E-04"
+    ]
+  },
+  "reproduction": {
+    "status": "not_yet_reproduced",
+    "recipe": {
+      "cwd": "Hosted checkout at b015 on Windows-latest/Pi1.5.0",
+      "preconditions": "Actual original CI Node22.19.0/Pi1.5.0 private fixture homes; exact test sourceab1228. This is recorded hosted recipe, not instruction to retry.",
+      "steps": [
+        "Run original test_pi_platform_contract.py supported1.5.0 aggregate.",
+        "After package/rpc-observed/rpc pass, shutdown partition runs original observed discovery/doctor wrapper.",
+        "Enabled alias fixture sends commands/invoke/capture then closes stdin and keeps original phase10s/natural30s checks."
+      ],
+      "failure_signature": "PID1808 JSexit0 at2267ms; v2collectioncomplete/capture/EOF true; real process wait times out29.949remaining seconds."
+    },
+    "evidence_ids": [
+      "E-01",
+      "E-02",
+      "E-03"
+    ],
+    "limitations": "Actual hosted failure captured; no fresh local replay attempted because pass/fail alone does not distinguish remaining post-JS-entry mechanisms."
+  },
+  "hypotheses": [
+    {
+      "id": "H-01",
+      "mechanism": "The host failed to complete discovery/turn/capture or observe stdin EOF before shutdown.",
+      "discriminator": "Check closed v2 completion flags and ordered EOF/session/exit phases in the exact failed artifact.",
+      "status": "refuted",
+      "supporting_evidence_ids": [],
+      "opposing_evidence_ids": [
+        "E-03",
+        "E-04"
+      ],
+      "limitations": "Refutation is specific to incomplete protocol/EOF in this PID; later raw test semantic assertions were not all reached."
+    },
+    {
+      "id": "H-02",
+      "mechanism": "The process remains in the observer callback or another synchronous JS exit listener after the first exit marker was written.",
+      "discriminator": "Same-PID stack or end-of-listener/reallyExit-entry observation before original deadline.",
+      "status": "inconclusive",
+      "supporting_evidence_ids": [
+        "E-03",
+        "E-04",
+        "E-06"
+      ],
+      "opposing_evidence_ids": [],
+      "limitations": "Observer marks callback entry only. Literal cached-bundle exit-hook scan is incomplete for aliases/native callbacks; absence is not refutation."
+    },
+    {
+      "id": "H-03",
+      "mechanism": "Enabled Node compile-cache AtExit persistence blocks in synchronous serialization/filesystem work after JS exit callbacks.",
+      "discriminator": "Native same-PID stack or closed compile-cache Persist entry/finish observations on the actual hanging window.",
+      "status": "inconclusive",
+      "supporting_evidence_ids": [
+        "E-03",
+        "E-05",
+        "E-06",
+        "E-07"
+      ],
+      "opposing_evidence_ids": [
+        "E-09"
+      ],
+      "limitations": "Source shows possible ordering, not actual blocked frame or enable result; prior successes do not disprove intermittent cache/host IO."
+    },
+    {
+      "id": "H-04",
+      "mechanism": "Node native worker/threadpool/tracing/platform shutdown blocks after native AtExit.",
+      "discriminator": "Same-PID native stack or stage observation separating cache completion from worker/libuv/platform cleanup.",
+      "status": "inconclusive",
+      "supporting_evidence_ids": [
+        "E-03",
+        "E-06",
+        "E-08"
+      ],
+      "opposing_evidence_ids": [],
+      "limitations": "Active-resource PipeWrap list does not expose native shutdown state; no causal attribution from it."
+    },
+    {
+      "id": "H-05",
+      "mechanism": "The trace belongs to a stale or different process than the Popen being waited for.",
+      "discriminator": "Check exact failure artifact basename/home plus successful phase gate requiring tracePID==Popen.pid before remaining natural wait.",
+      "status": "refuted",
+      "supporting_evidence_ids": [],
+      "opposing_evidence_ids": [
+        "E-01",
+        "E-03",
+        "E-04"
+      ],
+      "limitations": "PID not duplicated in parent JSON; refutation relies on unchanged actual source control flow and unique private home, not an invented parent field."
+    }
+  ],
+  "checks": [
+    {
+      "id": "C-01",
+      "operation": "Read exact run/job/artifact metadata via authenticated ghapiGET, download artifact14130605424, verify4395-byte archive digest and bounded closed JSON against owning job log.",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv",
+      "status": "completed",
+      "expectation": "Exact source/run/job ownership, API/log/upload digest equality and actual failing member identified without arbitrary payload disclosure.",
+      "observed": "All identities/digests equal; rpc-shutdown-govdd5nz v2 holds PID1808 and truthful completed-protocol/unexited-parent summary.",
+      "exit_code": 0,
+      "evidence_ids": [
+        "E-02",
+        "E-03"
+      ],
+      "side_effects": "Authorized read-only GitHub access; metadata/archive/8bounded JSON members retained only own Temp. No provider/API mutation.",
+      "authorization_basis": "Root fresh ca-debug actorinput explicitly authorizes owning diagnostic artifact GET and bounded retention."
+    },
+    {
+      "id": "C-02",
+      "operation": "Compare b015/current actual test bytes, read cached direct Pi/Node files and frozen official Node22.19 exit/compilecache/native shutdown source.",
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "status": "completed",
+      "expectation": "Distinguish JS listener entry from OS exit and identify grounded later boundaries without claiming sampled native frames.",
+      "observed": "Current test exactab1228; source ordering supports three post-entry candidates but cannot identify actual blocked frame.",
+      "exit_code": 0,
+      "evidence_ids": [
+        "E-04",
+        "E-05",
+        "E-06",
+        "E-07",
+        "E-08"
+      ],
+      "side_effects": "Read-only local/Git object/source and primary upstream web reads. No code/runtime setting modification.",
+      "authorization_basis": "Fresh Root read-only diagnosis scope and optional official primary source access."
+    },
+    {
+      "id": "C-03",
+      "operation": "At most one ordinary cached-runtime observed-discovery replay, only if it can discriminate a specific remaining boundary.",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv",
+      "status": "not_run",
+      "expectation": "A useful replay would record where samePID stops after exit listener entry while preserving original30s failing verdict.",
+      "observed": null,
+      "exit_code": null,
+      "evidence_ids": [],
+      "side_effects": "No runtime replay performed; no cache/install/provider effects.",
+      "authorization_basis": "Root allows one discriminating ordinary local original-fixture observation, not blind repetitions or unapproved instrumentation."
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-01",
+      "kind": "observation",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\1107-b015-pi-windows-job-132571421707.log:476,481,505-515; sha256:f95bb714a90dc8b8842998cba2bb10aea5f99e9b6e5e0b98a8dfa6d62d3f1edb",
+      "observation": "Actual Windows job132571421707 at sourceb015 fails observed discovery/doctor wrapper in shutdown partition. Matching rpc-observed2 and rawrpc13 completed successfully first. Final failure waited natural30s despite tracePID1808 JSexit0 at2267ms.",
+      "observed_at": "2026-11-14T20:20:08Z",
+      "check_id": null,
+      "coverage": "complete_for_claim",
+      "limitations": "No process stack or post-JS native stages retained."
+    },
+    {
+      "id": "E-02",
+      "kind": "command_result",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\artifact.json; archive C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\diagnostics.zip",
+      "observation": "Authenticated run43635526022 PRheadb015, job132571421707 failed; artifact14130605424 exact4395bytes SHA57c8db56ef59b99df5ad41980e7db9a7741c896cbfe3272e6419b5cfe613f1ba equals API metadata and original uploader finalized ID/digest. Authenticated exact job log also equals supplied Root log bytes after UTF8BOM/EOL normalization.",
+      "observed_at": null,
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "limitations": "Read-only GitHub GET; this PR artifact is diagnostic evidence, not trusted publication qualification."
+    },
+    {
+      "id": "E-03",
+      "kind": "observation",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\rpc-shutdown-govdd5nz.json sha256:7b67df6e44250ec502b27f5394c4423d41d697f1b360b9963d8022b795448727",
+      "observation": "Closed v2: commandsSeen,agentSettledSeen,captureSeen=true;23records, collectioncomplete at2300ms, stdinclosed; shutdown_timeout at32311ms; processExited=false,exitCode=null. TracePID1808 started3,EOF2265,session2266,JSexit2267 code0.",
+      "observed_at": null,
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "limitations": "Marker is callback entry. ParentPid not serialized; samePID relation established through exact source phase gate, not invented scalar."
+    },
+    {
+      "id": "E-04",
+      "kind": "source",
+      "snapshot_id": "S-02",
+      "locator": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_pi_package.py@b015 sha256:ab1228f243825f7fa38b194af2298d3bb50f73bb79986a6155ba059d4079092c#108-129,153-230,1043-1095",
+      "observation": "Observer writes process.pid and marks once(exit) entry. Observed wait requires exact tracePID==Popen.pid and ordered successful exit marker within10s, then real process.wait within original30s. Failure retains process.poll before cleanup. Current test source equals hosted b015.",
+      "observed_at": null,
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "limitations": "No whole checkout cleanliness claim. This establishes failure phase and PID gate, not where native execution blocked."
+    },
+    {
+      "id": "E-05",
+      "kind": "source",
+      "snapshot_id": "S-02",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-supported-1.5.0-msc-20261113\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js and chunk-44DLKSKE.js offsets3683300-3683700; C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\facts.json",
+      "observation": "Actual cached Pi1.5 bootstrap unconditionally calls enableCompileCache. Bundled RPC shutdown awaits runtimeHost.dispose(), detaches/pauses stdin and awaits raw stdout before process.exit(exitCode). Direct cached four runtime identities match successful same-job observed artifacts.",
+      "observed_at": null,
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "limitations": "Complete failing-process runtime graph/hash capture unavailable; static source plus samejob successful hashes, not fresh execution."
+    },
+    {
+      "id": "E-06",
+      "kind": "source",
+      "snapshot_id": null,
+      "locator": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/lib/internal/process/per_thread.js#L217-L228 ; https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/node_process_methods.cc#L450-L459",
+      "observation": "Node22.19 process.exit emits synchronous exit listeners before process.reallyExit. reallyExit invokes native RunAtExit before Environment::Exit. Therefore an observer exit marker is not evidence that native exit completed.",
+      "observed_at": null,
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "limitations": "Frozen official upstream source establishes ordering, not a frame sampled from failedPID."
+    },
+    {
+      "id": "E-07",
+      "kind": "source",
+      "snapshot_id": null,
+      "locator": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/env.cc#L1056-L1099 ; https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/compile_cache.cc#L279-L403",
+      "observation": "Successful compile-cache enable registers AtExit FlushCompileCache; Persist iterates cache entries and uses synchronous filesystem open/write/close/rename after JS exit listeners.",
+      "observed_at": null,
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "limitations": "Plausible post-JS mechanism only; no failed-process evidence that enable succeeded or Persist entered/stalled."
+    },
+    {
+      "id": "E-08",
+      "kind": "source",
+      "snapshot_id": null,
+      "locator": "https://raw.githubusercontent.com/nodejs/node/v22.19.0/src/api/environment.cc#L892-L908",
+      "observation": "Default native exit also stops sub-workers/tracing, shuts down libuv/threadpool and disposes platform before C-runtime exit.",
+      "observed_at": null,
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "limitations": "No native stack or boundary marks in actual failure distinguish these steps from synchronous JS callbacks or cache persistence."
+    },
+    {
+      "id": "E-09",
+      "kind": "observation",
+      "snapshot_id": null,
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-rpc-protocol-diagnostics\\local-observation\\addendum.json sha256:9f07e0d1e061f8d3b10ac01719e6cfd43e7815a65709c5a132834373bd019dc1",
+      "observation": "Prior ordinary local fault raw+observed pair passed with same direct4 cached Node22.19/Pi1.5 identities. It did not run this new failing discovery case.",
+      "observed_at": null,
+      "check_id": null,
+      "coverage": "partial",
+      "limitations": "Historical source9e/Python3.14 differs from b015 hosted Python; not current reproduction or cause refutation."
+    }
+  ],
+  "disposition": {
+    "kind": "unresolved",
+    "rationale": "The exact artifact narrows failure beyond complete protocol and stdin EOF to after JSexit listener entry, while OS process remains unexited. It cannot distinguish a synchronous listener from native cache/worker/libuv/platform shutdown. Source plausibility is not causal proof, so no application repair is justified.",
+    "evidence_ids": [
+      "E-01",
+      "E-02",
+      "E-03",
+      "E-04",
+      "E-05",
+      "E-06",
+      "E-07",
+      "E-08",
+      "E-09"
+    ],
+    "cause_ids": [],
+    "blockers": [
+      {
+        "kind": "evidence",
+        "missing": "An actual same-PID native stack or equivalent closed boundary observation after JSexit listener entry and before original30s deadline.",
+        "owner": "Root / Pi qualification diagnostic owner",
+        "resume_condition": "A separately scoped passive diagnostic captures the blocked boundary without changing raw assertions, natural deadline or turning forced cleanup into success."
+      }
+    ]
+  },
+  "regression": null,
+  "next_step": {
+    "target": "evidence",
+    "owner": "Root / Pi qualification diagnostic owner",
+    "action": "Scope the smallest same-PID shutdown discriminator: JS exit listener completion/reallyExit entry versus native AtExit/cache completion and native worker/libuv/platform cleanup, or obtain a bounded native stack of the actual hang. Keep30s failure and cleanup independent; do not blind-retry CI or claim cache cause.",
+    "completion_evidence": "Source/runtime-bound same-PID observation identifying the actual blocked frame/stage, or bounded unknown if no failure occurs. Only then select a cause-specific fix/regression."
+  }
+}

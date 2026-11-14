@@ -9,7 +9,10 @@ CI red.
 """
 from __future__ import annotations
 
+import json
 import os
+import shlex
+import tempfile
 import re
 import shutil
 import subprocess
@@ -445,6 +448,243 @@ class ChannelTest(unittest.TestCase):
                      "Publish the Claude marketplace channel",
                      "Publish the Codex marketplace channel"):
             self.assertIn("GH_TOKEN: ${{ inputs.github-token }}", action_step(name), name)
+
+
+
+def _literal_publication_bash(name: str, text: str | None = None) -> str:
+    """Extract one unchanged, unconditional literal run block; reject new YAML forms."""
+    lines = (action_text() if text is None else text).splitlines()
+    starts = [i for i, line in enumerate(lines) if line == "    - name: " + name]
+    if len(starts) != 1:
+        raise AssertionError(f"expected one exact publication step {name!r}")
+    start = starts[0]
+    end = next((i for i in range(start + 1, len(lines))
+                if lines[i].startswith("    - ")), len(lines))
+    step = lines[start + 1:end]
+    headers = [i for i, line in enumerate(step) if line == "      run: |"]
+    if len(headers) != 1:
+        raise AssertionError("expected one literal run: | block")
+    prelude, body = step[:headers[0]], step[headers[0] + 1:]
+    if prelude.count("      shell: bash") != 1:
+        raise AssertionError("expected explicit bash shell")
+    for line in prelude:
+        if line.strip() and not (line.startswith("        ") or
+                re.fullmatch(r"      (?:id: .+|shell: bash|env:)", line)):
+            raise AssertionError("unsupported publication step metadata")
+    if any("\t" in line or (line.strip() and not line.startswith("        "))
+           for line in body):
+        raise AssertionError("unsupported literal run indentation")
+    script = "\n".join(line[8:] if line.startswith("        ") else "" for line in body).rstrip() + "\n"
+    if "${{" in script or not script.startswith("set -euo pipefail\n"):
+        raise AssertionError("unsupported executable expression or shell preamble")
+    return script
+
+
+# This is only the isolated provider protocol: fixed GET observations and one
+# exclusive receipt upload. The production shell and planner decide the effects.
+_RECEIPT_PROVIDER = r'''
+import json, os, sys
+from pathlib import Path
+root = Path(os.environ["RECEIPT_FIXTURE"])
+command, args = sys.argv[1], sys.argv[2:]
+with (root / "calls.jsonl").open("a", encoding="utf-8") as stream:
+    stream.write(json.dumps([command, *args]) + "\n")
+meta = json.loads((root / "remote.json").read_text(encoding="utf-8"))
+repo, rid = "fixture/qualification", "7"
+receipt = root / "stored-receipt.json"
+def refuse():
+    print("unexpected fixture provider operation", file=sys.stderr)
+    raise SystemExit(93)
+if command == "git" and args == ["ls-remote", "--tags", "origin", "refs/tags/" + meta["tag"], "refs/tags/" + meta["tag"] + "^{}"]:
+    print(meta["source"] + "\trefs/tags/" + meta["tag"])
+elif command != "gh":
+    refuse()
+elif args == ["auth", "setup-git"]:
+    pass
+elif args == ["api", "--paginate", "--slurp", "repos/" + repo + "/releases?per_page=100"]:
+    release = meta["release"]
+    if receipt.exists():
+        release["assets"].append({"name": "codearbiter-publication.json", "state": "uploaded"})
+    print(json.dumps([[release]]))
+elif len(args) == 8 and args[:5] == ["api", "--method", "POST", "-H", "Content-Type: application/json"] and args[5] == "--input" and args[7] == "https://uploads.github.com/repos/" + repo + "/releases/7/assets?name=codearbiter-publication.json":
+    supplied = Path(args[6]).resolve()
+    if not supplied.is_relative_to(root.resolve()):
+        refuse()
+    with receipt.open("xb") as stream:
+        stream.write(supplied.read_bytes())
+    if (root / "lose-upload-response").exists():
+        raise SystemExit(57)
+elif args == ["api", "repos/" + repo + "/releases/7/assets", "--jq", '.[] | select(.name == "codearbiter-publication.json") | .url']:
+    if receipt.exists():
+        print("https://fixture.invalid/assets/receipt")
+elif args == ["api", "-H", "Accept: application/octet-stream", "https://fixture.invalid/assets/receipt"]:
+    sys.stdout.buffer.write(receipt.read_bytes())
+else:
+    refuse()
+'''
+
+
+class ReceiptShellBoundaryTest(unittest.TestCase):
+    """Run two shipped Bash blocks, with real receipt CLI and closed fake providers.
+
+    This does not execute GitHub's composite scheduler or qualify live publication,
+    package/channel/npm readback, authentication, or the earlier release steps.
+    """
+
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        if os.name == "nt":
+            git = shutil.which("git")
+            self.assertTrue(git, "Git for Windows is required")
+            self.bash = Path(git).resolve().parents[1] / "bin/bash.exe"
+        else:
+            self.bash = Path(shutil.which("bash") or "/missing-bash")
+        self.assertTrue(self.bash.is_file(), "real Bash is required; do not skip qualification")
+
+    def fixture(self, host):
+        root = self.root / host
+        root.mkdir()
+        (root / "bin").mkdir()
+        (root / ".github/scripts").mkdir(parents=True)
+        (root / "core/pysrc").mkdir(parents=True)
+        for path in (".github/scripts/release_target.py", ".github/scripts/_releaselib.py",
+                     "core/pysrc/_releaselib.py"):
+            shutil.copyfile(REPO / path, root / path)
+        target = {"claude": "ca", "codex": "ca-codex", "pi": "ca-pi", "none": "ca-sandbox"}[host]
+        package = {"claude": "codearbiter-ca-1.2.3.tar.gz", "codex": "codearbiter-ca-codex-1.2.3.tar.gz",
+                   "pi": "arbiterforge-ca-pi-1.2.3.tgz", "none": "none"}[host]
+        meta = {"tag": "fixture-v1.2.3", "source": "a" * 40, "release": {
+            "id": 7, "tag_name": "fixture-v1.2.3", "draft": False,
+            "assets": [] if host == "none" else [{"name": package, "state": "uploaded", "digest": "sha256:" + "b" * 64}]}}
+        (root / "remote.json").write_text(json.dumps(meta), encoding="utf-8")
+        (root / "completed-effects.json").write_text(json.dumps({"tag": "a" * 40,
+            "package": package, "channel": "already-published", "npm": "already-published"}), encoding="utf-8")
+        provider = root / "provider.py"
+        provider.write_text(_RECEIPT_PROVIDER, encoding="utf-8")
+        interpreter = shlex.quote(Path(sys.executable).as_posix())
+        for name in ("gh", "git", "npm", "npx", "curl", "wget", "ssh", "scp", "node", "python3"):
+            script = "#!/bin/bash\nexec " + interpreter + " -B -X utf8 "
+            script += ('"$@"\n' if name == "python3" else
+                       shlex.quote(provider.as_posix()) + " " + name + ' "$@"\n')
+            executable = root / "bin" / name
+            executable.write_text(script, encoding="utf-8", newline="\n")
+            executable.chmod(0o700)
+        essentials = {key: value for key, value in os.environ.items()
+                      if key.upper() in {"SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "SYSTEMDRIVE"}}
+        utility_dir = self.bash.parent.parent / "usr/bin" if os.name == "nt" else self.bash.parent
+        essentials.update({"PATH": os.pathsep.join((str(root / "bin"), str(utility_dir))),
+            "HOME": str(root), "USERPROFILE": str(root), "TEMP": str(root), "TMP": str(root),
+            "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUTF8": "1", "RECEIPT_FIXTURE": str(root),
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+            "RECEIPT_BIN": ("/" + root.as_posix()[0].lower() + root.as_posix()[2:] + "/bin") if os.name == "nt" else str(root / "bin"),
+            "GITHUB_REPOSITORY": "fixture/qualification", "RUNNER_TEMP": root.as_posix(),
+            "GITHUB_OUTPUT": (root / "output.txt").as_posix(), "TARGET": target, "HOST": "" if host == "none" else host,
+            "VERSION": "1.2.3", "TAG": meta["tag"], "SOURCE_COMMIT": meta["source"],
+            "ASSET": "" if host == "none" else package, "ASSET_SHA256": "" if host == "none" else "b" * 64,
+            "RELEASE_ID": "7", "PACKAGE_FILE": "" if host == "none" else package,
+            "PACKAGE_SHA256": "" if host == "none" else "b" * 64,
+            "CHANNEL_REF": "" if host in {"none", "pi"} else "c" * 40})
+        return root, essentials
+
+    def invoke(self, root, env, step):
+        script = _literal_publication_bash(step)
+        # Git for Windows' launcher may prepend its own executables. Establish
+        # and prove the private POSIX search path before the unchanged body.
+        bootstrap = ('PATH="$RECEIPT_BIN:/usr/bin:/bin"; export PATH\n'
+                     'for tool in gh git python3; do '
+                     '[ "$(command -v "$tool")" = "$RECEIPT_BIN/$tool" ] || exit 94; done\n')
+        return subprocess.run([str(self.bash), "--noprofile", "--norc", "-c", bootstrap + script],
+                              cwd=root, env=env, capture_output=True, text=True,
+                              encoding="utf-8", errors="strict", timeout=30)
+
+    def observe(self, root, env):
+        (root / "output.txt").write_text("", encoding="utf-8")
+        result = self.invoke(root, env, "Observe remote state and plan")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        output = dict(line.split("=", 1) for line in (root / "output.txt").read_text().splitlines())
+        env["MISSING"] = output["missing-assets"]
+        return output
+
+    def calls(self, root):
+        return [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+
+    def posts(self, root):
+        return [call for call in self.calls(root) if call[:4] == ["gh", "api", "--method", "POST"]]
+
+    def test_missing_receipt_is_uploaded_once_and_replay_only_reads(self):
+        for host in ("claude", "codex", "pi", "none"):
+            with self.subTest(host=host):
+                root, env = self.fixture(host)
+                completed = (root / "completed-effects.json").read_bytes()
+                plan = self.observe(root, env)
+                self.assertEqual((plan["tag"], plan["release"], plan["effects"]), ("present", "published", "receipt"))
+                self.assertEqual(plan["missing-assets"], "codearbiter-publication.json")
+                attached = self.invoke(root, env, "Attach the publication receipt")
+                self.assertEqual(attached.returncode, 0, attached.stderr)
+                receipt = (root / "stored-receipt.json").read_bytes()
+                observed = json.loads(receipt)
+                self.assertEqual((observed["target"], observed["source_commit"], observed["release_state"]),
+                                 (env["TARGET"], "a" * 40, "published"))
+                self.assertEqual(observed["package_sha256"], "none" if host == "none" else "b" * 64)
+                expected_channel = {"claude": "ca-marketplace", "codex": "ca-codex-marketplace",
+                                    "pi": "npm:@arbiterforge/ca-pi@1.2.3", "none": "none"}[host]
+                self.assertEqual(observed["channel"], expected_channel)
+                self.assertEqual(len(self.posts(root)), 1)
+                self.assertEqual(self.observe(root, env)["effects"], "")
+                repeated = self.invoke(root, env, "Attach the publication receipt")
+                self.assertEqual(repeated.returncode, 0, repeated.stderr)
+                self.assertEqual(len(self.posts(root)), 1)
+                self.assertEqual((root / "stored-receipt.json").read_bytes(), receipt)
+                self.assertEqual((root / "completed-effects.json").read_bytes(), completed)
+
+    def test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite(self):
+        for host in ("claude", "codex", "pi", "none"):
+            with self.subTest(host=host):
+                root, env = self.fixture(host)
+                channel = {"claude": "ca-marketplace", "codex": "ca-codex-marketplace",
+                           "pi": "npm:@arbiterforge/ca-pi@1.2.3", "none": "none"}[host]
+                wrong = (json.dumps({"format": "codearbiter.target-publication/0.1.0",
+                    "target": env["TARGET"], "host": env["HOST"] or "none", "tag": env["TAG"],
+                    "version": env["VERSION"], "source_commit": "d" * 40,
+                    "package_file": env["PACKAGE_FILE"] or "none",
+                    "package_sha256": env["PACKAGE_SHA256"] or "none", "channel": channel,
+                    "channel_ref": env["CHANNEL_REF"] or "none", "release_state": "published"}) + "\n").encode()
+                (root / "stored-receipt.json").write_bytes(wrong)
+                self.assertEqual(self.observe(root, env)["effects"], "")
+                refused = self.invoke(root, env, "Attach the publication receipt")
+                self.assertNotEqual(refused.returncode, 0)
+                self.assertIn("conflicting receipt is never replaced", refused.stderr)
+                self.assertIn("source_commit=", refused.stderr)
+                self.assertEqual(self.posts(root), [])
+                self.assertEqual((root / "stored-receipt.json").read_bytes(), wrong)
+                self.assertEqual((root / "readback-receipt.json").read_bytes(), wrong)
+
+    def test_uploaded_receipt_with_lost_response_is_observed_before_retry(self):
+        root, env = self.fixture("claude")
+        self.assertEqual(self.observe(root, env)["effects"], "receipt")
+        (root / "lose-upload-response").touch()
+        lost = self.invoke(root, env, "Attach the publication receipt")
+        self.assertEqual(lost.returncode, 57, lost.stderr)
+        self.assertEqual(len(self.posts(root)), 1)
+        self.assertEqual(self.observe(root, env)["effects"], "")
+        recovered = self.invoke(root, env, "Attach the publication receipt")
+        self.assertEqual(recovered.returncode, 0, recovered.stderr)
+        self.assertEqual(len(self.posts(root)), 1)
+
+    def test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes(self):
+        text = action_text()
+        name = "Attach the publication receipt"
+        for malformed in (text.replace("    - name: " + name, "    - name: absent"),
+                          text + "\n    - name: " + name + "\n",
+                          text.replace("      run: |", "      run: >"),
+                          text.replace("      shell: bash", "      shell: sh"),
+                          text.replace("    - name: " + name, "    - name: " + name + "\n      if: always()"),
+                          text.replace("        case \"$HOST\"", "\tcase \"$HOST\"")):
+            with self.subTest(shape=malformed[-100:]):
+                with self.assertRaises(AssertionError):
+                    _literal_publication_bash(name, malformed)
 
 
 if __name__ == "__main__":

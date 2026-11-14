@@ -1,0 +1,480 @@
+{
+  "schema": "codearbiter.analytical-baseline-correction/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "prior_inspection_source": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "scope": "Exactly six unsupported analytical composite transitions; no product implementation/runtime result changes.",
+  "governing_precedence": [
+    {
+      "path": "docs/state-contracts-major/PROGRAM.md",
+      "lines": [
+        5,
+        9,
+        13,
+        46
+      ],
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "meaning": "Analytical counts are not advertised feature counts; current implementation/accepted task intent outrank historical claims; preserve healthy boundaries without inventing statecharts; N/A requires an actual unsupported/inapplicable contract and evidence."
+    }
+  ],
+  "accepted_tasks_inspected": [
+    "SITE-U01: search query/expansion error/retry and existing module/keyboard/navigation preservation",
+    "SITE-U02: drawer listener lifetime/reconnect/focus restoration",
+    "BUILD-G01: owned generation staging; no strict Academy key/submodule-validator feature"
+  ],
+  "records": {
+    "S59:01": {
+      "unsupported_analytical_contract": "Uniform first-eligible-panel initialization/aria-hidden synchronization across all four heterogeneous component owners.",
+      "actual_owner_contract": "DecisionEvidence selects first case; ContextExplorer validates and honors declared initial/default overlap; ExampleChoices selects0 only with matched panes/buttons; AcademyOverview synchronizes existing details disclosures. No common first-panel protocol exists across this family.",
+      "whole_clause_why_never_applied": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "2746c7282977449c8aeaabeaf4509b2504403c10d80607cdb120938b8f0172f0",
+      "witnesses": [
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "start": 45,
+          "end": 60,
+          "file_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40"
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "start": 56,
+          "end": 70,
+          "file_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de"
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 15,
+          "end": 24,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 225,
+          "end": 250,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ],
+      "source_comparisons": {
+        "site/src/components/AcademyOverview.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/ContextExplorer.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/DecisionEvidence.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/ExampleChoices.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        }
+      },
+      "inputs": {
+        "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+        "site/src/components/ContextExplorer.astro": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+        "site/src/components/DecisionEvidence.astro": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+        "site/src/components/ExampleChoices.astro": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+      }
+    },
+    "S59:03": {
+      "unsupported_analytical_contract": "An aria-selected and roving tab-stop tab widget for the example-choice button group.",
+      "actual_owner_contract": "ExampleChoices deliberately uses a labelled role=group of aria-pressed buttons, native Tab/Enter and extra Arrow/Home/End focus/selection. Its source explicitly avoids tab roles. No aria-selected/roving tab-stop widget is declared.",
+      "whole_clause_why_never_applied": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "19cfb47e71df913845d0be1935c0616c0805903f08c5146a183fdd69e9fc5624",
+      "witnesses": [
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 6,
+          "end": 54,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        }
+      ],
+      "source_comparisons": {
+        "site/src/components/AcademyOverview.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/ContextExplorer.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/DecisionEvidence.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/ExampleChoices.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        }
+      },
+      "inputs": {
+        "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+        "site/src/components/ContextExplorer.astro": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+        "site/src/components/DecisionEvidence.astro": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+        "site/src/components/ExampleChoices.astro": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+      }
+    },
+    "S61:10": {
+      "unsupported_analytical_contract": "A beforeprint general interactive-state snapshot and fit of the canvas for print.",
+      "actual_owner_contract": "Reentrant beforeprint saves reading.open and opens static reading; CSS hides controls/frame/dialog/downloads and prints the complete static reading edition. It does not fit the interactive canvas or snapshot general selection/viewport.",
+      "whole_clause_why_never_applied": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "5bd75cd295eb99a9edea7e7e6f24ba3f73b10d6befaa66e373f6411a782410f5",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "start": 92,
+          "end": 92,
+          "file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+        }
+      ],
+      "source_comparisons": {
+        "site/src/components/WorkflowAtlas.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/scripts/workflow-atlas.ts": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/styles/workflow-atlas.css": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "direct behavior dependency",
+          "changed_source_assessment": null
+        }
+      },
+      "inputs": {
+        "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "site/src/components/WorkflowAtlas.astro": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+        "site/src/scripts/workflow-atlas.ts": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+        "site/src/styles/workflow-atlas.css": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+      }
+    },
+    "S61:11": {
+      "unsupported_analytical_contract": "An afterprint/disconnect general selections/details/viewport restoration from a print backup.",
+      "actual_owner_contract": "afterprint/disconnect restores reading.open and clears that backup; selection/zoom/viewport are left unmodified by printing. Disconnect separately aborts listeners/frames/observer/export work. No general print-state restoration exists.",
+      "whole_clause_why_never_applied": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "9a18f99b6334e0a69c22c7d98b8134f9fa2350933cddc1ba65880cc38cfabe50",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 299,
+          "end": 305,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "source_comparisons": {
+        "site/src/components/WorkflowAtlas.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/scripts/workflow-atlas.ts": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/styles/workflow-atlas.css": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "direct behavior dependency",
+          "changed_source_assessment": null
+        }
+      },
+      "inputs": {
+        "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "site/src/components/WorkflowAtlas.astro": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+        "site/src/scripts/workflow-atlas.ts": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+        "site/src/styles/workflow-atlas.css": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+      }
+    },
+    "S63:01": {
+      "unsupported_analytical_contract": "Automatic TOC frame queuing for arbitrary standalone layout changes as an owned event.",
+      "actual_owner_contract": "TOC updates initially and on coalesced scroll/resize using current header height and heading positions; disconnect removes listeners/cancels frame. No arbitrary independent layout-change event/observer is registered. ThemeProvider is dark-only, not a layout producer.",
+      "whole_clause_why_never_applied": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "582c8b21abb265be37b7b8fd7f61b32ce79faa1ff82f97c7f2309cacfb315b83",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 35,
+          "end": 70,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "source_comparisons": {
+        "site/src/components/CaTocList.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "direct behavior dependency",
+          "changed_source_assessment": null
+        },
+        "site/src/components/TableOfContents.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/src/components/ThemeProvider.astro": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        }
+      },
+      "inputs": {
+        "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "site/src/components/CaTocList.astro": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+        "site/src/components/TableOfContents.astro": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+        "site/src/components/ThemeProvider.astro": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad"
+      }
+    },
+    "S67:01": {
+      "unsupported_analytical_contract": "One loader transition attesting a closed exact top-level manifest key set and independent parent Git-submodule identity.",
+      "actual_owner_contract": "Academy loader resolves canonical academy-source, requires contained existing paths, validates required inventory fields/order/duplicates/release/tracks and Home setup, and records nested Git HEAD. It neither rejects extra top-level keys nor independently inspects parent Git mode160000/.gitmodules. Separate installer checksum/commit verification remains strict.",
+      "whole_clause_why_never_applied": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "53dc18ee2a32580f7c8896c97d07bde1f7d0ca24c65abd21d28e2433d99b97e0",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 139,
+          "end": 158,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 309,
+          "end": 357,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        }
+      ],
+      "source_comparisons": {
+        "site/scripts/academy-source.ts": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "original_current_identical": true,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": null
+        },
+        "site/scripts/generate-academy.ts": {
+          "original_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+          "original_sha256": "70c0a76c6d03409a94e9f4ee9942bf8afb9ad70fcd1d3b63ad9cf611e0d0f05c",
+          "prior_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+          "prior_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "current_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+          "current_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "original_current_identical": false,
+          "prior_current_identical": true,
+          "physical_equals_current_git": true,
+          "role": "frozen family citation exposure",
+          "changed_source_assessment": "Full diff inspected: accepted BUILD-G01 replaces direct rm/mkdir/write with in-memory Map and owned staged publisher. It changes output replacement, not loader manifest-key or parent-Git-submodule validation."
+        },
+        "site/scripts/owned-output.ts": {
+          "role": "current accepted BUILD-G01 dependency exposure only",
+          "current_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "prior_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "physical_equals_current_git": true,
+          "baseline_equality_claim": false
+        }
+      },
+      "inputs": {
+        "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+        "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+        "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f"
+      }
+    }
+  },
+  "premise_correction": "All5 UI row owner groups and the Academy loader are baseline-byte-identical. S67:01 also cites generate-academy.ts, which changed under BUILD-G01; its full output-staging delta is explicitly inspected and bound, never presented as unchanged.",
+  "prior_packet_untouched": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site19-acceptance-483d\\inspection.json",
+    "sha256": "bd79337c146ebf2c0792950656dccec184ff81907945f3047f38e45fd7808658"
+  },
+  "limits": [
+    "Source inspection only; no new tests/browser/visual/physical-user/installed observations.",
+    "Original frozen105 intake remains unchanged. Append analytical-audit correction to live accounting; no new user policy choice or advertised-feature deferral.",
+    "N/A covers unsupported whole analytical composites, not valid initialization/native-button keyboard/static print/TOC/source-validation behavior. No broad capability waiver.",
+    "Parent1098 remains held for full user testing; no publication."
+  ]
+}

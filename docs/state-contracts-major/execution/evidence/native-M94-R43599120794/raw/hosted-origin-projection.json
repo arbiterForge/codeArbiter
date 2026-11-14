@@ -1,0 +1,211 @@
+{
+  "schema": "codearbiter.original-hosted-origin-projection/1",
+  "scope": "Allowlisted original metadata; complete API/logs/archive remain immutable private Temp intake.",
+  "run": {
+    "id": 43599120794,
+    "head_sha": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+    "head_branch": "major/state-contracts",
+    "path": ".github/workflows/ci.yml",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1
+  },
+  "repository": {
+    "full_name": "arbiterForge/codeArbiter",
+    "id": 1233366728
+  },
+  "artifact": {
+    "id": 14116138817,
+    "name": "ci20-native-tested-windows-2025",
+    "size_in_bytes": 2838476,
+    "digest": "sha256:3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf",
+    "created_at": "2026-11-14T13:40:44Z",
+    "updated_at": "2026-11-14T13:40:44Z",
+    "expired": false,
+    "workflow_run": {
+      "id": 43599120794,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "major/state-contracts",
+      "head_sha": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9"
+    }
+  },
+  "job": {
+    "id": 132463972537,
+    "run_id": 43599120794,
+    "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+    "run_attempt": 1,
+    "head_sha": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-14T13:35:31Z",
+    "completed_at": "2026-11-14T13:40:49Z",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-14T13:35:32Z",
+        "completed_at": "2026-11-14T13:35:33Z"
+      },
+      {
+        "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-14T13:35:33Z",
+        "completed_at": "2026-11-14T13:35:52Z"
+      },
+      {
+        "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-14T13:35:52Z",
+        "completed_at": "2026-11-14T13:35:52Z"
+      },
+      {
+        "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-14T13:35:52Z",
+        "completed_at": "2026-11-14T13:36:00Z"
+      },
+      {
+        "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-14T13:36:00Z",
+        "completed_at": "2026-11-14T13:36:19Z"
+      },
+      {
+        "name": "Verify exact Go toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-14T13:36:19Z",
+        "completed_at": "2026-11-14T13:36:20Z"
+      },
+      {
+        "name": "Build native qualified candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-14T13:36:20Z",
+        "completed_at": "2026-11-14T13:40:40Z"
+      },
+      {
+        "name": "Bind the module-tested binary, source, host and toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-14T13:40:40Z",
+        "completed_at": "2026-11-14T13:40:41Z"
+      },
+      {
+        "name": "Join original named tests to the tested payload",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-14T13:40:41Z",
+        "completed_at": "2026-11-14T13:40:42Z"
+      },
+      {
+        "name": "Share the real tested candidate with this workflow run",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-14T13:40:42Z",
+        "completed_at": "2026-11-14T13:40:44Z"
+      },
+      {
+        "name": "Emit named major qualification report",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-11-14T13:40:44Z",
+        "completed_at": "2026-11-14T13:40:44Z"
+      },
+      {
+        "name": "Upload major qualification report",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 12,
+        "started_at": "2026-11-14T13:40:44Z",
+        "completed_at": "2026-11-14T13:40:44Z"
+      },
+      {
+        "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-11-14T13:40:44Z",
+        "completed_at": "2026-11-14T13:40:44Z"
+      },
+      {
+        "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22,
+        "started_at": "2026-11-14T13:40:44Z",
+        "completed_at": "2026-11-14T13:40:44Z"
+      },
+      {
+        "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-11-14T13:40:44Z",
+        "completed_at": "2026-11-14T13:40:44Z"
+      },
+      {
+        "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24,
+        "started_at": "2026-11-14T13:40:44Z",
+        "completed_at": "2026-11-14T13:40:47Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25,
+        "started_at": "2026-11-14T13:40:47Z",
+        "completed_at": "2026-11-14T13:40:47Z"
+      }
+    ]
+  },
+  "archive_sha256": "3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf",
+  "members": [
+    {
+      "path": "artifact-candidate/ca-artifact-windows-amd64.exe",
+      "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+    },
+    {
+      "path": "artifact-candidate/release.json",
+      "sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c"
+    },
+    {
+      "path": "ci20-native-tested.json",
+      "sha256": "b257b9d2a8d35962e68ec4a5711cfdfbe53ffb34a8486a1741fb1376b0bc3760"
+    },
+    {
+      "path": "native-observation.json",
+      "sha256": "7ef609b6db102ac1e8e3c79312b94c651c37a0b037fce30099e76c09a259c558"
+    },
+    {
+      "path": "native-tests.json",
+      "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+    }
+  ],
+  "approved_owner_uploader_attribution": {
+    "status": "PASS"
+  },
+  "private_intake": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf",
+  "original_log_sha256": "807ee581a1baa235ccb3cb38d70f44547badb2d51714dde2c7726f0ab1418025"
+}

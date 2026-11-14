@@ -1,0 +1,18 @@
+{
+  "extends": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\tsconfig.json",
+  "include": [
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\claude-inside.ts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\claude-inside.test.ts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\claude-inside-cli.ts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\claude-inside-cli.test.ts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\state-contracts.test.ts"
+  ],
+  "exclude": [
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\node_modules"
+  ],
+  "compilerOptions": {
+    "typeRoots": [
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-claude-late-cancel\\verification-project\\node_modules\\@types"
+    ]
+  }
+}

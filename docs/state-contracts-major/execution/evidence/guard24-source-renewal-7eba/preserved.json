@@ -1,0 +1,95 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite renewed source guard/effect/retry inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_bashguardlib.py": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+    "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+    "core/pysrc/pre-edit.py": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+    "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+    "core/pysrc/pre-write.py": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    ".codearbiter/context/security-controls.html": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:hook-admission:01",
+    "disposition:transitions:hooks:hook-admission:02",
+    "disposition:transitions:hooks:hook-admission:03",
+    "disposition:transitions:hooks:hook-admission:04",
+    "disposition:transitions:hooks:hook-admission:05",
+    "disposition:transitions:hooks:protected-state:01",
+    "disposition:transitions:hooks:protected-state:02",
+    "disposition:transitions:hooks:protected-state:03",
+    "disposition:transitions:hooks:protected-state:04",
+    "disposition:transitions:hooks:protected-state:05",
+    "disposition:transitions:hooks:protected-state:06",
+    "disposition:transitions:hooks:protected-state:07",
+    "disposition:transitions:hooks:shell-parser:01",
+    "disposition:transitions:hooks:shell-parser:02",
+    "disposition:transitions:hooks:shell-parser:03",
+    "disposition:transitions:hooks:shell-parser:04",
+    "disposition:transitions:hooks:shell-parser:05",
+    "disposition:transitions:hooks:push:01",
+    "disposition:transitions:hooks:push:02",
+    "disposition:transitions:hooks:push:03",
+    "disposition:transitions:hooks:push:05",
+    "disposition:machines:hooks:hook-admission",
+    "disposition:machines:hooks:protected-state",
+    "disposition:machines:hooks:shell-parser"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/source-inspection.json",
+      "sha256": "2a9ac93b941b8b06fc65c72e927404a48f1db9e1e2e411fa9fabc2798ab3ed92"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/input-join.json",
+      "sha256": "09949d693a894d2d760a44d208bdd3df5e11440c7321fc8d945d50ea17681ecd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/author10.json",
+      "sha256": "35ad5bbc12d2c15f337060415f76a6f0557856ba8bce2decf4212c944601d565"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/author10.log",
+      "sha256": "cbe2866aad0593621b939c072002ced78f74f755f20be9b88445c0c176482b1d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/independent9.json",
+      "sha256": "7623cde76183078e99657c2868b98c928b6ae424b24e065cb7537f3d51147921"
+    }
+  ],
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/source-inspection.json",
+  "scope": "Renew exact21 preserved baseline transition clauses and3complete source machines at immutable7eba/physical source bytes. PreservePRESERVEDclass and originald594 history. No runtime/installed/platform/task/scenario/model/consent/provider/publication/wholeprogramme qualification. No change to41multi-drift records or push04HOLD.",
+  "dependency_boundary": "Twentyone named source/caller/witness dependencies rejoined; five governing frozen task/machine/transition/program/policy inputs additionally pinned. Unchanged branches reuse original finite inspection only after literal current joins. Lock/audit/native writer failures are assessed at unchanged caller try/refusal boundaries, not executed or claimed full transitive runtime acceptance.",
+  "limits": [
+    "Current guard delta corrects ownership of independent simple read statements, retains whole-command conservative scan for complex/redirect/unknown syntax; not arbitrary shell execution security.",
+    "Original10author and9independent observations corroborate exact34ed branches only; no current whole-callgraph execution or unchanged fullsuite assertion.",
+    "All source bindings authenticated through recovered immutableorigin objects; Govlocaladminremainsmissing, no workspaceHEAD/indexclaim."
+  ]
+}

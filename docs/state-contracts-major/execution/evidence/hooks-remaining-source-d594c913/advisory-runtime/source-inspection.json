@@ -1,0 +1,351 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "advisory-runtime",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_activationlib.py": {
+      "source_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "baseline_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_babysitlib.py": {
+      "source_sha256": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+      "baseline_sha256": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_entrylib.py": {
+      "source_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "baseline_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_pathnorm.py": {
+      "source_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "baseline_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_protectedlib.py": {
+      "source_sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "baseline_sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_scopelib.py": {
+      "source_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "baseline_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_sensitivelib.py": {
+      "source_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "baseline_sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/babysit.py": {
+      "source_sha256": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+      "baseline_sha256": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/hostapi.py": {
+      "source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "baseline_sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:advisory-runtime:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "start": 655,
+          "end": 824,
+          "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+        }
+      ],
+      "conformance": "Regular local sink and serialized append escape line breaks; all ordinary logging failures are swallowed before block prints and exits2; warn/remind only print.",
+      "machine_id": "hooks:advisory-runtime",
+      "baseline_clause_sha256": "9da43fccf8e3ba9a35fef94168a880cd254b08fe2f1985f19a0b3b7f8afac5e5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_log_gate_event",
+          "lines": "689-804"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "staleness_warning",
+          "lines": "978-1020"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_mode_plane_active_since",
+          "lines": "915-975"
+        },
+        {
+          "path": "core/pysrc/_babysitlib.py",
+          "symbol": "module",
+          "lines": "1-76"
+        },
+        {
+          "path": "core/pysrc/babysit.py",
+          "symbol": "module",
+          "lines": "1-47"
+        },
+        {
+          "path": "core/pysrc/_entrylib.py",
+          "symbol": "module",
+          "lines": "1-41"
+        }
+      ]
+    },
+    {
+      "id": "hooks:advisory-runtime:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "start": 915,
+          "end": 1020,
+          "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+        }
+      ],
+      "conformance": "Newest64 mode-entry scan or valid legacy map identifies non-arbiter activity; marker/log maximum older than30min emits CONFIRM-09; absent/corrupt activity skipped.",
+      "machine_id": "hooks:advisory-runtime",
+      "baseline_clause_sha256": "1a08fabb9ce392d7fe4710ead8ba8628d897bf12d91fc25b0c251c37bdbf94f1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_log_gate_event",
+          "lines": "689-804"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "staleness_warning",
+          "lines": "978-1020"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_mode_plane_active_since",
+          "lines": "915-975"
+        },
+        {
+          "path": "core/pysrc/_babysitlib.py",
+          "symbol": "module",
+          "lines": "1-76"
+        },
+        {
+          "path": "core/pysrc/babysit.py",
+          "symbol": "module",
+          "lines": "1-47"
+        },
+        {
+          "path": "core/pysrc/_entrylib.py",
+          "symbol": "module",
+          "lines": "1-41"
+        }
+      ]
+    },
+    {
+      "id": "hooks:advisory-runtime:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "start": 978,
+          "end": 1020,
+          "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+        }
+      ],
+      "conformance": "Maximum marker/log mtime suppresses stale notice for any recent matching-file activity; function does not inspect a specific audit row.",
+      "machine_id": "hooks:advisory-runtime",
+      "baseline_clause_sha256": "1516996f3d4e4062fad22ffc701e54de61da3c9cd6569e020a02cb74e19cb24f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_log_gate_event",
+          "lines": "689-804"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "staleness_warning",
+          "lines": "978-1020"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_mode_plane_active_since",
+          "lines": "915-975"
+        },
+        {
+          "path": "core/pysrc/_babysitlib.py",
+          "symbol": "module",
+          "lines": "1-76"
+        },
+        {
+          "path": "core/pysrc/babysit.py",
+          "symbol": "module",
+          "lines": "1-47"
+        },
+        {
+          "path": "core/pysrc/_entrylib.py",
+          "symbol": "module",
+          "lines": "1-41"
+        }
+      ]
+    },
+    {
+      "id": "hooks:advisory-runtime:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_babysitlib.py",
+          "start": 28,
+          "end": 76,
+          "sha256": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94"
+        },
+        {
+          "path": "core/pysrc/babysit.py",
+          "start": 28,
+          "end": 47,
+          "sha256": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841"
+        }
+      ],
+      "conformance": "Explicit env on/true/1 AND active-project gate enables config; propose/branch only, malformed ONRED defaults propose; CLI exception returns disabled/propose with0 and no watcher effects.",
+      "machine_id": "hooks:advisory-runtime",
+      "baseline_clause_sha256": "e45e470eda38c0c703fe0d6651635b8fb61e0a32c9d94877edfd59dc8fe32029",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_log_gate_event",
+          "lines": "689-804"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "staleness_warning",
+          "lines": "978-1020"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_mode_plane_active_since",
+          "lines": "915-975"
+        },
+        {
+          "path": "core/pysrc/_babysitlib.py",
+          "symbol": "module",
+          "lines": "1-76"
+        },
+        {
+          "path": "core/pysrc/babysit.py",
+          "symbol": "module",
+          "lines": "1-47"
+        },
+        {
+          "path": "core/pysrc/_entrylib.py",
+          "symbol": "module",
+          "lines": "1-41"
+        }
+      ]
+    },
+    {
+      "id": "hooks:advisory-runtime:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_entrylib.py",
+          "start": 24,
+          "end": 41,
+          "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a"
+        }
+      ],
+      "conformance": "Explicit host installed before main; argv and return propagation follow flags; no state persistence or exception interception.",
+      "machine_id": "hooks:advisory-runtime",
+      "baseline_clause_sha256": "232cce155fd4fb20aea1821180f5cf2a998af19f23d1c4b8a269a7c9f623b677",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_log_gate_event",
+          "lines": "689-804"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "staleness_warning",
+          "lines": "978-1020"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "symbol": "_mode_plane_active_since",
+          "lines": "915-975"
+        },
+        {
+          "path": "core/pysrc/_babysitlib.py",
+          "symbol": "module",
+          "lines": "1-76"
+        },
+        {
+          "path": "core/pysrc/babysit.py",
+          "symbol": "module",
+          "lines": "1-47"
+        },
+        {
+          "path": "core/pysrc/_entrylib.py",
+          "symbol": "module",
+          "lines": "1-41"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:advisory-runtime",
+      "constituents": [
+        "hooks:advisory-runtime:01",
+        "hooks:advisory-runtime:02",
+        "hooks:advisory-runtime:03",
+        "hooks:advisory-runtime:04",
+        "hooks:advisory-runtime:05"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

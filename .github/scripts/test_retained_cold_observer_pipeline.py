@@ -43,9 +43,9 @@ class RetainedColdPipelineTest(unittest.TestCase):
   self.assertIn('overwrite: false',observation)
   report=self.cold[emit:upload]
   for part in ("github.event_name == 'push'", "github.ref == 'refs/heads/main'",
-               "github.ref == 'refs/heads/major/state-contracts'", "matrix.platform == 'linux/amd64'",
+               "github.ref == 'refs/heads/major/state-contracts'",
                "steps.cold_claude_observed.outcome == 'success'",'GH_TOKEN: ${{ github.token }}',
-               '--job-name "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>"',
+               '--job-name "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>"',
                '--observation "cold=${{ runner.temp }}/cold-claude/observation.json"',
                '--payload-root "artifact-host-payloads-${{ github.sha }}=${{ runner.temp }}/artifact-host-payloads"',
                '--payload-root "artifact-release-packages-${{ github.sha }}=${{ runner.temp }}/artifact-release-packages"'):
@@ -73,5 +73,38 @@ class RetainedColdPipelineTest(unittest.TestCase):
    'cli:tools/build-host-packages.py:cold:claude:linux/amd64',
    *['receipt:.github/scripts/test_context_installed.py:'+name for name in (
     'test_t044_installed_context_kind','test_t044_rejects_missing_candidate_identity','test_t044_rejects_nonisolated_environment')]])
+
+ def test_every_native_cell_routes_to_the_original_cold_consumer(self):
+  policy=json.loads((ROOT/'.github/major-qualification-policy.json').read_bytes())
+  groups=json.loads((ROOT/'.github/major-test-selections.json').read_bytes())['groups']
+  cells=[cell for cell in policy['required_installed_cells'] if cell.startswith('installed:native:')]
+  self.assertEqual(set(cells),{'installed:native:'+system+':'+arch
+                             for system in ('linux','windows','darwin') for arch in ('amd64','arm64')})
+  missing=[cell for cell in cells if cell not in policy['cell_job_bindings']
+           or not any(cell in row['cells'] for row in groups)]
+  self.assertEqual(missing,[], 'all six native installed cells need actual cold consumer routes')
+  for cell in cells:
+   platform=cell.removeprefix('installed:native:').replace(':','/')
+   job='[CHECK] | [CORE] | Structured artifact cold package  <'+platform+'>'
+   self.assertEqual(policy['cell_job_bindings'][cell],job)
+   matching=[row for row in groups if cell in row['cells']]
+   self.assertEqual(len(matching),1)
+   row=matching[0]
+   self.assertEqual(row['job'],job)
+   self.assertEqual(row['proof_kind'],'retained-archive-cli')
+   self.assertEqual(row['observation'],'cold')
+   self.assertEqual(row['payload_name'],'artifact-release-packages-{source_commit}')
+   self.assertEqual(row['selectors'],[
+    'cli:tools/build-host-packages.py:cold:claude:'+platform,
+    *['receipt:.github/scripts/test_context_installed.py:'+name for name in (
+     'test_t044_installed_context_kind','test_t044_rejects_missing_candidate_identity',
+     'test_t044_rejects_nonisolated_environment')]])
+  report=self.cold.split('- name: Emit installed Claude qualification report',1)[1].split('- name: Upload major qualification report',1)[0]
+  self.assertNotIn("matrix.platform == 'linux/amd64'",report)
+  self.assertIn('--job-name "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>"',report)
+  for clause in ("github.event_name == 'push'", "github.ref == 'refs/heads/main'",
+                 "github.ref == 'refs/heads/major/state-contracts'",
+                 "steps.cold_claude_observed.outcome == 'success'"):
+   self.assertIn(clause,report)
 
 if __name__=='__main__':unittest.main(verbosity=2)

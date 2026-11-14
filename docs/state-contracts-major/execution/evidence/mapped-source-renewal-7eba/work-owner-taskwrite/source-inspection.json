@@ -1,0 +1,1552 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "prior_source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "control_cone": "work-owner-taskwrite",
+  "method": "Read original complete clause/mapping and current fixed transport/caller paths. Authenticate original proofs/inputs and current physical bytes through independently recovered immutable Git objects. Normalize only the three explicitly reviewed provider AST changes to prove remaining full-module identity. No tests executed.",
+  "rows": [
+    {
+      "id": "hooks:work-owner:01",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "96c373ab99f1cbf6087afc69cebafe2fa25fe2fb3c4aa3ecc24b67e28cb4f5a2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "repository work state",
+        "event": "select owner",
+        "guard": "regular legacy board present and no nonempty/unsafe native work",
+        "to": "legacy-selected",
+        "effects": "Use LegacyClient and blockSHA optimistic concurrency.",
+        "failure_retry": "Both owners present or unsafe directory -> owner conflict; no automatic migration.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:01"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/work.py",
+            "start": 30,
+            "end": 48,
+            "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+          }
+        ],
+        "conformance": "Regular legacy board and absent/empty safe native directory selects LegacyClient; unsafe board/native or dual populated owners refuse."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 30,
+          "end": 48,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:02",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "89dcfcb068d5521b768a2a5eb5b2d0f87fa69ee8e95a86906594390efea2a4b6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "repository work state",
+        "event": "select owner",
+        "guard": "no legacy board and selected native work namespace",
+        "to": "native-selected",
+        "effects": "Use pinned ArtifactClient and native revision/model identities.",
+        "failure_retry": "Malformed owner state refuses; display projection reports unknown where classification cannot prove owner.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:02"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/work.py",
+            "start": 26,
+            "end": 48,
+            "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+          },
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "start": 162,
+            "end": 184,
+            "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1"
+          }
+        ],
+        "conformance": "Absent board selects pinned ArtifactClient; unsafe/uncertain state displayed as native-selected rather than healthy legacy. Manifest admission now additionally validates release shape, failing closed."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 26,
+          "end": 48,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        },
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "start": 162,
+          "end": 184,
+          "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:04",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "102d4ab9697fca26dc4c0f5d55dc745087897d11e04ce6c2c504b53e63c5543d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "multiple same-origin records",
+        "event": "lookup/create",
+        "guard": "ambiguous duplicate source identity",
+        "to": "ambiguous-origin",
+        "effects": "Hide ambiguous records from normal authoritative lookup and refuse source-key creation.",
+        "failure_retry": "Resolve duplicate identity explicitly; do not choose first row.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:04"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 90,
+            "end": 183,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 208,
+            "end": 217,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 312,
+            "end": 330,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          }
+        ],
+        "conformance": "Source duplicates are removed from authoritative lookup, counted unkeyed and creation/origin query refuses ambiguous identity rather than picking first."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 90,
+          "end": 183,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 208,
+          "end": 217,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 312,
+          "end": 330,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:05",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "a55e2941478206224b1b9613be97e081f8892369ef4b291b979b1c0a4571ba16",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "open completed work + exact archived copy",
+        "event": "scan",
+        "guard": "exact copied archive record",
+        "to": "archive-pending",
+        "effects": "Expose recoverable partial archive without treating it as two independent tasks.",
+        "failure_retry": "Archive retry completes removal with deduplication.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:05"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 81,
+            "end": 183,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          }
+        ],
+        "conformance": "Only physically identical complete/open-to-archive block with matching semantic fields coalesces and sets archive_pending; distinct duplicate ID refuses."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 81,
+          "end": 183,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:06",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "a97bd39547cc2fb20bda2aa83e3c260848b7bc5b68aaf5068d7929647047857b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "keyed legacy work",
+        "event": "update",
+        "guard": "current exact blockSHA; operation ID provided",
+        "to": "updated",
+        "effects": "Invoke bound taskwrite edit/transition.",
+        "failure_retry": "Operation ID is echoed but legacy update has no durable replay ledger; stale SHA is conflict.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:06"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 331,
+            "end": 366,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 350,
+            "end": 387,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          }
+        ],
+        "conformance": "Require operation ID and exact boardSHA, re-read selected identity under board lock, invoke constrained action; stale SHA becomes REVISION_CONFLICT; echoed operation ID is no replay ledger."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 331,
+          "end": 366,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 350,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:07",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "b21cc06531cc23b1fe46cd54a204c44b285efed96a87efe489588d752a7036b6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "keyed native work",
+        "event": "update",
+        "guard": "expected revision and model both supplied or read together",
+        "to": "updated",
+        "effects": "Pass native CAS mutation.",
+        "failure_retry": "One expected field without the other refuses; legacy/native identity types cannot be interchanged.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:07"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/work.py",
+            "start": 362,
+            "end": 402,
+            "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+          }
+        ],
+        "conformance": "Legacy rejects native revision; native request takes expected revision+model together or reads both from one current record; half-pair refuses before call."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 362,
+          "end": 402,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:08",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "6d4c5486cc9c5b8668a80dc30a190762d8510680115057670c801af739310916",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "work list",
+        "event": "context page",
+        "guard": "bounded requested records/cursor membership IDs",
+        "to": "partial projection",
+        "effects": "Return context_complete=false; legacy paging binds membership IDs, not all content bytes.",
+        "failure_retry": "Does not join knowledge or prove whole-workspace context.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:08"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 259,
+            "end": 311,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          }
+        ],
+        "conformance": "Bounded selected work/context returns context_complete false and no knowledge join; listing cursor binds sorted membership IDs only, content_snapshot false."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 259,
+          "end": 311,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:09",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "6788f4ca1ff51677d5012e49e0c7124fdc45dc61efb4d9fcda68ce37c09e5744",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "native work projection",
+        "event": "save derived view",
+        "guard": "known marker and safe exact .codearbiter/views/work/WORK-*.html path",
+        "to": "derived-view",
+        "effects": "Atomic tempfile+fsync+replace only recognized generated output.",
+        "failure_retry": "Unrecognized existing file/link/unsafe ancestor is preserved/refused.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:09"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/work.py",
+            "start": 423,
+            "end": 467,
+            "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+          }
+        ],
+        "conformance": "Derived recognized HTML exact WORK path only; safe ancestors/regular recognized existing page required; temporary fsync and replace; unrecognized content preserved/refused."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 423,
+          "end": 467,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:work-owner:10",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:work-owner",
+      "baseline_clause_sha256": "3fc17f393f6a14db59cb408ac8b0ab9b386fd4c4984628bad049f3838dac618d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_arbiterstatelib.py",
+          "symbol": "module",
+          "lines": "1-290"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        },
+        {
+          "path": "core/pysrc/work.py",
+          "symbol": "module",
+          "lines": "1-510"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "external issue/Project operation",
+        "event": "dispatch",
+        "guard": "native owner/capability selected",
+        "to": "provider state machine",
+        "effects": "Delegate to _workgithub for staged, sent, reconciled, mapped intents.",
+        "failure_retry": "Legacy owner refuses unsupported native/provider operations; host agent owns provider transition table.",
+        "source": [
+          {
+            "path": "core/pysrc/_arbiterstatelib.py",
+            "symbol": "module",
+            "lines": "1-290",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          },
+          {
+            "path": "core/pysrc/work.py",
+            "symbol": "module",
+            "lines": "1-510",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+          }
+        ],
+        "transition_id": "hooks:work-owner:10"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/work.py",
+            "start": 312,
+            "end": 360,
+            "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 190,
+            "end": 207,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          }
+        ],
+        "conformance": "Native-only provider verbs delegate to owning _workgithub operations; legacy caller rejects GitHub effects and adapter rejects unsupported operations. Delegation conformance only, not provider state proof."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/work.py",
+          "start": 312,
+          "end": 360,
+          "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 190,
+          "end": 207,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:01",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "18cc5035794c65a52a3e936aa0a0486a14941755131e846e839d94296e7ee7b1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "queued",
+        "event": "start",
+        "guard": "selected task valid; current owner and optional bound blockSHA rechecked under lock",
+        "to": "in-progress",
+        "effects": "Apply taskboard transform and atomic board write.",
+        "failure_retry": "Invalid transition/missing row/no change returns nonzero; no free-form board replacement.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:01"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 211,
+            "end": 272,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 333,
+            "end": 387,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 431,
+            "end": 446,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          }
+        ],
+        "conformance": "Under board lock recheck native owner and optional exact selected blockSHA; constrained taskboard transition returns nonzero on invalid/missing/no-change; atomic single-board replacement."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 211,
+          "end": 272,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 333,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 431,
+          "end": 446,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:02",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "f987cd8815bff73df90d493bc54ca21a323e6451753ab7cf5a809cc31cc02436",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "in-progress",
+        "event": "done",
+        "guard": "selected task valid",
+        "to": "done",
+        "effects": "Stamp completion through taskboard transform.",
+        "failure_retry": "When selection is by origin, underlying transform also permits queued->done; legacy ordinary-ID path requires in-progress.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:02"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 255,
+            "end": 272,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/_taskboardlib.py",
+            "start": 1281,
+            "end": 1344,
+            "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+          }
+        ],
+        "conformance": "Date validated and done transition stamps completion; ordinary queued->done rejected, origin-selected path permits queued->done by explicit transition_error condition."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 255,
+          "end": 272,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/_taskboardlib.py",
+          "start": 1281,
+          "end": 1344,
+          "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:03",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "41e3fd098411c6fc493a578597dd8feb76c21bf6d116beec90a7cf598a043fec",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "queued / in-progress / done",
+        "event": "rename/attach/reopen through work.py",
+        "guard": "bound WORK ID and exact blockSHA supplied",
+        "to": "updated / reopened",
+        "effects": "Apply constrained selected record edit.",
+        "failure_retry": "Unbound direct helper invocation refuses these operations.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:03"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 242,
+            "end": 253,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 327,
+            "end": 331,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 368,
+            "end": 387,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          }
+        ],
+        "conformance": "Rename/attach/reopen require bound WORK ID and boardSHA from caller; selected ID+origin checked under lock then constrained row edit."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 242,
+          "end": 253,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 327,
+          "end": 331,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 368,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:04",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "76603ac63dfa3b2d4d565c43bf9e05fc9350ecf2b11620349413c568202fb791",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "any",
+        "event": "add from origin",
+        "guard": "source origin unique across open and archive, operation ID not reused for another source",
+        "to": "queued or reused",
+        "effects": "Insert exact structured task or return existing source record.",
+        "failure_retry": "Existing origin is idempotent; conflicting opid refuses.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:04"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 403,
+            "end": 430,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/_taskboardlib.py",
+            "start": 931,
+            "end": 1028,
+            "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+          }
+        ],
+        "conformance": "Origin promotion scans open+archive first; existing source reused; operation ID found against a different source refuses before structured validated insertion."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 403,
+          "end": 430,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/_taskboardlib.py",
+          "start": 931,
+          "end": 1028,
+          "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:05",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "eeff451d64f11d0a8b0f4b11115bff9e7180b156a79b2fe0b8a5034b17784609",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "done",
+        "event": "archive",
+        "guard": "completion date present or explicit allow-undated; readable archive",
+        "to": "archivable",
+        "effects": "Compute pure transform under board lock.",
+        "failure_retry": "Unreadable archive returns exit3 before either board write; undated without allowance refuses.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:05"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 139,
+            "end": 208,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 389,
+            "end": 402,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          }
+        ],
+        "conformance": "Select done record and valid date or explicit undated allowance under lock; archive read OSError raises distinct exit3 before either write; pure transform determines output."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 139,
+          "end": 208,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 389,
+          "end": 402,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:06",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "999dca3ca324f5533d0ca9b8f8778d852f6cd03ea8baab5e038bd8fe45a3926a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "archivable",
+        "event": "persist archive",
+        "guard": "validated deduplicated output",
+        "to": "archive-written",
+        "effects": "Write done-tasks.md first.",
+        "failure_retry": "If next open-board write fails, duplicate exact copy remains visible as archive_pending.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:06"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 202,
+            "end": 208,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "start": 147,
+            "end": 165,
+            "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+          }
+        ],
+        "conformance": "Write deduplicated done copy first; subsequent open write failure leaves exact copy recognized archive_pending; pair is deliberately not atomic."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 202,
+          "end": 208,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "start": 147,
+          "end": 165,
+          "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:07",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "a6fcf4eca34d10d2e3bc0c8c24dd31a6e615ce0a85296171ec9d58a4393138f3",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "archive-written",
+        "event": "persist open board / retry archive",
+        "guard": "archive already holds exact ID/rawline copy",
+        "to": "archived",
+        "effects": "Remove completed task from open board; retries dedup archive.",
+        "failure_retry": "Archive-first sequence prioritizes preservation over pretending pair is atomic.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:07"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_taskboardlib.py",
+            "start": 1182,
+            "end": 1223,
+            "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+          },
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 389,
+            "end": 442,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          }
+        ],
+        "conformance": "Archive transform skips already-archived copy while removing exact selected open block; caller publishes archive before open, retries preserve record."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskboardlib.py",
+          "start": 1182,
+          "end": 1223,
+          "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 389,
+          "end": 442,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "hooks:taskwrite:08",
+      "decision": "PRESERVED",
+      "conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "dependency_boundary": "Native call interface only; no native/provider execution or model identity qualification. Taskboard named transform/parser symbols unchanged; changed classifier helpers are outside these caller cones.",
+      "machine_id": "hooks:taskwrite",
+      "baseline_clause_sha256": "b2f6d257fdf9fab31fd01c40982bc152c35027e5320d0f711bf80c7bfdece753",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "symbol": "module",
+          "lines": "1-464"
+        },
+        {
+          "path": "core/pysrc/_worklib.py",
+          "symbol": "module",
+          "lines": "1-366"
+        }
+      ],
+      "baseline_complete_clause": {
+        "from": "any",
+        "event": "lock/owner/hash changed",
+        "guard": "competing owner or stale selected work",
+        "to": "refused",
+        "effects": "Leave task transformation unapplied.",
+        "failure_retry": "Refresh selected work or retry after lock release.",
+        "source": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "symbol": "module",
+            "lines": "1-464",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+          },
+          {
+            "path": "core/pysrc/_worklib.py",
+            "symbol": "module",
+            "lines": "1-366",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+          }
+        ],
+        "transition_id": "hooks:taskwrite:08"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/taskwrite.py",
+            "start": 350,
+            "end": 387,
+            "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+          }
+        ],
+        "conformance": "Lock contention, changed owner, unreadable or stale selected block returns nonzero before transform/publication; retry only after reselect/lock release."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 350,
+          "end": 387,
+          "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+        }
+      ],
+      "current_source_conformance": "All cited owning source and direct dependencies are byte-identical to the prior supported whole-clause mapping, except the provider dependency whose only semantic delta is independently bounded in provider-source-delta.json. Owner choice, block/model revisions, task-board locking, exact archive transformations and safe HTML projection remain unchanged. A changed provider dependency is not labeled globally byte-identical and does not authorize a provider operation from taskwrite.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:taskwrite",
+      "constituents": [
+        "hooks:taskwrite:01",
+        "hooks:taskwrite:02",
+        "hooks:taskwrite:03",
+        "hooks:taskwrite:04",
+        "hooks:taskwrite:05",
+        "hooks:taskwrite:06",
+        "hooks:taskwrite:07",
+        "hooks:taskwrite:08"
+      ],
+      "maintained_machine": {
+        "machine_id": "hooks:taskwrite",
+        "name": "Locked legacy task transition and archive-first recovery",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [
+          "HW-12",
+          "HW-15"
+        ],
+        "source_intersection_task_ids": [
+          "HW-12"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "basis": "Every exact maintained constituent has a complete current source guard/effect/retry mapping in this successor. Source preservation only; no machine runtime/host/provider/task completion claim."
+    }
+  ],
+  "prior_proof": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+    "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+  },
+  "prior_inspection": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/source-inspection.json",
+    "sha256": "88082d609f36b2c52a7b336b84ee3456ce36c0ccf92173d6b95227d07038c64b"
+  },
+  "delta": {
+    "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json",
+    "sha256": "ff773795181f6b92909c418f0eb1b32cea1bcd3049c34f34376df4d7edaba0be"
+  },
+  "original_observations": [
+    {
+      "label": "preclaim-seven",
+      "original_source_sha256": "c3a3e6307cf2cbbaba3fcfd034274e19c14db08d068c061c9aed28915ba28ebf",
+      "original_test_sha256": "a63d395bde66c59e3c0195285fc4b68de2c28c9575ea7f504efa60b5d9c96269",
+      "original_count": 7,
+      "original_seconds": 67.1418964000186,
+      "raw": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.json",
+          "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.log",
+          "sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38"
+        }
+      ],
+      "all_original_test_helper_and_method_ASTs_unchanged_at_current": 86,
+      "source_scope": "Seven original observations at c3, not a new run on79. Tested sender/resume/identity paths remain AST-identical; endpoint-denial precedes changed JSON parsing.",
+      "qualification_limit": "Original ordinary source/fake-provider fixtures only. No live provider, installed host, complete module membership/absence, platform, task, finding or program promotion."
+    },
+    {
+      "label": "parser-six",
+      "original_source_sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+      "original_test_sha256": "9365e6ab869b9eb1131940da1851769f3cc4f804bb9b168512420b5d9add7752",
+      "original_count": 6,
+      "original_seconds": 59.046184799983166,
+      "raw": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.json",
+          "sha256": "25af662244ccdc0d8797cc0d2080d9aecde6f9a77047a0a605eac659585d5e45"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.log",
+          "sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a"
+        }
+      ],
+      "all_original_test_helper_and_method_ASTs_unchanged_at_current": 94,
+      "source_scope": "Actual original observation on identical79a1 production source; no new7eba execution.",
+      "qualification_limit": "Original ordinary source/fake-provider fixtures only. No live provider, installed host, complete module membership/absence, platform, task, finding or program promotion."
+    },
+    {
+      "label": "native-identity-three",
+      "original_source_sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+      "original_test_sha256": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+      "original_count": 3,
+      "original_seconds": 84.99003869993612,
+      "raw": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.json",
+          "sha256": "99f21f37dc77cee3d1116ced4e5067ad6f6a79e54fd558329d2bf08de8e6ba17"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.log",
+          "sha256": "716d9d550a93a10171669807010fd18c499818aca4232cbb458f196914cc97ea"
+        }
+      ],
+      "all_original_test_helper_and_method_ASTs_unchanged_at_current": 96,
+      "source_scope": "Actual original observation on identical79a1 production source; no new7eba execution.",
+      "qualification_limit": "Original ordinary source/fake-provider fixtures only. No live provider, installed host, complete module membership/absence, platform, task, finding or program promotion."
+    }
+  ],
+  "limits": "Finite whole-clause source preservation only. Original observations have the exact source/path scopes recorded separately, not fresh7eba runtime evidence. No blanket equivalence of changed provider behavior; no S38 runtime closure or endpoint-policy/credential/live-host/provider/publication/task/program qualification."
+}

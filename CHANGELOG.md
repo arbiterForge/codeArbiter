@@ -24,6 +24,19 @@ predate the plugin rewrite and are grouped by date.
 - Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
+### Fixed
+
+- Respect late Claude sandbox cancellation before reporting readiness, with scoped cleanup and token-safe errors.
+- Keep observed Sandbox container IDs available for recovery when cancellation cleanup discovery fails.
+- Qualify native installations from their matching cold-package executions and refuse source-only test substitutes.
+- Honor late Sandbox creation cancellation and rebuild the shipped CLI with its cancellation checks.
+- Collect matching observed Pi RPC evidence before raw failures stop the qualification runner; retain its existing test limits.
+- Clarify prompt-submit persona ownership and keep cancelled or interrupted CI watches from being treated as green.
+- Classify malformed provider JSON at the transport boundary without hiding programmer errors.
+- Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
+- Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
+- Serialize Farm worktree administration across concurrent processes sharing a Git common directory. Bound contention, retain unknown lock owners and preserve primary failures when lock release cannot be verified.
+
 ## [3.8.9] - 2026-11-12
 
 ### Fixed

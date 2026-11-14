@@ -818,6 +818,7 @@ async function buildOrReuseImage(repoDir, dephash, deps = defaultBuildDeps(), re
   if (inspectCode === 0 && deps.imageIdentity) {
     const identity = await deps.imageIdentity(tag);
     if (identity && /^sha256:[a-f0-9]{64}$/.test(identity.id) && identity.cacheKey === cacheKey) {
+      signal?.throwIfAborted();
       return { tag, cacheKey, imageId: identity.id, reused: true, built: false, builder, notes };
     }
   }
@@ -939,20 +940,23 @@ var BuildStagingFailure = class extends Error {
   cleanup;
 };
 var CreateFailure = class extends Error {
-  constructor(message, id, volumeName, cleanup, cause) {
+  // A successful run observation is recovery context, never cleanup authority.
+  constructor(message, id, volumeName, cleanup, cause, createdContainerId) {
     super(
       `${message}
-ca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`,
+ca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}` + (createdContainerId ? `; created-container=${createdContainerId}` : ""),
       cause === void 0 ? void 0 : { cause }
     );
     this.id = id;
     this.volumeName = volumeName;
     this.cleanup = cleanup;
+    this.createdContainerId = createdContainerId;
     this.name = "CreateFailure";
   }
   id;
   volumeName;
   cleanup;
+  createdContainerId;
 };
 async function compensateCreate(id, volume, dockerRun) {
   const failures = [];
@@ -1149,6 +1153,7 @@ async function createSandbox(url, opts = {}) {
       { verified: false, containers: [], volume: volumeName, failures: ["volume creation effect unknown; inspect before cleanup or a new create"] }
     );
   }
+  let createdContainerId;
   try {
     const cloneRaw = await cloneRepo(url, volumeName, id, opts.signal);
     const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
@@ -1169,6 +1174,8 @@ ${cloneStderr.trim()}` : "";
       signal: opts.signal,
       dockerRun: opts.dockerRun ? (args, call) => opts.dockerRun(args, call) : void 0
     });
+    createdContainerId = containerId;
+    opts.signal?.throwIfAborted();
     return {
       id,
       volumeName,
@@ -1180,7 +1187,7 @@ ${cloneStderr.trim()}` : "";
     };
   } catch (err) {
     const cleanup = await compensateCreate(id, volumeName, dockerRun);
-    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err);
+    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err, createdContainerId);
   }
 }
 

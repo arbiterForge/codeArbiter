@@ -191,7 +191,7 @@ function parseArtifactReleaseManifest(text) {
 }
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, unlink, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3 } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes as randomBytes2 } from "node:crypto";
 import { spawn as spawn3, spawnSync } from "node:child_process";
@@ -454,7 +454,7 @@ function redactSecrets(contents) {
 
 // mutation.ts
 import { spawn as spawn2 } from "node:child_process";
-import { performance } from "node:perf_hooks";
+import { performance as performance2 } from "node:perf_hooks";
 
 // worktree-fs.ts
 import { constants as constants2 } from "node:fs";
@@ -868,8 +868,8 @@ async function mutationCheck(wt, task) {
   }
   if (candidates.length === 0) return null;
   candidates = shuffle(candidates).slice(0, MUT.sample);
-  const start = performance.now();
-  const remainingMs = () => MUT.budgetMs - (performance.now() - start);
+  const start = performance2.now();
+  const remainingMs = () => MUT.budgetMs - (performance2.now() - start);
   let rejected = 0;
   let evaluated = 0;
   const survivors = [];
@@ -1976,8 +1976,66 @@ function withMergeLock(fn) {
   return next;
 }
 var worktreeChain = Promise.resolve();
-function withWorktreeLock(fn) {
-  const next = worktreeChain.then(fn, fn);
+async function withCommonWorktreeLock(fn, opts) {
+  const found = await git(["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+  const reported = found.stdout.trim();
+  if (found.code !== 0 || !path4.isAbsolute(reported) || /[\r\n]/.test(reported))
+    throw new Error("Git common directory unavailable for worktree administration");
+  const common = realpathSync.native(reported);
+  if (!(await stat(common)).isDirectory()) throw new Error("Git common directory is not a directory");
+  const lock = path4.join(common, "codearbiter-farm-worktrees.lock");
+  const timeoutMs = opts.timeoutMs ?? 15e3;
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 0) throw new Error("invalid worktree lock deadline");
+  const deadline = performance.now() + timeoutMs;
+  let handle;
+  for (; ; ) {
+    try {
+      handle = await open3(lock, fsConstants.O_RDWR | fsConstants.O_CREAT | fsConstants.O_EXCL | (fsConstants.O_NOFOLLOW ?? 0), 384);
+      break;
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      opts.onContention?.();
+      if (performance.now() >= deadline)
+        throw new Error("Git worktree administration busy or retained lock present; no lock owner was removed");
+      await sleep(Math.min(25, Math.max(0, deadline - performance.now())));
+    }
+  }
+  let primaryFailed = false;
+  let owned;
+  const owner = JSON.stringify({ pid: process.pid, token: randomBytes2(16).toString("hex") });
+  try {
+    owned = await handle.stat({ bigint: true });
+    await handle.writeFile(owner, "utf8");
+    return await fn();
+  } catch (error) {
+    primaryFailed = true;
+    throw error;
+  } finally {
+    let releaseError;
+    try {
+      const current = await lstat3(lock, { bigint: true });
+      const bytes = Buffer.alloc(Buffer.byteLength(owner) + 1);
+      const read = await handle.read(bytes, 0, bytes.length, 0);
+      if (!owned || !current.isFile() || current.isSymbolicLink() || current.nlink !== 1n || current.dev !== owned.dev || current.ino !== owned.ino || read.bytesRead !== Buffer.byteLength(owner) || bytes.subarray(0, read.bytesRead).toString("utf8") !== owner)
+        throw new Error("worktree lock ownership changed");
+      await unlink(lock);
+    } catch (error) {
+      releaseError = error;
+    }
+    try {
+      await handle.close();
+    } catch (error) {
+      releaseError ??= error;
+    }
+    if (releaseError) {
+      if (!primaryFailed) throw new Error("Git worktree administration lock release unverified; retained ownership requires inspection", { cause: releaseError });
+      console.error("Git worktree administration lock release unverified; primary failure preserved and retained ownership requires inspection");
+    }
+  }
+}
+function withWorktreeLock(fn, opts = {}) {
+  const invoke = () => withCommonWorktreeLock(fn, opts);
+  const next = worktreeChain.then(invoke, invoke);
   worktreeChain = next.catch(() => {
   });
   return next;
@@ -1988,11 +2046,15 @@ async function prepareWorktree(branch, wt, from, gitFn = git) {
   } catch (error) {
     return error instanceof Error ? error.message : String(error);
   }
-  return withWorktreeLock(async () => {
-    const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
-    if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
-    return null;
-  });
+  try {
+    return await withWorktreeLock(async () => {
+      const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
+      if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
+      return null;
+    });
+  } catch (error) {
+    return `worktree administration unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`;
+  }
 }
 var CLEANUP_ATTEMPTS = 3;
 var CLEANUP_DELAY_MS = 150;
@@ -2033,17 +2095,28 @@ async function removeWorktreeVerified(gitFn, wt, opts = {}) {
   const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
   let lastErr = "";
   for (let i = 1; i <= attempts; i++) {
-    const { registered, observation } = await withWorktreeLock(async () => {
-      const rmR = await gitFn(["worktree", "remove", "--force", wt]);
-      if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
-      let reg = await stillRegistered(gitFn, wt);
-      const observation2 = await observeWorktreePath(wt);
-      if (reg === true && observation2.kind === "absent") {
-        await gitFn(["worktree", "prune"]);
-        reg = await stillRegistered(gitFn, wt);
-      }
-      return { registered: reg, observation: observation2 };
-    });
+    let observed;
+    try {
+      observed = await withWorktreeLock(async () => {
+        const rmR = await gitFn(["worktree", "remove", "--force", wt]);
+        if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
+        let reg = await stillRegistered(gitFn, wt);
+        const observation2 = await observeWorktreePath(wt);
+        if (reg === true && observation2.kind === "absent") {
+          await gitFn(["worktree", "prune"]);
+          reg = await stillRegistered(gitFn, wt);
+        }
+        return { registered: reg, observation: observation2 };
+      });
+    } catch (error) {
+      return {
+        ok: false,
+        target: wt,
+        attempts: i - 1,
+        detail: `worktree administration unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`
+      };
+    }
+    const { registered, observation } = observed;
     if (observation.kind === "unknown") {
       return {
         ok: false,
@@ -2293,10 +2366,14 @@ async function prepareEvaluationWorktree(wt, from, gitFn) {
   } catch (e) {
     return msgOf(e);
   }
-  return withWorktreeLock(async () => {
-    const added = await gitFn(["worktree", "add", "--detach", wt, from]);
-    return added.code === 0 ? null : `canary worktree add failed: ${redactSecrets(added.out).slice(0, 200)}`;
-  });
+  try {
+    return await withWorktreeLock(async () => {
+      const added = await gitFn(["worktree", "add", "--detach", wt, from]);
+      return added.code === 0 ? null : `canary worktree add failed: ${redactSecrets(added.out).slice(0, 200)}`;
+    });
+  } catch (error) {
+    return `canary worktree administration unavailable: ${redactSecrets(msgOf(error)).slice(0, 200)}`;
+  }
 }
 async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps(), evaluation) {
   const branch = evaluation?.baseCommit ?? `farm/${t.id}`;
@@ -3156,11 +3233,13 @@ async function main() {
   let aborted = false;
   let publishError = null;
   try {
-    const branchResult = await git(["branch", ENV.integration, ENV.base]);
-    if (branchResult.code !== 0)
-      throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
     integrationWorktree = path4.resolve(runDir, "integration-wt");
-    const wtResult = await git(["worktree", "add", integrationWorktree, ENV.integration]);
+    const wtResult = await withWorktreeLock(async () => {
+      const branchResult = await git(["branch", ENV.integration, ENV.base]);
+      if (branchResult.code !== 0)
+        throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
+      return git(["worktree", "add", integrationWorktree, ENV.integration]);
+    });
     if (wtResult.code !== 0)
       throw new Error(`could not create integration worktree: ${wtResult.out}`);
     const byId = new Map(plan.tasks.map((t) => [t.id, t]));

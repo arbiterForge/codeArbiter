@@ -112,7 +112,7 @@ def rpc_shutdown_observer_source(trace: Path, *, module: bool = False) -> str:
          "const { writeFileSync } = require('node:fs');\n")
         + f"const tracePath = {json.dumps(str(trace))};\n"
         "const started = performance.now();\n"
-        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: []};\n"
+        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: [], reallyExitCallEntered: false};\n"
         "function observe(phase, exitCode) {\n"
         "  if (report.phases.length >= 8) return;\n"
         "  report.phases.push({phase, elapsedMs: Math.round(performance.now() - started),\n"
@@ -122,6 +122,18 @@ def rpc_shutdown_observer_source(trace: Path, *, module: bool = False) -> str:
         "  try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
         "  catch { /* Diagnostics must not change the host's shutdown outcome. */ }\n"
         "}\n"
+        "// Entry into this wrapper is not proof of native shutdown or OS exit.\n"
+        "try {\n"
+        "  const originalReallyExit = process.reallyExit;\n"
+        "  if (typeof originalReallyExit === 'function') {\n"
+        "    process.reallyExit = function(...args) {\n"
+        "      report.reallyExitCallEntered = true;\n"
+        "      try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
+        "      catch { /* This diagnostic write may itself be the last observed cut. */ }\n"
+        "      return Reflect.apply(originalReallyExit, this, args);\n"
+        "    };\n"
+        "  }\n"
+        "} catch { /* Optional observation must not change process behavior. */ }\n"
         "globalThis.__caPiRpcShutdownObserve = observe;\n"
         "process.stdin.prependOnceListener('end', () => observe('stdin_end'));\n"
         "process.once('exit', code => observe('process_exit', code));\n"
@@ -271,24 +283,164 @@ def safe_rpc_shutdown_report(trace: Path) -> dict | None:
                     return None
                 item["exitCode"] = row["exitCode"]
             rows.append(item)
-        return {"schemaVersion": 1, "pid": report["pid"], "node": report["node"], "platform": report["platform"], "phases": rows}
+        projected = {"schemaVersion": 1, "pid": report["pid"], "node": report["node"], "platform": report["platform"], "phases": rows}
+        if "reallyExitCallEntered" in report:
+            if type(report["reallyExitCallEntered"]) is not bool:
+                return None
+            projected["reallyExitCallEntered"] = report["reallyExitCallEntered"]
+        return projected
     except (OSError, ValueError, UnicodeError, RecursionError):
         return None
 
 
-def retain_rpc_shutdown_failure(trace: Path) -> str | None:
+RPC_PROTOCOL_PHASES = (
+    "spawned", "send_commands", "send_state", "send_invoke", "send_capture",
+    "receive_commands", "receive_state", "receive_capture", "agent_settled",
+    "collection_complete", "collection_deadline", "stdout_eof", "stdin_closed",
+    "process_exited", "shutdown_timeout", "error",
+)
+_NO_RPC_PROTOCOL = object()
+
+
+def safe_rpc_protocol_report(value: object) -> dict | None:
+    """Closed parent observations, never protocol payloads or inferred completion."""
+    try:
+        keys = {"schemaVersion", "events", "recordCount", "recordCountSaturated",
+                "commandsSeen", "stateSeen", "agentSettledSeen", "captureSeen",
+                "collection", "eofClosed", "processExited", "exitCode"}
+        if type(value) is not dict or any(type(key) is not str for key in value) or set(value) != keys:
+            return None
+        if type(value["schemaVersion"]) is not int or value["schemaVersion"] != 1:
+            return None
+        if type(value["recordCount"]) is not int or not 0 <= value["recordCount"] <= 1_000_000:
+            return None
+        flags = ("recordCountSaturated", "commandsSeen", "stateSeen", "agentSettledSeen", "captureSeen", "eofClosed")
+        if any(type(value[key]) is not bool for key in flags):
+            return None
+        if value["recordCountSaturated"] and value["recordCount"] != 1_000_000:
+            return None
+        if type(value["collection"]) is not str or value["collection"] not in ("not-started", "complete", "deadline", "stdout-eof", "error"):
+            return None
+        if value["processExited"] is not None and type(value["processExited"]) is not bool:
+            return None
+        code = value["exitCode"]
+        if value["processExited"] is True:
+            if type(code) is not int or not -(2**31) <= code < 2**32:
+                return None
+        elif code is not None:
+            return None
+        events = value["events"]
+        if type(events) is not list or not 1 <= len(events) <= 16:
+            return None
+        phases, elapsed = [], []
+        for row in events:
+            if type(row) is not dict or any(type(key) is not str for key in row) or set(row) != {"phase", "elapsedMs"}:
+                return None
+            if type(row["phase"]) is not str or row["phase"] not in RPC_PROTOCOL_PHASES or row["phase"] in phases:
+                return None
+            if type(row["elapsedMs"]) is not int or not 0 <= row["elapsedMs"] <= 86_400_000:
+                return None
+            phases.append(row["phase"]); elapsed.append(row["elapsedMs"])
+        if phases[0] != "spawned" or elapsed != sorted(elapsed):
+            return None
+        for key, phase in (("commandsSeen", "receive_commands"), ("stateSeen", "receive_state"),
+                           ("agentSettledSeen", "agent_settled"), ("captureSeen", "receive_capture"),
+                           ("eofClosed", "stdin_closed")):
+            if value[key] != (phase in phases):
+                return None
+        if (value["processExited"] is True) != ("process_exited" in phases):
+            return None
+        terminal = {"complete": "collection_complete", "deadline": "collection_deadline", "stdout-eof": "stdout_eof", "error": "error"}
+        if value["collection"] in terminal and terminal[value["collection"]] not in phases:
+            return None
+        return json.loads(json.dumps(value))
+    except Exception:
+        return None
+
+
+class RpcProtocolDiagnostic:
+    """Best-effort fixed-symbol bookkeeping; never owns the RPC verdict."""
+    def __init__(self):
+        self.started = time.monotonic()
+        self.value = {"schemaVersion": 1, "events": [], "recordCount": 0,
+                      "recordCountSaturated": False, "commandsSeen": False, "stateSeen": False,
+                      "agentSettledSeen": False, "captureSeen": False, "collection": "not-started",
+                      "eofClosed": False, "processExited": None, "exitCode": None}
+        self.mark("spawned")
+
+    def mark(self, phase):
+        try:
+            events = self.value["events"]
+            if phase in RPC_PROTOCOL_PHASES and len(events) < 16 and not any(row["phase"] == phase for row in events):
+                events.append({"phase": phase, "elapsedMs": round((time.monotonic() - self.started) * 1000)})
+        except Exception:
+            pass
+
+    def observe_record(self, record):
+        try:
+            count = self.value["recordCount"]
+            self.value["recordCount"] = min(count + 1, 1_000_000)
+            self.value["recordCountSaturated"] |= count == 1_000_000
+            for key, identifier in (("commandsSeen", "commands"), ("stateSeen", "state"), ("captureSeen", "capture")):
+                if record.get("id") == identifier:
+                    self.value[key] = True
+                    self.mark("receive_" + identifier)
+            if record.get("type") == "agent_settled":
+                self.value["agentSettledSeen"] = True
+                self.mark("agent_settled")
+        except Exception:
+            pass
+
+    def collected(self, outcome):
+        self.value["collection"] = outcome
+        self.mark({"complete": "collection_complete", "deadline": "collection_deadline", "stdout-eof": "stdout_eof", "error": "error"}[outcome])
+
+    def closed_stdin(self):
+        self.value["eofClosed"] = True
+        self.mark("stdin_closed")
+
+    def failed(self):
+        if self.value["collection"] == "not-started":
+            self.value["collection"] = "error"
+        self.mark("error")
+
+    def exited(self, code):
+        if type(code) is int:
+            self.value["processExited"], self.value["exitCode"] = True, code
+            self.mark("process_exited")
+        elif code is None:
+            self.value["processExited"] = False
+
+    def snapshot(self):
+        return safe_rpc_protocol_report(self.value)
+
+
+def rpc_protocol_observe(diagnostic, operation, *args):
+    """An optional diagnostic failure cannot become the test's failure."""
+    try:
+        return getattr(diagnostic, operation)(*args)
+    except Exception:
+        return None
+
+
+def retain_rpc_shutdown_failure(trace: Path, *, protocol: object = _NO_RPC_PROTOCOL) -> str | None:
     """Failure-only, exclusive CI artifact; never participates in the verdict."""
     selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
     if not selected:
         return None
     try:
+        report = {"schemaVersion": 1, "outcome": "failure", "trace": safe_rpc_shutdown_report(trace)}
+        if protocol is not _NO_RPC_PROTOCOL:
+            report.update(schemaVersion=2, protocol=safe_rpc_protocol_report(protocol))
+        encoded = json.dumps(report, separators=(",", ":")) + "\n"
+        if len(encoded.encode("utf-8")) > 8192:
+            return None
         destination = Path(selected)
         destination.mkdir(parents=True, exist_ok=True)
         if destination.is_symlink() or not destination.is_dir():
             return None
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="rpc-shutdown-", suffix=".json", dir=destination, delete=False) as stream:
-            json.dump({"schemaVersion": 1, "outcome": "failure", "trace": safe_rpc_shutdown_report(trace)}, stream, separators=(",", ":"))
-            stream.write("\n")
+            stream.write(encoded)
             return Path(stream.name).name
     except (OSError, ValueError):
         return None
@@ -385,6 +537,9 @@ def run_rpc_commands(
         "PI_CODING_AGENT_DIR": str(agent_dir),
         "PI_OFFLINE": "1",
         "PI_TELEMETRY": "0",
+        # Installed-package proof owns a complete inventory. The real Python
+        # bridge must not add untracked bytecode to those original bytes.
+        "PYTHONDONTWRITEBYTECODE": "1",
         "TEMP": str(temp_dir),
         "TMP": str(temp_dir),
         "USERPROFILE": str(home),
@@ -793,10 +948,15 @@ export default function registerCaptureProvider(pi: any) {
     # the reader and let a full pipe stall the child. Protocol stdout stays strict.
     stderr_bytes = b""
     stderr_error: Exception | None = None
+    protocol = None
 
     def stderr_tail() -> str:
         return stderr_bytes.decode("utf-8", errors="replace")[-2000:]
     try:
+        try:
+            protocol = RpcProtocolDiagnostic()
+        except Exception:
+            pass
         if process.stdin is None or process.stdout is None or process.stderr is None:
             raise AssertionError("Pi RPC did not expose standard streams")
 
@@ -831,6 +991,7 @@ export default function registerCaptureProvider(pi: any) {
             assert process.stdin is not None
             process.stdin.write(json.dumps(record, separators=(",", ":")) + "\n")
             process.stdin.flush()
+            rpc_protocol_observe(protocol, "mark", "send_" + record["id"])
 
         def decode(line: str) -> dict:
             try:
@@ -869,11 +1030,14 @@ export default function registerCaptureProvider(pi: any) {
             try:
                 line = output.get(timeout=max(0.01, deadline - time.monotonic()))
             except Empty:
+                rpc_protocol_observe(protocol, "collected", "deadline")
                 break
             if line is None:
+                rpc_protocol_observe(protocol, "collected", "stdout-eof")
                 break
             value = decode(line)
             records.append(value)
+            rpc_protocol_observe(protocol, "observe_record", value)
             if (invoke_alias or invoke_doctor or invoke_read_context) and value.get("type") == "agent_settled" and not capture_sent:
                 send({"id": "capture", "type": "get_last_assistant_text"})
                 capture_sent = True
@@ -888,12 +1052,18 @@ export default function registerCaptureProvider(pi: any) {
                 or not (invoke_alias or invoke_doctor or invoke_enforcement_fault or invoke_read_context)
                 or capture_done
             ):
+                rpc_protocol_observe(protocol, "collected", "complete")
                 break
+        else:
+            rpc_protocol_observe(protocol, "collected", "deadline")
 
         process.stdin.close()
+        rpc_protocol_observe(protocol, "closed_stdin")
         try:
             returncode = wait_for_rpc_shutdown(process, shutdown_trace, observed=_observe_shutdown)
+            rpc_protocol_observe(protocol, "exited", returncode)
         except subprocess.TimeoutExpired as error:
+            rpc_protocol_observe(protocol, "mark", "shutdown_timeout")
             raise AssertionError(
                 f"Pi RPC did not exit within 30 seconds of stdin EOF; received {len(records)} records; "
                 f"stderr tail={stderr_tail()!r}; "
@@ -911,7 +1081,9 @@ export default function registerCaptureProvider(pi: any) {
             except Empty:
                 break
             if line is not None:
-                records.append(decode(line))
+                value = decode(line)
+                records.append(value)
+                rpc_protocol_observe(protocol, "observe_record", value)
         if returncode != 0:
             raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail()}")
         if not any(record.get("id") == "commands" for record in records):
@@ -924,7 +1096,17 @@ export default function registerCaptureProvider(pi: any) {
             raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail()}")
         return records
     except Exception as error:
-        retained = retain_rpc_shutdown_failure(shutdown_trace)
+        rpc_protocol_observe(protocol, "failed")
+        try:
+            rpc_protocol_observe(protocol, "exited", process.poll())
+        except Exception:
+            pass
+        try:
+            retained = retain_rpc_shutdown_failure(
+                shutdown_trace, protocol=rpc_protocol_observe(protocol, "snapshot"),
+            )
+        except Exception:
+            retained = None
         if retained is not None:
             error.add_note(f"Pi RPC failure diagnostic artifact: {retained}")
         raise
@@ -2544,6 +2726,254 @@ class PiPackageTests(unittest.TestCase):
             side_effect=lambda *args, **kwargs: real_run(*args, **kwargs, _observe_shutdown=True),
         ):
             self.test_real_isolated_rpc_command_discovery_and_keyed_status()
+
+    def _observe_original_rpc_fixture_shutdown(self, fixture):
+        # These are additional observations, never substitutes for raw tests.
+        node, cli = live_pi_cli()
+        identity = rpc_diagnostic_runtime_identity(node, cli)
+        self.assertIsNotNone(identity)
+        real_run = run_rpc_commands
+
+        def observed(*args, **kwargs):
+            succeeded = False
+            try:
+                records = real_run(*args, **kwargs, _observe_shutdown=True)
+                succeeded = True
+                return records
+            finally:
+                try:
+                    retain_rpc_observed_raw_diagnostics(
+                        args[2] / "ca-rpc-shutdown-trace.json", identity, succeeded=succeeded,
+                    )
+                except Exception:
+                    pass
+
+        with mock.patch.object(sys.modules[__name__], "run_rpc_commands", side_effect=observed):
+            fixture()
+
+    def test_real_rpc_shutdown_probe_uses_the_same_enforcement_failure_fixture(self):
+        self._observe_original_rpc_fixture_shutdown(
+            self.test_real_rpc_enforcement_registration_failure_stays_fail_closed,
+        )
+
+    def test_real_rpc_shutdown_probe_uses_the_same_native_read_context_fixture(self):
+        self._observe_original_rpc_fixture_shutdown(
+            self.test_real_rpc_native_read_context_is_model_visible_once,
+        )
+
+    def _rpc_really_exit_boundary_fixture(self, kind):
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "Node is required for the shutdown diagnostic fixtures")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-reallyexit-") as directory:
+            root = Path(directory)
+            preload, _, trace = write_rpc_shutdown_observer(root)
+            bootstrap = root / "bootstrap.cjs"
+            setup = (
+                "// Synthetic callee block, not a claim about actual native shutdown.\n"
+                "process.reallyExit = function() { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0); };\n"
+                if kind == "callee" else ""
+            )
+            bootstrap.write_text(setup + "require(" + json.dumps(str(preload)) + ");\n",
+                                 encoding="utf-8", newline="\n")
+            script = r"""
+const assert = require('node:assert/strict');
+if (KIND === 'normal') {
+  // Test the exact generated wrapper against a returning/throwing callee in a
+  // separate VM, including a failed diagnostic writer. The real process below
+  // still exits through its genuine original native callee.
+  const source = require('node:fs').readFileSync(PRELOAD, 'utf8');
+  const receiver = {}, first = {}, second = {}, returned = {}, thrown = {};
+  let calls = 0;
+  const fake = {
+    pid: 7, version: process.version, platform: process.platform,
+    stdin: {readableEnded: false, prependOnceListener() {}},
+    once() {}, getActiveResourcesInfo() { return []; },
+    reallyExit: function(...args) {
+      calls++;
+      assert.equal(this, receiver);
+      if (args[0] === thrown) throw thrown;
+      assert.deepEqual(args, [first, second]);
+      return returned;
+    },
+  };
+  require('node:vm').runInNewContext(source, {
+    process: fake, performance: {now() { return 0; }},
+    require(name) {
+      assert.equal(name, 'node:fs');
+      return {writeFileSync() { throw new Error('controlled diagnostic write refusal'); }};
+    },
+  });
+  assert.equal(fake.reallyExit.call(receiver, first, second), returned);
+  let caught;
+  try { fake.reallyExit.call(receiver, thrown); } catch (error) { caught = error; }
+  assert.equal(caught, thrown);
+  assert.equal(calls, 2);
+}
+if (KIND === 'listener') {
+  process.on('exit', () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0));
+}
+process.stdin.on('end', () => {
+  globalThis.__caPiRpcShutdownObserve('session_shutdown_observer');
+  process.exit(0);
+});
+process.stdin.resume();
+process.stdout.write('ready\n');
+""".replace("KIND", json.dumps(kind)).replace("PRELOAD", json.dumps(str(preload)))
+            command = [node, "--require", str(bootstrap), "-e", script]
+            environment = {"HOME": str(root), "USERPROFILE": str(root),
+                           "TEMP": str(root), "TMP": str(root), "PATH": ""}
+            for key in ("SystemRoot", "WINDIR", "ComSpec", "PATHEXT"):
+                if os.environ.get(key):
+                    environment[key] = os.environ[key]
+            process = subprocess.Popen(
+                command, cwd=root, env=environment, stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                encoding="utf-8", errors="strict", start_new_session=os.name != "nt",
+                creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
+            )
+            stdout = stderr = None
+            try:
+                if kind == "normal":
+                    stdout, stderr = process.communicate(input="", timeout=5)
+                    self.assertEqual(process.returncode, 0)
+                else:
+                    process.stdin.close()
+                    process.stdin = None
+                    deadline = time.monotonic() + 5
+                    while time.monotonic() < deadline:
+                        report = safe_rpc_shutdown_report(trace)
+                        if report and len(report["phases"]) == 4:
+                            if kind != "callee" or report.get("reallyExitCallEntered") is True:
+                                break
+                        if process.poll() is not None:
+                            break
+                        time.sleep(0.01)
+                    self.assertIsNone(process.poll(), "negative fixture must remain alive before cleanup")
+                report = safe_rpc_shutdown_report(trace)
+                self.assertIsNotNone(report)
+                self.assertEqual(report["pid"], process.pid)
+                self.assertTrue(rpc_shutdown_phase_complete(trace, process.pid))
+                self.assertIs(report["reallyExitCallEntered"], kind != "listener")
+            finally:
+                if process.poll() is None:
+                    # These two synthetic hangs fail the exit contract. Reaping
+                    # this owned fixture is cleanup, never evidence of host success.
+                    terminate_process_tree(process)
+                if stdout is None:
+                    stdout, stderr = process.communicate(timeout=5)
+            self.assertEqual(stdout, "ready\n")
+            self.assertEqual(stderr, "")
+            return report
+
+    def test_rpc_shutdown_reallyexit_normal_is_transparent_and_closed(self):
+        report = self._rpc_really_exit_boundary_fixture("normal")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-reallyexit-projection-") as directory:
+            trace = Path(directory) / "trace.json"
+            legacy = {key: value for key, value in report.items() if key != "reallyExitCallEntered"}
+            trace.write_text(json.dumps(legacy), encoding="utf-8", newline="\n")
+            self.assertEqual(safe_rpc_shutdown_report(trace), legacy)
+            for bad in (1, "PrivateFixtureValue", {"payload": "PrivateFixtureValue"}, None):
+                trace.write_text(json.dumps({**report, "reallyExitCallEntered": bad}),
+                                 encoding="utf-8", newline="\n")
+                self.assertIsNone(safe_rpc_shutdown_report(trace))
+            trace.write_text(json.dumps({**report, "private": "PrivateFixtureValue"}),
+                             encoding="utf-8", newline="\n")
+            self.assertEqual(safe_rpc_shutdown_report(trace), report)
+
+    def test_rpc_shutdown_reallyexit_later_js_listener_stays_before_call(self):
+        self.assertIs(self._rpc_really_exit_boundary_fixture("listener")["reallyExitCallEntered"], False)
+
+    def test_rpc_shutdown_reallyexit_synthetic_callee_stays_after_call_entry(self):
+        self.assertIs(self._rpc_really_exit_boundary_fixture("callee")["reallyExitCallEntered"], True)
+
+    def test_rpc_protocol_failure_report_preserves_order_and_unknown_completion(self):
+        pending = RpcProtocolDiagnostic()
+        pending.mark("send_commands"); pending.mark("send_invoke")
+        pending.observe_record({"id": "commands", "success": True})
+        for _ in range(30):
+            pending.observe_record({"type": "other", "payload": "PrivateFixtureValue"})
+        pending.collected("deadline")
+        pending.closed_stdin()
+        pending.mark("shutdown_timeout"); pending.exited(None); pending.failed()
+        report = pending.snapshot()
+        self.assertIsNotNone(report)
+        self.assertEqual(report["recordCount"], 31)
+        self.assertTrue(report["commandsSeen"])
+        self.assertFalse(report["agentSettledSeen"])
+        self.assertFalse(report["captureSeen"])
+        self.assertEqual(report["collection"], "deadline")
+        self.assertTrue(report["eofClosed"])
+        self.assertIs(report["processExited"], False)
+        self.assertIsNone(report["exitCode"])
+        self.assertEqual([event["phase"] for event in report["events"]], [
+            "spawned", "send_commands", "send_invoke", "receive_commands",
+            "collection_deadline", "stdin_closed", "shutdown_timeout", "error",
+        ])
+        self.assertNotIn("PrivateFixtureValue", json.dumps(report))
+
+        complete = RpcProtocolDiagnostic()
+        for identifier in ("commands", "state", "invoke"):
+            complete.mark("send_" + identifier)
+        complete.observe_record({"id": "commands"})
+        complete.observe_record({"id": "state"})
+        complete.observe_record({"type": "agent_settled"})
+        complete.mark("send_capture"); complete.observe_record({"id": "capture"})
+        complete.collected("complete"); complete.closed_stdin(); complete.exited(0)
+        report = complete.snapshot()
+        self.assertTrue(all(report[key] for key in ("commandsSeen", "stateSeen", "agentSettledSeen", "captureSeen", "eofClosed", "processExited")))
+        self.assertEqual(report["exitCode"], 0)
+        complete.value["recordCount"] = 1_000_000
+        complete.observe_record({})
+        self.assertEqual(complete.snapshot()["recordCount"], 1_000_000)
+        self.assertTrue(complete.snapshot()["recordCountSaturated"])
+        broken = mock.Mock(snapshot=mock.Mock(side_effect=ValueError("PrivateFixtureValue")))
+        self.assertIsNone(rpc_protocol_observe(broken, "snapshot"))
+
+    def test_rpc_protocol_failure_report_is_closed_bounded_and_private(self):
+        valid = RpcProtocolDiagnostic().snapshot()
+        bad = []
+        class PretendEnum(str):
+            def __eq__(self, other):
+                return True
+            __hash__ = str.__hash__
+
+        for key, value in (("private", "PrivateFixtureValue"), ("schemaVersion", True),
+                           ("recordCount", True), ("recordCount", 1_000_001),
+                           ("commandsSeen", 1), ("collection", "PrivateFixtureValue"),
+                           ("collection", PretendEnum("PrivateFixtureValue")),
+                           ("processExited", "PrivateFixtureValue"), ("exitCode", True),
+                           ("events", [])):
+            item = copy.deepcopy(valid); item[key] = value; bad.append(item)
+        for key, value in (("phase", "PrivateFixtureValue"), ("elapsedMs", True),
+                           ("elapsedMs", -1), ("elapsedMs", 86_400_001),
+                           ("payload", "PrivateFixtureValue")):
+            item = copy.deepcopy(valid); item["events"][0][key] = value; bad.append(item)
+        item = copy.deepcopy(valid); item["events"] *= 2; bad.append(item)
+        item = copy.deepcopy(valid)
+        item["events"] = [{"phase": "spawned", "elapsedMs": 2}, {"phase": "error", "elapsedMs": 1}]
+        bad.extend([item, None, ["PrivateFixtureValue"]])
+        with tempfile.TemporaryDirectory(prefix="ca-rpc-protocol-") as directory:
+            root = Path(directory); trace = root / "missing-trace"; retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}):
+                legacy = retain_rpc_shutdown_failure(trace)
+                self.assertEqual(json.loads((retained / legacy).read_text(encoding="utf-8")),
+                                 {"schemaVersion": 1, "outcome": "failure", "trace": None})
+                name = retain_rpc_shutdown_failure(trace, protocol=valid)
+                payload = (retained / name).read_bytes()
+                self.assertLessEqual(len(payload), 8192)
+                self.assertEqual(set(json.loads(payload)), {"schemaVersion", "outcome", "trace", "protocol"})
+                self.assertEqual(json.loads(payload)["schemaVersion"], 2)
+                self.assertEqual(json.loads(payload)["protocol"], valid)
+                for item in bad:
+                    with self.subTest(item=item):
+                        self.assertIsNone(safe_rpc_protocol_report(item))
+                        name = retain_rpc_shutdown_failure(trace, protocol=item)
+                        payload = (retained / name).read_bytes()
+                        self.assertIsNone(json.loads(payload)["protocol"])
+                        self.assertNotIn(b"PrivateFixtureValue", payload)
+                        self.assertLessEqual(len(payload), 8192)
+                with mock.patch.object(tempfile, "NamedTemporaryFile", side_effect=ValueError("PrivateFixtureValue")):
+                    self.assertIsNone(retain_rpc_shutdown_failure(trace, protocol=valid))
 
     @staticmethod
     def _shutdown_report(pid=731, exit_ms=2000):
@@ -4202,7 +4632,7 @@ class NpmPublishContractTest(unittest.TestCase):
                     observed, tag, source, expected_object=expected
                 )
 
-PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "shutdown", "publish")
+PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc-observed", "rpc", "shutdown", "publish")
 
 
 def platform_package_suites():
@@ -4219,6 +4649,11 @@ def platform_package_suites():
     for case in cases(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])):
         if isinstance(case, NpmPublishContractTest):
             partition = "publish"
+        elif case._testMethodName in (
+            "test_real_rpc_shutdown_probe_uses_the_same_enforcement_failure_fixture",
+            "test_real_rpc_shutdown_probe_uses_the_same_native_read_context_fixture",
+        ):
+            partition = "rpc-observed"
         elif "shutdown" in case._testMethodName or "post_exit_entry" in case._testMethodName:
             partition = "shutdown"
         elif "rpc" in case._testMethodName:

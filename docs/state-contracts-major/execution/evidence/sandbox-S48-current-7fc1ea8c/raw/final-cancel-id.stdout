@@ -1,0 +1,20 @@
+
+ RUN  v4.1.12 C:/Users/brenn/AppData/Local/Temp/ca-sandbox-create-id-recovery/verification-project
+      Coverage enabled with v8
+
+ ✓ create.test.ts (25 tests | 20 skipped) 6ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed | 20 skipped (25)
+   Start at  15:16:32
+   Duration  353ms (transform 76ms, setup 0ms, import 167ms, tests 6ms, environment 0ms)
+
+JSON report written to C:/Users/brenn/AppData/Local/Temp/ca-sandbox-create-id-recovery/GREEN-vitest.json
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 14.16% ( 173/1221 )
+Branches     : 11.97% ( 108/902 )
+Functions    : 16.48% ( 30/182 )
+Lines        : 15% ( 159/1060 )
+================================================================================

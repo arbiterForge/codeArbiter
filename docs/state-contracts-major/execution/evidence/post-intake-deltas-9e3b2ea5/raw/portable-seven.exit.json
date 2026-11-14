@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\overlay\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "farm-registry-lock.test.ts",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\seven.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\overlay\\plugins\\ca\\tools",
+  "exit_code": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "seconds": 4.826452600071207,
+  "stdout_sha256": "eaaf516462768059bec20625a1e7235a41cbe4a147eee39d41e3e02b964fec33",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

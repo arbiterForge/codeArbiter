@@ -1,0 +1,1 @@
+Actual Python3.14 parser accepts the valid2000/5000/10000-level JSON arrays; original depth expectation was wrong and was corrected before production edit. Syntax/UTF8/intlimit cases genuinely escape. RecursionError compatibility is explicitly injected at parsing seam; no actual-depth rejection claim or new depth policy.

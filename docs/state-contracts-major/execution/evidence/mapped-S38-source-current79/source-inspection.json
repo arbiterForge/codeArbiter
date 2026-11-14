@@ -1,0 +1,254 @@
+{
+  "schema": "codearbiter.S38-six-clause-successor/1",
+  "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "rows": [
+    {
+      "id": "S38:01",
+      "literal_clause": {
+        "event": "sync all",
+        "guard": "current map/config",
+        "to": "per-target processing",
+        "effects": "Process issue and project effects independently; choose resume/reconcile/send/observe according to each target state.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "1046-1279"
+          }
+        ],
+        "from": "mapped work",
+        "transition_id": "S38:01"
+      },
+      "result": "PRESERVED",
+      "guard_effect_retry": "Current enabled map/generation is required; issue/project targets are evaluated separately using desired/status/effect ownership to select resume, observation or sender.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped",
+          "start": 1083,
+          "end": 1138,
+          "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "_resume_mapped",
+          "start": 1054,
+          "end": 1080,
+          "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+        }
+      ],
+      "scope": "Current full literal source-clause conformance for five unchanged edges; row04 supports tested remote-parser/network subcases but no new per-target native/identity fault execution."
+    },
+    {
+      "id": "S38:02",
+      "literal_clause": {
+        "event": "binding incomplete",
+        "guard": "required identity missing",
+        "to": "waiting binding",
+        "effects": "Return waiting reason; do not invent remote target.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "1046-1279"
+          }
+        ],
+        "from": "target",
+        "transition_id": "S38:02"
+      },
+      "result": "PRESERVED",
+      "guard_effect_retry": "Waiting binding/reconciliation attempts resume; still-unavailable/mismatched/nonpending effect returns the actual status rather than inventing remote identity.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped",
+          "start": 1083,
+          "end": 1138,
+          "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "_resume_mapped",
+          "start": 1054,
+          "end": 1080,
+          "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+        }
+      ],
+      "scope": "Current full literal source-clause conformance for five unchanged edges; row04 supports tested remote-parser/network subcases but no new per-target native/identity fault execution."
+    },
+    {
+      "id": "S38:03",
+      "literal_clause": {
+        "event": "mapped resume",
+        "guard": "prior claim exists",
+        "to": "reconcile needed",
+        "effects": "Dispatch target-specific observation/replay policy instead of generic resend.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "1046-1279"
+          }
+        ],
+        "from": "target unknown",
+        "transition_id": "S38:03"
+      },
+      "result": "PRESERVED",
+      "guard_effect_retry": "Resume uses saved transition/revision and target-specific observation policy; it does not perform a generic blind resend.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped",
+          "start": 1083,
+          "end": 1138,
+          "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "_resume_mapped",
+          "start": 1054,
+          "end": 1080,
+          "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+        }
+      ],
+      "scope": "Current full literal source-clause conformance for five unchanged edges; row04 supports tested remote-parser/network subcases but no new per-target native/identity fault execution."
+    },
+    {
+      "id": "S38:04",
+      "literal_clause": {
+        "event": "failure",
+        "guard": "API/native/identity error",
+        "to": "failed target with others continuing",
+        "effects": "Collect target error and continue independent targets; no distributed rollback.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "1046-1279"
+          }
+        ],
+        "from": "one target",
+        "transition_id": "S38:04"
+      },
+      "result": "HOLD_FOR_WHOLE_CLAUSE_EXECUTED_ACCEPTANCE",
+      "guard_effect_retry": "Current mapping owns each target; typed WorkSyncError/ArtifactError and expected URL/timeout failures are collected per target. Remote JSON parser errors now normalize to typed INVALID_REMOTE_RESPONSE before claim; postclaim ambiguity remains OUTCOME_UNKNOWN, and independent target processing continues.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped",
+          "start": 1083,
+          "end": 1138,
+          "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "_resume_mapped",
+          "start": 1054,
+          "end": 1080,
+          "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "_remote_json",
+          "start": 99,
+          "end": 104,
+          "span_sha256": "98a5dc2d41780ef83c78e9a5a39ceec106ae8f788c906f40cbd280f5ffbb07e4"
+        }
+      ],
+      "scope": "Current full literal source-clause conformance for five unchanged edges; row04 supports tested remote-parser/network subcases but no new per-target native/identity fault execution."
+    },
+    {
+      "id": "S38:05",
+      "literal_clause": {
+        "event": "aggregate",
+        "guard": "all requested complete, others not_requested",
+        "to": "complete",
+        "effects": "ok=true only if required targets complete; otherwise partial outcome retained.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "1046-1279"
+          }
+        ],
+        "from": "all targets",
+        "transition_id": "S38:05"
+      },
+      "result": "PRESERVED",
+      "guard_effect_retry": "Aggregate ok requires every requested target synchronized, with omitted targets explicitly not_requested; partial actual statuses remain.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped",
+          "start": 1083,
+          "end": 1138,
+          "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+        }
+      ],
+      "scope": "Current full literal source-clause conformance for five unchanged edges; row04 supports tested remote-parser/network subcases but no new per-target native/identity fault execution."
+    },
+    {
+      "id": "S38:06",
+      "literal_clause": {
+        "event": "observe PR",
+        "guard": "GET PR/files/head identity verifies exact work intent",
+        "to": "PR observed",
+        "effects": "Record open/closed/merged observation through native state.",
+        "failure_retry": "A merged PR observation does not automatically mark local work done; transition policy remains elsewhere.",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "1046-1279"
+          }
+        ],
+        "from": "any work",
+        "transition_id": "S38:06"
+      },
+      "result": "PRESERVED",
+      "guard_effect_retry": "PR observation verifies GET PR/files/exact head work identity and invokes observe-delivery with expected local revision. It records open/closed/merged without marking local work done.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "observe_pull",
+          "start": 1224,
+          "end": 1293,
+          "span_sha256": "7b962f9ab1d10ba4388a2218d1d1985ccf207e11c6f7a4e89592aa42e61b3f28"
+        }
+      ],
+      "scope": "Current full literal source-clause conformance for five unchanged edges; row04 supports tested remote-parser/network subcases but no new per-target native/identity fault execution."
+    }
+  ],
+  "holds": [
+    {
+      "id": "S38:04",
+      "status": "HOLD",
+      "resolved_prior_gap": "Malformed bounded JSON response normalization and genuine6current-source controls are implemented/reviewed and pass. Old c3 parser-gap wording is superseded.",
+      "current_gap": "Whole API/native/identity failure\u2192independent-target-continuation acceptance is broader than the retained13focused outcomes. No direct per-target native ArtifactError/identity-binding-failure continuation oracle is in these executed selectors; source tuple catch inspection is not relabeled a new full-row test.",
+      "available_scope": "Actual network/timeout/preclaim JSON pending\u2192independent Project success; postclaim JSON uncertainty/no resend; partial success/no duplicate; parser/privacy/programmer-boundary controls.",
+      "next_discriminator": "Existing or separately authorized actual source-bound fault cases for per-target native/identity errors, preserving shared-store authority barriers and independent-target/no-rollback behavior.",
+      "not_a_new_product_defect": "This is a retained execution-acceptance gap, not a claim the current source fails those native/identity guards."
+    },
+    {
+      "id": "S38",
+      "section": "machines",
+      "status": "PLANNED",
+      "reason": "Whole six-edge acceptance held with row04; no installed/provider/model/task/scenario completion inferred."
+    }
+  ],
+  "input_join": {
+    "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/input-join.json",
+    "sha256": "8c3cbc51aff4908f3e42dadf82964c7eae2b31147c5e77a2ef4a907cdfb1589d"
+  }
+}

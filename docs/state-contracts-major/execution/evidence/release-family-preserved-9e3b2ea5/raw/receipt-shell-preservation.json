@@ -1,0 +1,99 @@
+{
+  "base": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "original_top_level_AST_nodes_retained_exact": true,
+  "old_methods": [
+    "TriggerTest.test_releases_follow_successful_main_ci_and_manual_retry",
+    "TriggerTest.test_preflight_requires_a_successful_same_repo_main_push",
+    "TriggerTest.test_dispatch_is_refused_off_the_default_branch",
+    "TriggerTest.test_each_run_releases_its_own_commit_from_its_own_manifests",
+    "TriggerTest.test_dispatch_uses_the_newest_main_commit_with_successful_ci",
+    "TriggerTest.test_selection_is_reported_and_bindable_to_an_approved_candidate",
+    "TriggerTest.test_hosted_targets_refuse_expired_ci_artifacts",
+    "TriggerTest.test_each_release_job_rechecks_before_publishing",
+    "TriggerTest.test_every_publisher_receives_the_selected_source_and_ci_run",
+    "TriggerTest.test_dispatch_requires_a_successful_ci_run_for_the_commit",
+    "SourceSelectionTest.test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+    "SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
+    "SourceSelectionTest.test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+    "SourceSelectionTest.test_no_successful_ci_is_refused",
+    "SourceSelectionTest.test_source_no_longer_on_main_is_refused",
+    "SourceSelectionTest.test_expired_or_missing_artifacts_are_reported_not_hidden",
+    "SourceSelectionTest.test_selection_that_differs_from_the_approved_candidate_is_refused",
+    "SourceSelectionTest.test_workflow_run_event_binds_its_own_run",
+    "IndependenceTest.test_every_release_job_depends_only_on_the_preflight",
+    "IndependenceTest.test_each_release_job_gates_only_on_its_own_eligibility",
+    "IndependenceTest.test_one_targets_planning_error_does_not_block_the_others",
+    "IndependenceTest.test_no_cohort_machinery_remains",
+    "IndependenceTest.test_each_release_job_serializes_only_with_itself",
+    "IndependenceTest.test_release_jobs_check_out_the_exact_planned_commit",
+    "PermissionTest.test_workflow_default_is_read_only",
+    "PermissionTest.test_only_ca_is_marked_latest",
+    "PermissionTest.test_codex_publishes_with_the_dedicated_distribution_app",
+    "PermissionTest.test_pi_can_sign_npm_provenance",
+    "ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit",
+    "ConsumerSafetyGateTest.test_package_cohort_is_verified_before_anything_is_published",
+    "ConsumerSafetyGateTest.test_companion_manifest_must_agree",
+    "ConsumerSafetyGateTest.test_changelog_section_is_required",
+    "ConsumerSafetyGateTest.test_tag_is_created_only_when_the_plan_says_so",
+    "ConsumerSafetyGateTest.test_tag_is_read_back_against_the_release_commit",
+    "ConsumerSafetyGateTest.test_attached_package_reads_back_byte_identical",
+    "ConsumerSafetyGateTest.test_every_host_attaches_its_package_including_pi",
+    "ConsumerSafetyGateTest.test_npm_readback_requires_the_ci_built_integrity",
+    "ConsumerSafetyGateTest.test_release_goes_public_only_after_every_channel",
+    "ConsumerSafetyGateTest.test_receipt_is_written_after_the_release_is_public",
+    "AdvisoryCheckTest.test_codex_ruleset_audit_warns_instead_of_blocking",
+    "AdvisoryCheckTest.test_pi_npm_provenance_is_blocking",
+    "AdvisoryCheckTest.test_pre_tag_checks_are_required_through_the_shared_owner",
+    "AdvisoryCheckTest.test_advisory_checks_stay_visible_and_are_not_relabelled_verified",
+    "ChannelTest.test_codex_channel_uses_the_git_dist_tag_until_npm_resumes",
+    "ChannelTest.test_claude_channel_is_published",
+    "ChannelTest.test_pushing_steps_carry_the_publisher_token"
+  ],
+  "new_methods_added": [
+    "ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes",
+    "ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry"
+  ],
+  "unmodified_source_inputs": [
+    {
+      "path": ".github/actions/publish-target/action.yml",
+      "sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3"
+    },
+    {
+      "path": ".github/scripts/release_target.py",
+      "sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+    },
+    {
+      "path": ".github/scripts/_releaselib.py",
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+    },
+    {
+      "path": "core/pysrc/_releaselib.py",
+      "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+    },
+    {
+      "path": ".github/scripts/test_ci_impact.py",
+      "sha256": "d24fe9bbda5694b5aaaf18f79c9b4eb1f6290d77dca876b88d306a37ca3f2886"
+    },
+    {
+      "path": ".github/scripts/release_source.py",
+      "sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473"
+    },
+    {
+      "path": "tools/ci-impact.py",
+      "sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+    }
+  ],
+  "only_source_delta": "Three stdlib imports plus new strict extractor, fake-provider literal and test class. No old AST node/method/helper altered.",
+  "test_preimage_sha256": "03e53b28d99fb0b46fec7ff1dde64edfa5bffd06ff58858ddecee117dc1804ae",
+  "test_candidate_sha256": "a583c039057e33945e9d268409c2757ed83cad8a709334e2385998b2553fd4ae"
+}

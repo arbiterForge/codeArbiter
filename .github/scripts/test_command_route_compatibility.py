@@ -155,7 +155,9 @@ OWNER_OPERATIONAL_SHA256.update({
 # corrects gh watch polling claims; HW-06 scopes conflict pauses to dependents.
 # Historical pins remain above. Freeze the complete revised bodies too; the
 # routing/surface suite separately checks retained watcher gates and stop scope.
-EXPECTED_LEGACY_BODY_SHA256['watch'] = '22e44eae9adbe33ca92bbba7f30539f7fd1e843008a2357c6d5e6c2f726e9cf5'
+# HW-18 follow-up 74057 retains cancelled/interrupted outcomes as unverified.
+# Only its 13 additive guidance lines change; all watcher authority gates remain.
+EXPECTED_LEGACY_BODY_SHA256['watch'] = 'ecc8a26c65d92d15574224d12490b9adef0637039f647e8a29ec09234108bcf3'
 OWNER_OPERATIONAL_SHA256['context-check'] = 'be686437b253db5860fe8dd760cee0486ac374e221ad251451bf6e543095cd42'
 # HW-16/HOST-D01 correct startup/persona and maintenance effects while keeping
 # the initialization strategies, activation writer and refusal behavior intact.

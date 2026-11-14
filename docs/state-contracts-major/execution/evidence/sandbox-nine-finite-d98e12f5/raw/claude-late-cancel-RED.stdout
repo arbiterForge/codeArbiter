@@ -1,0 +1,42 @@
+
+ RUN  v4.1.12 C:/Users/brenn/AppData/Local/Temp/ca-sandbox-claude-late-cancel/verification-project
+
+ ❯ claude-inside.test.ts (29 tests | 4 failed | 25 skipped) 5ms
+     ↓ installs @anthropic-ai/claude-code at a PINNED version (reproducible image)
+     ↓ disables the autoupdater so the pinned version stays put
+     ↓ runs non-root and owns CLAUDE_HOME by the run uid (writable under --read-only)
+     ↓ carries every shared hardening flag the ordinary sandbox emits
+     ↓ passes only the token name in argv, never the reusable value
+     ↓ backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists
+     ↓ NEVER passes --privileged and NEVER mounts the docker socket
+     ↓ runs NON-ROOT and drops ALL capabilities, matching run.ts (token box is no softer)
+     ↓ defaults egress to offline (the hard default — Spike B caveat)
+     ↓ accepts an Anthropic-domains-only allowlist as the other permitted default
+     ↓ REFUSES an arbitrary wide-open network policy (no escaping the hard default)
+     ↓ THROWS when the token volume would be co-mounted with an untrusted-code run
+     ↓ requires a non-empty image, token, and home volume
+     ↓ builds the pinned claude image (DISABLE_AUTOUPDATER baked)
+     ↓ claude -p with the DUMMY token reaches AUTH (real 401 Invalid bearer token)
+     ↓ .claude state under the named-volume HOME persists across a restart
+     ↓ the offline default truly has no egress (curl reaches nothing)
+     ↓ supplies the token only to the Docker run process environment
+     ↓ redacts a token echoed by a failing Docker client
+     ↓ redacts a token echoed by a failed firewall command and tears down without it
+     ↓ applies the firewall inside the box for anthropic-only
+     ↓ destroys the box when the firewall cannot be applied
+     ↓ does not exec anything extra for offline, which needs no rules
+     ↓ defaults to offline, so the guaranteed posture needs no opt-in
+     ↓ the firewall script it applies is the one network.ts produced
+     × refuses ready after offline run and retains exact cleanup truth 3ms
+     × refuses ready after Anthropic run before firewall and retains exact cleanup truth 0ms
+     × refuses ready after successful firewall and retains exact cleanup truth 0ms
+     × refuses ready after successful firewall with unavailable cleanup and retains exact cleanup truth 0ms
+ ↓ state-contracts.test.ts (14 tests | 14 skipped)
+ ↓ claude-inside-cli.test.ts (17 tests | 17 skipped)
+
+ Test Files  1 failed | 2 skipped (3)
+      Tests  4 failed | 56 skipped (60)
+   Start at  16:47:13
+   Duration  885ms (transform 162ms, setup 0ms, import 323ms, tests 5ms, environment 0ms)
+
+JSON report written to C:/Users/brenn/AppData/Local/Temp/ca-sandbox-claude-late-cancel/RED-vitest.json

@@ -1,0 +1,103 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools; actual isolated Windows/amd64 Python3.14.6 source/test component run"
+  },
+  "inputs": {
+    ".github/scripts/test_release_target.py": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+    ".github/scripts/release_target.py": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    ".github/scripts/_npm_publishlib.py": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:findings:C-F01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/named-results.json",
+      "sha256": "4e93ffd578a4c3d966b9945ccd6aef63d592dd9ddc71be000bb9313449f59caa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/command.json",
+      "sha256": "618130214c7aeac817f0263111eadd3eb999d4be0949d456387d3fd889ce441d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/stdout.log",
+      "sha256": "fe1e8ee4292c1d11fc362e6f14216734816012fbd1089a242e2546591913a609"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/stderr.log",
+      "sha256": "f51f0ce8527fbdef77b84005c2b8237bab8d9bd7ef6b83207a94c87231c8352a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/inputs-before.json",
+      "sha256": "3964401aad867c53ae7e2732cb7df99399f27fb8c901a5c509020ddb2ba739a9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/inputs-after.json",
+      "sha256": "3964401aad867c53ae7e2732cb7df99399f27fb8c901a5c509020ddb2ba739a9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/observer.py",
+      "sha256": "56845d250e4ee5785b22dd5b46e801420681b7847b95c474a2ca63ad6d96039c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/assertion-map.json",
+      "sha256": "e17f94d78a5d11ad1fe0af692563e54640382976b590f8e3bc854adf7e74b6d4"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\observer.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:C-F01",
+      "assertion_ids": [
+        "test_release_target.EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+        "test_release_target.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state",
+        "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+        "test_release_target.CompletionModelTests.test_another_sources_unfinished_version_is_refused_with_its_owner",
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+        "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+        "test_release_target.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+        "test_release_target.FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+        "test_release_target.ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused",
+        "test_release_target.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it",
+        "test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified"
+      ],
+      "scope": "Actual pure local eligibility/planning defect boundary and hermetic interruption/component fixture acceptance; not live publication"
+    }
+  ],
+  "platform": "windows/amd64",
+  "scope": "The original finding explicitly describes a pure local decision probe. Real maintained eligible() and plan() agree on public missing receipt; completion/digest/source/receipt failure controls and interrupted model recovery pass. External publication is separate.",
+  "limits": [
+    "Actual local Windows/amd64 Python3.14.6 source-test/component acceptance only. Direct RT eligible/observe/plan/verify_receipt and registry classifier execute; PublicationRun is a hermetic test model, not the production composite shell or external publication.",
+    "No gh/npm/registry/marketplace/provider/network/publication effects. Real API/digest/artifact admission, OIDC/signatures/provenance and original hosted failed-job rerun are unexecuted.",
+    "The existing four composition tests inspect actual action text/gates/order; they do not execute shell or establish every source-to-effect correspondence.",
+    "No whole R-01 task, SEQ-22, machine or program closure. Only the documented pure local C-F01 defect boundary is TESTED.",
+    "Fresh isolated child before project imports with PYTHONDONTWRITEBYTECODE and PYTHONNOUSERSITE; no installed/bootstrap bytecode-completeness attestation. All9 declared source/data inputs were immutableGit==working before/after.",
+    "Original reported42PASS lane summary is inventory only and not used as actual command evidence."
+  ]
+}

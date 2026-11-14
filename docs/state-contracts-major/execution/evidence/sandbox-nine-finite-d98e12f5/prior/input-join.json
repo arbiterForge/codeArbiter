@@ -1,0 +1,185 @@
+{
+  "schema": "codearbiter.literal-source-join/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "physical_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "literal_object_database": "C:/Users/brenn/AppData/Local/Temp/ca-major-object-recovery-hpvs51lw/objects.git",
+  "recovery_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-host-observer-integration-root/read-only-object-recovery.json",
+  "git_discovery_failure": "Gov worktree gitdir unavailable; no repair attempted. Every literal read used explicit recovered origin bare DB.",
+  "current_inputs": {
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+    "plugins/ca-sandbox/tools/exec.test.ts": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+    "plugins/ca-sandbox/tools/network.test.ts": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "b40ae21eec8ff1bfaa707e827627fad2d0ef4f8505491ad7b52055295a5e5727",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+    "plugins/ca-sandbox/tools/sandbox.js": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/README.md": "b024372b828c7281a68ff7a4542ba20405a356449147e50ad346c5d59f624c8d",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "all_physical_equal_literal_commit": true,
+  "original_unchanged_path_joins": [
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/docker.ts",
+      "sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/exec.ts",
+      "sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/network.ts",
+      "sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/run.ts",
+      "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+      "sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+      "sha256": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "path": "plugins/ca-sandbox/tools/exec.test.ts",
+      "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/docker.ts",
+      "sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/exec.ts",
+      "sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/network.ts",
+      "sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/run.ts",
+      "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+      "sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+      "sha256": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/exec.test.ts",
+      "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+      "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/docker.ts",
+      "sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/exec.ts",
+      "sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/network.ts",
+      "sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/run.ts",
+      "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+      "sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+      "sha256": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/exec.test.ts",
+      "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+      "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+      "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "whole_bytes_unchanged": true
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/network.test.ts",
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+      "scope": "12 pure original method declarations and callbacks, complete contiguous describe sections",
+      "sha256": "684215c80bc4f2a2e16745cb6d5276eca936925ed52aae2cb7b800933c32f6bd",
+      "exact_section_unchanged": true,
+      "excluded_changes": "imports/comments and subsequent owned-peer Docker fixtures/counter controls"
+    }
+  ],
+  "frozen_network_planner_whole_bytes_unchanged": true,
+  "ledger_preimage_sha256": "32e6a9b9baa35ed99df765c202213fb5340928017c2d9fe9ba5cfec8b0e84344"
+}

@@ -159,6 +159,42 @@ describe("Pi farm preview routing", () => {
     expect(terminate).toHaveBeenCalledWith("cancelled");
   });
 
+  test.each(["unverified", "rejected"] as const)(
+    "cancellation retains unverified cleanup when settlement is %s",
+    async (settlement) => {
+      const input = await fixture();
+      const controller = new AbortController();
+      const child = new FakeFarmChild();
+      let markSpawned!: () => void;
+      const spawned = new Promise<void>((resolveSpawned) => { markSpawned = resolveSpawned; });
+      let releaseCleanup!: () => void;
+      const cleanupAllowed = new Promise<void>((resolveCleanup) => { releaseCleanup = resolveCleanup; });
+      const terminate = vi.fn(async () => {
+        await cleanupAllowed;
+        if (settlement === "rejected") throw new Error("PrivateCleanupFixtureValue");
+        return { reason: "cancelled" as const, state: "failed" as const, escalated: true, verified: false };
+      });
+      let settled = false;
+      const pending = runFarmPreview(input, controller.signal, {
+        spawn: (() => { markSpawned(); return child; }) as unknown as FarmSpawn,
+        createCleanup: () => ({ ready: async () => true, terminate }),
+      }).finally(() => { settled = true; });
+      await spawned;
+      await new Promise<void>((resolveTurn) => setImmediate(resolveTurn));
+      controller.abort();
+      await new Promise<void>((resolveTurn) => setImmediate(resolveTurn));
+      expect(settled).toBe(false);
+      expect(terminate).toHaveBeenCalledTimes(1);
+      expect(terminate).toHaveBeenCalledWith("cancelled");
+      releaseCleanup();
+      const result = await pending;
+      expect(result.terminal).toBe("degraded");
+      expect(result.message).toMatch(/cancel/u);
+      expect(result.message).toMatch(/cleanup.*not.*verified/u);
+      expect(JSON.stringify(result)).not.toContain("PrivateCleanupFixtureValue");
+    },
+  );
+
   test("cancellation during prelaunch filesystem checks prevents spawn", async () => {
     const input = await fixture();
     const controller = new AbortController();

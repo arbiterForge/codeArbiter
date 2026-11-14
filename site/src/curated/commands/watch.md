@@ -22,6 +22,15 @@ without touching any tracked file (the fix itself routes through `/ca:fix` or `/
 review, leaving the default branch untouched. On green, it notifies and presents the merge command
 as an offer — it never runs `gh pr merge` itself.
 
+After the watcher exits, arbiter reads the current check states once and verifies
+that they match the PR's current head before offering a merge. Exit zero alone is
+not green: gh 2.93.0 can return zero with cancelled checks. Cancelled checks leave
+verification incomplete; timed-out checks follow the red path. If the user stops
+the watch, the host task times out, or the process is interrupted, arbiter reports
+the stop without a green verdict or automatic restart. The refresh interval is
+not a deadline, and this command sets no elapsed-time timeout. Stopping the local
+watcher does not cancel GitHub workflow runs.
+
 `CODEARBITER_BABYSIT` (default off) governs whether `/ca:pr` auto-attaches a watcher to the PR it
 opens; `/ca:watch <PR>` itself works ad-hoc regardless of that flag.
 

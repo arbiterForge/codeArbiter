@@ -1,0 +1,22 @@
+{
+  "phase": "GREEN",
+  "tests": [
+    "test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+    "test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
+    "test_mapped_preclaim_programmer_error_is_not_swallowed",
+    "test_mapped_partial_issue_success_does_not_repeat_when_project_fails",
+    "test_mapped_issue_noop_reads_remote_and_repeated_sync_detects_drift",
+    "test_mapped_project_noop_reads_remote_and_repeated_sync_detects_drift",
+    "test_transport_refuses_unlisted_token_destinations"
+  ],
+  "tests_run": 7,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "successful": true,
+  "seconds": 67.1418964000186,
+  "source_sha256": "c3a3e6307cf2cbbaba3fcfd034274e19c14db08d068c061c9aed28915ba28ebf",
+  "test_sha256": "a63d395bde66c59e3c0195285fc4b68de2c28c9575ea7f504efa60b5d9c96269",
+  "log_sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38",
+  "execution": "Actual canonical _workgithub source candidate with original test module __file__ identity and unchanged real native fixture builder; fake provider only; no GitHub network."
+}

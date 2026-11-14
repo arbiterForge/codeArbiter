@@ -38,6 +38,19 @@ a phantom watcher.
    watch mode", default 10 in gh 2.93.0) — those are CLI-side API requests, not model
    calls. There is no agent polling loop and no interval-based model wake-up: arbiter
    is re-invoked once, when the watch process exits.
+   Before choosing red or green, read the current checks once with
+   `gh pr checks <PR> --json name,state,bucket,link` and confirm they belong to the
+   PR's current head under the merge-readiness rules. Exit zero alone is not green:
+   gh 2.93.0 can exit zero with cancelled checks. Report cancelled checks as
+   incomplete verification; do not offer a merge or restart them automatically.
+   A check with `TIMED_OUT` is a failure and follows the red path.
+
+   **If the watch stops early:** a user cancellation, host task timeout or process
+   interruption leaves the CI verdict unverified. Report the stop and any last
+   observed checks, then stop; do not turn it into green or restart the watch
+   automatically. `--interval` controls refresh frequency, not a deadline;
+   `gh pr checks --watch` has no elapsed-time timeout option. Stopping this local
+   watcher does not cancel GitHub's workflow runs.
 3. **On red** — retrieve the failing job's logs (`gh run view --log-failed` /
    `gh pr checks`) and act at the configured depth. Resolve that depth with the
    canonical resolver rather than reading the env var by hand (so the accepted

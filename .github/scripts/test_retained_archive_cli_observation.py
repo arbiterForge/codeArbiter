@@ -10,23 +10,24 @@ import unittest
 from unittest import mock
 
 
-def fixture():
+def fixture(platform="windows/amd64"):
+    native_name = "ca-artifact-" + platform.replace("/", "-") + (".exe" if platform.startswith("windows/") else "")
     source, tree, run, job = "a" * 40, "b" * 40, 7, 9
     digest = lambda b: hashlib.sha256(b).hexdigest()
     text = lambda v: json.dumps(v, sort_keys=True)
     binary, bridge = "c" * 64, "d" * 64
     manifest = {"format":"codearbiter.artifact-release/0.1.0", "version": "0.1.0", "protocol": "codearbiter.artifact-api/0.1.0", "schema_version": "0.3.2",
-                "binaries": {"windows/amd64": {"file": "ca-artifact-windows-amd64.exe", "sha256": binary, "native_tested": True}}}
-    manifest["context_qualification"] = {"windows/amd64": {"source_commit":source, "workflow":".github/workflows/ci.yml", "run_id":str(run), "binary_sha256":binary, "observation_sha256":"9"*64, "module_sha256":"0"*64, "native_cases":["TestContextBoundedRender","TestContextDocumentContract","TestContextMarkdownPreservation","TestContextMutationAdmission","TestContextRecoveryAndPaths","TestContextRepresentationBoundary"]}}
+                "binaries": {platform: {"file": native_name, "sha256": binary, "native_tested": True}}}
+    manifest["context_qualification"] = {platform: {"source_commit":source, "workflow":".github/workflows/ci.yml", "run_id":str(run), "binary_sha256":binary, "observation_sha256":"9"*64, "module_sha256":"0"*64, "native_cases":["TestContextBoundedRender","TestContextDocumentContract","TestContextMarkdownPreservation","TestContextMutationAdmission","TestContextRecoveryAndPaths","TestContextRepresentationBoundary"]}}
     mr = text(manifest)
     promotion = {"format": "codearbiter.artifact-promotion/0.1.0", "source_commit": source,
                  "workflow": ".github/workflows/ci.yml", "run_id": str(run),
                  "version": "0.1.0", "protocol": manifest["protocol"], "schema_version": "0.3.2",
                  "hosts": {"claude": "plugins/ca/helpers/artifacts", "codex": "plugins/ca-codex/helpers/artifacts", "pi": "plugins/ca-pi/helpers/artifacts"},
-                 "qualifications": {"windows/amd64": {"binary_sha256": binary}}}
+                 "qualifications": {platform: {"binary_sha256": binary}}}
     pr = text(promotion)
     package_members = {"plugins/ca/helpers/artifacts/release.json": {"sha256": digest(mr.encode())},
-                       "plugins/ca/helpers/artifacts/ca-artifact-windows-amd64.exe": {"sha256": binary},
+                       "plugins/ca/helpers/artifacts/" + native_name: {"sha256": binary},
                        "plugins/ca/hooks/_artifactlib.py": {"sha256": bridge}}
     package = {"file": "claude.tar.gz", "sha256": "e" * 64, "members": package_members}
     cohort = {"format": "codearbiter.artifact-package-cohort/0.1.0", "source_commit": source, "source_tree": tree,
@@ -36,7 +37,7 @@ def fixture():
     cr = text(cohort)
     receipt = {"format": "codearbiter.artifact-cold-execution/0.3.0", "source_commit": source,
         "workflow": ".github/workflows/ci.yml", "run_id": str(run), "job": "artifact-package-cold", "host": "claude",
-        "platform": "windows/amd64", "promotion_receipt_sha256": digest(pr.encode()), "package_sha256": package["sha256"],
+        "platform": platform, "promotion_receipt_sha256": digest(pr.encode()), "package_sha256": package["sha256"],
         "manifest_sha256": digest(mr.encode()), "binary_sha256": binary, "response_sha256": "1" * 64,
         "operation": "capabilities", "repository_operations_available": True, "runtime_downloads": False,
         "installed_workflow_response_sha256": "2" * 64, "installed_bridge_sha256": bridge,
@@ -54,17 +55,17 @@ def fixture():
         stage_name: {"artifact_id": 10, "archive_sha256": "5" * 64,
             "members": [{"path": "artifact-promotion.json", "sha256": digest(pr.encode())},
                 {"path": "plugins/ca/helpers/artifacts/release.json", "sha256": digest(mr.encode())},
-                {"path": "plugins/ca/helpers/artifacts/ca-artifact-windows-amd64.exe", "sha256": binary}]}}
+                {"path": "plugins/ca/helpers/artifacts/" + native_name, "sha256": binary}]}}
     consumed = {role: {"artifact_name": name, **payloads[name]} for role, name in (("promoted-stage", stage_name), ("release-packages", packages_name))}
     source_stamp = {"repository":"C:/repo", "source_commit": source, "source_tree": tree, "clean": True,
                     "inputs": {"tools/build-host-packages.py": "6" * 64}, "core_python_members": ["_artifactlib.py"],
-                    "host_lookup": {"path": "core/pysrc/_host.py", "path_style": "windows", "present": False}}
+                    "host_lookup": {"path": "core/pysrc/_host.py", "path_style": "windows" if platform.startswith("windows/") else "posix", "present": False}}
     runtime = {"python": {"path": "C:/Python/python.exe", "sha256": "7" * 64},
                "git": {"path": "C:/Git/git.exe", "sha256": "8" * 64}}
     payload_stamp = {role: {"root":"C:/stage" if role=="promoted-stage" else "C:/packages", "members":{m["path"]: m["sha256"] for m in consumed[role]["members"]}} for role in consumed}
     binding = {"format": "codearbiter.installed-observation-binding/1", "profile": "retained-cold-package-v1",
         "source_commit": source, "source_tree": tree, "workflow": ".github/workflows/ci.yml", "ci_run_id": run, "producer_job_id": job,
-        "host": "claude", "platform": "windows/amd64", "consumed_payloads": consumed,
+        "host": "claude", "platform": platform, "consumed_payloads": consumed,
         "cohort_sha256": digest(cr.encode()), "promotion_receipt_sha256": digest(pr.encode()),
         "documents": {"cohort": {"path": "artifact-package-cohort.json", "json_utf8": cr},
                       "promotion": {"path": "artifact-promotion.json", "json_utf8": pr},
@@ -72,7 +73,7 @@ def fixture():
         "cold_receipt": receipt, "source_before": source_stamp, "source_after": copy.deepcopy(source_stamp),
         "runtime_before": runtime, "runtime_after": copy.deepcopy(runtime),
         "payload_before": payload_stamp, "payload_after": copy.deepcopy(payload_stamp)}
-    tests = [{"id": "cli:tools/build-host-packages.py:cold:claude:windows/amd64", "result": "passed"}]
+    tests = [{"id": "cli:tools/build-host-packages.py:cold:claude:" + platform, "result": "passed"}]
     tests += [{"id": "receipt:.github/scripts/test_context_installed.py:" + t["name"], "result": "passed"} for t in receipt["context_installed_tests"]]
     req = {"source_commit": source, "source_tree": tree, "ci_run_id": run,
            "cells": ["installed:claude:workflow"], "cell_jobs": {"installed:claude:workflow": "cold owning job"}}
@@ -80,7 +81,7 @@ def fixture():
         "ci_run_id": run, "source_stable": True, "proof_kind": "retained-archive-cli", "producer": "retained-cold-package-observer-v1",
         "argv": ["C:/Python/python.exe", "-I", "-B", "C:/repo/tools/build-host-packages.py",
             "--release-package-stage", "C:/stage", "--cold-package-root", "C:/packages", "--source-repo", "C:/repo",
-            "--cold-host", "claude", "--cold-platform", "windows/amd64", "--trusted-source-commit", source,
+            "--cold-host", "claude", "--cold-platform", platform, "--trusted-source-commit", source,
             "--trusted-workflow", ".github/workflows/ci.yml", "--trusted-workflow-run", str(run),
             "--cold-promotion-receipt-sha256", digest(pr.encode()), "--cold-receipt", "C:/output/artifact-package-cold.json"], "exit_code": 0,
         "tests": tests, "installed_binding": binding}
@@ -101,7 +102,40 @@ class ColdBindingTest(unittest.TestCase):
         value = self.admit()
         self.assertEqual(value["payload_artifact_ids"], [8, 10])
         self.assertEqual(len(value["tests"]), 4)
-        self.assertEqual(value["installed_cells"], ["installed:claude:workflow"])
+        self.assertEqual(value["installed_cells"], ["installed:claude:workflow", "installed:native:windows:amd64"])
+
+    def test_executed_package_qualifies_only_its_native_platform(self):
+        import major_qualification_report as report_owner
+        import retained_archive_cli_observation as profile
+        platforms = ("linux/amd64", "linux/arm64", "windows/amd64", "windows/arm64",
+                     "darwin/amd64", "darwin/arm64")
+        for platform in platforms:
+            with self.subTest(platform=platform):
+                req, selection, observed, payloads = fixture(platform)
+                native = "installed:native:" + platform.replace("/", ":")
+                req["cells"].append(native)
+                req["cell_jobs"][native] = "cold owning job"
+                selection["groups"][0]["cells"] = req["cells"][:]
+                report = report_owner.build_report(
+                    req, job_name="cold owning job", job_id=9, selections=selection,
+                    observations={"cold": observed}, payloads=payloads,
+                )
+                self.assertEqual({row["cell"] for row in report["results"]}, set(req["cells"]))
+                self.assertTrue(all(row["selected_population"] == row["executed_population"] == 4
+                                    and row["payload_artifact_ids"] == [8, 10] for row in report["results"]))
+                admitted = profile.admit(observed, req=req, job_id=9, authenticated_payloads=payloads)
+                self.assertEqual(admitted["installed_cells"], ["installed:claude:workflow", native])
+                for other in platforms:
+                    if other == platform:
+                        continue
+                    cell = "installed:native:" + other.replace("/", ":")
+                    req["cells"] = [cell]; req["cell_jobs"] = {cell: "cold owning job"}
+                    selection["groups"][0]["cells"] = [cell]
+                    with self.subTest(requested=cell), self.assertRaisesRegex(ValueError, "cold profile"):
+                        report_owner.build_report(
+                            req, job_name="cold owning job", job_id=9, selections=selection,
+                            observations={"cold": observed}, payloads=payloads,
+                        )
 
     def test_source_test_argv_cannot_be_relabelled_with_a_copied_binding(self):
         with self.assertRaises(ValueError):
@@ -296,5 +330,92 @@ class PhysicalSourceTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,"linked observer"):
                     owner.physical_members(root)
             finally:link.rmdir() if os.name=="nt" else link.unlink()
+
+
+
+class ColdCliDiagnosticTest(unittest.TestCase):
+    def render_cli_error(self, error):
+        import ast
+        import contextlib
+        import io
+        import retained_archive_cli_observation as owner
+        tree = ast.parse(Path(owner.__file__).read_bytes())
+        branch = next(node for node in tree.body if isinstance(node, ast.If)
+                      and isinstance(node.test, ast.Compare)
+                      and isinstance(node.test.left, ast.Name)
+                      and node.test.left.id == "__name__")
+        def fail():
+            raise error
+        namespace = dict(vars(owner), __name__="__main__", main=fail)
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as stopped:
+            exec(compile(ast.Module(body=[branch], type_ignores=[]), owner.__file__, "exec"), namespace)
+        self.assertEqual(stopped.exception.code, 1)
+        expected = hashlib.sha256(str(error).encode("utf-8", errors="replace")).hexdigest()
+        self.assertIn("diagnostic_sha256=" + expected, stderr.getvalue())
+        return stderr.getvalue()
+
+    def chained(self, cause):
+        outer = ValueError("upload attribution unavailable or malformed")
+        outer.__cause__ = cause
+        return outer
+
+    def test_cli_distinguishes_underlying_upload_log_command_failure(self):
+        output = self.render_cli_error(self.chained(ValueError("readiness observation failed: gh")))
+        self.assertIn("code=UPLOAD_LOG_COMMAND_FAILED;", output)
+
+    def test_cli_distinguishes_fixed_timeouts_and_attribution_rejections(self):
+        for containment in ("exited", "terminated", "unconfirmed"):
+            with self.subTest(containment=containment):
+                error = self.chained(ValueError("readiness observation timed out; containment=" + containment))
+                self.assertIn("code=UPLOAD_LOG_TIMEOUT;", self.render_cli_error(error))
+        for reason in ("required exact upload step did not succeed",
+                       "artifact created outside claimed upload step",
+                       "upload attribution log exceeds bound",
+                       "claimed upload step did not run the pinned artifact uploader",
+                       "artifact ID/name/digest not finalized by claimed upload job"):
+            with self.subTest(reason=reason):
+                self.assertIn("code=UPLOAD_ATTRIBUTION_REJECTED;",
+                              self.render_cli_error(self.chained(ValueError(reason))))
+
+    def test_cli_classifies_fixed_metadata_and_encoding_failures(self):
+        cases = [(KeyError("created_at"), "UPLOAD_METADATA_INVALID"),
+                 (ValueError("invalid upload time identity"), "UPLOAD_METADATA_INVALID"),
+                 (ValueError("Invalid isoformat string: 'fixture-private-value'"), "UPLOAD_METADATA_INVALID"),
+                 (UnicodeDecodeError("utf8", b"\xff", 0, 1, "invalid start"), "UPLOAD_LOG_MALFORMED")]
+        for cause, code in cases:
+            with self.subTest(code=code):
+                output = self.render_cli_error(self.chained(cause))
+                self.assertIn("code=" + code + ";", output)
+                self.assertNotIn("fixture-private-value", output)
+
+    def test_cli_unknown_secret_and_unrelated_command_failures_stay_unknown(self):
+        private = "fixture-private-canary https://example.invalid/?auth=fixture-value"
+        for error in (self.chained(ValueError(private)), ValueError(private),
+                      ValueError("readiness observation failed: gh"),
+                      self.chained(KeyError(private))):
+            with self.subTest(error_type=type(error).__name__):
+                output = self.render_cli_error(error)
+                self.assertIn("code=UNKNOWN;", output)
+                self.assertNotIn(private, output)
+                self.assertNotIn("example.invalid", output)
+
+    def test_cli_cyclic_or_oversized_cause_chain_is_bounded(self):
+        cycle = self.chained(ValueError("unknown"))
+        cycle.__cause__.__cause__ = cycle
+        self.assertIn("code=UNKNOWN;", self.render_cli_error(cycle))
+        chain = self.chained(ValueError("readiness observation failed: gh"))
+        for _ in range(20):
+            wrapper = ValueError("unknown wrapper")
+            wrapper.__cause__ = chain
+            chain = wrapper
+        self.assertIn("code=UNKNOWN;", self.render_cli_error(chain))
+
+    def test_cli_unknown_cause_string_is_never_rendered(self):
+        class UnsafeString(ValueError):
+            def __str__(self):
+                raise AssertionError("unknown cause string must not be evaluated")
+        self.assertIn("code=UNKNOWN;", self.render_cli_error(self.chained(UnsafeString("untrusted"))))
+
 
 if __name__ == "__main__": unittest.main(verbosity=2)

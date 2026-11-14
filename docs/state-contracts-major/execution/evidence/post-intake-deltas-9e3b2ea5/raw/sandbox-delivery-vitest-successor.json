@@ -1,0 +1,219 @@
+{
+  "schema": "codearbiter.sandbox-cache-cancel-actual-vitest-successor/1",
+  "state": "TEMP_FROZEN;SOURCE_BEHAVIOR_VERIFIED;PARTIAL_COVERAGE;NOT_INSTALLED_QUALIFICATION",
+  "predecessor_delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\delivery.json",
+    "sha256": "4662e6927a15acbdf0c6b0b48b333381b2acf4303ac22b292a4bb9b212c0a7b8"
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\proposal.patch",
+    "sha256": "55a6b986a659b7c3558c43263bb6d6152ac606fd292ca65d6f1184c5ad8446d0"
+  },
+  "apply_files": [
+    {
+      "target": "plugins/ca-sandbox/tools/build.ts",
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\candidate\\plugins\\ca-sandbox\\tools\\build.ts",
+      "preimage_sha256": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+      "sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39"
+    },
+    {
+      "target": "plugins/ca-sandbox/tools/build.test.ts",
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\candidate\\plugins\\ca-sandbox\\tools\\build.test.ts",
+      "preimage_sha256": "872ff21ccd5b2c25009d34246a45561a770c6128ab526c9ceb03551c04a6f30c",
+      "sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9"
+    }
+  ],
+  "source": "8623cd46a79429be66fd1abf0fd2d614dcd22f0e",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "actual_project_run": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\actual-vitest-exit.json",
+    "sha256": "dbef206991ff4fde1a31f991058d45d9b1e38c2fbd2b6edd6e9b25a3b93b58e5"
+  },
+  "actual_named_results": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\actual-vitest-result.json",
+    "sha256": "6f482e8e83fbb8b6d24afc4cb263594156c5adee210fa889cce3b93ed9fdac0c"
+  },
+  "actual_coverage_final": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\actual-vitest-coverage\\coverage-final.json",
+    "sha256": "0a73f8e31d4a120c1510a2b7118d2aad772ebd0e661e0f92aca3807928e06f52"
+  },
+  "actual_coverage_summary": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\actual-vitest-coverage\\coverage-summary.json",
+    "sha256": "86064d8067a7c04d3dda979e511eaea487db3213ca2e2a03733672a876a5bf94"
+  },
+  "actual_config": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\vitest-verify.config.mjs",
+    "sha256": "97e3476639d5a5d3583c50255c7eb8e4220e6f3132162848f27b90651fe4766e"
+  },
+  "actual_command_runner": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\run-vitest.py",
+    "sha256": "e3e657703616678be790fb36ffa18b2add0fccc5a38e7a50f843826573d5838d"
+  },
+  "selected_tests_passed": 2,
+  "other_tests_filtered_not_qualified": 22,
+  "guard_source_mapping": {
+    "file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\vitest-project\\build.ts",
+    "source_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+    "line": 835,
+    "statements": [
+      {
+        "id": "376",
+        "location": {
+          "start": {
+            "line": 835,
+            "column": 6
+          },
+          "end": {
+            "line": 835,
+            "column": null
+          }
+        },
+        "hits": 2
+      }
+    ],
+    "adjacent_branches": [
+      {
+        "id": "136",
+        "location": {
+          "loc": {
+            "start": {
+              "line": 834,
+              "column": 4
+            },
+            "end": {
+              "line": 837,
+              "column": null
+            }
+          },
+          "type": "if",
+          "locations": [
+            {
+              "start": {
+                "line": 834,
+                "column": 4
+              },
+              "end": {
+                "line": 837,
+                "column": null
+              }
+            },
+            {
+              "start": {},
+              "end": {}
+            }
+          ],
+          "line": 834
+        },
+        "hits": [
+          2,
+          0
+        ]
+      },
+      {
+        "id": "137",
+        "location": {
+          "loc": {
+            "start": {
+              "line": 834,
+              "column": 8
+            },
+            "end": {
+              "line": 834,
+              "column": 97
+            }
+          },
+          "type": "binary-expr",
+          "locations": [
+            {
+              "start": {
+                "line": 834,
+                "column": 8
+              },
+              "end": {
+                "line": 834,
+                "column": 20
+              }
+            },
+            {
+              "start": {
+                "line": 834,
+                "column": 20
+              },
+              "end": {
+                "line": 834,
+                "column": 65
+              }
+            },
+            {
+              "start": {
+                "line": 834,
+                "column": 65
+              },
+              "end": {
+                "line": 834,
+                "column": 97
+              }
+            }
+          ],
+          "line": 834
+        },
+        "hits": [
+          2,
+          2,
+          2
+        ]
+      }
+    ],
+    "limits": "V8 has no distinct optional-chain branch entry for this guard. Do not infer a100percent branch result. Actual named tests prove uncancelled reuse and exact-reason rejection after cancellation."
+  },
+  "coverage_scope": {
+    "status": "PARTIAL",
+    "original_scope_and_exclusions_preserved": true,
+    "total": {
+      "lines": {
+        "total": 1058,
+        "covered": 89,
+        "skipped": 0,
+        "pct": 8.41
+      },
+      "statements": {
+        "total": 1218,
+        "covered": 90,
+        "skipped": 0,
+        "pct": 7.38
+      },
+      "functions": {
+        "total": 182,
+        "covered": 11,
+        "skipped": 0,
+        "pct": 6.04
+      },
+      "branches": {
+        "total": 900,
+        "covered": 48,
+        "skipped": 0,
+        "pct": 5.33
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "interpretation": "Numeric measurements are a two-test partial selection across the unchanged production population. No whole-tree threshold verdict inferred; supported-host owning coverage still required for its full verdict."
+  },
+  "cache_isolation": "Native config loading; --no-cache; private Temp config cacheDir/coverage/home/temp. Documented Temp-only node_modules junction reads existing pinned dependency graph; no install or repository cache/config edits.",
+  "limits": "Only harmless Docker-info collection probe allowed; exact -t matched two pure tests and no Docker workloads. No full401 suite, new dependency, npm, actual build/install/API/Gov/index/Git/marker edits. Initial immutable delivery and source hashes preserved. Root owns next child delivery and product intent/shipped bytes.",
+  "context_consumed": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\sandbox-cancel-actor-input.txt",
+      "sha256": "edfbd12eef1f388c4942b06423a80d54c1a0f863caf5b70b3deb67ba82ef5282"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\sandbox-cancel-actor-context.json",
+      "sha256": "444361b9b720cd4e7cf7dbfca0f1f8b93a469fd27ad172cf2908057df1403508"
+    }
+  ],
+  "context_blockers": []
+}

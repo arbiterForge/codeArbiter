@@ -105,6 +105,35 @@ describe("buildOrReuseImage — cache hit (AC-04)", async () => {
     expect(res.tag).toMatch(/^ca-sbx:v2-[a-f0-9]{64}$/);
     expect(inspected).toBe(res.tag);
   });
+
+  it("SBX-C01 cancellation during cache identity observation refuses stale reuse", async () => {
+    const controller = new AbortController();
+    const reason = new Error("cancelled while observing cached image identity");
+    let release!: () => void;
+    let observing!: () => void;
+    const held = new Promise<void>(resolve => { release = resolve; });
+    const started = new Promise<void>(resolve => { observing = resolve; });
+    let builds = 0;
+    const deps: BuildDeps = {
+      imageIdentity: async tag => {
+        observing();
+        await held;
+        return { id: "sha256:" + "a".repeat(64), cacheKey: tag.split(":v2-")[1] };
+      },
+      targetPlatform: async () => "linux/amd64",
+      imageInspect: async () => 0,
+      runBuild: async () => { builds++; return { code: 0, out: "" }; },
+      nixpacksVersion: async () => "1.41.0",
+      ensureNixpacks: async () => ({ available: true }),
+    };
+    const pending = buildOrReuseImage("/tmp/cancelled-cache-hit", "deadbeef0000", deps,
+                                     undefined, controller.signal);
+    await started;
+    controller.abort(reason);
+    release();
+    await expect(pending).rejects.toBe(reason);
+    expect(builds).toBe(0);
+  });
 });
 
 describe("buildOrReuseImage — cache miss builds (AC-05)", async () => {

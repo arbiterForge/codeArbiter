@@ -1,0 +1,70 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/scripts/_context_fixturelib.py": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C08:01",
+    "disposition:transitions:C08:02",
+    "disposition:transitions:C08:03"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/inspection.json",
+      "sha256": "fd288169463c568339689052c03f8edb17aac28bae27f80fc82cb02ac3d41687"
+    }
+  ],
+  "scope": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C08:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/_context_fixturelib.py",
+          "start": 37,
+          "end": 196,
+          "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+        }
+      ],
+      "semantic_assessment": "Closed catalog/case/task/oracle fields, finite counts and byte bounds, known setup/kind/tag values, safe path and collision checks, exact UTF-8 content hashes and canonical fixture/oracle digests are checked before returning the description. JSON loading rejects duplicate keys, nonfinite numbers and invalid UTF-8. Unknown case is refused by materialize.",
+      "limits": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established."
+    },
+    {
+      "cell": "disposition:transitions:C08:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/_context_fixturelib.py",
+          "start": 225,
+          "end": 287,
+          "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+        }
+      ],
+      "semantic_assessment": "Materialize revalidates supplied catalog/content hashes before effects; requires exactly one selected case and a new destination under an existing caller-trusted parent; checks destination/ancestors for links/reparse points. Fixed bounded Git commands construct committed/unborn/detached/linked/sparse arrangements, then declared staged/working edits; evaluator is sibling to solver. Existing/linked paths and failed setup stop; partial owned placement can remain. No second concurrent-source CAS is claimed.",
+      "limits": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established."
+    },
+    {
+      "cell": "disposition:transitions:C08:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/_context_fixturelib.py",
+          "start": 260,
+          "end": 296,
+          "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+        }
+      ],
+      "semantic_assessment": "Every fixed Git call uses check=True and 20-second timeout; failed commands cannot reach the return. Successful path records identities/oracle outside solver, obtains no-follow regular-file snapshot and returns solver/evaluator/task/setup/files. Snapshot refuses links/reparse/nonregular files; failure can leave owned partial output and caller must use a fresh destination. This is returned fixture-placement evidence, not independent verification of solver confinement.",
+      "limits": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established."
+    }
+  ],
+  "excluded_cells": []
+}

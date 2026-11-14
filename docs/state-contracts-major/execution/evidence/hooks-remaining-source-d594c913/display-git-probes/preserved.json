@@ -1,0 +1,31 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:display-git-probes:01",
+    "disposition:transitions:hooks:display-git-probes:02",
+    "disposition:transitions:hooks:display-git-probes:03",
+    "disposition:machines:hooks:display-git-probes"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/display-git-probes/source-inspection.json",
+      "sha256": "4a610e649e6b30d3c968ced6d38d0863bc42ea3c9a4f3e8e3a3a67331859878e"
+    }
+  ],
+  "scope": "display-git-probes: 3 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/display-git-probes/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

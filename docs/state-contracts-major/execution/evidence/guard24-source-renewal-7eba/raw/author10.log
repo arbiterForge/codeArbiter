@@ -1,0 +1,15 @@
+test_actual_knowledge_reader_then_protected_file_reads (test_literal_python_reads.CompoundReadRegression.test_actual_knowledge_reader_then_protected_file_reads) ... ok
+test_complete_hook_allows_compound_reads_and_keeps_three_write_guards (test_literal_python_reads.CompoundReadRegression.test_complete_hook_allows_compound_reads_and_keeps_three_write_guards) ... ok
+test_descriptor_redirection_keeps_each_protected_target_in_its_invocation (test_literal_python_reads.CompoundReadRegression.test_descriptor_redirection_keeps_each_protected_target_in_its_invocation) ... ok
+test_inline_nested_heredoc_and_later_interpreter_writes_remain_denied (test_literal_python_reads.CompoundReadRegression.test_inline_nested_heredoc_and_later_interpreter_writes_remain_denied) ... ok
+test_uncertain_shell_syntax_keeps_conservative_scope (test_literal_python_reads.CompoundReadRegression.test_uncertain_shell_syntax_keeps_conservative_scope) ... ok
+test_literal_reads_in_both_shells_have_a_read_only_guard_view (test_literal_python_reads.LiteralPythonReadTest.test_literal_reads_in_both_shells_have_a_read_only_guard_view) ... ok
+test_literal_path_reads_and_batched_prints (test_literal_python_reads.LiteralPythonReadTest.test_literal_path_reads_and_batched_prints) ... ok
+test_unknown_code_and_import_shadowing_are_not_exempted (test_literal_python_reads.LiteralPythonReadTest.test_unknown_code_and_import_shadowing_are_not_exempted) ... ok
+test_shell_boundaries_expansion_and_size_limits_remain_closed (test_literal_python_reads.LiteralPythonReadTest.test_shell_boundaries_expansion_and_size_limits_remain_closed) ... ok
+test_complete_hook_preserves_read_access_and_actual_write_denials (test_literal_python_reads.LiteralPythonReadTest.test_complete_hook_preserves_read_access_and_actual_write_denials) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.246s
+
+OK

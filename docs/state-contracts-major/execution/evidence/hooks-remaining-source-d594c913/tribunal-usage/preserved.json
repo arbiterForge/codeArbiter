@@ -1,0 +1,31 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "plugins/ca-codex/hooks/tribunal-usage.py": "cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c",
+    "plugins/ca/hooks/tribunal-usage.py": "2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:tribunal-usage:01",
+    "disposition:transitions:hooks:tribunal-usage:02",
+    "disposition:transitions:hooks:tribunal-usage:03",
+    "disposition:transitions:hooks:tribunal-usage:04",
+    "disposition:machines:hooks:tribunal-usage"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-usage/source-inspection.json",
+      "sha256": "5fb07ef4ed6727dfdd1c48f94ed3d3e123c6b335b73cd93ef2c53b62f8dd8f00"
+    }
+  ],
+  "scope": "tribunal-usage: 4 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-usage/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

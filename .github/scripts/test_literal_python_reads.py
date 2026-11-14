@@ -137,5 +137,89 @@ class LiteralPythonReadTest(unittest.TestCase):
                 self.assertEqual((Path(repo) / path).read_bytes(), before)
 
 
+class CompoundReadRegression(unittest.TestCase):
+    targets = (
+        ('.codearbiter/CONTEXT.md', 'H-18', guards.CONTEXT_INTERP_RE, guards.CONTEXT_NAME_RE),
+        ('.codearbiter/overrides.log', 'H-05', guards.LOG_INTERP_RE, guards.LOG_NAME_RE),
+        ('.codearbiter/decisions/0001-seed.md', 'H-11', guards.DECISIONS_INTERP_RE, guards.DECISIONS_NAME_RE),
+    )
+
+    def reader(self):
+        # The reported command shape, with portable fixture installation paths.
+        return ("& 'C:/runtime/python.exe' -B -X utf8 "
+                "'C:/plugins/ca-codex/hooks/knowledge.py' read security-controls")
+
+    def test_actual_knowledge_reader_then_protected_file_reads(self):
+        for path, tag, interp, names in self.targets:
+            for separator in ('; ', '\n', '\r\n', ' && ', ' || '):
+                command = self.reader() + separator + "Get-Content -Raw '" + path + "'"
+                with self.subTest(tag=tag, separator=repr(separator)):
+                    self.assertFalse(guards._interp_protected_write(command, interp, names),
+                                     'Interpreter cannot inherit a later read statement operand')
+
+    def denial_commands(self, path):
+        return [
+            f'python tool.py {path}',
+            f'python -m tool {path}',
+            f'python -c "print(1);open(\'{path}\',\'w\').write(\'x\')"',
+            f'python -c "\nprint(1);open(\'{path}\',\'w\').write(\'x\')\n"',
+            f'bash -c "python tool.py {path}"',
+            f"python - <<'EOF'\nfrom pathlib import Path\nPath('{path}').write_text('x')\nEOF",
+            f'pwsh -Command "Get-Content other;Set-Content {path} x"',
+            f'python reader.py; python writer.py {path}',
+            f'python writer.py >& {path}',
+            f'python writer.py 2>&1 {path}',
+            f'Write-Output "$(python tool.py "x;{path}")"',
+        ]
+
+    def test_inline_nested_heredoc_and_later_interpreter_writes_remain_denied(self):
+        for path, tag, interp, names in self.targets:
+            for command in self.denial_commands(path):
+                with self.subTest(tag=tag, command=command):
+                    self.assertTrue(guards._interp_protected_write(command, interp, names))
+
+    def test_descriptor_redirection_keeps_each_protected_target_in_its_invocation(self):
+        for path, tag, interp, names in self.targets:
+            command = f'python writer.py >& {path}'
+            with self.subTest(tag=tag, command=command):
+                self.assertTrue(guards._interp_protected_write(command, interp, names),
+                                'Descriptor ampersand is not an independent statement boundary')
+
+    def test_uncertain_shell_syntax_keeps_conservative_scope(self):
+        for path, tag, interp, names in self.targets:
+            for command in (
+                f'python tool.py \\\n {path}',
+                f'python tool.py ^; {path}',
+                f'python tool.py --% ; {path}',
+                f'cmd.exe /c python tool.py; {path}',
+                f'python tool.py `\n {path}',
+                f'python tool.py; Get-Content "unterminated {path}',
+                f'python tool.py; (Get-Content {path})',
+                f'python tool.py; Get-Content \u201c{path}\u201d',
+                f'python tool.py; Get-Content ' + ' ' * 33000 + path,
+            ):
+                with self.subTest(tag=tag, command=command[:100]):
+                    self.assertTrue(guards._interp_protected_write(command, interp, names))
+
+    def test_complete_hook_allows_compound_reads_and_keeps_three_write_guards(self):
+        spec = importlib.util.spec_from_file_location('compound_fixture_hooks', HERE / 'test_hook_guards.py')
+        fixture = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(fixture)
+        fixture.PRE_BASH = str(ROOT / 'core/pysrc/pre-bash.py')
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = fixture.make_fixture(temporary, 'feature/compound-read')
+            for path, tag, interp, names in self.targets:
+                before = (Path(repo) / path).read_bytes()
+                command = self.reader() + "; Get-Content -Raw '" + path + "'"
+                allowed = fixture.run_hook(repo, command, tool_name='PowerShell')
+                self.assertEqual(allowed.returncode, 0, allowed.stderr)
+                for command in self.denial_commands(path) + [
+                        self.reader() + f'; Set-Content {path} rewritten']:
+                    denied = fixture.run_hook(repo, command)
+                    self.assertEqual(denied.returncode, 2, command + ': ' + denied.stderr)
+                    self.assertIn('[' + tag + ']', denied.stderr)
+                self.assertEqual((Path(repo) / path).read_bytes(), before)
+
+
 if __name__ == '__main__':
     unittest.main()

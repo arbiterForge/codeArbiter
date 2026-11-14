@@ -1,0 +1,30 @@
+{
+  "fixture": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-evidence-crlf-git-r_esdv83",
+  "git": "git version 2.55.0.windows.3",
+  "preimage_sha256": "6f3fefb7a59f8d2d3555c3651a9e7b0181f05f458b6aae1273243fd65cbc4ecd",
+  "candidate_sha256": "26cc6d455dfa8157d75775e567277638deecce6e5cf02f7878cfa6edf0a3ac96",
+  "RED": "actualCRLF is falsely trailing whitespace",
+  "GREEN": "same exact CRLF bytes pass after only scopedattribute",
+  "byte_exact_index": true,
+  "controls": [
+    {
+      "control": "trailing-space",
+      "refused": true
+    },
+    {
+      "control": "trailing-tab",
+      "refused": true
+    },
+    {
+      "control": "blank-at-eof",
+      "refused": true
+    },
+    {
+      "control": "space-before-tab",
+      "refused": true
+    }
+  ],
+  "out_of_scope_CRLF_refused": true,
+  "no_global_config_change": true,
+  "raw_evidence_changed": false
+}

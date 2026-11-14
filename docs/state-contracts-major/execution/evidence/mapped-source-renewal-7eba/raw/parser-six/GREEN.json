@@ -1,0 +1,18 @@
+{
+  "phase": "GREEN",
+  "tests": [
+    "TransportResponseJSONTest",
+    "GithubWorkTest.test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target",
+    "GithubWorkTest.test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend"
+  ],
+  "tests_run": 6,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "successful": true,
+  "seconds": 59.046184799983166,
+  "source_sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+  "test_sha256": "9365e6ab869b9eb1131940da1851769f3cc4f804bb9b168512420b5d9add7752",
+  "log_sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a",
+  "execution": "Exact Temp candidate module/test compiled with original owning file identity; fake production opener/transport only, no GitHub network. Native fixture only for explicitly named mapped methods."
+}

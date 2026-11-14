@@ -51,7 +51,8 @@ the `ca-sandbox` container-isolation plugin, ships as a separate marketplace ins
 
 ## What's in this directory
 
-`ORCHESTRATOR.md` (the persona injected in enabled repos) · `commands/` · `skills/` · `agents/` ·
-`hooks/` (SessionStart injection + PreToolUse/PostToolUse gates) · `includes/` (routing table,
-reference map, farm setup) · `tools/` (the `--farm` dispatcher) · `SPRINT.md` (the `/ca:sprint`
-mode body).
+`arbiter.md` (arbiter-mode persona body) · `commands/` · `skills/` · `agents/` ·
+`hooks/` (SessionStart setup and state briefing; UserPromptSubmit persona composition
+and delivery; PreToolUse/PostToolUse gates) · `includes/` (safety core, other mode
+bodies, routing table, reference map, farm setup) · `tools/` (the `--farm` dispatcher)
+· `SPRINT.md` (the `/ca:sprint` mode body).
