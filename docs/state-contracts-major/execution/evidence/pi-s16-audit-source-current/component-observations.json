@@ -1,0 +1,208 @@
+{
+  "schema": "codearbiter.pi-historical-component-subset/1",
+  "source_origin": {
+    "run_id": 43532123830,
+    "event_head": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+    "actual_checkout": "83b21cb73190b245291337468aed30c12e628981",
+    "run_event": "pull_request",
+    "run_conclusion": "cancelled",
+    "artifacts": [
+      {
+        "host": "ubuntu",
+        "artifact_id": 14087508655,
+        "job_id": 132252425163,
+        "archive_sha256": "ec9321afa786c33c19b94a37b998e3e57bd3bf6f7639f64a18f0f6c8bd14816c",
+        "members": [
+          {
+            "path": "ubuntu-latest.checked.json",
+            "sha256": "443941587772145b465f9e55477cc00c2e52470aae948899dde87bb52cea3571"
+          },
+          {
+            "path": "ubuntu-latest.json",
+            "sha256": "8c215152e6bc98f70dfc2f267e17538bee82a65e0c3b43031101b46fbcf1e347"
+          },
+          {
+            "path": "ubuntu-latest.provenance.json",
+            "sha256": "7a88f4c1e2cdeda45010e592ef1a62573ebbaa528178e5b787ec21fbfab4eb66"
+          }
+        ],
+        "origin": "Original successfuljob in PR run; NOT trusted-main push qualification"
+      },
+      {
+        "host": "windows",
+        "artifact_id": 14087504011,
+        "job_id": 132252425297,
+        "archive_sha256": "0b514541eb9c8ba377dfaded565d47f0ef07fd5389ee02eddb2580ad62cff45f",
+        "members": [
+          {
+            "path": "windows-latest.checked.json",
+            "sha256": "491984387d38ee9763184903f495290968723a3a1f501ab375458e56564f0b56"
+          },
+          {
+            "path": "windows-latest.json",
+            "sha256": "13edc69e693915b2bae6ae3f06c67cf9760dc1e9cbb3d81560210f2e2011ba86"
+          },
+          {
+            "path": "windows-latest.provenance.json",
+            "sha256": "cdeabeeffeb4d21dcdf12a4f01791b7d2799bceb417009ae4d6b09c0f364de4a"
+          }
+        ],
+        "origin": "Original successfuljob in PR run; NOT trusted-main push qualification"
+      }
+    ],
+    "scope": "Authentic original component result artifacts only; current readiness refuses PR/failedrun origin as final hosted qualification. No local-host relabel."
+  },
+  "selected_observations": [
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a hardlink raced into an absent target",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a hardlink raced into an absent target",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a hardlink raced into an absent target",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.5763819999999953
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a hardlink raced into an absent target",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a hardlink raced into an absent target",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 3.4558999999999855
+        }
+      },
+      "assertion_body_sha256_lf": "2cf11cd264f9b586b17ff98c9043d862a619116a532c87f0e1fbcb9c851dfe03",
+      "assertion_source": "plugins/ca-pi/tools/test/audit-sink.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a line that is unbounded, unterminated, or carries an embedded newline",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.943556000000001
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a line that is unbounded, unterminated, or carries an embedded newline",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.6352999999999724
+        }
+      },
+      "assertion_body_sha256_lf": "a7ec984d90a7207db90a153666eacd6a35872b61f651534795da932aa1d3b009",
+      "assertion_source": "plugins/ca-pi/tools/test/audit-sink.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped after the append",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped after the append",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a target swapped after the append",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 2.510846000000015
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped after the append",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a target swapped after the append",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 12.335399999999993
+        }
+      },
+      "assertion_body_sha256_lf": "70c83021af84b0dc820e4b7962f6257837ee53bd8ddb5ef25bd62dc253883d0f",
+      "assertion_source": "plugins/ca-pi/tools/test/audit-sink.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped between validation and open",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped between validation and open",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a target swapped between validation and open",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.760645000000011
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped between validation and open",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects a target swapped between validation and open",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 3.5745999999999754
+        }
+      },
+      "assertion_body_sha256_lf": "5f9152889e862474483ec01ca410948118188a1440211c930939b5962dfde639",
+      "assertion_source": "plugins/ca-pi/tools/test/audit-sink.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects an opened handle whose identity is not the validated path",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects an opened handle whose identity is not the validated path",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects an opened handle whose identity is not the validated path",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.5221019999999896
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects an opened handle whose identity is not the validated path",
+          "path": "plugins/ca-pi/tools/test/audit-sink.test.ts",
+          "fullTestName": "Pi audit sink race cases > rejects an opened handle whose identity is not the validated path",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 3.182299999999998
+        }
+      },
+      "assertion_body_sha256_lf": "5b43e3a7bb54974844172508610a84eb4e7bceb0924ddfbb3c203a1e77b65b5a",
+      "assertion_source": "plugins/ca-pi/tools/test/audit-sink.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited",
+          "path": "plugins/ca-pi/tools/test/tool-guard.test.ts",
+          "fullTestName": "Pi final-wrapper permission decision > denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.0663590000000056
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited",
+          "path": "plugins/ca-pi/tools/test/tool-guard.test.ts",
+          "fullTestName": "Pi final-wrapper permission decision > denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.7018999999999949
+        }
+      },
+      "assertion_body_sha256_lf": "7c78f17bf3f2cc776244e502a343edc1ec9d45321bf6304e8c06b686778d9a86",
+      "assertion_source": "plugins/ca-pi/tools/test/tool-guard.test.ts"
+    }
+  ],
+  "scope": "Six exact historical component cases/two successful original jobs only; cancelledPR not final qualified-hosted origin. Real fixture file operations with explicit injected race IO; permission UI/bridge/audit dependency are substituted in final-wrapper case."
+}

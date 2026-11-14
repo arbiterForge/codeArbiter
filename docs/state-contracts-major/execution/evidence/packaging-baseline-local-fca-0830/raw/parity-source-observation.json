@@ -1,0 +1,37 @@
+{
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "result": "PRESERVED",
+  "cell": "disposition:transitions:T05:03",
+  "inputs": {
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+    "docs/codex-parity-testing.md": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6"
+  },
+  "literal_joins": [
+    {
+      "path": "tools/codex-parity-fixture.py",
+      "baseline_sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+      "subject_sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+      "literal_single_observation": "Literal working bytes read at this readonly observation equal immutable fd7 and0830 subject."
+    },
+    {
+      "path": "docs/codex-parity-testing.md",
+      "baseline_sha256": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6",
+      "subject_sha256": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6",
+      "literal_single_observation": "Literal working bytes read at this readonly observation equal immutable fd7 and0830 subject."
+    }
+  ],
+  "imports": [
+    "import os",
+    "import subprocess",
+    "import sys"
+  ],
+  "witness": {
+    "event": "print next steps",
+    "guard": "bare and governed branch after seeded commit success",
+    "effect": "Both branches print host-opening/checklist guidance and leave manual verification pending; existing guide reference is unchanged.",
+    "source_symbol": "main tail if bare / else",
+    "scope": "Source text/branch preservation only; no Git creation, session-start persona, installed host, operator action or enforcement result."
+  },
+  "limit": "Referenced host/runtime implementations are not dependency-equivalence claims; only unchanged printed instructions + unchanged guide text are preserved."
+}

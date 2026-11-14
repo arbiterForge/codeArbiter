@@ -1,0 +1,145 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual retained named local outcomes with literal whole-file original/current input joins."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S23:03",
+    "disposition:transitions:S23:04",
+    "disposition:transitions:S23:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S23:03",
+      "frozen_contract_sha256": "7631f6af661691ff81d5959227398108f68dfed6e09bf2a63317ef4b09f71f4a",
+      "event": "schedule task",
+      "guard": "all dependencies green; no reserved lexical file-scope conflicts; concurrency capacity",
+      "current_contract_review": "DAG-ready and scope-independent tasks reserve lexical scopes under available capacity; shared worker limiting remains in the inspected scheduler/sample path.",
+      "assertion_refs": [
+        "A-0171",
+        "A-0221",
+        "A-0222",
+        "A-0223",
+        "A-0224",
+        "A-0225",
+        "A-0226",
+        "A-0227",
+        "A-0228"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S23:04",
+      "frozen_contract_sha256": "50f309d67ec52c2660d1ffc674b48fbd112c4aceacbaeaf818e3ccfca35ea635",
+      "event": "dependency escalated/blocked",
+      "guard": "dependency cannot become green",
+      "current_contract_review": "An escalated predecessor blocks its dependent without claiming a worker call; independently eligible work is still admitted.",
+      "assertion_refs": [
+        "A-0142",
+        "A-0143",
+        "A-0221",
+        "A-0222",
+        "A-0223",
+        "A-0224",
+        "A-0225",
+        "A-0226",
+        "A-0227",
+        "A-0228"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S23:06",
+      "frozen_contract_sha256": "e416d3762c8d27f319832cc4572c8a76ffbbfddca4a80fba67b866c7a1e83094",
+      "event": "breaker threshold",
+      "guard": "settled tasks ≥ configured minimum (default 3), escalation fraction > configured rate (default 0.5)",
+      "current_contract_review": "Breaker uses settled minimum and escalation fraction, stops admission, drains existing tasks and records unscheduled remainder. Drain is distinct from OS signal cancellation.",
+      "assertion_refs": [
+        "A-0170"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ],
+  "commands": [
+    {
+      "mode": "coverage",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+      "started_utc": "2026-11-14T02:57:42.795034+00:00",
+      "finished_utc": "2026-11-14T03:02:06.211665+00:00",
+      "seconds": 263.4215792999603,
+      "exit_code": 0,
+      "before_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "after_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "full_input_count": 29,
+      "input_changes": [],
+      "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_version": "v24.22.1",
+      "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+    }
+  ],
+  "original_execution_origin": "farm941"
+}

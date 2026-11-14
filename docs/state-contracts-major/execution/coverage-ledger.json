@@ -657,13 +657,20 @@
    "evidence": []
   },
   "SF15": {
-   "owner": null,
+   "owner": "packaging",
    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
    "task_ids": [
     "DIST-M02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "SF16": {
    "owner": null,
@@ -938,8 +945,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-02": {
    "owner": "hooks-workflows",
@@ -1254,8 +1269,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-33": {
    "owner": "hooks-workflows",
@@ -3068,8 +3091,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S17": {
    "owner": "pi",
@@ -4473,8 +4503,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-01:02": {
    "owner": "hooks-workflows",
@@ -4482,8 +4520,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-01:03": {
    "owner": "hooks-workflows",
@@ -4491,8 +4537,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-01:04": {
    "owner": "hooks-workflows",
@@ -4500,8 +4554,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-02:01": {
    "owner": "hooks-workflows",
@@ -5534,8 +5596,15 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-18:02": {
    "owner": "hooks-workflows",
@@ -5543,8 +5612,15 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-18:03": {
    "owner": "hooks-workflows",
@@ -5552,8 +5628,15 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-18:04": {
    "owner": "hooks-workflows",
@@ -5561,8 +5644,15 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-18:05": {
    "owner": "hooks-workflows",
@@ -5570,8 +5660,15 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-18:06": {
    "owner": "hooks-workflows",
@@ -5579,8 +5676,15 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-19:01": {
    "owner": "hooks-workflows",
@@ -5843,8 +5947,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:02": {
    "owner": "hooks-workflows",
@@ -5853,8 +5964,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:03": {
    "owner": "hooks-workflows",
@@ -5863,8 +5981,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:04": {
    "owner": "hooks-workflows",
@@ -5873,8 +5998,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:05": {
    "owner": "hooks-workflows",
@@ -5883,8 +6015,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:06": {
    "owner": "hooks-workflows",
@@ -5893,8 +6032,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:07": {
    "owner": "hooks-workflows",
@@ -5903,8 +6049,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-23:08": {
    "owner": "hooks-workflows",
@@ -5913,8 +6066,15 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/preserved.json",
+     "sha256": "c4d6810e48a7403d2950129a02255f8d2b4f04276e12a460506c4783a0fdfea2"
+    }
+   ]
   },
   "WF-24:01": {
    "owner": "hooks-workflows",
@@ -6360,8 +6520,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-32:02": {
    "owner": "hooks-workflows",
@@ -6370,8 +6538,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-32:03": {
    "owner": "hooks-workflows",
@@ -6380,8 +6556,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-routing-helper-0830/preserved.json",
+     "sha256": "ba2347f1b28b7368a2385cbc86a70c9c2b063e730652efc62f669007e6f0d833"
+    }
+   ],
+   "candidate_contract_note": "Only finite declared model-guided source clauses are preserved. No runtime, model compliance, host, task or scenario completion claim."
   },
   "WF-33:01": {
    "owner": "hooks-workflows",
@@ -17405,8 +17589,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S16:02": {
    "owner": "pi",
@@ -17415,8 +17606,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S16:03": {
    "owner": "pi",
@@ -17425,8 +17623,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S16:04": {
    "owner": "pi",
@@ -17435,8 +17640,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S16:05": {
    "owner": "pi",
@@ -17445,8 +17657,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S16:06": {
    "owner": "pi",
@@ -17455,8 +17674,15 @@
     "PI-D04",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+     "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+   ]
   },
   "S17:01": {
    "owner": "pi",
@@ -17530,8 +17756,15 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
+     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+    }
+   ]
   },
   "S18:02": {
    "owner": "pi",
@@ -17542,8 +17775,15 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
+     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+    }
+   ]
   },
   "S18:03": {
    "owner": "pi",
@@ -17566,8 +17806,15 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
+     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+    }
+   ]
   },
   "S18:05": {
    "owner": "pi",
@@ -17578,8 +17825,15 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
+     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+    }
+   ]
   },
   "S18:06": {
    "owner": "pi",
@@ -17590,8 +17844,15 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
+     "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+    }
+   ]
   },
   "S18:07": {
    "owner": "pi",
@@ -17692,8 +17953,15 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s20-doctor-input-successor/pi-s20-source-preserved.json",
+     "sha256": "bb35889fec43a2ea1b7dcbf63da08ddaa47dd400c25b2cf403130bea2cf36da1"
+    }
+   ]
   },
   "S20:02": {
    "owner": "pi",
@@ -17712,8 +17980,15 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s20-doctor-input-successor/pi-s20-source-preserved.json",
+     "sha256": "bb35889fec43a2ea1b7dcbf63da08ddaa47dd400c25b2cf403130bea2cf36da1"
+    }
+   ]
   },
   "S20:04": {
    "owner": "pi",
@@ -17722,8 +17997,15 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s20-doctor-input-successor/pi-s20-source-preserved.json",
+     "sha256": "bb35889fec43a2ea1b7dcbf63da08ddaa47dd400c25b2cf403130bea2cf36da1"
+    }
+   ]
   },
   "S20:05": {
    "owner": "pi",
@@ -17732,8 +18014,15 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-s20-doctor-input-successor/pi-s20-source-preserved.json",
+     "sha256": "bb35889fec43a2ea1b7dcbf63da08ddaa47dd400c25b2cf403130bea2cf36da1"
+    }
+   ]
   },
   "S20:06": {
    "owner": "pi",
@@ -17792,8 +18081,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-input-config-tested.json",
+     "sha256": "3bd9048fc6b6f9ced33d9df72067fedcfe868df31a00bea1e95b4817ca8cacba"
+    }
+   ],
+   "candidate_contract_note": "Unbound JSON remains legacy input. Minimal schema controls and actual legacy CLI paths corroborate source classification; no typed/native admission is claimed."
   },
   "S22:02": {
    "owner": "farm",
@@ -17890,8 +18187,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-input-config-preserved.json",
+     "sha256": "1413cf4b8f49c3b708ac6d71836c39cfcaa5258942bfa949054ca8992be0bca0"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance: closed parsePlan/validate, env>plan>default resolution, secure URL admission and exclusive run-ID creation remain ordered before dispatch. Named schema/URL controls corroborate finite branches; no new every-config-combination execution."
   },
   "S23:02": {
    "owner": "farm",
@@ -17956,8 +18261,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
+     "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a"
+    }
+   ],
+   "candidate_contract_note": "DAG-ready and scope-independent tasks reserve lexical scopes under available capacity; shared worker limiting remains in the inspected scheduler/sample path."
   },
   "S23:04": {
    "owner": "farm",
@@ -17970,8 +18283,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
+     "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a"
+    }
+   ],
+   "candidate_contract_note": "An escalated predecessor blocks its dependent without claiming a worker call; independently eligible work is still admitted."
   },
   "S23:05": {
    "owner": "farm",
@@ -18036,8 +18357,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
+     "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a"
+    }
+   ],
+   "candidate_contract_note": "Breaker uses settled minimum and escalation fraction, stops admission, drains existing tasks and records unscheduled remainder. Drain is distinct from OS signal cancellation."
   },
   "S23:07": {
    "owner": "farm",
@@ -18064,8 +18393,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-preserved.json",
+     "sha256": "7502fa6a9526e78ce93644015602fe51bf4557cc40d7263d35e5ce811d556e38"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance of finally: attempt verified integration cleanup and durable report then Markdown; latest copies remain best effort. Handled publication faults are observed; external process-death/all-exception durability is explicitly not established."
   },
   "S23:09": {
    "owner": "farm",
@@ -18078,8 +18415,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-tested.json",
+     "sha256": "db8d0d9488a296d63781cfe4a6f20a80416a93b336ea0647d11ff9fb13c8d71b"
+    }
+   ],
+   "candidate_contract_note": "Actual two-task legacy CLI green execution publishes supported receipts and returns success; cleanup health is an independent success precondition."
   },
   "S23:10": {
    "owner": "farm",
@@ -18092,8 +18437,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-tested.json",
+     "sha256": "db8d0d9488a296d63781cfe4a6f20a80416a93b336ea0647d11ff9fb13c8d71b"
+    }
+   ],
+   "candidate_contract_note": "Escalation/blocked or cleanup-degraded outcomes preserve partial results; existing runExitCode separates workload2 from publication3."
   },
   "S23:11": {
    "owner": "farm",
@@ -18314,8 +18667,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Admitted worker files proceed through safe materialization and patch/evidence capture; real loopback/Git best-of-N/green fixtures and compliant-worker controls support finite paths, without OS adversarial race qualification."
   },
   "S24:05": {
    "owner": "farm",
@@ -18328,8 +18689,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Protected-test/path sweep precedes drift/gates/heuristic/mutation acceptance. Current source retains the complete order; selected software controls do not imply every optional mutation process outcome ran in this selected group."
   },
   "S24:06": {
    "owner": "farm",
@@ -18342,8 +18711,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Reported out-of-root or protected-test writes refuse the candidate; fatal containment paths do not authorize unsafe retry/reset."
   },
   "S24:07": {
    "owner": "farm",
@@ -18356,8 +18733,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "First dirty observation spends an available author retry and names forbidden paths in its next prompt."
   },
   "S24:08": {
    "owner": "farm",
@@ -18370,8 +18755,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "First drift without budget and repeated drift with budget both escalate with retained offending paths; the latch is independent of the numeric retry limit."
   },
   "S24:09": {
    "owner": "farm",
@@ -18436,8 +18829,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Ordinary retryable custom-worker failure retains configured retry/reset/setup-cache policy; a transport deferral does not enter that retry path. This is not crash-after-reset atomicity proof."
   },
   "S24:11": {
    "owner": "farm",
@@ -18450,8 +18851,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Long transport deferral does not start another authoring round immediately, for both single and multiple samples."
   },
   "S24:12": {
    "owner": "farm",
@@ -18516,8 +18925,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "A compliant qualified candidate advances to commit/integration; unsafe candidates and no-green sampling controls refuse."
   },
   "S24:14": {
    "owner": "farm",
@@ -18530,8 +18947,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Exhausted retries escalate with bounded prior-failure detail and retain diagnostic worktree/evidence."
   },
   "S25:01": {
    "owner": "farm",
@@ -18544,8 +18969,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+     "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+    }
+   ],
+   "candidate_contract_note": "Real and seam best-of-N run independent sample worktrees on the frozen base with shared worker limiting; single-sample path remains the task worktree."
   },
   "S25:02": {
    "owner": "farm",
@@ -18918,8 +19351,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-preserved.json",
+     "sha256": "b7fc180e53002ea220b1eac11643a901aa385e7224cb3b48860e299b628c2d90"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance: commit is issued once and failure returns existing escalation, preserving HEAD for inspection; no blind retry after uncertain commit observation. Negative failure case corroborates the note, not every crash boundary."
   },
   "S26:03": {
    "owner": "farm",
@@ -18932,8 +19373,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-tested.json",
+     "sha256": "7935e7d157ff32e7c71431101141562a69c741f4fca8ff4443db81a4defc2c6e"
+    }
+   ],
+   "candidate_contract_note": "Known qualified task branches merge --no-ff through the single integration merge lock. Actual overlapping-scope CLI fixtures serialize integration."
   },
   "S26:04": {
    "owner": "farm",
@@ -18946,8 +19395,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-preserved.json",
+     "sha256": "b7fc180e53002ea220b1eac11643a901aa385e7224cb3b48860e299b628c2d90"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance of success branch: a successful merge is accepted without a newly executed combined-tree gate. Per-task green is never relabeled as fresh combined-tree test coverage."
   },
   "S26:05": {
    "owner": "farm",
@@ -19966,8 +20423,16 @@
     "FARM-R02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-preserved.json",
+     "sha256": "b224c65e6fc8cecd6464aa2fa288577130f69d14be96c2e830c2084663d77ba4"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance preserves detached POSIX process groups, captured streams and per-command default timeout policy. Local Windows execution does not qualify the POSIX group arm."
   },
   "S29:02": {
    "owner": "farm",
@@ -19976,8 +20441,16 @@
     "FARM-R02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-tested.json",
+     "sha256": "bff768f5332f11564e2a28d2e9fc305160c0653156188e0bb458b496374d6486"
+    }
+   ],
+   "candidate_contract_note": "Ordinary exits/signal-null exit normalization and separated stdout/stderr/out are actually observed. The helper has no fixed accumulated-output cap; no bounded-memory claim is added."
   },
   "S29:03": {
    "owner": "farm",
@@ -19986,8 +20459,16 @@
     "FARM-R02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-tested.json",
+     "sha256": "bff768f5332f11564e2a28d2e9fc305160c0653156188e0bb458b496374d6486"
+    }
+   ],
+   "candidate_contract_note": "Deadline waits for typed tree-kill verification; verified timeout124 and unverified125 remain distinct. Local real descendant probes and controlled kill failure corroborate this finite process contract."
   },
   "S29:04": {
    "owner": "farm",
@@ -20085,8 +20566,16 @@
     "FARM-R02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-preserved.json",
+     "sha256": "b224c65e6fc8cecd6464aa2fa288577130f69d14be96c2e830c2084663d77ba4"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance of platform arms retains taskkill/fallback/root checks and their limits; root-process death alone cannot establish every descendant is gone. No unexecuted POSIX arm is marked Windows-tested."
   },
   "S30:01": {
    "owner": "farm",
@@ -20189,8 +20678,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-stale-registration-tested.json",
+     "sha256": "6fe6f9f9ee1fa0b176e6fbcd15827d2c2950807e249c90f07ddc049745e2f1c8"
+    }
+   ],
+   "candidate_contract_note": "Known registered+missing owned worktree authorizes one prune and reobservation; injected unavailable readback then authorizes no additional destructive attempt. Neither readback failure nor lexical mismatch proves registry absence."
   },
   "S30:04": {
    "owner": "farm",
@@ -20567,8 +21064,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+     "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+    }
+   ],
+   "candidate_contract_note": "Actual source/bundle canary freezes a resolvable base before entitlement callbacks can move its named ref; unresolved base refuses before model requests."
   },
   "S32:02": {
    "owner": "farm",
@@ -20581,8 +21086,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+     "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+    }
+   ],
+   "candidate_contract_note": "401 exclusion, bounded probe timeout/error and non401/status0 survivor are distinguished. A survivor is only eligible for canary evaluation, never a paid-provider capability claim."
   },
   "S32:03": {
    "owner": "farm",
@@ -20595,8 +21108,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+     "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+    }
+   ],
+   "candidate_contract_note": "Real source/bundle loopback canaries use detached isolated task/sample worktrees and leave existing refs unchanged; this path does not commit/merge."
   },
   "S32:04": {
    "owner": "farm",
@@ -20609,8 +21130,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+     "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+    }
+   ],
+   "candidate_contract_note": "Known settled canary candidates clean their own worktree/branch/root namespace independently before recommendation; failure fixtures preserve existing integration refs."
   },
   "S32:05": {
    "owner": "farm",
@@ -20623,8 +21152,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-preserved.json",
+     "sha256": "987de104fa89933b85a371ee5fe6898181fa2dbb6ee88d1a1988beda42fd0cca"
+    }
+   ],
+   "candidate_contract_note": "Source and controlled ranking preserve green-first then attempts/time order; one candidate run is not a statistical success-rate estimate."
   },
   "S32:06": {
    "owner": "farm",
@@ -20637,8 +21174,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-preserved.json",
+     "sha256": "987de104fa89933b85a371ee5fe6898181fa2dbb6ee88d1a1988beda42fd0cca"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance: no-green or degraded cleanup suppresses recommendation and exits2. The no-green path is observed; this group does not newly execute every canary cleanup-unknown fault."
   },
   "S32:07": {
    "owner": "farm",
@@ -20651,8 +21196,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+     "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+    }
+   ],
+   "candidate_contract_note": "Actual green, clean source/bundle canary writes its bounded recommendation/provenance while preserving existing refs."
   },
   "S33:01": {
    "owner": "farm",
@@ -21837,8 +22390,16 @@
     "SBX-C03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+     "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2"
+    }
+   ],
+   "candidate_contract_note": "Controlled spawn-boundary calls preserve explicit environment, bounded captured output and configured/default deadline. No real Docker availability is inferred from the local16 report."
   },
   "S47:03": {
    "owner": "sandbox",
@@ -21929,8 +22490,16 @@
     "SBX-C03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+     "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2"
+    }
+   ],
+   "candidate_contract_note": "Spawn errors, ordinary nonzero close and already-aborted signals retain ordinary failure and settle once; timer/listener cleanup is kept."
   },
   "S47:07": {
    "owner": "sandbox",
@@ -21940,8 +22509,16 @@
     "SBX-C03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+     "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2"
+    }
+   ],
+   "candidate_contract_note": "Abort/timeout/overflow first-reason latches remain authoritative across later close; retained output is not overwritten by a secondary terminal event."
   },
   "S48:01": {
    "owner": "sandbox",
@@ -22155,8 +22732,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED SBX-C01: V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched."
   },
   "S49:03": {
    "owner": "sandbox",
@@ -22168,8 +22753,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED SBX-C01: tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs."
   },
   "S49:04": {
    "owner": "sandbox",
@@ -22181,8 +22774,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning."
   },
   "S49:05": {
    "owner": "sandbox",
@@ -22194,8 +22795,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition."
   },
   "S49:06": {
    "owner": "sandbox",
@@ -22207,8 +22816,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback."
   },
   "S49:07": {
    "owner": "sandbox",
@@ -22220,8 +22837,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build."
   },
   "S49:08": {
    "owner": "sandbox",
@@ -22233,8 +22858,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success."
   },
   "S49:09": {
    "owner": "sandbox",
@@ -22246,8 +22879,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+     "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions."
   },
   "S50:01": {
    "owner": "sandbox",
@@ -22341,8 +22982,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+     "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869"
+    }
+   ],
+   "candidate_contract_note": "Software construction accepts caller-scoped dummy token/home volume, excludes source co-mount/host auth bind, and keeps reusable token value out of argv. Approved-store choice remains caller guidance, not a mechanically attested origin."
   },
   "S51:02": {
    "owner": "sandbox",
@@ -22352,8 +23001,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+     "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869"
+    }
+   ],
+   "candidate_contract_note": "Software policy/hardening and scoped Docker-client token environment enforce offline default or explicitly named experimental policy; no authenticated/live provider run is claimed."
   },
   "S51:03": {
    "owner": "sandbox",
@@ -22642,8 +23299,16 @@
     "SBX-C02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-copy-contract-tested.json",
+     "sha256": "3762d92c83ebe332f49697430dbb90f9199f7d5b6fb69fe77fcdd759825e1e07"
+    }
+   ],
+   "candidate_contract_note": "Explicit outward copy argv/destination and refusal of reverse bind/invalid sources are software-checked; host output may remain partial on interruption, with no transactional rollback claim."
   },
   "S53:01": {
    "owner": "sandbox",
@@ -22946,8 +23611,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cli-dispatch-tested.json",
+     "sha256": "e21b85d3cc9c0914c8625ca7fe37ad612bd537b86133e3ff78090c568244cdb0"
+    }
+   ],
+   "candidate_contract_note": "Valid imported CLI grammar invokes one selected handler, preserves exit codes and separates explicit prune from missing-ID destroy. Direct signal-entry execution is a separate source-only group."
   },
   "S54:02": {
    "owner": "sandbox",
@@ -22956,8 +23629,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+     "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+    }
+   ],
+   "candidate_contract_note": "Source-only direct-entry first SIGINT aborts the shared controller and requests cooperative cleanup."
   },
   "S54:03": {
    "owner": "sandbox",
@@ -22966,8 +23647,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+     "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+    }
+   ],
+   "candidate_contract_note": "Source-only direct-entry second SIGINT exits130 immediately; cleanup may remain incomplete."
   },
   "S54:04": {
    "owner": "sandbox",
@@ -22976,8 +23665,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+     "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+    }
+   ],
+   "candidate_contract_note": "Source-only resolved interrupted promise exits130 rather than the ordinary command code."
   },
   "S54:05": {
    "owner": "sandbox",
@@ -22986,8 +23683,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+     "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+    }
+   ],
+   "candidate_contract_note": "Source-only rejected promise still maps to exit1 even after abort; this baseline limitation is not silently normalized."
   },
   "S54:06": {
    "owner": "sandbox",
@@ -22996,8 +23701,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-preserved.json",
+     "sha256": "bd03c03c3c413f0e562fd0481271f41896493533abbf4c823305e44018d968f8"
+    }
+   ],
+   "candidate_contract_note": "Source-conformance only: required Linux-Docker availability mode throws for unavailable/incompatible daemon, while developer nonrequired mode may skip. Actual required-host runtime belongs to the separately retained hosted producer."
   },
   "S55:01": {
    "owner": "site",
@@ -24291,8 +25004,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:02": {
    "owner": "packaging",
@@ -24301,8 +25021,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:03": {
    "owner": "packaging",
@@ -24311,8 +25038,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:04": {
    "owner": "packaging",
@@ -24321,8 +25055,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:05": {
    "owner": "packaging",
@@ -24331,8 +25072,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:06": {
    "owner": "packaging",
@@ -24341,8 +25089,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:07": {
    "owner": "packaging",
@@ -24351,8 +25106,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:08": {
    "owner": "packaging",
@@ -24361,8 +25123,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:09": {
    "owner": "packaging",
@@ -24371,8 +25140,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:10": {
    "owner": "packaging",
@@ -24381,8 +25157,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S73:11": {
    "owner": "packaging",
@@ -24421,8 +25204,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S74:04": {
    "owner": "packaging",
@@ -24431,8 +25221,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S74:05": {
    "owner": "packaging",
@@ -24471,8 +25268,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S74:09": {
    "owner": "packaging",
@@ -24481,8 +25285,15 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/channel-tested.json",
+     "sha256": "512d27c66acac3bf443484daf7674ca1fdde12b2e8c7f105a3da688d7736738b"
+    }
+   ]
   },
   "S74:10": {
    "owner": "packaging",
@@ -24663,8 +25474,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+    }
+   ]
   },
   "S76:03": {
    "owner": "packaging",
@@ -24673,8 +25491,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+    }
+   ]
   },
   "S76:04": {
    "owner": "packaging",
@@ -24683,8 +25508,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+    }
+   ]
   },
   "S76:05": {
    "owner": "packaging",
@@ -24693,8 +25525,15 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/sync-tested.json",
+     "sha256": "067e078c541bdc44272c1b4fa4aabc5698613568c0e726f2907cff81d4501bc3"
+    }
+   ]
   },
   "S76:06": {
    "owner": "packaging",
@@ -26932,8 +27771,15 @@
     "R-08",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+    }
+   ]
   },
   "SX03:02": {
    "owner": "site-and-release",
@@ -26959,8 +27805,15 @@
     "R-08",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+    }
+   ]
   },
   "SX03:04": {
    "owner": "site-and-release",
@@ -26969,8 +27822,15 @@
     "R-08",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+    }
+   ]
   },
   "SX03:05": {
    "owner": "site-and-release",
@@ -26979,8 +27839,15 @@
     "R-08",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+    }
+   ]
   },
   "SX03:06": {
    "owner": "site-and-release",
@@ -27463,8 +28330,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0830b95752a05343563be027e513a2845a6c57df",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/parity-instruction-preserved.json",
+     "sha256": "1a8e3042be8718d6fffe637efd80ff7d436a7117bb81ea0b9e434d81d9922817"
+    }
+   ]
   },
   "T06:01": {
    "owner": "release-and-tooling",
@@ -28379,8 +29253,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Lazy catalog routing to the invoked command/lifecycle owner is preserved. The omitted catalog claims were corrected in exact proposed41273c bytes, later literally committed ae237d; no consumer phase execution is inferred."
   },
   "SW01:02": {
    "owner": "sandbox",
@@ -28392,8 +29274,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D04: packaged prerequisites replace mandatory consumer-readable maintainer sources; do not manufacture consumer ADRs or require source checkout. Driver guard definitions remain source-backed."
   },
   "SW01:03": {
    "owner": "sandbox",
@@ -28405,8 +29295,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "A reachable Docker daemon is an actual prerequisite; unavailable observation is not an empty/available registry."
   },
   "SW01:04": {
    "owner": "sandbox",
@@ -28418,8 +29316,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D01: absent already-installed Nixpacks selects supported Node/Python fallback, with effective builder reported; no runtime installer or unavailable Go/Rust fallback is implied."
   },
   "SW01:05": {
    "owner": "sandbox",
@@ -28431,8 +29337,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Create requires the explicitly supplied network repository URL; current grammar has no URL-guessing/default source. Catalog argument preserves that prerequisite, not an observed dialogue."
   },
   "SW01:06": {
    "owner": "sandbox",
@@ -28444,8 +29358,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D03: ordinary requested policy names are reported separately from effective offline runtime; clone/build may fetch remotely."
   },
   "SW01:07": {
    "owner": "sandbox",
@@ -28457,8 +29379,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D03: helper allowlist is experimental and not integrated into ordinary create; no new acknowledgement ceremony can manufacture runtime support."
   },
   "SW01:08": {
    "owner": "sandbox",
@@ -28470,8 +29400,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Historical with-Claude intent routes to separate supported token-only skill/entrypoint; ordinary create has no --with-claude flag and no implicit token launch."
   },
   "SW01:09": {
    "owner": "sandbox",
@@ -28483,8 +29421,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Source named volume/workspace and out-of-tree deps are prescribed through packaged create/build; host staging lifetime is now explicit, no hand-rolled runtime/mount bypass."
   },
   "SW01:10": {
    "owner": "sandbox",
@@ -28496,8 +29442,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED C01: V2 cache identity is independent of checkout basename and requires builder/platform/material identity, provenance and immutable image observation; equal dependency hash/tag existence alone is insufficient."
   },
   "SW01:11": {
    "owner": "sandbox",
@@ -28509,8 +29463,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Named-volume/tmpfs, no host bind/socket/privileged, non-root/read-only/no-new-privileges/resource guards remain machine-enforced; prose is not an independently observed container inspect."
   },
   "SW01:12": {
    "owner": "sandbox",
@@ -28522,8 +29484,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D03: exact returned IDs and effective policy are reported from the driver; construction/inspection invariants are distinct from a model-guided phase receipt. No new mandatory operator inspection is invented."
   },
   "SW01:13": {
    "owner": "sandbox",
@@ -28535,8 +29505,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Shell instructions require an existing running plugin-labeled target and introduce no creation/mount/privilege."
   },
   "SW01:14": {
    "owner": "sandbox",
@@ -28548,8 +29526,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Interactive shell retains existing non-root read-only-root posture/workspace. This preservation is instruction conformance, not an executed TTY qualification."
   },
   "SW01:15": {
    "owner": "sandbox",
@@ -28561,8 +29547,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "D02 selects persistent box lifetime: shell exit detaches and leaves container/volume until explicit destroy."
   },
   "SW01:16": {
    "owner": "sandbox",
@@ -28574,8 +29568,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+     "sha256": "d97d4117c33b24059aed8708049b0107c4efce42a29daab5461416fe5a812a9f"
+    }
+   ],
+   "candidate_contract_note": "Normal shell close is detach; contradictory automatic destruction prescription is explicitly removed.",
+   "contract": "frozen-task:SBX-D02"
   },
   "SW01:17": {
    "owner": "sandbox",
@@ -28587,8 +29590,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Exec preserves real exit, separated output, truncation and independent containment; no nonzero-to-success translation or automatic broad teardown."
   },
   "SW01:18": {
    "owner": "sandbox",
@@ -28600,8 +29611,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Copy is host-requested outward to explicit destination with no host-inbound bind/writable host grant; partial output/rollback is not hidden."
   },
   "SW01:19": {
    "owner": "sandbox",
@@ -28613,8 +29632,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Refuse host bind/socket/privileged/elevation or token/source co-mount rather than weakening structural controls."
   },
   "SW01:20": {
    "owner": "sandbox",
@@ -28626,8 +29653,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D02: named destroy targets exact instance only and never follows with automatic prune."
   },
   "SW01:21": {
    "owner": "sandbox",
@@ -28639,8 +29674,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D02: explicit broad prune takes its initial labeled snapshot; no-ID destroy is an error and newly created/unrelated objects are not adopted."
   },
   "SW01:22": {
    "owner": "sandbox",
@@ -28652,8 +29695,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Explicit keep-volume retains selected volume and cached images; unrelated leftovers remain separate."
   },
   "SW01:23": {
    "owner": "sandbox",
@@ -28665,8 +29716,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "Failed discovery/removal/verification is incomplete nonzero cleanup with retained identities, independently reported remaining/unknown resources."
   },
   "SW01:24": {
    "owner": "sandbox",
@@ -28678,8 +29737,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D02/D03: absence is selected-scope only; retained cache images/explicit kept volume and unrelated active boxes are not a global-zero violation."
   },
   "SW02:01": {
    "owner": "sandbox",
@@ -28688,8 +29755,17 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-01.json",
+     "sha256": "71925f1b0d2b47b4510b9263e1200fd9876c62c7a2666ecf76fde2dfd902d59a"
+    }
+   ],
+   "candidate_contract_note": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites.",
+   "contract": "frozen-task:SBX-D04"
   },
   "SW02:02": {
    "owner": "sandbox",
@@ -28698,8 +29774,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Separate supported CLI is preserved for routing; its placement does not mechanically enforce five agent-guided phases or add artifact approval."
   },
   "SW02:03": {
    "owner": "sandbox",
@@ -28708,8 +29792,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Exactly offline default or experimental anthropic-only token posture; never combine untrusted source with token home volume."
   },
   "SW02:04": {
    "owner": "sandbox",
@@ -28718,8 +29810,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Pinned Claude SemVer, disabled autoupdater and reviewed digest base remain prescribed prerequisites; image is not newly qualified by reading this instruction."
   },
   "SW02:05": {
    "owner": "sandbox",
@@ -28728,8 +29828,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Changed image pins retain dependency/requalification ownership; historic spike is not automatic current payload proof."
   },
   "SW02:06": {
    "owner": "sandbox",
@@ -28738,8 +29846,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Approved-store choice/scoped token input is caller guidance; reusable value must not enter argv/log/prompt/host bind. No real credential or paid provider run is required for this source conformance."
   },
   "SW02:07": {
    "owner": "sandbox",
@@ -28748,8 +29864,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Named home volume enables state persistence without host bind; persistence is distinct from observed authenticated-session capability."
   },
   "SW02:08": {
    "owner": "sandbox",
@@ -28758,8 +29882,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Use supported token-only argv builder and no-source co-mount guards; accepted policy/hardening are mechanical while phase completion remains agent guidance."
   },
   "SW02:09": {
    "owner": "sandbox",
@@ -28768,8 +29900,17 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-09.json",
+     "sha256": "d729d83af5cfb81299b1c3c1d34077442458f220aba43dcdb31bde01b103521f"
+    }
+   ],
+   "candidate_contract_note": "Mandatory consumer network401 prerequisite is replaced with optional separately authorized maintainer qualification; offline posture is not widened.",
+   "contract": "frozen-task:SBX-D04"
   },
   "SW02:10": {
    "owner": "sandbox",
@@ -28778,8 +29919,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D04: readiness follows actual supported CLI/token/policy/runtime outcomes; separate executable is not proof of a consumed five-phase completion record."
   },
   "SW02:11": {
    "owner": "sandbox",
@@ -28788,8 +29937,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Default credential-home teardown is prescribed with caller ownership; never describe failed removal as absence."
   },
   "SW02:12": {
    "owner": "sandbox",
@@ -28798,8 +29955,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Credential-home retention needs explicit recorded keep-volume choice; no durable record format is invented by this proof."
   },
   "SW02:13": {
    "owner": "sandbox",
@@ -28808,8 +29973,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "REMAPPED D02/D04: verify exact targeted container/credential volume absence, preserve unrelated boxes, retain unknown observations rather than global prune."
   },
   "SW02:14": {
    "owner": "sandbox",
@@ -28818,8 +29991,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+     "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+   ],
+   "candidate_contract_note": "Explicit subsequent use of retained home volume rechecks current posture/image/token guards; retained state is not authenticated-session qualification."
   },
   "pi-qualification:runtime-discovery:01": {
    "owner": "hooks-workflows",

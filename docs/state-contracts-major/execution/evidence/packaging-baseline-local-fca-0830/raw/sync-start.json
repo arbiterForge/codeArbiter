@@ -1,0 +1,13 @@
+{
+  "source_before": "0830b95752a05343563be027e513a2845a6c57df",
+  "inputs_before": {
+    ".github/scripts/test_sync_core.py": "5c5639db228ffe01aa909b22d6a8595de470c2f3b38a1ca22050e9d2ca3a1d00",
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601"
+  },
+  "runtime": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]"
+  }
+}

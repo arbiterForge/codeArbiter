@@ -11,7 +11,7 @@
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T04:40:23.944757+00:00",
+  "recorded_at": "2026-11-14T06:04:26.147777+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1562,7 +1562,19 @@
       "date": "2026-11-12"
     }
   ],
-  "pending_user_decisions": [],
+  "pending_user_decisions": [
+    {
+      "id": "PI-HTTP-ENDPOINT-POLICY",
+      "state": "AWAITING_USER",
+      "sources": [
+        "CON-004 current HTML security controls",
+        "Accepted ADR0018 endpoint acceptance",
+        "Accepted ADR0019 preserves0018 endpoint rules"
+      ],
+      "choice": "Require HTTPS outside bounded loopback via forward supersession, or preserve HTTP-compatible endpoints and clarify current policy/residual. No accepted ADR edited and no transport source changed.",
+      "affected_scope": "Pi upstream transport policy and dependent S10/S11 qualification; independent work continues under accepted scoped-conflict rule."
+    }
+  ],
   "new_required_work": [
     {
       "id": "CTX-HTML-01",
@@ -1759,9 +1771,10 @@
     {
       "id": "DEF-SITE-CAPTURE-BINDINGS-01",
       "owner": "packaging",
-      "status": "IMPLEMENTED_UNQUALIFIED",
+      "status": "DONE",
       "source": "6083 docs43554311947",
-      "detail": "Four generated guide capture source hashes stale after approved shared scanner repair. Supported capture regeneration changes only source bindings; original output/argv/exit unchanged. Freshness4 and owning52 plus normal source/Atlas/diagram/audit chainPASS; next hosted site generation pending."
+      "detail": "Four generated guide capture source hashes stale after approved shared scanner repair. Supported capture regeneration changes only source bindings; original output/argv/exit unchanged. Freshness4 and owning52 plus normal source/Atlas/diagram/audit chainPASS; next hosted site generation pending.",
+      "current_detail": "Owning exact0830 hosted checks passed; closes this scoped repair only, overall run failed separately at native authority."
     },
     {
       "id": "DEF-NATIVE-GIT-REGISTRATION-01",
@@ -1780,9 +1793,10 @@
     {
       "id": "DEF-CI-WINDOWS-CONTRACT-BUDGET-01",
       "owner": "hooks-workflows",
-      "status": "IMPLEMENTED_UNQUALIFIED",
+      "status": "DONE",
       "source": "6083 job132323671915",
-      "detail": "Actual annotation confirms20minute aggregate timeout; previous full same partition passed19m47s. Only Windows contracts job budget25minutes; otherhookcells20/recovery15 and all original73 commands/per-test deadlines unchanged. Actual owning regressionRED then44partition/recovery checksGREEN; hosted wall effectiveness pending."
+      "detail": "Actual annotation confirms20minute aggregate timeout; previous full same partition passed19m47s. Only Windows contracts job budget25minutes; otherhookcells20/recovery15 and all original73 commands/per-test deadlines unchanged. Actual owning regressionRED then44partition/recovery checksGREEN; hosted wall effectiveness pending.",
+      "current_detail": "Owning exact0830 hosted checks passed; closes this scoped repair only, overall run failed separately at native authority."
     },
     {
       "id": "DOC-SBX-CATALOG-01",
@@ -1790,6 +1804,20 @@
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
       "detail": "Shipped COMMANDS.md omitted prior README/skill lifecycle corrections. Catalog now reflects actual optional builder fallback, --net grammar, separate Claude-inside, v2 full cache identity, temporary host staging, effective offline runtime and named/prune scope. Source-backed docs correction; original36CLI cases unchanged and three links valid. Final generated/hosted checks pending."
+    },
+    {
+      "id": "DEF-WINDOWS-PROCESS-RUNDOWN-01",
+      "owner": "authority-runtime",
+      "status": "IN_PROGRESS",
+      "source": "0830 job132342773253 and retained local typed Win32 experiments",
+      "detail": "Parent0 and descendant exit code visible before descendant process object signals/cwd releases. Accounting-only drain and empty live PID list were empirically insufficient. Minimal identity-safe shared supervisor repair uses actual process-handle rundown observations; no deletion retries/ignore."
+    },
+    {
+      "id": "QUAL-REAL-EXECUTION-BOUNDARIES-01",
+      "owner": "farm-sandbox",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
+      "detail": "Actual Farm source/bundle producer interruption at an acknowledged Git merge, concurrent receipt-only recovery, private child environment canary and normal control are locally observed. Three real Docker partial-create compensation tests collected/SKIP locally/typechecked; actual Docker outcomes await required hosted execution. No whole crash-matrix or paid-provider claim."
     }
   ],
   "new_transition_rows": [
@@ -3327,6 +3355,63 @@
       "kind": "BOUNDED_FOLLOWUP_SOURCE_SUCCESSORS",
       "source": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
       "detail": "Thirteen finite native source clauses freshly reviewed at338ed remain PRESERVED with all244 source bytes and existing runtime gaps retained. Six P02 cells use genuine14selectedPASS15.612s at566375bb,11inputs stable;44partition support retains original338ed epoch. Initial35 failed one stale timeout assertion and is diagnostic only, excluded from TESTED witnesses. The exact changed assertion passed separately before commit. No new status/ID or baseline progress promotion."
+    },
+    {
+      "recorded_at": "2026-11-14T06:04:26.147777+00:00",
+      "kind": "SCOPED_154_DISPOSITION_CARRY",
+      "detail": "154 independently scoped baseline dispositions selected from seven retained source/result proposals:63TESTED,88PRESERVED,3retired-instructionNOT_APPLICABLE. Every original runtime epoch and raw result remains explicit. Finite source preservation and local/mock behavior are not installed/publication proof. No task or composed scenario is promoted. Pending native128 completeness, endpoint policy choice and remaining acceptance gaps remain open.",
+      "proposal_origins": {
+        "farm": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-sbx-remaining-qualified-abnsjdl_\\final-proposal\\proposal.json",
+          "sha256": "afa52bb559c3e5bbab3a3b385526947a5f1f00cbbeab08c1cb52faf0d2b8bd12"
+        },
+        "packaging": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\proposal24.json",
+          "sha256": "e69ecfe4a23b4f8c9fa644610d0d9ea8ad8deaa0d76d1344254a12d617145170"
+        },
+        "pi-s20": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-s20-source-proposal\\proposal.json",
+          "sha256": "bf0bc31048cdbfec8f234df41988486ae2aa6e1682274116af7d30b1bdaf8244"
+        },
+        "pi-s16": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-s16-audit-source-proposal\\proposal.json",
+          "sha256": "d01fa94a5037c0305bb2586b47f92a341301a3dfa85702958e0141ce2d7ab5f7"
+        },
+        "pi-s18": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-s18-footer-source-proposal\\proposal.json",
+          "sha256": "53f6789e3f1d4741cb607327e2c3e0c440894d6f480a900b6724d396fd8440e1"
+        },
+        "root-routing": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-routing-helper-m557ym31\\proposal9.json",
+          "sha256": "d4b696573832ef1c7cb3cc2ef5e66f765b2b8981de8df3652e72b5c76ecd0a05"
+        },
+        "hooks-wf18-23": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-wf18-23-_ipkz9hu\\proposal14.json",
+          "sha256": "9a58577ed2caa2935ee4100a5c9f671a3292613fd15dcbdd314071590b9b3885"
+        }
+      },
+      "new_recorded_counts": {
+        "TESTED": 304,
+        "PRESERVED": 215,
+        "NOT_APPLICABLE": 3,
+        "baseline_PLANNED": 1631
+      },
+      "note": "Draft carry; committed authenticity/currentness must be checked after this metadata commit."
+    },
+    {
+      "recorded_at": "2026-11-14T06:04:26.147777+00:00",
+      "kind": "CURRENT_0830_CI_COMPLETION",
+      "run_id": 43559796146,
+      "docs_run_id": 43559796039,
+      "event_head": "0830b95752a05343563be027e513a2845a6c57df",
+      "detail": "81successful checks; original Windows native-authority132342773253 failed at temporary cwd cleanup, with structured-artifact132348156191 and mergegate132348207049 derived failures. All three Pi platformjobs, site checks and Windows25minute contract budget passed. No unchanged rerun or whole-run success claim. Bounded actual local experiment confirmed exit-code visibility before process rundown; shared supervisor repair in progress."
+    },
+    {
+      "recorded_at": "2026-11-14T06:04:26.147777+00:00",
+      "kind": "MAIN_HISTORY_ANCESTRY_RECONCILED",
+      "commit": "8ce1b2b1b7321d87a7927bac7ab6d6c61fdb0952",
+      "main_parent": "3f1bd13762ed9f25320e58907f9bf98a81128504",
+      "detail": "All upstream ADR implementations already matched child0830 executable bytes. Resolved23 version/generated/HTML-cache/test/history conflicts without executable/test/config/generated change. Retained published patch changelogs and completed work record; candidate4.0.0/0.30.0 and HTML ownership retained. Main itself not changed."
     }
   ],
   "scoped_blockers": [
@@ -3336,19 +3421,24 @@
       "detail": "Shared reader defect implemented and locally checked in89333ff3; exact-head hosted observation and honest legacy dependency/absence scope migration remain required before final program qualification."
     },
     {
-      "id": "CI-6083-RED",
-      "scope": "PR1103 integration delivery",
-      "detail": "Required aggregate failed with original native ENOENT, Windows Pi EOF and Windows aggregate timeout; supported site capture bindings repaired locally. Diagnostics do not resolve original causes. Merge awaits successful exact-head replacement CI."
+      "id": "CI-WINDOWS-PROCESS-RUNDOWN",
+      "scope": "Current1103 exact-head CI and dependent artifact qualification",
+      "detail": "Actual native authority failure and local bound reproduction establish premature settlement on exit-code visibility. Shared Windows process rundown repair must pass affected tests and replacement exact-head checks."
+    },
+    {
+      "id": "PI-HTTP-ENDPOINT-POLICY",
+      "scope": "Selected Pi upstream transport contract and S10/S11",
+      "detail": "Awaiting explicit user choice between currentCON004 HTTPS rule and acceptedADR0018/0019 HTTP compatibility. No side selected or source changed; independent work remains authorized."
     }
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push the coherent capture/diagnostic/producer/job-budget/catalog batch and retained scoped successors, then watch exact-head checks; original native/Pi causes remain unresolved until actual observations establish them.",
+    "Finish the confirmed shared Windows process-rundown repair and affected generated parity; batch source/evidence once, then watch exact-head CI. Retain original failures and keep1098/main/publication held.",
     "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
     "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
     "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
   ],
-  "delivery_state": "PR1103_REPAIR_BATCH_AWAITING_EXACT_HEAD_CI_MAIN_HOLD",
+  "delivery_state": "PR1103_CURRENT_CI_RED_WINDOWS_REPAIR_LOCAL_SOURCE_BATCH_IN_PROGRESS_MAIN_HOLD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [

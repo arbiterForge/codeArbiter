@@ -1,0 +1,12 @@
+test_write_mode_vendors_byte_identical_copies (test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies) ... ok
+test_syncs_notices_into_each_installable_plugin_root (test_sync_core.TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root) ... ok
+test_check_passes_when_in_sync (test_sync_core.TestCheckMode.test_check_passes_when_in_sync) ... ok
+test_check_fails_on_modified_vendored_copy (test_sync_core.TestCheckMode.test_check_fails_on_modified_vendored_copy) ... ok
+test_check_fails_on_missing_vendored_file (test_sync_core.TestCheckMode.test_check_fails_on_missing_vendored_file) ... ok
+test_check_never_writes_when_drifted (test_sync_core.TestCheckMode.test_check_never_writes_when_drifted) ... ok
+test_sync_repairs_a_drifted_copy (test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.164s
+
+OK

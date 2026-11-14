@@ -1,0 +1,184 @@
+{
+  "schema": "codearbiter.pi-historical-component-subset/1",
+  "scope": "Historical exact named component support only; cancelled PR run is not final hosted qualification. Not a new execution.",
+  "source_origin": {
+    "run_id": 43532123830,
+    "event_head": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+    "actual_checkout": "83b21cb73190b245291337468aed30c12e628981",
+    "run_event": "pull_request",
+    "run_conclusion": "cancelled",
+    "artifacts": [
+      {
+        "host": "ubuntu",
+        "artifact_id": 14087508655,
+        "job_id": 132252425163,
+        "archive_sha256": "ec9321afa786c33c19b94a37b998e3e57bd3bf6f7639f64a18f0f6c8bd14816c",
+        "members": [
+          {
+            "path": "ubuntu-latest.checked.json",
+            "sha256": "443941587772145b465f9e55477cc00c2e52470aae948899dde87bb52cea3571"
+          },
+          {
+            "path": "ubuntu-latest.json",
+            "sha256": "8c215152e6bc98f70dfc2f267e17538bee82a65e0c3b43031101b46fbcf1e347"
+          },
+          {
+            "path": "ubuntu-latest.provenance.json",
+            "sha256": "7a88f4c1e2cdeda45010e592ef1a62573ebbaa528178e5b787ec21fbfab4eb66"
+          }
+        ],
+        "origin": "Original successfuljob in PR run; NOT trusted-main push qualification"
+      },
+      {
+        "host": "windows",
+        "artifact_id": 14087504011,
+        "job_id": 132252425297,
+        "archive_sha256": "0b514541eb9c8ba377dfaded565d47f0ef07fd5389ee02eddb2580ad62cff45f",
+        "members": [
+          {
+            "path": "windows-latest.checked.json",
+            "sha256": "491984387d38ee9763184903f495290968723a3a1f501ab375458e56564f0b56"
+          },
+          {
+            "path": "windows-latest.json",
+            "sha256": "13edc69e693915b2bae6ae3f06c67cf9760dc1e9cbb3d81560210f2e2011ba86"
+          },
+          {
+            "path": "windows-latest.provenance.json",
+            "sha256": "cdeabeeffeb4d21dcdf12a4f01791b7d2799bceb417009ae4d6b09c0f364de4a"
+          }
+        ],
+        "origin": "Original successfuljob in PR run; NOT trusted-main push qualification"
+      }
+    ],
+    "scope": "Authentic original component result artifacts only; current readiness refuses PR/failedrun origin as final hosted qualification. No local-host relabel."
+  },
+  "selected_observations": [
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases expands only the generated in-package skill through the public API and preserves args",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases expands only the generated in-package skill through the public API and preserves args",
+          "path": "plugins/ca-pi/tools/test/commands.test.ts",
+          "fullTestName": "generated Pi command aliases > expands only the generated in-package skill through the public API and preserves args",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 3.119956000000002
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases expands only the generated in-package skill through the public API and preserves args",
+          "path": "plugins/ca-pi/tools/test/commands.test.ts",
+          "fullTestName": "generated Pi command aliases > expands only the generated in-package skill through the public API and preserves args",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 6.562900000000013
+        }
+      },
+      "assertion_body_sha256_lf": "acb52e770e7253af49d60ddae0151a537164a2beba028261400d4cc49e7bf700",
+      "assertion_source": "plugins/ca-pi/tools/test/commands.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases fails visibly instead of reading a missing or out-of-package skill",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases fails visibly instead of reading a missing or out-of-package skill",
+          "path": "plugins/ca-pi/tools/test/commands.test.ts",
+          "fullTestName": "generated Pi command aliases > fails visibly instead of reading a missing or out-of-package skill",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 3.0348999999999933
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases fails visibly instead of reading a missing or out-of-package skill",
+          "path": "plugins/ca-pi/tools/test/commands.test.ts",
+          "fullTestName": "generated Pi command aliases > fails visibly instead of reading a missing or out-of-package skill",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 6.425600000000031
+        }
+      },
+      "assertion_body_sha256_lf": "f3c8cec25bf46503637a92549fb31e181493e2555f7aad4a95a60426aa48bd3f",
+      "assertion_source": "plugins/ca-pi/tools/test/commands.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases rechecks complete ownership inside an alias and sends nothing after a late collision",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases rechecks complete ownership inside an alias and sends nothing after a late collision",
+          "path": "plugins/ca-pi/tools/test/commands.test.ts",
+          "fullTestName": "generated Pi command aliases > rechecks complete ownership inside an alias and sends nothing after a late collision",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.9305560000000241
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases rechecks complete ownership inside an alias and sends nothing after a late collision",
+          "path": "plugins/ca-pi/tools/test/commands.test.ts",
+          "fullTestName": "generated Pi command aliases > rechecks complete ownership inside an alias and sends nothing after a late collision",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 4.619899999999916
+        }
+      },
+      "assertion_body_sha256_lf": "52e9a951e20ba3367a11f94c7474201f3478a4b318ed4ecf2c22f3f5d985230b",
+      "assertion_source": "plugins/ca-pi/tools/test/commands.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices deduplicates exact identities but retains same-rule changes and distinct read contexts",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices deduplicates exact identities but retains same-rule changes and distinct read contexts",
+          "path": "plugins/ca-pi/tools/test/notices.test.ts",
+          "fullTestName": "Pi governed result notices > deduplicates exact identities but retains same-rule changes and distinct read contexts",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.3762669999999986
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices deduplicates exact identities but retains same-rule changes and distinct read contexts",
+          "path": "plugins/ca-pi/tools/test/notices.test.ts",
+          "fullTestName": "Pi governed result notices > deduplicates exact identities but retains same-rule changes and distinct read contexts",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.3821000000000083
+        }
+      },
+      "assertion_body_sha256_lf": "a6916937bb67b5a7b04c00ab9ee2e0feb0b41a0c8ee5bef0f53dc722b70f493d",
+      "assertion_source": "plugins/ca-pi/tools/test/notices.test.ts"
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes",
+          "path": "plugins/ca-pi/tools/test/notices.test.ts",
+          "fullTestName": "Pi governed result notices > redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.508182000000005
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes",
+          "path": "plugins/ca-pi/tools/test/notices.test.ts",
+          "fullTestName": "Pi governed result notices > redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.4230999999999767
+        }
+      },
+      "assertion_body_sha256_lf": "90ebc910d85324228d46eb1beb678f577ff6770ceafc9b50bd60bb3420176945",
+      "assertion_source": "plugins/ca-pi/tools/test/notices.test.ts"
+    }
+  ],
+  "original_normalized_packet_sha256": "59171661fe8dbc4e1617b5f2fb326bd23828ea5575766bcbe7b36b9ee0863fb2"
+}
