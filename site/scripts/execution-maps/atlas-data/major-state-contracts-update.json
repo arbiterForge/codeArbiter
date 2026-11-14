@@ -1,5 +1,5 @@
 {
-  "revision": "6a8967f03078fa3c7b0d92a8d19f2d6383dd66e3",
+  "revision": "b7a75fcab005d9ab3c29618d59559da2edee3283",
   "title": "State-contract program: inspected source changes",
   "summary": "Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims. Real user stops and host permissions remain effective. This source review covers progress preservation, discovery capture, bounded recovery, scoped conflicts, generator and manifest contracts; it is not installed-host certification.",
   "changes": [
@@ -338,8 +338,8 @@
     },
     {
       "path": "core/pysrc/_workflowrecoverylib.py",
-      "blob": "7214f98ef18d1aa6578253b0926c85de0a0519c3",
-      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work. Decision and decline publication carries the caller preimage through both atomic comparisons; a concurrent append remains a conflict with its effect unresolved.",
+      "blob": "1926007b7b414790f1d986ea94c58a332dac1040",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work. Decision and decline publication carries the caller preimage through both atomic comparisons; a concurrent append remains a conflict with its effect unresolved. Only finite trusted reason codes supply bounded scan and startup recovery guidance. An uncertain decline stays claimed until exact audit readback settles it; changed facts use a new linked obligation without reopening settled history.",
       "nodes": [
         "c-harvest",
         "c-decisions",

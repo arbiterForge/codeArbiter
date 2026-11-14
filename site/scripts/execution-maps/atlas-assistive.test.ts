@@ -17,7 +17,7 @@ describe('assistive candidate versus retained historical routes',()=>{
     expect(createHash('sha256').update(historical).digest('hex'))
       .toBe('13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50');
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('6a8967f03078fa3c7b0d92a8d19f2d6383dd66e3');
+    expect(update.revision).toBe('b7a75fcab005d9ab3c29618d59559da2edee3283');
     expect(update.changes).toHaveLength(new Set([...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(MAJOR_SOURCE_BLOBS)]).size);
     expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(ASSISTIVE_SOURCE_BLOBS)));
     expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(MAJOR_SOURCE_BLOBS)));
@@ -123,6 +123,17 @@ describe('assistive candidate versus retained historical routes',()=>{
     for(const view of atlas.views)expect(renderAtlasSvg(atlas,view,theme)).toContain('HISTORICAL ROUTES  /  CODEARBITER');
     const exported=new URL(`../../../site/public/workflow-atlas/${REVIEWED_AT}/sources.json`,import.meta.url);
     expect(JSON.parse(readFileSync(exported,'utf8')).sourceUpdate).toEqual(atlas.sourceUpdate);
+  });
+
+  it('shows trusted recovery guidance without replay, regrant or uncertain-decline settlement',()=>{
+    const summary=atlas.sourceUpdate!.changes.find(change=>change.path==='core/pysrc/_workflowrecoverylib.py')!.summary;
+    expect(summary).toContain('finite trusted reason codes');
+    expect(summary).toContain('uncertain decline stays claimed');
+    expect(summary).toContain('new linked obligation without reopening settled history');
+    const recovery=atlas.views.flatMap(view=>view.nodes).find(node=>node.id==='f-recovery')!;
+    expect(nodeDetails(atlas,recovery)).toContain('status never replays effects or regrants authority');
+    const html=renderAtlasHtml(atlas,loadAtlasTheme(root));
+    expect(html).toContain('An uncertain decline stays claimed until exact audit readback');
   });
 
   it('exposes current context callers and native writers at the historical permission and recovery nodes',()=>{
