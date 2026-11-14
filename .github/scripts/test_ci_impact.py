@@ -1095,6 +1095,55 @@ class WorkflowContractTest(unittest.TestCase):
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
 
+    def test_sandbox_retains_original_named_results_without_filtering_console_run(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["ca-sandbox-tools"]
+        commands = re.findall(r"(?m)^        run: (npm test[^\n]*)$", job)
+        self.assertEqual(len(commands), 1, "the owning Sandbox suite must execute exactly once")
+        self.assertEqual(shlex.split(commands[0]), [
+            "npm", "test", "--", "--reporter=default", "--reporter=github-actions", "--reporter=json",
+            "--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json",
+        ], "reporters may add transport, never a file/name filter or error suppression")
+        test_step = job.split("- name: Test (Docker required - a missing daemon fails the run)", 1)[1].split("      - ", 1)[0]
+        self.assertNotIn("continue-on-error:", test_step)
+        self.assertNotIn("if:", test_step)
+
+    def test_sandbox_uploads_source_bound_original_json_and_requires_presence(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["ca-sandbox-tools"]
+        steps = re.split(r"(?m)^      - ", job)[1:]
+        uploads = [step for step in steps if step.startswith("name: Preserve original Sandbox named test results\n")]
+        self.assertEqual(len(uploads), 1, "one original named-result upload required")
+        upload = uploads[0]
+        for value in (
+            "if: always()", "uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "name: sandbox-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path: ${{ runner.temp }}/ca-sandbox-vitest.json", "if-no-files-found: error",
+            "retention-days: 14", "include-hidden-files: false", "overwrite: false",
+        ):
+            self.assertIn(value, upload)
+        self.assertNotIn("continue-on-error:", upload)
+        self.assertNotIn("permissions:", upload)
+        self.assertGreater(job.index("name: Preserve original Sandbox named test results"),
+                           job.index("name: Fail if a committed ca-sandbox artifact is stale"))
+
+    def test_sandbox_result_transport_guards_reject_incomplete_or_weakened_wiring(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        # Exercise the real owning guards against deliberate directive drift.
+        for old, new, guard in (
+            ("--reporter=json", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--reporter=default", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--reporter=github-actions", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--outputFile.json=", "dephash.test.ts --outputFile.json=", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("if-no-files-found: error", "if-no-files-found: ignore", self.test_sandbox_uploads_source_bound_original_json_and_requires_presence),
+        ):
+            with self.subTest(drift=old), tempfile.TemporaryDirectory(prefix="ca-sandbox-transport-wiring-") as tmp:
+                path = Path(tmp) / "ci.yml"
+                # Mutate only the selected owning job, never another upload.
+                job = workflow_jobs(ci)["ca-sandbox-tools"]
+                self.assertIn(old, job)
+                path.write_text(ci.replace(job, job.replace(old, new, 1), 1), encoding="utf-8")
+                with mock.patch.dict(globals(), {"CI_WORKFLOW": path}), self.assertRaises(AssertionError):
+                    guard()
+
     def test_the_required_sandbox_job_fails_when_docker_is_unavailable(self):
         # Issue #406 AC-1/AC-2.  ca-sandbox is the driver that clones UNTRUSTED
         # repositories, and every real-container suite used to convert a failed

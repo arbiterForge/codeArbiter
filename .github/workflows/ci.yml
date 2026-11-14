@@ -2246,7 +2246,9 @@ jobs:
           --output "$RUNNER_TEMP/nixpacks-acquisition.json"
           --github-path
       - name: Test (Docker required - a missing daemon fails the run)
-        run: npm test
+        # Preserve the original console/annotations and retain the same run's
+        # named outcomes; reporters never select or repeat tests.
+        run: npm test -- --reporter=default --reporter=github-actions --reporter=json --outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"
       - name: Assert every real-container layer executed
         # The preflight only proves the daemon answered once. This proves each
         # docker-gated layer actually ran, so a suite that silently stops
@@ -2274,6 +2276,20 @@ jobs:
           done
           [ "$stale" -eq 0 ] || exit 1
           echo "sandbox.js and claude-inside.js are in sync with the TypeScript sources"
+
+      - name: Preserve original Sandbox named test results
+        # Failed reports remain diagnostic; only successful original jobs/runs
+        # can qualify through the existing authenticated evidence reader.
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sandbox-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ca-sandbox-vitest.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
 
   ca-pi-checks:
     name: "[CHECK] | [PI  ] | Host-independent adapter contract"
