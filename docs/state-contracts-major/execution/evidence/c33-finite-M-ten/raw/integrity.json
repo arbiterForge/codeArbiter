@@ -1,0 +1,11 @@
+{
+  "before_after_equal": true,
+  "all165_physical_immutable_inputs_equal": true,
+  "actual_surface_membership_stable": true,
+  "actual_positive_import_and_host_descriptor_lookup_stable": true,
+  "loaded_repo_modules_accounted": true,
+  "private_home_files": [],
+  "fixture_temp_empty_after": true,
+  "gov_head_index_status_stable": true,
+  "qualification_scope": "local Windowsamd64 Python3.14 exact10 existingC33 mechanical contracts only"
+}

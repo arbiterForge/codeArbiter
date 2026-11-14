@@ -1,0 +1,15 @@
+test_changed_owner (__main__.RetainedRecoveryTests.test_changed_owner) ... ok
+test_codex_pretool (__main__.RetainedRecoveryTests.test_codex_pretool) ... ok
+test_corrupt_inventory (__main__.RetainedRecoveryTests.test_corrupt_inventory) ... ok
+test_credential_boundary (__main__.RetainedRecoveryTests.test_credential_boundary) ... ok
+test_dormant (__main__.RetainedRecoveryTests.test_dormant) ... ok
+test_foreign_helper (__main__.RetainedRecoveryTests.test_foreign_helper) ... ok
+test_host_reentry (__main__.RetainedRecoveryTests.test_host_reentry) ... ok
+test_native_response_loss (__main__.RetainedRecoveryTests.test_native_response_loss) ... ok
+test_pi_codec (__main__.RetainedRecoveryTests.test_pi_codec) ... ok
+test_shared_store (__main__.RetainedRecoveryTests.test_shared_store) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 29.641s
+
+OK

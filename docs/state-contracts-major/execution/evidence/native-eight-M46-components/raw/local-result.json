@@ -1,0 +1,10 @@
+{
+  "state": "PASSED_TWO_LOCAL_INSTALLED_NPM_FIXTURES",
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "original_payload_run_R": 43582198115,
+  "local_observation_run_id": 0,
+  "source_and_payload_stable": true,
+  "test_count": 2,
+  "observation_sha256": "0854d64703ce41e314e37657d2c611382389e3efee4d3688f048fee5fceffb18",
+  "limits": "Two controlled native receipt fixtures only; not live Claude consent/provider or whole installed host."
+}

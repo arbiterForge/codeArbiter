@@ -1,0 +1,30 @@
+{
+  "source_commit": "bf2f4b412cb1a81fde0e4c32fa2d4623ded3f63b",
+  "end_HEAD": "bf2f4b412cb1a81fde0e4c32fa2d4623ded3f63b",
+  "before_status": "?? .codearbiter/.artifacts/\n",
+  "after_status": "?? .codearbiter/.artifacts/\n",
+  "index_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "index_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "inputs_stable": true,
+  "positive_inputs": 20,
+  "python": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "command": {
+    "argv": [
+      "C:\\Python314\\python.exe",
+      "-B",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wf01-scoped-conflict-axnk14l1\\run-selected.py",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wf01-scoped-conflict-axnk14l1"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "exit_code": 0
+  },
+  "secrets_environment": "Minimal runtime allowlist/private HOME+TEMP before imports; no source copies, provider secrets or installed-host initialization.",
+  "home_empty_after": true,
+  "scratch_empty_after": true,
+  "scope": "Existing source-conformance assertions reading real canonical/generated guidance only. No installed model turn, scheduler/dependency analysis or store operation is executed."
+}

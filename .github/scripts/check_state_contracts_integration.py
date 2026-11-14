@@ -30,6 +30,13 @@ def safe_path(value):
 
 
 def validate(repo, source, load=None):
+    # Caller injection remains authoritative; an injected loader may itself use
+    # readiness.blob, so keep the transaction available in either case.
+    with readiness.blob_transaction(repo):
+        return _validate(repo, source, load)
+
+
+def _validate(repo, source, load=None):
     readiness.require(readiness.SHA.fullmatch(source or ""), "exact integration source required")
     cache = {}
     def original(commit, path):

@@ -1,0 +1,138 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "bf2f4b412cb1a81fde0e4c32fa2d4623ded3f63b",
+  "kind": "conformance-check",
+  "result": "PASSED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/farm_sandbox_program independent current committed-source static contract test execution; no installed actor session claim"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    ".github/scripts/test_routing_and_cleanup_surface.py": "fa3272d55e5e78b2ba67dcaf3bedc1ed846b875f246621b56d7e8d28821f66ad",
+    "core/surface/COMMANDS.md": "e34019216a13d6c1d683690d6f9e58ec2a056638fdb4acf441723ad9a003f086",
+    "core/surface/SPRINT.md": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+    "core/surface/commands/conflict.md": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+    "core/surface/includes/artifacts.md": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+    "core/surface/includes/routing-table.md": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+    "core/surface/includes/safety-core.md": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+    "core/surface/skills/context-check/SKILL.md": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+    "core/surface/skills/executing-plans/SKILL.md": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+    "core/surface/skills/subagent-driven-development/SKILL.md": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+    "plugins/ca-codex/SPRINT.md": "212dbc7880dd84b5fd7ac64861b15598b13f29f1f178012e821444c7c3c57639",
+    "plugins/ca-codex/routines/context-check/SKILL.md": "b4d1d59b5bb6c122bcfb65cb664c1a18764c919fa35808a5ec9d04cb41dbfb46",
+    "plugins/ca-codex/skills/ca-conflict/SKILL.md": "e8ae678e595aa226addafb690b4e537fac0bc56cb1798e1cab9f230590b906ff",
+    "plugins/ca-pi/SPRINT.md": "028a1a761b6a6c8d7813e85a9b42cb2de0e0be9e4a7e3d23596e3a864d63a499",
+    "plugins/ca-pi/routines/context-check/SKILL.md": "8cac8d753de58b6b2e67f63f8e945762100250cca10bc72d26369101ac152c88",
+    "plugins/ca-pi/skills/ca-conflict/SKILL.md": "900e0f27847067b1bffe2259b31d5215804b3c072803dba9da9bdd33a07139a6",
+    "plugins/ca/SPRINT.md": "99483b43184b9af982ed645b4d97725c6cd3a1a76c05934701f9ee42fe68c6cd",
+    "plugins/ca/commands/conflict.md": "65ef31744cffee8cfdb15670d51c6c741f382b4ecd920d45f00dd4e91212095c",
+    "plugins/ca/skills/context-check/SKILL.md": "b222c9047b2bc85fad5435853dc35af22c55d802fb644b2da2336ba17200d9ae"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wf01-scoped-conflict-axnk14l1\\run-selected.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wf01-scoped-conflict-axnk14l1"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/observe.py",
+      "sha256": "61f547d8b8805d4bd34e4fecbc66226dba8c3bb40ea813cfd4c931bc266361e2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/run-selected.py",
+      "sha256": "89a2aefd902c3aa19810de163c8520012c6767c5ec4a7bd5e21d6e7cbbdcbc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/source-paths.json",
+      "sha256": "6ad02e0712f92910909cff522b9ee7a55f21224a6b0189a4ebc06d5ad2f6a716"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/original.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/original.stderr.log",
+      "sha256": "73ecdda277cf8029bc7af81262f47b4c3602ac9641e8b45e63cb2e4a51f48c80"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/child-exit.json",
+      "sha256": "5b7f8f9343f6943ed04be1088adddb6a5d1b808bd64d77f5bff1c0c07f90bfa8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/named-results.json",
+      "sha256": "f9034fa7c89bbb6fa225ba3fde30b7b9fbe1c44e0216b118470cb27a78008d6b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/observation.json",
+      "sha256": "62911694a4e0ebc53d33836c1b4894f9461167442b86c5496f083e19fe242de0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/inputs-before.json",
+      "sha256": "03541fa90f367f533389f2192414e00d1c8d655190dbecb9b5b16a3615aace63"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/inputs-after.json",
+      "sha256": "03541fa90f367f533389f2192414e00d1c8d655190dbecb9b5b16a3615aace63"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/raw/clause-review.json",
+      "sha256": "82c36b7ef154cb29fc20c0724efd84634f6bd50ec375e2c7270b4256d0e115e3"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:findings:W-F01",
+    "disposition:transitions:WF-02:01"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:findings:W-F01",
+      "observed_named_cases": [
+        "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+        "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+        "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope"
+      ],
+      "assertion_scope": "The source-confirmed universal stop contradiction is corrected on canonical conflict command plus three rendered host copies: real dependency scope/unknown/shared-security wording and both exact sources remain; prohibited universal phrases are absent; independent authorized mutations continue with explicit global stops/no side-choice. Three host sprint/context refresh instruction copies propagate affected scope and independent continuation.",
+      "limits": "Published-source contract only; not an installed model-obedience or computed dependency graph/runtime claim."
+    },
+    {
+      "cell": "disposition:transitions:WF-02:01",
+      "observed_named_cases": [
+        "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+        "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+        "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope"
+      ],
+      "assertion_scope": "HW-06 remaps the old contradictory global STOP prescription to dependency-scoped conflict reporting, preserving exact sources and user resolution while allowing independent work. Source tests prove the maintained canonical+generated instruction clauses; safety/SPRINT/context/ADR clauses are reviewed at the same literal source epoch.",
+      "candidate_transition": {
+        "from": "working with governing rules",
+        "event": "two governing rules contradict",
+        "guard": "conflict detected; affected authority/data/decision dependency scope is known or explicitly unknown",
+        "to": "affected work and actual dependents paused; independent authorized work continues",
+        "effects": "Retain exact conflicting sources and hierarchy/recency context for user resolution; propagate same affected scope to children. Shared security/authority dependencies may expand affected set; explicit global stops remain global.",
+        "failure_retry": "Unknown dependencies are reported/inspected without inventing a graph; model cannot choose a rule; unrelated continuation never bypasses independent store-wide pending-journal or host/security gates."
+      },
+      "limits": "Instruction-surface conformance, not actual actor behavior/child revocation or store operation acceptance."
+    }
+  ],
+  "selected_assertion_body_sha256": {
+    "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies": "9ca167cc289860f6d5543446bf2f44a61553aeaca28c341566d991ac0418d374",
+    "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain": "185d6fcd4c951e0276c46b93ab61cc5560d1e073a0d88d66699b714840c5dd67",
+    "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope": "f5b6acf812c98a4f42ae3150dd8ce2431c958f4fa771274b64f550f6cf5d3e7f"
+  },
+  "scope_limits": [
+    "Actual3 existing source-conformance parent tests/14 successful path subcases only; they read canonical/generated instruction bytes, not a model dispatcher or a native candidate.",
+    "20 literal physical+immutable positive inputs captured BEFORE/AFTER stable atbf2f4b41; privateHOME/TEMP before imports, childexit retained before postconditions; Gov/index/source unchanged.",
+    "No new decision, code/test, provider, native build, installed host, dependency-analysis simulation, fullsuite or numeric coverage claim.",
+    "Native pending journal integrity remains its independent source owner; current source review after run is explicitly separate from test dependency capture and does not qualify new runtime.",
+    "Only W-F01 and finite WF-02:01 source instruction edge; WF-02:02, machine, HW-06 total completion and PI-D05 runtime prerequisite remain outside this proof."
+  ]
+}

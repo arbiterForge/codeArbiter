@@ -20,6 +20,7 @@
     "installed:sandbox:docker"
   ],
   "cell_job_bindings": {
-    "disposition:transitions:N09:04": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>"
+    "disposition:transitions:N09:04": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+    "installed:claude:workflow": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>"
   }
 }

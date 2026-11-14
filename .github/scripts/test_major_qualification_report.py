@@ -355,5 +355,42 @@ class ActualPythonObserverTest(unittest.TestCase):
             self.assertEqual(counter.read_text(), "x")
 
 
+
+class RetainedColdReportTest(unittest.TestCase):
+    def test_only_explicit_source_bound_package_placeholder_is_rendered(self):
+        from test_retained_archive_cli_observation import fixture
+        req,selection,observed,payloads=fixture()
+        selection["groups"][0]["payload_name"]="artifact-release-packages-{source_commit}"
+        report=owner.build_report(req,job_name="cold owning job",job_id=9,selections=selection,observations={"cold":observed},payloads=payloads)
+        self.assertEqual(report["results"][0]["payload_artifact_ids"],[8,10])
+        selection["groups"][0]["payload_name"]="arbitrary-{source_commit}"
+        with self.assertRaises(ValueError):owner.build_report(req,job_name="cold owning job",job_id=9,selections=selection,observations={"cold":observed},payloads=payloads)
+
+    def test_emission_accepts_only_normal_main_or_program_push(self):
+        import os
+        env={"GITHUB_ACTIONS":"true","GITHUB_REPOSITORY":owner.readiness.REPOSITORY,"GITHUB_EVENT_NAME":"push","GITHUB_REF":"refs/heads/major/state-contracts"}
+        with mock.patch.dict(os.environ,env,clear=True):owner.validate_emitter_environment()
+        for key,value in [("GITHUB_REF","refs/heads/topic"),("GITHUB_EVENT_NAME","pull_request"),("GITHUB_REPOSITORY","fork/codeArbiter"),("GITHUB_ACTIONS","false")]:
+            with self.subTest(key=key),mock.patch.dict(os.environ,{**env,key:value},clear=True),self.assertRaises(ValueError):owner.validate_emitter_environment()
+
+    def test_valid_closed_installed_observer_retains_both_distinct_original_payloads(self):
+        from test_retained_archive_cli_observation import fixture
+        req, selection, observed, payloads = fixture()
+        report = owner.build_report(req, job_name="cold owning job", job_id=9,
+            selections=selection, observations={"cold": observed}, payloads=payloads)
+        self.assertEqual(report["schema"], "codearbiter-major-qualification/3")
+        self.assertEqual(report["results"][0]["payload_artifact_ids"], [8, 10])
+        self.assertEqual({p["artifact_id"] for p in report["payloads"]}, {8, 10})
+        self.assertNotIn("payload_artifact_id", report["results"][0])
+
+    def test_cold_profile_never_qualifies_versioned_hosts_or_docker(self):
+        from test_retained_archive_cli_observation import fixture
+        for cell in ["installed:pi:windows:1.5.0", "installed:codex:0.145.0", "installed:sandbox:docker"]:
+            req, selection, observed, payloads = fixture()
+            req["cells"] = [cell];req["cell_jobs"] = {cell:"cold owning job"};selection["groups"][0]["cells"]=[cell]
+            with self.subTest(cell=cell), self.assertRaises(ValueError):
+                owner.build_report(req, job_name="cold owning job", job_id=9,
+                    selections=selection, observations={"cold":observed}, payloads=payloads)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

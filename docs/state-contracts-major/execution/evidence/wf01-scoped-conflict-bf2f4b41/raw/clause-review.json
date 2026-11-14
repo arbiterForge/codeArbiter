@@ -1,0 +1,64 @@
+{
+  "source_commit": "bf2f4b412cb1a81fde0e4c32fa2d4623ded3f63b",
+  "task": "HW-06 / W-F01",
+  "observed_existing_oracle": "TestDependentConflictScope,3 parents/14 actual subtests; finite published-source contract",
+  "clauses": [
+    {
+      "path": "core/surface/commands/conflict.md",
+      "scope": "Flow1..5 +Hard gate +After resolution",
+      "conformance": "Pause only actual authority/data/decision dependents. Unknown dependency stays unknown and affected scope waits; shared security/authority can expand scope. Quote both exact passages; user resolves, not recency/model preference. Continue independent authorized mutations; pass scoped pause/revocation to children; explicit global user/host stop remains global.",
+      "test": "Canonical plus three generated command surfaces inspected by first two tests."
+    },
+    {
+      "path": "core/surface/SPRINT.md",
+      "scope": "Actual stops",
+      "conformance": "Affected tasks and child delegations pause; only tasks relying on shared authority/security expand pause; unknown dependencies are inspected, independent work continues; real independent gates remain.",
+      "test": "Third test asserts affected scope/independent work on three generated SPRINThen source-scoped canonical review aligns clause."
+    },
+    {
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "scope": "current governing sources conflict paragraph",
+      "conformance": "Retain both exact sources; pause actual dependency scope/children; independent authorized mutations continue; no invented graph or chosen rule; global stop remains global.",
+      "test": "Third test asserts affected scope/independent work on three generated owner copies; canonical full relevant clause reviewed."
+    },
+    {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "scope": "Phase1/Phase3/Hard boundaries",
+      "conformance": "Group independent work around real prerequisites, retain actual BLOCKED stops, ask consequential missing decisions, keep actual host/security restrictions. This does not grant bypass of the native store."
+    },
+    {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "scope": "Select tasks / truthful checks / Hard boundaries",
+      "conformance": "Actual task dependencies, not checkpoint order, govern scheduling; unrelated work can continue after a failed check; explicit user/security constraints remain; no fabricated result/choice/qualification."
+    },
+    {
+      "path": "core/surface/includes/safety-core.md",
+      "scope": "sections2/3/7",
+      "conformance": "Unresolvable rule conflicts use conflict procedure; no silent reconciliation; security/audit integrity/data correctness retain precedence and encountered guards stand pending diagnosis."
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "scope": "Resume safely",
+      "conformance": "Current revision/model hash +same durable operation ID, inspect uncertain effects and preserve journal; rollback is not success and forward recovery precedes stale restore."
+    },
+    {
+      "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+      "scope": "Decision /Risks and verification",
+      "conformance": "Only actual dependencies/consequential unresolved decisions wait, unrelated work can continue, while typed integrity, CAS, transaction recovery, history, actual host/user stops and independent publication controls remain."
+    }
+  ],
+  "native_integrity_readback_after_source_test": {
+    "observation_kind": "Current immutable source review only; no new Go execution/build",
+    "files": {
+      "core/artifacts/internal/store/infrastructure.go": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+      "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+    },
+    "clauses": "infrastructure journal state prepared returns RECOVERY_REQUIRED before input snapshot; transaction exact replay lookup precedes Pending guard and a new write refuses any pending transaction. No new bypass/exception was implemented or tested.",
+    "scope": "This after-run review is NOT a positive native runtime input capture; Go files are not included in the source-conformance test dependency cone."
+  },
+  "open_acceptance": [
+    "No installed new model turn, actual A/B dependency scheduling or parent-child runtime pause/revocation was executed. PI-D05 completion prerequisite remains separate.",
+    "No WF-02:02 actual resolution retention/resume/replay sequence in this existing3-case oracle; leave it PLANNED.",
+    "No store-wide journal recovery execution or full HW-06/machine completion claimed."
+  ]
+}

@@ -1,0 +1,69 @@
+<skill name="ca-doctor" location="C:\Users\brenn\AppData\Local\Temp\ca-original-pi-rpc-M46e29-R43582198115\pi-original-extracted\package\plugins\ca-pi\skills\ca-doctor\SKILL.md">
+References are relative to C:\Users\brenn\AppData\Local\Temp\ca-original-pi-rpc-M46e29-R43582198115\pi-original-extracted\package\plugins\ca-pi\skills\ca-doctor.
+
+# /ca-doctor — install health
+
+Silent dormancy is the worst failure shape this plugin has: the gates look installed but never fire.
+This command proves the active host is healthy and reports every non-OK finding with an exact
+remediation.
+
+## Flow
+
+
+The mechanical report also invokes the installation-pinned artifact client's `capabilities`
+operation. When the repository contains an HTML authority, it performs a bounded catalog read to
+surface invalid or ambiguous artifacts. It MUST NOT load the artifact schema, search `PATH`, use a
+repository binary, mutate an artifact, or silently fall back to Markdown.
+Its executing-adapter identity comes from the already admitted plugin root. The observed adapter
+manifest version is separate from the native helper manifest's declared version and the native
+executable digest verified by the on-demand capability probe. A newer cached sibling is not the
+executing version. Missing or malformed identity data is reported as unknown; it never grants
+package trust.
+
+- `CAPABILITY_MISSING` or another installation identity failure is unhealthy: report “repair or
+  reinstall the pinned artifact payload; HTML work is blocked.” Unrelated legacy Markdown remains
+  usable.
+- An invalid HTML artifact is unhealthy: preserve the bounded engine code and direct the user to
+  inspect `repair-preview` before any explicit reviewed repair.
+1. The `/ca-doctor` alias has already run the extension's structured Pi doctor report before sending
+   this generated skill. Present the `<codearbiter-doctor-report>` block below verbatim.
+2. The report inspects, without granting trust: active Git package origin/version, exact Pi CLI and
+   module package identity, stable Pi/Node/Python support, shared-core and bridge paths, command and
+   native-equivalent skill-expansion ownership, child/ambient-marker state, and final wrapper sources.
+3. Its `wrapper-self-test` row submits only `git add --all --dry-run` directly to the stored governed
+   Pi bash wrapper. The exact shared-core `[H-03]` block is healthy and cannot stage files; execution
+   or a different block is unhealthy. This self-test does not traverse Pi's active dispatcher. Do not
+   rerun or respell it.
+4. Its `active-dispatch` row remains degraded because supported Pi 1.5.0 public extension
+   APIs cannot submit that deterministic call through the active dispatcher. PI-AC-28 remains blocked
+   until supported-version real-host promotion/CI evidence closes the gap.
+5. Resolve Python once, run `<plugin-root>/hooks/doctor.py`, and present its mechanical report
+   verbatim. This is the on-demand artifact-capability and repository-artifact check; it is separate
+   from the wrapper self-test and must not be respelled into an active-dispatch claim.
+
+## Remediation ladder
+
+1. Restart Pi so package resources and final wrappers register in one fresh process.
+2. Reinstall `ca-pi` from the approved pinned Git tag. For project-local packages, inspect `/trust`
+   and grant trust only if you accept that source; codeArbiter never grants it.
+3. If dormancy was intended, `/ca-init` opts the repository in.
+
+## When NOT to use
+
+- Scaffold state only → `/ca-init --check`.
+- Project progress, not install health → `/ca-status`.
+
+## Hard gate
+
+Read-only. MUST NOT create markers, stage files, grant trust, weaken a block, or retry the
+wrapper self-test with different spelling. MUST preserve the degraded active-dispatch diagnosis until
+supported-version real-host promotion/CI evidence closes PI-AC-28.
+
+For an arbiter-enabled repository, the mechanical report treats the Git backstop as healthy only
+after exact managed-shim and live-enforcer validation, plus a harmless selected-Git
+`git hook run pre-push` probe with empty input. It never executes a foreign hook.
+</skill>
+
+<codearbiter-doctor-report>
+{"format":"codearbiter-doctor-v1","report":"HEALTHY  package: @arbiterforge/ca-pi 0.30.0 is active from C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi as a user package.\nHEALTHY  trust: Pi reports the project as trusted after operator inspection. codeArbiter inspected trust state and did not grant it.\nHEALTHY  version: Pi 1.5.0, Node 24.22.1, and the supported runtime floor are compatible.\nHEALTHY  python: Python 3 is available to the Pi bridge.\nHEALTHY  core: The generated shared Python core is present with bridge C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\hooks\\pi-bridge.py.\nHEALTHY  commands: Command ownership is exact and DECISION-0018 native-equivalent expansion matches Pi 1.5.0.\nHEALTHY  bridge: The bounded canonical Python bridge is healthy.\nHEALTHY  footer: The rich footer is intentionally absent outside an active interactive parent session.\nHEALTHY  sidebar: The sidebar is intentionally absent outside an interactive parent session.\nHEALTHY  background: The background manager is intentionally absent outside a trusted enabled interactive parent session.\nHEALTHY  child: The exact hardened child enforcement artifact is present at C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter-child.js.\nHEALTHY  ambient-marker: No unvalidated ambient CODEARBITER_SUBAGENT marker is active.\nHEALTHY  module-identity: Active Pi CLI C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-supported-1.5.0-msc-20261113\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js; module C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-supported-1.5.0-msc-20261113\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\index.js; package C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-supported-1.5.0-msc-20261113\\node_modules\\@earendil-works\\pi-coding-agent; version 1.5.0. Module identity is self-consistent with the operator-launched Pi runtime; this does not prove publisher authenticity.\nHEALTHY  final-arguments: The active final-execution wrappers govern the arguments that reach Pi's built-in mutators.\nDEGRADED  active-dispatch: Supported Pi 1.5.0 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.\nREMEDIATION  active-dispatch: Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.\nHEALTHY  wrapper-self-test: The stored governed Pi bash wrapper returned the exact shared-core H-03 block for git add --all --dry-run; no staging occurred.\nDEGRADED  author-delegation: unavailable (no-parent-ui); read-only reviewer capability remains separate. Execution uses trusted-host-exact-operation-v1 with host filesystem/network access. Source capability is not packaged-author qualification.\nREMEDIATION  author-delegation: Use a trusted parent TUI for concrete operation confirmation; require exact supported-host author qualification before promotion.\nHEALTHY  delegation-recovery: no unresolved retained operations observed\nHEALTHY  private-artifact-approval: unavailable on Pi 1.5.0; legacy private entry is runtime-gated to 1.0.2. This does not qualify host-observed approval or grant delegation authority.\ndoctor: DEGRADED"}
+</codearbiter-doctor-report>

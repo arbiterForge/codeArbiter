@@ -1,0 +1,49 @@
+{
+  "receipt_present": true,
+  "receipt_sha256": "70593cbc601237908bbbe1e3eada03647ac2852b82ab9b662538e83f392f9785",
+  "receipt": {
+    "format": "codearbiter.artifact-cold-execution/0.3.0",
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "workflow": ".github/workflows/ci.yml",
+    "run_id": "43582198115",
+    "job": "artifact-package-cold",
+    "host": "claude",
+    "platform": "windows/amd64",
+    "promotion_receipt_sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084",
+    "package_sha256": "676c25c2726d4c818c654bcb3e11a4f5302cb42ab710dd6cd92093b05967947a",
+    "manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "response_sha256": "00163f607841c57fde4bb160917b600bff78e9b6ef60fbeaf77f5d07ea041180",
+    "operation": "capabilities",
+    "repository_operations_available": true,
+    "runtime_downloads": false,
+    "installed_workflow_response_sha256": "a0965d4ed0fd40a91ad30e3f1e32436317747c8bf51b109a9af3283d412f3835",
+    "installed_bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "installed_workflow_format": "codearbiter.installed-host-workflow/0.2.0",
+    "approval_evidence_mode": "host-observed-prompt",
+    "prerequisite_evidence_mode": "host-observed-prompt",
+    "interruption_reconciled": true,
+    "redispatched": true,
+    "commit_proof": true,
+    "finalization_proof": true,
+    "all_accepted_and_current": true,
+    "markdown_shadow_count": 0,
+    "context_workflow_scope": "candidate-preflight",
+    "context_installed_tests": [
+      {
+        "name": "test_t044_installed_context_kind",
+        "status": "pass"
+      },
+      {
+        "name": "test_t044_rejects_missing_candidate_identity",
+        "status": "pass"
+      },
+      {
+        "name": "test_t044_rejects_nonisolated_environment",
+        "status": "pass"
+      }
+    ],
+    "context_installed_output_sha256": "971455bf85027b5fb8f0acb5535e5a04a5c107ce16f823710a92cc0310fa239b"
+  },
+  "input_bytes_stable": true
+}

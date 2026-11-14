@@ -1,0 +1,938 @@
+{
+  "schema": "codearbiter.original-pi-rpc-projection/1",
+  "projection": "Allowlisted exact original command/status/settings fields and source byte hashes; not a new RPC execution or copied provider transcript.",
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "run_R": 43582198115,
+  "commands_response": {
+    "id": "commands",
+    "type": "response",
+    "command": "get_commands",
+    "success": true,
+    "data": {
+      "commands": [
+        {
+          "name": "ca-add-dep",
+          "description": "Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-adr",
+          "description": "Record user-decided ADRs or inspect their health read-only. Preserve attribution and acceptance evidence.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-adr-status",
+          "description": "Inspect ADR health read-only; optionally select one ADR with --adr N.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-audit",
+          "description": "Assemble the governance record for a range \u2014 commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings \u2014 into one dated audit packet. Read-only.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-checkpoint",
+          "description": "Periodic multi-reviewer sweep of the whole codebase \u2014 surfaces a triaged checkpoint report.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-chore",
+          "description": "Sanctioned lane for non-behavioral work \u2014 docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-cleanup",
+          "description": "Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-commit",
+          "description": "Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-conflict",
+          "description": "Pause affected work and its actual dependents when rules conflict. Present both sources and the dependency scope; the user resolves. Continue independent authorized work.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-context-check",
+          "description": "Inspect context drift and refresh selected source-backed documents under existing authorization.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-create-context",
+          "description": "Build source-backed project context through bounded inspection, optional agents, and record-level knowledge writes.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-debug",
+          "description": "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff, including a bounded unresolved result. Not for implementing a known fix, new features, or explanation-only questions.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-decompose",
+          "description": "Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-doctor",
+          "description": "Verify the active host install, package, command ownership, enforcement, wrapper self-test, and active-dispatch coverage gap. Read-only.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-feature",
+          "description": "Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-fix",
+          "description": "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-init",
+          "description": "Opt this repo into codeArbiter \u2014 scaffold the root-level .codearbiter/ state store.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-override",
+          "description": "Sanctioned, logged bypass of a gate or hard rule \u2014 one audit line, then proceed.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-pr",
+          "description": "Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-prune",
+          "description": "Trim transcript clutter to extend session lifetime \u2014 analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-reconcile",
+          "description": "Inspect architectural variances with SMARTS; record only explicit user choices. Report-only requests make no changes.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-refactor",
+          "description": "Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-release",
+          "description": "Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-review",
+          "description": "Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-spike",
+          "description": "Exploratory spike on a throwaway branch \u2014 answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-sprint",
+          "description": "Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-standup",
+          "description": "Daily repo hygiene \u2014 review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-status",
+          "description": "Show the project's current state at a glance \u2014 stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-task",
+          "description": "Add, select, start, complete, or reopen local work through its owning store.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-threat-model",
+          "description": "Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-tribunal",
+          "description": "Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "ca-watch",
+          "description": "Watch a PR's CI to completion \u2014 diagnose on red, notify and offer the merge on green. Never auto-merges.",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\extensions\\codearbiter.js",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "llama",
+          "description": "Manage llama.cpp router models",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "builtin:llama.cpp",
+            "source": "builtin",
+            "scope": "temporary",
+            "origin": "top-level"
+          }
+        },
+        {
+          "name": "mcp",
+          "description": "Manage MCP servers: sign in, reconnect, enable or disable, and change exposure",
+          "source": "extension",
+          "sourceInfo": {
+            "path": "builtin:mcp",
+            "source": "builtin",
+            "scope": "temporary",
+            "origin": "top-level"
+          }
+        },
+        {
+          "name": "skill:ca-add-dep",
+          "description": "Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-add-dep\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-adr",
+          "description": "Record user-decided ADRs or inspect their health read-only. Preserve attribution and acceptance evidence.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-adr\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-adr-status",
+          "description": "Inspect ADR health read-only; optionally select one ADR with --adr N.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-adr-status\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-audit",
+          "description": "Assemble the governance record for a range \u2014 commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings \u2014 into one dated audit packet. Read-only.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-audit\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-checkpoint",
+          "description": "Periodic multi-reviewer sweep of the whole codebase \u2014 surfaces a triaged checkpoint report.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-checkpoint\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-chore",
+          "description": "Sanctioned lane for non-behavioral work \u2014 docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-chore\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-cleanup",
+          "description": "Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-cleanup\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-commit",
+          "description": "Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-commit\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-conflict",
+          "description": "Pause affected work and its actual dependents when rules conflict. Present both sources and the dependency scope; the user resolves. Continue independent authorized work.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-conflict\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-context-check",
+          "description": "Inspect context drift and refresh selected source-backed documents under existing authorization.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-context-check\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-create-context",
+          "description": "Build source-backed project context through bounded inspection, optional agents, and record-level knowledge writes.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-create-context\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-debug",
+          "description": "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff, including a bounded unresolved result. Not for implementing a known fix, new features, or explanation-only questions.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-debug\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-decompose",
+          "description": "Develop greenfield intent or initialized brownfield target and delta in existing decomposition and knowledge records.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-decompose\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-doctor",
+          "description": "Verify the active host install, package, command ownership, enforcement, wrapper self-test, and active-dispatch coverage gap. Read-only.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-doctor\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-feature",
+          "description": "Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-feature\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-fix",
+          "description": "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-fix\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-init",
+          "description": "Opt this repo into codeArbiter \u2014 scaffold the root-level .codearbiter/ state store.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-init\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-override",
+          "description": "Sanctioned, logged bypass of a gate or hard rule \u2014 one audit line, then proceed.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-override\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-pr",
+          "description": "Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-pr\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-prune",
+          "description": "Trim transcript clutter to extend session lifetime \u2014 analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-prune\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-reconcile",
+          "description": "Inspect architectural variances with SMARTS; record only explicit user choices. Report-only requests make no changes.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-reconcile\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-refactor",
+          "description": "Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-refactor\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-release",
+          "description": "Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-release\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-review",
+          "description": "Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-review\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-spike",
+          "description": "Exploratory spike on a throwaway branch \u2014 answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-spike\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-sprint",
+          "description": "Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-sprint\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-standup",
+          "description": "Daily repo hygiene \u2014 review the day's repo state, then perform selected cleanups. Fast-forward only, never destructive without a yes.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-standup\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-status",
+          "description": "Show the project's current state at a glance \u2014 stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-status\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-task",
+          "description": "Add, select, start, complete, or reopen local work through its owning store.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-task\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-threat-model",
+          "description": "Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-threat-model\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-tribunal",
+          "description": "Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-tribunal\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        },
+        {
+          "name": "skill:ca-watch",
+          "description": "Watch a PR's CI to completion \u2014 diagnose on red, notify and offer the merge on green. Never auto-merges.",
+          "source": "skill",
+          "sourceInfo": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package\\plugins\\ca-pi\\skills\\ca-watch\\SKILL.md",
+            "source": "..\\..\\pi-original-extracted\\package",
+            "scope": "user",
+            "origin": "package",
+            "baseDir": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "route": "bare",
+      "original_records_sha256": "f3d6e419f1f2adec8117931626da45bc1355dd8fccd4a933ad6870d3282762eb",
+      "original_records_bytes": 47647,
+      "original_record_count": 1,
+      "commands_response_canonical_json_sha256": "fe795889bffacd37c1a2ec710e3b641bdfb812ab8c043bfa43736e6bb61d9bb0",
+      "statuses": [],
+      "settings": {
+        "npmCommand": [
+          "npm",
+          "--offline",
+          "--no-audit",
+          "--no-fund",
+          "--ignore-scripts"
+        ],
+        "packages": [
+          "..\\..\\pi-original-extracted\\package"
+        ]
+      },
+      "original_settings_sha256": "99119b763c3d9ba4414ba4e33d3c2b8b839dabb09b4cb422070c0ab38d04ee7c",
+      "extension_errors": 0
+    },
+    {
+      "route": "alias",
+      "original_records_sha256": "367cefb17b3d2eb7edfde2379dac50e0c3b32b6d873e8cc307652aeeefa815bc",
+      "original_records_bytes": 147073,
+      "original_record_count": 23,
+      "commands_response_canonical_json_sha256": "fe795889bffacd37c1a2ec710e3b641bdfb812ab8c043bfa43736e6bb61d9bb0",
+      "statuses": [
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter",
+          "statusText": "codeArbiter host: pi starting"
+        },
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter",
+          "statusText": "codeArbiter host: pi governed"
+        },
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter",
+          "statusText": "codeArbiter host: pi governed"
+        },
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter"
+        }
+      ],
+      "settings": {
+        "npmCommand": [
+          "npm",
+          "--offline",
+          "--no-audit",
+          "--no-fund",
+          "--ignore-scripts"
+        ],
+        "packages": [
+          "..\\..\\pi-original-extracted\\package"
+        ]
+      },
+      "original_settings_sha256": "99119b763c3d9ba4414ba4e33d3c2b8b839dabb09b4cb422070c0ab38d04ee7c",
+      "extension_errors": 0,
+      "successful_capture": true,
+      "capture_sha256": "481cd2b0fcfb356687e10da48d61c6ce77dcad7d6d0ab55f3c310b7773008d12",
+      "capture_bytes": 6278,
+      "original_capture_response_canonical_sha256": "0841b54989fc04a1d4d42cc301b9c4cb9b94a9f747473dd6ff4efd6505c558f2"
+    },
+    {
+      "route": "doctor",
+      "original_records_sha256": "fa95a9c5f5c58bdd3d1f4ef8901204a6b025d474ac68afbf4bd8a02355b6754e",
+      "original_records_bytes": 220029,
+      "original_record_count": 21,
+      "commands_response_canonical_json_sha256": "fe795889bffacd37c1a2ec710e3b641bdfb812ab8c043bfa43736e6bb61d9bb0",
+      "statuses": [
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter",
+          "statusText": "codeArbiter host: pi starting"
+        },
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter",
+          "statusText": "codeArbiter host: pi governed"
+        },
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter",
+          "statusText": "codeArbiter host: pi governed"
+        },
+        {
+          "type": "extension_ui_request",
+          "method": "setStatus",
+          "statusKey": "codearbiter"
+        }
+      ],
+      "settings": {
+        "npmCommand": [
+          "npm",
+          "--offline",
+          "--no-audit",
+          "--no-fund",
+          "--ignore-scripts"
+        ],
+        "packages": [
+          "..\\..\\pi-original-extracted\\package"
+        ]
+      },
+      "original_settings_sha256": "99119b763c3d9ba4414ba4e33d3c2b8b839dabb09b4cb422070c0ab38d04ee7c",
+      "extension_errors": 0,
+      "successful_capture": true,
+      "capture_sha256": "5205279a9d4cbc07553a97265e53e15921bd3db4b329c1cafc477769a59f4bf3",
+      "capture_bytes": 7644,
+      "original_capture_response_canonical_sha256": "fb23924b928d34d029fd9d3c77cb5063787c47ad8155729086ca758dec571b15"
+    }
+  ],
+  "original_full_transcripts_private": true,
+  "excluded_fields": [
+    "non-command message events",
+    "model/usage/assistant events",
+    "notifications",
+    "transport UI request ids"
+  ],
+  "record_hash_convention": "Sorted-key compact JSON object digests, separate from original whole-file raw byte hashes."
+}
