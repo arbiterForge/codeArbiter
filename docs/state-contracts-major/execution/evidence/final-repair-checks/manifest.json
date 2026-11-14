@@ -1,0 +1,65 @@
+{
+  "scope": "Original component repair evidence; no new disposition/status promotion. Original Temp CRLF/source epochs remain explicitly separate from committed LF join; Docker real acceptance pending. Context19 first file includes12PASS/7 resource setup errors, followed by only7 actual corrected reruns. Historical test identities/raw bytes unchanged.",
+  "files": {
+    "p02/final-author-freeze.json": {
+      "sha256": "c3e9807d47925bb1ca9432a5917ccbbaa127b29568d1be51a5d4d3adfd8d99b6",
+      "bytes": 10626
+    },
+    "p02/red.log": {
+      "sha256": "44dd769777a673b0564bacbb50b23c5a98f6385b0ea51c4e56cabf92d348e7de",
+      "bytes": 6469
+    },
+    "p02/host-owner-red.log": {
+      "sha256": "401e0316aed0a33f8aa37560c24ff052cb4b9aaac2067d1769791155d27058df",
+      "bytes": 1218
+    },
+    "p02/integration30.stderr.log": {
+      "sha256": "088d357513b5d113927fdd247104d0afe97bf34fa66fb5c91c7cdfd7cd6e73a4",
+      "bytes": 5761
+    },
+    "p02/readiness37.stderr.log": {
+      "sha256": "a41d0406e51c989e2ff483c822bce30e5a02e2bc6b021a9748b87444ebc17ab2",
+      "bytes": 6280
+    },
+    "p02/context19-first.stderr.log": {
+      "sha256": "487d416c2598d1991d4ae09cf21371b2c825896580efc6f00c9c2929f3d017db",
+      "bytes": 21386
+    },
+    "p02/context7-setup-corrected.stderr.log": {
+      "sha256": "4617a274a1f9872f495be40c863dba01aaf91a5b82e4ecec4986068ca63c657c",
+      "bytes": 1363
+    },
+    "p02/lf-source-join.json": {
+      "sha256": "b57d3922ffce630fddb1bc97f5ffafb61b9c17f436d1a755eea613148b3cd025",
+      "bytes": 2022
+    },
+    "p02/root-framing-parity.json": {
+      "sha256": "291f574cd4fc255a1d31b271546ade437d51f894f9d8085655c74e416f4a1fd4",
+      "bytes": 519
+    },
+    "p02/committed-owner-history.json": {
+      "sha256": "876fbc5fa28a9b6bd5a598f0dfc0d481eeb24ac11aa6334747967c3c1c084949",
+      "bytes": 75430
+    },
+    "farm/author-handoff.json": {
+      "sha256": "e6a215fb44379cac07e924fb175a1e3dbd60e3412f72126791da3f94c6baad60",
+      "bytes": 2680
+    },
+    "farm/red-tests.json": {
+      "sha256": "56d8639a75ad577c56818bce5421f0eae4cd765883e3ac779e1c785b3dee9abd",
+      "bytes": 3764
+    },
+    "farm/green-tests.json": {
+      "sha256": "98d7876f0cd7b0a48cff3c2adfcea78e36c57fb85bbea096c5ae5db7d3f311af",
+      "bytes": 3391
+    },
+    "sandbox/manifest.json": {
+      "sha256": "73608722ff4cc4e9543d94c5e57f034446e5a009340eb6f74bdbf01e21bfb531",
+      "bytes": 2601
+    },
+    "sandbox/test-result.json": {
+      "sha256": "0e80c6929f8c531c29c0e8b377ddfad78cddb18b1424fb522e542c0c3b22f0a2",
+      "bytes": 826
+    }
+  }
+}

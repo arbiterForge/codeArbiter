@@ -4,14 +4,14 @@
   "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "b7a75fcab005d9ab3c29618d59559da2edee3283 plus retained qualification records in this commit",
+  "head": "89333ff30221f3b7a145de055a9d7a8d2eb42500 plus retained repair-check records in this commit",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T02:51:17.509057+00:00",
+  "recorded_at": "2026-11-14T03:10:33.897240+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1714,10 +1714,31 @@
     {
       "id": "DEF-P02-DEPENDENCY-MEMBERSHIP-01",
       "owner": "program-integrity",
-      "status": "OPEN",
+      "status": "IMPLEMENTED_UNQUALIFIED",
       "severity": "MEDIUM",
       "source": "execution/evidence/membership-applicability-audit/audit.json",
-      "detail": "Actual disposable immutable Git fixture shows current applicability ignores newly added Go dependency members and formerly absent host shim. Positive input hashes remain equal so old proof is incorrectly APPLICABLE. Existing bounded native module fingerprint detects the new Go member. Fix owning shared reader with scoped membership/absence inputs and RED/GREEN; preserve historical authenticity. Current literal243 native membership is checked, but is not a future absence guarantee. This diagnostic is not runtime qualification or publication authority."
+      "detail": "Actual disposable immutable Git fixture shows current applicability ignores newly added Go dependency members and formerly absent host shim. Positive input hashes remain equal so old proof is incorrectly APPLICABLE. Existing bounded native module fingerprint detects the new Go member. Fix owning shared reader with scoped membership/absence inputs and RED/GREEN; preserve historical authenticity. Current literal243 native membership is checked, but is not a future absence guarantee. This diagnostic is not runtime qualification or publication authority. Implemented89333ff3: one shared current-input checker authenticates explicit module membership and owned absence against successful immutable trees. Legacy incomplete runtime scopes report UNKNOWN. Actual new RED cases precede30integrationPASS,37readinessPASS and19distinct context-ownerPASS; exact original CRLF epochs and semantically identical committedLF join retained. Exact-head hosted check pending."
+    },
+    {
+      "id": "QUAL-P02-LEGACY-SCOPES-01",
+      "owner": "program-integrity",
+      "status": "OPEN",
+      "source": "89333ff30221f3b7a145de055a9d7a8d2eb42500",
+      "detail": "Reconcile legacy runtime proofs with genuine retained module fingerprints and relevant owned lookup observations, or execute only missing scoped acceptance. Do not convert positive-file cones into unobserved completeness or rewrite original results. New reader correctly reports150UNKNOWN/86STALE/131APPLICABLE among367authentic records; these counts are current applicability, not changed recorded progress."
+    },
+    {
+      "id": "DEF-FARM-LATE-DRIFT-01",
+      "owner": "farm",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+      "detail": "Actual first-clean/second-dirty regression incorrectly called add/commit/merge. Minimal existing escalation guard now refuses dirty and unavailable final drift without reset or new author attempt. Genuine1RED/2controls to3GREEN; focused475PASS1skip; owning941PASS3originalWindowsSKIP,lines74.04branches73.03; typecheck/build and independent reviewPASS. Hosted exact-source union remains pending."
+    },
+    {
+      "id": "QUAL-SBX-REAL-OVERFLOW-01",
+      "owner": "sandbox",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "ff0907d5faddbd8210d54f202db2d5611b353dba",
+      "detail": "One real Docker acceptance case uses actual output overflow to verify exact target stopped while independent owned survivor remains running. Local16unitPASS/typecheckPASS; both realDocker cases skipped because daemon unavailable. Required hosted ca-sandbox-tools must execute the new case; no local Docker acceptance claim."
     }
   ],
   "new_transition_rows": [
@@ -3197,18 +3218,28 @@
       "what": "Recovery CI completion and additional Atlas refusal",
       "observed": "Run43540351670 recovery jobs passed on all three OS; Windows completed388seconds within the unchanged15-minute budget. Separate Windows Farm and sandbox fixture failures drove current fixes. Docs run43540351529 Generator/Astro refused changed workflow-recovery source against the Atlas review binding; affected source routes are being reviewed before intentional regeneration. No site deployment or whole-run green claim.",
       "date": "2026-11-14"
+    },
+    {
+      "what": "Final functional repair checkpoint",
+      "observed": "Committed0ea1984c restores intentionally reviewed Atlas recovery bindings after the actual source-change refusal; owning generation/161focusedtests/typecheck passed. 0d7c0f2b refuses newly observed final drift before staging. ff0907d5 adds required realDocker overflow containment acceptance, pending hosted. 89333ff3 fixes shared applicability membership/owned lookup handling; original proof histories remain authentic. No raw/source epoch is relabeled; final-repair-checks retains original failures, successes and explicitEOLjoin.",
+      "date": "2026-11-14"
+    },
+    {
+      "what": "Actual current reader and history",
+      "observed": "On committed89333ff3 the owning immutable-Git checker authenticates all367recorded cells (240TESTED127PRESERVED) and reports131APPLICABLE/86STALE/150UNKNOWN. Another1785baseline cells remainPLANNED. UNKNOWN includes legacy missing module/host-lookup completeness; it is not passed qualification and does not alter original recorded progress. This checkpoint is not whole-program/installed/publication completion.",
+      "date": "2026-11-14"
     }
   ],
   "scoped_blockers": [
     {
       "id": "P02-DEPENDENCY-MEMBERSHIP",
       "scope": "Final program qualification",
-      "detail": "Shared applicability reader must account for scoped membership/absence dependencies before final qualification. Synthetic counterexample retained; implementation in progress."
+      "detail": "Shared reader defect implemented and locally checked in89333ff3; exact-head hosted observation and honest legacy dependency/absence scope migration remain required before final program qualification."
     }
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Finish affected Atlas source review and retain current scoped proofs, then push this coherent source/evidence batch once and watch exact-head replacement CI.",
+    "Push the completed coherent repair and original-check batch once, then observe every selected exact-head replacement check to completion.",
     "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
     "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
     "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
@@ -3232,7 +3263,7 @@
     "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
     "base": "major/state-contracts",
     "observed_head": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
-    "next": "Push the combined Farm, CI and recovery repairs with retained row-specific evidence, then require exact-head hosted checks. Merge1103 into major/state-contracts under standing authority and approved named remote deletion. Keep1098 draft and unmerged to main for user testing.",
-    "local_source_head": "b7a75fcab005d9ab3c29618d59559da2edee3283"
+    "next": "Push coherent repairs once and observe exact-head replacement CI. Merge1103 only with its required aggregate green, using true merge and approved named auto-deletion. Keep1098 draft/unmerged to main; no release authority.",
+    "local_source_head": "89333ff30221f3b7a145de055a9d7a8d2eb42500"
   }
 }

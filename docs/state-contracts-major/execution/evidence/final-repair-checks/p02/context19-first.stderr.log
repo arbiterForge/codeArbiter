@@ -1,0 +1,206 @@
+test_bridge_fixture_results_cannot_claim_live_authority (test_context_verification.ContextVerificationBridge.test_bridge_fixture_results_cannot_claim_live_authority) ... ERROR
+test_bridge_rejects_malformed_or_unbounded_output (test_context_verification.ContextVerificationBridge.test_bridge_rejects_malformed_or_unbounded_output) ... ok
+test_go_bridge_accepts_unselected_packages_not_skipped_named_tests (test_context_verification.ContextVerificationBridge.test_go_bridge_accepts_unselected_packages_not_skipped_named_tests) ... ok
+test_go_bridge_binds_cwd_executable_and_source (test_context_verification.ContextVerificationBridge.test_go_bridge_binds_cwd_executable_and_source) ... ok
+test_go_bridge_observes_a_real_named_fixture (test_context_verification.ContextVerificationBridge.test_go_bridge_observes_a_real_named_fixture) ... ok
+test_go_bridge_rejects_missing_duplicate_skipped_failed_and_zero_match (test_context_verification.ContextVerificationBridge.test_go_bridge_rejects_missing_duplicate_skipped_failed_and_zero_match) ... ok
+test_installed_bridge_enforces_empty_path_and_no_pythonpath (test_context_verification.ContextVerificationBridge.test_installed_bridge_enforces_empty_path_and_no_pythonpath) ... ERROR
+test_installed_bridge_rejects_invalid_release_manifest_contract (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_invalid_release_manifest_contract) ... ERROR
+test_installed_bridge_rejects_oversized_release_before_launch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_oversized_release_before_launch) ... ERROR
+test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) ... 
+  test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Windows', machine='AMD64') ... ERROR
+  test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Windows', machine='ARM64') ... ERROR
+  test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Linux', machine='x86_64') ... ERROR
+  test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Linux', machine='aarch64') ... ERROR
+  test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Darwin', machine='x86_64') ... ERROR
+  test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Darwin', machine='arm64') ... ERROR
+test_installed_bridge_requires_all_exact_candidate_inputs (test_context_verification.ContextVerificationBridge.test_installed_bridge_requires_all_exact_candidate_inputs) ... ERROR
+test_unknown_installed_architecture_remains_unsupported (test_context_verification.ContextVerificationBridge.test_unknown_installed_architecture_remains_unsupported) ... ok
+test_windows_arm64_installed_inputs_bind_native_release (test_context_verification.ContextVerificationBridge.test_windows_arm64_installed_inputs_bind_native_release) ... ERROR
+test_duplicate_keys_invalid_utf8_and_truncated_stream_are_rejected (test_context_verification.GoOutputContract.test_duplicate_keys_invalid_utf8_and_truncated_stream_are_rejected) ... ok
+test_exit_code_requires_an_integer_zero (test_context_verification.GoOutputContract.test_exit_code_requires_an_integer_zero) ... ok
+test_named_results_cannot_cross_packages_or_run_after_passing (test_context_verification.GoOutputContract.test_named_results_cannot_cross_packages_or_run_after_passing) ... ok
+test_parallel_events_and_unselected_package_preserve_raw_evidence (test_context_verification.GoOutputContract.test_parallel_events_and_unselected_package_preserve_raw_evidence) ... ok
+test_stderr_byte_limit_is_inclusive (test_context_verification.GoOutputContract.test_stderr_byte_limit_is_inclusive) ... ok
+test_subtest_selection_requires_unique_exact_names (test_context_verification.GoOutputContract.test_subtest_selection_requires_unique_exact_names) ... ok
+
+======================================================================
+ERROR: test_bridge_fixture_results_cannot_claim_live_authority (test_context_verification.ContextVerificationBridge.test_bridge_fixture_results_cannot_claim_live_authority)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 486, in test_bridge_fixture_results_cannot_claim_live_authority
+    invocation = bridge.build_installed_invocation(**self.installed_inputs())
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_enforces_empty_path_and_no_pythonpath (test_context_verification.ContextVerificationBridge.test_installed_bridge_enforces_empty_path_and_no_pythonpath)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 455, in test_installed_bridge_enforces_empty_path_and_no_pythonpath
+    invocation = bridge.build_installed_invocation(**valid)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_invalid_release_manifest_contract (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_invalid_release_manifest_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 216, in test_installed_bridge_rejects_invalid_release_manifest_contract
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_oversized_release_before_launch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_oversized_release_before_launch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 289, in test_installed_bridge_rejects_oversized_release_before_launch
+    self.assertFalse(bridge.build_installed_invocation(**accepted).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Windows', machine='AMD64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 273, in test_installed_bridge_rejects_platform_filename_mismatch
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Windows', machine='ARM64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 273, in test_installed_bridge_rejects_platform_filename_mismatch
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Linux', machine='x86_64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 273, in test_installed_bridge_rejects_platform_filename_mismatch
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Linux', machine='aarch64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 273, in test_installed_bridge_rejects_platform_filename_mismatch
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Darwin', machine='x86_64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 273, in test_installed_bridge_rejects_platform_filename_mismatch
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) (system='Darwin', machine='arm64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 273, in test_installed_bridge_rejects_platform_filename_mismatch
+    self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_installed_bridge_requires_all_exact_candidate_inputs (test_context_verification.ContextVerificationBridge.test_installed_bridge_requires_all_exact_candidate_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 431, in test_installed_bridge_requires_all_exact_candidate_inputs
+    invocation = bridge.build_installed_invocation(**valid)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+======================================================================
+ERROR: test_windows_arm64_installed_inputs_bind_native_release (test_context_verification.ContextVerificationBridge.test_windows_arm64_installed_inputs_bind_native_release)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_context_verification.py", line 301, in test_windows_arm64_installed_inputs_bind_native_release
+    invocation = bridge.build_installed_invocation(**inputs)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\_contextverificationlib.py", line 445, in build_installed_invocation
+    runner = Path(__file__).with_name("test_artifact_installed_host.py").resolve(strict=True)
+  File "C:\Python314\Lib\pathlib\__init__.py", line 938, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen ntpath>", line 696, in realpath
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\.github\\scripts\\test_artifact_installed_host.py'
+
+----------------------------------------------------------------------
+Ran 19 tests in 84.147s
+
+FAILED (errors=12)
