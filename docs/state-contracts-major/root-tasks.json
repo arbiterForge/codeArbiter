@@ -1,0 +1,603 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "tasks": [
+    {
+      "id": "P-00",
+      "title": "Establish the integration branch and evidence baseline",
+      "phase": "0",
+      "owner": "release-and-integration",
+      "finding_ids": [],
+      "dependencies": [],
+      "source_paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/release.yml",
+        ".github/workflows/docs.yml"
+      ],
+      "implementation": [
+        "Verify the exact origin owner/login and repository; fetch current main and tags without resetting any worktree. Record the inspected source SHA and compare to the audit SHA.",
+        "Create or resume major/state-contracts from an inspected base. If it already exists, inspect its commits and worktrees; never force-reset it. Preserve unrelated uncommitted work by using a clean worktree.",
+        "Import this corpus under docs/state-contracts-major/ or an equivalent documented branch-owned planning directory. Preserve baseline audit bytes and their hashes. Record the user decisions and the unresolved SMARTS/disposition choices.",
+        "Use short-lived child branches whose PR base is major/state-contracts. A single final promotion PR targets main only after the complete acceptance record is ready. No partial fixes from this program are merged/cherry-picked into main.",
+        "Create an explicit checkpoint after every slice with branch/head, finished and remaining task IDs, test commands/results, unknown outcomes, and the next concrete action. Never substitute a chat assertion for repository evidence.",
+        "Preserve intake specifications and audit as historical evidence. Initialize execution/progress.json and execution/CHECKPOINT.md from the provided templates; record actual completion, later decisions and any newly discovered required work there. Resume from actual Git plus these live records, not historical PLANNED labels."
+      ],
+      "tests": [
+        "Run packet validation; compare HEAD and audit baseline; inspect all existing branch/worktree changes before choosing a resume path.",
+        "Exercise bootstrap instructions in a disposable clone, including pre-existing branch and dirty-worktree cases; they must not discard changes."
+      ],
+      "acceptance": [
+        "Correct authorized repository and branch recorded.",
+        "All 70 finding IDs and 287 machine families accounted for; no implementation is marked complete at import.",
+        "No main branch, tag, release, marketplace or Pages mutation during bootstrap."
+      ],
+      "rollback": [
+        "Retain the branch and imported evidence; remove only a newly created empty/disposable worktree after verifying it contains no unique work."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "P-01",
+      "title": "Admit the integration branch to real CI without publication",
+      "phase": "0",
+      "owner": "release-and-integration",
+      "finding_ids": [],
+      "dependencies": [
+        "P-00"
+      ],
+      "source_paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/docs.yml",
+        ".github/workflows/codeql.yml",
+        ".github/workflows/release.yml",
+        ".github/scripts/payload_version_gate.py",
+        ".github/scripts/check_auto_release_candidate.py",
+        "tools/build-host-packages.py"
+      ],
+      "implementation": [
+        "Extend the current ci workflow pull_request base-branch admission to major/state-contracts and add exact integration-branch push admission. Preserve main and the existing authorized branch entries. Add the planning/contract paths to push impact selection so policy-only program changes cannot skip required checks.",
+        "Ensure integration push and final qualification can select all required domains and all six native platform/package cells, regardless of the latest small diff. A selective green child PR is not full program qualification.",
+        "Extend docs validation and Pi security analysis to integration work while retaining explicit main-only Pages deployment and main-push release source checks. Do not grant branch/PR qualification npm, marketplace, release or Pages publication permissions.",
+        "Handle payload-version checks explicitly: current helper compares payload changes to the PR base version, so reserving one future version does not by itself allow every child PR to keep that version. Introduce a narrowly scoped integration-candidate rule only for this branch, based on recorded main baseline plus current remote tags, synchronized manifests/changelogs and no publication. Final main/merge-group checks keep the normal strict advancement rule. Alternatively bump a fresh untagged development version per child change until the final major version; choose and record one supported policy rather than disabling the gate globally.",
+        "Read effective branch rules and required checks through an authorized method. Unavailable administration evidence remains unavailable. Honor existing protection; do not claim a branch rule was installed merely because its YAML/test passed.",
+        "Do not rely on a brand-new manual-only workflow on a non-default branch. A branch push workflow can bootstrap validation; verify the actual run and source SHA. Audit workflow_run consumers so a non-main run cannot reach privileged publication.",
+        "Implement the integration candidate rule in both actual owners: payload_version_gate.py for its admitted targets and tools/build-host-packages.py --release-guard-base for Pi. The general helper deliberately excludes ca-pi. Preserve Pi changelog advancement, generated root metadata equality, payload identity and tag checks. Do not assume prerelease suffixes are accepted by the current portable version grammar; test a supported numeric candidate policy.",
+        "For same-candidate integration updates, evaluate the Pi newly introduced changelog heading and required metadata-change checks against the recorded main candidate baseline, not an immediate integration base already containing that heading. Retain meaningful current content synchronization; the normal final-main guard keeps its strict actual-base checks."
+      ],
+      "tests": [
+        "Event matrix: integration push, child PR to integration, final PR to main, merge_group, main push, fork PR, canceled run, policy-only diff and docs-rule-only diff.",
+        "Validate all applicable jobs are selected; no required missing/skipped lane is accepted as full qualification.",
+        "Negative checks prove integration/fork events cannot deploy Pages, publish npm, update marketplace refs or create Releases.",
+        "Version tests: same untagged candidate with multiple child changes only in the declared integration scope; changed/claimed tag, wrong base, malformed version and main unchanged-version payload all reject.",
+        "Two successive Pi child PRs under the same untagged candidate pass only under the recorded integration rule; stale Pi changelog/root metadata, published candidate tag and unchanged-version main promotion still fail."
+      ],
+      "acceptance": [
+        "Actual integration CI and docs validation runs are recorded for the branch SHA.",
+        "Publication remains main-only and separately gated.",
+        "Supported branch-version semantics have fixtures and a written owner; no global version-gate bypass."
+      ],
+      "rollback": [
+        "Revert only integration admission/candidate special handling on the integration branch; leave main/release protections intact. Preserve diagnostic evidence."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "P-02",
+      "title": "Freeze owner contracts and compatibility traces before extraction",
+      "phase": "1",
+      "owner": "integration-architect",
+      "finding_ids": [],
+      "dependencies": [
+        "P-00"
+      ],
+      "source_paths": [
+        "core/hosts.json",
+        "core/artifacts/internal/operations/protocol.go",
+        "core/artifacts/internal/operations/engine.go",
+        "core/surface/command-routes.json"
+      ],
+      "implementation": [
+        "Assign every machine family to its existing owner and an explicit disposition: contract extraction, defect repair, instruction correction, or preservation under existing conformance. Pure parsing helpers do not need a new runtime framework.",
+        "Declare a shared outcome vocabulary while keeping progress, evidence, authority, delivery, containment and identity/generation independent. Use existing native schema/wire conventions until a versioned change is justified.",
+        "Record observable command grammar, exit codes, host exceptions, operation IDs/replay, file output classes, authority provenance, remote-effect timing and unavailable states before changing them.",
+        "Add a result/effect contract at real state/effect boundaries; generate repeated capabilities, accepted bounds, diagnostics and catalogs from their owner. Do not add a universal workflow gate or a global cross-product state enum.",
+        "Link each baseline row to meaningful existing tests, a new sequence test, or a reviewed instruction/conformance check. A planned mapping is not coverage execution and a comment/substring test is not semantic proof."
+      ],
+      "tests": [
+        "Compare representative old/new traces on unchanged inputs, including refusal, partial commit, lost response, replay and cancellation.",
+        "Check every family/row/finding is assigned without assigning every row a trivial implementation-mirroring test.",
+        "A missing owner/output class or divergent generated capability fails conformance."
+      ],
+      "acceptance": [
+        "All machine families and transition rows have traceable owners and dispositions.",
+        "Compatibility baseline and named intended behavior changes are recorded.",
+        "No new ordinary-work approval ceremony."
+      ],
+      "rollback": [
+        "Keep new contracts additive until readers and consumers are qualified; revert projections independently while retaining existing durable history."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-01",
+      "title": "Unify publication completion and receipt-only recovery",
+      "phase": "3",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F01"
+      ],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        ".github/actions/publish-target/action.yml",
+        ".github/scripts/release_target.py",
+        ".github/workflows/release.yml"
+      ],
+      "implementation": [
+        "Define per-target completion from exact tag/source identity, required asset/digest readback, registry/marketplace effects where applicable, and final publication receipt.",
+        "Make eligibility and planning consume the same observed completion model. Public-but-missing-receipt remains eligible for the missing receipt effect; already complete is a no-op.",
+        "Preserve immutable tags/assets, Pi pre-publication provenance verification and independent target recovery. Unknown remote outcomes trigger readback before retry; a receipt failure never implies safe republishing."
+      ],
+      "tests": [
+        "Inject failure after tag, draft, package/channel effect, public transition and receipt attachment.",
+        "Public release with missing receipt must schedule only the missing effect.",
+        "Wrong asset digest/source, moved tag, registry mismatch and unavailable readback must not be papered over.",
+        "Run existing .github/scripts/test_release_target.py and test_release_workflow.py plus new composition fixtures."
+      ],
+      "acceptance": [
+        "eligible/plan agree for every publication state.",
+        "Receipt-only recovery succeeds without replacing bytes, moving tags or repeating completed publication."
+      ],
+      "rollback": [
+        "Revert new planner before publication if necessary; after an external effect, recover forward from observed exact identity. Never delete or retarget immutable release history."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-02",
+      "title": "Bind operator release intent to the exact selected source and CI artifacts",
+      "phase": "3",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F02"
+      ],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        ".github/workflows/release.yml"
+      ],
+      "implementation": [
+        "Display the selected source SHA and successful main CI run in manual release planning. Correct current-head wording to match the actual default selection, preserving useful recovery of an earlier successful source.",
+        "For this major promotion, require equality with the approved final source/artifact record. A later unrelated successful run or stale older run must not silently become the major release candidate.",
+        "Reuse original-run recovery while retained artifacts exist; if bytes are rebuilt, establish new identities and repeat affected qualification."
+      ],
+      "tests": [
+        "Newer main failed while older main CI succeeded; no successful CI; old source no longer ancestor; artifact expired; selected approved source differs.",
+        "Exact source/digest readback is displayed and enforced for major publication."
+      ],
+      "acceptance": [
+        "Every publication operation names its exact source and build run.",
+        "Manual UI/report and implementation agree."
+      ],
+      "rollback": [
+        "Retain old immutable publication records; revert UI selection changes only when behavior/documentation remain consistent."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-03",
+      "title": "Resolve and encode pre-tag enforcement policy once",
+      "phase": "3",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F03"
+      ],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        ".github/scripts/check_auto_release_candidate.py",
+        ".github/workflows/ci.yml",
+        ".github/workflows/release.yml",
+        ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md",
+        ".codearbiter/decisions/0044-trusted-pi-npm-publication.md"
+      ],
+      "implementation": [
+        "Preserve the currently required candidate check while drafting a successor ADR for the advisory-versus-required contradiction. Do not weaken current gates merely to match old prose.",
+        "Define checks by concrete consumer-safety or qualification purpose and enforcement class. Derive CI/release reporting from that approved definition.",
+        "Record the major-program completion gate as a release-specific requirement requested by B; do not silently turn it into an ordinary runtime permission system or permanent all-release cross-target transaction."
+      ],
+      "tests": [
+        "A required check failure blocks at the declared boundary; advisory failure is visible without being relabeled verified.",
+        "CI candidate and publication planning use the same policy owner.",
+        "An accepted ADR alone cannot mark a check implemented or qualified."
+      ],
+      "acceptance": [
+        "B/maintainer-approved enforcement disposition and source implementation agree.",
+        "ADR0044 provenance requirements remain active."
+      ],
+      "rollback": [
+        "Keep current required candidate enforcement until replacement policy and tests are accepted; revert derivative wording if implementation is deferred."
+      ],
+      "decision_dependencies": [
+        "D-GOV-PRETAG"
+      ],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-04",
+      "title": "Record actual route-publication observations without authorizing removals",
+      "phase": "3",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F04"
+      ],
+      "dependencies": [
+        "R-01"
+      ],
+      "source_paths": [
+        ".github/scripts/check_command_route_release_state.py",
+        ".github/workflows/ci.yml",
+        ".github/workflows/release.yml",
+        ".github/actions/publish-target/action.yml"
+      ],
+      "implementation": [
+        "Wire the existing non-mutating publication observer after observed target settlement and persist its exact source/tag/release identity and outcome.",
+        "Distinguish planned, tag-only, draft, published, unavailable and mismatch. Observation failure records unknown; it must not claim successful publication or silently undo external effects.",
+        "Keep compatibility-removal authorization separate. A major version or elapsed clock alone does not authorize alias removal; the default handoff preserves existing aliases."
+      ],
+      "tests": [
+        "Observer runs against published, tag-only, draft, missing, API unavailable and identity mismatch fixtures.",
+        "Receipt recovery followed by observation is idempotent; policy-only declarations cannot become published evidence."
+      ],
+      "acceptance": [
+        "Publication clock has actual observation evidence.",
+        "No alias removal occurs without its distinct approved conditions."
+      ],
+      "rollback": [
+        "Keep observations as historical evidence; revert consumer projection if necessary, leaving publication unknown rather than inventing freshness."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-05",
+      "title": "Close documentation-rule event selection",
+      "phase": "2",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F05"
+      ],
+      "dependencies": [
+        "P-01"
+      ],
+      "source_paths": [
+        ".github/workflows/docs.yml"
+      ],
+      "implementation": [
+        "Add the voice checker and its implementation predicate to PR/integration input selection and derive the shared input set where practical.",
+        "Preserve deliberate deployment event differences. Ensure validation of rule changes does not grant deployment permissions."
+      ],
+      "tests": [
+        "Change only .github/scripts/check_site_voice.py; change only core/pysrc/_sloplib.py; both must select their actual gate.",
+        "Unrelated paths and fork/integration events must not publish Pages."
+      ],
+      "acceptance": [
+        "Actual input ownership is reflected in event/impact tests and workflow selection."
+      ],
+      "rollback": [
+        "Revert scoped selector changes without altering deployment authority."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-06",
+      "title": "Separate qualification verdicts and absent/invalid evidence",
+      "phase": "2",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F06",
+        "C-F07"
+      ],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        ".github/scripts/check_tag_immutability.py",
+        ".github/scripts/check_branch_protection.py",
+        ".github/scripts/check_codex_host.py",
+        ".github/scripts/payload_version_gate.py"
+      ],
+      "implementation": [
+        "Keep compatible exit behavior where necessary, but expose structured verified/skipped/unavailable/rejected observations with reason, scope and source identity. Each consumer declares which outcomes satisfy its requirement.",
+        "Distinguish absent, valid and invalid base manifests. Genuine first-introduction remains allowed; corrupt or unusable base evidence is not absence.",
+        "This major program accepts neither skipped nor unavailable for a required advertised capability. Deliberate N/A requires evidence and a scoped rationale, not an agent relabeling a failed test."
+      ],
+      "tests": [
+        "403/unavailable branch-protection read; optional Codex host absent; missing/invalid/valid base version; malformed release declaration.",
+        "Existing ordinary advisory behavior remains compatible while major-readiness aggregation rejects missing required evidence."
+      ],
+      "acceptance": [
+        "Every green major-readiness result has affirmative applicable evidence.",
+        "First-introduction and invalid evidence take distinct tested paths."
+      ],
+      "rollback": [
+        "Maintain old exit codes during additive rollout; revert new projection without treating unknown as verified."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-07",
+      "title": "Bound verification subprocess waits and settle children",
+      "phase": "2",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "C-F08"
+      ],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        ".github/scripts/check_codex_host.py",
+        ".github/scripts/pi_benchmark.py"
+      ],
+      "implementation": [
+        "Apply a deadline to the initial install/subprocess and Pi benchmark first-line wait, not only the later communication phase.",
+        "Preserve partial diagnostics; track cancellation/timeout and containment separately. Use the platform-qualified child/process-tree termination contract.",
+        "Do not report qualification failure as evidence that a still-running child is quiescent."
+      ],
+      "tests": [
+        "Child never emits ready line; emits partial line; exits immediately; hangs during install; survives direct parent termination in a containment fixture.",
+        "Run test_pi_benchmark.py and actual affected Codex host tests with bounded fake children before installed qualification."
+      ],
+      "acceptance": [
+        "Every pending verifier phase has a tested deadline and explicit cleanup outcome."
+      ],
+      "rollback": [
+        "Keep diagnostics and operation identity; restore prior runner only outside required qualification while clearly reporting the liveness gap."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "R-08",
+      "title": "Derive site publication labels from observed release state",
+      "phase": "3",
+      "owner": "release-and-integration",
+      "finding_ids": [
+        "SX-F01"
+      ],
+      "dependencies": [
+        "R-01",
+        "R-04"
+      ],
+      "source_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/release-applicability-presentation.ts",
+        ".github/actions/publish-target/action.yml"
+      ],
+      "implementation": [
+        "Supply a durable observed publication record keyed to immutable tag/source/payload identity. Stable local tags alone cannot be labeled published.",
+        "When publication evidence is absent or unavailable, render that state honestly while retaining valid content/source applicability information.",
+        "Do not make an obsolete receipt ledger a blanket prerequisite for unrelated new releases; use the current publication owner and preserve stale/historical labels."
+      ],
+      "tests": [
+        "Highest stable local tag is draft or tag-only; empty receipt ledger; actual published identity; stale receipt; wrong payload/source; offline build.",
+        "Build rendered pages and assert visible label, underlying JSON endpoint and proof applicability agree."
+      ],
+      "acceptance": [
+        "Tag and published-release states stay distinct through generated data, rendered page and source API."
+      ],
+      "rollback": [
+        "Revert the presentation to explicit unknown/tag labeling; preserve exact historical records."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "T-01",
+      "title": "Make measurement and illustration verdicts trustworthy",
+      "phase": "2",
+      "owner": "measurement-tools",
+      "finding_ids": [
+        "T-F01",
+        "T-F02",
+        "T-F03",
+        "T-F04"
+      ],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        "tools/statusline-bench.py",
+        "tools/live-smarts-exercise.py",
+        "tools/ci20_baseline.py",
+        "tools/ci20_inventory.py",
+        "tools/statusline-screenshot.py"
+      ],
+      "implementation": [
+        "Reject empty/unknown benchmark populations and incompatible harness identities before PASS. Keep selected subsets visible.",
+        "Separate live SMARTS subprocess completion from output quality; evaluate actual alternatives/material comparison, not literal lens-name count. Use reviewed qualitative evidence where a structural checker cannot establish reasoning quality.",
+        "Bind CI20 workflow bytes to the recorded commit, or prove exact blob equality. Label counterfactual selection separately from live workflow execution.",
+        "Require successful nonempty renderer output before screenshotting and own all temporary file/browser cleanup. Retain explicit mock-data provenance."
+      ],
+      "tests": [
+        "Empty population, invalid scenario, mismatch/harness version and real nonempty comparison.",
+        "Three lens names without material alternatives must fail the SMARTS quality criterion; nonzero child exit cannot pass because output contains keywords.",
+        "Dirty workflow at clean HEAD fails identity binding; same committed blob succeeds.",
+        "Failed renderer and browser error leave no misleading successful image or untracked fixture residue."
+      ],
+      "acceptance": [
+        "No success verdict based on zero measurements or a failed producer.",
+        "Measurement/proof labels identify what was actually exercised."
+      ],
+      "rollback": [
+        "Retain historical reports as historical; remove invalid new verdicts and regenerate after correcting the harness."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "G-01",
+      "title": "Reconcile ADRs, claims and generated guidance with accepted behavior",
+      "phase": "4",
+      "owner": "governance-and-docs",
+      "finding_ids": [],
+      "dependencies": [
+        "P-02"
+      ],
+      "source_paths": [
+        ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md",
+        ".codearbiter/decisions/0036-bounded-authorization-cleanup-direction.md",
+        ".codearbiter/decisions/0037-extensible-structured-artifact-engine.md",
+        ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md",
+        ".codearbiter/decisions/0043-assistive-state-engine.md",
+        ".codearbiter/decisions/0044-trusted-pi-npm-publication.md",
+        ".codearbiter/decisions/0045-merge-observed-github-work-effects.md"
+      ],
+      "implementation": [
+        "Use ADR-PROPOSALS.md and owner designs to prepare new decisions/addenda through the repository workflow. Allocate real decision IDs at execution; preserve accepted bodies/history and link supersession explicitly.",
+        "Record B-approved dependent-work scope, corrected submissions, actual scoped Pi authorship and nonblocking durable recovery. Keep progress/evidence and reviewer HIGH disposition pending until resolved in their worksheets.",
+        "Update canonical owner content before generated host surfaces and site projections. Correct facts without broadening legal/privacy/security or organization-wide claims.",
+        "Record proposed Project claim-registry deltas with exact new source/package evidence. Other repositories remain separate scope; Academy compatibility is verified against its exact release before making a new compatibility claim."
+      ],
+      "tests": [
+        "ADR decisions, implemented handlers, capabilities, diagnostics and model-guided instructions agree for every changed outcome.",
+        "Build/sync checks for all shared Python and surface/catalog projections; no manual generated-only fix.",
+        "Claim records distinguish planned, implemented, source verified and released/installed qualified."
+      ],
+      "acceptance": [
+        "Every affected accepted-decision conflict has a recorded disposition.",
+        "No source or documentation labels a proposed protocol already supported."
+      ],
+      "rollback": [
+        "Revert new derivative claims if qualification fails; preserve historical ADR and audit records."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "Q-01",
+      "title": "Close the complete behavioral, migration and installed-artifact matrix",
+      "phase": "5",
+      "owner": "qualification",
+      "finding_ids": [],
+      "dependencies": [
+        "P-01",
+        "P-02"
+      ],
+      "source_paths": [],
+      "implementation": [
+        "Collect completion evidence for all implementation tasks, all finding dispositions, all machine owners and all transition coverage mappings. One sequence test may cover many rows if its asserted effects/guards are identified.",
+        "Run the canonical complete suites plus targeted fault-injection sequences, source-to-bundle checks, six native/cold package platform cells and supported host runtime matrix. Preserve deliberate advisory lanes; do not confuse them with required new behavior qualification.",
+        "Exercise upgrade from each relevant last published adapter artifact, existing state with checks/history/pending journal, new state, uninstall after user edits, interruption, restart and recovery. Verify rollback before new writes and explicit forward reconciliation after incompatible writes.",
+        "For Pi, demonstrate real delegated write/edit and authorized verification execution under the supported host, plus denied/wrong-scope/revoked/stale attempts. Mock-only or read-only cannot close authorship.",
+        "Measure UX/DX/AX acceptance: ordinary prompts do not increase due to optional evidence; dependent stops stay scoped; truthful outcome and recovery are discoverable; contract facts have one owner. Use actual user/agent scenario evidence, not only keyword tests."
+      ],
+      "tests": [
+        "Execute the complete TEST-AND-QUALIFICATION.md matrix with exact commit/platform/runtime/artifact digest and result population.",
+        "An unavailable required runtime/platform keeps the release requirement open.",
+        "Differential traces preserve all behavior except the explicit user-approved change list."
+      ],
+      "acceptance": [
+        "No open defect or unqualified required capability in the accepted program scope.",
+        "All remaining N/A decisions are evidence-backed and reviewed; no blanket waiver substitutes for entire completion.",
+        "Program candidate is fully built and tested on the integration branch."
+      ],
+      "rollback": [
+        "Retain integration branch and exact candidate artifacts; fix and requalify there. Do not promote partially completed work."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "Q-02",
+      "title": "Add an exact-candidate major-release readiness barrier",
+      "phase": "5",
+      "owner": "release-and-qualification",
+      "finding_ids": [],
+      "dependencies": [
+        "R-01",
+        "R-02",
+        "R-06",
+        "P-01"
+      ],
+      "source_paths": [],
+      "implementation": [
+        "Q-02 completion means the readiness verifier and its valid/invalid/noncircular regression cases are implemented and tested on the integration candidate. The actual final-main readiness instance is verified during Q-03 before publication; Q-02 does not require a future main commit or Q-03 completion before promotion.",
+        "Implement the release-specific readiness protocol described in BRANCH-AND-RELEASE.md before final promotion. It must guard the first externally visible publication/channel effect for this major program.",
+        "Bind the readiness receipt to exact source commit, CI build/run identity, target versions, archive/member digests, installed qualification cells and accepted program decisions. Obtain evidence from the declared trusted producer; an edited project JSON with passed:true is not authority.",
+        "If final-main packages differ from the qualified integration candidate, keep major publication pending while qualifying those exact bytes. Never rely on matching version strings or tree identity as byte equality.",
+        "Keep current main-only publication and independent target retry. Global program readiness precedes publication; it is not an atomic cross-target release transaction or a new ordinary-work gate.",
+        "The current workflow auto-releases after successful main CI. Wire readiness before that can publish; do not plan to notice missing final qualification after the release has already happened.",
+        "Use a noncircular PREPUBLICATION_READY predicate. Require completed implementation, migration, tests, decisions and exact-candidate qualification tasks, but exclude Q-03 actual publication/public readback/receipt settlement from this precondition. DISTRIBUTION_SETTLED requires Q-03 afterward. Test both populations explicitly; a readiness record never claims the release already exists.",
+        "For a new Pi npm publication preserve GITHUB_SHA == selected SOURCE_COMMIT at the actual release event. Delayed readiness cannot override this provenance check. If main advances and the original matching event/run cannot publish, select/rebuild/requalify an eligible exact source and unused version as required; never substitute a trusted-sha or weaken ADR0044. Byte-identical already-published npm recovery remains a separate observed-state case."
+      ],
+      "tests": [
+        "Missing, forged, stale, wrong-source, wrong-run, wrong-artifact, unknown-cell and partial readiness all prevent first publication.",
+        "Valid exact receipt admits publication; subsequent missing-receipt recovery does not repeat completed package/channel effects.",
+        "Unrelated pre-existing target release behavior remains governed by its approved policy.",
+        "PREPUBLICATION_READY can be valid while Q-03/publication is pending; DISTRIBUTION_SETTLED cannot be valid before every required external readback/receipt is observed. No circular readiness dependency.",
+        "Qualification completes after main advances: mismatched Pi event/source refuses a new npm publish; matching exact source permits it; already-published byte-identical recovery follows its own policy."
+      ],
+      "acceptance": [
+        "Exact built bytes and required installed scenarios are verified before first major publication.",
+        "Automatic main release cannot outrun final qualification."
+      ],
+      "rollback": [
+        "Keep publication pending before effects; after effects, reconcile forward and publish corrected new versions where needed. No moved tags or overwritten registry versions."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    },
+    {
+      "id": "Q-03",
+      "title": "Promote once, publish the new major, and verify each distribution",
+      "phase": "6",
+      "owner": "release-manager",
+      "finding_ids": [],
+      "dependencies": [
+        "Q-01",
+        "Q-02",
+        "G-01",
+        "R-01",
+        "R-02",
+        "R-03",
+        "R-04",
+        "R-08"
+      ],
+      "source_paths": [],
+      "implementation": [
+        "Resolve the remaining scoped decisions with B and confirm the integration-qualified program record is complete, with only final exact-main qualification/publication/readback outstanding. Prepare the single integration-to-main promotion PR through normal review/merge rules; no partial earlier merges.",
+        "Choose an unused next major in the product ca namespace. At this observation ca is 3.8.5, so 4.0.0 is a proposed target only; re-resolve versions and tags immediately before freezing. Preserve independent Codex/Pi/sandbox version namespaces and choose each according to its actual changed contract.",
+        "Keep root Pi package.json generated from its owner. Build and qualify the final exact source/bytes under Q-02. Publish through existing sanctioned hosted mechanisms, not improvised local npm/token paths.",
+        "Read back tag dereference, GitHub non-draft state, exact asset digests, final publication receipt, relevant marketplace ref/install identity, Pi registry integrity/provenance and documented update/uninstall behavior. Record partial publication explicitly and recover only missing target effects.",
+        "Retain the integration branch through final verification and recovery. B requested this work stay isolated until complete; closing a task or green subset of CI does not permit early promotion.",
+        "If final-main verification exposes a needed implementation fix, return that fix to the held integration program and repeat reviewed qualification/promotion. Do not silently implement unfinished features directly on main. Publication remains pending until PREPUBLICATION_READY; Q-03 completes only at DISTRIBUTION_SETTLED."
+      ],
+      "tests": [
+        "Final merge/queue SHA and exact post-merge package qualification; immutable tag readback; clean installed upgrade/current install for each changed advertised target.",
+        "Publication interruption/retry and docs publication observation on the final immutable identities."
+      ],
+      "acceptance": [
+        "New major publication has exact per-target completion and installed-behavior evidence.",
+        "No required program item remains unfinished or merely marked deferred.",
+        "Release notes distinguish changed behavior, migration/rollback boundaries, known intentional exceptions and qualification scope."
+      ],
+      "rollback": [
+        "Before promotion, withdraw the pending PR and continue on the integration branch. After promotion but before publication, keep publication pending and route any source correction back through the held integration branch and reviewed qualification; do not force-reset main. After publication preserve immutable artifacts/tags, fix forward with a new version, and report partial settlement truthfully."
+      ],
+      "decision_dependencies": [],
+      "status": "PLANNED"
+    }
+  ]
+}

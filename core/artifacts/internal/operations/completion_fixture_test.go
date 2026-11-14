@@ -18,9 +18,13 @@ import (
 func completionGit(t *testing.T, root string, args ...string) string {
 	t.Helper()
 	command := exec.Command("git", append([]string{"-C", root}, args...)...)
+	// Keep tracing outside the repository closure and private to this command.
+	// Successful fixtures remain quiet; only an original failure prints context.
+	trace := filepath.Join(t.TempDir(), "git-trace.jsonl")
+	command.Env = completionGitTraceEnvironment(os.Environ(), trace)
 	b, err := command.CombinedOutput()
 	if err != nil {
-		t.Fatalf("git %v: %v %s", args, err, b)
+		t.Fatalf("git %v: %v %.4096s\n%s", args, err, b, completionGitFailureContext(root, command.Path, trace))
 	}
 	return strings.TrimSpace(string(b))
 }

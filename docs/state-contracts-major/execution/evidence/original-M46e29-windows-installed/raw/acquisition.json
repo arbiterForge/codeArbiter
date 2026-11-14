@@ -1,0 +1,173 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "run_id": 43582198115,
+  "event": "push",
+  "run_status_at_acquisition": "completed",
+  "run_conclusion_at_acquisition": "success",
+  "event_head_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "actual_checkout_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "assembly_job_id": 132423292928,
+  "promotion_receipt_sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084",
+  "cohort_sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01",
+  "artifacts": [
+    {
+      "directory": "stage",
+      "metadata": {
+        "id": 14109699644,
+        "node_id": "MDg6QXJ0aWZhY3QxNDEwOTY5OTY0NA==",
+        "name": "artifact-host-payloads-46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+        "size_in_bytes": 46289611,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109699644",
+        "archive_download_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109699644/zip",
+        "expired": false,
+        "digest": "sha256:54cab0cc0f336c89f3a205b1522cb88cd640c88dc6389634daf9c32428191968",
+        "created_at": "2026-11-14T10:47:34Z",
+        "updated_at": "2026-11-14T10:47:34Z",
+        "expires_at": "2026-11-17T10:24:57Z",
+        "workflow_run": {
+          "id": 43582198115,
+          "repository_id": 1233366728,
+          "head_repository_id": 1233366728,
+          "head_branch": "major/state-contracts",
+          "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+        }
+      },
+      "archive_sha256": "54cab0cc0f336c89f3a205b1522cb88cd640c88dc6389634daf9c32428191968",
+      "members": [
+        {
+          "path": "artifact-promotion.json",
+          "sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/ca-artifact-darwin-amd64",
+          "sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/ca-artifact-darwin-arm64",
+          "sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/ca-artifact-linux-amd64",
+          "sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/ca-artifact-linux-arm64",
+          "sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/ca-artifact-windows-amd64.exe",
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/ca-artifact-windows-arm64.exe",
+          "sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1"
+        },
+        {
+          "path": "plugins/ca-codex/helpers/artifacts/release.json",
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/ca-artifact-darwin-amd64",
+          "sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/ca-artifact-darwin-arm64",
+          "sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/ca-artifact-linux-amd64",
+          "sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/ca-artifact-linux-arm64",
+          "sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/ca-artifact-windows-amd64.exe",
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/ca-artifact-windows-arm64.exe",
+          "sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1"
+        },
+        {
+          "path": "plugins/ca-pi/helpers/artifacts/release.json",
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/ca-artifact-darwin-amd64",
+          "sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/ca-artifact-darwin-arm64",
+          "sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/ca-artifact-linux-amd64",
+          "sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/ca-artifact-linux-arm64",
+          "sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/ca-artifact-windows-amd64.exe",
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/ca-artifact-windows-arm64.exe",
+          "sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1"
+        },
+        {
+          "path": "plugins/ca/helpers/artifacts/release.json",
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd"
+        }
+      ]
+    },
+    {
+      "directory": "packages",
+      "metadata": {
+        "id": 14109784562,
+        "node_id": "MDg6QXJ0aWZhY3QxNDEwOTc4NDU2Mg==",
+        "name": "artifact-release-packages-46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+        "size_in_bytes": 50253481,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109784562",
+        "archive_download_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109784562/zip",
+        "expired": false,
+        "digest": "sha256:d6f4d6a0f6e104c6c387f86ea78a36b6a2ff74d33e1dc4ac2459030a07baf22e",
+        "created_at": "2026-11-14T10:48:08Z",
+        "updated_at": "2026-11-14T10:48:08Z",
+        "expires_at": "2026-11-17T10:24:57Z",
+        "workflow_run": {
+          "id": 43582198115,
+          "repository_id": 1233366728,
+          "head_repository_id": 1233366728,
+          "head_branch": "major/state-contracts",
+          "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+        }
+      },
+      "archive_sha256": "d6f4d6a0f6e104c6c387f86ea78a36b6a2ff74d33e1dc4ac2459030a07baf22e",
+      "members": [
+        {
+          "path": "arbiterforge-ca-pi-0.30.0.tgz",
+          "sha256": "c52dfd6a2022edc6dfc90eab88ce6a8cd433d1fa61bbb8b31fe81166bfecb553"
+        },
+        {
+          "path": "artifact-package-cohort.json",
+          "sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01"
+        },
+        {
+          "path": "codearbiter-ca-4.0.0.tar.gz",
+          "sha256": "676c25c2726d4c818c654bcb3e11a4f5302cb42ab710dd6cd92093b05967947a"
+        },
+        {
+          "path": "codearbiter-ca-codex-0.30.0.tar.gz",
+          "sha256": "eefdaa4b3c34471dae446d84019b5533d09370cf60d945713e1060898ac437ca"
+        }
+      ]
+    }
+  ],
+  "publication_authority": false,
+  "qualification": "original archive acquisition only; owning production verifier/cold journeys still required"
+}

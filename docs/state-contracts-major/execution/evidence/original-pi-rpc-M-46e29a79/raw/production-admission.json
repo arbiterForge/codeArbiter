@@ -1,0 +1,10 @@
+{
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "run_R": 43582198115,
+  "acquisition_sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c",
+  "promotion_sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084",
+  "cohort_sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01",
+  "require_production": true,
+  "state": "PASSED",
+  "before_Pi_extraction_or_install": true
+}

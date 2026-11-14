@@ -1,0 +1,30 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "runtime": "v24.22.1",
+  "fixture": "Synthetic stable tags; no original publication receipts and no GitHub Release-status input",
+  "selected": [
+    {
+      "target": "ca",
+      "version": "999.0.0",
+      "tag": "v999.0.0",
+      "publicationCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "originalPublicationReceipt": "not-recorded"
+    },
+    {
+      "target": "ca-codex",
+      "version": "999.0.0",
+      "tag": "ca-codex-v999.0.0",
+      "publicationCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "originalPublicationReceipt": "not-recorded"
+    },
+    {
+      "target": "ca-pi",
+      "version": "999.0.0",
+      "tag": "ca-pi-v999.0.0",
+      "publicationCommit": "cccccccccccccccccccccccccccccccccccccccc",
+      "originalPublicationReceipt": "not-recorded"
+    }
+  ],
+  "external_operations": 0,
+  "boundary": "Proves tag-only selection behavior, not that any actual production tag is unpublished."
+}

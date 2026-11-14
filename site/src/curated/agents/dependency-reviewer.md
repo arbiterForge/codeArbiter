@@ -21,4 +21,6 @@ scan, which is why it sits above the haiku-tier checks.
 
 A per-check verdict (license, provenance, maintenance signal, CVEs, supply-chain posture, each
 PASS/BLOCK/FLAG) plus CRITICAL–LOW findings with the package name and remediation. Blocks the install
-on a denied license, an unapproved source, or a known CRITICAL CVE with no documented justification.
+on a denied or undeterminable license, an unapproved source, a known CRITICAL or HIGH CVE with no
+documented justification, or a suspicious install script. Maintenance-only risk (unmaintained or
+abandoned, no security finding) is MEDIUM and does not block; HIGH always blocks.

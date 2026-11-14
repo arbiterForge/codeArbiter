@@ -1,0 +1,51 @@
+Hook partition contract validated: {'contracts': 72, 'isolation': 1, 'guard': 1, 'setup': 3, 'native_setup': 1}
+Recovery installation contract validated: {'commands': 5, 'native_setup': 1, 'cells': 3}
+test_budget_exception_cannot_change_host_partition_or_other_ceiling (__main__.PartitionContractTests.test_budget_exception_cannot_change_host_partition_or_other_ceiling) ... ok
+test_changed_native_toolchain_pin_fails (__main__.PartitionContractTests.test_changed_native_toolchain_pin_fails) ... ok
+test_changed_native_toolchain_version_fails (__main__.PartitionContractTests.test_changed_native_toolchain_version_fails) ... ok
+test_conditional_native_toolchain_fails (__main__.PartitionContractTests.test_conditional_native_toolchain_fails) ... ok
+test_current_job_environment_uses_only_legal_contexts (__main__.PartitionContractTests.test_current_job_environment_uses_only_legal_contexts) ... ok
+test_current_native_preparation_inputs_reach_hooks (__main__.PartitionContractTests.test_current_native_preparation_inputs_reach_hooks) ... ok
+test_current_windows_contract_budget_has_only_the_observed_exception (__main__.PartitionContractTests.test_current_windows_contract_budget_has_only_the_observed_exception) ... ok
+test_current_workflow_qualifies_one_shared_native_reader_before_contracts (__main__.PartitionContractTests.test_current_workflow_qualifies_one_shared_native_reader_before_contracts) ... ok
+test_deleted_contract_command_fails (__main__.PartitionContractTests.test_deleted_contract_command_fails) ... ok
+test_duplicated_contract_command_fails (__main__.PartitionContractTests.test_duplicated_contract_command_fails) ... ok
+test_extra_axis_fails (__main__.PartitionContractTests.test_extra_axis_fails) ... ok
+test_fail_fast_cannot_be_enabled (__main__.PartitionContractTests.test_fail_fast_cannot_be_enabled) ... ok
+test_guard_cannot_be_skipped (__main__.PartitionContractTests.test_guard_cannot_be_skipped) ... ok
+test_lost_gate_dependency_fails (__main__.PartitionContractTests.test_lost_gate_dependency_fails) ... ok
+test_lost_gate_result_fails (__main__.PartitionContractTests.test_lost_gate_result_fails) ... ok
+test_missing_full_history_fails (__main__.PartitionContractTests.test_missing_full_history_fails) ... ok
+test_missing_guard_keeps_bounded_contract_error (__main__.PartitionContractTests.test_missing_guard_keeps_bounded_contract_error) ... ok
+test_missing_hermetic_suite_fails (__main__.PartitionContractTests.test_missing_hermetic_suite_fails) ... ok
+test_missing_native_toolchain_fails (__main__.PartitionContractTests.test_missing_native_toolchain_fails) ... ok
+test_missing_partition_fails (__main__.PartitionContractTests.test_missing_partition_fails) ... ok
+test_missing_shared_native_preparation_fails (__main__.PartitionContractTests.test_missing_shared_native_preparation_fails) ... ok
+test_missing_tags_fails (__main__.PartitionContractTests.test_missing_tags_fails) ... ok
+test_repeated_plain_suite_fails (__main__.PartitionContractTests.test_repeated_plain_suite_fails) ... ok
+test_replaced_contract_command_fails (__main__.PartitionContractTests.test_replaced_contract_command_fails) ... ok
+test_shared_native_consumer_environment_is_required (__main__.PartitionContractTests.test_shared_native_consumer_environment_is_required) ... ok
+test_shared_native_output_cannot_move (__main__.PartitionContractTests.test_shared_native_output_cannot_move) ... ok
+test_shared_native_preparation_cannot_be_conditional (__main__.PartitionContractTests.test_shared_native_preparation_cannot_be_conditional) ... ok
+test_shared_native_preparation_cannot_precede_toolchain (__main__.PartitionContractTests.test_shared_native_preparation_cannot_precede_toolchain) ... ok
+test_shared_native_preparation_cannot_repeat (__main__.PartitionContractTests.test_shared_native_preparation_cannot_repeat) ... ok
+test_shared_native_preparation_cannot_reuse_parent_input (__main__.PartitionContractTests.test_shared_native_preparation_cannot_reuse_parent_input) ... ok
+test_shared_native_preparation_cannot_skip_tests (__main__.PartitionContractTests.test_shared_native_preparation_cannot_skip_tests) ... ok
+test_softened_check_fails (__main__.PartitionContractTests.test_softened_check_fails) ... ok
+test_timeout_ceiling_cannot_expand (__main__.PartitionContractTests.test_timeout_ceiling_cannot_expand) ... ok
+test_unassigned_contract_fails (__main__.PartitionContractTests.test_unassigned_contract_fails) ... ok
+test_valid_four_cell_contract (__main__.PartitionContractTests.test_valid_four_cell_contract) ... ok
+test_wrong_isolation_route_fails (__main__.PartitionContractTests.test_wrong_isolation_route_fails) ... ok
+test_wrong_windows_exclusion_fails (__main__.PartitionContractTests.test_wrong_windows_exclusion_fails) ... ok
+test_current_recovery_qualifies_once_before_all_five_commands (__main__.RecoveryContractTests.test_current_recovery_qualifies_once_before_all_five_commands) ... ok
+test_recovery_preserves_budget_matrix_permissions_and_pins (__main__.RecoveryContractTests.test_recovery_preserves_budget_matrix_permissions_and_pins) ... ok
+test_recovery_qualification_cannot_move_repeat_or_be_conditional (__main__.RecoveryContractTests.test_recovery_qualification_cannot_move_repeat_or_be_conditional) ... ok
+test_recovery_refuses_ambient_reuse_and_qualification_bypass (__main__.RecoveryContractTests.test_recovery_refuses_ambient_reuse_and_qualification_bypass) ... ok
+test_recovery_requires_legal_fixed_sibling_environment (__main__.RecoveryContractTests.test_recovery_requires_legal_fixed_sibling_environment) ... ok
+test_recovery_requires_preparation_and_every_original_command (__main__.RecoveryContractTests.test_recovery_requires_preparation_and_every_original_command) ... ok
+test_valid_recovery_three_host_contract (__main__.RecoveryContractTests.test_valid_recovery_three_host_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.014s
+
+OK

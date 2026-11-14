@@ -105,14 +105,12 @@ def terminate_process_tree(process: subprocess.Popen[str]) -> None:
     process.wait(timeout=5)
 
 
-def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
-    """Observe EOF, a shutdown hook, and exit without driving them."""
-    preload = home / "ca-rpc-shutdown-observer.cjs"
-    extension = home / "ca-rpc-shutdown-observer.ts"
-    trace = home / "ca-rpc-shutdown-trace.json"
-    preload.write_text(
-        "const { writeFileSync } = require('node:fs');\n"
-        f"const tracePath = {json.dumps(str(trace))};\n"
+def rpc_shutdown_observer_source(trace: Path, *, module: bool = False) -> str:
+    """Bounded passive observer, also embeddable in the existing provider."""
+    return (
+        ("import { writeFileSync } from 'node:fs';\n" if module else
+         "const { writeFileSync } = require('node:fs');\n")
+        + f"const tracePath = {json.dumps(str(trace))};\n"
         "const started = performance.now();\n"
         "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: []};\n"
         "function observe(phase, exitCode) {\n"
@@ -127,9 +125,16 @@ def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
         "globalThis.__caPiRpcShutdownObserve = observe;\n"
         "process.stdin.prependOnceListener('end', () => observe('stdin_end'));\n"
         "process.once('exit', code => observe('process_exit', code));\n"
-        "observe('started');\n",
-        encoding="utf-8", newline="\n",
+        "observe('started');\n"
     )
+
+
+def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
+    """Observe EOF, a shutdown hook, and exit without driving them."""
+    preload = home / "ca-rpc-shutdown-observer.cjs"
+    extension = home / "ca-rpc-shutdown-observer.ts"
+    trace = home / "ca-rpc-shutdown-trace.json"
+    preload.write_text(rpc_shutdown_observer_source(trace), encoding="utf-8", newline="\n")
     extension.write_text(
         "export default function observeShutdown(pi: any) {\n"
         "  pi.on('session_shutdown', () => {\n"
@@ -226,20 +231,127 @@ def wait_for_rpc_shutdown(
 
 
 def rpc_shutdown_diagnostics(trace: Path) -> str:
+    report = safe_rpc_shutdown_report(trace)
+    return json.dumps(report, separators=(",", ":"))[:2000] if report is not None else "unavailable or invalid trace"
+
+
+def safe_rpc_shutdown_report(trace: Path) -> dict | None:
+    """Project only fixed diagnostic fields; never echo arbitrary file content."""
     try:
         with trace.open("rb") as stream:
             data = stream.read(8193)
-    except OSError:
-        return "unavailable"
-    try:
         if len(data) > 8192:
             raise ValueError("oversized trace")
         report = json.loads(data.decode("utf-8", "strict"))
-        if not isinstance(report, dict):
-            raise ValueError("non-object trace")
-    except (ValueError, UnicodeError, RecursionError):
-        return "invalid or oversized trace"
-    return json.dumps(report, separators=(",", ":"))[:2000]
+        if not isinstance(report, dict) or type(report.get("schemaVersion")) is not int or report["schemaVersion"] != 1:
+            return None
+        if type(report.get("pid")) is not int or not 0 < report["pid"] <= 2**32:
+            return None
+        if not isinstance(report.get("node"), str) or re.fullmatch(r"v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", report["node"]) is None:
+            return None
+        if report.get("platform") not in ("win32", "linux", "darwin"):
+            return None
+        phases = report.get("phases")
+        if not isinstance(phases, list) or not 1 <= len(phases) <= 8:
+            return None
+        rows = []
+        for row in phases:
+            if not isinstance(row, dict) or row.get("phase") not in ("started", "stdin_end", "session_shutdown_observer", "process_exit"):
+                return None
+            if type(row.get("elapsedMs")) is not int or not 0 <= row["elapsedMs"] <= 86_400_000 or type(row.get("stdinEnded")) is not bool:
+                return None
+            resources = row.get("resources")
+            if not isinstance(resources, list) or len(resources) > 16 or any(not isinstance(x, str) or len(x) > 24 for x in resources):
+                return None
+            known_resources = {"PipeWrap", "TTYWrap", "TCPWrap", "UDPWrap", "ProcessWrap", "FSReqCallback", "FSReqPromise", "CloseReq", "Timeout", "Immediate", "FileHandle", "Worker", "MessagePort", "TCPSocketWrap", "TCPServerWrap", "SignalWrap", "ConnectWrap", "WriteWrap", "ShutdownWrap"}
+            item = {key: row[key] for key in ("phase", "elapsedMs", "stdinEnded")}
+            item["resources"] = [value if value in known_resources else "Other" for value in resources]
+            if "exitCode" in row:
+                if type(row["exitCode"]) is not int or not -(2**31) <= row["exitCode"] < 2**32:
+                    return None
+                item["exitCode"] = row["exitCode"]
+            rows.append(item)
+        return {"schemaVersion": 1, "pid": report["pid"], "node": report["node"], "platform": report["platform"], "phases": rows}
+    except (OSError, ValueError, UnicodeError, RecursionError):
+        return None
+
+
+def retain_rpc_shutdown_failure(trace: Path) -> str | None:
+    """Failure-only, exclusive CI artifact; never participates in the verdict."""
+    selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if not selected:
+        return None
+    try:
+        destination = Path(selected)
+        destination.mkdir(parents=True, exist_ok=True)
+        if destination.is_symlink() or not destination.is_dir():
+            return None
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="rpc-shutdown-", suffix=".json", dir=destination, delete=False) as stream:
+            json.dump({"schemaVersion": 1, "outcome": "failure", "trace": safe_rpc_shutdown_report(trace)}, stream, separators=(",", ":"))
+            stream.write("\n")
+            return Path(stream.name).name
+    except (OSError, ValueError):
+        return None
+
+
+def rpc_diagnostic_runtime_identity(node: str, cli: Path) -> dict | None:
+    """Hash the admitted executable and direct RPC entries, without logging paths."""
+    try:
+        entry = cli.parent / "cli-runtime.js"
+        with entry.open("rb") as stream:
+            source = stream.read(16_385)
+        if len(source) > 16_384:
+            return None
+        imported = re.search(
+            rb'import\{configureHttpDispatcher,main\}from"(\./chunks/[A-Za-z0-9_-]+\.js)"',
+            source,
+        )
+        if imported is None:
+            return None
+        runtime = cli.parent / imported[1].decode("ascii")
+        paths = {"nodeSha256": Path(node), "cliSha256": cli,
+                 "entrySha256": entry, "rpcModuleSha256": runtime}
+        identities = {}
+        for name, path in paths.items():
+            digest = hashlib.sha256()
+            size = 0
+            with path.open("rb") as stream:
+                while block := stream.read(65_536):
+                    size += len(block)
+                    if size > 128 << 20:
+                        return None
+                    digest.update(block)
+            identities[name] = digest.hexdigest()
+        return identities
+    except (OSError, ValueError, UnicodeError):
+        return None
+
+
+def retain_rpc_observed_raw_diagnostics(trace: Path, identity: dict | None, *, succeeded: bool) -> str | None:
+    """Separate observed-route receipt; never changes the raw compatibility verdict."""
+    selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if not selected:
+        return None
+    fields = {"nodeSha256", "cliSha256", "entrySha256", "rpcModuleSha256"}
+    if not isinstance(identity, dict) or set(identity) != fields or any(
+        not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None
+        for value in identity.values()
+    ):
+        identity = None
+    try:
+        destination = Path(selected)
+        destination.mkdir(parents=True, exist_ok=True)
+        if destination.is_symlink() or not destination.is_dir():
+            return None
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="rpc-shutdown-observed-", suffix=".json", dir=destination, delete=False) as stream:
+            json.dump({"schemaVersion": 1, "route": "passive-observed-raw-companion",
+                       "outcome": "observed-pass" if succeeded is True else "observed-failure",
+                       "runtimeIdentity": identity, "trace": safe_rpc_shutdown_report(trace)},
+                      stream, separators=(",", ":"))
+            stream.write("\n")
+            return Path(stream.name).name
+    except (OSError, ValueError):
+        return None
 
 
 def run_rpc_commands(
@@ -607,6 +719,18 @@ export default function registerCaptureProvider(pi: any) {
         )
 
     shutdown_trace = home / "ca-rpc-shutdown-trace.json"
+    if (invoke_alias or invoke_doctor) and not _observe_shutdown:
+        # Embed observation into the already-selected local provider. Raw Node
+        # argv and the natural-exit verdict remain unchanged; this captures the
+        # previously missing phase when that original compatibility case fails.
+        source = provider.read_text(encoding="utf-8")
+        source = source.replace(
+            "export default function registerCaptureProvider(pi: any) {",
+            "export default function registerCaptureProvider(pi: any) {\n"
+            "  pi.on('session_shutdown', () => { (globalThis as any).__caPiRpcShutdownObserve?.('session_shutdown_observer'); });",
+            1,
+        )
+        provider.write_text(rpc_shutdown_observer_source(shutdown_trace, module=True) + source, encoding="utf-8", newline="\n")
     command = [
         node,
         str(cli),
@@ -799,6 +923,11 @@ export default function registerCaptureProvider(pi: any) {
         if invoke_enforcement_fault and not any(record.get("type") == "agent_settled" for record in records):
             raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail()}")
         return records
+    except Exception as error:
+        retained = retain_rpc_shutdown_failure(shutdown_trace)
+        if retained is not None:
+            error.add_note(f"Pi RPC failure diagnostic artifact: {retained}")
+        raise
     finally:
         cleanup_errors: list[str] = []
         if process.stdin is not None and not process.stdin.closed:
@@ -1441,7 +1570,8 @@ class PiPackageTests(unittest.TestCase):
     def test_ci_has_pi_path_output_matrix_and_independent_version_guard(self):
         ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         required = (
-            "ca-pi: ${{ steps.filter.outputs.ca-pi }}",
+            "ca-pi: ${{ steps.filter.outputs.ca-pi == 'true' || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}",
             "- 'plugins/ca-pi/**'",
             "ca-pi-checks:",
             "ca-pi-tools:",
@@ -1454,7 +1584,8 @@ class PiPackageTests(unittest.TestCase):
             "Test package, module identity, compatibility, and native binding",
             "Test the complete Pi adapter suite",
             "Test real package RPC activation and aliases",
-            'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"',
+            'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT" \\\n'
+            '            --integration-base-branch "${BASE_BRANCH#refs/heads/}" --main-ref origin/main',
             "ca-pi-latest:",
             "- ca-pi-checks",
             "- ca-pi-tools",
@@ -2396,9 +2527,9 @@ class PiPackageTests(unittest.TestCase):
                     reader.join(timeout=2)
 
     def test_real_rpc_shutdown_probe_uses_the_same_untrusted_fixture(self):
-        # The original compatibility case above remains uninstrumented. This
-        # additional case observes the same fixture without turning a passing
-        # diagnostic rerun into a substitute for its original result.
+        # The original case keeps its raw CLI arguments. This additional case
+        # also observes before provider loading, without substituting a passing
+        # diagnostic run for the original natural-exit result.
         real_run = run_rpc_commands
         with mock.patch.object(
             sys.modules[__name__], "run_rpc_commands",
@@ -2418,11 +2549,11 @@ class PiPackageTests(unittest.TestCase):
     def _shutdown_report(pid=731, exit_ms=2000):
         phases = ["started", "stdin_end", "session_shutdown_observer", "process_exit"]
         rows = [
-            {"phase": phase, "elapsedMs": elapsed, "stdinEnded": index > 0}
+            {"phase": phase, "elapsedMs": elapsed, "stdinEnded": index > 0, "resources": []}
             for index, (phase, elapsed) in enumerate(zip(phases, [0, 100, 101, exit_ms]))
         ]
         rows[-1]["exitCode"] = 0
-        return {"schemaVersion": 1, "pid": pid, "phases": rows}
+        return {"schemaVersion": 1, "pid": pid, "node": "v22.19.0", "platform": "win32", "phases": rows}
 
     def test_rpc_shutdown_phase_requires_exact_order_identity_and_success(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-phase-") as directory:
@@ -2516,7 +2647,7 @@ class PiPackageTests(unittest.TestCase):
                 self.assertLessEqual(elapsed, 10.001)
 
     def test_rpc_shutdown_budget_bounds_raw_and_post_exit_entry_hangs(self):
-        for observed, phase_at in ((False, None), (True, 2)):
+        for observed, phase_at in ((False, None), (False, 2), (True, 2)):
             with self.subTest(observed=observed):
                 result, elapsed, _ = self._exercise_shutdown_clock(
                     observed=observed, phase_at=phase_at, exit_at=100,
@@ -2562,27 +2693,76 @@ class PiPackageTests(unittest.TestCase):
     def test_rpc_shutdown_diagnostics_are_bounded_and_tolerate_missing_or_invalid_trace(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observer-") as directory:
             trace = Path(directory) / "trace.json"
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"{" + b"x" * 20_000)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_text(json.dumps({"large": "x" * 9000}), encoding="utf-8")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"{}" + b" " * 9000)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
-            trace.write_bytes(b"{}" + b" " * 8190)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "{}")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
+            good = json.dumps(self._shutdown_report()).encode("utf-8")
+            trace.write_bytes(good + b" " * (8192 - len(good)))
+            self.assertIn('"process_exit"', rpc_shutdown_diagnostics(trace))
             trace.write_bytes(b"{not-json}")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"\xff")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"[]")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"[" * 2000 + b"]" * 2000)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_text(json.dumps({"phases": [{"phase": "stdin_end"}]}), encoding="utf-8")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), '{"phases":[{"phase":"stdin_end"}]}')
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_text(json.dumps({"large": "x" * 3000}), encoding="utf-8")
             self.assertLessEqual(len(rpc_shutdown_diagnostics(trace)), 2000)
+
+    def test_rpc_shutdown_failure_artifact_projects_only_safe_fields_and_is_exclusive(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-retained-") as directory:
+            root = Path(directory)
+            trace = root / "trace.json"
+            report = self._shutdown_report()
+            report["secret"] = "NOT_A_REAL_SECRET_FIXTURE"
+            report["phases"][-1]["argv"] = "NOT_A_REAL_SECRET_FIXTURE"
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            output = root / "artifacts"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(output)}):
+                first = retain_rpc_shutdown_failure(trace)
+                second = retain_rpc_shutdown_failure(trace)
+            self.assertNotEqual(first, second)
+            self.assertIsNotNone(first)
+            raw = (output / first).read_text(encoding="utf-8")
+            self.assertNotIn("NOT_A_REAL_SECRET_FIXTURE", raw)
+            self.assertNotIn("NOT_A_REAL_SECRET_FIXTURE", rpc_shutdown_diagnostics(trace))
+            self.assertEqual(json.loads(raw), {"schemaVersion": 1, "outcome": "failure", "trace": self._shutdown_report()})
+            report["phases"][-1]["resources"] = ["PrivateFixtureValue", "PipeWrap"]
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            self.assertEqual(safe_rpc_shutdown_report(trace)["phases"][-1]["resources"], ["Other", "PipeWrap"])
+            self.assertNotIn("PrivateFixtureValue", rpc_shutdown_diagnostics(trace))
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(output)}):
+                sanitized = retain_rpc_shutdown_failure(trace)
+            self.assertNotIn("PrivateFixtureValue", (output / sanitized).read_text(encoding="utf-8"))
+            for key, value in (("node", "NOT_A_REAL_SECRET_FIXTURE"), ("platform", "NOT_A_REAL_SECRET_FIXTURE"), ("pid", True)):
+                candidate = self._shutdown_report()
+                candidate[key] = value
+                trace.write_text(json.dumps(candidate), encoding="utf-8")
+                self.assertIsNone(safe_rpc_shutdown_report(trace))
+                self.assertNotIn("NOT_A_REAL_SECRET_FIXTURE", rpc_shutdown_diagnostics(trace))
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIsNone(retain_rpc_shutdown_failure(trace))
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(trace)}):
+                self.assertIsNone(retain_rpc_shutdown_failure(trace))
+
+    def test_rpc_embedded_observer_is_passive_and_keeps_stdout_clean(self):
+        node, _ = live_pi_cli()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-embedded-") as directory:
+            trace = Path(directory) / "trace.json"
+            source = rpc_shutdown_observer_source(trace, module=True)
+            source += "process.stdin.resume(); process.stdin.on('end', () => { setTimeout(() => { process.stdout.write('still-running'); process.exit(0); }, 100); });"
+            result = subprocess.run([node, "--input-type=module", "-e", source], input="", text=True, capture_output=True, timeout=10, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "still-running")
+            self.assertEqual(result.stderr, "")
+            self.assertEqual([x["phase"] for x in safe_rpc_shutdown_report(trace)["phases"]], ["started", "stdin_end", "process_exit"])
 
     def test_rpc_shutdown_observer_never_turns_an_eof_hang_into_a_pass(self):
         node, _ = live_pi_cli()
@@ -2599,7 +2779,8 @@ class PiPackageTests(unittest.TestCase):
                 "JSON.stringify({id:'commands',success:true,data:{commands:[]}})+'\\n'));"
                 "process.stdin.on('end', () => setInterval(() => {}, 1000));"
             )
-            with self.assertRaisesRegex(AssertionError, "orderly shutdown did not complete") as raised:
+            retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}), self.assertRaisesRegex(AssertionError, "orderly shutdown did not complete") as raised:
                 run_rpc_commands(
                     cwd, root / "agent", home,
                     _rpc_command=[node, "--require", str(preload), "-e", child_code],
@@ -2613,6 +2794,11 @@ class PiPackageTests(unittest.TestCase):
             self.assertIsNotNone(process.poll(), "the failing RPC root must be reaped")
             self.assertFalse(reader.is_alive(), "the failing RPC stdout reader must stop")
             self.assertIn('"stdin_end"', rpc_shutdown_diagnostics(trace))
+            artifacts = list(retained.glob("rpc-shutdown-*.json"))
+            self.assertEqual(len(artifacts), 1)
+            self.assertEqual(read_json(artifacts[0])["outcome"], "failure")
+            self.assertEqual(read_json(artifacts[0])["trace"]["phases"][-1]["phase"], "stdin_end")
+            self.assertTrue(any(artifacts[0].name in note for note in raised.exception.__notes__))
 
     def test_rpc_post_exit_entry_hang_reaps_process_tree_and_readers(self):
         node, _ = live_pi_cli()
@@ -2667,6 +2853,51 @@ class PiPackageTests(unittest.TestCase):
                 else:
                     self.fail("post-exit-entry hang left a descendant alive")
 
+    def test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observed-record-") as directory:
+            root = Path(directory)
+            cli = root / "cli.js"
+            node = root / "node.exe"
+            entry = root / "cli-runtime.js"
+            runtime = root / "chunks" / "chunk-fixture.js"
+            runtime.parent.mkdir()
+            for path in (cli, node, runtime):
+                path.write_bytes(b"owned non-executable identity fixture")
+            entry.write_bytes(b'import{configureHttpDispatcher,main}from"./chunks/chunk-fixture.js";')
+            identity = rpc_diagnostic_runtime_identity(str(node), cli)
+            self.assertEqual(identity, {
+                name: hashlib.sha256(path.read_bytes()).hexdigest()
+                for name, path in {"nodeSha256": node, "cliSha256": cli,
+                                   "entrySha256": entry, "rpcModuleSha256": runtime}.items()
+            })
+            trace = root / "trace.json"
+            report = self._shutdown_report()
+            report["private"] = "PrivateFixtureValue"
+            report["phases"][0]["resources"] = ["PrivateFixtureValue"]
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}):
+                one = retain_rpc_observed_raw_diagnostics(trace, identity, succeeded=True)
+                two = retain_rpc_observed_raw_diagnostics(trace, {**identity, "private": "PrivateFixtureValue"}, succeeded=False)
+            self.assertNotEqual(one, two)
+            first = read_json(retained / one)
+            second = read_json(retained / two)
+            self.assertEqual(set(first), {"schemaVersion", "route", "outcome", "runtimeIdentity", "trace"})
+            self.assertEqual(first["route"], "passive-observed-raw-companion")
+            self.assertEqual(first["outcome"], "observed-pass")
+            self.assertEqual(first["runtimeIdentity"], identity)
+            self.assertEqual(first["trace"]["phases"][0]["resources"], ["Other"])
+            self.assertEqual(second["outcome"], "observed-failure")
+            self.assertIsNone(second["runtimeIdentity"])
+            self.assertNotIn("PrivateFixtureValue", (retained / one).read_text(encoding="utf-8"))
+            self.assertNotIn("PrivateFixtureValue", (retained / two).read_text(encoding="utf-8"))
+            entry.write_bytes(b'import{configureHttpDispatcher,main}from"../outside.js";')
+            self.assertIsNone(rpc_diagnostic_runtime_identity(str(node), cli))
+            entry.write_bytes(b"x" * 16_385)
+            self.assertIsNone(rpc_diagnostic_runtime_identity(str(node), cli))
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIsNone(retain_rpc_observed_raw_diagnostics(trace, identity, succeeded=True))
+
     def test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-") as directory:
             root = Path(directory)
@@ -2685,6 +2916,41 @@ class PiPackageTests(unittest.TestCase):
             self.assertEqual(len(observed), 1)
             self.assertNotIn("--require", observed[0])
             self.assertFalse(any("ca-rpc-shutdown-observer" in argument for argument in observed[0]))
+
+    def test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases(self):
+        # Separate from the original raw argv/natural-exit qualification above.
+        # A pass here does not resolve or replace a failure in that original case.
+        node, cli = live_pi_cli()
+        identity = rpc_diagnostic_runtime_identity(node, cli)
+        self.assertIsNotNone(identity, "the diagnostic must identify the actual direct RPC runtime")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-observed-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            observed = []
+            succeeded = False
+            try:
+                records = run_rpc_commands(
+                    cwd, root / "agent", root / "home", _observe_shutdown=True,
+                    _on_process_started=lambda process, reader: observed.append(process.args),
+                )
+                self.assertTrue(records[0]["success"])
+                self.assertEqual(len(observed), 1)
+                expected = [node, "--require", str(root / "home/ca-rpc-shutdown-observer.cjs"),
+                            str(cli), "--mode", "rpc", "--offline", "--no-session", "--approve",
+                            "--no-prompt-templates", "--no-themes", "--no-context-files",
+                            "--extension", str(root / "home/ca-rpc-shutdown-observer.ts"),
+                            "--no-builtin-tools"]
+                self.assertEqual(observed[0], expected)
+                report = safe_rpc_shutdown_report(root / "home/ca-rpc-shutdown-trace.json")
+                self.assertEqual([row["phase"] for row in report["phases"]],
+                                 ["started", "stdin_end", "session_shutdown_observer", "process_exit"])
+                self.assertEqual(report["phases"][-1]["exitCode"], 0)
+                succeeded = True
+            finally:
+                retain_rpc_observed_raw_diagnostics(
+                    root / "home/ca-rpc-shutdown-trace.json", identity, succeeded=succeeded,
+                )
 
     def test_rpc_stderr_backpressure_does_not_block_shutdown(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
@@ -3632,28 +3898,46 @@ class NpmPublishContractTest(unittest.TestCase):
             cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
             binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
             for host, prefix in prefixes.items():
-                manifest_data = {"binaries": {
-                    platform: {"file": "artifact-bin", "sha256": binary_sha}
-                    for platform in platforms
-                }}
+                from _artifactmanifestlib import CONTRACT
+                manifest_data = {
+                    "format": CONTRACT["format"], "version": "0.1.0",
+                    "protocol": CONTRACT["protocol"],
+                    "schema_version": CONTRACT["schema_version"],
+                    "binaries": {
+                        platform: {
+                            "file": "ca-artifact-" + platform.replace("/", "-")
+                                    + (".exe" if platform.startswith("windows/") else ""),
+                            "sha256": binary_sha, "native_tested": True,
+                        }
+                        for platform in platforms
+                    },
+                }
                 if host == "pi":
                     manifest_data["context_qualification"] = {
-                        platform: {"source_commit": "a" * 40, "binary_sha256": binary_sha}
+                        platform: {
+                            "source_commit": "a" * 40, "workflow": CONTRACT["workflow"],
+                            "run_id": "123", "binary_sha256": binary_sha,
+                            "observation_sha256": "d" * 64, "module_sha256": "e" * 64,
+                            "native_cases": CONTRACT["native_cases"],
+                        }
                         for platform in platforms
                     }
                 manifest = json.dumps(manifest_data, separators=(",", ":")).encode()
+                self.assertEqual(helper.parse_release_manifest(manifest), manifest_data)
                 manifest_sha = hashlib.sha256(manifest).hexdigest()
+                archive_members = {prefix + "release.json": manifest}
+                archive_members.update({prefix + entry["file"]: binary
+                                        for entry in manifest_data["binaries"].values()})
                 archive_path = packages / f"{host}.tgz"
                 with tarfile.open(archive_path, "w:gz") as archive:
-                    for name, data in ((prefix + "release.json", manifest),
-                                       (prefix + "artifact-bin", binary)):
+                    for name, data in archive_members.items():
                         info = tarfile.TarInfo(name); info.size = len(data)
                         archive.addfile(info, io.BytesIO(data))
                 package_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
                 cohort["packages"][host] = {
                     "file": archive_path.name, "sha256": package_sha,
-                    "members": {prefix + "release.json": {"sha256": manifest_sha},
-                                prefix + "artifact-bin": {"sha256": binary_sha}},
+                    "members": {name: {"sha256": hashlib.sha256(data).hexdigest()}
+                                for name, data in archive_members.items()},
                 }
                 for platform in platforms:
                     cell = cold_root / f"{host}-{platform.replace('/', '-')}"
@@ -3763,9 +4047,8 @@ class NpmPublishContractTest(unittest.TestCase):
             helper.validate_main_commit(repo, "b" * 40)
 
     def test_security_policy_and_workflow_guard_the_npm_secret_boundary(self):
-        policy = (REPO / ".codearbiter" / "security-controls.md").read_text(
-            encoding="utf-8"
-        )
+        from project_knowledge import context_text
+        policy = context_text("security-controls")
         workflow = self.WORKFLOW.read_text(encoding="utf-8")
         action = self.ACTION.read_text(encoding="utf-8")
         self.assertIn("### ca-pi npm publication boundary", policy)

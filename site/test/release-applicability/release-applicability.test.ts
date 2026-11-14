@@ -534,7 +534,7 @@ describe("deterministic release applicability record", () => {
         matchesReplay: true,
       },
     });
-    expect(record.proof.statement).toMatch(/applies.*latest published ca artifact/i);
+    expect(record.proof.statement).toMatch(/applies.*selected ca tag/i);
   });
 
   it.each([

@@ -1,0 +1,34 @@
+{
+  "task_ids": [
+    "NT-01",
+    "NT-02",
+    "NT-03",
+    "NT-04",
+    "NT-05",
+    "NT-06",
+    "NT-07",
+    "NT-08",
+    "NT-09",
+    "NT-10",
+    "NT-11",
+    "NT-12"
+  ],
+  "finding_ids_covered": [
+    "N-F01",
+    "N-F02",
+    "N-F03",
+    "N-F04",
+    "N-F05",
+    "N-F06",
+    "N-F07",
+    "N-F08",
+    "N-F09",
+    "N-F10"
+  ],
+  "findings_without_task": [],
+  "new_full_read_files": 27,
+  "prior_native_full_read_manifest": "audit-work/native-read-files.txt",
+  "partial_reads_note": "Relevant decision-log sections and targeted native/CI lines were additionally read; no new full-file claim for these partial rereads. Canonical native implementation had been fully read in prior audit.",
+  "native_execution": false,
+  "repository_modification": false
+}

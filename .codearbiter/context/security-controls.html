@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Security controls · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">CTX-SECURITY-CONTROLS</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-records">Records</a><a href="#group-notes">Notes</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / knowledge</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Security controls</h1><p class="deck">Trust boundaries, authentication, secret handling and prohibited primitives. Operative scope blocks stay in security-controls.md.</p><div class="meta"><span>CTX-SECURITY-CONTROLS</span><span>Revision 5 · schema 0.3.2</span><span>33 addressable records</span></div></header><section class="group" id="group-records"><a class="back" href="#main-content">Top</a><h2>Records</h2>
+<!-- CA:BEGIN:CON-001 -->
+<article class="record" id="CON-001" data-ca-symbol="CON-001" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-001">CON-001</a><h3>Security controls — codeArbiter</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span># Security controls — codeArbiter
+
+This document records accepted boundaries and their owners. It is not a claim
+that every tool call is intercepted or that every host/platform is qualified.
+ADR-0043 removes the duplicate artifact permission layer for already-authorized
+work; it preserves host permissions, explicit user denials/stops, sandbox and
+filesystem restrictions, repository integrity, safe persistence and publication
+authorization. Progress may be recorded without claiming verification or review.
+
+</div></article>
+<!-- CA:END:CON-001 -->
+
+<!-- CA:BEGIN:CON-002 -->
+<article class="record" id="CON-002" data-ca-symbol="CON-002" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-002">CON-002</a><h3>Cryptographic primitives</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Cryptographic primitives
+
+SHA-256 and the SHA-2 family are approved for hashing/integrity. MD5, SHA-1, DES,
+3DES, RC4, RC2 and Blowfish are prohibited. Test fixture strings describing
+forbidden primitives are not approval to use them. The owning detection and
+commit-marker controls are `_sensitivelib.py`, `_hooklib.py`, and their tests.
+Do not weaken these controls as part of the assistive lifecycle change.
+
+</div></article>
+<!-- CA:END:CON-002 -->
+
+<!-- CA:BEGIN:CON-003 -->
+<article class="record" id="CON-003" data-ca-symbol="CON-003" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-003">CON-003</a><h3>Secret store and access method</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Secret store and access method
+
+This project has no runtime secrets vault. Secrets belong in the owning process&#39;s
+approved environment or release secret store,
+never source, logs, artifacts, prompts, configuration commits, or diagnostic
+echoes. `FARM_API_KEY` is allowed only as farm runtime input. Sandbox
+`CLAUDE_CODE_OAUTH_TOKEN` injection is explicit `--with-claude` behavior; do not
+mount credential material with untrusted source or silently widen egress.
+The approved environment may be the owning process&#39;s secret source or the bounded
+runtime transport from its release store. Environment access by itself grants no
+new origin, sink, child, or lifetime permission. Keep each value within the
+owning process or the specifically approved child flow for its actual workflow
+lifetime, then release it; do not cache or serialize it for later work.
+
+Pi&#39;s ADR-0019 parent inference broker supersedes stored-provider credential
+projection. A child receives a short-lived per-child loopback token, not reusable
+provider credentials. The selected provider/model is exact; unavailable service
+must not cause automatic fallback. This is cooperative same-user isolation,
+not an OS security boundary: another local process holding the child token may
+use it until revocation. The broker closes and temporary state is cleaned on
+completion/failure. Secrets do not enter child argv or diagnostic output.
+
+Child provider configuration is credential-blind and schema-bounded. Only
+approved keys/shapes and pure environment references for API-key/header fields
+are projected; executable `!` values and unsupported provider/OAuth routes fail
+closed. Endpoint URLs exclude userinfo, query and fragment. Preserve bounded
+case-insensitive route validation. Child OS environment is minimal, excluding
+farm/Claude credentials; home, agent and session state are isolated, prompts use
+stdin, and `PI_PACKAGE_DIR` exposes only the intended parent package resources.
+Dummy-credential tests must not read real home authentication.
+
+</div></article>
+<!-- CA:END:CON-003 -->
+
+<!-- CA:BEGIN:CON-004 -->
+<article class="record" id="CON-004" data-ca-symbol="CON-004" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-004">CON-004</a><h3>Network and untrusted execution</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Network and untrusted execution
+
+TLS verification stays enabled. API endpoints use HTTPS except narrowly bounded
+loopback test/broker paths. Farm validates its resolved base URL and each fetch,
+rejects userinfo and redirects, and emits origin-only diagnostics. Provider
+response bodies must not be copied into reports, retry messages or stderr.
+
+The update notifier makes bounded unauthenticated GitHub release reads without
+repository content, PII or credentials: at most ten pages/1,000 results, daily
+per-host caching, standard-library verified TLS, and fail-silent asynchronous
+behavior that does not add SessionStart network latency.
+
+Sandbox containers use non-root UID 1000, `--cap-drop ALL`, read-only root,
+`no-new-privileges`, resource caps and no privileged mode or Docker socket.
+`mounts.ts` is the single mount constructor: named volumes/tmpfs only, no host
+bind mounts. Network is offline by default and an unknown policy is an error.
+Clone inputs are bounded to approved HTTPS/SSH forms; reject leading options
+and transport-helper forms, preserve argv separation and `--`, and never
+interpolate untrusted input into a shell. Installed nixpacks detection does not
+authorize downloading/installing a helper at runtime. Container image inputs
+are digest-pinned; supply-chain tests reject floating `latest` inputs.
+
+</div></article>
+<!-- CA:END:CON-004 -->
+
+<!-- CA:BEGIN:CON-005 -->
+<article class="record" id="CON-005" data-ca-symbol="CON-005" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-005">CON-005</a><h3>Dependency policy</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Dependency policy
+
+Dependencies and lockfile resolutions use the official npm registry. Repository
+metadata links are not dependency-source exceptions. New/changed dependencies
+retain provenance, vulnerability and license review. The high-severity audit
+threshold includes development dependencies in the three tools projects; site
+production dependencies use the exception-aware gate. An exception identifies
+the exact advisory/package, maximum severity, owner rationale and expiry of at
+most 30 days. `site/audit-exceptions.json` owns the current exception; the recorded
+2026-10-03 approval for GHSA-ch52-4w7c-c8xp expires no later than 2026-11-02.
+Do not infer that an old no-fix observation remains current.
+
+</div></article>
+<!-- CA:END:CON-005 -->
+
+<!-- CA:BEGIN:CON-006 -->
+<article class="record" id="CON-006" data-ca-symbol="CON-006" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-006">CON-006</a><h3>Approved licenses</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>### Approved licenses
+
+Approved licenses are MIT, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause,
+BlueOak-1.0.0, CC0-1.0 and Unlicense. Retain these accepted scoped additions:
+
+| License | Accepted scope |
+|---|---|
+| MPL-2.0 | Development/build-time dependencies in site and tools; not shipped runtime code. |
+| LGPL-3.0-or-later | The accepted `@img/sharp-libvips-*` docs-site build-time packages only; optimized output does not embed that library. |
+| 0BSD | Development/build-time site/tools dependencies. |
+| Artistic-2.0 | The exact vetted npm 11.19.1 CI CLI only. |
+| CC-BY-3.0 | Bundled `spdx-exceptions` 2.5.0 in that exact vetted CLI only. |
+
+The accepted argparse license-metadata mismatch resolves to upstream MIT;
+satteri ships MIT despite missing SPDX metadata. These are specific accepted
+findings, not blanket missing-license exemptions. A license outside the approved
+set/scopes needs explicit review and the existing override record. Preserve the
+2026-07-02 and 2026-07-14 user decisions and attribution in history. The Pi npm
+package is public; private build/test manifests do not make all repository
+packages private.
+
+</div></article>
+<!-- CA:END:CON-006 -->
+
+<!-- CA:BEGIN:CON-007 -->
+<article class="record" id="CON-007" data-ca-symbol="CON-007" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-007">CON-007</a><h3>Hook security (Python)</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Hook security (Python)
+
+Hooks use Python&#39;s standard library. Malformed hook stdin has the deliberately
+fail-open entry behavior in `_hooklib.read_input`; that is not a rule to treat
+unsafe filesystem state or failed security reads as success. Git-operation cwd
+respects repeated `-C`. Codex does not inherit `CLAUDE_PROJECT_DIR`; host payload
+cwd remains a host trust boundary. Git owns config grammar and hook execution.
+Default worktree layout support does not imply all separate-Git-dir, UNC or WSL
+topologies are qualified. Do not alter safe.directory to manufacture a result.
+
+The hook identity bundle comprises three atomically bound records; malformed,
+stale or inconsistent identities fail closed. Uninstall removes only owned
+configuration. Preserve conservative cache invalidation and actual-runtime
+identity checks. A source checkout, package inventory, doctor result or prior
+session cannot substitute for current live enforcement proof.
+
+</div></article>
+<!-- CA:END:CON-007 -->
+
+<!-- CA:BEGIN:CON-008 -->
+<article class="record" id="CON-008" data-ca-symbol="CON-008" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-008">CON-008</a><h3>Pi trust boundary</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>### Pi trust boundary
+
+Pi can load an extension before project trust. Before affirmative
+`isProjectTrusted()`, only the bounded context marker is read; Python/Git work,
+mutations and doctor probes remain unavailable. Session-start and final
+pre-execution checks invalidate/re-read trust as required. Unknown tools fail
+closed unless the host descriptor supplies an allowed mapping. Exact final
+argument order is a promotion requirement; a host unable to guarantee it is not
+qualified. Child execution disables ambient extension/session/approval discovery
+and loads the intended resources explicitly. A child marker prevents recursive
+dispatch only; it does not disable security controls. Use `shell:false`, bounded
+redacted inputs, minimal environment and whole-process-tree cleanup.
+
+ADR-0010 accepts that trusted same-process extensions and a cooperative parent
+with filesystem/shell access can bypass or forge unkeyed local records. Source
+hashes/receipts are integrity and provenance records within that model, not
+signed attestation against the parent. Stronger secret-key attestation remains
+a separately recorded product decision, not an implicit requirement of this
+refresh. Ordinary progress never needs such an attestation.
+
+</div></article>
+<!-- CA:END:CON-008 -->
+
+<!-- CA:BEGIN:CON-009 -->
+<article class="record" id="CON-009" data-ca-symbol="CON-009" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-009">CON-009</a><h3>Audit trail</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Audit trail
+
+Append-only records include overrides.log, triage.log, sprint-log.md,
+gate-events.log, done-tasks.md, decisions/decision-log.md and ADR lifecycle
+history under their existing owning controls. H-05 protects existing history;
+it does not guarantee every event was logged. The accepted completeness strategy
+is a lightweight staleness warning with the best-effort gate-events sink. Sink
+failure/lock contention must not reverse a guard&#39;s verdict. Warnings are advisory
+and not persisted as fabricated events. `/override` is not staleness-tracked.
+
+`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-lifecycle
+ledger. Its exact repository-relative path is authoritative; hook classification
+also compares it case-folded so mixed-case aliases cannot evade protection on
+supported case-insensitive filesystems. Tail append is its only permitted write
+shape. H-05 enforces append-only write shape by blocking rewrites, truncation,
+deletion and non-tail edits. The lifecycle checker separately validates JSONL
+syntax, event completeness, schema, and committed-prefix integrity after writes
+and in CI; H-05 does not validate appended content. H-11 separately protects
+governed decision-document paths.
+
+In CI, the lifecycle checker compares the base and current ledger as committed Git blobs
+and requires the base to be an exact byte prefix of the current blob. Missing,
+unresolvable or all-zero base identities fail closed. Immutable accepted packets
+retain their exact bindings; local checks do not rewrite historical evidence.
+Sanctioned marker producers are cooperative attestations; never mint a marker,
+approval source or test/review result without its actual underlying action.
+
+Lexical shell guards have accepted indirection boundaries, including variable
+and descriptor/compound-shell forms; they are not an adversarial OS sandbox.
+The accepted MCP write-hook gap remains for both host surfaces under ADR-0010:
+doctor reports configuration availability/counts without exposing server
+details. Reopen this decision when a supported host matcher exists, a cooperative
+consumer incident occurs, a shipped/recommended MCP tool needs coverage, or the
+doctor visibility guarantee is lost. A tool name alone does not prove coverage.
+
+</div></article>
+<!-- CA:END:CON-009 -->
+
+<!-- CA:BEGIN:CON-010 -->
+<article class="record" id="CON-010" data-ca-symbol="CON-010" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-010">CON-010</a><h3>Protected-state registry</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Protected-state registry
+
+`_protectedstatelib.py` owns protected paths. `open-tasks.md` is helper-only
+mutable through taskwrite.py; `done-tasks.md` is append-only. Context documents
+use their bounded owned writer. `release-targets.md` is marker-gated because
+its generation/pre-tag/release-build declarations execute in privileged release
+lanes; do not raw-write it or treat it as ordinary prose. Case/slash normalization,
+known write verbs and interpreter-inline forms preserve cross-platform matching.
+Broad-basename overmatching and the deliberate touch exclusion retain their
+recorded scope; a refresh must not silently choose a new enforcement policy.
+
+</div></article>
+<!-- CA:END:CON-010 -->
+
+<!-- CA:BEGIN:CON-011 -->
+<article class="record" id="CON-011" data-ca-symbol="CON-011" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-011">CON-011</a><h3>Native artifacts and recovery</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Native artifacts and recovery
+
+The native engine is pinned to the installed package&#39;s manifest/digest/platform
+qualification. Never discover a replacement on PATH or fetch one at runtime.
+Packaging/installers retain their platform-specific safe-path, no-follow and
+identity boundaries. Static source or fixture tests do not establish installed
+host permissions.
+
+CI qualification receipts are issued by one Linux `artifact-engine` job, not on
+each native host. Its trust basis is this run&#39;s artifact store, the required
+native stages&#39; success (`ci20_native_binding.py gate`), and each native
+consumer&#39;s on-host `verify` of the builder&#39;s stamp against that host&#39;s Go
+toolchain. The issuer re-binds run, source, module, platform, toolchain and
+bytes. Keep those consumer `verify` steps unconditional on every platform;
+contract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04b.
+
+Bounded requests/reads, stable IDs, exact revisions, safe HTML escaping,
+transaction journals, before-images, operation replay and no-follow filesystem
+checks protect data integrity. Progress and reported checks must remain separate
+from assessed evidence. A failed/flaky later result must remain visible.
+Reconciliation cleanup cannot erase a captured real stop because the capture
+preceded attempt persistence; recovery reuses the existing immutable observation
+and source, original operation ID and revision binding. Ambiguous/missing inputs
+stay unresolved without inventing authority. Migration/rollback preserves later
+work and complete-store history; it is explicit, not an automatic rewrite.
+
+</div></article>
+<!-- CA:END:CON-011 -->
+
+<!-- CA:BEGIN:CON-012 -->
+<article class="record" id="CON-012" data-ca-symbol="CON-012" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-012">CON-012</a><h3>Published tag immutability</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Published tag immutability
+
+The four installable release series are `v*` (ca), `ca-sandbox-v*`,
+`ca-codex-v*` and `ca-pi-v*`. Consumers pin tags as payload identities.
+**A published tag is immutable: there is no break-glass.** Moving, retargeting
+or deleting one is prohibited for every actor, including administrators.
+Correct a bad release with a new version. This preserves the maintainer&#39;s
+2026-07-25 ruling on issue #386; no standing bypass credential is justified
+by a recovery action the project expressly forbids.
+
+A mutable tag can redirect a pinned install to unreviewed code while its old
+release notes still imply the reviewed payload; deletion breaks availability.
+Preserve the two independent controls:
+
+1. Repository tag rulesets prevent deletion and non-fast-forward movement over
+   the release namespaces, without bypass actors for this immutability control.
+   Rulesets are external settings, not source files; a historical setting
+   snapshot does not prove current configuration.
+2. `.github/scripts/check_tag_immutability.py` detects drift against the disjoint
+   union of `.github/published-tags.json` (original-publication receipts) and
+   `.github/legacy-published-tags.json` (closed historical baselines). The
+   `[CHECK] | [REPO] | Published tag immutability` job is read-only. Detection
+   cannot prevent an install between a ref change and the next audit, so it
+   does not replace the preventive ruleset.
+
+The original-publication ledger retains both the tag object and peeled commit.
+A current API ref or mutable Release `target_commitish` cannot reconstruct a
+lost original identity. Ledger integrity rests on reviewed Git history and
+protected-main updates; changing a recorded identity to silence a red drift
+check is never a repair. Authenticate the original publisher run/artifact before
+reconciliation, bind its expected identity independently, and preserve uncertainty
+when that evidence is unavailable. A retained receipt is not a completed ledger
+handoff: only its reviewed addition merged to main completes ingestion.
+
+ADR-0034 fixes the legacy epoch at **44 records observed at
+`2026-09-04T20:45:43Z`**. It is **not original-publication proof**: a historical
+ref could have moved before observation. Its canonical identity-and-grade digest,
+source-matrix digest, timestamp, record count and **15/28/1 evidence-grade
+distribution** stay bound. The baseline provides forward detection only.
+Publishers and receipt reconcilers cannot grow the closed set. Adding or
+replacing an identity, source or grade requires a **new accepted, user-attributed
+ADR and architectural review**. Later tags use original-publication receipts;
+none may be relabelled as legacy to clear a failure. There is no break-glass
+for deletion, retargeting or movement; correction remains a new version.
+
+ADR-0040&#39;s accepted exception is narrow: required CI and the release workflow&#39;s
+preflight run without `--require-recorded`. A recorded tag that moved or
+disappeared, or invalid/unreadable inventory, still fails; an unrecorded new tag
+warns. Do not describe either workflow as strict missing-receipt enforcement.
+The checker still supports an explicitly selected `--require-recorded` audit;
+that capability is not evidence that every caller selects it. Receipt
+reconciliation remains separately authenticated and reviewed. Publication and
+ledger-PR merge are not transactional, and a later publication can race an
+already-green check. Preserve the accepted provenance-warning residual rather
+than inventing original-publication evidence or bypassing a drift failure.
+
+</div></article>
+<!-- CA:END:CON-012 -->
+
+<!-- CA:BEGIN:CON-013 -->
+<article class="record" id="CON-013" data-ca-symbol="CON-013" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-013">CON-013</a><h3>Hosted publication and distribution</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Hosted publication and distribution
+
+Governance publication uses exact retained qualified cohort bytes. Local source,
+hosted candidate, published archive, npm/cold install, marketplace and actual
+fresh host-session checks are distinct. The normal cohort archives are tarballs;
+the hosted Codex static ZIP validator is a separate bounded inspection surface,
+not a claim of live Codex execution. That validator limits archives to 8 MiB,
+1,024 entries, 2 MiB per file, 32 MiB total and 100:1 expansion; accepts only the
+expected plugin subtree; rejects symlinks/reparse/encrypted/unsafe/ambiguous
+paths; and checks manifest, frontmatter, resources, hooks and generated digests.
+No desktop VM/device-auth/API-key simulation substitutes for actual host proof.
+
+</div></article>
+<!-- CA:END:CON-013 -->
+
+<!-- CA:BEGIN:CON-014 -->
+<article class="record" id="CON-014" data-ca-symbol="CON-014" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-014">CON-014</a><h3>ca-pi npm publication boundary</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>### ca-pi npm publication boundary
+
+Pi publication of `@arbiterforge/ca-pi` uses npm trusted publishing with
+short-lived GitHub OIDC credentials. The npm package setting must authorize
+`arbiterForge/codeArbiter`, workflow filename `release.yml`, and `npm publish`.
+The GitHub-hosted Pi release job has `id-token: write`; no `NPMJS_TOKEN` or
+`NODE_AUTH_TOKEN` enters the publish invocation. An unavailable trusted publisher
+fails publication closed. The exact-byte integrity, npm audit signatures, and
+attested repository, workflow and source commit are blocking before the GitHub
+Release becomes public (ADR-0044). The exact npm@11.19.1 CLI is acquired
+without credentials over verified non-redirecting
+TLS, with pinned SHA-512 SRI, bounded regular contained archive extraction and
+a verified temporary CLI; never a global install or PATH replacement. Pins and
+the scoped registry are verified; install/pack/publish scripts are disabled.
+The credential-free download is exactly
+`https://registry.npmjs.org/npm/-/npm-11.19.1.tgz`, bound to
+`sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.
+Archive path-containment and the resolved executable are verified before use.
+`npm audit signatures` and SLSA checks bind source, builder, payload and commit;
+OIDC provenance is the approved publication identity. The npm trusted-publisher
+setting is managed in the npm package account; no token fallback is permitted.
+Pin changes need fresh review.
+
+Codex distribution uses the protected `codex-distribution` environment&#39;s six
+named values: `CODEX_DISTRIBUTION_APP_ID`, `CODEX_DISTRIBUTION_APP_INSTALLATION_ID`,
+`CODEX_DISTRIBUTION_APP_PRIVATE_KEY`, `CODEX_RULESET_VERIFIER_APP_ID`,
+`CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID`, `CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY`.
+Do not fall back to arbitrary repository/org secrets or local files. The
+separately user-authorized initial Codex npm organization token remains a
+recorded broader exposure/unknown-privilege residual; do not falsely describe
+it as environment-narrowed.
+
+The authorization for the first `@arbiterforge/ca-codex` publication recorded
+that the token was available to all organization repositories, with unknown
+npm privilege scope. Preserve that attribution; it is not a claim that the
+current deferred Codex publication workflow receives the token. When that
+authorized boundary is exercised, expose NODE_AUTH_TOKEN only in the authenticated publish step.
+Public cold install uses token-free npm configuration and exact retained package
+bytes; publication and channel advancement still require their owning checks.
+
+Publisher and verifier Apps have distinct positive IDs and process environments.
+Publisher: Actions read, Contents read/write, Metadata read, sole non-admin
+ruleset bypass. Verifier: Administration read/write and Metadata read, no
+Contents write and no bypass. Ordinary GITHUB_TOKEN stays read-only except the
+specifically owned Pi release job&#39;s Actions-read/Contents-write scope for draft
+Release access. Temp private keys use restrictive permissions, short-lived
+SHA-256 JWTs, verified TLS API calls and exit cleanup; only masked token outputs
+cross the intended step handoff. Job-scoped OIDC availability to all steps is
+an accepted residual, not a step-local capability.
+
+Release-target rows declare `pre-tag`, `rebuild`, `generate` and optional
+`release-build` as operator-authored executable inputs, length-capped to 1,024
+characters. Release hashes bind the ordered `pre-tag` list plus `release-build`,
+`rebuild` and `generate`; changing any one invalidates the per-target
+confirmation. Read every declared executable input before recording that
+confirmation, and check it before the first executable declaration runs.
+Dry runs only list the commands and never mint a durable confirmation. `pre-tag` is
+check-only and mechanically guarded by `run-pre-tag`. The reviewed hosted-build
+path runs `release-build` only in the exact-candidate publisher, with a newly
+empty `RELEASE_ASSET_DIR`, a clean tracked tree before and after, and exact
+asset-inventory verification.
+
+The alternative retained-cohort path treats its exact fail-closed sentinel as
+policy, never as a locally runnable builder. It accepts only retained CI packages
+whose digests, receipts, source commit and flat names bind to the exact candidate;
+arbitrary build failures cannot select this exception. H-22 protects the declaring
+file with its actual authoring marker. This remains a cooperative governance
+boundary, not shell sandboxing or filesystem confinement. Package identity,
+deterministic contents, registry ownership, provenance and public cold install
+are verified before marketplace promotion. Preserve explicit publication
+authorization and exact distributed-byte readback.
+
+</div></article>
+<!-- CA:END:CON-014 -->
+
+<!-- CA:BEGIN:CON-015 -->
+<article class="record" id="CON-015" data-ca-symbol="CON-015" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-015">CON-015</a><h3>Boundary crossings</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Boundary crossings
+
+Farm stages explicit worker paths, never blanket `git add -A`. Its unattended
+dispatcher commits use the accepted NOSIGN path; the integration PR carries the
+reviewed signed artifact. Operator-authored plan gate/test commands and
+`FARM_MUTATION_CMD` use the accepted shell execution path, bounded to 1,024
+characters; this is not authority to execute untrusted source as shell text.
+
+Historical explicit attestation adapters remain available with their recorded
+limits: the verifier script is pinned but its interpreter is selected by name;
+unresolvable live request/spool handling, registry publication, stop-before-bind
+ordering, live-workspace review reads and session/CLI-defined reviewer shadows
+have separately tracked residuals. Pi has no equivalent hook-captured
+verification/review producer. Do not erase those findings because ordinary
+progress no longer requires the producers, and do not describe their unkeyed
+records as protection against a malicious parent.
+
+The Codex self-hosted desktop/device-auth/VM/OIDC proof boundary was retired by
+ADR-0032; static hosted package inspection is its current release boundary.
+The sandbox pipe-to-shell nixpacks installer was removed; existing builder
+detection and fallback do not reopen that exception. Historical records retain
+these closures without reintroducing their old machinery.
+
+</div></article>
+<!-- CA:END:CON-015 -->
+
+<!-- CA:BEGIN:CON-016 -->
+<article class="record" id="CON-016" data-ca-symbol="CON-016" data-ca-kind="records"><div class="record-head"><a class="id" href="#CON-016">CON-016</a><h3>Evidence owners</h3><span class="badge">constraint</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Evidence owners
+
+Use the retained ADRs and owning source/tests for details rather than adding
+successive snapshots to this document: ADR-0010 (cooperative boundary), ADR-0019
+(Pi broker), ADR-0029/0032/0034/0040 (publication history), ADR-0031 (shared kernel),
+ADR-0038 (bounded platform recovery), ADR-0043 (assistive engine),
+`core/pysrc/_protectedstatelib.py`, hook guard/cold-install tests,
+`plugins/ca-pi/tools/src/`, sandbox mount/run tests, native store/render/recovery
+tests, and `.github/workflows/` with their contract tests. Retain original
+attribution and historical evidence in Git/ADRs/logs when refreshing current
+guidance; this document does not decide unresolved product policy.
+</div></article>
+<!-- CA:END:CON-016 -->
+</section><section class="group" id="group-notes"><a class="back" href="#main-content">Top</a><h2>Notes</h2>
+<!-- CA:BEGIN:NOTE-001 -->
+<article class="record" id="NOTE-001" data-ca-symbol="NOTE-001" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-001">NOTE-001</a><h3>Security controls — codeArbiter</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>513</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>0</div></div></div><div class="field"><span class="label">Text</span># Security controls — codeArbiter
+
+This document records accepted boundaries and their owners. It is not a claim
+that every tool call is intercepted or that every host/platform is qualified.
+ADR-0043 removes the duplicate artifact permission layer for already-authorized
+work; it preserves host permissions, explicit user denials/stops, sandbox and
+filesystem restrictions, repository integrity, safe persistence and publication
+authorization. Progress may be recorded without claiming verification or review.
+
+</div></article>
+<!-- CA:END:NOTE-001 -->
+
+<!-- CA:BEGIN:NOTE-002 -->
+<article class="record" id="NOTE-002" data-ca-symbol="NOTE-002" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-002">NOTE-002</a><h3>Cryptographic primitives</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>928</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>513</div></div></div><div class="field"><span class="label">Text</span>## Cryptographic primitives
+
+SHA-256 and the SHA-2 family are approved for hashing/integrity. MD5, SHA-1, DES,
+3DES, RC4, RC2 and Blowfish are prohibited. Test fixture strings describing
+forbidden primitives are not approval to use them. The owning detection and
+commit-marker controls are `_sensitivelib.py`, `_hooklib.py`, and their tests.
+Do not weaken these controls as part of the assistive lifecycle change.
+
+</div></article>
+<!-- CA:END:NOTE-002 -->
+
+<!-- CA:BEGIN:NOTE-003 -->
+<article class="record" id="NOTE-003" data-ca-symbol="NOTE-003" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-003">NOTE-003</a><h3>Secret store and access method</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>2942</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>928</div></div></div><div class="field"><span class="label">Text</span>## Secret store and access method
+
+This project has no runtime secrets vault. Secrets belong in the owning process&#39;s
+approved environment or release secret store,
+never source, logs, artifacts, prompts, configuration commits, or diagnostic
+echoes. `FARM_API_KEY` is allowed only as farm runtime input. Sandbox
+`CLAUDE_CODE_OAUTH_TOKEN` injection is explicit `--with-claude` behavior; do not
+mount credential material with untrusted source or silently widen egress.
+The approved environment may be the owning process&#39;s secret source or the bounded
+runtime transport from its release store. Environment access by itself grants no
+new origin, sink, child, or lifetime permission. Keep each value within the
+owning process or the specifically approved child flow for its actual workflow
+lifetime, then release it; do not cache or serialize it for later work.
+
+Pi&#39;s ADR-0019 parent inference broker supersedes stored-provider credential
+projection. A child receives a short-lived per-child loopback token, not reusable
+provider credentials. The selected provider/model is exact; unavailable service
+must not cause automatic fallback. This is cooperative same-user isolation,
+not an OS security boundary: another local process holding the child token may
+use it until revocation. The broker closes and temporary state is cleaned on
+completion/failure. Secrets do not enter child argv or diagnostic output.
+
+Child provider configuration is credential-blind and schema-bounded. Only
+approved keys/shapes and pure environment references for API-key/header fields
+are projected; executable `!` values and unsupported provider/OAuth routes fail
+closed. Endpoint URLs exclude userinfo, query and fragment. Preserve bounded
+case-insensitive route validation. Child OS environment is minimal, excluding
+farm/Claude credentials; home, agent and session state are isolated, prompts use
+stdin, and `PI_PACKAGE_DIR` exposes only the intended parent package resources.
+Dummy-credential tests must not read real home authentication.
+
+</div></article>
+<!-- CA:END:NOTE-003 -->
+
+<!-- CA:BEGIN:NOTE-004 -->
+<article class="record" id="NOTE-004" data-ca-symbol="NOTE-004" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-004">NOTE-004</a><h3>Network and untrusted execution</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>4273</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>2942</div></div></div><div class="field"><span class="label">Text</span>## Network and untrusted execution
+
+TLS verification stays enabled. API endpoints use HTTPS except narrowly bounded
+loopback test/broker paths. Farm validates its resolved base URL and each fetch,
+rejects userinfo and redirects, and emits origin-only diagnostics. Provider
+response bodies must not be copied into reports, retry messages or stderr.
+
+The update notifier makes bounded unauthenticated GitHub release reads without
+repository content, PII or credentials: at most ten pages/1,000 results, daily
+per-host caching, standard-library verified TLS, and fail-silent asynchronous
+behavior that does not add SessionStart network latency.
+
+Sandbox containers use non-root UID 1000, `--cap-drop ALL`, read-only root,
+`no-new-privileges`, resource caps and no privileged mode or Docker socket.
+`mounts.ts` is the single mount constructor: named volumes/tmpfs only, no host
+bind mounts. Network is offline by default and an unknown policy is an error.
+Clone inputs are bounded to approved HTTPS/SSH forms; reject leading options
+and transport-helper forms, preserve argv separation and `--`, and never
+interpolate untrusted input into a shell. Installed nixpacks detection does not
+authorize downloading/installing a helper at runtime. Container image inputs
+are digest-pinned; supply-chain tests reject floating `latest` inputs.
+
+</div></article>
+<!-- CA:END:NOTE-004 -->
+
+<!-- CA:BEGIN:NOTE-005 -->
+<article class="record" id="NOTE-005" data-ca-symbol="NOTE-005" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-005">NOTE-005</a><h3>Dependency policy</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>4989</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>4273</div></div></div><div class="field"><span class="label">Text</span>## Dependency policy
+
+Dependencies and lockfile resolutions use the official npm registry. Repository
+metadata links are not dependency-source exceptions. New/changed dependencies
+retain provenance, vulnerability and license review. The high-severity audit
+threshold includes development dependencies in the three tools projects; site
+production dependencies use the exception-aware gate. An exception identifies
+the exact advisory/package, maximum severity, owner rationale and expiry of at
+most 30 days. `site/audit-exceptions.json` owns the current exception; the recorded
+2026-10-03 approval for GHSA-ch52-4w7c-c8xp expires no later than 2026-11-02.
+Do not infer that an old no-fix observation remains current.
+
+</div></article>
+<!-- CA:END:NOTE-005 -->
+
+<!-- CA:BEGIN:NOTE-006 -->
+<article class="record" id="NOTE-006" data-ca-symbol="NOTE-006" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-006">NOTE-006</a><h3>Approved licenses</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>6125</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>4989</div></div></div><div class="field"><span class="label">Text</span>### Approved licenses
+
+Approved licenses are MIT, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause,
+BlueOak-1.0.0, CC0-1.0 and Unlicense. Retain these accepted scoped additions:
+
+| License | Accepted scope |
+|---|---|
+| MPL-2.0 | Development/build-time dependencies in site and tools; not shipped runtime code. |
+| LGPL-3.0-or-later | The accepted `@img/sharp-libvips-*` docs-site build-time packages only; optimized output does not embed that library. |
+| 0BSD | Development/build-time site/tools dependencies. |
+| Artistic-2.0 | The exact vetted npm 11.19.1 CI CLI only. |
+| CC-BY-3.0 | Bundled `spdx-exceptions` 2.5.0 in that exact vetted CLI only. |
+
+The accepted argparse license-metadata mismatch resolves to upstream MIT;
+satteri ships MIT despite missing SPDX metadata. These are specific accepted
+findings, not blanket missing-license exemptions. A license outside the approved
+set/scopes needs explicit review and the existing override record. Preserve the
+2026-07-02 and 2026-07-14 user decisions and attribution in history. The Pi npm
+package is public; private build/test manifests do not make all repository
+packages private.
+
+</div></article>
+<!-- CA:END:NOTE-006 -->
+
+<!-- CA:BEGIN:NOTE-007 -->
+<article class="record" id="NOTE-007" data-ca-symbol="NOTE-007" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-007">NOTE-007</a><h3>Hook security (Python)</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>7079</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>6125</div></div></div><div class="field"><span class="label">Text</span>## Hook security (Python)
+
+Hooks use Python&#39;s standard library. Malformed hook stdin has the deliberately
+fail-open entry behavior in `_hooklib.read_input`; that is not a rule to treat
+unsafe filesystem state or failed security reads as success. Git-operation cwd
+respects repeated `-C`. Codex does not inherit `CLAUDE_PROJECT_DIR`; host payload
+cwd remains a host trust boundary. Git owns config grammar and hook execution.
+Default worktree layout support does not imply all separate-Git-dir, UNC or WSL
+topologies are qualified. Do not alter safe.directory to manufacture a result.
+
+The hook identity bundle comprises three atomically bound records; malformed,
+stale or inconsistent identities fail closed. Uninstall removes only owned
+configuration. Preserve conservative cache invalidation and actual-runtime
+identity checks. A source checkout, package inventory, doctor result or prior
+session cannot substitute for current live enforcement proof.
+
+</div></article>
+<!-- CA:END:NOTE-007 -->
+
+<!-- CA:BEGIN:NOTE-008 -->
+<article class="record" id="NOTE-008" data-ca-symbol="NOTE-008" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-008">NOTE-008</a><h3>Pi trust boundary</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>8314</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>7079</div></div></div><div class="field"><span class="label">Text</span>### Pi trust boundary
+
+Pi can load an extension before project trust. Before affirmative
+`isProjectTrusted()`, only the bounded context marker is read; Python/Git work,
+mutations and doctor probes remain unavailable. Session-start and final
+pre-execution checks invalidate/re-read trust as required. Unknown tools fail
+closed unless the host descriptor supplies an allowed mapping. Exact final
+argument order is a promotion requirement; a host unable to guarantee it is not
+qualified. Child execution disables ambient extension/session/approval discovery
+and loads the intended resources explicitly. A child marker prevents recursive
+dispatch only; it does not disable security controls. Use `shell:false`, bounded
+redacted inputs, minimal environment and whole-process-tree cleanup.
+
+ADR-0010 accepts that trusted same-process extensions and a cooperative parent
+with filesystem/shell access can bypass or forge unkeyed local records. Source
+hashes/receipts are integrity and provenance records within that model, not
+signed attestation against the parent. Stronger secret-key attestation remains
+a separately recorded product decision, not an implicit requirement of this
+refresh. Ordinary progress never needs such an attestation.
+
+</div></article>
+<!-- CA:END:NOTE-008 -->
+
+<!-- CA:BEGIN:NOTE-009 -->
+<article class="record" id="NOTE-009" data-ca-symbol="NOTE-009" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-009">NOTE-009</a><h3>Audit trail</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>10579</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>8314</div></div></div><div class="field"><span class="label">Text</span>## Audit trail
+
+Append-only records include overrides.log, triage.log, sprint-log.md,
+gate-events.log, done-tasks.md, decisions/decision-log.md and ADR lifecycle
+history under their existing owning controls. H-05 protects existing history;
+it does not guarantee every event was logged. The accepted completeness strategy
+is a lightweight staleness warning with the best-effort gate-events sink. Sink
+failure/lock contention must not reverse a guard&#39;s verdict. Warnings are advisory
+and not persisted as fabricated events. `/override` is not staleness-tracked.
+
+`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-lifecycle
+ledger. Its exact repository-relative path is authoritative; hook classification
+also compares it case-folded so mixed-case aliases cannot evade protection on
+supported case-insensitive filesystems. Tail append is its only permitted write
+shape. H-05 enforces append-only write shape by blocking rewrites, truncation,
+deletion and non-tail edits. The lifecycle checker separately validates JSONL
+syntax, event completeness, schema, and committed-prefix integrity after writes
+and in CI; H-05 does not validate appended content. H-11 separately protects
+governed decision-document paths.
+
+In CI, the lifecycle checker compares the base and current ledger as committed Git blobs
+and requires the base to be an exact byte prefix of the current blob. Missing,
+unresolvable or all-zero base identities fail closed. Immutable accepted packets
+retain their exact bindings; local checks do not rewrite historical evidence.
+Sanctioned marker producers are cooperative attestations; never mint a marker,
+approval source or test/review result without its actual underlying action.
+
+Lexical shell guards have accepted indirection boundaries, including variable
+and descriptor/compound-shell forms; they are not an adversarial OS sandbox.
+The accepted MCP write-hook gap remains for both host surfaces under ADR-0010:
+doctor reports configuration availability/counts without exposing server
+details. Reopen this decision when a supported host matcher exists, a cooperative
+consumer incident occurs, a shipped/recommended MCP tool needs coverage, or the
+doctor visibility guarantee is lost. A tool name alone does not prove coverage.
+
+</div></article>
+<!-- CA:END:NOTE-009 -->
+
+<!-- CA:BEGIN:NOTE-010 -->
+<article class="record" id="NOTE-010" data-ca-symbol="NOTE-010" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-010">NOTE-010</a><h3>Protected-state registry</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>11241</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>10579</div></div></div><div class="field"><span class="label">Text</span>## Protected-state registry
+
+`_protectedstatelib.py` owns protected paths. `open-tasks.md` is helper-only
+mutable through taskwrite.py; `done-tasks.md` is append-only. Context documents
+use their bounded owned writer. `release-targets.md` is marker-gated because
+its generation/pre-tag/release-build declarations execute in privileged release
+lanes; do not raw-write it or treat it as ordinary prose. Case/slash normalization,
+known write verbs and interpreter-inline forms preserve cross-platform matching.
+Broad-basename overmatching and the deliberate touch exclusion retain their
+recorded scope; a refresh must not silently choose a new enforcement policy.
+
+</div></article>
+<!-- CA:END:NOTE-010 -->
+
+<!-- CA:BEGIN:NOTE-011 -->
+<article class="record" id="NOTE-011" data-ca-symbol="NOTE-011" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-011">NOTE-011</a><h3>Native artifacts and recovery</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>12828</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>11241</div></div></div><div class="field"><span class="label">Text</span>## Native artifacts and recovery
+
+The native engine is pinned to the installed package&#39;s manifest/digest/platform
+qualification. Never discover a replacement on PATH or fetch one at runtime.
+Packaging/installers retain their platform-specific safe-path, no-follow and
+identity boundaries. Static source or fixture tests do not establish installed
+host permissions.
+
+CI qualification receipts are issued by one Linux `artifact-engine` job, not on
+each native host. Its trust basis is this run&#39;s artifact store, the required
+native stages&#39; success (`ci20_native_binding.py gate`), and each native
+consumer&#39;s on-host `verify` of the builder&#39;s stamp against that host&#39;s Go
+toolchain. The issuer re-binds run, source, module, platform, toolchain and
+bytes. Keep those consumer `verify` steps unconditional on every platform;
+contract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04b.
+
+Bounded requests/reads, stable IDs, exact revisions, safe HTML escaping,
+transaction journals, before-images, operation replay and no-follow filesystem
+checks protect data integrity. Progress and reported checks must remain separate
+from assessed evidence. A failed/flaky later result must remain visible.
+Reconciliation cleanup cannot erase a captured real stop because the capture
+preceded attempt persistence; recovery reuses the existing immutable observation
+and source, original operation ID and revision binding. Ambiguous/missing inputs
+stay unresolved without inventing authority. Migration/rollback preserves later
+work and complete-store history; it is explicit, not an automatic rewrite.
+
+</div></article>
+<!-- CA:END:NOTE-011 -->
+
+<!-- CA:BEGIN:NOTE-012 -->
+<article class="record" id="NOTE-012" data-ca-symbol="NOTE-012" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-012">NOTE-012</a><h3>Published tag immutability</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>16413</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>12828</div></div></div><div class="field"><span class="label">Text</span>## Published tag immutability
+
+The four installable release series are `v*` (ca), `ca-sandbox-v*`,
+`ca-codex-v*` and `ca-pi-v*`. Consumers pin tags as payload identities.
+**A published tag is immutable: there is no break-glass.** Moving, retargeting
+or deleting one is prohibited for every actor, including administrators.
+Correct a bad release with a new version. This preserves the maintainer&#39;s
+2026-07-25 ruling on issue #386; no standing bypass credential is justified
+by a recovery action the project expressly forbids.
+
+A mutable tag can redirect a pinned install to unreviewed code while its old
+release notes still imply the reviewed payload; deletion breaks availability.
+Preserve the two independent controls:
+
+1. Repository tag rulesets prevent deletion and non-fast-forward movement over
+   the release namespaces, without bypass actors for this immutability control.
+   Rulesets are external settings, not source files; a historical setting
+   snapshot does not prove current configuration.
+2. `.github/scripts/check_tag_immutability.py` detects drift against the disjoint
+   union of `.github/published-tags.json` (original-publication receipts) and
+   `.github/legacy-published-tags.json` (closed historical baselines). The
+   `[CHECK] | [REPO] | Published tag immutability` job is read-only. Detection
+   cannot prevent an install between a ref change and the next audit, so it
+   does not replace the preventive ruleset.
+
+The original-publication ledger retains both the tag object and peeled commit.
+A current API ref or mutable Release `target_commitish` cannot reconstruct a
+lost original identity. Ledger integrity rests on reviewed Git history and
+protected-main updates; changing a recorded identity to silence a red drift
+check is never a repair. Authenticate the original publisher run/artifact before
+reconciliation, bind its expected identity independently, and preserve uncertainty
+when that evidence is unavailable. A retained receipt is not a completed ledger
+handoff: only its reviewed addition merged to main completes ingestion.
+
+ADR-0034 fixes the legacy epoch at **44 records observed at
+`2026-09-04T20:45:43Z`**. It is **not original-publication proof**: a historical
+ref could have moved before observation. Its canonical identity-and-grade digest,
+source-matrix digest, timestamp, record count and **15/28/1 evidence-grade
+distribution** stay bound. The baseline provides forward detection only.
+Publishers and receipt reconcilers cannot grow the closed set. Adding or
+replacing an identity, source or grade requires a **new accepted, user-attributed
+ADR and architectural review**. Later tags use original-publication receipts;
+none may be relabelled as legacy to clear a failure. There is no break-glass
+for deletion, retargeting or movement; correction remains a new version.
+
+ADR-0040&#39;s accepted exception is narrow: required CI and the release workflow&#39;s
+preflight run without `--require-recorded`. A recorded tag that moved or
+disappeared, or invalid/unreadable inventory, still fails; an unrecorded new tag
+warns. Do not describe either workflow as strict missing-receipt enforcement.
+The checker still supports an explicitly selected `--require-recorded` audit;
+that capability is not evidence that every caller selects it. Receipt
+reconciliation remains separately authenticated and reviewed. Publication and
+ledger-PR merge are not transactional, and a later publication can race an
+already-green check. Preserve the accepted provenance-warning residual rather
+than inventing original-publication evidence or bypassing a drift failure.
+
+</div></article>
+<!-- CA:END:NOTE-012 -->
+
+<!-- CA:BEGIN:NOTE-013 -->
+<article class="record" id="NOTE-013" data-ca-symbol="NOTE-013" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-013">NOTE-013</a><h3>Hosted publication and distribution</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>17172</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>16413</div></div></div><div class="field"><span class="label">Text</span>## Hosted publication and distribution
+
+Governance publication uses exact retained qualified cohort bytes. Local source,
+hosted candidate, published archive, npm/cold install, marketplace and actual
+fresh host-session checks are distinct. The normal cohort archives are tarballs;
+the hosted Codex static ZIP validator is a separate bounded inspection surface,
+not a claim of live Codex execution. That validator limits archives to 8 MiB,
+1,024 entries, 2 MiB per file, 32 MiB total and 100:1 expansion; accepts only the
+expected plugin subtree; rejects symlinks/reparse/encrypted/unsafe/ambiguous
+paths; and checks manifest, frontmatter, resources, hooks and generated digests.
+No desktop VM/device-auth/API-key simulation substitutes for actual host proof.
+
+</div></article>
+<!-- CA:END:NOTE-013 -->
+
+<!-- CA:BEGIN:NOTE-014 -->
+<article class="record" id="NOTE-014" data-ca-symbol="NOTE-014" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-014">NOTE-014</a><h3>ca-pi npm publication boundary</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>21953</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>17172</div></div></div><div class="field"><span class="label">Text</span>### ca-pi npm publication boundary
+
+Pi publication of `@arbiterforge/ca-pi` uses npm trusted publishing with
+short-lived GitHub OIDC credentials. The npm package setting must authorize
+`arbiterForge/codeArbiter`, workflow filename `release.yml`, and `npm publish`.
+The GitHub-hosted Pi release job has `id-token: write`; no `NPMJS_TOKEN` or
+`NODE_AUTH_TOKEN` enters the publish invocation. An unavailable trusted publisher
+fails publication closed. The exact-byte integrity, npm audit signatures, and
+attested repository, workflow and source commit are blocking before the GitHub
+Release becomes public (ADR-0044). The exact npm@11.19.1 CLI is acquired
+without credentials over verified non-redirecting
+TLS, with pinned SHA-512 SRI, bounded regular contained archive extraction and
+a verified temporary CLI; never a global install or PATH replacement. Pins and
+the scoped registry are verified; install/pack/publish scripts are disabled.
+The credential-free download is exactly
+`https://registry.npmjs.org/npm/-/npm-11.19.1.tgz`, bound to
+`sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.
+Archive path-containment and the resolved executable are verified before use.
+`npm audit signatures` and SLSA checks bind source, builder, payload and commit;
+OIDC provenance is the approved publication identity. The npm trusted-publisher
+setting is managed in the npm package account; no token fallback is permitted.
+Pin changes need fresh review.
+
+Codex distribution uses the protected `codex-distribution` environment&#39;s six
+named values: `CODEX_DISTRIBUTION_APP_ID`, `CODEX_DISTRIBUTION_APP_INSTALLATION_ID`,
+`CODEX_DISTRIBUTION_APP_PRIVATE_KEY`, `CODEX_RULESET_VERIFIER_APP_ID`,
+`CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID`, `CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY`.
+Do not fall back to arbitrary repository/org secrets or local files. The
+separately user-authorized initial Codex npm organization token remains a
+recorded broader exposure/unknown-privilege residual; do not falsely describe
+it as environment-narrowed.
+
+The authorization for the first `@arbiterforge/ca-codex` publication recorded
+that the token was available to all organization repositories, with unknown
+npm privilege scope. Preserve that attribution; it is not a claim that the
+current deferred Codex publication workflow receives the token. When that
+authorized boundary is exercised, expose NODE_AUTH_TOKEN only in the authenticated publish step.
+Public cold install uses token-free npm configuration and exact retained package
+bytes; publication and channel advancement still require their owning checks.
+
+Publisher and verifier Apps have distinct positive IDs and process environments.
+Publisher: Actions read, Contents read/write, Metadata read, sole non-admin
+ruleset bypass. Verifier: Administration read/write and Metadata read, no
+Contents write and no bypass. Ordinary GITHUB_TOKEN stays read-only except the
+specifically owned Pi release job&#39;s Actions-read/Contents-write scope for draft
+Release access. Temp private keys use restrictive permissions, short-lived
+SHA-256 JWTs, verified TLS API calls and exit cleanup; only masked token outputs
+cross the intended step handoff. Job-scoped OIDC availability to all steps is
+an accepted residual, not a step-local capability.
+
+Release-target rows declare `pre-tag`, `rebuild`, `generate` and optional
+`release-build` as operator-authored executable inputs, length-capped to 1,024
+characters. Release hashes bind the ordered `pre-tag` list plus `release-build`,
+`rebuild` and `generate`; changing any one invalidates the per-target
+confirmation. Read every declared executable input before recording that
+confirmation, and check it before the first executable declaration runs.
+Dry runs only list the commands and never mint a durable confirmation. `pre-tag` is
+check-only and mechanically guarded by `run-pre-tag`. The reviewed hosted-build
+path runs `release-build` only in the exact-candidate publisher, with a newly
+empty `RELEASE_ASSET_DIR`, a clean tracked tree before and after, and exact
+asset-inventory verification.
+
+The alternative retained-cohort path treats its exact fail-closed sentinel as
+policy, never as a locally runnable builder. It accepts only retained CI packages
+whose digests, receipts, source commit and flat names bind to the exact candidate;
+arbitrary build failures cannot select this exception. H-22 protects the declaring
+file with its actual authoring marker. This remains a cooperative governance
+boundary, not shell sandboxing or filesystem confinement. Package identity,
+deterministic contents, registry ownership, provenance and public cold install
+are verified before marketplace promotion. Preserve explicit publication
+authorization and exact distributed-byte readback.
+
+</div></article>
+<!-- CA:END:NOTE-014 -->
+
+<!-- CA:BEGIN:NOTE-015 -->
+<article class="record" id="NOTE-015" data-ca-symbol="NOTE-015" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-015">NOTE-015</a><h3>Boundary crossings</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>23319</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>21953</div></div></div><div class="field"><span class="label">Text</span>## Boundary crossings
+
+Farm stages explicit worker paths, never blanket `git add -A`. Its unattended
+dispatcher commits use the accepted NOSIGN path; the integration PR carries the
+reviewed signed artifact. Operator-authored plan gate/test commands and
+`FARM_MUTATION_CMD` use the accepted shell execution path, bounded to 1,024
+characters; this is not authority to execute untrusted source as shell text.
+
+Historical explicit attestation adapters remain available with their recorded
+limits: the verifier script is pinned but its interpreter is selected by name;
+unresolvable live request/spool handling, registry publication, stop-before-bind
+ordering, live-workspace review reads and session/CLI-defined reviewer shadows
+have separately tracked residuals. Pi has no equivalent hook-captured
+verification/review producer. Do not erase those findings because ordinary
+progress no longer requires the producers, and do not describe their unkeyed
+records as protection against a malicious parent.
+
+The Codex self-hosted desktop/device-auth/VM/OIDC proof boundary was retired by
+ADR-0032; static hosted package inspection is its current release boundary.
+The sandbox pipe-to-shell nixpacks installer was removed; existing builder
+detection and fallback do not reopen that exception. Historical records retain
+these closures without reintroducing their old machinery.
+
+</div></article>
+<!-- CA:END:NOTE-015 -->
+
+<!-- CA:BEGIN:NOTE-016 -->
+<article class="record" id="NOTE-016" data-ca-symbol="NOTE-016" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-016">NOTE-016</a><h3>Evidence owners</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>24018</div><div class="field"><span class="label">Path</span>.codearbiter/security-controls.md</div><div class="field"><span class="label">Start</span>23319</div></div></div><div class="field"><span class="label">Text</span>## Evidence owners
+
+Use the retained ADRs and owning source/tests for details rather than adding
+successive snapshots to this document: ADR-0010 (cooperative boundary), ADR-0019
+(Pi broker), ADR-0029/0032/0034/0040 (publication history), ADR-0031 (shared kernel),
+ADR-0038 (bounded platform recovery), ADR-0043 (assistive engine),
+`core/pysrc/_protectedstatelib.py`, hook guard/cold-install tests,
+`plugins/ca-pi/tools/src/`, sandbox mount/run tests, native store/render/recovery
+tests, and `.github/workflows/` with their contract tests. Retain original
+attribution and historical evidence in Git/ADRs/logs when refreshing current
+guidance; this document does not decide unresolved product policy.
+</div></article>
+<!-- CA:END:NOTE-016 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-001 -->
+<article class="record" id="SRC-001" data-ca-symbol="SRC-001" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-001">SRC-001</a><h3>Original Markdown security-controls</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/security-controls.md at 97e1ecac795138cacb83a9d5e81c39d4c234867a; SHA-256 0c3c3b13ddfad25d67f9113d653d797d6b5d9d8e391744d9e090c431c9122255</div><div class="field"><span class="label">Note</span>Source observed during user-authorized HTML conversion; inherited claims retain original evidence limits.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-001 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>97e1ecac795138cacb83a9d5e81c39d4c234867a</div><div class="field"><span class="label">Observed date</span>2026-11-13</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: ce7593f4e1d541725184f7844cec4b2aed14af768791967d4f89a808e45de44f<br>Model SHA-256: 78586c8cff0a9d41fc1998a9ef2e65b115b69efa56e96bad5321687e67fb8711</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "CTX-SECURITY-CONTROLS",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "78586c8cff0a9d41fc1998a9ef2e65b115b69efa56e96bad5321687e67fb8711",
+    "normative_sha256": "ce7593f4e1d541725184f7844cec4b2aed14af768791967d4f89a808e45de44f",
+    "symbol_count": 33
+  },
+  "kind": "knowledge",
+  "normative": {
+    "baseline": {
+      "commit": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+      "observed_date": "2026-11-13",
+      "repository": null
+    },
+    "notes": [
+      {
+        "basis": "source-observed",
+        "id": "NOTE-001",
+        "origin": {
+          "end": 513,
+          "path": ".codearbiter/security-controls.md",
+          "start": 0
+        },
+        "text": "# Security controls — codeArbiter\n\nThis document records accepted boundaries and their owners. It is not a claim\nthat every tool call is intercepted or that every host/platform is qualified.\nADR-0043 removes the duplicate artifact permission layer for already-authorized\nwork; it preserves host permissions, explicit user denials/stops, sandbox and\nfilesystem restrictions, repository integrity, safe persistence and publication\nauthorization. Progress may be recorded without claiming verification or review.\n\n",
+        "title": "Security controls — codeArbiter"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-002",
+        "origin": {
+          "end": 928,
+          "path": ".codearbiter/security-controls.md",
+          "start": 513
+        },
+        "text": "## Cryptographic primitives\n\nSHA-256 and the SHA-2 family are approved for hashing/integrity. MD5, SHA-1, DES,\n3DES, RC4, RC2 and Blowfish are prohibited. Test fixture strings describing\nforbidden primitives are not approval to use them. The owning detection and\ncommit-marker controls are `_sensitivelib.py`, `_hooklib.py`, and their tests.\nDo not weaken these controls as part of the assistive lifecycle change.\n\n",
+        "title": "Cryptographic primitives"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-003",
+        "origin": {
+          "end": 2942,
+          "path": ".codearbiter/security-controls.md",
+          "start": 928
+        },
+        "text": "## Secret store and access method\n\nThis project has no runtime secrets vault. Secrets belong in the owning process's\napproved environment or release secret store,\nnever source, logs, artifacts, prompts, configuration commits, or diagnostic\nechoes. `FARM_API_KEY` is allowed only as farm runtime input. Sandbox\n`CLAUDE_CODE_OAUTH_TOKEN` injection is explicit `--with-claude` behavior; do not\nmount credential material with untrusted source or silently widen egress.\nThe approved environment may be the owning process's secret source or the bounded\nruntime transport from its release store. Environment access by itself grants no\nnew origin, sink, child, or lifetime permission. Keep each value within the\nowning process or the specifically approved child flow for its actual workflow\nlifetime, then release it; do not cache or serialize it for later work.\n\nPi's ADR-0019 parent inference broker supersedes stored-provider credential\nprojection. A child receives a short-lived per-child loopback token, not reusable\nprovider credentials. The selected provider/model is exact; unavailable service\nmust not cause automatic fallback. This is cooperative same-user isolation,\nnot an OS security boundary: another local process holding the child token may\nuse it until revocation. The broker closes and temporary state is cleaned on\ncompletion/failure. Secrets do not enter child argv or diagnostic output.\n\nChild provider configuration is credential-blind and schema-bounded. Only\napproved keys/shapes and pure environment references for API-key/header fields\nare projected; executable `!` values and unsupported provider/OAuth routes fail\nclosed. Endpoint URLs exclude userinfo, query and fragment. Preserve bounded\ncase-insensitive route validation. Child OS environment is minimal, excluding\nfarm/Claude credentials; home, agent and session state are isolated, prompts use\nstdin, and `PI_PACKAGE_DIR` exposes only the intended parent package resources.\nDummy-credential tests must not read real home authentication.\n\n",
+        "title": "Secret store and access method"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-004",
+        "origin": {
+          "end": 4273,
+          "path": ".codearbiter/security-controls.md",
+          "start": 2942
+        },
+        "text": "## Network and untrusted execution\n\nTLS verification stays enabled. API endpoints use HTTPS except narrowly bounded\nloopback test/broker paths. Farm validates its resolved base URL and each fetch,\nrejects userinfo and redirects, and emits origin-only diagnostics. Provider\nresponse bodies must not be copied into reports, retry messages or stderr.\n\nThe update notifier makes bounded unauthenticated GitHub release reads without\nrepository content, PII or credentials: at most ten pages/1,000 results, daily\nper-host caching, standard-library verified TLS, and fail-silent asynchronous\nbehavior that does not add SessionStart network latency.\n\nSandbox containers use non-root UID 1000, `--cap-drop ALL`, read-only root,\n`no-new-privileges`, resource caps and no privileged mode or Docker socket.\n`mounts.ts` is the single mount constructor: named volumes/tmpfs only, no host\nbind mounts. Network is offline by default and an unknown policy is an error.\nClone inputs are bounded to approved HTTPS/SSH forms; reject leading options\nand transport-helper forms, preserve argv separation and `--`, and never\ninterpolate untrusted input into a shell. Installed nixpacks detection does not\nauthorize downloading/installing a helper at runtime. Container image inputs\nare digest-pinned; supply-chain tests reject floating `latest` inputs.\n\n",
+        "title": "Network and untrusted execution"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-005",
+        "origin": {
+          "end": 4989,
+          "path": ".codearbiter/security-controls.md",
+          "start": 4273
+        },
+        "text": "## Dependency policy\n\nDependencies and lockfile resolutions use the official npm registry. Repository\nmetadata links are not dependency-source exceptions. New/changed dependencies\nretain provenance, vulnerability and license review. The high-severity audit\nthreshold includes development dependencies in the three tools projects; site\nproduction dependencies use the exception-aware gate. An exception identifies\nthe exact advisory/package, maximum severity, owner rationale and expiry of at\nmost 30 days. `site/audit-exceptions.json` owns the current exception; the recorded\n2026-10-03 approval for GHSA-ch52-4w7c-c8xp expires no later than 2026-11-02.\nDo not infer that an old no-fix observation remains current.\n\n",
+        "title": "Dependency policy"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-006",
+        "origin": {
+          "end": 6125,
+          "path": ".codearbiter/security-controls.md",
+          "start": 4989
+        },
+        "text": "### Approved licenses\n\nApproved licenses are MIT, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause,\nBlueOak-1.0.0, CC0-1.0 and Unlicense. Retain these accepted scoped additions:\n\n| License | Accepted scope |\n|---|---|\n| MPL-2.0 | Development/build-time dependencies in site and tools; not shipped runtime code. |\n| LGPL-3.0-or-later | The accepted `@img/sharp-libvips-*` docs-site build-time packages only; optimized output does not embed that library. |\n| 0BSD | Development/build-time site/tools dependencies. |\n| Artistic-2.0 | The exact vetted npm 11.19.1 CI CLI only. |\n| CC-BY-3.0 | Bundled `spdx-exceptions` 2.5.0 in that exact vetted CLI only. |\n\nThe accepted argparse license-metadata mismatch resolves to upstream MIT;\nsatteri ships MIT despite missing SPDX metadata. These are specific accepted\nfindings, not blanket missing-license exemptions. A license outside the approved\nset/scopes needs explicit review and the existing override record. Preserve the\n2026-07-02 and 2026-07-14 user decisions and attribution in history. The Pi npm\npackage is public; private build/test manifests do not make all repository\npackages private.\n\n",
+        "title": "Approved licenses"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-007",
+        "origin": {
+          "end": 7079,
+          "path": ".codearbiter/security-controls.md",
+          "start": 6125
+        },
+        "text": "## Hook security (Python)\n\nHooks use Python's standard library. Malformed hook stdin has the deliberately\nfail-open entry behavior in `_hooklib.read_input`; that is not a rule to treat\nunsafe filesystem state or failed security reads as success. Git-operation cwd\nrespects repeated `-C`. Codex does not inherit `CLAUDE_PROJECT_DIR`; host payload\ncwd remains a host trust boundary. Git owns config grammar and hook execution.\nDefault worktree layout support does not imply all separate-Git-dir, UNC or WSL\ntopologies are qualified. Do not alter safe.directory to manufacture a result.\n\nThe hook identity bundle comprises three atomically bound records; malformed,\nstale or inconsistent identities fail closed. Uninstall removes only owned\nconfiguration. Preserve conservative cache invalidation and actual-runtime\nidentity checks. A source checkout, package inventory, doctor result or prior\nsession cannot substitute for current live enforcement proof.\n\n",
+        "title": "Hook security (Python)"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-008",
+        "origin": {
+          "end": 8314,
+          "path": ".codearbiter/security-controls.md",
+          "start": 7079
+        },
+        "text": "### Pi trust boundary\n\nPi can load an extension before project trust. Before affirmative\n`isProjectTrusted()`, only the bounded context marker is read; Python/Git work,\nmutations and doctor probes remain unavailable. Session-start and final\npre-execution checks invalidate/re-read trust as required. Unknown tools fail\nclosed unless the host descriptor supplies an allowed mapping. Exact final\nargument order is a promotion requirement; a host unable to guarantee it is not\nqualified. Child execution disables ambient extension/session/approval discovery\nand loads the intended resources explicitly. A child marker prevents recursive\ndispatch only; it does not disable security controls. Use `shell:false`, bounded\nredacted inputs, minimal environment and whole-process-tree cleanup.\n\nADR-0010 accepts that trusted same-process extensions and a cooperative parent\nwith filesystem/shell access can bypass or forge unkeyed local records. Source\nhashes/receipts are integrity and provenance records within that model, not\nsigned attestation against the parent. Stronger secret-key attestation remains\na separately recorded product decision, not an implicit requirement of this\nrefresh. Ordinary progress never needs such an attestation.\n\n",
+        "title": "Pi trust boundary"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-009",
+        "origin": {
+          "end": 10579,
+          "path": ".codearbiter/security-controls.md",
+          "start": 8314
+        },
+        "text": "## Audit trail\n\nAppend-only records include overrides.log, triage.log, sprint-log.md,\ngate-events.log, done-tasks.md, decisions/decision-log.md and ADR lifecycle\nhistory under their existing owning controls. H-05 protects existing history;\nit does not guarantee every event was logged. The accepted completeness strategy\nis a lightweight staleness warning with the best-effort gate-events sink. Sink\nfailure/lock contention must not reverse a guard's verdict. Warnings are advisory\nand not persisted as fabricated events. `/override` is not staleness-tracked.\n\n`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-lifecycle\nledger. Its exact repository-relative path is authoritative; hook classification\nalso compares it case-folded so mixed-case aliases cannot evade protection on\nsupported case-insensitive filesystems. Tail append is its only permitted write\nshape. H-05 enforces append-only write shape by blocking rewrites, truncation,\ndeletion and non-tail edits. The lifecycle checker separately validates JSONL\nsyntax, event completeness, schema, and committed-prefix integrity after writes\nand in CI; H-05 does not validate appended content. H-11 separately protects\ngoverned decision-document paths.\n\nIn CI, the lifecycle checker compares the base and current ledger as committed Git blobs\nand requires the base to be an exact byte prefix of the current blob. Missing,\nunresolvable or all-zero base identities fail closed. Immutable accepted packets\nretain their exact bindings; local checks do not rewrite historical evidence.\nSanctioned marker producers are cooperative attestations; never mint a marker,\napproval source or test/review result without its actual underlying action.\n\nLexical shell guards have accepted indirection boundaries, including variable\nand descriptor/compound-shell forms; they are not an adversarial OS sandbox.\nThe accepted MCP write-hook gap remains for both host surfaces under ADR-0010:\ndoctor reports configuration availability/counts without exposing server\ndetails. Reopen this decision when a supported host matcher exists, a cooperative\nconsumer incident occurs, a shipped/recommended MCP tool needs coverage, or the\ndoctor visibility guarantee is lost. A tool name alone does not prove coverage.\n\n",
+        "title": "Audit trail"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-010",
+        "origin": {
+          "end": 11241,
+          "path": ".codearbiter/security-controls.md",
+          "start": 10579
+        },
+        "text": "## Protected-state registry\n\n`_protectedstatelib.py` owns protected paths. `open-tasks.md` is helper-only\nmutable through taskwrite.py; `done-tasks.md` is append-only. Context documents\nuse their bounded owned writer. `release-targets.md` is marker-gated because\nits generation/pre-tag/release-build declarations execute in privileged release\nlanes; do not raw-write it or treat it as ordinary prose. Case/slash normalization,\nknown write verbs and interpreter-inline forms preserve cross-platform matching.\nBroad-basename overmatching and the deliberate touch exclusion retain their\nrecorded scope; a refresh must not silently choose a new enforcement policy.\n\n",
+        "title": "Protected-state registry"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-011",
+        "origin": {
+          "end": 12828,
+          "path": ".codearbiter/security-controls.md",
+          "start": 11241
+        },
+        "text": "## Native artifacts and recovery\n\nThe native engine is pinned to the installed package's manifest/digest/platform\nqualification. Never discover a replacement on PATH or fetch one at runtime.\nPackaging/installers retain their platform-specific safe-path, no-follow and\nidentity boundaries. Static source or fixture tests do not establish installed\nhost permissions.\n\nCI qualification receipts are issued by one Linux `artifact-engine` job, not on\neach native host. Its trust basis is this run's artifact store, the required\nnative stages' success (`ci20_native_binding.py gate`), and each native\nconsumer's on-host `verify` of the builder's stamp against that host's Go\ntoolchain. The issuer re-binds run, source, module, platform, toolchain and\nbytes. Keep those consumer `verify` steps unconditional on every platform;\ncontract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04b.\n\nBounded requests/reads, stable IDs, exact revisions, safe HTML escaping,\ntransaction journals, before-images, operation replay and no-follow filesystem\nchecks protect data integrity. Progress and reported checks must remain separate\nfrom assessed evidence. A failed/flaky later result must remain visible.\nReconciliation cleanup cannot erase a captured real stop because the capture\npreceded attempt persistence; recovery reuses the existing immutable observation\nand source, original operation ID and revision binding. Ambiguous/missing inputs\nstay unresolved without inventing authority. Migration/rollback preserves later\nwork and complete-store history; it is explicit, not an automatic rewrite.\n\n",
+        "title": "Native artifacts and recovery"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-012",
+        "origin": {
+          "end": 16413,
+          "path": ".codearbiter/security-controls.md",
+          "start": 12828
+        },
+        "text": "## Published tag immutability\n\nThe four installable release series are `v*` (ca), `ca-sandbox-v*`,\n`ca-codex-v*` and `ca-pi-v*`. Consumers pin tags as payload identities.\n**A published tag is immutable: there is no break-glass.** Moving, retargeting\nor deleting one is prohibited for every actor, including administrators.\nCorrect a bad release with a new version. This preserves the maintainer's\n2026-07-25 ruling on issue #386; no standing bypass credential is justified\nby a recovery action the project expressly forbids.\n\nA mutable tag can redirect a pinned install to unreviewed code while its old\nrelease notes still imply the reviewed payload; deletion breaks availability.\nPreserve the two independent controls:\n\n1. Repository tag rulesets prevent deletion and non-fast-forward movement over\n   the release namespaces, without bypass actors for this immutability control.\n   Rulesets are external settings, not source files; a historical setting\n   snapshot does not prove current configuration.\n2. `.github/scripts/check_tag_immutability.py` detects drift against the disjoint\n   union of `.github/published-tags.json` (original-publication receipts) and\n   `.github/legacy-published-tags.json` (closed historical baselines). The\n   `[CHECK] | [REPO] | Published tag immutability` job is read-only. Detection\n   cannot prevent an install between a ref change and the next audit, so it\n   does not replace the preventive ruleset.\n\nThe original-publication ledger retains both the tag object and peeled commit.\nA current API ref or mutable Release `target_commitish` cannot reconstruct a\nlost original identity. Ledger integrity rests on reviewed Git history and\nprotected-main updates; changing a recorded identity to silence a red drift\ncheck is never a repair. Authenticate the original publisher run/artifact before\nreconciliation, bind its expected identity independently, and preserve uncertainty\nwhen that evidence is unavailable. A retained receipt is not a completed ledger\nhandoff: only its reviewed addition merged to main completes ingestion.\n\nADR-0034 fixes the legacy epoch at **44 records observed at\n`2026-09-04T20:45:43Z`**. It is **not original-publication proof**: a historical\nref could have moved before observation. Its canonical identity-and-grade digest,\nsource-matrix digest, timestamp, record count and **15/28/1 evidence-grade\ndistribution** stay bound. The baseline provides forward detection only.\nPublishers and receipt reconcilers cannot grow the closed set. Adding or\nreplacing an identity, source or grade requires a **new accepted, user-attributed\nADR and architectural review**. Later tags use original-publication receipts;\nnone may be relabelled as legacy to clear a failure. There is no break-glass\nfor deletion, retargeting or movement; correction remains a new version.\n\nADR-0040's accepted exception is narrow: required CI and the release workflow's\npreflight run without `--require-recorded`. A recorded tag that moved or\ndisappeared, or invalid/unreadable inventory, still fails; an unrecorded new tag\nwarns. Do not describe either workflow as strict missing-receipt enforcement.\nThe checker still supports an explicitly selected `--require-recorded` audit;\nthat capability is not evidence that every caller selects it. Receipt\nreconciliation remains separately authenticated and reviewed. Publication and\nledger-PR merge are not transactional, and a later publication can race an\nalready-green check. Preserve the accepted provenance-warning residual rather\nthan inventing original-publication evidence or bypassing a drift failure.\n\n",
+        "title": "Published tag immutability"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-013",
+        "origin": {
+          "end": 17172,
+          "path": ".codearbiter/security-controls.md",
+          "start": 16413
+        },
+        "text": "## Hosted publication and distribution\n\nGovernance publication uses exact retained qualified cohort bytes. Local source,\nhosted candidate, published archive, npm/cold install, marketplace and actual\nfresh host-session checks are distinct. The normal cohort archives are tarballs;\nthe hosted Codex static ZIP validator is a separate bounded inspection surface,\nnot a claim of live Codex execution. That validator limits archives to 8 MiB,\n1,024 entries, 2 MiB per file, 32 MiB total and 100:1 expansion; accepts only the\nexpected plugin subtree; rejects symlinks/reparse/encrypted/unsafe/ambiguous\npaths; and checks manifest, frontmatter, resources, hooks and generated digests.\nNo desktop VM/device-auth/API-key simulation substitutes for actual host proof.\n\n",
+        "title": "Hosted publication and distribution"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-014",
+        "origin": {
+          "end": 21953,
+          "path": ".codearbiter/security-controls.md",
+          "start": 17172
+        },
+        "text": "### ca-pi npm publication boundary\n\nPi publication of `@arbiterforge/ca-pi` uses npm trusted publishing with\nshort-lived GitHub OIDC credentials. The npm package setting must authorize\n`arbiterForge/codeArbiter`, workflow filename `release.yml`, and `npm publish`.\nThe GitHub-hosted Pi release job has `id-token: write`; no `NPMJS_TOKEN` or\n`NODE_AUTH_TOKEN` enters the publish invocation. An unavailable trusted publisher\nfails publication closed. The exact-byte integrity, npm audit signatures, and\nattested repository, workflow and source commit are blocking before the GitHub\nRelease becomes public (ADR-0044). The exact npm@11.19.1 CLI is acquired\nwithout credentials over verified non-redirecting\nTLS, with pinned SHA-512 SRI, bounded regular contained archive extraction and\na verified temporary CLI; never a global install or PATH replacement. Pins and\nthe scoped registry are verified; install/pack/publish scripts are disabled.\nThe credential-free download is exactly\n`https://registry.npmjs.org/npm/-/npm-11.19.1.tgz`, bound to\n`sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.\nArchive path-containment and the resolved executable are verified before use.\n`npm audit signatures` and SLSA checks bind source, builder, payload and commit;\nOIDC provenance is the approved publication identity. The npm trusted-publisher\nsetting is managed in the npm package account; no token fallback is permitted.\nPin changes need fresh review.\n\nCodex distribution uses the protected `codex-distribution` environment's six\nnamed values: `CODEX_DISTRIBUTION_APP_ID`, `CODEX_DISTRIBUTION_APP_INSTALLATION_ID`,\n`CODEX_DISTRIBUTION_APP_PRIVATE_KEY`, `CODEX_RULESET_VERIFIER_APP_ID`,\n`CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID`, `CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY`.\nDo not fall back to arbitrary repository/org secrets or local files. The\nseparately user-authorized initial Codex npm organization token remains a\nrecorded broader exposure/unknown-privilege residual; do not falsely describe\nit as environment-narrowed.\n\nThe authorization for the first `@arbiterforge/ca-codex` publication recorded\nthat the token was available to all organization repositories, with unknown\nnpm privilege scope. Preserve that attribution; it is not a claim that the\ncurrent deferred Codex publication workflow receives the token. When that\nauthorized boundary is exercised, expose NODE_AUTH_TOKEN only in the authenticated publish step.\nPublic cold install uses token-free npm configuration and exact retained package\nbytes; publication and channel advancement still require their owning checks.\n\nPublisher and verifier Apps have distinct positive IDs and process environments.\nPublisher: Actions read, Contents read/write, Metadata read, sole non-admin\nruleset bypass. Verifier: Administration read/write and Metadata read, no\nContents write and no bypass. Ordinary GITHUB_TOKEN stays read-only except the\nspecifically owned Pi release job's Actions-read/Contents-write scope for draft\nRelease access. Temp private keys use restrictive permissions, short-lived\nSHA-256 JWTs, verified TLS API calls and exit cleanup; only masked token outputs\ncross the intended step handoff. Job-scoped OIDC availability to all steps is\nan accepted residual, not a step-local capability.\n\nRelease-target rows declare `pre-tag`, `rebuild`, `generate` and optional\n`release-build` as operator-authored executable inputs, length-capped to 1,024\ncharacters. Release hashes bind the ordered `pre-tag` list plus `release-build`,\n`rebuild` and `generate`; changing any one invalidates the per-target\nconfirmation. Read every declared executable input before recording that\nconfirmation, and check it before the first executable declaration runs.\nDry runs only list the commands and never mint a durable confirmation. `pre-tag` is\ncheck-only and mechanically guarded by `run-pre-tag`. The reviewed hosted-build\npath runs `release-build` only in the exact-candidate publisher, with a newly\nempty `RELEASE_ASSET_DIR`, a clean tracked tree before and after, and exact\nasset-inventory verification.\n\nThe alternative retained-cohort path treats its exact fail-closed sentinel as\npolicy, never as a locally runnable builder. It accepts only retained CI packages\nwhose digests, receipts, source commit and flat names bind to the exact candidate;\narbitrary build failures cannot select this exception. H-22 protects the declaring\nfile with its actual authoring marker. This remains a cooperative governance\nboundary, not shell sandboxing or filesystem confinement. Package identity,\ndeterministic contents, registry ownership, provenance and public cold install\nare verified before marketplace promotion. Preserve explicit publication\nauthorization and exact distributed-byte readback.\n\n",
+        "title": "ca-pi npm publication boundary"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-015",
+        "origin": {
+          "end": 23319,
+          "path": ".codearbiter/security-controls.md",
+          "start": 21953
+        },
+        "text": "## Boundary crossings\n\nFarm stages explicit worker paths, never blanket `git add -A`. Its unattended\ndispatcher commits use the accepted NOSIGN path; the integration PR carries the\nreviewed signed artifact. Operator-authored plan gate/test commands and\n`FARM_MUTATION_CMD` use the accepted shell execution path, bounded to 1,024\ncharacters; this is not authority to execute untrusted source as shell text.\n\nHistorical explicit attestation adapters remain available with their recorded\nlimits: the verifier script is pinned but its interpreter is selected by name;\nunresolvable live request/spool handling, registry publication, stop-before-bind\nordering, live-workspace review reads and session/CLI-defined reviewer shadows\nhave separately tracked residuals. Pi has no equivalent hook-captured\nverification/review producer. Do not erase those findings because ordinary\nprogress no longer requires the producers, and do not describe their unkeyed\nrecords as protection against a malicious parent.\n\nThe Codex self-hosted desktop/device-auth/VM/OIDC proof boundary was retired by\nADR-0032; static hosted package inspection is its current release boundary.\nThe sandbox pipe-to-shell nixpacks installer was removed; existing builder\ndetection and fallback do not reopen that exception. Historical records retain\nthese closures without reintroducing their old machinery.\n\n",
+        "title": "Boundary crossings"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-016",
+        "origin": {
+          "end": 24018,
+          "path": ".codearbiter/security-controls.md",
+          "start": 23319
+        },
+        "text": "## Evidence owners\n\nUse the retained ADRs and owning source/tests for details rather than adding\nsuccessive snapshots to this document: ADR-0010 (cooperative boundary), ADR-0019\n(Pi broker), ADR-0029/0032/0034/0040 (publication history), ADR-0031 (shared kernel),\nADR-0038 (bounded platform recovery), ADR-0043 (assistive engine),\n`core/pysrc/_protectedstatelib.py`, hook guard/cold-install tests,\n`plugins/ca-pi/tools/src/`, sandbox mount/run tests, native store/render/recovery\ntests, and `.github/workflows/` with their contract tests. Retain original\nattribution and historical evidence in Git/ADRs/logs when refreshing current\nguidance; this document does not decide unresolved product policy.\n",
+        "title": "Evidence owners"
+      }
+    ],
+    "records": [
+      {
+        "basis": "source-observed",
+        "id": "CON-001",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "# Security controls — codeArbiter\n\nThis document records accepted boundaries and their owners. It is not a claim\nthat every tool call is intercepted or that every host/platform is qualified.\nADR-0043 removes the duplicate artifact permission layer for already-authorized\nwork; it preserves host permissions, explicit user denials/stops, sandbox and\nfilesystem restrictions, repository integrity, safe persistence and publication\nauthorization. Progress may be recorded without claiming verification or review.\n\n",
+        "title": "Security controls — codeArbiter",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-002",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Cryptographic primitives\n\nSHA-256 and the SHA-2 family are approved for hashing/integrity. MD5, SHA-1, DES,\n3DES, RC4, RC2 and Blowfish are prohibited. Test fixture strings describing\nforbidden primitives are not approval to use them. The owning detection and\ncommit-marker controls are `_sensitivelib.py`, `_hooklib.py`, and their tests.\nDo not weaken these controls as part of the assistive lifecycle change.\n\n",
+        "title": "Cryptographic primitives",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-003",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Secret store and access method\n\nThis project has no runtime secrets vault. Secrets belong in the owning process's\napproved environment or release secret store,\nnever source, logs, artifacts, prompts, configuration commits, or diagnostic\nechoes. `FARM_API_KEY` is allowed only as farm runtime input. Sandbox\n`CLAUDE_CODE_OAUTH_TOKEN` injection is explicit `--with-claude` behavior; do not\nmount credential material with untrusted source or silently widen egress.\nThe approved environment may be the owning process's secret source or the bounded\nruntime transport from its release store. Environment access by itself grants no\nnew origin, sink, child, or lifetime permission. Keep each value within the\nowning process or the specifically approved child flow for its actual workflow\nlifetime, then release it; do not cache or serialize it for later work.\n\nPi's ADR-0019 parent inference broker supersedes stored-provider credential\nprojection. A child receives a short-lived per-child loopback token, not reusable\nprovider credentials. The selected provider/model is exact; unavailable service\nmust not cause automatic fallback. This is cooperative same-user isolation,\nnot an OS security boundary: another local process holding the child token may\nuse it until revocation. The broker closes and temporary state is cleaned on\ncompletion/failure. Secrets do not enter child argv or diagnostic output.\n\nChild provider configuration is credential-blind and schema-bounded. Only\napproved keys/shapes and pure environment references for API-key/header fields\nare projected; executable `!` values and unsupported provider/OAuth routes fail\nclosed. Endpoint URLs exclude userinfo, query and fragment. Preserve bounded\ncase-insensitive route validation. Child OS environment is minimal, excluding\nfarm/Claude credentials; home, agent and session state are isolated, prompts use\nstdin, and `PI_PACKAGE_DIR` exposes only the intended parent package resources.\nDummy-credential tests must not read real home authentication.\n\n",
+        "title": "Secret store and access method",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-004",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Network and untrusted execution\n\nTLS verification stays enabled. API endpoints use HTTPS except narrowly bounded\nloopback test/broker paths. Farm validates its resolved base URL and each fetch,\nrejects userinfo and redirects, and emits origin-only diagnostics. Provider\nresponse bodies must not be copied into reports, retry messages or stderr.\n\nThe update notifier makes bounded unauthenticated GitHub release reads without\nrepository content, PII or credentials: at most ten pages/1,000 results, daily\nper-host caching, standard-library verified TLS, and fail-silent asynchronous\nbehavior that does not add SessionStart network latency.\n\nSandbox containers use non-root UID 1000, `--cap-drop ALL`, read-only root,\n`no-new-privileges`, resource caps and no privileged mode or Docker socket.\n`mounts.ts` is the single mount constructor: named volumes/tmpfs only, no host\nbind mounts. Network is offline by default and an unknown policy is an error.\nClone inputs are bounded to approved HTTPS/SSH forms; reject leading options\nand transport-helper forms, preserve argv separation and `--`, and never\ninterpolate untrusted input into a shell. Installed nixpacks detection does not\nauthorize downloading/installing a helper at runtime. Container image inputs\nare digest-pinned; supply-chain tests reject floating `latest` inputs.\n\n",
+        "title": "Network and untrusted execution",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-005",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Dependency policy\n\nDependencies and lockfile resolutions use the official npm registry. Repository\nmetadata links are not dependency-source exceptions. New/changed dependencies\nretain provenance, vulnerability and license review. The high-severity audit\nthreshold includes development dependencies in the three tools projects; site\nproduction dependencies use the exception-aware gate. An exception identifies\nthe exact advisory/package, maximum severity, owner rationale and expiry of at\nmost 30 days. `site/audit-exceptions.json` owns the current exception; the recorded\n2026-10-03 approval for GHSA-ch52-4w7c-c8xp expires no later than 2026-11-02.\nDo not infer that an old no-fix observation remains current.\n\n",
+        "title": "Dependency policy",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-006",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "### Approved licenses\n\nApproved licenses are MIT, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause,\nBlueOak-1.0.0, CC0-1.0 and Unlicense. Retain these accepted scoped additions:\n\n| License | Accepted scope |\n|---|---|\n| MPL-2.0 | Development/build-time dependencies in site and tools; not shipped runtime code. |\n| LGPL-3.0-or-later | The accepted `@img/sharp-libvips-*` docs-site build-time packages only; optimized output does not embed that library. |\n| 0BSD | Development/build-time site/tools dependencies. |\n| Artistic-2.0 | The exact vetted npm 11.19.1 CI CLI only. |\n| CC-BY-3.0 | Bundled `spdx-exceptions` 2.5.0 in that exact vetted CLI only. |\n\nThe accepted argparse license-metadata mismatch resolves to upstream MIT;\nsatteri ships MIT despite missing SPDX metadata. These are specific accepted\nfindings, not blanket missing-license exemptions. A license outside the approved\nset/scopes needs explicit review and the existing override record. Preserve the\n2026-07-02 and 2026-07-14 user decisions and attribution in history. The Pi npm\npackage is public; private build/test manifests do not make all repository\npackages private.\n\n",
+        "title": "Approved licenses",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-007",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Hook security (Python)\n\nHooks use Python's standard library. Malformed hook stdin has the deliberately\nfail-open entry behavior in `_hooklib.read_input`; that is not a rule to treat\nunsafe filesystem state or failed security reads as success. Git-operation cwd\nrespects repeated `-C`. Codex does not inherit `CLAUDE_PROJECT_DIR`; host payload\ncwd remains a host trust boundary. Git owns config grammar and hook execution.\nDefault worktree layout support does not imply all separate-Git-dir, UNC or WSL\ntopologies are qualified. Do not alter safe.directory to manufacture a result.\n\nThe hook identity bundle comprises three atomically bound records; malformed,\nstale or inconsistent identities fail closed. Uninstall removes only owned\nconfiguration. Preserve conservative cache invalidation and actual-runtime\nidentity checks. A source checkout, package inventory, doctor result or prior\nsession cannot substitute for current live enforcement proof.\n\n",
+        "title": "Hook security (Python)",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-008",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "### Pi trust boundary\n\nPi can load an extension before project trust. Before affirmative\n`isProjectTrusted()`, only the bounded context marker is read; Python/Git work,\nmutations and doctor probes remain unavailable. Session-start and final\npre-execution checks invalidate/re-read trust as required. Unknown tools fail\nclosed unless the host descriptor supplies an allowed mapping. Exact final\nargument order is a promotion requirement; a host unable to guarantee it is not\nqualified. Child execution disables ambient extension/session/approval discovery\nand loads the intended resources explicitly. A child marker prevents recursive\ndispatch only; it does not disable security controls. Use `shell:false`, bounded\nredacted inputs, minimal environment and whole-process-tree cleanup.\n\nADR-0010 accepts that trusted same-process extensions and a cooperative parent\nwith filesystem/shell access can bypass or forge unkeyed local records. Source\nhashes/receipts are integrity and provenance records within that model, not\nsigned attestation against the parent. Stronger secret-key attestation remains\na separately recorded product decision, not an implicit requirement of this\nrefresh. Ordinary progress never needs such an attestation.\n\n",
+        "title": "Pi trust boundary",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-009",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Audit trail\n\nAppend-only records include overrides.log, triage.log, sprint-log.md,\ngate-events.log, done-tasks.md, decisions/decision-log.md and ADR lifecycle\nhistory under their existing owning controls. H-05 protects existing history;\nit does not guarantee every event was logged. The accepted completeness strategy\nis a lightweight staleness warning with the best-effort gate-events sink. Sink\nfailure/lock contention must not reverse a guard's verdict. Warnings are advisory\nand not persisted as fabricated events. `/override` is not staleness-tracked.\n\n`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-lifecycle\nledger. Its exact repository-relative path is authoritative; hook classification\nalso compares it case-folded so mixed-case aliases cannot evade protection on\nsupported case-insensitive filesystems. Tail append is its only permitted write\nshape. H-05 enforces append-only write shape by blocking rewrites, truncation,\ndeletion and non-tail edits. The lifecycle checker separately validates JSONL\nsyntax, event completeness, schema, and committed-prefix integrity after writes\nand in CI; H-05 does not validate appended content. H-11 separately protects\ngoverned decision-document paths.\n\nIn CI, the lifecycle checker compares the base and current ledger as committed Git blobs\nand requires the base to be an exact byte prefix of the current blob. Missing,\nunresolvable or all-zero base identities fail closed. Immutable accepted packets\nretain their exact bindings; local checks do not rewrite historical evidence.\nSanctioned marker producers are cooperative attestations; never mint a marker,\napproval source or test/review result without its actual underlying action.\n\nLexical shell guards have accepted indirection boundaries, including variable\nand descriptor/compound-shell forms; they are not an adversarial OS sandbox.\nThe accepted MCP write-hook gap remains for both host surfaces under ADR-0010:\ndoctor reports configuration availability/counts without exposing server\ndetails. Reopen this decision when a supported host matcher exists, a cooperative\nconsumer incident occurs, a shipped/recommended MCP tool needs coverage, or the\ndoctor visibility guarantee is lost. A tool name alone does not prove coverage.\n\n",
+        "title": "Audit trail",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-010",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Protected-state registry\n\n`_protectedstatelib.py` owns protected paths. `open-tasks.md` is helper-only\nmutable through taskwrite.py; `done-tasks.md` is append-only. Context documents\nuse their bounded owned writer. `release-targets.md` is marker-gated because\nits generation/pre-tag/release-build declarations execute in privileged release\nlanes; do not raw-write it or treat it as ordinary prose. Case/slash normalization,\nknown write verbs and interpreter-inline forms preserve cross-platform matching.\nBroad-basename overmatching and the deliberate touch exclusion retain their\nrecorded scope; a refresh must not silently choose a new enforcement policy.\n\n",
+        "title": "Protected-state registry",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-011",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Native artifacts and recovery\n\nThe native engine is pinned to the installed package's manifest/digest/platform\nqualification. Never discover a replacement on PATH or fetch one at runtime.\nPackaging/installers retain their platform-specific safe-path, no-follow and\nidentity boundaries. Static source or fixture tests do not establish installed\nhost permissions.\n\nCI qualification receipts are issued by one Linux `artifact-engine` job, not on\neach native host. Its trust basis is this run's artifact store, the required\nnative stages' success (`ci20_native_binding.py gate`), and each native\nconsumer's on-host `verify` of the builder's stamp against that host's Go\ntoolchain. The issuer re-binds run, source, module, platform, toolchain and\nbytes. Keep those consumer `verify` steps unconditional on every platform;\ncontract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04b.\n\nBounded requests/reads, stable IDs, exact revisions, safe HTML escaping,\ntransaction journals, before-images, operation replay and no-follow filesystem\nchecks protect data integrity. Progress and reported checks must remain separate\nfrom assessed evidence. A failed/flaky later result must remain visible.\nReconciliation cleanup cannot erase a captured real stop because the capture\npreceded attempt persistence; recovery reuses the existing immutable observation\nand source, original operation ID and revision binding. Ambiguous/missing inputs\nstay unresolved without inventing authority. Migration/rollback preserves later\nwork and complete-store history; it is explicit, not an automatic rewrite.\n\n",
+        "title": "Native artifacts and recovery",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-012",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Published tag immutability\n\nThe four installable release series are `v*` (ca), `ca-sandbox-v*`,\n`ca-codex-v*` and `ca-pi-v*`. Consumers pin tags as payload identities.\n**A published tag is immutable: there is no break-glass.** Moving, retargeting\nor deleting one is prohibited for every actor, including administrators.\nCorrect a bad release with a new version. This preserves the maintainer's\n2026-07-25 ruling on issue #386; no standing bypass credential is justified\nby a recovery action the project expressly forbids.\n\nA mutable tag can redirect a pinned install to unreviewed code while its old\nrelease notes still imply the reviewed payload; deletion breaks availability.\nPreserve the two independent controls:\n\n1. Repository tag rulesets prevent deletion and non-fast-forward movement over\n   the release namespaces, without bypass actors for this immutability control.\n   Rulesets are external settings, not source files; a historical setting\n   snapshot does not prove current configuration.\n2. `.github/scripts/check_tag_immutability.py` detects drift against the disjoint\n   union of `.github/published-tags.json` (original-publication receipts) and\n   `.github/legacy-published-tags.json` (closed historical baselines). The\n   `[CHECK] | [REPO] | Published tag immutability` job is read-only. Detection\n   cannot prevent an install between a ref change and the next audit, so it\n   does not replace the preventive ruleset.\n\nThe original-publication ledger retains both the tag object and peeled commit.\nA current API ref or mutable Release `target_commitish` cannot reconstruct a\nlost original identity. Ledger integrity rests on reviewed Git history and\nprotected-main updates; changing a recorded identity to silence a red drift\ncheck is never a repair. Authenticate the original publisher run/artifact before\nreconciliation, bind its expected identity independently, and preserve uncertainty\nwhen that evidence is unavailable. A retained receipt is not a completed ledger\nhandoff: only its reviewed addition merged to main completes ingestion.\n\nADR-0034 fixes the legacy epoch at **44 records observed at\n`2026-09-04T20:45:43Z`**. It is **not original-publication proof**: a historical\nref could have moved before observation. Its canonical identity-and-grade digest,\nsource-matrix digest, timestamp, record count and **15/28/1 evidence-grade\ndistribution** stay bound. The baseline provides forward detection only.\nPublishers and receipt reconcilers cannot grow the closed set. Adding or\nreplacing an identity, source or grade requires a **new accepted, user-attributed\nADR and architectural review**. Later tags use original-publication receipts;\nnone may be relabelled as legacy to clear a failure. There is no break-glass\nfor deletion, retargeting or movement; correction remains a new version.\n\nADR-0040's accepted exception is narrow: required CI and the release workflow's\npreflight run without `--require-recorded`. A recorded tag that moved or\ndisappeared, or invalid/unreadable inventory, still fails; an unrecorded new tag\nwarns. Do not describe either workflow as strict missing-receipt enforcement.\nThe checker still supports an explicitly selected `--require-recorded` audit;\nthat capability is not evidence that every caller selects it. Receipt\nreconciliation remains separately authenticated and reviewed. Publication and\nledger-PR merge are not transactional, and a later publication can race an\nalready-green check. Preserve the accepted provenance-warning residual rather\nthan inventing original-publication evidence or bypassing a drift failure.\n\n",
+        "title": "Published tag immutability",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-013",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Hosted publication and distribution\n\nGovernance publication uses exact retained qualified cohort bytes. Local source,\nhosted candidate, published archive, npm/cold install, marketplace and actual\nfresh host-session checks are distinct. The normal cohort archives are tarballs;\nthe hosted Codex static ZIP validator is a separate bounded inspection surface,\nnot a claim of live Codex execution. That validator limits archives to 8 MiB,\n1,024 entries, 2 MiB per file, 32 MiB total and 100:1 expansion; accepts only the\nexpected plugin subtree; rejects symlinks/reparse/encrypted/unsafe/ambiguous\npaths; and checks manifest, frontmatter, resources, hooks and generated digests.\nNo desktop VM/device-auth/API-key simulation substitutes for actual host proof.\n\n",
+        "title": "Hosted publication and distribution",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-014",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "### ca-pi npm publication boundary\n\nPi publication of `@arbiterforge/ca-pi` uses npm trusted publishing with\nshort-lived GitHub OIDC credentials. The npm package setting must authorize\n`arbiterForge/codeArbiter`, workflow filename `release.yml`, and `npm publish`.\nThe GitHub-hosted Pi release job has `id-token: write`; no `NPMJS_TOKEN` or\n`NODE_AUTH_TOKEN` enters the publish invocation. An unavailable trusted publisher\nfails publication closed. The exact-byte integrity, npm audit signatures, and\nattested repository, workflow and source commit are blocking before the GitHub\nRelease becomes public (ADR-0044). The exact npm@11.19.1 CLI is acquired\nwithout credentials over verified non-redirecting\nTLS, with pinned SHA-512 SRI, bounded regular contained archive extraction and\na verified temporary CLI; never a global install or PATH replacement. Pins and\nthe scoped registry are verified; install/pack/publish scripts are disabled.\nThe credential-free download is exactly\n`https://registry.npmjs.org/npm/-/npm-11.19.1.tgz`, bound to\n`sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.\nArchive path-containment and the resolved executable are verified before use.\n`npm audit signatures` and SLSA checks bind source, builder, payload and commit;\nOIDC provenance is the approved publication identity. The npm trusted-publisher\nsetting is managed in the npm package account; no token fallback is permitted.\nPin changes need fresh review.\n\nCodex distribution uses the protected `codex-distribution` environment's six\nnamed values: `CODEX_DISTRIBUTION_APP_ID`, `CODEX_DISTRIBUTION_APP_INSTALLATION_ID`,\n`CODEX_DISTRIBUTION_APP_PRIVATE_KEY`, `CODEX_RULESET_VERIFIER_APP_ID`,\n`CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID`, `CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY`.\nDo not fall back to arbitrary repository/org secrets or local files. The\nseparately user-authorized initial Codex npm organization token remains a\nrecorded broader exposure/unknown-privilege residual; do not falsely describe\nit as environment-narrowed.\n\nThe authorization for the first `@arbiterforge/ca-codex` publication recorded\nthat the token was available to all organization repositories, with unknown\nnpm privilege scope. Preserve that attribution; it is not a claim that the\ncurrent deferred Codex publication workflow receives the token. When that\nauthorized boundary is exercised, expose NODE_AUTH_TOKEN only in the authenticated publish step.\nPublic cold install uses token-free npm configuration and exact retained package\nbytes; publication and channel advancement still require their owning checks.\n\nPublisher and verifier Apps have distinct positive IDs and process environments.\nPublisher: Actions read, Contents read/write, Metadata read, sole non-admin\nruleset bypass. Verifier: Administration read/write and Metadata read, no\nContents write and no bypass. Ordinary GITHUB_TOKEN stays read-only except the\nspecifically owned Pi release job's Actions-read/Contents-write scope for draft\nRelease access. Temp private keys use restrictive permissions, short-lived\nSHA-256 JWTs, verified TLS API calls and exit cleanup; only masked token outputs\ncross the intended step handoff. Job-scoped OIDC availability to all steps is\nan accepted residual, not a step-local capability.\n\nRelease-target rows declare `pre-tag`, `rebuild`, `generate` and optional\n`release-build` as operator-authored executable inputs, length-capped to 1,024\ncharacters. Release hashes bind the ordered `pre-tag` list plus `release-build`,\n`rebuild` and `generate`; changing any one invalidates the per-target\nconfirmation. Read every declared executable input before recording that\nconfirmation, and check it before the first executable declaration runs.\nDry runs only list the commands and never mint a durable confirmation. `pre-tag` is\ncheck-only and mechanically guarded by `run-pre-tag`. The reviewed hosted-build\npath runs `release-build` only in the exact-candidate publisher, with a newly\nempty `RELEASE_ASSET_DIR`, a clean tracked tree before and after, and exact\nasset-inventory verification.\n\nThe alternative retained-cohort path treats its exact fail-closed sentinel as\npolicy, never as a locally runnable builder. It accepts only retained CI packages\nwhose digests, receipts, source commit and flat names bind to the exact candidate;\narbitrary build failures cannot select this exception. H-22 protects the declaring\nfile with its actual authoring marker. This remains a cooperative governance\nboundary, not shell sandboxing or filesystem confinement. Package identity,\ndeterministic contents, registry ownership, provenance and public cold install\nare verified before marketplace promotion. Preserve explicit publication\nauthorization and exact distributed-byte readback.\n\n",
+        "title": "ca-pi npm publication boundary",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-015",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Boundary crossings\n\nFarm stages explicit worker paths, never blanket `git add -A`. Its unattended\ndispatcher commits use the accepted NOSIGN path; the integration PR carries the\nreviewed signed artifact. Operator-authored plan gate/test commands and\n`FARM_MUTATION_CMD` use the accepted shell execution path, bounded to 1,024\ncharacters; this is not authority to execute untrusted source as shell text.\n\nHistorical explicit attestation adapters remain available with their recorded\nlimits: the verifier script is pinned but its interpreter is selected by name;\nunresolvable live request/spool handling, registry publication, stop-before-bind\nordering, live-workspace review reads and session/CLI-defined reviewer shadows\nhave separately tracked residuals. Pi has no equivalent hook-captured\nverification/review producer. Do not erase those findings because ordinary\nprogress no longer requires the producers, and do not describe their unkeyed\nrecords as protection against a malicious parent.\n\nThe Codex self-hosted desktop/device-auth/VM/OIDC proof boundary was retired by\nADR-0032; static hosted package inspection is its current release boundary.\nThe sandbox pipe-to-shell nixpacks installer was removed; existing builder\ndetection and fallback do not reopen that exception. Historical records retain\nthese closures without reintroducing their old machinery.\n\n",
+        "title": "Boundary crossings",
+        "type": "constraint"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CON-016",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Evidence owners\n\nUse the retained ADRs and owning source/tests for details rather than adding\nsuccessive snapshots to this document: ADR-0010 (cooperative boundary), ADR-0019\n(Pi broker), ADR-0029/0032/0034/0040 (publication history), ADR-0031 (shared kernel),\nADR-0038 (bounded platform recovery), ADR-0043 (assistive engine),\n`core/pysrc/_protectedstatelib.py`, hook guard/cold-install tests,\n`plugins/ca-pi/tools/src/`, sandbox mount/run tests, native store/render/recovery\ntests, and `.github/workflows/` with their contract tests. Retain original\nattribution and historical evidence in Git/ADRs/logs when refreshing current\nguidance; this document does not decide unresolved product policy.\n",
+        "title": "Evidence owners",
+        "type": "constraint"
+      }
+    ],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [
+      {
+        "id": "SRC-001",
+        "locator": ".codearbiter/security-controls.md at 97e1ecac795138cacb83a9d5e81c39d4c234867a; SHA-256 0c3c3b13ddfad25d67f9113d653d797d6b5d9d8e391744d9e090c431c9122255",
+        "note": "Source observed during user-authorized HTML conversion; inherited claims retain original evidence limits.",
+        "title": "Original Markdown security-controls",
+        "type": "repository",
+        "url": null
+      }
+    ],
+    "summary": "Trust boundaries, authentication, secret handling and prohibited primitives. Operative scope blocks stay in security-controls.md.",
+    "title": "Security controls"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 5,
+  "schema_version": "0.3.2",
+  "slug": "security-controls"
+}
+</script>
+</body></html>

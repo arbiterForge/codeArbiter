@@ -756,6 +756,54 @@ describe("Task 6 exact Pi child launch", () => {
     expect(existsSync(isolationRoot!)).toBe(false);
     expect(JSON.parse(await readFile(resolve(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
   });
+  test("a delegation channel cleanup failure cannot strand the isolated environment", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const request = await materializedRequest(); let isolationRoot: string | undefined;
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      isolationRoot = dirname((options.env as NodeJS.ProcessEnv).HOME!); temporaryRoots.push(isolationRoot); return new FakeChild();
+    });
+    runnerMocks.cleanupReady.mockRejectedValue(new Error("injected readiness failure"));
+    const delegated = { ...request, openDelegation: async () => ({ endpoint: "http://127.0.0.1:41234/v1/operation", token: "c".repeat(64),
+      revoke: () => undefined, close: async () => { throw new Error("injected channel cleanup failure"); } }) };
+    await expect(runPiChild(delegated as never, new AbortController().signal)).rejects.toThrow();
+    expect(isolationRoot).toBeDefined(); expect(existsSync(isolationRoot!)).toBe(false);
+  });
+  test.each(["none", "channel", "environment"] as const)("%s cleanup outcome preserves actual delegated effects in the structured result", async (failure) => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const request = await materializedRequest(); const child = new FakeChild();
+    const summary = { profile: "trusted-host-exact-operation-v1" as const, observation: "parent-recorded" as const,
+      requested: 0, completed: 0, failed: 0, refused: 0, unknown: 0, unsettled: 0, containmentUnverified: 0 };
+    let input = "";
+    child.stdin.on("data", async (chunk) => {
+      input += chunk.toString("utf8"); const records = input.trimEnd().split("\n");
+      if (records.length === 1) writeValidAttestation(child, request);
+      else if (records.length === 2) child.stdout.write(JSON.stringify({ type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee-handshake", command: "prompt", success: true }) + "\n");
+      else if (records.length === 3) {
+        await writeFile(resolve(request.cwd, "completed-effect.txt"), "durable effect before cleanup");
+        await writeFile(resolve(request.cwd, "uncertain-effect.txt"), "effect with lost observation");
+        Object.assign(summary, { requested: 2, completed: 1, unknown: 1 });
+        const task = JSON.parse(records[2]!) as { id: string };
+        for (const event of [{ type: "response", id: task.id, command: "prompt", success: true }, { type: "agent_start" },
+          { type: "agent_end", messages: [assistantMessage], willRetry: false }, { type: "agent_settled", aborted: false }]) {
+          child.stdout.write(JSON.stringify(event) + "\n");
+        }
+        child.close(0);
+      }
+    });
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      temporaryRoots.push(dirname((options.env as NodeJS.ProcessEnv).HOME!)); return child;
+    });
+    if (failure === "environment") runnerMocks.environmentCleanupStarted.mockImplementationOnce(() => { throw new Error("injected environment cleanup failure"); });
+    const result = await runPiChild({ ...request, openDelegation: async () => ({ endpoint: "http://127.0.0.1:41234/v1/operation", token: "c".repeat(64),
+      revoke: () => undefined, close: async () => { if (failure === "channel") throw new Error("injected channel cleanup failure"); }, summary: () => ({ ...summary }) }) } as never,
+    new AbortController().signal);
+    expect(result.terminal).toBe(failure === "none" ? "completed" : "degraded");
+    expect(result.delegation).toEqual(summary);
+    expect(result.output).toBe("child-complete");
+    expect(await readFile(resolve(request.cwd, "completed-effect.txt"), "utf8")).toBe("durable effect before cleanup");
+    expect(await readFile(resolve(request.cwd, "uncertain-effect.txt"), "utf8")).toBe("effect with lost observation");
+    if (failure !== "none") expect(result.diagnostic).toContain("isolation-cleanup");
+  });
 
   test("spawns exact Node and withholds the task until a correlated handshake success", async () => {
     const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
@@ -859,7 +907,7 @@ describe("Task 6 exact Pi child launch", () => {
     expect(existsSync(env.PI_CODING_AGENT_DIR!)).toBe(false);
     expect(JSON.parse(await readFile(resolve(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
     expect(input.trimEnd().split("\n")).toHaveLength(3);
-    expect(capability).toBe("0123456789abcdef0123456789abcdef");
+    expect(capability).toBe('{"nonce":"0123456789abcdef0123456789abcdef","v":2}');
   });
 
   test("never fabricates completion when a valid lifecycle exits nonzero", async () => {
@@ -1409,6 +1457,7 @@ describe("Task 6 exact Pi child launch", () => {
   test.each([
     ["provider environment", "dummy-openai-value"],
     ["projected stored auth", "selected-provider-file-secret"],
+    ["delegation bearer", "c".repeat(64)],
   ] as const)("fails closed when assistant output contains an exact %s credential value", async (_source, secret) => {
     const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
     const child = new FakeChild();
@@ -1444,7 +1493,11 @@ describe("Task 6 exact Pi child launch", () => {
     });
     runnerMocks.spawn.mockReturnValue(child);
 
-    const result = await runPiChild(request as never, new AbortController().signal);
+    const delegatedRequest = { ...request, ...(_source === "delegation bearer" ? {
+      openDelegation: async () => ({ endpoint: "http://127.0.0.1:41234/v1/operation", token: secret,
+        revoke: () => undefined, close: async () => undefined }),
+    } : {}) };
+    const result = await runPiChild(delegatedRequest as never, new AbortController().signal);
 
     expect(result).toEqual({ terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." });
     expect(JSON.stringify(result)).not.toContain(secret);
@@ -1578,10 +1631,11 @@ describe("Task 6 enforcement-only child adapter", () => {
     const { installChild, readChildCapability } = await loadModule<ChildModule>("../src/child-extension.ts", "child adapter");
     await expect(readChildCapability(Readable.from([]))).rejects.toThrow("malformed");
     await expect(readChildCapability(Readable.from(["short"]))).rejects.toThrow("malformed");
-    await expect(readChildCapability(Readable.from(["x".repeat(33)]))).rejects.toThrow("oversized");
+    await expect(readChildCapability(Readable.from(["x".repeat(513)]))).rejects.toThrow("oversized");
     const failedPipe = new Readable({ read() { this.destroy(new Error("raw pipe error")); } });
     await expect(readChildCapability(failedPipe)).rejects.toThrow("unavailable");
-    await expect(readChildCapability(Readable.from(["0123456789abcdef0123456789abcdef"]))).resolves.toBe("0123456789abcdef0123456789abcdef");
+    await expect(readChildCapability(Readable.from(["0123456789abcdef0123456789abcdef"]))).rejects.toThrow("malformed");
+    await expect(readChildCapability(Readable.from(['{"nonce":"0123456789abcdef0123456789abcdef","v":2}']))).resolves.toBe("0123456789abcdef0123456789abcdef");
     for (const expectedNonce of [undefined, "short", "fedcba9876543210fedcba9876543210"]) {
       const pi = new FakePi();
       installChild(pi as never, { marker: "1", expectedNonce } as never);

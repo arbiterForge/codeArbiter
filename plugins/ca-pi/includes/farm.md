@@ -409,3 +409,15 @@ another process's index lock. Persistent staging refusal, unverified rollback/re
 or an unreadable replacement test cannot be repaired by another model call. The task retains its actual
 attempt, written-file and known-usage evidence, without commit or acceptance bypass.
 This does not add process resume, a provider fallback or a new approval checkpoint.
+
+
+### Effect recovery and new attempts
+
+Run identities are exclusive. An existing `FARM_RUN_ID` is refused before any stream is truncated. A fresh run also refuses an existing integration branch, task branch or worktree; it never force-resets or pre-cleans another run's resources. A new author attempt needs an explicit new run identity, unused task/resource identities and a distinct integration branch where the previous one still exists.
+
+Exit 3 means report publication failed; completed author commits and integration effects may already exist. Inspect `.farm/runs/<run-id>/effects/` and run `node "<plugin-root>/tools/farm.js" --recover-receipt <run-id>` from the same repository with the same `FARM_REPORT_DIR`. This path observes recorded branch/commit/tree identities, writes an independent recovered receipt and never calls an author, resets refs, deletes worktrees or replaces the original stream/report. Unknown or changed identities remain unknown. Cleanup and report publication are independent from observed merge success; an incomplete cleanup cannot become recovered green.
+
+Gate reports preserve command exit, timeout and containment independently. Unverified process-tree cleanup stops reset/retry on the affected worktree; ordinary nonzero gate failures and verified-clean timeouts keep their retry policy. Failed or malformed Git drift observations are unavailable after bounded read-only retry and cannot authorize dependent mutation. Independent task resources retain their own outcomes.
+
+
+Effect journals have their own `artifacts.effects.complete` and `errors` fields. A journal publication failure keeps receipt debt visible, drains independently running tasks, and exits 3 even when the final report JSON/Markdown can still be written. Streaming completeness remains a separate observation in `artifacts.stream`; a complete JSONL is not relabeled incomplete because a different receipt failed. Inspect/recover retained identities before choosing any new author attempt.

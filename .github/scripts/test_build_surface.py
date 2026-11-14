@@ -43,7 +43,11 @@ _WORKFLOW_ORDER = [
 ]
 _COMPATIBILITY = {
     "clockStarts": "confirmed-non-draft-github-release",
-    "removalRequires": "minor-release-with-changelog-notice",
+    "removalRequires": {
+        "minimumVersion": {"claude": "3.0.0", "codex": "1.0.0", "pi": "1.0.0"},
+        "decision": "separately-approved-named-removal",
+        "evidence": "fresh-exact-confirmed-non-draft-release",
+    },
     "targets": {
         "claude": {
             "publishedWithoutMetadata": "2.16.0",
@@ -89,7 +93,8 @@ class _RepoCase(unittest.TestCase):
 
     def setUp(self):
         self._td = tempfile.TemporaryDirectory()
-        self.repo = self._td.name
+        # The owned fixture is physical; publisher link refusals stay enabled.
+        self.repo = os.path.realpath(self._td.name)
         self.addCleanup(self._td.cleanup)
         _write(
             self.repo,
@@ -935,6 +940,30 @@ class CommandCatalogTest(_RepoCase):
         with self.assertRaisesRegex(B.SurfaceError, "unknown.*surprise"):
             self.render("claude")
 
+    def test_retirement_policy_is_closed_and_rendered_from_its_owner(self):
+        path = Path(self.repo) / "core/surface/command-routes.json"
+        original = json.loads(path.read_text(encoding="utf-8"))
+        rule = original["compatibility"]["removalRequires"]
+        missing_decision = json.loads(json.dumps(rule))
+        del missing_decision["decision"]
+        missing_evidence = json.loads(json.dumps(rule))
+        del missing_evidence["evidence"]
+        wrong_floor = json.loads(json.dumps(rule))
+        wrong_floor["minimumVersion"]["claude"] = "2.0.0"
+        for invalid in ("minor-release-with-changelog-notice", missing_decision,
+                        missing_evidence, wrong_floor, dict(rule, extra=True)):
+            with self.subTest(rule=invalid):
+                document = json.loads(json.dumps(original))
+                document["compatibility"]["removalRequires"] = invalid
+                path.write_text(json.dumps(document), encoding="utf-8")
+                with self.assertRaisesRegex(B.SurfaceError, "removalRequires"):
+                    self.render("claude")
+        path.write_text(json.dumps(original), encoding="utf-8")
+        rendered = B._render_facts("{{FACT:compatibility-removal-rule}}", self.repo)
+        for expected in ("approved 3.0.0", "approved 1.0.0", "never authorizes removal",
+                         "naming the affected route", "exact confirmed non-draft release"):
+            self.assertIn(expected, rendered)
+
     def test_first_containing_release_must_follow_the_published_baseline(self):
         registry_path = Path(self.repo) / "core/surface/command-routes.json"
         original = json.loads(registry_path.read_text(encoding="utf-8"))
@@ -1342,7 +1371,8 @@ class VerificationBoundaryContractTest(unittest.TestCase):
             "Run it before opening a PR",
         )
         for path in paths:
-            text = self.read(path)
+            from project_knowledge import context_text
+            text = context_text("tech-stack") if path == ".codearbiter/tech-stack.md" else self.read(path)
             if path.startswith("core/surface/commands/"):
                 text = B._compose_skill_entry(
                     text, path, str(REPO_ROOT / "core/surface"), {}
@@ -1965,7 +1995,8 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
     def test_secret_source_guidance_uses_active_policy(self):
         secret = (REPO_ROOT / 'core/surface/skills/secret-handling/SKILL.md').read_text(encoding='utf-8')
         reviewer = (REPO_ROOT / 'core/surface/agents/auth-crypto-reviewer.md').read_text(encoding='utf-8')
-        policy = (REPO_ROOT / '.codearbiter/security-controls.md').read_text(encoding='utf-8')
+        from project_knowledge import context_text
+        policy = context_text("security-controls")
         self.assertRegex(policy, r"owning process's\s+approved environment")
         self.assertIn('runtime transport', policy)
         self.assertIn('reading `process.env` alone neither approves nor rejects', secret)
@@ -2787,7 +2818,8 @@ class LanguageCoveragePolicyTest(unittest.TestCase):
                 self.assertIn('Unmeasured:', auditor)
 
     def test_repository_binds_existing_surfaces_to_the_approved_profiles(self):
-        stack = (REPO_ROOT / '.codearbiter/tech-stack.md').read_text(encoding='utf-8')
+        from project_knowledge import context_text
+        stack = context_text("tech-stack")
         coverage = stack.split('## Coverage\n', 1)[1].split('\n## ', 1)[0]
         for path in ('plugins/ca/tools', 'plugins/ca-pi/tools',
                      'plugins/ca-sandbox/tools', 'site/'):
@@ -2857,6 +2889,47 @@ class RealPersonaCopiesTest(unittest.TestCase):
                     text = (REPO_ROOT / plugin / rel).read_text(encoding="utf-8")
                     self.assertFalse(text.lstrip().startswith("<!--"), f"{plugin}/{rel}")
                     self.assertTrue(text.startswith("# "), f"{plugin}/{rel}: {text[:60]!r}")
+
+
+
+class TestOwnerFactsAreGenerated(unittest.TestCase):
+    """HW-19 (W-F08): command signatures and the Tribunal lens count come from
+    their owners at build time, not from hand-copied catalog prose."""
+
+    def test_rendered_catalogs_carry_owner_release_grammar_and_lens_count(self):
+        hint = B.owner_argument_hint("release").replace("|", "\\|")
+        count = B.tribunal_lens_count()
+        self.assertEqual(count, len(list((REPO_ROOT / "core/surface/skills/tribunal/references/lenses").glob("*.md"))))
+        word = B._NUMBER_WORDS[count]
+        for plugin, form in (("plugins/ca", "/ca:release"), ("plugins/ca-codex", "$ca-release"),
+                             ("plugins/ca-pi", "/ca-release")):
+            with self.subTest(plugin=plugin):
+                text = (REPO_ROOT / plugin / "COMMANDS.md").read_text(encoding="utf-8")
+                self.assertIn(f"| `{form}` | `{hint}` |", text)
+                self.assertIn(f"resumable {word}-lens audit", text)
+                self.assertNotIn("eleven-lens", text)
+                self.assertNotIn("{{FACT:", text)
+        self.assertIn("[target]", B.owner_argument_hint("release"))
+        self.assertIn("--dry-run", B.owner_argument_hint("release"))
+
+    def test_a_new_lens_card_changes_the_rendered_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lenses = Path(tmp) / "core/surface/skills/tribunal/references/lenses"
+            lenses.mkdir(parents=True)
+            for i in range(14):
+                (lenses / f"lens{i}.md").write_text("# lens\n", encoding="utf-8")
+            (lenses / "README.txt").write_text("not a card\n", encoding="utf-8")
+            self.assertEqual(B._render_facts("{{FACT:tribunal-lens-count}}", tmp), "fourteen")
+
+    def test_argument_hint_follows_the_skill_entry_owner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            _write(tmp, "core/surface/commands/x.md", "{{SKILL_ENTRY:x}}\n")
+            _write(tmp, "core/surface/skills/x/SKILL.md",
+                   '---\nname: x\nargument-hint: "[a] | --b"\n---\nbody\n')
+            self.assertEqual(B._render_facts("`{{FACT:argument-hint:x}}`", tmp), "`[a] \\| --b`")
+            _write(tmp, "core/surface/commands/y.md", "---\ndescription: d\n---\nbody\n")
+            with self.assertRaises(B.SurfaceError):
+                B._render_facts("{{FACT:argument-hint:y}}", tmp)
 
 
 if __name__ == "__main__":

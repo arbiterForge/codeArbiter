@@ -70,6 +70,8 @@ export type ExecResult = {
    * looking for a hang that never happened. Both run the same teardown.
    */
   aborted?: boolean;
+  overflowed?: boolean;
+  containment?: "verified-stopped" | "unknown";
 };
 
 export type ExecOptions = {
@@ -171,8 +173,9 @@ export async function execInSandbox(
   // report calls it, which is why docker.ts types the two apart instead of
   // collapsing both into `timedOut`.
   let escalation = "";
-  if (r.timedOut || r.aborted) {
-    const why = r.timedOut ? "the exec deadline" : "cancellation";
+  let containment: ExecResult["containment"];
+  if (r.timedOut || r.aborted || r.overflowed) {
+    const why = r.overflowed ? "lost output observation" : r.timedOut ? "the exec deadline" : "cancellation";
     // `--time 0` on purpose: a graceful window is what the deadline already
     // spent. Asking for another 5 seconds of grace here also means the
     // escalation can itself exceed the runner's own timeout and be killed
@@ -183,7 +186,10 @@ export async function execInSandbox(
     // that was just cancelled, so handing it the same aborted signal would
     // cancel the cleanup too and guarantee the orphan this exists to prevent.
     const stopped = await dockerRun(["stop", "--time", "0", id]);
-    escalation = stopped.code === 0
+    const observed = await dockerRun(["inspect", "--format", "{{.State.Running}}", id]);
+    containment = stopped.code === 0 && observed.code === 0 && observed.stdout.trim() === "false"
+      ? "verified-stopped" : "unknown";
+    escalation = containment === "verified-stopped"
       ? `
 ca-sandbox: stopped container ${id} after ${why}.`
       : `
@@ -204,5 +210,7 @@ ca-sandbox: could not stop container ${id} after ${why} `
     truncated: out.truncated || err.truncated,
     ...(r.timedOut ? { timedOut: true } : {}),
     ...(r.aborted ? { aborted: true } : {}),
+    ...(r.overflowed ? { overflowed: true } : {}),
+    ...(containment ? { containment } : {}),
   };
 }

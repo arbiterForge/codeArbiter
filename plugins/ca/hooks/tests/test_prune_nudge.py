@@ -157,6 +157,18 @@ class TestO3SmallDelta(unittest.TestCase):
         self.assertFalse(armed)
         self.assertEqual(advisory, "")
 
+    def test_large_total_context_does_not_satisfy_the_freed_threshold(self):
+        """HW-22 (GEN-F01): the threshold is avoidable context a prune would
+        FREE, not total model context. A huge transcript with freed context
+        one byte under the floor never arms; at the floor it arms."""
+        e = {"CODEARBITER_PRUNE_NUDGE": "on"}
+        for context_freed, expected in ((319_999, False), (320_000, True), (320_004, True)):
+            with self.subTest(context_freed=context_freed):
+                rec = {"freed_bytes": 9_000_000, "context_bytes_freed": context_freed,
+                       "last_pruned_size": 40_000_000, "pct": 1.0}
+                armed, _, _ = P.nudge_decision(rec, idle_secs=300, e=e)
+                self.assertIs(armed, expected)
+
     def test_below_floor_context_bytes(self):
         # est_tokens(context_bytes_freed) stays below the 80 000-token floor.
         rec = {"freed_bytes": 500_000, "context_bytes_freed": 100_000,

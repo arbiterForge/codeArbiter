@@ -1,0 +1,166 @@
+{
+  "kind": "SOURCE_DRIFT_WORKLIST",
+  "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "inspected_base": "33abc347720879bade0494ef0a68ef0d0319236a",
+  "commits_since_audit": 15,
+  "changed_file_count": 100,
+  "cited_source_path_count": 252,
+  "changed_cited_paths": [
+    "README.md",
+    "core/artifacts/internal/operations/work_adopt.go",
+    "core/hosts.json",
+    "core/pysrc/_taskboardlib.py",
+    "core/surface/includes/pi-host-notes.md",
+    "core/surface/skills/commit-gate/SKILL.md",
+    "plugins/ca-pi/hooks/_host.py",
+    "plugins/ca-pi/package.json",
+    "plugins/ca-pi/tools/build.mjs",
+    "plugins/ca-pi/tools/src/compatibility.ts",
+    "plugins/ca-pi/tools/src/doctor.ts",
+    "plugins/ca-pi/tools/src/pi-api.d.ts",
+    "plugins/ca-pi/tools/src/runner.ts",
+    "plugins/ca-pi/tools/test/package.test.ts",
+    "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
+    "plugins/ca-pi/tools/test/runner-isolation.test.ts"
+  ],
+  "tasks_requiring_source_revalidation": [
+    {
+      "task": "P-02",
+      "finding_ids": [],
+      "changed_cited_paths": [
+        "core/hosts.json"
+      ]
+    },
+    {
+      "task": "NT-07",
+      "finding_ids": [
+        "N-F06"
+      ],
+      "changed_cited_paths": [
+        "core/artifacts/internal/operations/work_adopt.go"
+      ]
+    },
+    {
+      "task": "HW-03",
+      "finding_ids": [
+        "HOOK-F03"
+      ],
+      "changed_cited_paths": [
+        "plugins/ca-pi/hooks/_host.py",
+        "plugins/ca-pi/package.json"
+      ]
+    },
+    {
+      "task": "HW-12",
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "changed_cited_paths": [
+        "core/pysrc/_taskboardlib.py"
+      ]
+    },
+    {
+      "task": "HW-13",
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "changed_cited_paths": [
+        "core/surface/skills/commit-gate/SKILL.md"
+      ]
+    },
+    {
+      "task": "HW-16",
+      "finding_ids": [
+        "W-F05",
+        "HOOK-B02"
+      ],
+      "changed_cited_paths": [
+        "README.md"
+      ]
+    },
+    {
+      "task": "HW-26",
+      "finding_ids": [],
+      "changed_cited_paths": [
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts"
+      ]
+    },
+    {
+      "task": "PI-D01",
+      "finding_ids": [
+        "SF01"
+      ],
+      "changed_cited_paths": [
+        "core/hosts.json",
+        "plugins/ca-pi/tools/src/pi-api.d.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ]
+    },
+    {
+      "task": "PI-D03",
+      "finding_ids": [
+        "SF01"
+      ],
+      "changed_cited_paths": [
+        "plugins/ca-pi/tools/build.mjs",
+        "plugins/ca-pi/tools/src/runner.ts",
+        "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts"
+      ]
+    },
+    {
+      "task": "PI-D04",
+      "finding_ids": [
+        "SF01"
+      ],
+      "changed_cited_paths": [
+        "plugins/ca-pi/tools/src/runner.ts"
+      ]
+    },
+    {
+      "task": "PI-D05",
+      "finding_ids": [
+        "SF01"
+      ],
+      "changed_cited_paths": [
+        "plugins/ca-pi/tools/src/runner.ts"
+      ]
+    },
+    {
+      "task": "PI-D06",
+      "finding_ids": [
+        "SF01",
+        "SF12"
+      ],
+      "changed_cited_paths": [
+        "core/hosts.json",
+        "core/surface/includes/pi-host-notes.md",
+        "plugins/ca-pi/tools/src/doctor.ts"
+      ]
+    },
+    {
+      "task": "PI-D07",
+      "finding_ids": [
+        "SF01"
+      ],
+      "changed_cited_paths": [
+        "plugins/ca-pi/tools/build.mjs",
+        "plugins/ca-pi/tools/src/compatibility.ts",
+        "plugins/ca-pi/tools/test/package.test.ts",
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts"
+      ]
+    },
+    {
+      "task": "PI-C01",
+      "finding_ids": [
+        "SF12"
+      ],
+      "changed_cited_paths": [
+        "plugins/ca-pi/tools/src/compatibility.ts"
+      ]
+    }
+  ],
+  "note": "Worklist only. Unchanged cited paths still require reading before edits; changed uncited files may still affect callers."
+}

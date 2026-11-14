@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT / "plugins/ca/hooks"))
 
 import _contextsnapshotlib as snapshots  # noqa: E402
 import _provenancelib as provenance  # noqa: E402
+import _knowledgelib as knowledge  # noqa: E402
 
 
 def read_repo(relative_path):
@@ -411,6 +412,15 @@ def record_snapshot(record, root=ROOT):
 
 def test_code_map_provenance_identities_are_current():
     """Native v2 adoption binds actual document/source bytes, not frozen prose."""
+    if knowledge.context_format(str(ROOT)) == "html":
+        from project_knowledge import native_client, active_records
+        identity = native_client().call("identity", {"artifact_id": "CTX-CODE-MAP"})
+        check(len(identity["model_sha256"]) == 64 and bool(active_records("code-map")),
+              "HTML code map must be readable through its native identity owner")
+        check(not any((ROOT / ".codearbiter/.provenance" / (doc + ".json")).exists()
+                      for doc in provenance.V2_DOCUMENTS),
+              "HTML cutover must not retain a second legacy provenance owner")
+        return
     record = json.loads(read_repo(".codearbiter/.provenance/code-map.json"))
     valid = provenance.valid_provenance_record(record) and record.get("schema") == 2
     check(valid and record.get("doc") == "code-map", "code-map must retain valid enrolled v2 provenance")
@@ -427,8 +437,23 @@ def test_code_map_provenance_identities_are_current():
 
 def test_code_map_provenance_rejects_stale_or_incomplete_evidence():
     """A fixture probe cannot make stale, malformed or legacy evidence current."""
-    good = json.loads(read_repo(".codearbiter/.provenance/code-map.json"))
-    snapshot = record_snapshot(good)
+    # This is a legacy assessor contract even when the project itself has
+    # converted. Keep an explicit positive fixture so negatives cannot pass
+    # merely because the real repository has no legacy record anymore.
+    from test_provenancelib import ProvenanceV2ContractTest
+    good = ProvenanceV2ContractTest._v2("code-map")
+    snapshot = {
+        "source": {"files": {"package.json": {"digest_method": "sha256-raw", "digest": "b" * 64}},
+                   "membership": [{"predicate": "manifests", "scope_paths": ["."],
+                                   "digest_method": "sha256-membership-v1", "digest": "c" * 64}]},
+        "targets": {good["document"]["path"]: {"status": "file", "digest_method": "sha256-raw",
+                                                 "digest": "a" * 64}}}
+    with tempfile.TemporaryDirectory() as directory:
+        (Path(directory) / "code-map.json").write_text(json.dumps(good), encoding="utf-8")
+        positive = provenance.assess_context_provenance(directory, ["code-map"], snapshot,
+                    snapshot_probe=lambda _: {"source_current": True, "targets_current": True})
+    check(positive["identity"] == "current" and not positive["verified_fresh"],
+          "unmodified legacy fixture must match identities without semantic certification")
     stale_document = copy.deepcopy(good)
     stale_document["document"]["digest"] = "0" * 64
     stale_source = copy.deepcopy(good)
@@ -454,8 +479,15 @@ def test_code_map_provenance_rejects_stale_or_incomplete_evidence():
 
 def test_code_map_manifest_ownership_matches_sources():
     """The coarse map points to current manifest owners without pinning versions."""
-    text = read_repo(".codearbiter/code-map.md")
-    entries = dict(re.findall(r"^- `([^`]+)` [—–-]+ (.+)$", text, re.MULTILINE))
+    if knowledge.context_format(str(ROOT)) == "html":
+        from project_knowledge import active_records, context_text
+        components = [r for r in active_records("code-map") if r["type"] == "component"]
+        entries = {p + ("/" if (ROOT / p).is_dir() else ""): r["statement"]
+                   for r in components for p in r["scope"]["paths"]}
+        text = context_text("code-map")
+    else:
+        text = read_repo(".codearbiter/code-map.md")
+        entries = dict(re.findall(r"^- `([^`]+)` [—–-]+ (.+)$", text, re.MULTILINE))
     for path, owner in (("plugins/ca/.claude-plugin/plugin.json", "Claude"),
                         ("plugins/ca-codex/.codex-plugin/plugin.json", "Codex")):
         manifest = json.loads(read_repo(path))
@@ -472,8 +504,60 @@ def test_code_map_manifest_ownership_matches_sources():
           "the coarse map must direct mutable version/catalog queries to their owners")
 
 
+def test_html_context_preserves_checkout_bytes():
+    """Git filters preserve native models; a real writer edit changes identity."""
+    from project_knowledge import native_client
+    paths = list(knowledge.HTML_PATHS.values()) + [knowledge.DECOMPOSITION_PATH,
+            ".gitattributes", ".codearbiter/.gitattributes", ".codearbiter/CONTEXT.md",
+            ".codearbiter/security-controls.md"]
+    expected = {p: (ROOT / p).read_bytes() for p in paths}
+    source = native_client()
+    identities = {knowledge.artifact_id(doc): source.call("identity", {
+                  "artifact_id": knowledge.artifact_id(doc)}) for doc in knowledge.DOCUMENTS}
+    with tempfile.TemporaryDirectory(prefix="ca-html-checkout-") as directory:
+        checkout = Path(directory).resolve()
+        def git(*args):
+            subprocess.run(["git", "-C", str(checkout), *args], check=True, capture_output=True)
+        git("init", "--quiet")
+        git("config", "core.autocrlf", "false")
+        for path, raw in expected.items():
+            target = checkout / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        git("add", "--", *paths)
+        git("config", "core.autocrlf", "true")
+        for path in paths:
+            (checkout / path).unlink()
+        git("checkout-index", "--force", "--all")
+        for path, raw in expected.items():
+            actual = (checkout / path).read_bytes()
+            if path.endswith(".gitattributes"):
+                check(actual.replace(b"\r\n", b"\n") == raw.replace(b"\r\n", b"\n"),
+                      f"checkout must retain attribute rules: {path}")
+                continue
+            check(actual == raw,
+                  f"autocrlf checkout must preserve native context bytes: {path}")
+        client = native_client(checkout)
+        for artifact, identity in identities.items():
+            actual = client.call("identity", {"artifact_id": artifact})
+            check(actual["model_sha256"] == identity["model_sha256"],
+                  f"native reader must retain model identity after checkout: {artifact}")
+        before = client.call("identity", {"artifact_id": "CTX-CODE-MAP"})
+        client.call("apply", {"artifact_id": "CTX-CODE-MAP", "operation_id": "checkout-real-edit",
+                    "expected": {"revision": before["revision"], "model_sha256": before["model_sha256"]},
+                    "changes": [{"op": "record.add", "collection": "records", "record": {
+                        "type": "fact", "title": "Actual fixture edit", "statement": "Changed current model",
+                        "basis": "proposed", "scope": {"paths": []}, "source_refs": [], "related_refs": []}}]})
+        after = client.call("identity", {"artifact_id": "CTX-CODE-MAP"})
+        check(after["model_sha256"] != before["model_sha256"],
+              "a real native writer edit must change the model identity")
+
+
 def test_context_provenance_preserves_checkout_bytes():
     """A real autocrlf checkout preserves bound bytes; genuine edits stay stale."""
+    if knowledge.context_format(str(ROOT)) == "html":
+        test_html_context_preserves_checkout_bytes()
+        return
     record_paths = [f".codearbiter/.provenance/{doc}.json"
                     for doc in provenance.V2_DOCUMENTS]
     records = [json.loads(read_repo(path)) for path in record_paths]
@@ -610,7 +694,14 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
-    missing = [r for r in REQUIRED_FILES if not (ROOT / r).exists()]
+    required = REQUIRED_FILES
+    if knowledge.context_format(str(ROOT)) == "html":
+        removed_narrative = {".codearbiter/code-map.md", ".codearbiter/tech-stack.md",
+                             ".codearbiter/coding-standards.md"}
+        required = [p for p in required if p not in removed_narrative
+                    and not p.startswith(".codearbiter/.provenance/")]
+        required += list(knowledge.HTML_PATHS.values()) + [knowledge.DECOMPOSITION_PATH]
+    missing = [r for r in required if not (ROOT / r).exists()]
     if missing:
         for m in missing:
             print(f"FATAL: missing file {m}")

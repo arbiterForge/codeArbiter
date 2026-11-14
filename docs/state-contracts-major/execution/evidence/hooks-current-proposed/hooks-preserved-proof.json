@@ -1,0 +1,75 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "inputs": {
+    "plugins/ca-pi/tools/test/live-pi-host.ts": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    "plugins/ca-pi/tools/vitest.config.ts": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+    "core/pysrc/_cleanuplib.py": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+  },
+  "proposal_state": "PROPOSED_ROOT_CARRY_REVIEW_REQUIRED",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "scope": "11exact helper transitions; no global family or program qualification",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Current hooks owner clause-level source conformance by farm_sandbox_program"
+  },
+  "disposition_ids": [
+    "disposition:transitions:pi-qualification:runtime-discovery:01",
+    "disposition:transitions:pi-qualification:runtime-discovery:02",
+    "disposition:transitions:pi-qualification:runtime-discovery:03",
+    "disposition:transitions:pi-qualification:runtime-discovery:04",
+    "disposition:transitions:pi-qualification:disposable-home:04",
+    "disposition:transitions:hooks:cleanup-journal:01",
+    "disposition:transitions:hooks:cleanup-journal:02",
+    "disposition:transitions:hooks:cleanup-journal:03",
+    "disposition:transitions:hooks:cleanup-journal:04",
+    "disposition:transitions:hooks:cleanup-journal:05",
+    "disposition:transitions:hooks:cleanup-journal:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/raw/hooks-preserved-raw.json",
+      "sha256": "b36b694fd663a82219a724f25dc85eb86f02f35a290340dff1384e2629a72e19"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "path-only-runtime-helper",
+      "transition_ids": [
+        "pi-qualification:runtime-discovery:01",
+        "pi-qualification:runtime-discovery:02",
+        "pi-qualification:runtime-discovery:03",
+        "pi-qualification:runtime-discovery:04"
+      ],
+      "claim": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts.",
+      "source": "plugins/ca-pi/tools/test/live-pi-host.ts",
+      "scope_limits": "Preserved qualification helper semantics, no installed Pi runtime/provider qualification."
+    },
+    {
+      "id": "best-effort-exact-fixture-exit",
+      "transition_ids": [
+        "pi-qualification:disposable-home:04"
+      ],
+      "claim": "Only successful setup registers process exit handler; handler attempts rmSync of exact freshly created root with exceptions swallowed. Abrupt exit or cleanup error can leave that exact disposable residue; no production resource cleanup promise.",
+      "source": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+      "scope_limits": "Static preservation review only; no forced-termination test or cleanup-success guarantee."
+    },
+    {
+      "id": "write-ahead-cleanup-and-reconciliation",
+      "transition_ids": [
+        "hooks:cleanup-journal:01",
+        "hooks:cleanup-journal:02",
+        "hooks:cleanup-journal:03",
+        "hooks:cleanup-journal:04",
+        "hooks:cleanup-journal:05",
+        "hooks:cleanup-journal:06"
+      ],
+      "claim": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records.",
+      "source": "core/pysrc/_cleanuplib.py:load_journal/_with_locked_journal/execute_branch_deletion/reconcile_pending_operations/_compact",
+      "scope_limits": "Existing caller-injected helper only; no new live Git/worktree deletion implementation or cross-worktree-lock guarantee. No actual deletion performed for this preservation review."
+    }
+  ]
+}

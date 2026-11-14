@@ -27,12 +27,21 @@ type GovernanceTarget = (typeof GOVERNANCE_TARGETS)[number];
 /** Whether the selected tag's original-publication receipt has been reconciled into the ledger. */
 export type OriginalPublicationReceiptStatus = "recorded" | "not-recorded";
 
+export interface PublicationObservation {
+  state: "unknown" | "published" | "draft" | "tag-only" | "mismatch";
+  observedAt?: string;
+  workflowRun?: string;
+  observationSource?: string;
+  releaseId?: number;
+}
+
 export interface CurrentGovernanceRelease {
   target: GovernanceTarget;
   version: string;
   tag: string;
   publicationCommit: string;
   originalPublicationReceipt: OriginalPublicationReceiptStatus;
+  publication?: PublicationObservation;
 }
 
 /** A release tag in the checkout and the commit it peels to. */
@@ -95,6 +104,7 @@ export interface ReleaseApplicabilityRecord {
     hostDiscoveryProven: boolean;
     replayDigest: string;
     applicable: boolean;
+    publication: PublicationObservation;
     statement: string;
     currentSource: {
       path: string;
@@ -121,6 +131,7 @@ export interface CreateReleaseApplicabilityRecordInput {
   proof: DirectHookReplayEvidence;
   currentHookSource: string | Uint8Array;
   git: ReleaseApplicabilityGit;
+  publicationObservation?: unknown;
 }
 
 interface ReleaseTarget {
@@ -394,14 +405,8 @@ function compareVersions(left: ParsedVersion, right: ParsedVersion): number {
   return 0;
 }
 
-/**
- * Select each governance host's latest published release: the highest stable
- * SemVer release tag in the checkout. The receipt ledger no longer gates new
- * tags (ADR-0040), so it lags publication; it supplies only the separate
- * original-publication receipt status, and a recorded receipt must name the
- * same commit as the tag. Docs builds fetch full history and tags; a checkout
- * with no stable tag for a host fails closed rather than presenting a stale row.
- */
+/** Select the highest stable local tag as a source identity. This does not
+ * establish that a GitHub Release exists, is non-draft, or is currently public. */
 export function selectCurrentGovernanceReleases(
   releaseTargetsMarkdown: string,
   publishedTagsJson: string,
@@ -581,12 +586,44 @@ export function resolveDocumentationBuildIdentity(
   return { mode: "local", commit, dirty: git.isDirty() };
 }
 
+/** Consume the existing release owner's durable observation, matching the exact
+ * tag, manifest version and peeled commit. Historical receipts are not inputs.
+ * The timestamp is retained: this is an observation, never a live API claim. */
+export function observedPublication(release: CurrentGovernanceRelease, input: unknown): PublicationObservation {
+  const unknown: PublicationObservation = { state: "unknown" };
+  if (!input || typeof input !== "object" || Array.isArray(input)) return unknown;
+  const record = input as Record<string, unknown>;
+  if (record.format !== "codearbiter.route-publication-observation/0.1.0"
+      || record.clock_starts !== "confirmed-non-draft-github-release"
+      || !["public", "draft-inclusive"].includes(String(record.release_visibility))
+      || typeof record.source_commit !== "string" || !NONZERO_LOWER_COMMIT_SHA.test(record.source_commit)
+      || typeof record.workflow_run !== "string" || !/^[1-9][0-9]*$/.test(record.workflow_run)
+      || typeof record.observed_at !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(record.observed_at)
+      || !Number.isFinite(Date.parse(record.observed_at)) || Date.parse(record.observed_at) > Date.now() + 60000
+      || !Array.isArray(record.observations)) return unknown;
+  const matches = record.observations.filter((row: unknown) => row && typeof row === "object"
+    && (row as Record<string, unknown>).target === release.target && (row as Record<string, unknown>).tag === release.tag);
+  if (matches.length !== 1) return unknown;
+  const row = matches[0] as Record<string, unknown>;
+  if (row.tag_commit !== release.publicationCommit || row.first_containing_version !== release.version) return unknown;
+  const provenance = { observedAt: record.observed_at, workflowRun: record.workflow_run, observationSource: record.source_commit };
+  if (row.state === "published" && row.release_draft === false && Number.isSafeInteger(row.release_id) && Number(row.release_id) > 0)
+    return { state: "published", releaseId: Number(row.release_id), ...provenance };
+  if (row.state === "draft" && row.release_draft === true && Number.isSafeInteger(row.release_id) && Number(row.release_id) > 0)
+    return { state: "draft", releaseId: Number(row.release_id), ...provenance };
+  if (row.state === "tag-only" && record.release_visibility === "draft-inclusive" && row.release_id === null && row.release_draft === null)
+    return { state: "tag-only", ...provenance };
+  if (row.state === "mismatch") return { state: "mismatch", ...provenance };
+  return unknown;
+}
+
 export function createReleaseApplicabilityRecord({
   build,
   releases,
   proof,
   currentHookSource,
   git,
+  publicationObservation,
 }: CreateReleaseApplicabilityRecordInput): ReleaseApplicabilityRecord {
   if (proof.evidenceKind !== DIRECT_HOOK_EVIDENCE_KIND) {
     throw new Error(`Direct-hook replay evidenceKind must be ${DIRECT_HOOK_EVIDENCE_KIND}`);
@@ -617,6 +654,7 @@ export function createReleaseApplicabilityRecord({
       tag: release.tag,
       publicationCommit: release.publicationCommit,
       originalPublicationReceipt: release.originalPublicationReceipt,
+      publication: observedPublication(release, publicationObservation),
       manifestPath: release.manifestPath,
       manifestPaths: [...release.manifestPaths],
     };
@@ -658,10 +696,13 @@ export function createReleaseApplicabilityRecord({
   const currentMatches = currentDigest === replayDigest;
   const publishedMatches = publishedDigest === replayDigest;
   const applicable = currentMatches && publishedMatches;
-  const statement = applicable
-    ? "Replay digest applies to both the current hook source and the exact latest published ca artifact source."
+  const publication = publishedCa.publication;
+  const artifactLabel = publication.state === "published" ? "observed published ca artifact" : "selected ca tag";
+  const statement = (applicable
+    ? `Replay digest applies to both the current hook source and the exact ${artifactLabel} source.`
     : `Replay digest mismatch: current hook source ${currentMatches ? "matches" : "does not match"}; `
-      + `latest published ca artifact source ${publishedMatches ? "matches" : "does not match"}.`;
+      + `${artifactLabel} source ${publishedMatches ? "matches" : "does not match"}.`)
+    + ` Publication state: ${publication.state}${publication.observedAt ? ` (observed ${publication.observedAt})` : ""}.`;
 
   return {
     schemaVersion: 3,
@@ -687,6 +728,7 @@ export function createReleaseApplicabilityRecord({
       hostDiscoveryProven: proof.hostDiscoveryProven,
       replayDigest,
       applicable,
+      publication,
       statement,
       currentSource: {
         path: proof.source,
@@ -862,8 +904,23 @@ export function generateReleaseApplicability(
   );
   const build = resolveDocumentationBuildIdentity(git, environment);
   const currentHookSource = readFileSync(currentHookPath);
+  let publicationObservation: unknown;
+  const observationPath = environment.CODEARBITER_PUBLICATION_OBSERVATION;
+  if (observationPath) {
+    try {
+      const path = resolve(observationPath);
+      let cursor = path;
+      while (true) {
+        if (lstatSync(cursor).isSymbolicLink()) throw new Error("linked publication observation");
+        const parent = dirname(cursor); if (cursor === parent) break; cursor = parent;
+      }
+      if (!lstatSync(path).isFile() || lstatSync(path).size > 1048576) throw new Error("unbounded publication observation");
+      publicationObservation = JSON.parse(readFileSync(path, "utf8"));
+    } catch { publicationObservation = undefined; }
+  }
   const record = createReleaseApplicabilityRecord({
     build,
+    publicationObservation,
     releases,
     proof,
     currentHookSource,

@@ -119,7 +119,7 @@ discovery; it is not a project maturity stage, skill phase, or enforcement gate.
 ## Marker
 
 A small file under `.codearbiter/.markers/` that records a gate's pass state, for example
-`security-gate-passed`, which a commit-time gate checks for freshness and content coverage
+`security-gate-passed`, which a commit-time gate checks against the exact worktree and staged candidate
 before allowing a commit through. See
 [The `.codearbiter/` State File Reference](/codearbiter-directory/files/#markers).
 

@@ -1,0 +1,249 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "4f2c53b5fed25aa7d197d3cec9f1c97c552d4bb75a720b06984989b5749daafd",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "proposal_state": "PROPOSED_ROOT_CARRY_REVIEW_REQUIRED",
+  "tested_input_relation": "Actual69b09 plus authorWIP execution, all27 before/after stable, with retained16-input cone literally committed as89d6 afterward. No runtime at89d6 claimed; old931 epoch is retained only in history.",
+  "kind": "test",
+  "result": "PASSED",
+  "scope": "The same eight TESTED Farm cells, exact12 selector identities passed in the actual current938 owning run. Complete16-input cone includes source/bundle/test/package/config/shared JSON; no new cell or status promotion.",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual current Windows safe-Node938-pass owner execution; exact12 selected named assertions for existing8 cells only, not a new run for this packet."
+  },
+  "disposition_ids": [
+    "disposition:transitions:S23:02",
+    "disposition:transitions:S24:01",
+    "disposition:transitions:S23:11",
+    "disposition:transitions:S31:06",
+    "disposition:transitions:S23:05",
+    "disposition:transitions:S24:12",
+    "disposition:transitions:S29:05",
+    "disposition:transitions:S24:09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json",
+      "sha256": "5ae107095b808352d03c10df20712ce0ec7615513d7e477a70c397b30f646fc6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/execution-origin.json",
+      "sha256": "a12c1a10b15ba4e7fd8af24442e6dde3aaddc60b2111ca9efee2d6db0ff4b70c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm-clause-bindings.json",
+      "sha256": "28ede2ccb2b471d080ea8d81fd7ae559c7d9d086bfc12b486a7c3c23d69dcd66"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/clause-review.json",
+      "sha256": "51549e1d2b02242c07a28124448a8e54022221a9d717f5d3f5f6aaac26c20bfe"
+    }
+  ],
+  "commands": [
+    {
+      "exit_code": 0,
+      "started_ms": 1794621020133,
+      "ended_ms": 1794621255897,
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:/Users/brenn/AppData/Local/Temp/ca-farm-fixture-alias-75a8f10e/qualified-coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "exclusive-run-and-resource-claims",
+      "claim": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean.",
+      "transition_cells": [
+        "disposition:transitions:S23:02",
+        "disposition:transitions:S24:01"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2343.7704000000012,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.823000000000036,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred."
+    },
+    {
+      "id": "receipt-debt-and-readonly-repair",
+      "claim": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown.",
+      "transition_cells": [
+        "disposition:transitions:S23:11",
+        "disposition:transitions:S31:06"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2454.8257999999914,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3246.751199999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2354.7374,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred."
+    },
+    {
+      "id": "journal-failure-independent-drain",
+      "claim": "Journal publication failure escalates affected result yet drains independent in-flight work; real independent merge/result survives. Stream/effects receipt health remain separate.",
+      "transition_cells": [
+        "disposition:transitions:S23:05"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6573.640299999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred."
+    },
+    {
+      "id": "typed-gate-hold",
+      "claim": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof.",
+      "transition_cells": [
+        "disposition:transitions:S24:12",
+        "disposition:transitions:S29:05"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.467200000000048,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 4.37360000000001,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.6792999999997846,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred."
+    },
+    {
+      "id": "drift-unavailable-and-bounded-read-retry",
+      "claim": "Failed128 and malformed successful Git readback are unavailable, never []. A bounded retry accepts only an actually successful current observation; unavailable sample drift preserves candidate evidence, buys no reset/new author.",
+      "transition_cells": [
+        "disposition:transitions:S24:09"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 955.1598000000013,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.4252999999998792,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.228499999999997,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred."
+    }
+  ],
+  "nonclaims": [
+    "No new cell, status promotion, rerun or source/index/ledger/progress write.",
+    "Old references/source epochs/raws remain unchanged in69-anchored history.",
+    "No provider/Docker/nonroot/installed-host/cross-platform/full-task/release qualification."
+  ],
+  "prior_evidence_identity": {
+    "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm8-tested-successor.json",
+    "sha256": "3c6ab8e48aab46ec360ae0e7f3fc4252dd35fa32c2dacf990dca8f56d2cd9f47",
+    "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+  }
+}

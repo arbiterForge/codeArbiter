@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
+import contextlib
 import importlib.util
+import io
 import json
+import unittest.mock
 import subprocess
 import sys
 import tempfile
@@ -127,6 +130,50 @@ class CandidateCheckTest(unittest.TestCase):
         self.assertNotEqual(unrelated, self.live)
         results = candidate_check.evaluate_candidate(self.repo, later)
         self.assertTrue(results[0].eligible)
+
+
+REPO = Path(__file__).resolve().parents[2]
+
+
+class PreTagPolicyTest(unittest.TestCase):
+    """R-03 / C-F03 under D-GOV-PRETAG (B, 2026-11-12): pre-tag is REQUIRED.
+
+    One owner declares each release check's purpose, enforcement class and
+    boundary; CI and the release workflow both call it, and a declaration
+    alone (an ADR, a policy row) cannot mark a check implemented."""
+
+    def test_declared_pre_tag_checks_are_required_before_the_tag(self):
+        policy = candidate_check.CHECK_POLICY["pre-tag"]
+        self.assertEqual(policy["enforcement"], "required")
+        self.assertIn("before", policy["boundary"])
+        self.assertEqual(candidate_check.CHECK_POLICY["pi-npm-provenance"]["enforcement"],
+                         "required")  # ADR-0044 stays active
+
+    def test_every_declared_check_is_implemented_where_it_claims(self):
+        self.assertEqual(candidate_check.policy_problems(REPO), [])
+
+    def test_a_policy_row_without_an_implementation_is_not_implemented(self):
+        fake = {"phantom-check": {"enforcement": "required", "purpose": "x",
+                                  "boundary": "before tag",
+                                  "implemented_by": [(".github/workflows/release.yml",
+                                                      "phantom_check.py")]}}
+        problems = candidate_check.policy_problems(REPO, fake)
+        self.assertEqual(len(problems), 1)
+        self.assertIn("phantom-check", problems[0])
+        bad_class = {"x": dict(fake["phantom-check"], enforcement="mostly")}
+        self.assertIn("enforcement", candidate_check.policy_problems(REPO, bad_class)[0])
+
+    def test_a_required_pre_tag_failure_blocks_that_target(self):
+        failing = subprocess.CompletedProcess(["py"], 3)
+        with unittest.mock.patch.object(candidate_check.subprocess, "run", return_value=failing):
+            with self.assertRaisesRegex(candidate_check.CandidateError, "pre-tag checks failed"):
+                candidate_check.run_pre_tag_target(REPO, "ca")
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(candidate_check.main(["--pre-tag-target", "ca"]), 1)
+        passing = subprocess.CompletedProcess(["py"], 0)
+        with unittest.mock.patch.object(candidate_check.subprocess, "run", return_value=passing):
+            candidate_check.run_pre_tag_target(REPO, "ca")
+
 
 if __name__ == "__main__":
     unittest.main()

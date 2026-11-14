@@ -4,6 +4,7 @@
 
 export interface ProofApplicabilityInput {
   applicable: boolean;
+  publication?: { state: string };
   publishedSource: { matchesReplay: boolean };
   currentSource: { matchesReplay: boolean };
 }
@@ -22,17 +23,19 @@ export function presentProofApplicability(
     throw new Error("Generated proof applicability is internally inconsistent");
   }
 
+  const publication = proof.publication?.state ?? "unknown";
+  const artifact = publication === "published" ? "exact observed published ca artifact" : `selected ca tag (publication ${publication})`;
   if (proof.applicable) {
     return {
       isMismatch: false,
-      message: "Replay source applies to the exact latest published ca artifact",
+      message: `Replay source applies to the ${artifact}`,
     };
   }
 
   return {
     isMismatch: true,
     message: publishedMatchesReplay
-      ? "Replay source matches the exact latest published ca artifact, but differs from the current hook source"
-      : "Digest mismatch: the exact latest published ca artifact does not match the replay source",
+      ? `Replay source matches the ${artifact}, but differs from the current hook source`
+      : `Digest mismatch: the ${artifact} does not match the replay source`,
   };
 }

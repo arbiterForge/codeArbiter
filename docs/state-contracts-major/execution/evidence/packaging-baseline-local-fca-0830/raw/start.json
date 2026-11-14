@@ -1,0 +1,48 @@
+{
+  "source_before": "0830b95752a05343563be027e513a2845a6c57df",
+  "inputs_before": {
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/build-host-packages.py": "abd40c23530e34e08d56f6afb62fdaf4f5002aa430dd8288e70d767921844419",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea"
+  },
+  "runtime": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "win32"
+  },
+  "git": {
+    "path": "C:/Program Files/Git/cmd/git.exe",
+    "sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364",
+    "version": "git version 2.55.0.windows.3"
+  },
+  "HOME_set_before_project_imports": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\home",
+  "selectors": [
+    "ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+    "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+    "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+    "ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+    "ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+    "ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+    "ClaudeChannelTests.test_channel_refuses_to_roll_back",
+    "ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+    "ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+    "ClaudeChannelTests.test_readback_refuses_an_unpromoted_or_substituted_version",
+    "ClaudeChannelTests.test_readback_never_pushes",
+    "ClaudeChannelTests.test_package_without_native_payload_is_refused",
+    "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+    "ClaudeCatalogTests.test_archive_catalog_is_relative_for_either_main_catalog_form",
+    "ClaudeCatalogTests.test_unexpected_ca_source_is_refused",
+    "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+    "CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+    "CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+    "CodexGitChannelTests.test_git_mode_needs_no_npm_package"
+  ]
+}

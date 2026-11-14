@@ -1,0 +1,139 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual final14-case Windows ordinary/owned-TEMP-junction executions at69b09 plus the three disclosed author files; exact27 source bytes were subsequently committed as89d6. No new run or run at89d6 claimed."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S30:05",
+    "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01",
+    "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "plugins/ca/tools/node_modules/vitest/vitest.mjs",
+        "run",
+        "farm-cleanup-observation.test.ts",
+        "--root",
+        "plugins/ca/tools",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-75a8f10e\\qualified-ordinary-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+      "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+      "named_passed": 14
+    },
+    {
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "plugins/ca/tools/node_modules/vitest/vitest.mjs",
+        "run",
+        "farm-cleanup-observation.test.ts",
+        "--root",
+        "plugins/ca/tools",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-75a8f10e\\qualified-alias-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-75a8f10e\\linked-tmp",
+      "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-75a8f10e\\linked-tmp",
+      "named_passed": 14
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/qualified-ordinary-tests.json",
+      "sha256": "0b02a172fcf78ba9c8ca67847b1b6c08990476ada21352e02c7c262c80572303"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/qualified-alias-tests.json",
+      "sha256": "65758be177ad583debf9cd21d31d9b8110c5dd32a8c3920cc992ba68b4323a49"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/execution-origin.json",
+      "sha256": "ac6722902480c95c6449b076c487a2bdfe2b545234695401ad9ab9d84b5bd616"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/clause-review.json",
+      "sha256": "242c6be5e0bb4fe2974d908e5bc7025bb82d55ff7d7c1ac14f505f982b11c02e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/source-trace.json",
+      "sha256": "8fe7620054c407c8be3814aba57ab11dc9e1b432f6c4771db10a102c5e71b668"
+    }
+  ],
+  "source_input_scope": "Complete13-file static test/production/package/config import cone, literally selected from actual27 before/after hashes. No regenerated bundle was executed by these direct source tests; bundle stays in the retained27 execution envelope.",
+  "semantic_groups": [
+    {
+      "id": "known-presence-absence-and-fs-unknown",
+      "cells": [
+        "disposition:transitions:S30:05",
+        "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01"
+      ],
+      "named_cases": [
+        "worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+        "worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+        "worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+        "worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+        "worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+        "worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+        "worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path"
+      ],
+      "claim": "Genuine ENOENT with observed absent registration admits success; known presence retains bounded retry/failure; EACCES/EIO/dangling entry cannot become missingness. Registered/unregistered filesystem-unknown cases stop after one removal with no prune or destructive retry.",
+      "limits": "No actual EACCES permission change, process-descendant containment or native platform union is inferred from injected errors."
+    },
+    {
+      "id": "physical-registration-and-unknown-readback",
+      "cells": [
+        "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01"
+      ],
+      "named_cases": [
+        "worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+        "worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+        "worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+        "worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+        "worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+        "worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+        "worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed"
+      ],
+      "claim": "Actual admitted same-repository alias/locked-missing fixture remains registered and cannot return cleanup success; genuine removal via alias admits absence. Initial/post-prune Git read errors and canonical identity/no-ancestor failures remain unknown, not mismatch. No action follows the unknown observation.",
+      "limits": "Real mounted Windows junction and Git lock are distinct from injected path/registry errors and ENOENT-to-root; no real unmount, host authorization or atomic same-user alias race exclusion."
+    }
+  ],
+  "definition_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/introduced-registration-edge.json",
+    "sha256": "4b38ca1d50c2cc081f2091dd303be4de9ee9e9d9cce0d5e74c7c5a424135cb65"
+  },
+  "execution_origin_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/execution-origin.json",
+    "sha256": "ac6722902480c95c6449b076c487a2bdfe2b545234695401ad9ab9d84b5bd616"
+  },
+  "nonclaims": [
+    "A failed cleanup observation is not worker failure or permission to invoke another author; these tests do not execute receipt repair.",
+    "S30:05 retains known-present exhaustion while unknown exits earlier; old error-as-absence and lexical-mismatch behavior are intentionally not preserved.",
+    "No whole-task/provider/Docker/network/nonroot/cross-platform or release closure."
+  ]
+}

@@ -1,0 +1,47 @@
+go-test-parallel: 477 top-level tests in 18 packages, 37 chunks on 32 workers
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate [13 tests] 0.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/render [16 tests] 0.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical [4 tests] 0.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema [9 tests] 0.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact [1 tests] 0.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository [3 tests] 1.1s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/conformance [1 tests] 1.1s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault [1 tests] 0.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/authority [1 tests] 0.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/model [1 tests] 0.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol [1 tests] 0.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation [36 tests] 1.1s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind [1 tests] 0.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/read [10 tests] 2.5s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument [26 tests] 5.3s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/store [46 tests] 6.5s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [35 tests] 17.3s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [33 tests] 19.3s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [31 tests] 25.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence [15 tests] 26.6s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [35 tests] 30.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 30.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 31.1s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [31 tests] 31.2s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [31 tests] 33.6s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence [15 tests] 33.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence [15 tests] 34.9s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence [11 tests] 35.4s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 35.5s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 36.7s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 37.0s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence [15 tests] 38.0s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 44.6s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 47.2s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 47.2s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [1 tests] 47.2s
+ok   github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations [31 tests] 49.2s
+go-test-parallel: 474 passed, 3 skipped, all complete
+{
+  "binary": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-zero-final-qualified-sqjql6ap\\payload\\ca-artifact-windows-amd64.exe",
+  "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+  "toolchain": "go version go1.27.1 windows/amd64",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "module_tests_passed": true,
+  "upstream_host_qualified": false
+}

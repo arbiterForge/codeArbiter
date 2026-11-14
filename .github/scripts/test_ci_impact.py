@@ -139,6 +139,36 @@ def workflow_jobs(text: str) -> dict[str, str]:
     return jobs
 
 
+def reviewed_cold_event_guards(block: str) -> set[str]:
+    """Only the reviewed producer alternatives may omit merge-group evidence.
+
+    The original non-push cold execution remains required for merge groups.
+    Match each exact predicate to its one owning step; copying it onto another
+    test step cannot create an event-gating exemption.
+    """
+    push = ("github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
+            "github.ref == 'refs/heads/major/state-contracts') && "
+            "hashFiles('.github/integration-candidate.json') != ''")
+    expected = {
+        "Cold-execute the complete exact-package claude workflow": "${{ !cancelled() && !(" + push + ") }}",
+        "Observe the original exact-package claude workflow": "${{ !cancelled() && " + push + " }}",
+        "Emit installed Claude qualification report": (
+            "github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
+            "github.ref == 'refs/heads/major/state-contracts') && matrix.platform == 'linux/amd64' "
+            "&& steps.cold_claude_observed.outcome == 'success' "
+            "&& hashFiles('.github/integration-candidate.json') != ''"),
+    }
+    steps = re.split(r"(?m)^      - name: ", block)[1:]
+    all_conditions = re.findall(r"(?m)^\s+if: ([^\n]+)$", block)
+    for name, predicate in expected.items():
+        matches = [step for step in steps if step.splitlines()[0] == name]
+        if (len(matches) != 1
+                or re.findall(r"(?m)^        if: ([^\n]+)$", matches[0]) != [predicate]
+                or all_conditions.count(predicate) != 1):
+            raise ValueError("cold producer event predicate is missing, changed or reused")
+    return set(expected.values())
+
+
 def checkout_fetch_depth(job: str) -> str | None:
     """Return the checkout step's structured ``with.fetch-depth`` value.
 
@@ -767,6 +797,35 @@ class EvaluationTest(unittest.TestCase):
         )
 
 
+class ReviewedColdEventGuardTest(unittest.TestCase):
+    def block(self):
+        return workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-package-cold"]
+
+    def test_only_actual_three_owned_producer_predicates_are_allowed(self):
+        self.assertEqual(len(reviewed_cold_event_guards(self.block())), 3)
+
+    def test_changing_original_merge_group_path_refuses(self):
+        block = self.block().replace("!cancelled() && !(github.event_name", "!cancelled() && (github.event_name", 1)
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(block)
+
+    def test_copying_a_producer_predicate_to_job_level_refuses(self):
+        block = self.block()
+        predicate = next(value for value in reviewed_cold_event_guards(block)
+                         if value.startswith("${{ !cancelled() && github.event_name"))
+        changed, count = re.subn(r"(?m)^    if: [^\n]+$", "    if: " + predicate, block, count=1)
+        self.assertEqual(count, 1)
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(changed)
+
+    def test_copying_a_producer_predicate_to_another_test_step_refuses(self):
+        block = self.block()
+        predicate = next(value for value in reviewed_cold_event_guards(block) if value.startswith("github.event_name"))
+        block += "      - name: unrelated required test\n        if: " + predicate + "\n        run: python required.py\n"
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(block)
+
+
 class MapValidationTest(unittest.TestCase):
     def load(self, document):
         with tempfile.TemporaryDirectory() as temporary:
@@ -812,6 +871,20 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_pi_failure_diagnostics_survive_the_failed_owning_step(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))['ca-pi-tools']
+        for name in ('Test real package RPC activation and aliases',
+                     'Test cross-platform paths, encoding, cancellation, process trees, prune, and generation'):
+            step = job.split('- name: ' + name, 1)[1].split('- name:', 1)[0]
+            self.assertIn('CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics', step)
+            self.assertNotIn('continue-on-error:', step)
+        upload = job.split('- name: Retain sanitized RPC failure phases', 1)[1]
+        self.assertIn('if: always()', upload)
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-shutdown-*.json', upload)
+        self.assertIn('if-no-files-found: ignore', upload)
+        self.assertNotIn('continue-on-error:', upload)
+
     def test_required_tag_immutability_job_requires_recorded_publications(self):
         # A missing receipt must block the required merge gate, not first surface
         # after merge when the next automatic release reaches strict preflight.
@@ -1034,7 +1107,9 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("id: impact", ci)
         self.assertIn("python tools/ci-impact.py", ci)
         self.assertIn("list-files: shell", ci)
-        self.assertIn("impact: ${{ steps.filter.outputs.impact }}", ci)
+        # P-01: the integration branch push selects every domain.
+        self.assertIn("impact: ${{ steps.filter.outputs.impact == 'true' || "
+                      "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}", ci)
         self.assertIn("needs.changes.outputs.impact == 'true'", ci)
         self.assertIn("needs.changes.outputs.ca-pi == 'true'", ci)
 
@@ -1078,6 +1153,55 @@ class WorkflowContractTest(unittest.TestCase):
         )
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
+
+    def test_sandbox_retains_original_named_results_without_filtering_console_run(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["ca-sandbox-tools"]
+        commands = re.findall(r"(?m)^        run: (npm test[^\n]*)$", job)
+        self.assertEqual(len(commands), 1, "the owning Sandbox suite must execute exactly once")
+        self.assertEqual(shlex.split(commands[0]), [
+            "npm", "test", "--", "--reporter=default", "--reporter=github-actions", "--reporter=json",
+            "--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json",
+        ], "reporters may add transport, never a file/name filter or error suppression")
+        test_step = job.split("- name: Test (Docker required - a missing daemon fails the run)", 1)[1].split("      - ", 1)[0]
+        self.assertNotIn("continue-on-error:", test_step)
+        self.assertNotIn("if:", test_step)
+
+    def test_sandbox_uploads_source_bound_original_json_and_requires_presence(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["ca-sandbox-tools"]
+        steps = re.split(r"(?m)^      - ", job)[1:]
+        uploads = [step for step in steps if step.startswith("name: Preserve original Sandbox named test results\n")]
+        self.assertEqual(len(uploads), 1, "one original named-result upload required")
+        upload = uploads[0]
+        for value in (
+            "if: always()", "uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "name: sandbox-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path: ${{ runner.temp }}/ca-sandbox-vitest.json", "if-no-files-found: error",
+            "retention-days: 14", "include-hidden-files: false", "overwrite: false",
+        ):
+            self.assertIn(value, upload)
+        self.assertNotIn("continue-on-error:", upload)
+        self.assertNotIn("permissions:", upload)
+        self.assertGreater(job.index("name: Preserve original Sandbox named test results"),
+                           job.index("name: Fail if a committed ca-sandbox artifact is stale"))
+
+    def test_sandbox_result_transport_guards_reject_incomplete_or_weakened_wiring(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        # Exercise the real owning guards against deliberate directive drift.
+        for old, new, guard in (
+            ("--reporter=json", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--reporter=default", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--reporter=github-actions", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--outputFile.json=", "dephash.test.ts --outputFile.json=", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("if-no-files-found: error", "if-no-files-found: ignore", self.test_sandbox_uploads_source_bound_original_json_and_requires_presence),
+        ):
+            with self.subTest(drift=old), tempfile.TemporaryDirectory(prefix="ca-sandbox-transport-wiring-") as tmp:
+                path = Path(tmp) / "ci.yml"
+                # Mutate only the selected owning job, never another upload.
+                job = workflow_jobs(ci)["ca-sandbox-tools"]
+                self.assertIn(old, job)
+                path.write_text(ci.replace(job, job.replace(old, new, 1), 1), encoding="utf-8")
+                with mock.patch.dict(globals(), {"CI_WORKFLOW": path}), self.assertRaises(AssertionError):
+                    guard()
 
     def test_the_required_sandbox_job_fails_when_docker_is_unavailable(self):
         # Issue #406 AC-1/AC-2.  ca-sandbox is the driver that clones UNTRUSTED
@@ -1873,6 +1997,32 @@ class WorkflowContractTest(unittest.TestCase):
                     f"a {event} touching only docs.yml never runs docs.yml",
                 )
 
+    def test_docs_pull_request_selection_covers_every_push_input(self):
+        # R-05 / C-F05: the voice gate's two rule implementations selected
+        # push builds only, so a PR changing just the rule skipped the gate
+        # that enforces it.  Validation inputs are one set for both events;
+        # deliberate event differences live in event/branch admission and the
+        # deploy condition, never in which inputs validate.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        push = set(event_trigger_paths(docs, "push"))
+        pull_request = set(event_trigger_paths(docs, "pull_request"))
+        for owned in (".github/scripts/check_site_voice.py", "core/pysrc/_sloplib.py"):
+            with self.subTest(path=owned):
+                self.assertIn(owned, pull_request, f"a PR touching only {owned} skips its gate")
+        self.assertEqual(push, pull_request)
+
+    def test_docs_validation_triggers_never_grant_deploy(self):
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(docs)
+        self.assertIn(
+            "if: contains(fromJSON('[\"push\",\"workflow_run\",\"workflow_dispatch\"]'), "
+            "github.event_name) && github.ref == 'refs/heads/main'", jobs["deploy"])
+        self.assertRegex(docs, r"(?m)^permissions:\n  contents: read$")
+        for name, body in jobs.items():
+            if name != "deploy":
+                self.assertNotIn("pages: write", body, name)
+                self.assertNotIn("id-token: write", body, name)
+
     def test_docs_release_applicability_inputs_trigger_full_history_builds(self):
         docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
         required_inputs = {
@@ -2366,6 +2516,17 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_active_knowledge_and_selector_reach_policy_conformance(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        scopes = {"push": push_trigger_paths(ci),
+                  "hooks": paths_filter(ci, "hooks"),
+                  "impact": paths_filter(ci, "impact")}
+        for name, paths in scopes.items():
+            for subject in (".codearbiter/context/**", ".codearbiter/CONTEXT.md"):
+                with self.subTest(scope=name, subject=subject):
+                    self.assertIn(subject, paths,
+                                  "an active HTML fact/policy or format-selector edit must run its conformance owner")
+
     def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
         # Issue #507, same defect class as the test above and as #384/#403/#404.
         # GateCommandTest lives in THIS file, which runs only in the path-scoped
@@ -2451,10 +2612,30 @@ class WorkflowContractTest(unittest.TestCase):
             "the range scan is not scoped to the event that has a base to diff against",
         )
 
+    def test_recovery_checks_have_required_native_cells_and_independent_exit_statuses(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        recovery = jobs["workflow-recovery"]
+        self.assertIn("os: [ubuntu-latest, windows-latest, macos-latest]", recovery)
+        self.assertIn("fail-fast: false", recovery)
+        self.assertIn("timeout-minutes: 15", recovery)
+        self.assertNotIn("continue-on-error", recovery)
+        self.assertNotIn("run: |", recovery)
+        for script in ("test_workflow_recovery.py", "test_workflow_recovery_cli.py",
+                       "test_workflow_recovery_hosts.py", "test_workflow_recovery_generator.py",
+                       "test_review_resubmission.py"):
+            self.assertEqual(recovery.count("run: python .github/scripts/" + script + "\n"), 1)
+        self.assertIn("      - workflow-recovery\n", jobs["ci-passed"])
+        self.assertIn("${{ needs['workflow-recovery'].result }}", jobs["ci-passed"])
+
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("  documentation-contract:\n", ci)
         self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
+        document_job = workflow_jobs(ci)["documentation-contract"]
+        native_setup = "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        self.assertIn(native_setup, document_job)
+        self.assertIn('go-version: "1.27.1"', document_job)
+        self.assertLess(document_job.index(native_setup), document_job.index("run: python3 .github/scripts/check_docs_contract.py"))
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
@@ -2546,10 +2727,21 @@ class WorkflowContractTest(unittest.TestCase):
         misbased: list[str] = []
         for job_id in enforced:
             block = jobs.get(job_id, "")
+            cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
             for condition in re.findall(r"(?m)^\s+if: (?P<test>[^\n]+)$", block):
+                # Publication-authority evidence cannot run for PR/queue
+                # events. The named-outcomes check below independently keeps
+                # the original tests and their retained observation unconditional.
+                if (job_id == 'artifact-native-build' and condition ==
+                        "github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.expected_platform == 'windows/amd64' && hashFiles('.github/integration-candidate.json') != ''"):
+                    report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
+                    self.assertIn('if: ' + condition, report_step)
+                    continue
+                if condition in cold_guards:
+                    continue
                 if "github.event_name" not in condition:
                     continue
                 if "merge_group" not in condition:
@@ -3006,6 +3198,20 @@ class GateCommandTest(unittest.TestCase):
 
     def _defines(self, token, tech_stack):
         """Does tech-stack.md define `token`? Regex where one fits, structure where not."""
+        if token in ("test", "audit"):
+            from project_knowledge import active_records
+            records = active_records("tech-stack")
+            if records is not None:
+                if token == "audit":
+                    return any(record.get("type") == "command"
+                               and record["command"]["argv"][0] == "npm"
+                               and "audit" in record["command"]["argv"]
+                               and "--audit-level=high" in record["command"]["argv"]
+                               for record in records)
+                return any(record.get("type") == "command"
+                           and record["command"]["purpose"] == "test"
+                           and record["command"]["argv"][0] != ":"
+                           for record in records)
         proof = self.DEFINITIONS[token]
         if proof is not None:
             return proof.search(tech_stack) is not None
@@ -3025,7 +3231,8 @@ class GateCommandTest(unittest.TestCase):
         return found
 
     def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         missing = []
         for token, who in sorted(self._demanded().items()):
             names = ", ".join(sorted(who))
@@ -3076,7 +3283,8 @@ class GateCommandTest(unittest.TestCase):
         leaves the gate pointing at nothing while every text assertion still
         passes - #507 reachable straight through the fix for #507.
         """
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         pairs = self._npm_invocations(tech_stack)
         # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
         # is satisfied by the unrelated `build` and `typecheck` invocations in the same
@@ -3127,7 +3335,8 @@ class GateCommandTest(unittest.TestCase):
 
     def test_every_tested_tree_has_its_coverage_command_documented(self):
         """Completeness, driven by the filesystem rather than by the prose."""
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
         undocumented = [
             tree for tree in sorted(self._tested_trees())
@@ -3485,6 +3694,41 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                     if step.startswith("      - name: Browser publication gate\n"))
         self.assertRegex(gate, r"(?m)^        id: browser-gate$")
 
+    def test_component_suite_is_discovered_and_success_gates_pages_upload(self):
+        scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
+        self.assertEqual(scripts.get("test:components"),
+                         "playwright test --config=playwright.components.config.ts",
+                         "component specs are outside the production browser testDir")
+        config = (REPO_ROOT / "site/playwright.components.config.ts").read_text(encoding="utf-8")
+        self.assertRegex(config, r"testDir:\s*['\"]\./test/components['\"]")
+        self.assertRegex(config, r"channel:\s*['\"]chrome['\"]")
+        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
+            DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
+
+        def assert_lane(candidate):
+            self._assert_build_control_flow(candidate)
+            steps = re.split(r"(?m)(?=^      - )", candidate)[1:]
+            selected = [step for step in steps
+                        if re.search(r"(?m)^        run: npm run test:components$", step)]
+            self.assertEqual(len(selected), 1, "component suite must execute exactly once")
+            self.assertLess(candidate.index("run: google-chrome --version"),
+                            candidate.index("run: npm run test:components"))
+            self.assertLess(candidate.index("run: npm run test:components"),
+                            candidate.index("uses: actions/upload-pages-artifact@"))
+
+        assert_lane(build)
+        for mutation in (
+            build.replace("run: npm run test:components", "run: npm run test:browser", 1),
+            build.replace("        run: npm run test:components",
+                          "        if: false\n        run: npm run test:components", 1),
+            build.replace("        run: npm run test:components",
+                          "        continue-on-error: true\n        run: npm run test:components", 1),
+        ):
+            with self.subTest(mutation=mutation):
+                self.assertNotEqual(mutation, build)
+                with self.assertRaises(AssertionError):
+                    assert_lane(mutation)
+
     def test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads(self):
         """Mutations must not turn evidence retention into publication authorization."""
         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
@@ -3559,11 +3803,11 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertNotIn("continue-on-error:", deploy)
         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
         for name, command in scripts.items():
-            if name != "test:browser":
+            if name not in {"test:browser", "test:components"}:
                 self.assertNotRegex(command, r"playwright|test:browser", name)
-        for path in (REPO_ROOT / ".codearbiter/tech-stack.md",
-                     REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md"):
-            self.assertNotRegex(path.read_text(encoding="utf-8"), r"playwright install|run test:browser")
+        from project_knowledge import context_text
+        self.assertNotRegex(context_text("tech-stack"), r"playwright install|run test:browser")
+        self.assertNotRegex((REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md").read_text(encoding="utf-8"), r"playwright install|run test:browser")
 
     def test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition(self):
         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
@@ -3572,7 +3816,7 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertNotRegex(build, r"(?i)\b(?:curl|wget)\b|install-(?:browser|deps)")
         self.assertEqual(re.findall(r"(?m)^        run: (.+)$", build), [
             "npm ci", "npm run build", "npm run link-audit",
-            "google-chrome --version", "npm run test:browser",
+            "google-chrome --version", "npm run test:components", "npm run test:browser",
         ], "browser validation must consume the runner image without executable downloads")
 
     def test_playwright_configuration_is_inside_the_typecheck_scope(self):
@@ -3590,6 +3834,21 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 
 
 class ArtifactEngineCIContractTest(unittest.TestCase):
+    def test_retained_recovery_receives_independent_production_context(self):
+        ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        block = workflow_jobs(ci)["artifact-package-cold"]
+        recovery = block.split("- name: Qualify recovery against the retained exact package cohort", 1)[1]
+        recovery = recovery.split("\n      - ", 1)[0]
+        for argument in (
+            '--trusted-source-commit "${{ github.sha }}"',
+            '--trusted-workflow ".github/workflows/ci.yml"',
+            '--trusted-workflow-run "${{ github.run_id }}"',
+            '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+            '--promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"',
+        ):
+            with self.subTest(argument=argument):
+                self.assertIn(argument, recovery)
+
     """The structured-artifact engine is a required six-platform package gate."""
 
     def test_candidate_suites_have_one_qualified_execution(self):
@@ -3777,7 +4036,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "subprocess.check_output(['go', 'env', 'GOVERSION']",
             'python tools/go_test_parallel.py --module core/artifacts --build-flag=-race',
             'python .github/scripts/test_artifact_native.py',
-            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
+            'python tools/build-artifacts.py\n          --output "${{ runner.temp }}/artifact-candidate"\n          --test-observation "${{ runner.temp }}/native-tests.json"',
             'python .github/scripts/run_concurrent_suites.py',
             '.github/scripts/test_artifact_approval_adapter.py',
             '.github/scripts/test_artifact_prerequisite_adapter.py',
@@ -3856,15 +4115,19 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # One job per platform; each host runs as its own isolated step with its
         # own receipt artifact, and a failing host never hides the others.
         self.assertNotIn("matrix.host", cold)
+        cold_hosts = cold.split("Create one isolated receipt directory per host", 1)[1]
         for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
                         '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
                         '--cold-platform "${{ matrix.platform }}"',
                         'needs.artifact-package-assembly.outputs.promotion-receipt-sha256'):
-            self.assertEqual(cold.count(binding), 3, binding)
+            self.assertEqual(cold_hosts.count(binding), 3, binding)
         for host in ("claude", "codex", "pi"):
             self.assertEqual(cold.count(f'--cold-host "{host}"'), 1)
-            self.assertEqual(cold.count(f"id: cold_{host}"), 1)
-            self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
+            self.assertEqual(cold.count(f"id: cold_{host}\n"), 1)
+            if host == "claude":
+                self.assertIn("if: ${{ !cancelled() && (steps.cold_claude.outcome == 'success' || steps.cold_claude_observed.outcome == 'success') }}", cold)
+            else:
+                self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
             self.assertIn(f'--cold-receipt "${{{{ runner.temp }}}}/cold-{host}/artifact-package-cold.json"', cold)
             self.assertIn(f"name: artifact-package-cold-${{{{ matrix.platform_token }}}}-{host}-${{{{ github.sha }}}}", cold)
         for runner, platform_name in (
@@ -3905,7 +4168,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # Every main push must build the cohort release.yml publishes from.
         self.assertIn(
             "artifacts: ${{ steps.filter.outputs.artifacts == 'true' || "
-            "(github.event_name == 'push' && github.ref == 'refs/heads/main') }}",
+            "(github.event_name == 'push' && github.ref == 'refs/heads/main') || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}",
             changes,
         )
         self.assertIn(
@@ -3946,6 +4210,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/curated/**",
             "tools/build-artifacts.py",
             "tools/test-artifact-mixed-schema.py",
+            "tools/test-artifact-work-old-client.py",
             "tools/build-host-packages.py",
             "tools/install-artifact-payload.py",
             "tools/generate-artifact-types.py",
@@ -3991,6 +4256,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "tools/create-artifact-examples.py",
             ".github/scripts/test_artifact_conformance.py",
             "tools/test-artifact-mixed-schema.py",
+            "tools/test-artifact-work-old-client.py",
             ".github/requirements/artifact-conformance-py314.lock",
         ):
             result = module.evaluate(real_map, [path], hosts())
@@ -4316,6 +4582,45 @@ class ContextImpactClosureTest(unittest.TestCase):
 
 
 class NativeQualificationTimeBudgetTest(unittest.TestCase):
+    def test_publication_reports_are_trusted_main_only_and_read_only(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        native = jobs['artifact-native-build']
+        emit = native.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
+        self.assertIn("github.event_name == 'push'", emit)
+        self.assertIn("github.ref == 'refs/heads/main'", emit)
+        self.assertIn("matrix.expected_platform == 'windows/amd64'", emit)
+        self.assertIn('GH_TOKEN: ${{ github.token }}', emit)
+        self.assertIn('major_qualification_report.py emit', emit)
+        self.assertNotIn('continue-on-error:', native)
+        producer = jobs['major-readiness-producer']
+        self.assertIn('name: major readiness producer', producer)
+        self.assertIn("github.event_name == 'push'", producer)
+        self.assertIn("github.ref == 'refs/heads/main'", producer)
+        self.assertIn('needs: [changes, ci-passed]', producer)
+        self.assertIn('actions: read', producer)
+        self.assertIn('contents: read', producer)
+        self.assertNotIn(': write', producer)
+        self.assertIn('major_readiness.py produce', producer)
+        self.assertIn('name: Upload major readiness record', producer)
+        self.assertIn("if: hashFiles('.github/integration-candidate.json') != ''", producer)
+        self.assertIn("if: steps.major-readiness.outcome == 'success'", producer)
+        self.assertIn('major-readiness-${{ github.sha }}', producer)
+        self.assertNotIn('continue-on-error:', producer)
+
+    def test_native_named_outcomes_come_from_the_original_build_run(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-native-build"]
+        self.assertEqual(job.count("python tools/build-artifacts.py"), 1)
+        self.assertIn('--test-observation "${{ runner.temp }}/native-tests.json"', job)
+        self.assertIn('major_qualification_report.py admit-go', job)
+        self.assertLess(job.index('ci20_native_binding.py stamp'),
+                        job.index('major_qualification_report.py admit-go'))
+        self.assertLess(job.index('major_qualification_report.py admit-go'),
+                        job.index('name: Share the real tested candidate'))
+        upload = job.split('name: Share the real tested candidate', 1)[1]
+        self.assertIn('${{ runner.temp }}/native-tests.json', upload)
+        self.assertIn('${{ runner.temp }}/native-observation.json', upload)
+        self.assertNotIn('continue-on-error:', job)
+
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         qualifier = jobs["artifact-engine"]

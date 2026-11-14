@@ -1,0 +1,29 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "tools/sync-core.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\sync-root",
+      "exit_code": 0,
+      "stdout_sha256": "0b1c50baac3042f54542c54a901f6b6762c455430f241e5159adc338ddbd0cee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "tools/sync-core.py",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\sync-root",
+      "exit_code": 0,
+      "stdout_sha256": "866bc5844a00445de827a65eb2291f8bb9336567b282cdce3950b7d8f66b0c6f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "canonical_helper_count": 98,
+  "scope": "normal supported generator in isolated immutable0830 source tree plus actual author authority overlay; parity, not host acceptance"
+}

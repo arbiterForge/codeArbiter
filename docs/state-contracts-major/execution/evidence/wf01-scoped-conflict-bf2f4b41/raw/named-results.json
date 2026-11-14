@@ -1,0 +1,118 @@
+{
+  "tests_run": 3,
+  "success": true,
+  "named": [
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "result": "PASS"
+    }
+  ],
+  "subcases": [
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+      "parameters": {
+        "path": "core/surface/commands/conflict.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+      "parameters": {
+        "path": "plugins/ca/commands/conflict.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+      "parameters": {
+        "path": "plugins/ca-codex/skills/ca-conflict/SKILL.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+      "parameters": {
+        "path": "plugins/ca-pi/skills/ca-conflict/SKILL.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+      "parameters": {
+        "path": "core/surface/commands/conflict.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+      "parameters": {
+        "path": "plugins/ca/commands/conflict.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+      "parameters": {
+        "path": "plugins/ca-codex/skills/ca-conflict/SKILL.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+      "parameters": {
+        "path": "plugins/ca-pi/skills/ca-conflict/SKILL.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "parameters": {
+        "path": "plugins/ca/SPRINT.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "parameters": {
+        "path": "plugins/ca/skills/context-check/SKILL.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "parameters": {
+        "path": "plugins/ca-codex/SPRINT.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "parameters": {
+        "path": "plugins/ca-codex/routines/context-check/SKILL.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "parameters": {
+        "path": "plugins/ca-pi/SPRINT.md"
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+      "parameters": {
+        "path": "plugins/ca-pi/routines/context-check/SKILL.md"
+      },
+      "result": "PASS"
+    }
+  ]
+}

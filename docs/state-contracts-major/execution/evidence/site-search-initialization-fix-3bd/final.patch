@@ -1,0 +1,250 @@
+diff --git a/site/src/components/Search.astro b/site/src/components/Search.astro
+--- a/site/src/components/Search.astro
++++ b/site/src/components/Search.astro
+@@ -98,26 +98,35 @@
+       };
+ 
+       let pagefind: any = null;
++      let pendingPagefind: Promise<void> | null = null;
+       let loadErr = false;
+       let loadAttempt = 0;
+       const loadPagefind = async (force = false) => {
+         if (pagefind) return;
++        if (pendingPagefind) return pendingPagefind;
+         if (loadErr && !force) return;
+         if (force) {
+           loadErr = false;
+           loadAttempt += 1;
+         }
+-        try {
+-          // Runtime path so Vite does not try to bundle the build-time asset.
+-          const retrySuffix = loadAttempt > 0 ? `?retry=${loadAttempt}` : "";
+-          pagefind = await import(
+-            /* @vite-ignore */ `${base}/pagefind/pagefind.js${retrySuffix}`
+-          );
+-          await pagefind.options?.({ basePath: `${base}/pagefind/` });
+-        } catch {
+-          pagefind = null;
+-          loadErr = true;
+-        }
++        // Focus and query callers share complete initialization, including options.
++        pendingPagefind = (async () => {
++          try {
++            // Runtime path so Vite does not try to bundle the build-time asset.
++            const retrySuffix = loadAttempt > 0 ? `?retry=${loadAttempt}` : "";
++            const loaded = await import(
++              /* @vite-ignore */ `${base}/pagefind/pagefind.js${retrySuffix}`
++            );
++            await loaded.options?.({ basePath: `${base}/pagefind/` });
++            pagefind = loaded;
++          } catch {
++            pagefind = null;
++            loadErr = true;
++          } finally {
++            pendingPagefind = null;
++          }
++        })();
++        return pendingPagefind;
+       };
+ 
+       // --- Combobox state: the option elements and the active (highlighted) one.
+diff --git a/site/test/components/search-interactions.spec.ts b/site/test/components/search-interactions.spec.ts
+new file mode 100644
+--- /dev/null
++++ b/site/test/components/search-interactions.spec.ts
+@@ -0,0 +1,195 @@
++/// <reference lib="dom" />
++/** Search component acceptance with real Chrome and controlled Pagefind; no production index/layout claim. */
++import { test, expect, type Page } from '@playwright/test';
++import { readFileSync } from 'node:fs';
++import ts from 'typescript';
++
++const source = readFileSync('src/components/Search.astro', 'utf8');
++const markup = source.slice(source.indexOf('<ca-site-search'), source.indexOf('<script>'))
++  .replace('class={Astro.props.class} data-base={base}', 'data-base=""');
++const script = ts.transpileModule(source.match(/<script>([\s\S]*?)<\/script>/)![1], {
++  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
++}).outputText;
++
++async function mount(page: Page, mode: 'init' | 'normal' | 'expand' | 'options-reject' = 'normal') {
++  const requests: string[] = [];
++  await page.route('http://component.test/**', async route => {
++    if (route.request().url().includes('/pagefind/')) {
++      requests.push(route.request().url());
++      return route.fulfill({ contentType: 'text/javascript', body: `
++        const mode=${JSON.stringify(mode)};
++        window.queries??=[]; window.dataCalls??=[]; window.optionsCalls??=0; window.releases??={};
++        let initialized=false;
++        const expansion=new Promise(resolve=>{window.releaseExpansion=resolve;});
++        export async function options() {
++          window.optionsCalls++; window.optionsStarted=true;
++          if(mode==='init') await new Promise(resolve=>{window.releaseOptions=resolve;});
++          if(mode==='options-reject'&&!import.meta.url.includes('?retry=')) throw Error('controlled options rejection');
++          initialized=true; window.initialized=true;
++        }
++        export async function search(query) {
++          window.queries.push({query,initialized});
++          if(query.startsWith('held')) await new Promise(resolve=>{window.releases[query]=resolve;});
++          const count=query==='none'?0:(query==='many'||mode==='expand'?10:3);
++          return {results:Array.from({length:count},(_,i)=>({async data(){
++            window.dataCalls.push({query,index:i});
++            if(mode==='expand'&&i>=8){window.expansionStarted=(window.expansionStarted||0)+1;await expansion;}
++            return {url:'/target/'+i,meta:{title:query+' '+i},excerpt:''};
++          }}))};
++        }` });
++    }
++    return route.fulfill({ contentType: 'text/html', body:
++      `<!doctype html><button id="outside">Outside</button>${markup}<script type="module">${script}</script>` });
++  });
++  await page.goto('http://component.test/');
++  await page.waitForFunction(() => !!customElements.get('ca-site-search'));
++  return requests;
++}
++
++async function focusReady(page: Page) {
++  const input = page.getByRole('combobox');
++  await input.focus();
++  await page.waitForFunction(() => (window as any).initialized === true);
++  return input;
++}
++
++async function submit(page: Page, value: string) {
++  await page.getByRole('combobox').fill(value);
++  await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit());
++}
++
++async function drain(page: Page) {
++  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
++}
++
++test('concurrent focus and submitted queries await one module initialization', async ({ page }) => {
++  const requests = await mount(page, 'init');
++  await page.getByRole('combobox').focus();
++  await page.waitForFunction(() => (window as any).optionsStarted === true);
++  await submit(page, 'first');
++  await submit(page, 'newest');
++  await drain(page);
++  expect(await page.evaluate(() => (window as any).queries)).toEqual([]);
++  expect(await page.evaluate(() => (window as any).optionsCalls)).toBe(1);
++  expect(requests).toEqual(['http://component.test/pagefind/pagefind.js']);
++  await page.evaluate(() => (window as any).releaseOptions());
++  await expect(page.getByRole('option')).toHaveText(['newest 0', 'newest 1', 'newest 2']);
++  await submit(page, 'cached');
++  await expect(page.getByRole('option')).toHaveText(['cached 0', 'cached 1', 'cached 2']);
++  expect(await page.evaluate(() => (window as any).optionsCalls)).toBe(1);
++  expect(requests).toEqual(['http://component.test/pagefind/pagefind.js']);
++  expect(await page.evaluate(() => (window as any).queries.every((entry: any) => entry.initialized))).toBe(true);
++});
++
++test('normalized queries debounce for140ms and fetch only the first8 results', async ({ page }) => {
++  await mount(page);
++  const input = await focusReady(page);
++  const fixed = new Date('2026-11-14T00:00:00Z');
++  await page.clock.install({ time: fixed });
++  await page.clock.pauseAt(fixed);
++  await input.fill(' discarded ');
++  await page.clock.runFor(139);
++  expect(await page.evaluate(() => (window as any).queries)).toEqual([]);
++  await input.fill('  many  ');
++  await page.clock.runFor(139);
++  expect(await page.evaluate(() => (window as any).queries)).toEqual([]);
++  await page.clock.runFor(1);
++  await expect(page.getByRole('option')).toHaveText(Array.from({ length: 8 }, (_, i) => `many ${i}`));
++  expect(await page.evaluate(() => (window as any).queries.map((entry: any) => entry.query))).toEqual(['many']);
++  expect(await page.evaluate(() => (window as any).dataCalls.map((entry: any) => entry.index))).toEqual([0,1,2,3,4,5,6,7]);
++  await expect(page.locator('.ca-search__status')).toHaveText('10 results for "many".');
++});
++
++test('pending expansion disables repeat activation until all data settles', async ({ page }) => {
++  await mount(page, 'expand');
++  await focusReady(page);
++  await submit(page, 'expanded');
++  await expect(page.getByRole('option')).toHaveCount(8);
++  const button = page.getByRole('button', { name: 'Show all 10 results' });
++  await button.click();
++  await page.waitForFunction(() => (window as any).expansionStarted === 2);
++  await expect(button).toBeDisabled();
++  await expect(page.getByRole('option')).toHaveCount(8);
++  await button.evaluate(element => (element as HTMLButtonElement).click());
++  expect(await page.evaluate(() => (window as any).expansionStarted)).toBe(2);
++  await page.evaluate(() => (window as any).releaseExpansion());
++  await expect(page.getByRole('option')).toHaveCount(10);
++  await expect(page.locator('.ca-search__show-all')).toBeHidden();
++  await expect(page.locator('.ca-search__show-all')).toBeEnabled();
++  await expect(page.locator('.ca-search__status')).toHaveText('10 results for "expanded".');
++});
++
++test('empty results, arrow wrapping, submit and activation preserve combobox navigation', async ({ page }) => {
++  await mount(page);
++  let input = await focusReady(page);
++  await submit(page, ' none ');
++  await expect(page.locator('.ca-search__status')).toHaveText('No results for "none".');
++  await expect(page.getByRole('option')).toHaveCount(0);
++  await expect(input).toHaveAttribute('aria-expanded', 'true');
++  await expect(input).toHaveAttribute('aria-activedescendant', '');
++  await submit(page, ' choices ');
++  await expect(page.getByRole('option')).toHaveText(['choices 0', 'choices 1', 'choices 2']);
++  await input.press('ArrowDown');
++  await expect(input).toHaveAttribute('aria-activedescendant', 'ca-search-opt-0');
++  await input.press('ArrowUp');
++  await expect(input).toHaveAttribute('aria-activedescendant', 'ca-search-opt-2');
++  await input.press('ArrowDown');
++  await expect(input).toHaveAttribute('aria-activedescendant', 'ca-search-opt-0');
++  await input.press('ArrowDown');
++  await expect(page.getByRole('option').nth(1)).toHaveAttribute('aria-selected', 'true');
++  await input.press('Enter');
++  await expect(page).toHaveURL('http://component.test/target/1');
++  input = await focusReady(page);
++  await submit(page, 'clicked');
++  await expect(page.getByRole('option')).toHaveCount(3);
++  await page.getByRole('option').nth(2).click();
++  await expect(page).toHaveURL('http://component.test/target/2');
++});
++
++test('late successful queries cannot replace newer results or empty state', async ({ page }) => {
++  await mount(page);
++  const input = await focusReady(page);
++  await submit(page, 'held-one');
++  await page.waitForFunction(() => typeof (window as any).releases['held-one'] === 'function');
++  await submit(page, 'newer');
++  await expect(page.getByRole('option')).toHaveText(['newer 0', 'newer 1', 'newer 2']);
++  await input.press('ArrowDown');
++  await page.evaluate(() => (window as any).releases['held-one']());
++  await drain(page);
++  await expect(page.getByRole('option')).toHaveText(['newer 0', 'newer 1', 'newer 2']);
++  await expect(input).toHaveAttribute('aria-activedescendant', 'ca-search-opt-0');
++  await expect(page.locator('.ca-search__status')).toHaveText('3 results for "newer".');
++  await submit(page, 'held-two');
++  await page.waitForFunction(() => typeof (window as any).releases['held-two'] === 'function');
++  await submit(page, 'none');
++  await expect(page.locator('.ca-search__status')).toHaveText('No results for "none".');
++  await page.evaluate(() => (window as any).releases['held-two']());
++  await drain(page);
++  await expect(page.getByRole('option')).toHaveCount(0);
++  await expect(input).toHaveAttribute('aria-activedescendant', '');
++  await expect(page.locator('.ca-search__status')).toHaveText('No results for "none".');
++});
++
++test('options rejection remains handled and explicit retry initializes a fresh module', async ({ page }) => {
++  const unhandled: string[] = [];
++  page.on('pageerror', error => unhandled.push(error.message));
++  const requests = await mount(page, 'options-reject');
++  const input = page.getByRole('combobox');
++  await input.focus();
++  await submit(page, 'retained');
++  await expect(page.getByText('Search is temporarily unavailable.')).toBeVisible();
++  await expect(input).toHaveValue('retained');
++  await expect(page.getByRole('option')).toHaveCount(0);
++  expect(await page.evaluate(() => (window as any).queries)).toEqual([]);
++  expect(await page.evaluate(() => (window as any).optionsCalls)).toBe(1);
++  await page.getByRole('button', { name: 'Retry search', exact: true }).click();
++  await expect(page.getByRole('option')).toHaveText(['retained 0', 'retained 1', 'retained 2']);
++  await expect(page.getByRole('button', { name: 'Retry search', exact: true })).toBeHidden();
++  expect(requests).toEqual(['http://component.test/pagefind/pagefind.js', 'http://component.test/pagefind/pagefind.js?retry=1']);
++  expect(await page.evaluate(() => (window as any).optionsCalls)).toBe(2);
++  expect(await page.evaluate(() => (window as any).queries.every((entry: any) => entry.initialized))).toBe(true);
++  await submit(page, 'cached');
++  await expect(page.getByRole('option')).toHaveText(['cached 0', 'cached 1', 'cached 2']);
++  expect(await page.evaluate(() => (window as any).optionsCalls)).toBe(2);
++  expect(unhandled).toEqual([]);
++});

@@ -1,0 +1,38 @@
+{
+  "schema": "codearbiter.major-test-selections/1",
+  "groups": [
+    {
+      "id": "native-task-block-progress",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel"
+      ],
+      "cells": [
+        "disposition:transitions:N09:04"
+      ],
+      "scope": "Intentional N09:04 change under D-PROGRESS=B: block selected upstream task while preserving all seven downstream progress labels and deriving dependency readiness independently. This does not qualify other task-reconcile, receipt, migration, installed-host or whole-task cells."
+    },
+    {
+      "id": "claude-cold-linux-amd64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:linux/amd64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:claude:workflow"
+      ],
+      "scope": "Original extracted installed helper workflow and three context fixture cases on Linux amd64. No public parent, TUI, provider or physical consent claim."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "implementation": "Explicit off advances existing generation, retiring any older install await; explicit on/new session can establish a new live install.",
+  "regression": "Original exact target RED is retained and unchanged; target plus old control2GREEN0.467s.",
+  "owner_checks": "48PASS(26manager+13compositor+9renderer)/0skip0.834s; typecheckPASS1.862s; local lines92.39%,branches84.79%.",
+  "limits": [
+    "Real production components via unit TUI/metrics ports, no actual installed/physical TUI.",
+    "No metrics cancellation/process cleanup/provider/network/native acceptance claim.",
+    "Source epoch is actual6d+WIP, never a future Git event."
+  ],
+  "retained_external_originals": [
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-fix-40mw6i7c"
+  ],
+  "proof_currentness": "No renewal performed. Active proof inventory separate; Root schedules smallest current committed selection."
+}

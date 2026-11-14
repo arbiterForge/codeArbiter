@@ -25,10 +25,14 @@ const LegacySMARTSProfile = SMARTSProfile
 // closed.
 const SMARTSProfileV2 = "smarts-plan-method/0.2.0"
 
+// SMARTSProfileV3 retains the V2 decision vocabulary and binds the actual
+// before/after schema epochs and normative identities in its closed record.
+const SMARTSProfileV3 = "smarts-plan-method/0.3.0"
+
 // IsSMARTSProfile reports whether profile is a SMARTS plan-method producer
 // profile the engine validates.
 func IsSMARTSProfile(profile string) bool {
-	return profile == LegacySMARTSProfile || profile == SMARTSProfileV2
+	return profile == LegacySMARTSProfile || profile == SMARTSProfileV2 || profile == SMARTSProfileV3
 }
 
 var Lenses = []string{"Scalable", "Maintainable", "Available", "Reliable", "Testable", "Securable"}
@@ -283,12 +287,21 @@ func ValidateSMARTSRecordFor(profile string, record map[string]any) error {
 	decisionSchema, validateDecision := DecisionSchema(), ValidateDecision
 	switch profile {
 	case LegacySMARTSProfile:
-	case SMARTSProfileV2:
+	case SMARTSProfileV2, SMARTSProfileV3:
 		decisionSchema, validateDecision = DecisionSchemaV2(), ValidateDecisionV2
 	default:
 		return fault.New("INVALID_SMARTS", "unrecognized SMARTS producer profile")
 	}
-	if es := schema.ValidateWith(smartsRecordSchema(decisionSchema), record); len(es) > 0 {
+	recordSchema := smartsRecordSchema(decisionSchema)
+	if profile == SMARTSProfileV3 {
+		properties := model.M(recordSchema["properties"])
+		for _, field := range []string{"before_schema_version", "after_schema_version"} {
+			properties[field] = map[string]any{"enum": model.List("0.3.0", "0.3.1", model.SchemaVersion, model.ProgressVersion)}
+		}
+		properties["before_normative_sha256"], properties["after_normative_sha256"] = hash(), hash()
+		recordSchema["required"] = append(model.A(recordSchema["required"]), "before_schema_version", "after_schema_version", "before_normative_sha256", "after_normative_sha256")
+	}
+	if es := schema.ValidateWith(recordSchema, record); len(es) > 0 {
 		return &es[0]
 	}
 	pair := model.M(record["pair"])
@@ -300,6 +313,20 @@ func ValidateSMARTSRecordFor(profile string, record map[string]any) error {
 		return err
 	}
 	before, after := model.M(record["before_normative"]), model.M(record["after_normative"])
+	if profile == SMARTSProfileV3 {
+		beforeVersion, afterVersion := model.S(record["before_schema_version"]), model.S(record["after_schema_version"])
+		if !model.VersionAtLeast(afterVersion, beforeVersion) {
+			return fault.New("INVALID_SMARTS", "method revision cannot downgrade the recorded schema epoch")
+		}
+		for _, phase := range []string{"before", "after"} {
+			version := model.S(record[phase+"_schema_version"])
+			data := map[string]any{"format_version": model.FormatVersion, "kind": "plan", "schema_version": version, "artifact_id": model.M(pair["plan"])["artifact_id"], "normative": record[phase+"_normative"]}
+			digest, err := canonical.Hash(data)
+			if err != nil || digest != model.S(record[phase+"_normative_sha256"]) || model.RequiredVersion(data) != version {
+				return fault.New("INVALID_SMARTS", "method record schema epoch and normative identity do not match")
+			}
+		}
+	}
 	for _, n := range []map[string]any{before, after} {
 		h, err := ProtectedPlanHash(n)
 		if err != nil || h != model.S(pair["scope_sha256"]) {
@@ -379,7 +406,13 @@ func validateSMARTS(observed, event, context map[string]any) bool {
 	result := model.M(observed["producer_result"])
 	dh, _ := canonical.Hash(record["decision"])
 	id := model.S(model.M(pair["plan"])["artifact_id"])
-	afterHash, _ := canonical.Hash(map[string]any{"format_version": model.FormatVersion, "kind": "plan", "schema_version": model.SchemaVersion, "artifact_id": id, "normative": record["after_normative"]})
+	// The applied plan carries the label its features require (0.3.4 once it
+	// holds a typed tombstone); the recorded hash used that same label.
+	afterVersion := model.RequiredVersion(map[string]any{"kind": "plan", "schema_version": model.SchemaVersion, "normative": record["after_normative"]})
+	if model.S(observed["producer_profile"]) == SMARTSProfileV3 {
+		afterVersion = model.S(record["after_schema_version"])
+	}
+	afterHash, _ := canonical.Hash(map[string]any{"format_version": model.FormatVersion, "kind": "plan", "schema_version": afterVersion, "artifact_id": id, "normative": record["after_normative"]})
 	subject := model.M(event["subject"])
 	decisionBytes, _ := canonical.Marshal(record["decision"])
 	return model.S(result["grant_receipt"]) == model.S(record["grant_receipt"]) && model.S(result["decision_sha256"]) == dh && model.S(result["scope_sha256"]) == model.S(pair["scope_sha256"]) && model.S(subject["artifact_id"]) == id && model.S(subject["record_id"]) == id && model.S(subject["normative_sha256"]) == afterHash && model.S(context["input_sha256"]) == afterHash && model.S(event["source_text"]) == string(decisionBytes) && model.S(context["prompt_sha256"]) == canonical.BytesHash(decisionBytes)

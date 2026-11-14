@@ -35,6 +35,26 @@ STARTUP_CONTENT_SHA256 = {
     "core/pysrc/session-start.py": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
 }
 
+# HW-14/HOST-D01 explicitly reviewed these two comment corrections and the
+# bounded recovery presentation seam. Preserve the previous full-content pin:
+# only byte-exact accepted changes are normalized for its comparison.
+_REVIEWED_STARTUP_REPLACEMENTS = (
+    (b'# The active startup path owns setup and a state briefing. Mode cleanup and\n# healing an already host-owned global statusline pin precede activation; an\n# absent activation flag therefore does not imply zero maintenance effects.\n# Enabled startup may install Git enforcement and spawn bounded fetch/update\n# work. The explicit-root init --check --passive path is the inspection boundary.\n# Persona delivery belongs to prompt-submit.py on each applicable turn, rather\n# than SessionStart. Recovery scans read only the existing Git-common ledger;\n# a separate optional per-session marker remembers notices emitted by this hook.\n#\n', b'# Detects an arbiter-enabled repo and injects the orchestrator persona + startup\n# state into context. A plugin has no CLAUDE.md to load an always-on persona, so\n# the SessionStart hook does it: in a repo whose `.codearbiter/CONTEXT.md`\n# frontmatter sets `arbiter: enabled`, this prints ORCHESTRATOR.md (+ live state)\n# to stdout, which Claude Code adds to context.\n#\n'),
+    (b'# After the narrow maintenance above, the activation flag gates project startup.\n', b'# In any repo WITHOUT the flag, the hook exits silently (dormant) \xe2\x80\x94 the plugin\n# can be installed globally and stays out of the way everywhere else.\n'),
+    (b'    # This notice never performs a target effect or repairs the recovery store.\n    if host.name != "pi":\n        # Pi owns typed snapshot/UI/prompt delivery and its current-lease dedup.\n        try:\n            import _workflowrecoverylib\n            recovery_notice = _workflowrecoverylib.presentation(root, session_id)\n            if recovery_notice["text"]:\n                print(recovery_notice["text"], flush=True)\n                _workflowrecoverylib.record_notice_emitted(root, session_id, recovery_notice["fingerprint"])\n        except Exception:  # An optional notice cannot disable normal startup.\n            print("codeArbiter: workflow recovery notice unavailable; independent authorized work continues.")\n\n', b''),
+)
+
+
+def reviewed_startup_bytes(path: str, content: bytes) -> bytes:
+    if path != "core/pysrc/session-start.py":
+        return content
+    for accepted, previous in _REVIEWED_STARTUP_REPLACEMENTS:
+        if content.count(accepted) != 1:
+            raise AssertionError("startup accepted recovery delta differs from reviewed bytes")
+        content = content.replace(accepted, previous, 1)
+    return content
+
+
 HISTORICAL_ATTESTATION_GUIDANCE_PATHS = (
     "core/surface/includes/artifacts-attestation.md",
     "plugins/ca/includes/artifacts-attestation.md",
@@ -316,7 +336,7 @@ class ArtifactSurfaceTest(unittest.TestCase):
                 git_bytes(POLICY_BASELINE_REVISION, fixture["path"])
             ).hexdigest()
             self.assertEqual(fixture["sha256"], historical_digest, fixture["path"])
-            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            digest = hashlib.sha256(reviewed_startup_bytes(fixture["path"], path.read_bytes())).hexdigest()
             expected_digest = STARTUP_CONTENT_SHA256.get(fixture["path"], fixture["sha256"])
             self.assertEqual(digest, expected_digest, fixture["path"])
 
@@ -328,16 +348,36 @@ class ArtifactSurfaceTest(unittest.TestCase):
         for path, expected in STARTUP_CONTENT_SHA256.items():
             self.assertIn(path, POLICY_STARTUP_FIXTURES)
             self.assertRegex(expected, r"^[0-9a-f]{64}$")
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected)
+            self.assertEqual(hashlib.sha256(reviewed_startup_bytes(path, (ROOT / path).read_bytes())).hexdigest(), expected)
 
     def test_reviewed_startup_content_still_rejects_drift_and_eager_schema(self) -> None:
         for path, expected in STARTUP_CONTENT_SHA256.items():
-            approved = (ROOT / path).read_bytes()
+            approved = reviewed_startup_bytes(path, (ROOT / path).read_bytes())
+            self.assertEqual(hashlib.sha256(approved).hexdigest(), expected)
             self.assertNotEqual(hashlib.sha256(approved + b"\n").hexdigest(), expected)
             forbidden = self.baseline["forbidden_startup_markers"]
             self.assertTrue(forbidden)
             seeded = approved.decode() + "\n" + forbidden[0] + "\n"
             self.assertTrue(eager_markers(seeded, forbidden))
+
+    def test_recovery_startup_delta_rejects_changed_effect_missing_and_duplicate_blocks(self) -> None:
+        path = "core/pysrc/session-start.py"
+        content = (ROOT / path).read_bytes()
+        notice = _REVIEWED_STARTUP_REPLACEMENTS[-1][0]
+        self.assertIn(b'_workflowrecoverylib.presentation(root, session_id)', notice)
+        self.assertIn(b'if host.name != "pi":', notice)
+        self.assertLess(notice.index(b'print(recovery_notice["text"]'),
+                        notice.index(b'_workflowrecoverylib.record_notice_emitted('))
+        for altered in (content.replace(b'_workflowrecoverylib.presentation(root, session_id)',
+                                        b'_workflowrecoverylib.repair(root, session_id)'),
+                        content.replace(notice, b''), content + notice):
+            with self.subTest(length=len(altered)), self.assertRaisesRegex(AssertionError, "reviewed bytes"):
+                reviewed_startup_bytes(path, altered)
+        # Changes outside the exact additions still fail the retained full pin.
+        drift = content.replace(b'def main():', b'def main():  # changed')
+        self.assertNotEqual(content, drift)
+        self.assertNotEqual(hashlib.sha256(reviewed_startup_bytes(path, drift)).hexdigest(),
+                            STARTUP_CONTENT_SHA256[path])
 
     def test_startup_fixtures_do_not_eager_load_artifact_content(self) -> None:
         forbidden = self.baseline["forbidden_startup_markers"]

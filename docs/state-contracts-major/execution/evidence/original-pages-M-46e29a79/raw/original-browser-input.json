@@ -1,0 +1,14 @@
+{
+  "origin": "http://127.0.0.1:56374",
+  "product_source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "product_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "docs_run_R": 43582198099,
+  "pagefind_entry": {
+    "path": "pagefind/pagefind.js",
+    "size": 45555,
+    "sha256": "252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009"
+  },
+  "playwright": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test",
+  "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "output": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-l7falj9l\\observation-giqgm6q0\\browser-result.json"
+}

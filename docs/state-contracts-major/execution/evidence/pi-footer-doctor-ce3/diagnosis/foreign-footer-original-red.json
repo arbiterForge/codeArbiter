@@ -1,0 +1,52 @@
+{
+  "schema": "codearbiter.selected-original-vitest-results/1",
+  "representation": "LOSSLESS_SELECTED_ASSERTION_OBJECTS_PARTIAL_REPORT",
+  "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\diagnosis-red-with-positive-control.json",
+    "sha256": "f1134f5366b233f8bcd96b2745ada783845d9986860ef5f03e4721d19d7b513b",
+    "bytes": 13816,
+    "preserved_in_Temp": true
+  },
+  "actual_source_epoch": "ce3a4a91+Temp regression-only test overlay; current production untouched",
+  "original_success": false,
+  "selected_assertion_objects": [
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle disposes the owned footer subscription once through the Pi replacement contract",
+      "status": "passed",
+      "title": "disposes the owned footer subscription once through the Pi replacement contract",
+      "duration": 2.7170000000000982,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+      "status": "failed",
+      "title": "does not clear another extension footer after its owned component was replaced",
+      "duration": 5.06029999999987,
+      "failureMessages": [
+        "AssertionError: expected undefined to be { render: [Function render], \u2026(1) } // Object.is equality\n    at C:/Users/brenn/AppData/Local/Temp/ca-pi-footer-replacement-diagnosis-abwz3vyv/candidate/plugins/ca-pi/tools/test/status.test.ts:370:21\n    at async file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ],
+      "meta": {},
+      "tags": []
+    }
+  ],
+  "selected_counts": {
+    "passed": 1,
+    "failed": 1
+  },
+  "omitted_unselected_count": 38,
+  "omitted_fields": [
+    "unselected assertion objects",
+    "coverageMap if present",
+    "snapshot bookkeeping",
+    "suite wallclock wrapper"
+  ],
+  "limits": "Selected objects exactly equal original JSON semantic values; original raw report remains untouched. Not a lossless projection of omitted report fields or a later-source execution."
+}

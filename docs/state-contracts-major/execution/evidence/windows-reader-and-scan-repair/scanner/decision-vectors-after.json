@@ -1,0 +1,395 @@
+{
+  "owner_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+  "vectors": {
+    "ordinary": {
+      "source_sha256": "8071adb9a95196c63ae4484aad2c23259acd1c3c873a7e072427bedbb920d997",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": "candidate-v1:13f648495281961db5083452dddaf9d0e9af2e6b200eca0f3ad6634e00aff071"
+      }
+    },
+    "same-line-crypto": {
+      "source_sha256": "394ace7cca793e6f4d3290567fd45c9565af53aaf828d633b4826a453133f509",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            1,
+            "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            1,
+            "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+          ]
+        ],
+        "candidate": "candidate-v1:f0bef73e0754f91654d4097dfea210019701dc150a5e934f38a5ee0b22c2b022"
+      }
+    },
+    "ordinary-rc2": {
+      "source_sha256": "90726889b8984adabf4a316d8714f4e5efbd1cacc06545ecbf6611bf26b1b869",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": "candidate-v1:f3aa8fa6b39e18293ae25e49a14444f798aa716d92775cda44167792d68645fa"
+      }
+    },
+    "secret": {
+      "source_sha256": "b1672f16db854ed0957c61dc8bbaca28b14d88c188878e530eb996443c8b15a3",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [
+          "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4"
+        ],
+        "findings": [
+          [
+            "secret",
+            "sample.py",
+            1,
+            "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [
+          "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4"
+        ],
+        "findings": [
+          [
+            "secret",
+            "sample.py",
+            1,
+            "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4"
+          ]
+        ],
+        "candidate": "candidate-v1:1fcda8ba230c1567097332766295090fb34dd4e9fa277922baf55395fdc866ff"
+      }
+    },
+    "both-ordered": {
+      "source_sha256": "3a1dddcf73ef7fd53c556fd3da9737cde2f912fd778cc1d1b51ba6c8d113d87b",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4",
+          "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+          ],
+          [
+            "secret",
+            "sample.py",
+            3,
+            "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4",
+          "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "path-v1:721ccc7011c2f6c2b44acde1db76ff893bcabacc6d53bd318d547d4de9cf41c6"
+          ],
+          [
+            "secret",
+            "sample.py",
+            3,
+            "path-v1:2bb905a54bb6090b37185e905d9662ee511629809dd60761a0e80b3ef9b03ce4"
+          ]
+        ],
+        "candidate": "candidate-v1:968d03586f30ca8e48e6c0e79c6b99145520800e5119481e96ea0304ab48910c"
+      }
+    },
+    "same-line-both": {
+      "source_sha256": "47cb2259418d8b6d185edff32d1bc4644adc7f8b6346002628cc9f90f2efa542",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "path-v1:045b358458acce1ad3ed1fb432c2ef7c7199301ea2c353f011d602f4b0c830b5"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            1,
+            "path-v1:045b358458acce1ad3ed1fb432c2ef7c7199301ea2c353f011d602f4b0c830b5"
+          ],
+          [
+            "secret",
+            "sample.py",
+            1,
+            "path-v1:045b358458acce1ad3ed1fb432c2ef7c7199301ea2c353f011d602f4b0c830b5"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "path-v1:045b358458acce1ad3ed1fb432c2ef7c7199301ea2c353f011d602f4b0c830b5"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            1,
+            "path-v1:045b358458acce1ad3ed1fb432c2ef7c7199301ea2c353f011d602f4b0c830b5"
+          ],
+          [
+            "secret",
+            "sample.py",
+            1,
+            "path-v1:045b358458acce1ad3ed1fb432c2ef7c7199301ea2c353f011d602f4b0c830b5"
+          ]
+        ],
+        "candidate": "candidate-v1:25d1f83022894fd8f53c026f7e94b86524aa8b9233d3a373667c4c01ccac4d7f"
+      }
+    },
+    "actual-import": {
+      "source_sha256": "ed1f3f66990cd998bc935394c62283b07470c61430fd4467b9387fa6e76204ea",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:f9f0d4d0581d52ec84e3c8d5fba2551ee61a6ab0e2479c284f536ef99d63273a"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "ctx-v1:f9f0d4d0581d52ec84e3c8d5fba2551ee61a6ab0e2479c284f536ef99d63273a"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:f9f0d4d0581d52ec84e3c8d5fba2551ee61a6ab0e2479c284f536ef99d63273a"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "ctx-v1:f9f0d4d0581d52ec84e3c8d5fba2551ee61a6ab0e2479c284f536ef99d63273a"
+          ]
+        ],
+        "candidate": "candidate-v1:1049d68e013f2d67bdbdb825052eee86a7e1d3f011e34db886fa1f87580bdd87"
+      }
+    },
+    "aliased-import": {
+      "source_sha256": "a1c88c5b5efeb88beff1e27072007b11c82e9698cbc9e3356055ab49c5170683",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:23778654fcc049c7e20f69582886555854e66f904f6bc21ff9108ccd1c4279f8"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "ctx-v1:23778654fcc049c7e20f69582886555854e66f904f6bc21ff9108ccd1c4279f8"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:23778654fcc049c7e20f69582886555854e66f904f6bc21ff9108ccd1c4279f8"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "ctx-v1:23778654fcc049c7e20f69582886555854e66f904f6bc21ff9108ccd1c4279f8"
+          ]
+        ],
+        "candidate": "candidate-v1:4c886610e943940688a6e9fa91822ce3a0598b5d34f61dccfdaaa098bb07e113"
+      }
+    },
+    "final-import": {
+      "source_sha256": "dddb0483e18fbc2c53e04389c20e1adbc5eeffb3fb8b620e96c9f620aa393619",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:ee75e95692395938149abeeae406ea1801f6927b53e8a47e09da53e1824969a8"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "ctx-v1:ee75e95692395938149abeeae406ea1801f6927b53e8a47e09da53e1824969a8"
+          ]
+        ],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:ee75e95692395938149abeeae406ea1801f6927b53e8a47e09da53e1824969a8"
+        ],
+        "findings": [
+          [
+            "crypto",
+            "sample.py",
+            2,
+            "ctx-v1:ee75e95692395938149abeeae406ea1801f6927b53e8a47e09da53e1824969a8"
+          ]
+        ],
+        "candidate": "candidate-v1:d6f83acde0f20d5d498d9d5a6515b907c1c19df38afb9dd40f58ee6488892a14"
+      }
+    },
+    "far-header": {
+      "source_sha256": "9853f43de568b45bafb1f2648761f5599ab04296941aa1b3bb3bab5b5db07c81",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:aab3294272b32f12d892ba182157018158ab11830e5c389fb23a22932b9d1bb2"
+        ],
+        "findings": [],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": true,
+        "digests": [
+          "ctx-v1:aab3294272b32f12d892ba182157018158ab11830e5c389fb23a22932b9d1bb2"
+        ],
+        "findings": [],
+        "candidate": "candidate-v1:474ab9e417c07c219be66d2e2c2f66cc0cd5a2574b567c3f3615a58bfb503ede"
+      }
+    },
+    "triple-quoted": {
+      "source_sha256": "72148493670ec9b7d7e945aa16ad1d04e9fca821742d41f03ba87952155cd0ac",
+      "source": null,
+      "diff": null
+    },
+    "comment-header": {
+      "source_sha256": "00bf3cac0143979bb1ad9adabaae53622226c6bc9a9b1e15874f60d7f17db643",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": "candidate-v1:f58e92cb0735a29be6bc43a0b1f7f88f8dca965a2d742884affabe59567bb6a3"
+      }
+    },
+    "closed-unrelated-import": {
+      "source_sha256": "5838bcb1cdc5f4aabce40ab823d73a09be9de087dfdef2d4c849afb57a3728be",
+      "source": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": null
+      },
+      "diff": {
+        "type": "SecurityScan",
+        "crypto": false,
+        "digests": [],
+        "findings": [],
+        "candidate": "candidate-v1:428c90ff7f9bc0a4d6008353d15454caf99230f88d28728021432681e8f85d40"
+      }
+    },
+    "unterminated-string": {
+      "source_sha256": "c034ce6c3b3b2d88eab84a482111fc8ce279c6445e03a28b3ca311feb7eaedac",
+      "source": null,
+      "diff": null
+    },
+    "cross-line-unsupported": {
+      "source_sha256": "4d802e3ced0147744ac0a0bb695f567c205694a693bdb4cf85baeb4232602abf",
+      "source": null,
+      "diff": null
+    },
+    "cross-line-with-real-import": {
+      "source_sha256": "b369f978ee40ce8d4150f2c38e7944f59947b59e32021582dd8bc6f7a66279b7",
+      "source": null,
+      "diff": null
+    },
+    "invalid-context": {
+      "source_sha256": "65310fabca7cc9ac603ee9bf293bc3ab88aad91672d7ad70eaaee973246830d8",
+      "source": null,
+      "diff": null
+    },
+    "replacement-character": {
+      "source_sha256": "3ead7ad76c593663d0958d7bdcd236eb20a9ff63f7043f66ba17cd23e9b7ee6b",
+      "source": null,
+      "diff": null
+    }
+  }
+}

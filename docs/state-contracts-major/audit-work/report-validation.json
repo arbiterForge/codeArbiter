@@ -1,0 +1,11 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine_families": 287,
+  "transition_rows_preserved_exactly": 1748,
+  "source_links_checked": 4056,
+  "duplicate_ids": 0,
+  "external_script_or_stylesheet_dependencies": 0,
+  "validation": "Structured HTML/JSON/content/source validation. Browser rendering not executed because a browser executable is not installed.",
+  "final_rebuild_verified": true,
+  "main_head_rechecked_at": "2026-11-09 16:12:29 UTC"
+}

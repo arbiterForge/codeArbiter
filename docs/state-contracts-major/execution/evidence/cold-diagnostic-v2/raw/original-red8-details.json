@@ -1,0 +1,87 @@
+{
+  "source_export": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "source_kind": "Temp exact production/test overlay",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-v2-o52jgysl\\observe.py",
+    "red8-details"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-v2-o52jgysl",
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "runtime_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "HOME_before_import": "C:/Users/brenn/AppData/Local/Temp/ca-cold-diagnostics-v2-o52jgysl/home",
+  "exit_code": 1,
+  "duration_seconds": 0.21687889099121094,
+  "named_outcomes": [
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_arbitrary_and_forged_exception_names_remain_unclassified",
+      "outcome": "ERROR"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_builtin_subtypes_and_families_keep_no_messages",
+      "outcome": "FAIL"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields",
+      "outcome": "FAIL"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_keeps_exact_legacy_v1_decoder_and_nested_record",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_nested_failure_survives_both_consumers_without_private_stderr",
+      "outcome": "FAIL"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_audit_denial_reports_closed_outer_context",
+      "outcome": "FAIL"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_guard_builtin_failure_has_safe_subtype_and_site",
+      "outcome": "FAIL"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_nested_audit_retains_deepest_context",
+      "outcome": "FAIL"
+    }
+  ],
+  "inputs_before": {
+    "tools/build-host-packages.py": "abd40c23530e34e08d56f6afb62fdaf4f5002aa430dd8288e70d767921844419",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    ".github/scripts/test_artifact_installed_host.py": "b6ce05dfa1a9ef09531952e70bf65dd8488318e07d2532fbabe6ad6404f39192",
+    ".github/scripts/test_artifact_package.py": "514b9a370e7ea2025dca1dd2aecae3a26fab46f0e9d4c24ef9c6c644a28fb1c3",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "inputs_after": {
+    "tools/build-host-packages.py": "abd40c23530e34e08d56f6afb62fdaf4f5002aa430dd8288e70d767921844419",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    ".github/scripts/test_artifact_installed_host.py": "b6ce05dfa1a9ef09531952e70bf65dd8488318e07d2532fbabe6ad6404f39192",
+    ".github/scripts/test_artifact_package.py": "514b9a370e7ea2025dca1dd2aecae3a26fab46f0e9d4c24ef9c6c644a28fb1c3",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "observer_sha256": "7e4f37b46fbafb85e5398d29306f4e0e4dda212cacebac347ae55389bc61c0ae",
+  "raw_stderr_sha256": "51a8ee766c298488e755766fcaa7cf47031779c4ecdc39d6283b64fb2d5ecd5d",
+  "fixture_boundary": "Actual existing owner globals loaded by file path; direct native-free TestCase.run invokes actual case setup/cleanup, intentionally no unrelated native-building module setup. Not full package acceptance."
+}

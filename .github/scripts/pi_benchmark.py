@@ -141,6 +141,61 @@ def _round_ms(nanoseconds):
     return round(nanoseconds / 1_000_000.0, 6)
 
 
+BOUNDARY_READY_SECONDS = 30.0
+BOUNDARY_COMPLETE_SECONDS = 30.0
+
+
+def _boundary_session(argv, cwd, ready_timeout=BOUNDARY_READY_SECONDS,
+                      complete_timeout=BOUNDARY_COMPLETE_SECONDS):
+    """Run the boundary child with a deadline on BOTH phases (R-07 / C-F08).
+
+    The readiness line used to block in readline() with no bound, so a child
+    that never wrote it waited forever before the 30-second completion
+    timeout could apply. Each phase now has a deadline; on a miss the whole
+    child tree is terminated and the error states the containment outcome
+    plus any partial stderr, never implying the child is quiescent.
+    """
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    import _boundedproc
+
+    def fail(phase, reason):
+        try:
+            containment = _boundedproc.terminate_tree(process)
+        except OSError:
+            containment = "unconfirmed"
+        try:
+            partial_out, err = process.communicate(timeout=_boundedproc.GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError, ValueError):
+            partial_out, err = "", ""
+        tail = (err or partial_out or ready_raw or "").strip()[-400:]
+        raise RuntimeError(
+            f"production Pi benchmark boundary {phase} failed: {reason}; "
+            f"containment={containment}" + (f"; partial output: {tail}" if tail else ""))
+
+    startup = time.perf_counter_ns()
+    process = _boundedproc.start(
+        argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        encoding="utf-8", errors="replace",
+    )
+    ready_raw, reason = _boundedproc.readline(process, ready_timeout)
+    startup_ms = _round_ms(time.perf_counter_ns() - startup)
+    if ready_raw is None:
+        fail("readiness", reason)
+    if ready_raw == "":
+        fail("readiness", f"{reason} (exit {process.poll()})")
+    try:
+        ready = json.loads(ready_raw)
+    except json.JSONDecodeError:
+        fail("readiness", "ready line is not one complete JSON record")
+    try:
+        remainder, _stderr = process.communicate(timeout=complete_timeout)
+    except subprocess.TimeoutExpired:
+        fail("completion", f"no completion within {complete_timeout:g}s")
+    if process.returncode != 0:
+        raise RuntimeError("production Pi benchmark boundary failed")
+    return startup_ms, ready, remainder
+
+
 def _production_pi_samples(samples, cwd):
     """Measure the bundled production wrapBuiltins/BridgePort boundary."""
     node = shutil.which("node")
@@ -159,20 +214,12 @@ def _production_pi_samples(samples, cwd):
         )
         if built.returncode != 0:
             raise RuntimeError("production Pi benchmark boundary did not bundle")
-        startup = time.perf_counter_ns()
-        process = subprocess.Popen(
-            [node, str(bundle), str(samples)], cwd=cwd, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
-        )
-        if process.stdout is None:
-            raise RuntimeError("production Pi benchmark boundary has no protocol stream")
-        ready_raw = process.stdout.readline()
-        startup_ms = _round_ms(time.perf_counter_ns() - startup)
-        ready = json.loads(ready_raw)
-        remainder, _stderr = process.communicate(timeout=30)
-        if process.returncode != 0:
-            raise RuntimeError("production Pi benchmark boundary failed")
-        document = json.loads(remainder)
+        startup_ms, ready, remainder = _boundary_session(
+            [node, str(bundle), str(samples)], cwd)
+        try:
+            document = json.loads(remainder)
+        except json.JSONDecodeError as error:
+            raise RuntimeError("production Pi benchmark completion record is malformed") from error
     if ready != {**ready, "phase": "ready"} or ready.get("wrapperCount") != 4:
         raise RuntimeError("production Pi benchmark readiness drifted")
     timings = document.get("timings")

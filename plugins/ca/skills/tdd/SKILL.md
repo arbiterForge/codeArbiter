@@ -82,6 +82,13 @@ baseline tests before restructuring. Never weaken assertions or suppress failure
 
 ## Phase 3 — Implement and check
 
+When a qualifying out-of-scope follow-up is first recognized, use
+`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md` immediately: register its exact extractor
+origin and sanitized candidate with `source.workflow: tdd:phase-6`, the current
+source fingerprint, and the stable workflow/work run. Do not wait for terminal
+handoff or retain only conversation text. Record actual `durable:false` without
+stopping independent work; terminal promotion still uses its existing authority.
+
 Implement the scoped change using project conventions. Run the proving checks on
 the resulting source, followed by affected pre-existing contracts. Repair regressions
 and retain failed results until superseded by an actual rerun.
@@ -128,3 +135,6 @@ Preserve failures and actual user stops. Do not skip tests, lower coverage thres
 or suppress security checks to obtain a pass. Use `${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`
 for genuine out-of-scope findings. Completion reports must distinguish implementation,
 verification, review, and release.
+At terminal harvest, reconcile any uncertain registered effect by exact
+operation/origin, then resume only the selected authorized obligations and retain
+each target readback. A failing or unregistered capture is not recovered work.

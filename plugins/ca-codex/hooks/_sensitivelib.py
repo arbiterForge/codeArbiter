@@ -462,10 +462,14 @@ def _scan_bound_lines(lines, contextual_bindings, path=None, rows=None):
         rows = [None] * len(lines)
     findings = []
     for index, line in enumerate(lines):
+        crypto = CRYPTO_RE.search(line)
+        secret = SECRET_RE.search(line)
+        if not crypto and not secret:
+            continue
         digest = line_digest(line, path)
-        if CRYPTO_RE.search(line):
+        if crypto:
             findings.append(SecurityFinding("crypto", path, rows[index], digest))
-        if SECRET_RE.search(line):
+        if secret:
             findings.append(SecurityFinding("secret", path, rows[index], digest))
     for first, _start, last, _end in spans:
         digest = contextual_bindings[(first, _start, last, _end)]
@@ -526,6 +530,9 @@ def security_scan_source(path, source, added_rows):
              (tokenize.OP, "."), (tokenize.NAME, "Cipher"),
              (tokenize.NAME, "import"), (tokenize.OP, "(")]
     for index in range(len(tokens) - len(start)):
+        token = tokens[index]
+        if token.type != tokenize.NAME or token.string != "from":
+            continue
         if [(token.type, token.string) for token in tokens[index:index + len(start)]] != start:
             continue
         cursor = index + len(start)

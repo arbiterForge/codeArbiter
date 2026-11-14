@@ -1,0 +1,722 @@
+{
+  "schema": "codearbiter.workflow-source-clause-inspection/1",
+  "observer": "/root/packaging_site_tools",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "14 written model-guided clauses, no actual workflow/runtime/user/model/installed acceptance.",
+  "source_comparisons": [
+    {
+      "path": ".codearbiter/context/security-controls.html",
+      "declared_owner": false,
+      "baseline_path_state": "not-in-successfully-enumerated-baseline-tree",
+      "baseline_sha256": null,
+      "current_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "whole_file_identical": false
+    },
+    {
+      "path": ".codearbiter/security-controls.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "0c3c3b13ddfad25d67f9113d653d797d6b5d9d8e391744d9e090c431c9122255",
+      "current_sha256": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/surface/agents/tribunal-lens-reviewer.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+      "current_sha256": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/command-routes.json",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "18a87c94393aef590df171798ef6b97f6bb550187d37129aaa1f873e86fcd6b5",
+      "current_sha256": "9882caf3f5c5f769f420c2d2c0bf03e958d5822b156e15b9231ec21a7a39f756",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/surface/includes/command-compatibility.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "0c13e07bf6bad350fe0efc6a2e7b0e7f666e130a6ff18ed8fcc9c588afdc62fa",
+      "current_sha256": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/surface/includes/helper-invocation.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "75467678ab56e1871b1aeb1b1b08b15273b7cd3c65b7d4928020570b426ca9cc",
+      "current_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "05419cf635d82a4889c2f964654bf2337e0ab878bc6e1fc4786c50d8e7dd31be",
+      "current_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/surface/skills/decompose/SKILL.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+      "current_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/decompose/references/markdown-format.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+      "current_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/SKILL.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+      "current_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/cost-and-models.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448",
+      "current_sha256": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/finding-record.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "f82a0d48b31a2521617fb9a7b4326f6c2ce439022367dcaf67f3d338bce010c7",
+      "current_sha256": "f82a0d48b31a2521617fb9a7b4326f6c2ce439022367dcaf67f3d338bce010c7",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/issue-filing.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052",
+      "current_sha256": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/report.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "4fccd7de3ea4e089a7960d8978936afe1942ba3c2c479f61924ed38abf7319a8",
+      "current_sha256": "4fccd7de3ea4e089a7960d8978936afe1942ba3c2c479f61924ed38abf7319a8",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/review-risk.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f",
+      "current_sha256": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/schemas.md",
+      "declared_owner": false,
+      "baseline_path_state": "present",
+      "baseline_sha256": "942425a3aaa68a01464b7b3070a19957404085edcfdb35ecdc29ada7a4021ebd",
+      "current_sha256": "942425a3aaa68a01464b7b3070a19957404085edcfdb35ecdc29ada7a4021ebd",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/telemetry.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "05a545bbbd4b01b7daf6c3e7af422b2bcb9a8e54581c47ddcf9f54999d4c8ee3",
+      "current_sha256": "05a545bbbd4b01b7daf6c3e7af422b2bcb9a8e54581c47ddcf9f54999d4c8ee3",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/triage.md",
+      "declared_owner": true,
+      "baseline_path_state": "present",
+      "baseline_sha256": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f",
+      "current_sha256": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f",
+      "whole_file_identical": true
+    }
+  ],
+  "shared_guard_dependency_inspection": [
+    {
+      "paths": [
+        "core/surface/includes/knowledge.md"
+      ],
+      "assessment": "Read full current card and complete fd7 diff. Additive canonical --text/--commands-only uses active revision-bound records; retired notes cannot reinstate policy. Format selection/no silent conversion, one native-or-legacy task owner, evidence basis and actual authority preserved."
+    },
+    {
+      "paths": [
+        "core/surface/includes/helper-invocation.md"
+      ],
+      "assessment": "Read complete card/full diff. Only added literal preexisting workflow-recovery.py leaf; installed-resource/interpreter/literal-argv/no-replay boundaries unchanged. Card covers debug/work/recovery only; Tribunal schemas define its own exact tribunal.py invocation, decomposition its knowledge/init owner."
+    },
+    {
+      "paths": [
+        "core/surface/includes/command-compatibility.md",
+        "core/surface/command-routes.json"
+      ],
+      "assessment": "Read compatibility card/full diff and exact decompose/tribunal registry entries. Decompose remains alias init --greenfield, Tribunal retained advanced canonical owner. Removal FACT now registry-owned closed floors+named decision+fresh exact non-draft evidence. No implicit removal or publication clock inference."
+    },
+    {
+      "paths": [
+        "core/surface/skills/tribunal/references/schemas.md",
+        "core/surface/skills/tribunal/references/report.md",
+        "core/surface/skills/tribunal/references/finding-record.md",
+        "core/surface/skills/tribunal/references/cost-and-models.md",
+        "core/surface/skills/tribunal/references/review-risk.md"
+      ],
+      "assessment": "Complete support cards read: immutable run/source and append-only outcomes; drift invalidates reuse; structured argv is not consent; evidence never expands authority; unavailable estimate/usage not zero; report separate from terminal filing/telemetry."
+    },
+    {
+      "paths": [
+        ".codearbiter/context/security-controls.html",
+        ".codearbiter/security-controls.md"
+      ],
+      "assessment": "Both current policy files exactly join previously completely read current HTML policy/operative scope stub. Baseline HTML absent through successful immutable tree enumeration, not treated as historical equivalence. Current-format policy selection respects no invented consent/secret result."
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:WF-18:01",
+      "frozen_baseline_row": {
+        "from": "Uninitialized greenfield",
+        "event": "Inspect/resume interview",
+        "guard": "No meaningful implementation; scaffold exists",
+        "to": "First unfinished layer",
+        "effects": "Read durable session/layer files and actual confirmations.",
+        "failure_retry": "Migrate interrupted temporary drafts only after comparing destinations; preserve conflicts, never overwrite.",
+        "transition_id": "WF-18:01"
+      },
+      "preserved_source_clause": "Resume retained actual work under selected format; preserve conflicting interrupted drafts, settled answers and initialized history.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 65,
+          "end": 86,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "8b2672de8e703f7f62c999a9f65f32fe5036f796a446b33853dbf2ca987150f6",
+          "bounded_excerpt": "## 1. Inspect and resume\n\n...\nstep. An explicit restart retires earlier records with a reason; it never deletes\nthem."
+        },
+        {
+          "path": "core/surface/skills/decompose/references/markdown-format.md",
+          "start": 41,
+          "end": 58,
+          "file_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+          "selected_span_sha256": "1147a81e609e0240ed41ccff57c8727b480395b17135f524c2ce83f5533dc15c",
+          "bounded_excerpt": "## 1. Inspect and resume\n\n...\nconflicting versions without overwriting either. Temporary drafts remain until\ninitialization completes. Never cite a temporary file that cleanup will remove."
+        }
+      ],
+      "limits": "HTML active records and Markdown durable session/layers remain distinct. No silent conversion; no resume or enrollment actually performed."
+    },
+    {
+      "cell": "disposition:transitions:WF-18:02",
+      "frozen_baseline_row": {
+        "from": "Interview layer",
+        "event": "User answers focused questions",
+        "guard": "Vision, flows, scope, tech shape, integrations or risks",
+        "to": "Layer retained",
+        "effects": "Persist actual question/answer/tradeoffs and unresolved items before next layer.",
+        "failure_retry": "Do not re-ask settled questions or manufacture an architectural decision.",
+        "transition_id": "WF-18:02"
+      },
+      "preserved_source_clause": "Capture focused actual answers/tradeoffs and unanswered questions before next layer; only actual user architecture decisions reach ADR owner.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 87,
+          "end": 123,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "60443f15a554e8c755672c9151047bc27dce00265732962f3130cebd6a5fae31",
+          "bounded_excerpt": "## 2. Capture the interview\n\n...\nAn unresolved consequential choice blocks only the output that depends on it.\nContinue with independent areas."
+        },
+        {
+          "path": "core/surface/skills/decompose/references/markdown-format.md",
+          "start": 59,
+          "end": 89,
+          "file_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+          "selected_span_sha256": "0b5b8065882ec5126ce3d9a237216446507562a0d7d5f30dbbc24fbc7dcdb347",
+          "bounded_excerpt": "## 2. Capture the interview\n\n...\nAn unresolved consequential choice blocks its dependent output. Record other gaps\nas questions; a user's explicit deferral remains unresolved and is not permission."
+        }
+      ],
+      "limits": "Unresolved consequential choice blocks only dependent output, never grants permission. No actual interview/decision claim."
+    },
+    {
+      "cell": "disposition:transitions:WF-18:03",
+      "frozen_baseline_row": {
+        "from": "Layers retained",
+        "event": "Synthesize",
+        "guard": "Retained evidence and relevant ADRs read",
+        "to": "Architecture/phases/backlog candidates",
+        "effects": "Write current/planned distinctions and measurable criteria; present for correction and actual confirmation.",
+        "failure_retry": "An explicit deferral remains unresolved and grants no permission.",
+        "transition_id": "WF-18:03"
+      },
+      "preserved_source_clause": "Synthesize proposed architecture/phases/work from retained evidence/ADRs; apply corrections and record actual confirmation without reapproving unchanged content.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 124,
+          "end": 137,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "fd25a2f0d9cdfa0cab6f314414d9ea39e1ec02cf97ebdd433fa256ba53b05679",
+          "bounded_excerpt": "## 3. Synthesize and confirm\n\n...\nconfirmation as an answered question. Proceed when the records match the user's\nchoices and every remaining gap is an open question."
+        },
+        {
+          "path": "core/surface/skills/decompose/references/markdown-format.md",
+          "start": 90,
+          "end": 106,
+          "file_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+          "selected_span_sha256": "dc5bea82d31030b70bdcf5f1c9613dc5a05bda1fce4644d461892f4a2483f3cb",
+          "bounded_excerpt": "## 3. Synthesize and confirm\n\n...\nProceed when the artifacts accurately represent the user's choices and each gap is\nresolved or explicitly retained on the question board."
+        }
+      ],
+      "limits": "Proposed architecture is not implemented fact; explicit deferral remains unresolved. No model synthesis or confirmation executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-18:04",
+      "frozen_baseline_row": {
+        "from": "Confirmed decomposition",
+        "event": "Populate context",
+        "guard": "Sources and selected format valid",
+        "to": "Initialization ready",
+        "effects": "Write five managed context/provenance pairs or knowledge records; selected tasks go through their owner.",
+        "failure_retry": "Do not create release-target rows from greenfield intent without actual manifests.",
+        "transition_id": "WF-18:04"
+      },
+      "preserved_source_clause": "Populate selected-format context only through managed owners; retain provenance/activation/history and never create release-target rows from intent without manifests.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 116,
+          "end": 120,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "0179b7723465cfafbd8edf6ef7d022c3e1dd8606f3f6b3088bc748bec47a2758",
+          "bounded_excerpt": "Release intent is elicited here: capture the **tag prefix** preference and\n**changelog kept** yes/no under technical shape. No `.codearbiter/release-targets.md` row is ever written by this skill.\nGreenfield runs before any manifest or tag exists. `{{CMD:release}}` or a subsequent\ncontext refresh derives a target from the actual manifest and delivery structure."
+        },
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 138,
+          "end": 163,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "310b06518e9984805d6914d1626accdff373a7aceee8ec461db90efcf3c19399",
+          "bounded_excerpt": "## 4. Populate context\n\n...\nPreserve\n`overrides.log`, `last-checkpoint` and all ADR history."
+        },
+        {
+          "path": "core/surface/skills/decompose/references/markdown-format.md",
+          "start": 107,
+          "end": 156,
+          "file_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+          "selected_span_sha256": "b9e22a846a7507961ac6856ace37c8e90af9371b95046aa051f1230e99164972",
+          "bounded_excerpt": "## 4. Populate context\n\n...\nVerify all five v2 pairs, the task/question boards and audit header are present.\nDo not scaffold cut documents listed in `{{PLUGIN_ROOT}}/includes/cut-docs.md`."
+        }
+      ],
+      "limits": "HTML record and Markdown preview/apply writers remain distinct. No write transaction, initialization, task promotion or release was executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-18:05",
+      "frozen_baseline_row": {
+        "from": "Initialized brownfield decomposition",
+        "event": "Inspect current capability versus target",
+        "guard": "Existing initialized state retained",
+        "to": "Updated project model",
+        "effects": "Record source-observed current architecture, proposed delta/phases, and candidate work separately.",
+        "failure_retry": "Inspection alone proves neither historical rationale nor deployment/testing.",
+        "transition_id": "WF-18:05"
+      },
+      "preserved_source_clause": "Initialized brownfield acquisition preserves activation, questions/ADRs/work and current source-observed architecture separately from proposed target/delta.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 20,
+          "end": 64,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "09da3d13a8dff8e8cb75b47577d5a233fcdace929d48cbc0b15bf59c0318511f",
+          "bounded_excerpt": "## Initialized brownfield acquisition\n\n...\nDo not silently convert. The numbered procedure below remains the greenfield\nroute for projects that have not been initialized."
+        },
+        {
+          "path": "core/surface/skills/decompose/references/markdown-format.md",
+          "start": 10,
+          "end": 40,
+          "file_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+          "selected_span_sha256": "33e4d7278ba8dd6a3721c85a3e7858391cadb04ba0f471a14139631807a498fe",
+          "bounded_excerpt": "## Initialized brownfield acquisition\n\n...\nsource scope and remaining unknowns, then return to the requested work. The\ngreenfield interview and initialization steps below do not run on this path."
+        }
+      ],
+      "limits": "Do not restart initial interview/population; inspection cannot prove original rationale, deployment or passing tests. Missing facts stay unknown."
+    },
+    {
+      "cell": "disposition:transitions:WF-18:06",
+      "frozen_baseline_row": {
+        "from": "Candidate work",
+        "event": "User selects promotion",
+        "guard": "Dedup stable origin against active and archived work",
+        "to": "Linked work item",
+        "effects": "Promote through exactly one selected work owner and retain returned ID.",
+        "failure_retry": "Matching title or external citation alone is not publication; retries repair the same link.",
+        "transition_id": "WF-18:06"
+      },
+      "preserved_source_clause": "User-selected work promotion dedups stable origin including archived work through one chosen owner, retains actual returned ID and repairs same link on retry.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 47,
+          "end": 59,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "af73fd748af30736e23c4bb5aa2ff46184fd43ef8be031b8d9eb6a3675fd2212",
+          "bounded_excerpt": "Save discovered gaps as decomposition `work_item` candidates. Do not call\n`knowledge.py promote` or create an external issue merely because a gap was\n...\nselected records and remaining unknowns, then return to the requested work;\nthe greenfield interview and initialization steps below do not run on this path."
+        },
+        {
+          "path": "core/surface/skills/decompose/SKILL.md",
+          "start": 153,
+          "end": 163,
+          "file_sha256": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+          "selected_span_sha256": "5a08170343594dd5416e91ecf7a1b33f03276ee525f48fc5fec193f58ce20d50",
+          "bounded_excerpt": "Promote each approved `work_item` with `knowledge.py promote <WORK-ID>`. It adds the\ntask through the task board's own writer and is safe to repeat. Never write task\n...\nPreserve\n`overrides.log`, `last-checkpoint` and all ADR history."
+        },
+        {
+          "path": "core/surface/skills/decompose/references/markdown-format.md",
+          "start": 31,
+          "end": 40,
+          "file_sha256": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+          "selected_span_sha256": "00f9388ad2cc3de123aa729e26ff0560d4cbdec844dd83926e83b244977e04ee",
+          "bounded_excerpt": "Candidates are not tasks or tracker tickets. When the user selects promotion,\nresolve candidates that cite the same external item by their actual scope and\n...\nsource scope and remaining unknowns, then return to the requested work. The\ngreenfield interview and initialization steps below do not run on this path."
+        }
+      ],
+      "limits": "Title/shared citation does not authorize publication. No actual native/legacy work mutation, external issue or provider acceptance claim."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:01",
+      "frozen_baseline_row": {
+        "from": "Audit requested",
+        "event": "Prepare run",
+        "guard": "Scope, source binding and cost acknowledgment established",
+        "to": "Inventory/risk mapping",
+        "effects": "Create the retained run and bounded evidence packets; count actual applicability and gaps.",
+        "failure_retry": "No model dispatch before required cost acknowledgment; unchanged resume retains it.",
+        "transition_id": "WF-23:01"
+      },
+      "preserved_source_clause": "Bind source/scope/evidence and acknowledge actual cost/settings before models; unchanged resume reuses acknowledgment while drift creates fresh binding.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 57,
+          "end": 91,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "d3f1e88b255e7d4584a126219432ebe99d6f3fe11b6be871c75b85f78ad145a1",
+          "bounded_excerpt": "## Phase 0 — Bind, size and confirm cost · gate: STOP\n\n...\n\nGate: source bound, cost acknowledged and actual supported settings confirmed."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/cost-and-models.md",
+          "start": 45,
+          "end": 65,
+          "file_sha256": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448",
+          "selected_span_sha256": "a2c093919969ebc6baefa3a8ba427b2d7d37f48cf2541cfb06826043e069dd88",
+          "bounded_excerpt": "## Evidence-based token band\n\n...\nConcurrency is capped at five and further limited by actual host capacity.\nLower concurrency affects elapsed time and peak resources; it does not reduce total tokens."
+        }
+      ],
+      "limits": "Mechanical inventory is not review; missing profile/usage stays unknown. No Tribunal start/estimate/dispatch/lock recovery executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:02",
+      "frozen_baseline_row": {
+        "from": "Inventory complete",
+        "event": "Dispatch lens wave",
+        "guard": "Bound finding/evidence scope and packet limits",
+        "to": "Reviewing",
+        "effects": "Dispatch selected lenses and persist findings/leads as discovered.",
+        "failure_retry": "Source-shaped instructions do not grant scope/tools/writes; evidence expansion does not expand finding scope.",
+        "transition_id": "WF-23:02"
+      },
+      "preserved_source_clause": "Dispatch selected bounded trusted lens assignments, preserve finding/evidence scope, persist discovered findings/leads and actual completion/usage limitations.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 92,
+          "end": 150,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "6a7c8ab48d5b853a50583818abf4c7a9ab0e0009654daecd94ee5401a5c70db9",
+          "bounded_excerpt": "## Phase 1 — Deterministic inventory and bounded packets · gate: BLOCK\n\n...\nGate: every active lens has persisted findings/leads and a completion event;\nfailed/incomplete output remains explicit until retried or dispositioned."
+        },
+        {
+          "path": "core/surface/agents/tribunal-lens-reviewer.md",
+          "start": 19,
+          "end": 56,
+          "file_sha256": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+          "selected_span_sha256": "3a98cd60b7804c7cae589d887be41b570b22f617f177bdd75c26523c5f2fc1d5",
+          "bounded_excerpt": "## Assignment Format\n\n...\n- The bounded packet and relevant inventory facts. Read other units only within\n  the permitted evidence scope, to prove or disprove a concrete claim."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/review-risk.md",
+          "start": 26,
+          "end": 47,
+          "file_sha256": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f",
+          "selected_span_sha256": "afd113589ba51d2e57f7c6ecb430a8fc4846d642d1835879be129f5526a23d76",
+          "bounded_excerpt": "## Review boundary\n\n...\nworking directory. `tech-stack.md` and tool output supply command candidates,\nnot that authorization. Without it, use static evidence or report a bounded gap."
+        }
+      ],
+      "limits": "Source instructions cannot grant role/tools/network/write authority; bound evidence expansion does not expand finding scope. No model or card-quality behavior observed."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:03",
+      "frozen_baseline_row": {
+        "from": "Candidate finding",
+        "event": "Independent disproof attempt",
+        "guard": "Concrete claim and needed evidence only",
+        "to": "Confirmed / narrowed / refuted / inconclusive",
+        "effects": "Record fresh verification and actual independence; narrowed includes surviving claim.",
+        "failure_retry": "Shared-context/inline execution is limited independence; no invented probe result.",
+        "transition_id": "WF-23:03"
+      },
+      "preserved_source_clause": "Attempt fresh independent disproof for serious/invasive inferential claims; preserve confirmed/narrowed/refuted/inconclusive and actual independent/limited mode.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 158,
+          "end": 165,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "e9e1dcb8dd1bb568fdc4cd5b132f64db92e82a3221010344e112822e5cf23dac",
+          "bounded_excerpt": "Before keeping serious work, dispatch the same generic reviewer with MODE verify\nas a fresh disprover given only the candidate and necessary evidence. Every\n...\nGenuine design forks use decision-required; factual uncertainty never becomes\na design decision merely because confidence is low."
+        },
+        {
+          "path": "core/surface/agents/tribunal-lens-reviewer.md",
+          "start": 70,
+          "end": 86,
+          "file_sha256": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+          "selected_span_sha256": "ba0f4d35e231e04037546df4b293600e5ca04793c58342c8e45b70aa6f9dcf14",
+          "bounded_excerpt": "## Verify mode\n\n...\nread-only traces or return inconclusive. Do not install tools, mutate product\ncode, file issues, send telemetry or grant yourself more tools."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/triage.md",
+          "start": 30,
+          "end": 54,
+          "file_sha256": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f",
+          "selected_span_sha256": "f6a98b178415c45b92d14bec4c620c06484094e04632ea115547368ab5051386",
+          "bounded_excerpt": "## Required verification\n\n...\nonly bounded trusted probes or authorized non-mutating reproductions, without\ninstalling dependencies or changing product code."
+        }
+      ],
+      "limits": "Inline/shared-context or inconclusive does not clear independent verification. No actual independent model proof or probe result is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:04",
+      "frozen_baseline_row": {
+        "from": "Findings and leads",
+        "event": "Triage",
+        "guard": "All retained items receive disposition",
+        "to": "Followup candidates",
+        "effects": "Use keep/combine/duplicate/false-positive/defer/accept-risk/decision-required/verify-required/investigate; leads promoted/dismissed/deferred.",
+        "failure_retry": "Unverified serious claims remain pending, not automatically fileable.",
+        "transition_id": "WF-23:04"
+      },
+      "preserved_source_clause": "Account for findings/leads with explicit triage, eligibility and confidence; only supported surviving work reaches kept plan.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 151,
+          "end": 178,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "7877156327b82c7be17484f936c3e559661b9518d11c890c8e072eb5ada053b7",
+          "bounded_excerpt": "## Phase 3 — Verify, triage and plan per wave · gate: BLOCK\n\n...\nGate: every finding and lead accounted for, required verification visible,\nand phase plans contain only supported eligible work."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/triage.md",
+          "start": 70,
+          "end": 92,
+          "file_sha256": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f",
+          "selected_span_sha256": "7b575bfd84ba685f0a329638e6aa6b8cd7279fe3ff3365adcc5953a265426c93",
+          "bounded_excerpt": "## Persist the decision\n\n...\nevidence and rationale; routed leads need an eventual owning disposition. A lead\ndoes not become a finding until normal evidence and scope requirements hold."
+        }
+      ],
+      "limits": "Refuted/unverified serious claims remain out of kept plans/confirmed issues; factual uncertainty is not a design choice. No finding/triage event performed."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:05",
+      "frozen_baseline_row": {
+        "from": "Report prepared",
+        "event": "Write report",
+        "guard": "Actual findings/coverage limitations represented",
+        "to": "Followup phase",
+        "effects": "Persist report and eligible phase plan.",
+        "failure_retry": "report-written is not complete; unresolved filing/telemetry disposition remains.",
+        "transition_id": "WF-23:05"
+      },
+      "preserved_source_clause": "Project report/manifest from source-bound durable records with real coverage/independence/usage limitations; report-written enters follow-up.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 179,
+          "end": 191,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "afae3af929651542b0e2505260b18a781f1b4214d33649aa603ebc51c95760d4",
+          "bounded_excerpt": "## Phase 4 — Report · gate: BLOCK\n\n...\nnot terminal completion. A disconnect here resumes follow-ups without rerunning\nlenses, only after a fresh unchanged-source check. No issues created by this phase."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/report.md",
+          "start": 1,
+          "end": 15,
+          "file_sha256": "4fccd7de3ea4e089a7960d8978936afe1942ba3c2c479f61924ed38abf7319a8",
+          "selected_span_sha256": "65dedf68e11fad1d0eea3842e6ac4af7eca13db2134c58be0ea69d87f604c70a",
+          "bounded_excerpt": "# Report projection\n\n...\n\n## Structure"
+        }
+      ],
+      "limits": "Report projection does not file issues or complete pending dispositions. No report generation actually run."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:06",
+      "frozen_baseline_row": {
+        "from": "Filing selected",
+        "event": "Publish selected issue",
+        "guard": "Explicit issue selection and authorization",
+        "to": "Filed / pending / skipped",
+        "effects": "Search remote state on retry and retain one receipt per created issue.",
+        "failure_retry": "Prepared commands are not authority; crash after create needs reconciliation before duplicate create.",
+        "transition_id": "WF-23:06"
+      },
+      "preserved_source_clause": "File only explicitly selected eligible issues with authorization/fresh source and duplicate suppression from remote/history/receipts before retries.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 192,
+          "end": 204,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "d65cd10db8c4146ba17b396155c660b629f9d56ff9a2d7a1197a53be3a83fc1f",
+          "bounded_excerpt": "## Phase 5 — Filing disposition · gate: BLOCK\n\n...\nfiling appends issues-filed. Unanswered choices or unresolved failures stay pending.\nFindings file as GitHub issues, never `open-tasks.md`; never author an ADR."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/issue-filing.md",
+          "start": 1,
+          "end": 15,
+          "file_sha256": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052",
+          "selected_span_sha256": "553a46ac2c568f54726aa13bdda64ce4c17e059d02d9bea83ec657e6684dd0d0",
+          "bounded_excerpt": "# Issue filing\n\n...\nOnly keep and combine groups qualify. Refuted, verify-required, investigate,\ninconclusive and limited-independence serious claims cannot become confirmed"
+        }
+      ],
+      "limits": "Stored commands are not authority; crash after create requires remote reconciliation; partial failures stay pending. No tracker call or issue create performed."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:07",
+      "frozen_baseline_row": {
+        "from": "Telemetry pending",
+        "event": "Present exact aggregate payload",
+        "guard": "Allowlisted aggregate; opt-in consent for this run",
+        "to": "Sent / skipped / pending",
+        "effects": "Send only with actual consent and record real success; explicit skip closes it.",
+        "failure_retry": "No answer stays pending, not consent or rejection.",
+        "transition_id": "WF-23:07"
+      },
+      "preserved_source_clause": "Preview allowlisted public aggregates and obtain explicit per-run consent; successful send or explicit skip settles telemetry, silence stays pending.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 205,
+          "end": 217,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "3207e467c941f48c41a218c11be85f8722964a830586d0661c96eaf2d5eb3fe8",
+          "bounded_excerpt": "## Phase 6 — Telemetry disposition and completion · gate: STOP\n\n...\npending. Recheck source before follow-up actions. After both filing and telemetry\ndispositions, append run-completed. It is the terminal completion signal."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/telemetry.md",
+          "start": 1,
+          "end": 15,
+          "file_sha256": "05a545bbbd4b01b7daf6c3e7af422b2bcb9a8e54581c47ddcf9f54999d4c8ee3",
+          "selected_span_sha256": "f56a15ad66521fb0329aec5bd4b03f752f9d49fd269ee8333bdfc0c1c849fcac",
+          "bounded_excerpt": "# Telemetry (opt-in, aggregate-only)\n\n...\n\nPreserve the existing optional user-entered --tag <label> for cross-run tracking;"
+        }
+      ],
+      "limits": "Exclude source identity/path/code/hash/arbitrary events; tag exception needs preview/consent. No HTTP/telemetry/provider action or transport-policy decision claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-23:08",
+      "frozen_baseline_row": {
+        "from": "Followup phase",
+        "event": "Close run",
+        "guard": "Both filing and telemetry dispositions settled",
+        "to": "Complete",
+        "effects": "Retain source-bound report/history.",
+        "failure_retry": "Source drift creates a new binding; abandonment is its own terminal state.",
+        "transition_id": "WF-23:08"
+      },
+      "preserved_source_clause": "Close only after real filing and telemetry dispositions and unchanged source; retain history and distinguish abandonment from completion.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "start": 213,
+          "end": 217,
+          "file_sha256": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+          "selected_span_sha256": "82de147c7ac1b6498b5653c20b0cc14cab6907f1d377a9017402adf905170cfe",
+          "bounded_excerpt": "Record telemetry-sent only after a successful authorized post; an explicit\ndecline or chosen command hand-off records telemetry-skipped. No answer remains\npending. Recheck source before follow-up actions. After both filing and telemetry\ndispositions, append run-completed. It is the terminal completion signal."
+        },
+        {
+          "path": "core/surface/skills/tribunal/references/schemas.md",
+          "start": 137,
+          "end": 151,
+          "file_sha256": "942425a3aaa68a01464b7b3070a19957404085edcfdb35ecdc29ada7a4021ebd",
+          "selected_span_sha256": "26d56668a3668a5e128770c27974fca050e66e4294c020fadfffacc4f754a182",
+          "bounded_excerpt": "## Lifecycle and resume\n\n...\n| invalid | Surface the malformed/incomplete records; never guess or rewrite them. |\n| terminal | Run completed/aborted. Read history; a new audit needs exclusive allocation. |"
+        }
+      ],
+      "limits": "report-written is nonterminal; drift needs fresh binding; unanswered choices remain pending and aborted runs do not resume. No lifecycle event emitted."
+    }
+  ],
+  "scope_boundary": "Finite direct owners+shared instruction/schema guards only. No helper Python execution/import equivalence, project/lens input execution, tracker/provider/telemetry, actual user choice, generated-host render or installed registration. Unselected dynamic inputs require binding at actual execution.",
+  "literal_source_capture": {
+    "inputs_before": {
+      ".codearbiter/context/security-controls.html": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      ".codearbiter/security-controls.md": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+      "core/surface/agents/tribunal-lens-reviewer.md": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+      "core/surface/command-routes.json": "9882caf3f5c5f769f420c2d2c0bf03e958d5822b156e15b9231ec21a7a39f756",
+      "core/surface/includes/command-compatibility.md": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+      "core/surface/includes/helper-invocation.md": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+      "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "core/surface/skills/decompose/SKILL.md": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+      "core/surface/skills/decompose/references/markdown-format.md": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+      "core/surface/skills/tribunal/SKILL.md": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+      "core/surface/skills/tribunal/references/cost-and-models.md": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448",
+      "core/surface/skills/tribunal/references/finding-record.md": "f82a0d48b31a2521617fb9a7b4326f6c2ce439022367dcaf67f3d338bce010c7",
+      "core/surface/skills/tribunal/references/issue-filing.md": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052",
+      "core/surface/skills/tribunal/references/report.md": "4fccd7de3ea4e089a7960d8978936afe1942ba3c2c479f61924ed38abf7319a8",
+      "core/surface/skills/tribunal/references/review-risk.md": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f",
+      "core/surface/skills/tribunal/references/schemas.md": "942425a3aaa68a01464b7b3070a19957404085edcfdb35ecdc29ada7a4021ebd",
+      "core/surface/skills/tribunal/references/telemetry.md": "05a545bbbd4b01b7daf6c3e7af422b2bcb9a8e54581c47ddcf9f54999d4c8ee3",
+      "core/surface/skills/tribunal/references/triage.md": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f"
+    },
+    "inputs_after": {
+      ".codearbiter/context/security-controls.html": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      ".codearbiter/security-controls.md": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+      "core/surface/agents/tribunal-lens-reviewer.md": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+      "core/surface/command-routes.json": "9882caf3f5c5f769f420c2d2c0bf03e958d5822b156e15b9231ec21a7a39f756",
+      "core/surface/includes/command-compatibility.md": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+      "core/surface/includes/helper-invocation.md": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+      "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "core/surface/skills/decompose/SKILL.md": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+      "core/surface/skills/decompose/references/markdown-format.md": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+      "core/surface/skills/tribunal/SKILL.md": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+      "core/surface/skills/tribunal/references/cost-and-models.md": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448",
+      "core/surface/skills/tribunal/references/finding-record.md": "f82a0d48b31a2521617fb9a7b4326f6c2ce439022367dcaf67f3d338bce010c7",
+      "core/surface/skills/tribunal/references/issue-filing.md": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052",
+      "core/surface/skills/tribunal/references/report.md": "4fccd7de3ea4e089a7960d8978936afe1942ba3c2c479f61924ed38abf7319a8",
+      "core/surface/skills/tribunal/references/review-risk.md": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f",
+      "core/surface/skills/tribunal/references/schemas.md": "942425a3aaa68a01464b7b3070a19957404085edcfdb35ecdc29ada7a4021ebd",
+      "core/surface/skills/tribunal/references/telemetry.md": "05a545bbbd4b01b7daf6c3e7af422b2bcb9a8e54581c47ddcf9f54999d4c8ee3",
+      "core/surface/skills/tribunal/references/triage.md": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f"
+    },
+    "equal": true
+  },
+  "frozen_contract_input": {
+    "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+    "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "retention": "Existing frozen105 corpus reused; not recopied."
+  }
+}

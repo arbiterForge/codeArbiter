@@ -16,6 +16,7 @@ import brownfield from './atlas-data/brownfield-lifecycle.json';
 import debug from './atlas-data/debug-handoff.json';
 import tribunal from './atlas-data/tribunal-lifecycle.json';
 import assistiveUpdate from './atlas-data/assistive-update.json';
+import majorUpdate from './atlas-data/major-state-contracts-update.json';
 
 // Original diagram/source links retain REVIEWED_AT. Freshness is separately
 // revalidated against this exact source revision, never whichever HEAD is newest.
@@ -313,6 +314,11 @@ export const COMMAND_REMOVAL_SOURCE_BLOBS:Readonly<Record<string,string>>=Object
   'docs/parity.md':'ea25f8681bcd2c4d5be27ea79fc9f365aee175fc',
 });
 
+// Current program bindings supersede only the named owners; all historical packets remain intact.
+export const MAJOR_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze(
+  Object.fromEntries(majorUpdate.changes.map(change=>[change.path,change.blob])),
+);
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -428,15 +434,31 @@ function applySelectedWorkRoute(atlas:Atlas):void {
   setNode('debug-handoff','d-task',undefined,
     'A concrete follow-up uses the selected work owner under existing authorization.\nThe work.py facade routes native and legacy writes without a second board.\nA design question may lead to an attributed ADR later, never by automatic conversion.');
 }
+/** Current text over retained spatial positions; source packets keep their original bytes. */
+function applyMajorRoutes(atlas:Atlas):void {
+  const set=(id:string,body:string,detail?:string):void=>{
+    const node=atlas.views.flatMap(view=>view.nodes).find(node=>node.id===id);
+    if(!node?.layout.body)throw new Error(`Major-program atlas node missing: ${id}`);
+    node.body=body;node.layout.body.lengths=body.split('\n').map(line=>Array.from(line).length);
+    if(detail)node.detail=detail;
+  };
+  set('k-conflict','Contradictory governing rules\nPause affected work and dependents\nContinue independent authorized work',
+    'Retain both exact sources and actual authority, data or decision dependencies. Shared dependencies can expand the pause. Unknown dependencies need inspection; an explicit global user or host stop remains global.');
+  set('k-task','Capture follow-ups at discovery\nPromote selected authorized items\nReport exact target readback');
+  set('c-harvest','Register qualifying findings early\nReconcile uncertain effects before retry\nPromote only under existing authority',
+    'Discovery capture retains exact extractor origin, stable workflow/work run and source fingerprint. Terminal harvest reconciles each selected operation and target. Unregistered text and durable:false reports are not recovered obligations; a new session does not inherit a revoked grant.');
+  const recovery=atlas.views.flatMap(view=>view.nodes).find(node=>node.id==='f-recovery')!;
+  recovery.detail='Inspect the durable operation outcome before retry. Registered follow-ups survive interruption in a Git-common journal; current authority and exact source/target binding are checked again. Partial or unavailable inventory remains explicit, and status never repairs or promotes work. Unknown effects hold only dependent resources. Only finite trusted reason codes supply bounded recovery guidance; status never replays effects or regrants authority. An uncertain decline stays claimed until exact audit readback, and changed facts use a new linked obligation without reopening settled history. Installed-cohort and real parent-host qualification remain separate.';
+}
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??PI_SUPPORT_SOURCE_BLOBS[path]??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??MAJOR_SOURCE_BLOBS[path]??PI_SUPPORT_SOURCE_BLOBS[path]??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',PI_HOST_DESCRIPTOR_BLOB],
   ]);
   for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
-    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
+    ...Object.keys(MAJOR_SOURCE_BLOBS),...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
   ])if(!requests.has(path))requests.set(path,pinFor(path));
   const checked=checkedSources(root,requests);
   const read=(path:string,pin?:string):string=>{
@@ -481,10 +503,17 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
   applySelectedWorkRoute(atlas);
+  applyMajorRoutes(atlas);
   atlas.scope+=` Original source links and spatial positions retained; task labels show the selected work owner. Source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
-  atlas.sourceUpdate=structuredClone(assistiveUpdate);
+  const currentChanges=new Map(assistiveUpdate.changes.map(change=>[change.path,structuredClone(change)]));
+  for(const change of majorUpdate.changes) {
+    const previous=currentChanges.get(change.path);
+    currentChanges.set(change.path,{...structuredClone(change),nodes:[...new Set([...(previous?.nodes??[]),...change.nodes])],summary:change.summary+(previous?' Historical source packet: '+previous.summary:'')});
+  }
+  atlas.sourceUpdate={...structuredClone(majorUpdate),summary:majorUpdate.summary+' '+assistiveUpdate.summary,changes:[...currentChanges.values()]};
   atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Current assistive source bindings identify inspected implementation bytes, with ${assistiveUpdate.revision} as the committed source base. Live host qualification and release are separate evidence. `+atlas.scope;
+  atlas.scope+=` State-contract changes bind ${majorUpdate.changes.length} complete owner files by exact Git blob; source base ${majorUpdate.revision}.`;
   atlas.caveats=atlas.caveats.map(note=>`Historical snapshot: ${note}`);
   const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
   return atlas;

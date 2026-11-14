@@ -257,6 +257,12 @@ func (w *writer) record(m map[string]any, k string) {
 		w.raw(`<span class="badge">`)
 		if state == "DONE" {
 			w.text("Implementation complete (checks not assessed)")
+		} else if state == "STALE" && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.text("Legacy unresolved (STALE)")
+		} else if state == "REVIEW" && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.text("Implementation ready (checks not assessed)")
+		} else if state == "ACCEPTED" && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.text("Historical ACCEPTED (evidence not assessed)")
 		} else {
 			w.text(state)
 		}
@@ -268,10 +274,13 @@ func (w *writer) record(m map[string]any, k string) {
 	w.raw(`</div>`)
 	w.fields(m, skip)
 	if r.Kind == "tasks" {
+		if model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.value(model.TaskProgress(w.d, id), "recorded_progress")
+		}
 		w.raw(`<details><summary>Execution record</summary>`)
 		w.value(model.M(model.M(w.d.Data["execution"])["tasks"])[id], "execution")
 		w.raw(`</details>`)
-		if model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
+		if model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.SchemaVersion) {
 			checks, bounded := model.TaskCheckAssessments(w.d, nil, id)
 			if len(checks) > 0 {
 				w.raw(`<details><summary>Reported command checks (not independently verified)</summary>`)
@@ -283,7 +292,16 @@ func (w *writer) record(m map[string]any, k string) {
 			}
 		}
 	}
-	if r.Kind == "prerequisites" && !r.Retired && model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
+	if r.Retired && model.S(m["original_kind"]) == "tasks" {
+		// A typed retired task keeps its reported checks as history only; it
+		// has no live execution state and drives no scheduling.
+		if history := model.A(model.M(model.M(w.d.Data["execution"])["task_check_observations"])[id]); len(history) > 0 {
+			w.raw(`<details><summary>Retained command checks of this retired task (history, not independently verified)</summary>`)
+			w.value(history, "retained_task_checks")
+			w.raw(`</details>`)
+		}
+	}
+	if r.Kind == "prerequisites" && !r.Retired && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.SchemaVersion) {
 		w.raw(`<details><summary>Recorded prerequisite assessment</summary>`)
 		assessment := model.PrerequisiteAssessment(w.d, m)
 		// Do not repeat the symbol's id as an HTML anchor in this projection.

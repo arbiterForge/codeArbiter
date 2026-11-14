@@ -1,0 +1,61 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "tag_refs": [
+    {
+      "tag": "v3.8.5",
+      "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "tag_objects": [
+        "2a69990c9018e2f5b2e50ddc0bfbb09a5b06a2b3"
+      ],
+      "ref": "refs/tags/v3.8.5"
+    },
+    {
+      "tag": "ca-codex-v0.26.5",
+      "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "tag_objects": [
+        "e59fbc6db646be215a849fa4942a503eeb13352b"
+      ],
+      "ref": "refs/tags/ca-codex-v0.26.5"
+    },
+    {
+      "tag": "ca-pi-v0.27.3",
+      "commit": "27e6cb12eb0195bc89b4e91ee7d8d8093ac490fa",
+      "tag_objects": [
+        "1e8fd815f89042e0591ffc04b5da795eaa28ec4c"
+      ],
+      "ref": "refs/tags/ca-pi-v0.27.3"
+    },
+    {
+      "tag": "ca-pi-v0.27.5",
+      "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "tag_objects": [
+        "c174c5bdb6c4f56557f87ddf82021fbe484c0f86"
+      ],
+      "ref": "refs/tags/ca-pi-v0.27.5"
+    },
+    {
+      "tag": "ca-sandbox-v0.1.10",
+      "commit": "cfee5a82707eb477013496b96146f1c309cb7faa",
+      "tag_objects": [
+        "1e1f3cf246346b1fdf8c8be5d6895cb4467c79fd"
+      ],
+      "ref": "refs/tags/ca-sandbox-v0.1.10"
+    }
+  ],
+  "sandbox": {
+    "id": 423183029,
+    "tag": "ca-sandbox-v0.1.10",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-10-25T06:14:18Z",
+    "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-sandbox-v0.1.10",
+    "assets": [
+      {
+        "name": "codearbiter-publication.json",
+        "digest": "sha256:e2643d262db163e649c4e220f534ce0d533e274b0b8f95f19f54ed437d02ee76",
+        "size": 348
+      }
+    ]
+  },
+  "artifact_bytes": "UNKNOWN; metadata only; exact installed qualification remains a task"
+}

@@ -1,0 +1,207 @@
+{
+  "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nt09-progress-selection-6g3k8cdq\\original-go.jsonl",
+    "sha256": "fbee5fa20a5ebd1ab3d5ea24b296a08fb556113c086a133ed9a6a7eca7040353"
+  },
+  "terminal_outcomes": [
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/unchanged",
+      "Elapsed": 0.11
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/unchanged_unindexed",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/unrelated_source",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/unrelated_source_unindexed",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/changed_source",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/changed_source_unindexed",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/changed_task_definition",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/changed_task_definition_unindexed",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/changed_criterion",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/changed_criterion_unindexed",
+      "Elapsed": 0.12
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/unrelated_specification_prose",
+      "Elapsed": 0.12
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope/unrelated_specification_prose_unindexed",
+      "Elapsed": 0.12
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestCheckConflictsRespectDefinitionAndSourceScope",
+      "Elapsed": 1.31
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestDependencyInvalidationPreservesIndependentStops",
+      "Elapsed": 0.44
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+      "Elapsed": 0.22
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof",
+      "Elapsed": 0.23
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/PENDING",
+      "Elapsed": 0.17
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/IN_PROGRESS",
+      "Elapsed": 0.17
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/REVIEW",
+      "Elapsed": 0.15
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/DONE",
+      "Elapsed": 0.15
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/ACCEPTED",
+      "Elapsed": 0.16
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/BLOCKED",
+      "Elapsed": 0.16
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/STALE",
+      "Elapsed": 0.15
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+      "Elapsed": 1.12
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestAssistiveScopedFactsKeepIndependentWorkMoving",
+      "Elapsed": 0.14
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestTaskCheckLatestFailureOverridesPriorPassAndSkipsUnknown",
+      "Elapsed": 0.27
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestTaskCheckCASReplaySourceChangesAndPresentationEdits",
+      "Elapsed": 0.18
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability",
+      "Elapsed": 0.18
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/PENDING",
+      "Elapsed": 0.32
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/BLOCKED",
+      "Elapsed": 0.33
+    },
+    {
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+      "Elapsed": 0.65
+    }
+  ],
+  "exact_all_selected_parents": [
+    "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+    "TestDependencyInvalidationPreservesIndependentStops",
+    "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+    "TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+    "TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability",
+    "TestCheckConflictsRespectDefinitionAndSourceScope",
+    "TestTaskCheckCASReplaySourceChangesAndPresentationEdits",
+    "TestTaskCheckLatestFailureOverridesPriorPassAndSkipsUnknown",
+    "TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof"
+  ],
+  "no_failed_or_skipped_outcomes": true
+}

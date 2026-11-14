@@ -29,6 +29,7 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CORE = os.path.join(REPO, "core", "pysrc")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from owned_output import assert_complete, publish_files, validate_targets
 from host_descriptors import DescriptorError, load_host_descriptors  # noqa: E402
 
 # Per-plugin files that must never be synced from core even if a same-named
@@ -56,37 +57,6 @@ def read_bytes(path):
 NOTICE_FILES = ("LICENSE", "THIRD_PARTY_NOTICES.md")
 
 
-def sync_notices(plugins, check):
-    """Copy owning notices into the subtree retained by each host installer."""
-    drifted = []
-    written = 0
-    for name in NOTICE_FILES:
-        source = read_bytes(os.path.join(REPO, name))
-        if not source:
-            raise OSError(f"canonical notice is empty: {name}")
-        for rel_hooks in plugins:
-            relative = os.path.join(os.path.dirname(rel_hooks), name)
-            target = os.path.join(REPO, relative)
-            try:
-                same = read_bytes(target) == source
-            except OSError:
-                same = False
-            if same:
-                continue
-            if check:
-                drifted.append(relative.replace(os.sep, "/"))
-                continue
-            os.makedirs(os.path.dirname(target), exist_ok=True)
-            temporary = target + ".tmp-sync"
-            try:
-                with open(temporary, "wb") as output:
-                    output.write(source)
-                os.replace(temporary, target)
-            finally:
-                if os.path.exists(temporary):
-                    os.remove(temporary)
-            written += 1
-    return drifted, written
 
 
 def main(argv=None):
@@ -109,54 +79,43 @@ def main(argv=None):
         sys.stderr.write(f"sync-core: {error}\n")
         return 2
 
+    drifted, updates, core_targets = [], {}, set()
     try:
-        drifted, notices_written = sync_notices(plugins, check)
-    except OSError as error:
-        sys.stderr.write(f"sync-core: cannot synchronize package notices: {error}\n")
-        return 1
-    if not check and notices_written:
-        print(f"sync-core: {notices_written} package notice(s) written")
-    written = 0
-    for rel_hooks in plugins:
-        hooks_dir = os.path.join(REPO, rel_hooks)
-        if not check:
-            try:
-                os.makedirs(hooks_dir, exist_ok=True)
-            except OSError as error:
-                sys.stderr.write(
-                    f"sync-core: cannot create hooks target {hooks_dir}: {error}\n"
-                )
-                return 1
+        assert_complete(REPO, "core")
+        # Materialize and validate the complete source set before publication.
+        sources = {}
         for name in names:
-            src = os.path.join(CORE, name)
-            dst = os.path.join(hooks_dir, name)
             try:
-                src_bytes = read_bytes(src)
-            except OSError as e:
-                sys.stderr.write(f"sync-core: cannot read canonical source {src}: {e}\n")
-                return 1
+                sources[name] = read_bytes(os.path.join(CORE, name))
+            except OSError as error:
+                raise OSError(f"cannot read canonical source {name}: {error}") from error
+        for rel_hooks in plugins:
+            for name, data in sources.items():
+                target = os.path.join(REPO, rel_hooks, name)
+                updates[target] = data
+                core_targets.add(target)
+            for name in NOTICE_FILES:
+                data = read_bytes(os.path.join(REPO, name))
+                if not data:
+                    raise OSError(f"canonical notice is empty: {name}")
+                updates[os.path.join(REPO, os.path.dirname(rel_hooks), name)] = data
+        validate_targets(REPO, updates)
+        changed = {}
+        for path, data in updates.items():
             try:
-                same = read_bytes(dst) == src_bytes
+                same = read_bytes(path) == data
             except OSError:
-                same = False  # absent vendored copy counts as drift
-            if same:
-                continue
-            if check:
-                drifted.append(os.path.join(rel_hooks, name).replace(os.sep, "/"))
-                continue
-            tmp = dst + ".tmp-sync"
-            try:
-                with open(tmp, "wb") as f:  # binary: byte-exact, LF preserved
-                    f.write(src_bytes)
-                os.replace(tmp, dst)  # atomic: never leaves a partially-written dst
-            except OSError as e:
-                try:
-                    os.remove(tmp)
-                except OSError:
-                    pass
-                sys.stderr.write(f"sync-core: cannot write vendored copy {dst}: {e}\n")
-                return 1
-            written += 1
+                same = False
+            if not same:
+                changed[path] = data
+                drifted.append(os.path.relpath(path, REPO).replace(os.sep, "/"))
+        if not check:
+            publish_files(REPO, "core", changed)
+        written = sum(path in core_targets for path in changed)
+        notices_written = len(changed) - written
+    except OSError as error:
+        sys.stderr.write(f"sync-core: cannot synchronize owned output: {error}\n")
+        return 1
 
     if check:
         if drifted:
@@ -169,6 +128,8 @@ def main(argv=None):
               f"{len(plugins)} plugin(s), all byte-identical)")
         return 0
 
+    if notices_written:
+        print(f"sync-core: {notices_written} package notice(s) written")
     print(f"sync-core: {written} file(s) written, "
           f"{len(names) * len(plugins) - written} already current")
     return 0

@@ -1,0 +1,36 @@
+{
+  "proposed_rows": 91,
+  "counts": {
+    "TESTED": 40,
+    "PRESERVED": 48,
+    "NOT_APPLICABLE": 3
+  },
+  "hosted_observed_pending_rows": 10,
+  "open_rows": 17,
+  "exact_original_passed_assertions": 283,
+  "proofs": 25,
+  "software_source_epochs": {
+    "farm941": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+    "sandbox357": "ef40ab5f33f4430a3650c225909801094acabbb4",
+    "deadline16": "6a636870bc23f5079700faf58a234d19f6823eca"
+  },
+  "review_source_epoch": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "physical_catalog_matches_review_commit": true,
+  "remaining_acceptance": [
+    "S21:01..04 belong to Pi farm-adapter host/authority/cleanup qualification; no Farm941 inference.",
+    "S22:02..07 require installed typed-engine/platform pin/bridge evidence; no Node unit-suite substitute.",
+    "FARM-R01 explicitly requires remaining crash-before/after commit/merge/report, concurrent recoverers and same-ID/ref-advance races where not actually observed; constructed report/journal faults are insufficient.",
+    "Default create/host-build cancellation and actual partial resource/firewall compensation remain open where original named evidence is only injected helpers.",
+    "S50:05 and S51:03/04/06 actual network/firewall/caller cleanup boundaries remain open; no reusable provider credential or paid inference is a prerequisite.",
+    "Direct first/second SIGINT and interactive shell-detach runtime acceptance remain distinct from preserved source/guide clauses; source proof is not a real signal/TTY execution.",
+    "Actual6a Sandbox395 successful job contains positive overflow/two-create/cache/runtime/network checks, but failed overall run has no Sandbox artifact. Preserve diagnostic log class; new successful eligible hosted artifact/run must supply supported origin."
+  ],
+  "new_behavior_findings": [
+    "One omitted COMMANDS.md catalog was a genuine implementation gap; exact correction is now committed ae237d. No additional source bug established by this mapping."
+  ],
+  "limits": [
+    "No tests, builds, provider calls, reruns, Gov source/index/ledger/progress/marker mutations were executed for this packet.",
+    "N/A proposals are explicit retired contradictory instructions under frozen SBX-D02/D04, never failed/absent Docker or provider cells. Parent owns acceptance of these3 classifications.",
+    "PRESERVED rows cover actual finite current source/instruction clauses, not runtime execution, test completeness, installed package parity, phase receipts or publication readiness."
+  ]
+}

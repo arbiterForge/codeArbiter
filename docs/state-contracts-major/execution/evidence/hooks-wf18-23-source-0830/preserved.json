@@ -1,0 +1,55 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools actual finite whole-owner and changed-shared-guard source-clause inspection"
+  },
+  "inputs": {
+    ".codearbiter/context/security-controls.html": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    ".codearbiter/security-controls.md": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+    "core/surface/agents/tribunal-lens-reviewer.md": "69d356a96e6b0855890960c0234d548338706ca73cb07a9ded470d4b0c1c4896",
+    "core/surface/command-routes.json": "9882caf3f5c5f769f420c2d2c0bf03e958d5822b156e15b9231ec21a7a39f756",
+    "core/surface/includes/command-compatibility.md": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+    "core/surface/includes/helper-invocation.md": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+    "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+    "core/surface/skills/decompose/SKILL.md": "99a3af6f72bee19e842e32e634f7d2d86d224efec137c80632d21cb80db53169",
+    "core/surface/skills/decompose/references/markdown-format.md": "cad5c770c5274613a660c7d1daf0fb4fe5a2e1d967c755eb8c0024cb44d160d5",
+    "core/surface/skills/tribunal/SKILL.md": "b4f5aef245e63af89bec5f8697fd6c51557b5abde52c8993b8963c30201f1bd6",
+    "core/surface/skills/tribunal/references/cost-and-models.md": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448",
+    "core/surface/skills/tribunal/references/finding-record.md": "f82a0d48b31a2521617fb9a7b4326f6c2ce439022367dcaf67f3d338bce010c7",
+    "core/surface/skills/tribunal/references/issue-filing.md": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052",
+    "core/surface/skills/tribunal/references/report.md": "4fccd7de3ea4e089a7960d8978936afe1942ba3c2c479f61924ed38abf7319a8",
+    "core/surface/skills/tribunal/references/review-risk.md": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f",
+    "core/surface/skills/tribunal/references/schemas.md": "942425a3aaa68a01464b7b3070a19957404085edcfdb35ecdc29ada7a4021ebd",
+    "core/surface/skills/tribunal/references/telemetry.md": "05a545bbbd4b01b7daf6c3e7af422b2bcb9a8e54581c47ddcf9f54999d4c8ee3",
+    "core/surface/skills/tribunal/references/triage.md": "d6529005c8531091cbc29aebf83d5deade2170fa05bb67d76d6a483787f34d8f"
+  },
+  "disposition_ids": [
+    "disposition:transitions:WF-18:01",
+    "disposition:transitions:WF-18:02",
+    "disposition:transitions:WF-18:03",
+    "disposition:transitions:WF-18:04",
+    "disposition:transitions:WF-18:05",
+    "disposition:transitions:WF-18:06",
+    "disposition:transitions:WF-23:01",
+    "disposition:transitions:WF-23:02",
+    "disposition:transitions:WF-23:03",
+    "disposition:transitions:WF-23:04",
+    "disposition:transitions:WF-23:05",
+    "disposition:transitions:WF-23:06",
+    "disposition:transitions:WF-23:07",
+    "disposition:transitions:WF-23:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/raw/source-inspection.json",
+      "sha256": "af9a1832fe8930ed1ed451c3046b251397320e28e5995fbb253b1e99e601d88d"
+    }
+  ],
+  "scope": "Finite direct owners+shared instruction/schema guards only. No helper Python execution/import equivalence, project/lens input execution, tracker/provider/telemetry, actual user choice, generated-host render or installed registration. Unselected dynamic inputs require binding at actual execution.",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-wf18-23-source-0830/raw/source-inspection.json"
+}

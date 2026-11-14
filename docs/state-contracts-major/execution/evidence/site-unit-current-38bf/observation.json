@@ -1,0 +1,15 @@
+{
+  "source": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "exit_code": 0,
+  "seconds": 2.841457900009118,
+  "selected": 68,
+  "passed": 68,
+  "failed": 0,
+  "selected_skipped": [],
+  "pattern_filtered_unselected": 35,
+  "inputs_stable_physical_immutable": true,
+  "input_count": 15,
+  "head_index_stable": true,
+  "raw_sha256": "c815f5baf489b9f93b7e75706bd8ec0e3668515f7ee16016682856201b5e5467",
+  "limits": "Actual local site unit/component owner selection only, includes real locked Pagefind one-page index; no browser/build/deployed/channel/provider/native/install/cohort claim."
+}

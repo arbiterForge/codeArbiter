@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_hook_ci_partition"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "seconds": 92.15812519995961,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ec38dea20002e9ed7b1296d58cd40af896e556fea76da3299fad16b9b7e17ce4"
+}

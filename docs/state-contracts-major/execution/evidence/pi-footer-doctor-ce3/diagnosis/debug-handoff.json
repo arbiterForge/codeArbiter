@@ -1,0 +1,206 @@
+{
+  "protocol": "codearbiter.debug-handoff/1.0.0",
+  "case_id": "DBG-pi-footer-foreign-replacement",
+  "request": {
+    "intent": "diagnosis_only",
+    "request_ref": "/root delegated footer ownership diagnosis and targetRED",
+    "scope": "Confirm precise S18:07 ownership route and target regression only; no production repair.",
+    "restrictions": [
+      "No Gov/index/ledger changes",
+      "Do not change prior frozen footer/doctor packets",
+      "No endpoint/ADR change or actualTUI claim",
+      "No fix until Root scoped actor packet"
+    ]
+  },
+  "snapshots": [
+    {
+      "id": "S-01",
+      "repository": "arbiterForge/codeArbiter",
+      "worktree": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\candidate",
+      "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+      "dirty_state": "dirty",
+      "runtime_identity": "Windows amd64 admitted Node24.22.1, existing locked Vitest; actual Pi1.5 interface source inspected but not executed",
+      "fingerprint": null,
+      "fingerprint_recipe": null,
+      "limitations": "Temp overlay adds prior positive and new regression tests only; all production input bytes remain currentbase."
+    }
+  ],
+  "symptom": {
+    "observed": "Foreign footer exists after Pi-style host invokes our component.dispose; later lifecycle.dispose clears the shared slot. New assertion fails actualundefined/expectedforeign, while old owned-disposal case passes.",
+    "expected": "After a foreign extension replaces Arbiter footer and Pi disposes our component, later Arbiter lifecycle disposal must leave foreign footer intact.",
+    "expected_evidence_ids": [
+      "E-01",
+      "E-02"
+    ]
+  },
+  "reproduction": {
+    "status": "reproduced",
+    "evidence_ids": [
+      "E-04"
+    ],
+    "recipe": {
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\candidate\\plugins\\ca-pi\\tools",
+      "preconditions": "Exact current lifecycle, declared UI-port setter matching inspectedPi1.5 shared behavior, owned bare fixture, no activation or network.",
+      "steps": [
+        "Start owned footer and install subscription.",
+        "Invoke same shared public setter with foreign component; host model disposes owned component first.",
+        "Call Arbiter lifecycle.dispose and assert foreign component remains.",
+        "Run prior owned-disposal positivecontrol alongside."
+      ],
+      "failure_signature": "expected undefined to be foreign footer component; positive control passes"
+    },
+    "limitations": "One actual production component instance through faithful UI-port model, not real host/TUI interaction."
+  },
+  "checks": [
+    {
+      "id": "C-01",
+      "status": "completed",
+      "operation": "Read actual Pi1.5 shared-setter source, current lifecycle and frozen/task/ADR expectation.",
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "authorization_basis": "Root diagnosis+targetRED task",
+      "expectation": "Identify actual ownership retirement path without inferring new API/policy.",
+      "observed": "Shared setter disposes our component before foreign replacement; local ownership flag not revoked. No conflicting footerADR found.",
+      "exit_code": 0,
+      "side_effects": "Read-only source inspection.",
+      "evidence_ids": [
+        "E-01",
+        "E-02",
+        "E-03"
+      ]
+    },
+    {
+      "id": "C-02",
+      "status": "completed",
+      "operation": "Run exact new foreign-replacement case plus unchanged frozen owned-disposal control with actual PiFooterLifecycle.",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\candidate\\plugins\\ca-pi\\tools",
+      "authorization_basis": "Root diagnosis+targetRED task",
+      "expectation": "Foreign footer remains after Arbiter shutdown; owned footer still restores native.",
+      "observed": "Positive passes; new test fails actualundefined vs foreign.",
+      "exit_code": 1,
+      "side_effects": "Owned Temp fixtures only; production unchanged.",
+      "evidence_ids": [
+        "E-04"
+      ]
+    },
+    {
+      "id": "C-03",
+      "status": "completed",
+      "operation": "Owning tsc noEmit in Temp candidate.",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\candidate\\plugins\\ca-pi\\tools",
+      "authorization_basis": "Required bounded test verification",
+      "expectation": "Candidate test compiles.",
+      "observed": "Exit0.",
+      "exit_code": 0,
+      "side_effects": "No emitted files.",
+      "evidence_ids": [
+        "E-05"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-01",
+      "kind": "contract",
+      "locator": "docs/state-contracts-major/contracts/transition-coverage.json:S18:07 atce3a4a91a3164e1b778e81d206ec76517633c518",
+      "observation": "Owned instance dispose must advance generation, release subscription and restore native footer only if owned.",
+      "snapshot_id": "S-01",
+      "check_id": null,
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Finite baseline footer ownership requirement; no whole task/machine claim."
+    },
+    {
+      "id": "E-02",
+      "kind": "source",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\host-interface-source.json",
+      "observation": "Pi1.5 public UI setFooter delegates to a shared setter; existing custom component.dispose is called before foreign factory is installed.",
+      "snapshot_id": "S-01",
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Source inspected; no real host UI execution."
+    },
+    {
+      "id": "E-03",
+      "kind": "source",
+      "locator": "plugins/ca-pi/tools/src/status.ts:189-193,252-272 atce3a4a91a3164e1b778e81d206ec76517633c518",
+      "observation": "Component dispose clears subscription/TUI/data but not installed/context. Class dispose later clears shared footer when those historical flags remain set.",
+      "snapshot_id": "S-01",
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Source-class behavior under cooperative public UI contract."
+    },
+    {
+      "id": "E-04",
+      "kind": "command_result",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\diagnosis-red-with-positive-control.json",
+      "observation": "One positive owned-disposal case passes; new foreign-replacement case fails expectedforeign vs actualundefined after class dispose.",
+      "snapshot_id": "S-01",
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Component UI-port model with exact inspected setFooter behavior, not renderedTUI."
+    },
+    {
+      "id": "E-05",
+      "kind": "command_result",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\typecheck.stdout",
+      "observation": "Owning TypeScript noEmit check exits0.",
+      "snapshot_id": "S-01",
+      "check_id": "C-03",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Typecheck only."
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H-01",
+      "status": "supported",
+      "mechanism": "Component.dispose releases subscription/clears TUI+footerData but retains installed/context; classdispose treats historical install flag as live ownership and unconditionally calls setFooter(undefined).",
+      "discriminator": "After observed component unsubscribe on foreign replacement, call classdispose and observe shared slot.",
+      "supporting_evidence_ids": [
+        "E-02",
+        "E-03",
+        "E-04"
+      ],
+      "opposing_evidence_ids": [],
+      "limitations": "No runtime/package integration executed; expectation anchored frozen owner contract."
+    }
+  ],
+  "disposition": {
+    "kind": "confirmed_code_defect",
+    "cause_ids": [
+      "H-01"
+    ],
+    "evidence_ids": [
+      "E-01",
+      "E-02",
+      "E-03",
+      "E-04"
+    ],
+    "rationale": "Explicit frozen live ownership requirement and actual supported host replacement semantics differ from retained local installed flag; direct current-component regression reproduces the unwanted clear.",
+    "blockers": []
+  },
+  "next_step": {
+    "target": "fix",
+    "owner": "Root selects scoped fix actor",
+    "action": "Receive scoped fix authorization; then revoke only current component ownership on actual host disposal while preserving owned native restoration and stale-generation safety.",
+    "completion_evidence": "Named RED becomes GREEN, positive owned-dispose remainsGREEN, stale callback/current-generation controls pass; exact source/bundles and independent review as required."
+  },
+  "regression": {
+    "basis": "reproduction",
+    "candidate_test_id": "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+    "evidence_ids": [
+      "E-01",
+      "E-02",
+      "E-03",
+      "E-04"
+    ],
+    "obligation": "S18:07 native restoration only while owned.",
+    "oracle": "After actualcomponent disposal and foreign installation, later lifecycle shutdown leaves foreign component and emits no native restore; owned-disposal control still works.",
+    "reuse_existing": false,
+    "snapshot_id": "S-01"
+  }
+}

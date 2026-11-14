@@ -1,0 +1,200 @@
+{
+  "schema": "codearbiter.finite-pi-acceptance-review/1",
+  "reviewer": "/root/pi_program",
+  "source_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "actual_observation": "One committed-source51case run; no priorTemp or historical run relabel.",
+  "mapping": [
+    {
+      "id": "pi-qualification:disposable-home:01",
+      "frozen_clause": {
+        "from": "module-uninitialized",
+        "event": "module top-level evaluation",
+        "guard": "mkdtempSync succeeds under tmpdir",
+        "to": "temp-home-created",
+        "effects": "Create fresh ca-pi-operator-home-* directory and .pi/agent recursively.",
+        "failure_retry": "Synchronous create failure throws; no exit cleanup listener exists yet.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        ],
+        "transition_id": "pi-qualification:disposable-home:01"
+      },
+      "source_and_effect_mapping": "Actual setup ran before imports and created exclusive temporary operator/agent home; os.homedir and marker assertions identify owned root.",
+      "actual_selectors": [
+        "#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+        "#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+        "#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+        "#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home"
+      ],
+      "limits": "Four genuine successful setup effects only; synchronous failure/listener ordering is preserved source at35..60, not an injected filesystem-failure test."
+    },
+    {
+      "id": "pi-qualification:disposable-home:02",
+      "frozen_clause": {
+        "from": "temp-home-created",
+        "event": "seed dummy credential fixture",
+        "guard": "writeFileSync succeeds",
+        "to": "dummy-auth-seeded",
+        "effects": "Write valid JSON with explicit dummy-disposable-home-not-a-credential API-key fixture.",
+        "failure_retry": "Write failure throws and may leave partial temp directory; this helper does not read operator auth.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        ],
+        "transition_id": "pi-qualification:disposable-home:02"
+      },
+      "source_and_effect_mapping": "Actual seeded auth file under the owned home contains explicit dummy JSON; selected assertion reads only that disposable file, not operator auth.",
+      "actual_selectors": [
+        "#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+        "#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+        "#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+        "#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home"
+      ],
+      "limits": "Four genuine successful setup effects only; synchronous failure/listener ordering is preserved source at35..60, not an injected filesystem-failure test."
+    },
+    {
+      "id": "pi-qualification:disposable-home:03",
+      "frozen_clause": {
+        "from": "dummy-auth-seeded",
+        "event": "redirect environment",
+        "guard": "successful prior setup",
+        "to": "environment-redirected",
+        "effects": "Set test-process HOME and USERPROFILE to disposable root, delete HOMEDRIVE/HOMEPATH, set PI_CODING_AGENT_DIR and CODEARBITER_TEST_DISPOSABLE_HOME; register exit listener.",
+        "failure_retry": "No environment restoration is implemented; intended lifetime is this test process. Source alone does not prove every test imports/preloads the helper.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "symbol": "top-level disposable-home setup and exit handler",
+            "lines": "35-60",
+            "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+          }
+        ],
+        "transition_id": "pi-qualification:disposable-home:03"
+      },
+      "source_and_effect_mapping": "Actual HOME/USERPROFILE and Pi-agent marker values match owned root, HOMEDRIVE/HOMEPATH are removed by setup, and inherited environment spread points there. No process-global restoration or guaranteed exit cleanup inferred.",
+      "actual_selectors": [
+        "#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+        "#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+        "#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+        "#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home"
+      ],
+      "limits": "Four genuine successful setup effects only; synchronous failure/listener ordering is preserved source at35..60, not an injected filesystem-failure test."
+    },
+    {
+      "id": "S18:07",
+      "frozen_clause": {
+        "event": "dispose",
+        "guard": "owned instance",
+        "to": "disposed then native",
+        "effects": "Advance generation; release subscription and restore native footer only if owned.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "any footer",
+        "transition_id": "S18:07"
+      },
+      "source_and_effect_mapping": "Current component dispose is idempotent; matching owner/context/generation retires ownership and advances generation without touching UI. Lifecycle dispose clears owner before restoring native only while locally installed. Actual positive native restore/subscription once, foreign replacement no clear, samecontext stale/duplicate disposal no newer-owner retirement all pass. Existing shutdown/pending-generation tests pass.",
+      "actual_selectors": [
+        "Pi keyed status lifecycle disposes the owned footer subscription once through the Pi replacement contract",
+        "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+        "Pi keyed status lifecycle stale and repeated component disposal cannot retire a newer footer generation"
+      ],
+      "limits": "Actual production component through declared UI-port model matching inspectedPi1.5 shared setter. Not installed/renderedTUI, physical consent, foreignregistry or wholemachine qualification."
+    },
+    {
+      "id": "S20:06",
+      "frozen_clause": {
+        "event": "doctor",
+        "guard": "read-only observations and H03 dry-run probe",
+        "to": "diagnosed",
+        "effects": "Aggregate unhealthy > degraded > healthy; active dispatch is always degraded while running.",
+        "failure_retry": "Doctor reports observed capability; it does not grant tool authority or repair state.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+            "symbol": "ownership inspection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+            "lines": "1-201"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/commands.ts",
+            "symbol": "command adapters",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+            "lines": "1-129"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/notices.ts",
+            "symbol": "deduplicated notices",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+            "lines": "1-81"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/doctor.ts",
+            "symbol": "doctor facts and outcome",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+            "lines": "1-502"
+          }
+        ],
+        "from": "any",
+        "transition_id": "S20:06"
+      },
+      "source_and_effect_mapping": "Actual diagnosePi keeps active-dispatch degraded; formatPiDoctorReport final verdict is unhealthy before degraded before healthy independent of roworder. Inputs remain unchanged. Actual runPiWrapperSelfTest exact dry-run callback boundary admits only exactH03 block; executed/wrongblock/bait are unhealthy, dormant/untrusted paths call no wrapper/bridge. Extension routes this to stored wrapper tool-guard.ts937..944; doctor only returns formatted observations and cannot grant/repair authority.",
+      "actual_selectors": [
+        "Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+        "Pi structured doctor reports exact active origins and limits the module-identity claim",
+        "Pi structured doctor reports enabled global untrusted state without a bridge probe or wrapper self-test",
+        "Pi structured doctor wrapper self-test calls only the stored wrapper with the exact H-03 dry-run",
+        "Pi structured doctor wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block",
+        "Pi structured doctor wrapper self-test skips while dormant without claiming active dispatch"
+      ],
+      "limits": "Diagnostic/helper component acceptance with fake package/runtime paths and substituted wrapper/bridge ports; source routing inspected. No actual installed H03 hook/dispatcher/host-consent proof, live doctor qualification or author capability closure."
+    }
+  ],
+  "source_routing_read": [
+    "plugins/ca-pi/tools/src/status.ts",
+    "plugins/ca-pi/tools/src/doctor.ts",
+    "plugins/ca-pi/tools/src/extension.ts:1191-1258",
+    "plugins/ca-pi/tools/src/tool-guard.ts:937-944",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts:35-60"
+  ],
+  "nonclaims": [
+    "No machine/task/TUI/full-adapter/installed/currentauthor/provider qualification",
+    "S18:03/S20:02 endpointpolicy affectedcells remain withheld",
+    "Earlier3688/83b21 and ce3+WIP outcomes are history only"
+  ]
+}

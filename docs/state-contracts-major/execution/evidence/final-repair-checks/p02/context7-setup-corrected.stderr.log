@@ -1,0 +1,12 @@
+test_bridge_fixture_results_cannot_claim_live_authority (test_context_verification.ContextVerificationBridge.test_bridge_fixture_results_cannot_claim_live_authority) ... ok
+test_installed_bridge_enforces_empty_path_and_no_pythonpath (test_context_verification.ContextVerificationBridge.test_installed_bridge_enforces_empty_path_and_no_pythonpath) ... ok
+test_installed_bridge_rejects_invalid_release_manifest_contract (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_invalid_release_manifest_contract) ... ok
+test_installed_bridge_rejects_oversized_release_before_launch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_oversized_release_before_launch) ... ok
+test_installed_bridge_rejects_platform_filename_mismatch (test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch) ... ok
+test_installed_bridge_requires_all_exact_candidate_inputs (test_context_verification.ContextVerificationBridge.test_installed_bridge_requires_all_exact_candidate_inputs) ... ok
+test_windows_arm64_installed_inputs_bind_native_release (test_context_verification.ContextVerificationBridge.test_windows_arm64_installed_inputs_bind_native_release) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.895s
+
+OK

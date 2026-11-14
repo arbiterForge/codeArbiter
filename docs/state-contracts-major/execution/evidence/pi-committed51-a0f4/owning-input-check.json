@@ -1,0 +1,47 @@
+{
+  "source_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "owner": "major_readiness.evidence_paths",
+  "checks": [
+    {
+      "id": "pi-qualification:disposable-home:01",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "pi-qualification:disposable-home:02",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "pi-qualification:disposable-home:03",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S18:07",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S20:06",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S18:01",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S18:02",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S18:04",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S18:05",
+      "missing_owning_inputs": []
+    },
+    {
+      "id": "S18:06",
+      "missing_owning_inputs": []
+    }
+  ],
+  "result": "PASS_ALL10"
+}

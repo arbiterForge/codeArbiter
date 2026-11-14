@@ -71,7 +71,7 @@ const hooksJson: HooksJson = existsSync(hooksJsonPath)
   ? JSON.parse(readFileSync(hooksJsonPath, "utf-8"))
   : { hooks: {} };
 const eventMap = buildEventMap(hooksJson);
-const hooksGatesPage = renderHooksReference(callSites, eventMap, pluginVersion);
+const hooksGatesPage = renderHooksReference(callSites, eventMap, pluginVersion, undefined, skipped);
 writeFileSync(join(outDir, "hooks-gates.md"), hooksGatesPage);
 
 console.log(

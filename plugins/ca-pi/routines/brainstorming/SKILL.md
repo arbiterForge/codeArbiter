@@ -73,6 +73,15 @@ Drafts may be incomplete. `validate` with `gate: ready` identifies missing cover
 
 ## Phase 5 - Self-review and handoff
 
+At the first qualifying triage finding, load `<plugin-root>/includes/harvest.md`
+and register the bounded sanitized candidate under
+`source.workflow: brainstorming:triage`. Keep the extractor's exact origin suffix,
+stable workflow/work run, and current source fingerprint. Capture at discovery,
+before terminal handoff; `durable:false` is visible and does not stop independent
+authorized work. At the existing terminal harvest, reconcile uncertain effects
+and resume only the selected confirmed or in-scope sprint items, retaining exact
+target readback. Do not turn a blocking decision into deferred work or approval.
+
 Read back the saved specification. Check consistency, alignment with the user's request, exclusions, and ability to verify: no criterion that contradicts an accepted ADR without an explicitly resolved, source-visible owner decision. Identify a plausible failure mode or say none was found. Proportion the review to risk rather than mandating an adversarial committee.
 
 For full-lane feature or sprint work, return the selected spec identity, normative digest, criteria, and genuinely open decisions directly to `writing-plans` (`<plugin-root>/routines/writing-plans/SKILL.md`). The caller maintains its ordering; do not skip a useful plan to reach implementation. An existing spec should resume at its actual unfinished step, not restart an interview.

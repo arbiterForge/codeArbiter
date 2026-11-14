@@ -151,5 +151,88 @@ class ReadOnlyReviewFunnelTest(unittest.TestCase):
         self.assertNotIn("checkpoint-aggregator", curated_review)
 
 
+HOST_TREES = ("core/surface", "plugins/ca", "plugins/ca-codex", "plugins/ca-pi")
+
+
+def _index_blocks_cell(index: str, agent: str) -> str:
+    row = next(line for line in index.splitlines() if line.startswith(f"| [{agent}]"))
+    cell = [part.strip() for part in row.strip().strip("|").split("|")][-1]
+    return cell.split("(", 1)[0]
+
+
+class SeverityDispositionPolicyTest(unittest.TestCase):
+    """HW-09 / HW-20 (W-F03, W-F08): D-HIGH — maintenance-only dependency
+    risk is MEDIUM and non-blocking; HIGH keeps one meaning (blocks) in every
+    reviewer, the shared contract, triage and the rendered index."""
+
+    def test_dependency_owner_assigns_medium_to_maintenance_only(self):
+        for tree in HOST_TREES:
+            with self.subTest(tree=tree):
+                body = _read(f"{tree}/agents/dependency-reviewer.md")
+                self.assertIn("Maintenance-only risk is MEDIUM", body)
+                self.assertIn("Mixed maintenance + security keeps the security severity", body)
+                self.assertNotIn("Flag as **HIGH** when the package is unmaintained", body)
+                self.assertNotIn("Do not block on maintenance alone", body)
+
+    def test_security_highs_block_in_the_dependency_owner(self):
+        for tree in HOST_TREES:
+            with self.subTest(tree=tree):
+                body = _read(f"{tree}/agents/dependency-reviewer.md")
+                self.assertIn("BLOCK on any known CRITICAL or HIGH CVE", body)
+                self.assertNotIn("Flag HIGH CVEs for user evaluation", body)
+                self.assertIn("Flag suspicious install scripts as **HIGH** (blocking)", body)
+                self.assertIn("BLOCK if the license is denied", body)
+                self.assertIn("Supply chain: <install script: yes/no; notes> — PASS | BLOCK", body)
+
+    def test_no_reviewer_body_declares_a_non_blocking_high(self):
+        pattern = re.compile(
+            r"(HIGH[^.\n]*(for user evaluation|do not block|does not block|non-blocking)"
+            r"|(do not block|non-blocking)[^.\n]*\bHIGH\b)", re.IGNORECASE)
+        for tree in HOST_TREES:
+            for path in sorted((REPO_ROOT / tree / "agents").glob("*.md")):
+                if path.name == "INDEX.md":  # checked cell-by-cell below
+                    continue
+                text = path.read_text(encoding="utf-8")
+                for line in text.splitlines():
+                    if "not a non-blocking HIGH" in line:
+                        continue
+                    self.assertIsNone(pattern.search(line), f"{path}: {line}")
+
+    def test_shared_contract_states_one_rule_and_the_single_exception(self):
+        for tree in HOST_TREES:
+            with self.subTest(tree=tree):
+                contract = _read(f"{tree}/includes/reviewer-contract.md")
+                self.assertIn("## Severity and gate", contract)
+                self.assertIn("any **CRITICAL** or **HIGH** finding\nblocks", contract)
+                self.assertIn("maintenance-only risk", contract)
+                self.assertIn("keeps the security severity", contract)
+                self.assertIn("cannot change their severity or gate disposition", contract)
+
+    def test_triage_never_conditions_high_blocking(self):
+        for tree in HOST_TREES:
+            with self.subTest(tree=tree):
+                triage = _read(f"{tree}/agents/finding-triage.md")
+                self.assertNotIn("HIGH severity and breaks correctness", triage)
+                self.assertIn("HIGH has one meaning: it blocks", triage)
+
+    def test_index_blocks_column_matches_owner_severities(self):
+        for tree in HOST_TREES:
+            with self.subTest(tree=tree):
+                index = _read(f"{tree}/agents/INDEX.md")
+                dependency = _index_blocks_cell(index, "dependency-reviewer")
+                self.assertNotIn("maintenance", dependency)
+                for fact in ("license", "CRITICAL/HIGH CVE", "install script"):
+                    self.assertIn(fact, dependency)
+                coverage = _index_blocks_cell(index, "coverage-auditor")
+                # The owner flags uncovered source files and logical gaps MEDIUM.
+                body = _read(f"{tree}/agents/coverage-auditor.md")
+                self.assertIn("Flag uncovered source files as **MEDIUM**", body)
+                self.assertNotIn("untested source", coverage)
+                self.assertIn("maturity threshold", coverage)
+                self.assertIn("Flag missing critical-path evidence as **HIGH**", body)
+                self.assertIn("critical-path", coverage)
+                self.assertIn("negative-path", coverage)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

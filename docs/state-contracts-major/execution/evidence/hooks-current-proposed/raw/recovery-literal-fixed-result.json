@@ -1,0 +1,41 @@
+{
+  "kind": "recovery",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "seconds": 10.736774444580078,
+  "environment_keys": [
+    "HOME",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "home_before_interpreter_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-recovery-proof-home-q8np_h2a",
+  "input_drift": [],
+  "harness_correction": "Read Windows case-insensitive os.environ directly for SystemRoot; initial copied dict omitted it and Python _overlapped failed before test import. Failure retained separately; production/testsource unchanged."
+}

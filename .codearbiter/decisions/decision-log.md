@@ -2254,3 +2254,155 @@ Reliable and Securable favor checking the merged default-branch work before a co
 Record ADR-0045 and bind DECISION-REMOTE-TIMING in the native work-system specification. Keep the issue provider's after_merge default and exact-work merge proof, retain explicit immediate configuration and Project sync commands, and report pending, conflict, and outcome-unknown states in the CLI and work view.
 
 ---
+
+## DECISION-0079 — D-PROGRESS — Preserve independent progress and derive evidence applicability
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit choice recorded by Claude Code on 2026-11-12 in the live major-program progress record.
+**Decision category:** state-engine-representation
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The major-program discussion left this choice for the product owner.
+- **Scaffold position:** D-PROGRESS selected option B from the native SMARTS packet. ADR-0043 required progress/evidence separation without choosing its representation. Dependency invalidation had overwritten prior progress with STALE.
+- **Status type:** open-decision-closure
+
+### Decision
+Preserve recorded work progress independently of dependency and evidence invalidation. Keep actual user stops, adverse observations and historical evidence; an upstream change does not erase downstream progress or an independent stop. Derive evidence applicability on demand from actual current inputs, separately from dependency readiness. An unavailable or incomplete basis remains unassessed or unknown; a label or receipt reference alone is not current proof. Keep option A only as a temporary old-client reader bridge. Legacy STALE without trustworthy prior state remains legacy/unresolved with its raw value and reason retained. Never invent recovered progress or permit unsupported writes.
+
+This selects ADR-0043's progress representation; its ordinary-work, host-permission and publication boundaries remain in force.
+
+### SMARTS rationale
+Independent progress preserves reported work while derived applicability can reflect changed or missing inputs. The native SMARTS comparison identifies the extra invalidation obligations of persisted assessments and the remaining ambiguity of an overlay; option B avoids both as the permanent representation.
+
+### Implementation implication
+Record ADR-0046-independent-progress-derived-evidence. Mutators, dependency advice, contextual reads, renderers and compatible clients must agree on the selected semantics. Preserve historical progress while evidence currentness changes, and disclose unrecoverable legacy state. Acceptance remains distinct from implementation, installed-host qualification and publication.
+
+---
+
+## DECISION-0080 — D-HIGH — Classify maintenance-only dependency risk as MEDIUM
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit choice recorded by Claude Code on 2026-11-12 in the live major-program progress record.
+**Decision category:** review-severity-contract
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The major-program discussion left this choice for the product owner.
+- **Scaffold position:** D-HIGH resolves incompatible meanings of HIGH: a blocking severity and a maintenance-only dependency concern that did not block.
+- **Status type:** open-decision-closure
+
+### Decision
+Maintenance-only dependency risk, including an unmaintained or abandoned dependency without a separate security finding, is MEDIUM and non-blocking. HIGH retains one meaning everywhere: it blocks the affected change. A mixed maintenance and security finding retains its actual security severity; maintenance classification must not downgrade a security concern.
+
+### SMARTS rationale
+A severity with one blocking meaning is easier to trace through the reviewer funnel. Keeping mixed security findings at their actual severity preserves the independent security boundary while maintenance-only risk stays visible.
+
+### Implementation implication
+Record ADR-0047-maintenance-risk-medium. The dependency reviewer, triage funnel and generated role index must use the same severity and blocking rules. Record unresolved maintenance risk honestly. Acceptance remains distinct from implementation, installed-host qualification and publication.
+
+---
+
+## DECISION-0081 — D-GOV-PRETAG — Require declared pre-tag checks
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit choice recorded by Claude Code on 2026-11-12 in the live major-program progress record.
+**Decision category:** release-governance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The major-program discussion left this choice for the product owner.
+- **Scaffold position:** D-GOV-PRETAG ratifies required enforcement. ADR-0040 clause 4 calls release-skill pre-tag proof advisory; current CI and release paths enforce the declared checks. The owner chose required checks rather than weakening enforcement.
+- **Status type:** open-decision-closure
+
+### Decision
+Declared target pre-tag checks are required. A failed declared check blocks the affected candidate or publication; it must not become a warning. This supersedes only ADR-0040's advisory treatment of release-skill pre-tag proof. Its independent per-target release behavior and other advisory checks retain their separately applicable decisions and later successors. The checks retain their existing declared-input, check-only, content-binding and clean-tree contracts. Success grants no merge or publication authority and establishes no unrelated installed-host qualification.
+
+### SMARTS rationale
+Required declared checks keep the recorded contract consistent with actual candidate and release enforcement. Their narrow scope preserves independent target release and separately applicable advisory checks.
+
+### Implementation implication
+Record ADR-0048-required-declared-pre-tag-checks. Declared targets, candidate preflight, the release owner and generated guidance must agree that these checks are required. Correct failing inputs or checks without silently removing the gate. Acceptance remains distinct from implementation, installed-host qualification and publication.
+
+---
+
+## DECISION-0082 — adr-0046-ratified — Bind the owner's independent-progress decision
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit D-PROGRESS option B retained in DECISION-0079 and the live program progress record.
+**Decision category:** adr-ratification
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** D-PROGRESS selects independent recorded progress and derived evidence applicability.
+- **Scaffold position:** ADR-0046 records the exact accepted choice with independently reviewed obligations.
+- **Status type:** open-decision-closure
+
+### Decision
+Ratify the unchanged user choice recorded in DECISION-0079 as ADR-0046-independent-progress-derived-evidence. Its status is Accepted/Planned; this entry claims neither implementation nor verification.
+
+### SMARTS rationale
+Preserve the user's representation choice, historical progress and independent stops. Bind the exact immutable decision and complete obligations through the following acceptance event without inventing delivery evidence.
+
+### Implementation implication
+Commit the exact ADR and this append, then use the shipped acceptance writer to bind its twelve independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
+
+---
+
+## DECISION-0083 — adr-0047-ratified — Bind the owner's dependency-severity decision
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit D-HIGH choice retained in DECISION-0080 and the live program progress record.
+**Decision category:** adr-ratification
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Maintenance-only dependency risk is MEDIUM and non-blocking; HIGH blocks affected work.
+- **Scaffold position:** ADR-0047 records the accepted choice and preserves independent security severity.
+- **Status type:** open-decision-closure
+
+### Decision
+Ratify the unchanged user choice recorded in DECISION-0080 as ADR-0047-maintenance-risk-medium. Its status is Accepted/Planned; this entry claims neither implementation nor verification.
+
+### SMARTS rationale
+Keep one meaning for HIGH across dependency review and triage. Record maintenance concerns without downgrading independent security findings, and preserve the owner's explicit decision.
+
+### Implementation implication
+Commit the exact ADR and this append, then use the shipped acceptance writer to bind its seven independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
+
+---
+
+## DECISION-0084 — adr-0048-ratified — Bind the owner's pre-tag verification decision
+
+**Date:** 2026-11-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com; explicit D-GOV-PRETAG choice retained in DECISION-0081 and the live program progress record.
+**Decision category:** adr-ratification
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Declared target pre-tag checks are required before creating a publication effect.
+- **Scaffold position:** ADR-0048 records the accepted choice without granting publication authority.
+- **Status type:** open-decision-closure
+
+### Decision
+Ratify the unchanged user choice recorded in DECISION-0081 as ADR-0048-required-declared-pre-tag-checks. Its status is Accepted/Planned; this entry claims neither implementation nor verification.
+
+### SMARTS rationale
+Keep declared checks executable and required at their actual publication boundary. Bind the user's existing decision while preserving separate qualification, authorization and receipt-only repair semantics.
+
+### Implementation implication
+Commit the exact ADR and this append, then use the shipped acceptance writer to bind its ten independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
+
+---

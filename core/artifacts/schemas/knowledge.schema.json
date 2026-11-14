@@ -14,7 +14,10 @@
       "const": "knowledge"
     },
     "schema_version": {
-      "const": "0.3.2"
+      "enum": [
+        "0.3.2",
+        "0.3.4"
+      ]
     },
     "artifact_id": {
       "type": "string",

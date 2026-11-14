@@ -18,6 +18,7 @@ import subprocess
 import tempfile
 import threading
 from typing import Any
+from _artifactmanifestlib import validate_release_manifest
 
 PROTOCOL = "codearbiter.artifact-api/0.1.0"
 SCHEMA_VERSION = "0.3.2"
@@ -1084,6 +1085,10 @@ class ArtifactClient:
                 raise ArtifactError("CAPABILITY_MISSING", "no matching tested binary in the installation")
             if entry["native_tested"] is not True:
                 raise ArtifactError("UNVERIFIED_PLATFORM", "cross-compilation is not native qualification")
+            try:
+                validate_release_manifest(manifest)
+            except ValueError as error:
+                raise ArtifactError("INVALID_INSTALLATION", str(error)) from error
             name = entry["file"]
             expected_name = f"ca-artifact-{system}-{arch}" + (".exe" if system == "windows" else "")
             if name != expected_name:

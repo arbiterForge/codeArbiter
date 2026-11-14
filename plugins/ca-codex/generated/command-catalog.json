@@ -20,7 +20,15 @@
   ],
   "compatibility": {
     "clockStarts": "confirmed-non-draft-github-release",
-    "removalRequires": "minor-release-with-changelog-notice",
+    "removalRequires": {
+      "minimumVersion": {
+        "claude": "3.0.0",
+        "codex": "1.0.0",
+        "pi": "1.0.0"
+      },
+      "decision": "separately-approved-named-removal",
+      "evidence": "fresh-exact-confirmed-non-draft-release"
+    },
     "targets": {
       "claude": {
         "publishedWithoutMetadata": "2.16.0",
@@ -111,7 +119,7 @@
     },
     "conflict": {
       "name": "conflict",
-      "description": "Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation.",
+      "description": "Pause affected work and its actual dependents when rules conflict. Present both sources and the dependency scope; the user resolves. Continue independent authorized work.",
       "skillPath": "skills/ca-conflict/SKILL.md",
       "visibility": "internal",
       "workflow": "decide",

@@ -1,0 +1,40 @@
+{
+  "source_commit": "32e46e45cf632deb0acc5f0231632684f8d75f87",
+  "source_sha256": "4039900b3b8713f8052d7bd1a3fa174e0b357292c700d6b4ab5edfc65d4840d6",
+  "observations": [
+    {
+      "case": "missing head matches absent record head",
+      "record": {
+        "name": "gate",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "head": null,
+      "name": "gate",
+      "observed": "green"
+    },
+    {
+      "case": "missing head and required name match absent fields",
+      "record": {
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "head": null,
+      "name": null,
+      "observed": "green"
+    },
+    {
+      "case": "empty configured name matches empty record name",
+      "record": {
+        "name": "",
+        "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "name": "",
+      "observed": "green"
+    }
+  ],
+  "scope": "Pure classifier invocation only; no GitHub, release, merge or source effect"
+}

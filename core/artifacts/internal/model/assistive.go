@@ -8,6 +8,32 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
 )
 
+// TaskProgress reports recorded work without turning a historical label or
+// receipt reference into current evidence. A legacy STALE value has destroyed
+// its prior progress in the live record; retain it and its reason as unresolved.
+func TaskProgress(d *Document, id string) map[string]any {
+	recorded := M(M(M(d.Data["execution"])["tasks"])[id])
+	status := S(recorded["state"])
+	var progress any = status
+	basis := "recorded"
+	switch status {
+	case "DONE":
+		basis = "caller_reported"
+	case "REVIEW":
+		basis = "caller_reported"
+		if len(A(recorded["evidence_refs"])) > 0 {
+			basis = "receipt_references_unassessed"
+		}
+	case "ACCEPTED":
+		basis = "historical_receipt_label_unassessed"
+	case "STALE":
+		basis, progress = "legacy_unresolved", nil
+	}
+	return map[string]any{"projection_version": "recorded-progress/1", "state": progress,
+		"recorded_state": status, "recorded_reason": recorded["reason"],
+		"basis": basis, "evidence_assessed": false}
+}
+
 // HasAssistiveFields prevents new semantics from being stored under an old
 // schema label. Reading an unchanged historical document never upgrades it.
 func HasAssistiveFields(v map[string]any) bool {
@@ -253,4 +279,57 @@ func TaskCheckAssessments(d, spec *Document, id string) ([]any, bool) {
 		out = append(out, note)
 	}
 	return out, len(entries) > 0 && M(entries[len(entries)-1])["history_trimmed"] == true
+}
+
+// HasTypedRetirement reports whether any tombstone records its original kind.
+func HasTypedRetirement(v map[string]any) bool {
+	for _, value := range A(M(v["normative"])["retired_symbols"]) {
+		if _, ok := M(value)["original_kind"]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+var versionRank = map[string]int{"0.3.0": 0, "0.3.1": 1, "0.3.2": 2, RetirementVersion: 4}
+
+// RequiredVersion returns the schema label a non-work document must carry for
+// the features it contains. It never moves a label backward, so an ordinary
+// write after a feature upgrade cannot relabel the document to an older
+// version that would refuse it. Work documents keep their own versioning.
+func RequiredVersion(v map[string]any) string {
+	current := S(v["schema_version"])
+	if S(v["kind"]) == "work" {
+		return current
+	}
+	need := current
+	raise := func(version string) {
+		if versionRank[version] > versionRank[need] {
+			need = version
+		}
+	}
+	if HasAssistiveFields(v) {
+		raise(SchemaVersion)
+	}
+	if HasTypedRetirement(v) {
+		raise(RetirementVersion)
+	}
+	return need
+}
+
+// AtLeast returns RequiredVersion(v), raised to minimum when that is newer.
+// Writers that always introduce 0.3.2 semantics use AtLeast(v, SchemaVersion).
+func AtLeast(v map[string]any, minimum string) string {
+	need := RequiredVersion(v)
+	if versionRank[minimum] > versionRank[need] {
+		return minimum
+	}
+	return need
+}
+
+// VersionAtLeast reports whether a non-work document label is at or after
+// minimum in the 0.3.x feature order (0.3.4 includes every 0.3.2 feature).
+func VersionAtLeast(version, minimum string) bool {
+	have, known := versionRank[version]
+	return known && have >= versionRank[minimum]
 }

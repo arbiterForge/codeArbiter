@@ -1,0 +1,40 @@
+{
+  "schema": "codearbiter.selected-original-vitest-results/1",
+  "representation": "LOSSLESS_SELECTED_ASSERTION_OBJECTS_PARTIAL_REPORT",
+  "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\precedence-negative-control.json",
+    "sha256": "a1afb0d8cb008e2dfd6b0308a58b86b7fd867decceeb06f713d8aaac4aea6773",
+    "bytes": 9986,
+    "preserved_in_Temp": true
+  },
+  "actual_source_epoch": "ce3a4a91+Temp diagnostic precedence mutant/test overlay; mutant restored before6PASS",
+  "original_success": false,
+  "selected_assertion_objects": [
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+      "status": "failed",
+      "title": "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+      "duration": 8.942800000000034,
+      "failureMessages": [
+        "AssertionError: expected 'doctor: DEGRADED' to be 'doctor: UNHEALTHY' // Object.is equality\n    at C:/Users/brenn/AppData/Local/Temp/ca-pi-doctor-aggregate-yfb1_rma/candidate/plugins/ca-pi/tools/test/doctor.test.ts:245:63\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ],
+      "meta": {},
+      "tags": []
+    }
+  ],
+  "selected_counts": {
+    "passed": 0,
+    "failed": 1
+  },
+  "omitted_unselected_count": 27,
+  "omitted_fields": [
+    "unselected assertion objects",
+    "coverageMap if present",
+    "snapshot bookkeeping",
+    "suite wallclock wrapper"
+  ],
+  "limits": "Selected objects exactly equal original JSON semantic values; original raw report remains untouched. Not a lossless projection of omitted report fields or a later-source execution."
+}

@@ -292,7 +292,9 @@ class WorkflowContract(unittest.TestCase):
                 self.assertIn("expected_platform: " + platform, text, owner)
             self.assertIn("fail-fast: false", text)
         self.assertNotIn("--skip-tests", self.jobs["artifact-native-build"])
-        self.assertIn("python tools/build-artifacts.py --output", self.jobs["artifact-native-build"])
+        # Folded YAML commands preserve their shell arguments across newlines.
+        self.assertRegex(self.jobs["artifact-native-build"],
+                         r"python[ \t]+tools/build-artifacts\.py\s+--output(?:[ \t]|$)")
 
     def test_full_coverage_and_platform_specific_checks_stay_required(self):
         # The tested build owns the complete module population and vet; a
@@ -359,7 +361,10 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("AUTHORITY_SHARD: all", authority_job)
         self.assertIn('AUTHORITY_SHARD_COUNT: "4"', authority_job)
         self.assertNotIn("matrix.shard", authority_job)
-        self.assertNotIn("upload-artifact", authority_job)
+        self.assertIn("name: Retain original authority observations", authority_job)
+        self.assertIn("path: ${{ runner.temp }}/authority-observations/*.json", authority_job)
+        self.assertLess(authority_job.index("name: Recheck tested candidate after authority coverage"),
+                        authority_job.index("name: Retain original authority observations"))
         aggregate = self.jobs["ci-passed"]
         for owner in OWNERS:
             self.assertIn("\n      - " + owner + "\n", aggregate)
@@ -628,6 +633,9 @@ class HostedCheckPaginationContract(unittest.TestCase):
         inconsistent = copy.deepcopy(pages)
         inconsistent[1]["total_count"] = 102
         self.assertFalse(read(inconsistent))
+
+
+from test_artifact_authority_retention import AuthorityRetentionTest, AuthorityRetentionWorkflowTest
 
 
 if __name__ == "__main__":

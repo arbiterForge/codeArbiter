@@ -5,18 +5,20 @@
 # prints a stderr breadcrumb instead of going silently dormant (the worst
 # failure shape for a plugin whose whole job is to be active).
 #
-# Detects an arbiter-enabled repo and injects the orchestrator persona + startup
-# state into context. A plugin has no CLAUDE.md to load an always-on persona, so
-# the SessionStart hook does it: in a repo whose `.codearbiter/CONTEXT.md`
-# frontmatter sets `arbiter: enabled`, this prints ORCHESTRATOR.md (+ live state)
-# to stdout, which Claude Code adds to context.
+# The active startup path owns setup and a state briefing. Mode cleanup and
+# healing an already host-owned global statusline pin precede activation; an
+# absent activation flag therefore does not imply zero maintenance effects.
+# Enabled startup may install Git enforcement and spawn bounded fetch/update
+# work. The explicit-root init --check --passive path is the inspection boundary.
+# Persona delivery belongs to prompt-submit.py on each applicable turn, rather
+# than SessionStart. Recovery scans read only the existing Git-common ledger;
+# a separate optional per-session marker remembers notices emitted by this hook.
 #
 # Injection is via PLAIN STDOUT, not hookSpecificOutput.additionalContext:
 # additionalContext from a plugin-scoped hook is unreliable (claude-code #16538),
 # whereas plain stdout is added to context dependably.
 #
-# In any repo WITHOUT the flag, the hook exits silently (dormant) — the plugin
-# can be installed globally and stays out of the way everywhere else.
+# After the narrow maintenance above, the activation flag gates project startup.
 
 import concurrent.futures
 import copy
@@ -1314,6 +1316,18 @@ def main():
     ot_text = read_text(ot)
     emit_task_summary(ot_text, native_work=native_work_selected(
         os.path.join(root, ".codearbiter")))
+
+    # This notice never performs a target effect or repairs the recovery store.
+    if host.name != "pi":
+        # Pi owns typed snapshot/UI/prompt delivery and its current-lease dedup.
+        try:
+            import _workflowrecoverylib
+            recovery_notice = _workflowrecoverylib.presentation(root, session_id)
+            if recovery_notice["text"]:
+                print(recovery_notice["text"], flush=True)
+                _workflowrecoverylib.record_notice_emitted(root, session_id, recovery_notice["fingerprint"])
+        except Exception:  # An optional notice cannot disable normal startup.
+            print("codeArbiter: workflow recovery notice unavailable; independent authorized work continues.")
 
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
     _drift = provenance_drift_line(root, report_unknown=True)

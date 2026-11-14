@@ -9,6 +9,23 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 ### Fixed
 - Correct the marketplace description to explain the existing nixpacks and generated-Dockerfile build paths. Prepare the 0.1.7 metadata patch so marketplace installs receive the corrected description.
 
+## [0.2.0] - 2026-11-13
+
+### Changed
+
+- Reuse images through a V2 cache identity that includes the builder, target platform and effective build profile, then verify the cache label and immutable image ID. Temporary checkout names no longer change that identity.
+- Limit Nixpacks generation to explicit Node/Python, Go and bounded non-workspace Rust profiles with pinned image inputs, including Go/Rust runtime stages. Bound native manifest reads and include their observed inputs in cache identity. Refuse custom Nixpacks configuration and existing generated output before generation or cleanup can change those paths.
+- Report requested and effective network policies separately. Ordinary exploration remains offline.
+
+### Fixed
+
+- Refuse failed manifest, daemon and resource observations instead of treating them as absence. Failed or cancelled creation retains exact resource references when independent cleanup cannot confirm removal.
+- Use bounded, cancellable process paths for clone and host staging, and report uncertain helper or staging cleanup.
+
+### Qualification pending
+
+- Installed Nixpacks and fallback two-create Docker checks, and an actual Windows WSL build, remain unqualified locally. Controlled subprocess tests do not replace those runtime checks.
+
 ## [0.1.10] - 2026-10-24
 
 ### Fixed

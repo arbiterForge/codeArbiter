@@ -1,0 +1,260 @@
+{
+  "schema": "codearbiter.workflow-recovery-contract",
+  "version": 1,
+  "owner": "core/pysrc/_workflowrecoverylib.py",
+  "design": "docs/state-contracts-major/INTERRUPTION-RECOVERY.md#durable-interruption-recovery-precise-product-behavior",
+  "purpose": "Durable local continuation for registered workflow obligations (D-RECOVERY). Bookkeeping only: registering, reading, claiming or settling an obligation never creates a task, decision, issue, approval, completion, publication or cleanup, and never grants authority.",
+  "non_goals": [
+    "global daemon",
+    "database service",
+    "generic command or instruction replay",
+    "universal permission or progress gate",
+    "new ordinary-work approval ceremony",
+    "automatic remote publication",
+    "automatic cleanup or deletion"
+  ],
+  "storage": {
+    "base": "git-common-dir",
+    "resolution": "git rev-parse --path-format=absolute --git-common-dir from the real (non-reparse) repository root, as _artifactauthoritylib._spool_root does",
+    "subtree": "codearbiter/workflow-recovery/v1",
+    "caller_supplied_root": "forbidden-in-installed-operation",
+    "path_rules": [
+      "every directory on the path is a real directory (no symlink, no reparse point)",
+      "every record file is a regular file opened without following links",
+      "names are derived from validated identities, never from caller text",
+      "reads never leave the owned subtree"
+    ],
+    "dormant_project": "never read, never created: only an active project (arbiter: enabled) may read an existing ledger, and only an explicit write creates the subtree",
+    "verification_input": "never",
+    "snapshot": "excluded: the native snapshot never hashes .git (core/artifacts/internal/validate/input_policy.go IsGitPath), and a linked worktree's common directory lies outside its checkout",
+    "portability": "local to this repository's Git directory; not portable work evidence, not a backup, not durable after that Git directory is deleted",
+    "inventory": "documented runtime path owned by the workflow-recovery helper; doctor/status may report it, cleanup may not delete pending/claimed/unavailable records"
+  },
+  "bounds": {
+    "scan_max_summaries": 32,
+    "scan_max_bytes": 262144,
+    "registration_max_bytes": 65536,
+    "batch_max_candidates": 32,
+    "title_max_chars": 200,
+    "description_max_chars": 4000,
+    "locator_max_chars": 512,
+    "reason_max_chars": 200,
+    "history_max_entries": 32,
+    "oversize": "explicit unavailable/partial result; never silently truncate a candidate into a different obligation"
+  },
+  "kinds": {
+    "terminal-harvest": {
+      "producers": [
+        "tdd:phase-6",
+        "brainstorming:triage",
+        "writing-plans:triage",
+        "commit-gate:set-aside",
+        "checkpoint:deferrable",
+        "sprint:low-confidence"
+      ],
+      "candidate_kinds": ["work", "decision"],
+      "blocking": ["blocking", "nonblocking"],
+      "targets": ["native-work", "legacy-work", "nonblocking-decision", "blocking-decision-escalation", "decline-audit"]
+    }
+  },
+  "unknown_kind_or_version": "unavailable: preserved byte-for-byte, reported as bounded metadata, never overwritten, downgraded or deleted",
+  "work_ref_forms": ["native:<work_id>", "legacy:<exact origin>", "none"],
+  "work_ref_none": "authorized ordinary work without an enrolled task registers with work_ref 'none'; registering never requires creating a task",
+  "record": {
+    "additional_fields": "forbidden",
+    "fields": {
+      "schema_version": {"type": "integer", "required": true, "const": 1},
+      "kind": {"type": "string", "required": true, "registered_kind": true},
+      "repository_id": {"type": "string", "required": true, "pattern": "^[0-9a-f]{32}$"},
+      "project_id": {"type": "string", "required": false, "max_chars": 128},
+      "worktree_id": {"type": "string", "required": true, "pattern": "^[0-9a-f]{32}$"},
+      "workflow_run_id": {"type": "string", "required": true, "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+      "obligation_id": {"type": "string", "required": true, "pattern": "^ob-[0-9a-f]{32}$"},
+      "origin": {"type": "string", "required": true, "pattern": "^(?!.*[.][.])[A-Za-z0-9._:/@-]{1,200}#[A-Za-z0-9._-]{1,64}$"},
+      "work_ref": {"type": "string", "required": true, "pattern": "^(none|native:[A-Za-z0-9._-]{1,128}|legacy:[A-Za-z0-9._:/@#-]{1,256})$"},
+      "source": {"type": "object", "required": true, "fields": {
+        "workflow": {"type": "string", "required": true, "producer": true},
+        "locator": {"type": "string", "required": true, "max_chars": 512},
+        "fingerprint": {"type": "string", "required": true, "pattern": "^sha256:[0-9a-f]{64}$"},
+        "branch": {"type": "string", "required": false, "max_chars": 256, "note": "observation only, never identity"},
+        "base": {"type": "string", "required": false, "pattern": "^[0-9a-f]{40,64}$"}
+      }},
+      "candidate": {"type": "object", "required": true, "fields": {
+        "revision": {"type": "integer", "required": true, "minimum": 1},
+        "kind": {"type": "string", "required": true, "enum_ref": "kinds.*.candidate_kinds"},
+        "blocking": {"type": "string", "required": true, "enum_ref": "kinds.*.blocking"},
+        "title": {"type": "string", "required": true, "max_chars": 200},
+        "description": {"type": "string", "required": false, "max_chars": 4000},
+        "boundaries": {"type": "array", "required": false, "max_items": 16, "item_max_chars": 128},
+        "provenance": {"type": "string", "required": true, "max_chars": 512}
+      }},
+      "state": {"type": "string", "required": true, "enum_ref": "states"},
+      "record_revision": {"type": "integer", "required": true, "minimum": 1, "monotonic": true},
+      "created_at": {"type": "string", "required": true, "format": "rfc3339-utc", "note": "diagnostic, never permission"},
+      "updated_at": {"type": "string", "required": true, "format": "rfc3339-utc", "note": "diagnostic, never permission"},
+      "reason": {"type": "string", "required": false, "enum_ref": "unavailable_reasons"},
+      "reason_detail": {"type": "string", "required": false, "max_chars": 200},
+      "previous_attempt": {"type": "string", "required": false, "pattern": "^at-[0-9a-f]{32}$"},
+      "last_transition": {"type": "string", "required": true, "transition_ref": true},
+      "claim": {"type": "object", "required": false, "fields": {
+        "attempt_id": {"type": "string", "required": true, "pattern": "^at-[0-9a-f]{32}$"},
+        "host": {"type": "string", "required": true, "enum": ["claude", "codex", "pi", "cli"]},
+        "session": {"type": "string", "required": false, "max_chars": 128},
+        "process_instance": {"type": "string", "required": true, "max_chars": 128},
+        "nonce": {"type": "string", "required": true, "pattern": "^[0-9a-f]{32}$"},
+        "expected_record_revision": {"type": "integer", "required": true, "minimum": 1},
+        "effect_operation_id": {"type": "string", "required": true, "pattern": "^op-[0-9a-f]{32}$"}
+      }},
+      "effect": {"type": "object", "required": false, "fields": {
+        "owner": {"type": "string", "required": true, "enum_ref": "kinds.*.targets"},
+        "target_kind": {"type": "string", "required": true, "max_chars": 64},
+        "origin": {"type": "string", "required": true, "same_as": "origin"},
+        "candidate_revision": {"type": "integer", "required": true, "minimum": 1},
+        "operation_id": {"type": "string", "required": true, "pattern": "^op-[0-9a-f]{32}$"},
+        "expected_target_revision": {"type": "string", "required": false, "max_chars": 128}
+      }},
+      "outcome": {"type": "object", "required": false, "fields": {
+        "disposition": {"type": "string", "required": true, "enum_ref": "settled_dispositions"},
+        "target_id": {"type": "string", "required": false, "max_chars": 128},
+        "receipt_sha256": {"type": "string", "required": true, "pattern": "^[0-9a-f]{64}$"},
+        "evidence": {"type": "string", "required": true, "max_chars": 512},
+        "replacement": {"type": "string", "required": false, "pattern": "^ob-[0-9a-f]{32}$"}
+      }},
+      "authority_context": {"type": "string", "required": false, "max_chars": 256, "note": "names the authority source for audit; revalidated at effect time; never a reusable grant"},
+      "history": {"type": "array", "required": true, "max_items": 32, "item": "transition-entry"}
+    },
+    "forbidden_keys": ["authorized", "approved", "approval", "permission", "grant", "token", "secret", "password", "credential", "transcript", "raw_packet", "rejected_payload", "command", "shell", "argv", "executable", "path_to_run"],
+    "forbidden_content": "no full transcript, raw debug packet, secret, credential, raw rejected payload, arbitrary command, shell text, or executable path"
+  },
+  "identities": {
+    "obligation_id": "ob-<sha256(repository_id, workflow_run_id, kind, origin)[:32]>: stable across discovery replay, restart and reentry; never derived from a timestamp or the current session",
+    "candidate_revision": "increments only on an authorized correction under compare-and-swap; the previous candidate stays in history; a new revision never overwrites an effect of unknown outcome",
+    "effect_operation_id": "op-<sha256(obligation_id, candidate_revision, target owner, action)[:32]>: an exact retry reuses it with the immutable payload; a corrected attempt gets a new linked attempt only after the earlier effect is known absent or settled"
+  },
+  "states": ["absent", "pending", "claimed", "unavailable", "settled"],
+  "terminal_states": ["settled"],
+  "settled_dispositions": ["promoted", "reused", "declined", "cancelled", "superseded"],
+  "unavailable_reasons": [
+    "io-temporary",
+    "storage-unavailable",
+    "capacity",
+    "unsupported-version",
+    "unknown-kind",
+    "corrupt-record",
+    "changed-binding",
+    "source-stale",
+    "owner-ambiguous",
+    "authorization-denied",
+    "explicit-stop",
+    "material-unavailable",
+    "uncertain-effect",
+    "target-unavailable"
+  ],
+  "reason_recovery": {
+    "io-temporary": "retry the same explicit operation once storage is readable",
+    "storage-unavailable": "repair storage access; nothing was registered",
+    "capacity": "settle or explicitly dispose older obligations; nothing older is evicted",
+    "unsupported-version": "use a reader that supports this version; the bytes are preserved",
+    "unknown-kind": "install the version that registered this kind; the bytes are preserved",
+    "corrupt-record": "inspect the preserved bytes through the explicit recovery path; no automatic repair",
+    "changed-binding": "revalidate the source/work binding in the current context",
+    "source-stale": "re-run discovery against the current source",
+    "owner-ambiguous": "resolve the single target owner (dual owner refuses)",
+    "authorization-denied": "a correction cannot clear this; only a new real grant from the host or user can",
+    "explicit-stop": "a correction cannot clear this; only the user lifting the stop can",
+    "material-unavailable": "restore the required material, then resume",
+    "uncertain-effect": "reconcile by exact operation/origin readback before any retry",
+    "target-unavailable": "wait for the target owner; never write through a second owner"
+  },
+  "correction_cannot_clear": ["authorization-denied", "explicit-stop"],
+  "events": [
+    "register",
+    "register-invalid",
+    "register-replay",
+    "correct",
+    "scan",
+    "claim",
+    "claim-busy",
+    "claim-refused",
+    "decline",
+    "target-readback-proves-effect",
+    "response-lost",
+    "reconcile-proves-effect",
+    "reconcile-proves-absent",
+    "reconcile-undetermined",
+    "condition-restored",
+    "unknown-or-malformed-read",
+    "cancel",
+    "supersede",
+    "settled-replay",
+    "new-follow-up",
+    "write-after-commit-point-failed"
+  ],
+  "transitions": [
+    {"id": "WR-01", "from": "absent", "event": "register", "guard": "registered kind and version; closed bounded fields valid; storage writable under the writer lock", "to": "pending", "effects": "write record and index under one recoverable write intent; return durable:true with obligation_id and record_revision; no task, issue or decision write", "on_reject": "absent with durable:false (WR-02)"},
+    {"id": "WR-02", "from": "absent", "event": "register-invalid", "guard": "invalid, oversize or unknown-kind input, or storage unavailable", "to": "absent", "effects": "bounded sanitized diagnostic and durable:false; ordinary unrelated work continues; no record invented", "on_reject": "not applicable: this is the rejection"},
+    {"id": "WR-03", "from": "pending", "event": "register-replay", "guard": "same obligation identity and byte-identical candidate", "to": "pending", "effects": "return the existing obligation_id and record_revision; nothing rewritten", "on_reject": "a different candidate is a conflict requiring an explicit correction, never idempotent success"},
+    {"id": "WR-04", "from": "pending", "event": "correct", "guard": "authorized correction; expected record_revision matches; no unreconciled effect", "to": "pending", "effects": "candidate.revision+1 and record_revision+1; previous candidate kept in history", "on_reject": "revision conflict returns the current state unchanged"},
+    {"id": "WR-05", "from": "pending", "event": "scan", "guard": "active project; bounded read", "to": "pending", "effects": "read-only bounded summary with complete/partial/unavailable inventory and a resume route; never executes promotion, cleanup, publication or review", "on_reject": "an unreadable index reports partial/unavailable, never an empty inventory"},
+    {"id": "WR-06", "from": "pending", "event": "claim", "guard": "workflow terminal step or explicit resume; current source/work binding holds; actual current effect authority holds; per-obligation OS lock acquired; expected record_revision matches", "to": "claimed", "effects": "persist the claim and immutable effect intent before calling the target adapter", "on_reject": "lock held: WR-12 busy; revision mismatch: current state unchanged"},
+    {"id": "WR-07", "from": "pending", "event": "claim-refused", "guard": "target owner ambiguous, source stale, unsupported kind/version, actual scope denied, or required material unavailable", "to": "unavailable", "effects": "retain the candidate and a precise reason; pause only this dependent effect; no fallback owner and no universal approval request", "on_reject": "not applicable: this is the refusal"},
+    {"id": "WR-08", "from": "pending", "event": "decline", "guard": "interactive preview explicitly declined; the decline audit event committed durably", "to": "settled", "disposition": "declined", "effects": "composite journey: WR-06 first persists the immutable decline-audit intent; exact audit readback settles through WR-09 or recovered WR-11 with disposition declined; one idempotent decline event and terminal receipt, no board or question write", "on_reject": "an uncertain audit commit keeps the recoverable attempt claimed; WR-10/WR-11 reconciliation must determine the effect before retry, never demote an unknown effect to pending"},
+    {"id": "WR-09", "from": "claimed", "event": "target-readback-proves-effect", "guard": "the target reports success and exact readback (operation or origin) proves the effect or an exact-origin reuse", "to": "settled", "disposition": "promoted|reused|declined", "effects": "persist target id and receipt digest; infer no parent completion, review pass, merge or cleanup", "on_reject": "readback mismatch moves to reconciliation (WR-10)"},
+    {"id": "WR-10", "from": "claimed", "event": "response-lost", "guard": "the target response was lost or the claimant died after the effect may have committed", "to": "claimed", "effects": "a later executor acquires the released OS lock and queries exact operation/origin; it never blindly replays an unknown effect", "on_reject": "lock still held: busy (WR-12)"},
+    {"id": "WR-11", "from": "claimed", "event": "reconcile-proves-effect", "guard": "reconciliation readback proves the exact intended effect exists", "to": "settled", "disposition": "promoted|reused|declined", "effects": "record the recovered receipt; no duplicate write; independently edited target content is not overwritten", "on_reject": "not applicable"},
+    {"id": "WR-12", "from": "claimed", "event": "claim-busy", "guard": "another live process holds the per-obligation OS lock", "to": "claimed", "effects": "report busy with bounded metadata; no TTL-based theft; no global session wait", "on_reject": "not applicable"},
+    {"id": "WR-13", "from": "claimed", "event": "reconcile-proves-absent", "guard": "reconciliation proves the effect did not commit; current binding and authority still hold", "to": "pending", "effects": "record the failed attempt; keep the immutable effect identity for an exact retry; no permission fabricated", "on_reject": "authority no longer holds: unavailable (WR-14)"},
+    {"id": "WR-14", "from": "claimed", "event": "reconcile-undetermined", "guard": "outcome cannot be determined, target unavailable, or source/authority changed", "to": "unavailable", "effects": "retain the unresolved effect intent and reason; new revisions and effects for this obligation wait for reconciliation", "on_reject": "not applicable"},
+    {"id": "WR-15", "from": "unavailable", "event": "scan", "guard": "read-only status or reentry", "to": "unavailable", "effects": "show the reason and its legitimate recovery route; identical notices may be suppressed per session without discarding state", "on_reject": "not applicable"},
+    {"id": "WR-16", "from": "unavailable", "event": "condition-restored", "guard": "the relevant condition changed; bindings and real authority revalidated; any previous effect reconciled; reason not in correction_cannot_clear unless a real new grant or lifted stop is observed", "to": "pending", "effects": "record the reason-specific recovery", "on_reject": "a formatting correction alone cannot clear authorization-denied or explicit-stop"},
+    {"id": "WR-17", "from": "any-persisted", "event": "unknown-or-malformed-read", "guard": "unknown schema version, unknown kind, or malformed bytes on disk", "to": "unavailable", "effects": "preserve the bytes under owned access; report bounded safe metadata only; no overwrite, deletion, downgrade or empty-state interpretation", "on_reject": "not applicable"},
+    {"id": "WR-18", "from": "pending|unavailable", "event": "cancel", "guard": "explicit authorized cancellation; no unreconciled effect", "to": "settled", "disposition": "cancelled", "effects": "retain the disposition", "on_reject": "an unreconciled effect keeps the current state"},
+    {"id": "WR-19", "from": "pending|unavailable", "event": "supersede", "guard": "explicit authorized supersession naming the replacement obligation; no unreconciled effect", "to": "settled", "disposition": "superseded", "effects": "retain the disposition and link the replacement", "on_reject": "an unreconciled effect keeps the current state"},
+    {"id": "WR-20", "from": "settled", "event": "settled-replay", "guard": "exact registration, retry or notification replay", "to": "settled", "effects": "return the terminal receipt or tombstone and target link; no repeated effect or prompt", "on_reject": "not applicable"},
+    {"id": "WR-21", "from": "settled", "event": "new-follow-up", "guard": "new authorized follow-up after changed facts", "to": "settled", "effects": "register a NEW linked obligation using a new workflow_run_id, a distinct origin naming the settled predecessor, and candidate.provenance retaining that relation; the old history stays immutable and is never reopened", "on_reject": "not applicable"},
+    {"id": "WR-22", "from": "any-persisted", "event": "write-after-commit-point-failed", "guard": "a record or index write failed after a possible commit point", "to": "observed", "effects": "re-read and report requested, observed and committed/durable facts separately; never silently revert a later writer", "on_reject": "not applicable"}
+  ],
+  "forbidden_transition_triggers": [
+    "elapsed-age",
+    "budget-exceeded",
+    "branch-deletion",
+    "validation-pass",
+    "generic-cli-success",
+    "agent-reported-done",
+    "error",
+    "process-exit",
+    "absent-response"
+  ],
+  "forbidden_transition_rule": "No forbidden trigger may move an obligation to settled, grant authority, or mark work complete. There is no age-triggered pending to settled, no error to complete, and no validation-pass to authorization-granted.",
+  "settled_entry_events": ["decline", "target-readback-proves-effect", "reconcile-proves-effect", "cancel", "supersede"],
+  "result": {
+    "fields": {
+      "durable": "true only when the record and index commit was observed",
+      "write": ["committed", "not-committed", "uncertain"],
+      "observed_state": "state read back after the operation, or unknown",
+      "inventory": ["complete", "partial", "unavailable"],
+      "count": "exact only when inventory is complete; a lower bound when partial; unknown when unavailable",
+      "cursor": "opaque continuation bound to index generation and page identity; a stale cursor restarts or reports changed inventory",
+      "denied": "an actual host/user denial, distinct from unavailable"
+    },
+    "empty_success_forbidden": "an incomplete or unreadable read never reports zero pending obligations as complete"
+  },
+  "retention": {
+    "unresolved": "pending, claimed and unavailable records are kept until an observed effect or explicit authorized disposition settles them; never aged out, budget-evicted, or removed because a branch was deleted or an agent said done",
+    "capacity": "registration reports durable:false; nothing older is evicted",
+    "tombstone": "settled records may compact to immutable tombstones keeping obligation/operation/origin identity, disposition, target reference and receipt digest; exact ID lookup and dedup survive compaction",
+    "cleanup_authority": "ledger maintenance never deletes a live target, worktree, branch, transcript or pending record; it is not an exception to ADR-0036 cleanup authorization"
+  },
+  "compatibility": {
+    "older_versions": "ignore the owned runtime directory without deleting it",
+    "unknown_versions": "readable only as bounded unavailable metadata; never overwritten with a lower version",
+    "absence": "no ledger means no registered obligations, not that all historical workflows completed",
+    "legacy_import": "only an explicit bounded operation with source checksums and exact origins; never a startup mining pass",
+    "rollback": "disables new writers and notifications while preserving the ledger and target records; reverting source does not roll back observed effects"
+  },
+  "adr_boundaries": {
+    "ADR-0008": "commit-gate harvest still runs at Phase 7 before staging so promoted work rides the work commit; a pending record surviving an abandoned branch never makes the follow-up authoritative on another branch; startup stages nothing",
+    "ADR-0036": "recovery-ledger retention does not supersede per-item/group cleanup authority and supplies no deletion relaxation",
+    "ADR-0043": "registration and reentry are assistive bookkeeping: no new approval ceremony, no universal gate; only work that depends on an unavailable obligation waits"
+  }
+}

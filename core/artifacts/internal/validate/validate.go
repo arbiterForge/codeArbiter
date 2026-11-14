@@ -16,6 +16,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
 )
 
@@ -154,6 +155,9 @@ func Structural(d *model.Document) []fault.Error {
 	for _, v := range model.A(n["retired_symbols"]) {
 		r := model.M(v)
 		id := model.S(r["id"])
+		if kind, typed := r["original_kind"]; typed && !retirableKind(d, model.S(kind)) {
+			add(&es, "INVALID_RETIREMENT", id, "original_kind", "original kind is not a record collection of this artifact")
+		}
 		if model.I(r["retired_in_revision"]) > d.Revision() {
 			add(&es, "INVALID_RETIREMENT", id, "retired_in_revision", "retirement is later than this revision")
 		}
@@ -233,6 +237,15 @@ func sortErrors(es []fault.Error) { // insertion sort; diagnostics are capped at
 		}
 	}
 }
+
+// retiredAs reports whether id is a tombstone that recorded original kind as
+// its typed owner. An untyped legacy tombstone owns no history: its kind is
+// unresolved, and an ID prefix is not evidence of kind.
+func retiredAs(d *model.Document, id, kind string) bool {
+	record, known := d.Symbols.ByID[id]
+	return known && record.Retired && model.S(record.Value["original_kind"]) == kind
+}
+
 func planStructure(d *model.Document) []fault.Error {
 	es := []fault.Error{}
 	n := d.Norm()
@@ -358,7 +371,7 @@ func planStructure(d *model.Document) []fault.Error {
 	}
 	ex := model.M(d.Data["execution"])
 	for id := range model.M(ex["scopes"]) {
-		if _, ok := cps[id]; !ok {
+		if _, ok := cps[id]; !ok && !retiredAs(d, id, "checkpoints") {
 			add(&es, "ORPHAN_STATE", id, "execution.scopes", "scope has no checkpoint definition")
 		}
 	}
@@ -376,7 +389,7 @@ func planStructure(d *model.Document) []fault.Error {
 	for id, observations := range model.M(ex["task_check_observations"]) {
 		if _, exists := tasks[id]; !exists {
 			record, known := d.Symbols.ByID[id]
-			if !known || !record.Retired || record.Kind != "tasks" {
+			if !known || !record.Retired || (record.Kind != "tasks" && !retiredAs(d, id, "tasks")) {
 				add(&es, "ORPHAN_STATE", id, "execution.task_check_observations", "unknown task command history")
 			}
 		}
@@ -598,3 +611,11 @@ func Binding(plan, spec *model.Document) []fault.Error {
 }
 func Error(es []fault.Error) error    { return first(es) }
 func Explain(es []fault.Error) string { return fmt.Sprintf("%d validation diagnostic(s)", len(es)) }
+
+// retirableKind admits a tombstone's recorded original kind. The engine copies
+// it from the pre-removal symbol index, where a record's kind is the name of
+// the collection that held it. The tombstone collection itself and the
+// document root are never a record's original kind.
+func retirableKind(d *model.Document, kind string) bool {
+	return d != nil && kind != "document" && schema.RecordKinds(d.Kind())[kind]
+}

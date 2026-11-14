@@ -1,0 +1,9 @@
+{
+  "source_sections": 44,
+  "meaningful_sections": 43,
+  "exact_note_digest_matches": 43,
+  "section_coverage_complete": true,
+  "command_records": 97,
+  "original_claims": "Preserved verbatim as sourced notes. Security controls additionally represented as complete constraint records. Project current format claim updated to HTML; original preserved as note.",
+  "limitations": "Conversion preserves inherited claims; it is not a new semantic audit or verification campaign. Imported commands remain unrun."
+}

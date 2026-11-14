@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "--version"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "stdout": "v24.22.1\n",
+  "stderr": ""
+}

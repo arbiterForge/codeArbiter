@@ -1,0 +1,10 @@
+{
+  "fixture": "published Release with exact existing tag and no publication receipt",
+  "eligible": false,
+  "plan": {
+    "tag": "present",
+    "release": "published",
+    "release-id": "99",
+    "missing-assets": "codearbiter-publication.json"
+  }
+}

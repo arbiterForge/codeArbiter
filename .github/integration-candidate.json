@@ -1,0 +1,11 @@
+{
+  "schema": "codearbiter-integration-candidate/1",
+  "branch": "major/state-contracts",
+  "baseline_main_commit": "33abc347720879bade0494ef0a68ef0d0319236a",
+  "candidates": {
+    "ca": "4.0.0",
+    "ca-codex": "0.30.0",
+    "ca-pi": "0.30.0",
+    "ca-sandbox": "0.2.0"
+  }
+}

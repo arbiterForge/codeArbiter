@@ -1,0 +1,826 @@
+{
+  "representation": "Exact selected68 original assertion objects, partial original report;35 filtered cases not copied",
+  "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-selected68-38bf-jn1x6li7\\original-vitest68.json",
+    "sha256": "c815f5baf489b9f93b7e75706bd8ec0e3668515f7ee16016682856201b5e5467"
+  },
+  "outcomes": [
+    {
+      "ancestorTitles": [
+        "owned generated publication"
+      ],
+      "fullName": "owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+      "status": "passed",
+      "title": "restores the complete old output after a late rename failure and reruns deterministically",
+      "duration": 70.89800000000002,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "owned generated publication"
+      ],
+      "fullName": "owned generated publication refuses a second writer without touching its marker",
+      "status": "passed",
+      "title": "refuses a second writer without touching its marker",
+      "duration": 5.2450000000000045,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "owned generated publication"
+      ],
+      "fullName": "owned generated publication refuses a linked owner before touching external files",
+      "status": "passed",
+      "title": "refuses a linked owner before touching external files",
+      "duration": 5.596199999999953,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "owned generated publication"
+      ],
+      "fullName": "owned generated publication retains an unusable marker if recovery also fails",
+      "status": "passed",
+      "title": "retains an unusable marker if recovery also fails",
+      "duration": 11.99490000000003,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication writes and reads back every byte, replacing only the previous generated search output",
+      "status": "passed",
+      "title": "writes and reads back every byte, replacing only the previous generated search output",
+      "duration": 67.17939999999999,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+      "status": "passed",
+      "title": "rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+      "duration": 39.142900000000054,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication checks JavaScript syntax without executing emitted code",
+      "status": "passed",
+      "title": "checks JavaScript syntax without executing emitted code",
+      "duration": 52.736299999999915,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path ../escape",
+      "status": "passed",
+      "title": "rejects non-local output path ../escape",
+      "duration": 0.3020000000000209,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path /absolute",
+      "status": "passed",
+      "title": "rejects non-local output path /absolute",
+      "duration": 0.11270000000001801,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path a/../escape",
+      "status": "passed",
+      "title": "rejects non-local output path a/../escape",
+      "duration": 0.08749999999997726,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path C:/escape",
+      "status": "passed",
+      "title": "rejects non-local output path C:/escape",
+      "duration": 0.07569999999998345,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path a\\b",
+      "status": "passed",
+      "title": "rejects non-local output path a\\b",
+      "duration": 0.053999999999973625,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path a//b",
+      "status": "passed",
+      "title": "rejects non-local output path a//b",
+      "duration": 0.08500000000003638,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path a/%2e%2e/b",
+      "status": "passed",
+      "title": "rejects non-local output path a/%2e%2e/b",
+      "duration": 0.11939999999992779,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path .",
+      "status": "passed",
+      "title": "rejects non-local output path .",
+      "duration": 0.07729999999992287,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication rejects non-local output path ..",
+      "status": "passed",
+      "title": "rejects non-local output path ..",
+      "duration": 0.07359999999994216,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+      "status": "passed",
+      "title": "requires unique nonempty assets, the module and valid entry metadata",
+      "duration": 29.916499999999928,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication does not follow an existing search-output symlink",
+      "status": "passed",
+      "title": "does not follow an existing search-output symlink",
+      "duration": 32.81950000000006,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+      "status": "passed",
+      "title": "waits for the in-memory result and closes the service without asking it to write files",
+      "duration": 45.737100000000055,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication fails closed and closes the service on create failure",
+      "status": "passed",
+      "title": "fails closed and closes the service on create failure",
+      "duration": 1.0751999999999953,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication fails closed and closes the service on index failure",
+      "status": "passed",
+      "title": "fails closed and closes the service on index failure",
+      "duration": 0.7576000000000249,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication fails closed and closes the service on serialize failure",
+      "status": "passed",
+      "title": "fails closed and closes the service on serialize failure",
+      "duration": 0.7216000000000804,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+      "status": "passed",
+      "title": "indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+      "duration": 540.7226,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "complete search bundle publication"
+      ],
+      "fullName": "complete search bundle publication is wired to every Astro build instead of an optional postbuild command",
+      "status": "passed",
+      "title": "is wired to every Astro build instead of an optional postbuild command",
+      "duration": 2.0878999999999905,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "release applicability presentation"
+      ],
+      "fullName": "release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+      "status": "passed",
+      "title": "distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+      "duration": 1.1696999999999775,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "release applicability presentation"
+      ],
+      "fullName": "release applicability presentation presents the exact successful applicability claim (O-13)",
+      "status": "passed",
+      "title": "presents the exact successful applicability claim (O-13)",
+      "duration": 0.12709999999998445,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "release applicability presentation"
+      ],
+      "fullName": "release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+      "status": "passed",
+      "title": "rejects an internally inconsistent applicability claim (O-13)",
+      "duration": 0.4067000000000007,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+      "status": "passed",
+      "title": "never calls an offline local tag or historical receipt published",
+      "duration": 0.9943999999999278,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability retains exact observed published state",
+      "status": "passed",
+      "title": "retains exact observed published state",
+      "duration": 0.2178000000000111,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability retains exact observed draft state",
+      "status": "passed",
+      "title": "retains exact observed draft state",
+      "duration": 0.11450000000002092,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability retains exact observed tag-only state",
+      "status": "passed",
+      "title": "retains exact observed tag-only state",
+      "duration": 0.06590000000005602,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+      "status": "passed",
+      "title": "refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+      "duration": 0.16370000000006257,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+      "status": "passed",
+      "title": "keeps public-hidden/missing and unavailable observations unknown",
+      "duration": 0.084699999999998,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "observed publication is distinct from source applicability"
+      ],
+      "fullName": "observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state",
+      "status": "passed",
+      "title": "retains source matches while explicitly exposing unknown, draft or published state",
+      "duration": 0.16409999999996217,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "selectCurrentGovernanceReleases"
+      ],
+      "fullName": "selectCurrentGovernanceReleases selects the highest stable SemVer independently for every governance host (O-01)",
+      "status": "passed",
+      "title": "selects the highest stable SemVer independently for every governance host (O-01)",
+      "duration": 2.1025000000000773,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "historical release applicability"
+      ],
+      "fullName": "historical release applicability reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)",
+      "status": "passed",
+      "title": "reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)",
+      "duration": 0.607599999999934,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "historical release applicability"
+      ],
+      "fullName": "historical release applicability rejects a historical manifest whose version does not exactly match its selected tag (O-04)",
+      "status": "passed",
+      "title": "rejects a historical manifest whose version does not exactly match its selected tag (O-04)",
+      "duration": 0.5897999999999683,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "release declaration provenance contract"
+      ],
+      "fullName": "release declaration provenance contract rejects missing governed provenance-manifest declaration (O-03)",
+      "status": "passed",
+      "title": "rejects missing governed provenance-manifest declaration (O-03)",
+      "duration": 0.20319999999992433,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "release declaration provenance contract"
+      ],
+      "fullName": "release declaration provenance contract rejects duplicate governed provenance-manifest declaration (O-03)",
+      "status": "passed",
+      "title": "rejects duplicate governed provenance-manifest declaration (O-03)",
+      "duration": 0.1449000000000069,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "release declaration provenance contract"
+      ],
+      "fullName": "release declaration provenance contract rejects divergent governed provenance-manifest declaration (O-03)",
+      "status": "passed",
+      "title": "rejects divergent governed provenance-manifest declaration (O-03)",
+      "duration": 0.09649999999999181,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects unexpected top-level key (O-02)",
+      "status": "passed",
+      "title": "rejects unexpected top-level key (O-02)",
+      "duration": 0.22520000000008622,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects wrong namespaces (O-02)",
+      "status": "passed",
+      "title": "rejects wrong namespaces (O-02)",
+      "duration": 0.22120000000006712,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects invalid date (O-02)",
+      "status": "passed",
+      "title": "rejects invalid date (O-02)",
+      "duration": 0.15629999999998745,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects malformed unselected governed tag (O-02)",
+      "status": "passed",
+      "title": "rejects malformed unselected governed tag (O-02)",
+      "duration": 0.17239999999992506,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects extra receipt key (O-02)",
+      "status": "passed",
+      "title": "rejects extra receipt key (O-02)",
+      "duration": 0.19299999999998363,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects zero identity (O-02)",
+      "status": "passed",
+      "title": "rejects zero identity (O-02)",
+      "duration": 0.21820000000002437,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects uppercase identity (O-02)",
+      "status": "passed",
+      "title": "rejects uppercase identity (O-02)",
+      "duration": 0.22759999999993852,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects invalid object type (O-02)",
+      "status": "passed",
+      "title": "rejects invalid object type (O-02)",
+      "duration": 0.14179999999998927,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects commit identity mismatch (O-02)",
+      "status": "passed",
+      "title": "rejects commit identity mismatch (O-02)",
+      "duration": 0.09720000000004347,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects duplicate JSON keys instead of accepting the last value (O-02)",
+      "status": "passed",
+      "title": "rejects duplicate JSON keys instead of accepting the last value (O-02)",
+      "duration": 0.16600000000005366,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "original-publication ledger validation"
+      ],
+      "fullName": "original-publication ledger validation rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)",
+      "status": "passed",
+      "title": "rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)",
+      "duration": 0.15409999999997126,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "documentation build identity"
+      ],
+      "fullName": "documentation build identity binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)",
+      "status": "passed",
+      "title": "binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)",
+      "duration": 0.14599999999995816,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "documentation build identity"
+      ],
+      "fullName": "documentation build identity rejects a missing GitHub Actions build identity (O-06)",
+      "status": "passed",
+      "title": "rejects a missing GitHub Actions build identity (O-06)",
+      "duration": 0.11360000000001946,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "documentation build identity"
+      ],
+      "fullName": "documentation build identity rejects a not 40-hex GitHub Actions build identity (O-06)",
+      "status": "passed",
+      "title": "rejects a not 40-hex GitHub Actions build identity (O-06)",
+      "duration": 0.07849999999996271,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "documentation build identity"
+      ],
+      "fullName": "documentation build identity rejects a different from HEAD GitHub Actions build identity (O-06)",
+      "status": "passed",
+      "title": "rejects a different from HEAD GitHub Actions build identity (O-06)",
+      "duration": 0.06839999999999691,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "documentation build identity"
+      ],
+      "fullName": "documentation build identity records the exact local HEAD and dirty state without using a branch name (O-06)",
+      "status": "passed",
+      "title": "records the exact local HEAD and dirty state without using a branch name (O-06)",
+      "duration": 0.06359999999995125,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "documentation build identity"
+      ],
+      "fullName": "documentation build identity rejects a moving or malformed local HEAD identity (O-06)",
+      "status": "passed",
+      "title": "rejects a moving or malformed local HEAD identity (O-06)",
+      "duration": 0.10529999999994288,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record requires the replay digest to match both current and latest-published ca source bytes (O-07)",
+      "status": "passed",
+      "title": "requires the replay digest to match both current and latest-published ca source bytes (O-07)",
+      "duration": 3.6732000000000653,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record records an explicit current-source mismatch without throwing or calling it compatibility (O-08)",
+      "status": "passed",
+      "title": "records an explicit current-source mismatch without throwing or calling it compatibility (O-08)",
+      "duration": 0.5511999999999944,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record records an explicit published-source mismatch without throwing or calling it compatibility (O-08)",
+      "status": "passed",
+      "title": "records an explicit published-source mismatch without throwing or calling it compatibility (O-08)",
+      "duration": 0.3704000000000178,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects malformed direct-hook proof evidence: empty evidence kind (O-07)",
+      "status": "passed",
+      "title": "rejects malformed direct-hook proof evidence: empty evidence kind (O-07)",
+      "duration": 0.14610000000004675,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)",
+      "status": "passed",
+      "title": "rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)",
+      "duration": 0.10269999999991342,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)",
+      "status": "passed",
+      "title": "rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)",
+      "duration": 0.06209999999998672,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)",
+      "status": "passed",
+      "title": "rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)",
+      "duration": 0.07939999999996417,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects malformed direct-hook proof evidence: non-canonical source (O-07)",
+      "status": "passed",
+      "title": "rejects malformed direct-hook proof evidence: non-canonical source (O-07)",
+      "duration": 0.05429999999989832,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects malformed direct-hook proof evidence: invalid replay digest (O-07)",
+      "status": "passed",
+      "title": "rejects malformed direct-hook proof evidence: invalid replay digest (O-07)",
+      "duration": 0.07110000000000127,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "deterministic release applicability record"
+      ],
+      "fullName": "deterministic release applicability record rejects missing latest-published hook bytes (O-07)",
+      "status": "passed",
+      "title": "rejects missing latest-published hook bytes (O-07)",
+      "duration": 0.23550000000000182,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "published Pi support (#1071)"
+      ],
+      "fullName": "published Pi support (#1071) records the Pi versions the selected ca-pi tag supports, read at that tag's commit",
+      "status": "passed",
+      "title": "records the Pi versions the selected ca-pi tag supports, read at that tag's commit",
+      "duration": 0.399599999999964,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    }
+  ]
+}

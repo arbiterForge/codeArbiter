@@ -1,0 +1,30 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "runtime": "v24.22.1",
+  "cache": {
+    "key": "752e59b3dea3",
+    "tags": [
+      "ca-sbx:ca-sbx-checkout-aaaaaa-752e59b3dea3",
+      "ca-sbx:ca-sbx-checkout-bbbbbb-752e59b3dea3"
+    ]
+  },
+  "overflow": {
+    "result": {
+      "id": "container",
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "overflow",
+      "durationMs": 0,
+      "truncated": false
+    },
+    "calls": [
+      [
+        "exec",
+        "container",
+        "sleep",
+        "infinity"
+      ]
+    ]
+  },
+  "failedListing": []
+}

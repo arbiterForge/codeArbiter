@@ -1,0 +1,523 @@
+{
+  "schema": "codearbiter-tested-source-origin/1",
+  "actual_run_head": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "actual_run_dirt": "New cleanup test plus author modifications to farm.ts/farm.js; initial baseline status and final before/after hashes retained. Parent later committed exactly these bytes as2c62; no execution at2c62 is claimed.",
+  "current_exact_commit": "2c62fc67ba7105e26f86f3ee8a87ae968c505854",
+  "captured_top_level_count": 26,
+  "captured_top_level_before_after_equal": true,
+  "captured_before_sha256": "c169c71643cd67a7e6dbb59985b135409528acc1bc410eba0e944f5c14ff0ff0",
+  "captured_after_sha256": "c169c71643cd67a7e6dbb59985b135409528acc1bc410eba0e944f5c14ff0ff0",
+  "original_pre_run_git_inventory": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/baseline.json",
+    "sha256": "ebf3e427975790dfcf0d0e282937beefe55142a860215a90283c7e973fe2387a",
+    "captured_head": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+    "captured_status": [
+      "?? .codearbiter/.artifacts/",
+      "?? plugins/ca/tools/farm-cleanup-observation.test.ts"
+    ],
+    "capture_phase": "Before actual target RED and the subsequent three-file repair; shared static JSON was tracked-clean. This is the original captured inventory, not a newly asserted clean status."
+  },
+  "shared_import": {
+    "path": "core/artifact-release-manifest.json",
+    "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "literal_git_baseline_and_2c62_equal": true,
+    "observed_mtime_ns": 1794594076754537400,
+    "run_start_ms": 1794616179800,
+    "mtime_precedes_run": true,
+    "hash_capture_timing": "This import was not included in the original26 top-level hash snapshots. Its hash/mtime/Git equality were observed afterward. Retained original baseline status has no shared-manifest dirt; parent held non-Farm source fixed. These are cooperative epoch provenance facts, not a retroactive before-run hash measurement."
+  },
+  "input_cones": {
+    "cleanup7": {
+      "roots": [
+        "plugins/ca/tools/farm-cleanup-observation.test.ts"
+      ],
+      "explicit_dynamic_inputs": [],
+      "edges": [
+        {
+          "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/artifact-manifest.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/artifact-manifest.ts",
+          "to": "core/artifact-release-manifest.json",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:os",
+        "node:path",
+        "node:perf_hooks",
+        "node:url",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+        "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+        "plugins/ca/tools/farm-cleanup-observation.test.ts": "42db12b66d169916eb88f932bcfde2fea208c1ddd2f36116ad6bb632e4206be7",
+        "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+        "plugins/ca/tools/farm.ts": "0c20d5f03483e24f50b27a660ced3e6da266fd6de71d20fe252c3555f5117670",
+        "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+        "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+        "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+        "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+        "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+      }
+    },
+    "farm12": {
+      "roots": [
+        "plugins/ca/tools/farm.test.ts",
+        "plugins/ca/tools/state-contracts.test.ts",
+        "plugins/ca/tools/farm.unit.test.ts"
+      ],
+      "explicit_dynamic_inputs": [
+        "plugins/ca/tools/farm.js"
+      ],
+      "edges": [
+        {
+          "from": "plugins/ca/tools/state-contracts.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/artifact-manifest.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/artifact-manifest.ts",
+          "to": "core/artifact-release-manifest.json",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/state-contracts.test.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/state-contracts.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "dynamic"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:http",
+        "node:module",
+        "node:os",
+        "node:path",
+        "node:perf_hooks",
+        "node:url",
+        "node:util",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+        "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+        "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+        "plugins/ca/tools/farm.js": "9999aecd40ec543d806b454aac2cbd54297f6d684e48548e2d102406532569c3",
+        "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+        "plugins/ca/tools/farm.ts": "0c20d5f03483e24f50b27a660ced3e6da266fd6de71d20fe252c3555f5117670",
+        "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+        "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+        "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+        "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72",
+        "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+        "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+        "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+      }
+    },
+    "preservation": {
+      "roots": [
+        "plugins/ca/tools/farm.unit.test.ts",
+        "plugins/ca/tools/mutation.test.ts",
+        "plugins/ca/tools/worktree-fs.test.ts",
+        "plugins/ca/tools/farm.test.ts"
+      ],
+      "explicit_dynamic_inputs": [
+        "plugins/ca/tools/farm.js"
+      ],
+      "edges": [
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/artifact-manifest.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/artifact-manifest.ts",
+          "to": "core/artifact-release-manifest.json",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "dynamic"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/worktree-fs.test.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/worktree-fs.test.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "dynamic"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:http",
+        "node:module",
+        "node:os",
+        "node:path",
+        "node:perf_hooks",
+        "node:url",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+        "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+        "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+        "plugins/ca/tools/farm.js": "9999aecd40ec543d806b454aac2cbd54297f6d684e48548e2d102406532569c3",
+        "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+        "plugins/ca/tools/farm.ts": "0c20d5f03483e24f50b27a660ced3e6da266fd6de71d20fe252c3555f5117670",
+        "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+        "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+        "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+        "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+        "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+        "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+        "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+        "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+      }
+    }
+  },
+  "source_only_provenance_limit": "If the integration owner requires a direct before/after hash for the shared static JSON import rather than the retained clean epoch/literal/mtime join, TESTED admissions below remain pending a bounded19-case post-freeze run. No coverage rerun is needed or claimed."
+}

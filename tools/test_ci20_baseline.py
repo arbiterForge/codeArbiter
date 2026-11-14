@@ -43,6 +43,20 @@ def fixture():
 
 
 class BaselineTest(unittest.TestCase):
+    def test_dirty_workflow_cannot_be_bound_to_clean_head_before_api_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(['git', 'init', '--quiet', str(root)], check=True)
+            path = root / '.github/workflows/ci.yml'
+            path.parent.mkdir(parents=True)
+            path.write_text('jobs: {}\n')
+            subprocess.run(['git','-C',str(root),'add','.github/workflows/ci.yml'],check=True)
+            subprocess.run(['git','-C',str(root),'-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture'],check=True)
+            path.write_text('jobs: {changed: {}}\n')
+            with patch.object(module,'api',side_effect=AssertionError('network reached before binding')):
+                with self.assertRaisesRegex(ValueError,'workflow.*(differs|changed|bound)'):
+                    module.collect('fixture/repo',1,root)
+
     def test_matrix_needs_and_real_durations(self):
         workflow, jobs = fixture()
         owners = module.identify_jobs(workflow, jobs)

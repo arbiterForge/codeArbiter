@@ -20,7 +20,11 @@
   ],
   "compatibility": {
     "clockStarts": "confirmed-non-draft-github-release",
-    "removalRequires": "minor-release-with-changelog-notice",
+    "removalRequires": {
+      "minimumVersion": {"claude": "3.0.0", "codex": "1.0.0", "pi": "1.0.0"},
+      "decision": "separately-approved-named-removal",
+      "evidence": "fresh-exact-confirmed-non-draft-release"
+    },
     "targets": {
       "claude": {
         "publishedWithoutMetadata": "2.16.0",

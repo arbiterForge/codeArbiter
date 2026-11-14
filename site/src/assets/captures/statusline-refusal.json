@@ -31,7 +31,7 @@
     },
     {
       "path": "plugins/ca/hooks/_host.py",
-      "sha256": "40164cdaa5155fa7c28cb643e07a64b5c7ec7c827aaac68ba9c91c502f027406"
+      "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
     },
     {
       "path": "plugins/ca/hooks/_pathnorm.py",
@@ -47,15 +47,15 @@
     },
     {
       "path": "plugins/ca/hooks/_sensitivelib.py",
-      "sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458"
+      "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506"
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "22899a88b42660144a0ce5a18f937e3f522a00323311ee2984c376586322450b"
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
     },
     {
       "path": "plugins/ca/hooks/wire-statusline.py",
-      "sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92"
+      "sha256": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
     }
   ]
 }

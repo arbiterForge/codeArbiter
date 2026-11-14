@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-13
+
+### Changed
+
+- Separate recorded work progress from derived dependency readiness and independently verified checks, preserving identities, user stops and later edits across supported schema upgrades.
+- Use shared current-mode, task-discovery, context-delivery and corrected-review helpers; reconcile interrupted workflow effects through their owning receipts.
+- Preserve primary farm failures and bound recovery reads before consuming content; keep local implementation, installed qualification and publication outcomes distinct.
+- Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
+- Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
+
 ## [0.26.9] - 2026-11-12
 
 ### Fixed

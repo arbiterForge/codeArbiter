@@ -1,0 +1,101 @@
+{
+  "state": "TEMP_TEST_ONLY_ACCEPTANCE_AUTHOR_FREEZE",
+  "source_base": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+  "source_epoch": "Literal current source plus owning test-only Temp overlay, not a future retained test-source execution",
+  "path": "plugins/ca/tools/farm-interruption.test.ts",
+  "before_sha256": "3d7da328c90cadb512f6711a438b761cf00ad9541a438052dd009eeb5572826f",
+  "after_sha256": "e6b2346fd4bfdbadf58512421e455f65c35f7c1f7d0285cf820886da90dd56ef",
+  "patch_sha256": "d9b9a7b6b8bba1c000ef44edee22058006072353aaead913ca68479f2ee1e397",
+  "production_changes": 0,
+  "existing9_test_bodies_and_helpers_unchanged": true,
+  "acceptance": "FARM-R01 / S23:12 finite outer exception branch: actual CLI/Git collision on preexisting distinct operator integration commit; exit1; final blocked report+Markdown exists, aborted=false/results empty/author0; refs/worktree registry/operator blob retained; receipt-only recovery empty=true preserves all original bytes and does not author.",
+  "commands": [
+    {
+      "label": "characterization-three",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-interruption.test.ts",
+        "--testNamePattern",
+        "real outer branch-creation failure|unblocked real post-merge hook control",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\characterization-three.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\candidate\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "seconds": 3.4864465000573546,
+      "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\home",
+      "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "source_stable_during_run": true
+    },
+    {
+      "label": "missing-final-report-negative",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-interruption.test.ts",
+        "--testNamePattern",
+        "real outer branch-creation failure.*source",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\missing-final-report-negative.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\candidate\\plugins\\ca\\tools",
+      "exit_code": 1,
+      "seconds": 1.1455149999819696,
+      "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\home",
+      "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "source_stable_during_run": true
+    },
+    {
+      "label": "final-three",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-interruption.test.ts",
+        "--testNamePattern",
+        "real outer branch-creation failure|unblocked real post-merge hook control",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\final-three.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\candidate\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "seconds": 3.381347300019115,
+      "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\home",
+      "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "source_stable_during_run": true
+    },
+    {
+      "label": "typecheck",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\typescript\\bin\\tsc",
+        "--noEmit"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\candidate\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "seconds": 1.1468929999973625,
+      "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\home",
+      "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "source_stable_during_run": true
+    }
+  ],
+  "actual_passed_names": [
+    "FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)",
+    "FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (source)",
+    "FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (bundle)"
+  ],
+  "negative_control": "Only Temp source main finally writeReport call disabled; new source test fails expected false to be true at required report-existence assertion. Correct original source restored byte-exact before final3PASS. This proves new test sensitivity, not an original product defect RED.",
+  "original_input_count": 30,
+  "original_inputs_before_after_stable": true,
+  "runtime": "Windows amd64 SafeNode24.22.1; minimal parent runtime allowlist/privateHOME before imports; existing locked dependencies only",
+  "coverage": "Test-only addition; no production scope/numeric profile change. Selected2 new+1 genuine success control and tsc pass; no broad941/full owning11 run or new percentage claim.",
+  "limits": [
+    "One actual ordinary outer error, not every exception/double-failure/crash window. No source/build/provider/Docker/native cohort/installed/hosted qualification implied.",
+    "New tests are Temp WIP; any admitted source subject must join literal new test bytes or run appropriate bounded current proof after commit.",
+    "No Gov/source/index/ledger/progress/marker/commit/push mutation. Existing metadata and original failure/control packets untouched.",
+    "Normal output/report expected original failure text is not suppressed; no retry/reset/prune/deletion of operator resources. Fixture cleanup only owns its original disposable root."
+  ]
+}

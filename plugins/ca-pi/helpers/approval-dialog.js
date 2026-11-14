@@ -782,6 +782,9 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
   }
 }
 
+// src/compatibility.ts
+var PRIVATE_APPROVAL_LEGACY_PI_VERSION = "1.0.2";
+
 // src/approval-entry.ts
 function approvalEntry(pi) {
   let generation;
@@ -803,7 +806,7 @@ function approvalEntry(pi) {
         throw new Error("unsupported launch profile");
       }
       const runtime = await resolvePiRuntimeIdentity();
-      if (runtime.version !== "1.0.2") throw new Error("unqualified host version");
+      if (runtime.version !== PRIVATE_APPROVAL_LEGACY_PI_VERSION) throw new Error("unqualified host version");
       const packageRoot = resolve6(dirname3(entry), "..");
       const result = await runApprovalDialog(context, {
         isCurrent: () => generation === lease,

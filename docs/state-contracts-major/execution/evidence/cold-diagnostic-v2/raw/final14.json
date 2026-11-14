@@ -1,0 +1,150 @@
+{
+  "source_export": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "source_kind": "Temp exact production/test overlay",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-getter-dg_l5aem\\observe.py",
+    "final14",
+    "ColdFailureDiagnosticTests",
+    "PackageTests.test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details",
+    "PackageTests.test_cold_failure_diagnostic_survives_verifier_child_boundary",
+    "PackageTests.test_cold_failure_producer_keeps_known_native_cause_without_message",
+    "PackageTests.test_cold_failure_diagnostic_rejects_malformed_arbitrary_and_duplicate_fields"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-getter-dg_l5aem",
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "runtime_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "HOME_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-getter-dg_l5aem\\home",
+  "exit_code": 0,
+  "duration_seconds": 0.618971586227417,
+  "named_outcomes": [
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_arbitrary_and_forged_exception_names_remain_unclassified",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_builtin_subtypes_and_families_keep_no_messages",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_custom_context_failure_keeps_closed_cli_output",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_diagnostic_observer_failure_never_replaces_guard_failure",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_keeps_exact_legacy_v1_decoder_and_nested_record",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_nested_failure_survives_both_consumers_without_private_stderr",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_audit_denial_reports_closed_outer_context",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_guard_builtin_failure_has_safe_subtype_and_site",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_nested_audit_retains_deepest_context",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.PackageTests.test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.PackageTests.test_cold_failure_diagnostic_survives_verifier_child_boundary",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.PackageTests.test_cold_failure_producer_keeps_known_native_cause_without_message",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_artifact_package.PackageTests.test_cold_failure_diagnostic_rejects_malformed_arbitrary_and_duplicate_fields",
+      "outcome": "PASS"
+    }
+  ],
+  "inputs_before": {
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    ".github/scripts/test_artifact_installed_host.py": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+    ".github/scripts/test_artifact_package.py": "c86bb0157df0c603065be23cfb5d6d9072da1ea369edaf04f7c823da2245fc57",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "inputs_after": {
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    ".github/scripts/test_artifact_installed_host.py": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+    ".github/scripts/test_artifact_package.py": "c86bb0157df0c603065be23cfb5d6d9072da1ea369edaf04f7c823da2245fc57",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "observer_sha256": "19a0106bdb40a5bbfaa77a8f8ea50ef96d01577a9a5c0ead30c72beb87af4b08",
+  "raw_stderr_sha256": "50f37e910e08207e41470852f4a0f3e01620e220cef228aa02fd8d916c7e288b",
+  "actual_child_outputs": [
+    {
+      "mode": "observer-failure",
+      "exit_code": 0,
+      "stdout_bytes": 270,
+      "stdout_sha256": "1e02eaf1fa179af403033c2d89655b50a35867446c3c39497892bb4ea0d379fb",
+      "closed_record_valid": true,
+      "retained_stdout": "final14.observer-failure.stdout.json"
+    },
+    {
+      "mode": "network",
+      "exit_code": 0,
+      "stdout_bytes": 283,
+      "stdout_sha256": "16bb3c64215df3208507fa69d244468446fe06040a2e1506d2d6f5b0283f5205",
+      "closed_record_valid": true,
+      "retained_stdout": "final14.network.stdout.json"
+    },
+    {
+      "mode": "builtin",
+      "exit_code": 0,
+      "stdout_bytes": 299,
+      "stdout_sha256": "09b412673ebf760abc1ae0fa6528643be054dceab8b1dcf8c8fa5cfca6526374",
+      "closed_record_valid": true,
+      "retained_stdout": "final14.builtin.stdout.json"
+    },
+    {
+      "mode": "nested",
+      "exit_code": 0,
+      "stdout_bytes": 284,
+      "stdout_sha256": "896354658a4091918786b702e6238d59e8680bf42b8d32150ae4365e5d14c08b",
+      "closed_record_valid": true,
+      "retained_stdout": "final14.nested.stdout.json"
+    }
+  ],
+  "fixture_boundary": "Actual existing owner globals loaded by file path; direct native-free TestCase.run invokes actual case setup/cleanup, intentionally no unrelated native-building module setup. Not full package acceptance."
+}

@@ -1,0 +1,102 @@
+{
+  "reviewer": "/root/farm_sandbox_program",
+  "candidate_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "source_comparison": [
+    {
+      "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+      "baseline_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+      "candidate_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+      "physical_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+      "physical_equals_candidate": true,
+      "candidate_equals_baseline": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+      "baseline_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+      "candidate_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+      "physical_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+      "physical_equals_candidate": true,
+      "candidate_equals_baseline": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/vitest.config.ts",
+      "baseline_sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+      "candidate_sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+      "physical_sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+      "physical_equals_candidate": true,
+      "candidate_equals_baseline": true
+    },
+    {
+      "path": "core/pysrc/_cleanuplib.py",
+      "baseline_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+      "candidate_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+      "physical_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+      "physical_equals_candidate": true,
+      "candidate_equals_baseline": true
+    },
+    {
+      "path": "core/pysrc/_hooklib.py",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "candidate_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "physical_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "physical_equals_candidate": true,
+      "candidate_equals_baseline": true
+    }
+  ],
+  "lock_and_atomic_dependency_review": [
+    {
+      "symbol": "acquire_lock",
+      "ast_body_equal": true,
+      "candidate_line": 508
+    },
+    {
+      "symbol": "release_lock",
+      "ast_body_equal": true,
+      "candidate_line": 556
+    },
+    {
+      "symbol": "write_text_atomic",
+      "ast_body_equal": true,
+      "candidate_line": 482
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "path-only-runtime-helper",
+      "transition_ids": [
+        "pi-qualification:runtime-discovery:01",
+        "pi-qualification:runtime-discovery:02",
+        "pi-qualification:runtime-discovery:03",
+        "pi-qualification:runtime-discovery:04"
+      ],
+      "claim": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts.",
+      "source": "plugins/ca-pi/tools/test/live-pi-host.ts",
+      "scope_limits": "Preserved qualification helper semantics, no installed Pi runtime/provider qualification."
+    },
+    {
+      "id": "best-effort-exact-fixture-exit",
+      "transition_ids": [
+        "pi-qualification:disposable-home:04"
+      ],
+      "claim": "Only successful setup registers process exit handler; handler attempts rmSync of exact freshly created root with exceptions swallowed. Abrupt exit or cleanup error can leave that exact disposable residue; no production resource cleanup promise.",
+      "source": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+      "scope_limits": "Static preservation review only; no forced-termination test or cleanup-success guarantee."
+    },
+    {
+      "id": "write-ahead-cleanup-and-reconciliation",
+      "transition_ids": [
+        "hooks:cleanup-journal:01",
+        "hooks:cleanup-journal:02",
+        "hooks:cleanup-journal:03",
+        "hooks:cleanup-journal:04",
+        "hooks:cleanup-journal:05",
+        "hooks:cleanup-journal:06"
+      ],
+      "claim": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records.",
+      "source": "core/pysrc/_cleanuplib.py:load_journal/_with_locked_journal/execute_branch_deletion/reconcile_pending_operations/_compact",
+      "scope_limits": "Existing caller-injected helper only; no new live Git/worktree deletion implementation or cross-worktree-lock guarantee. No actual deletion performed for this preservation review."
+    }
+  ],
+  "review_basis": "Actual clause-level source review against frozen guard/effect/retry, then full-byte unchanged owner comparison; AST dependency equality used for preservation only, never current TESTED reclassification."
+}

@@ -67,6 +67,23 @@ For HTML, use receipt-free `task-start`, `task-review` (implementation reported 
 
 ## Actual stops
 
+When a recorded low-confidence decision yields a qualifying in-scope follow-up,
+use [includes/harvest.md](includes/harvest.md) at discovery to register the exact
+extractor origin and sanitized candidate under `source.workflow:
+sprint:low-confidence`, with the stable workflow/work run and current source
+fingerprint. Retain actual durable/partial failure facts; unregistered discussion
+is not recovered. Terminal harvest reconciles unknown effects before resuming
+selected obligations under existing sprint authority, with per-item target
+readback. Blocking decisions and revoked child scopes stay with their actual
+owners; a recovery record does not regrant them or stop independent work.
+
+For a rule conflict, use `$ca-conflict` to record the affected scope and actual
+authority, data or decision dependencies. Pause affected tasks and their child
+delegations; continue independent authorized work and mutations. A shared security
+or authority dependency expands the pause only to work that relies on it. Record
+unknown dependencies and inspect them without inventing a graph or choosing a rule.
+An explicit global user or host stop remains global.
+
 Stop affected work for an explicit user denial/stop, an unauthorized irreversible or destructive operation, a host/tool sandbox denial, a genuinely consequential missing product decision, or an independently applicable security, secrets, migration, or publication control. A security-critical finding requires resolving its risk, not faking a reviewer pass. Not every change mentioning authentication or an ADR automatically asks the user again when it is already within the agreed task; assess the actual risk and authorization.
 
 A failing unit test, lint error, mismatched criterion, missing optional context map, changed receipt, or unsupported named-test parser is **not** another permission question. Record the failure and work on a correction or independent task. Do not equate a reported passing command exit with named-test-level proof it does not provide.

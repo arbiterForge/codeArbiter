@@ -18,7 +18,11 @@
     },
     {
       "path": "plugins/ca/hooks/_artifactlib.py",
-      "sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1"
+      "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b"
+    },
+    {
+      "path": "plugins/ca/hooks/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
     },
     {
       "path": "plugins/ca/hooks/_durabilitylib.py",
@@ -42,7 +46,7 @@
     },
     {
       "path": "plugins/ca/hooks/_host.py",
-      "sha256": "40164cdaa5155fa7c28cb643e07a64b5c7ec7c827aaac68ba9c91c502f027406"
+      "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
     },
     {
       "path": "plugins/ca/hooks/_pathnorm.py",
@@ -58,7 +62,7 @@
     },
     {
       "path": "plugins/ca/hooks/_sensitivelib.py",
-      "sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458"
+      "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506"
     },
     {
       "path": "plugins/ca/hooks/_taskboardlib.py",
@@ -70,7 +74,7 @@
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
-      "sha256": "22899a88b42660144a0ce5a18f937e3f522a00323311ee2984c376586322450b"
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
     },
     {
       "path": "plugins/ca/hooks/init-codearbiter.py",

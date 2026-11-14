@@ -151,6 +151,31 @@ OWNER_OPERATIONAL_SHA256.update({
     'decompose': '494371267c4d544ea7d6c2b4743af5912e57d32e2c58b8934621b449bd238ad7',
 })
 
+# The major program explicitly changes these two guidance contracts: HW-18
+# corrects gh watch polling claims; HW-06 scopes conflict pauses to dependents.
+# Historical pins remain above. Freeze the complete revised bodies too; the
+# routing/surface suite separately checks retained watcher gates and stop scope.
+EXPECTED_LEGACY_BODY_SHA256['watch'] = '22e44eae9adbe33ca92bbba7f30539f7fd1e843008a2357c6d5e6c2f726e9cf5'
+OWNER_OPERATIONAL_SHA256['context-check'] = 'be686437b253db5860fe8dd760cee0486ac374e221ad251451bf6e543095cd42'
+# HW-16/HOST-D01 correct startup/persona and maintenance effects while keeping
+# the initialization strategies, activation writer and refusal behavior intact.
+EXPECTED_DEFAULT_BODY_SHA256['init'] = 'e37a00a1b0d5d8ce05c5120449a0bc3a9bb29a0995c10a6e3abc60cb4b684f1d'
+
+
+# HW-14 adds only this read-only recovery projection to the historic snapshot.
+# Remove exact authorized additions for the old digest; all other bytes stay pinned.
+_STATUS_RECOVERY_ITEM = '7. **Interrupted workflow follow-ups** — resolve the installed\n   `hooks/workflow-recovery.py` using the helper card above, then run `scan`.\n   Report pending, claimed and unavailable entries from this bounded page.\n   A `partial` result is a lower bound with an opaque cursor; offer selected\n   further pages rather than claiming a complete backlog count. An absent\n   ledger means no registered obligations, not that historical work completed.\n   Unreadable, unknown-version or interrupted state stays unavailable with its\n   reason and explicit recovery route. Status never invokes `repair`, `resume`,\n   promotion, completion, staging, issue publication, or a notice-marker write.\n'
+_STATUS_RECOVERY_ROW = "Workflow recovery: <this page's pending/claimed/unavailable; complete/partial/unavailable>\n"
+
+
+def _historical_status_body(body):
+    for addition in (_STATUS_RECOVERY_ITEM, _STATUS_RECOVERY_ROW):
+        if body.count(addition) != 1:
+            raise AssertionError("status recovery addition differs from its reviewed contract")
+        body = body.replace(addition, "", 1)
+    return body
+
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:
@@ -294,7 +319,27 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                     self.assertEqual(digest(procedure), "f41e8036b13658fcb37701b5ea5236c3d7bda9c0bda36bab22f0a2249b016aaf")
                     self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
                 else:
+                    if slug == "status":
+                        body = _historical_status_body(body)
                     self.assertEqual(digest(MODES_RE.sub("", body)), expected)
+
+    def test_status_recovery_projection_keeps_exact_read_only_bounded_contract(self):
+        body = command_body("status")
+        self.assertIn("then run `scan`", _STATUS_RECOVERY_ITEM)
+        self.assertIn("A `partial` result is a lower bound with an opaque cursor", _STATUS_RECOVERY_ITEM)
+        self.assertIn("Status never invokes `repair`, `resume`", _STATUS_RECOVERY_ITEM)
+        for altered in (body.replace("then run `scan`", "then run `repair`"),
+                        body.replace(_STATUS_RECOVERY_ROW, ""),
+                        body + _STATUS_RECOVERY_ITEM):
+            with self.subTest(altered=altered[-60:]), self.assertRaisesRegex(AssertionError, "reviewed contract"):
+                _historical_status_body(altered)
+
+    def test_status_recovery_normalization_does_not_hide_unrelated_body_drift(self):
+        body = _historical_status_body(command_body("status"))
+        self.assertEqual(digest(MODES_RE.sub("", body)), EXPECTED_DEFAULT_BODY_SHA256["status"])
+        drift = body.replace("**Current branch** — from git.", "**Current branch** — guessed.")
+        self.assertNotEqual(body, drift)
+        self.assertNotEqual(digest(MODES_RE.sub("", drift)), EXPECTED_DEFAULT_BODY_SHA256["status"])
 
     def test_mode_markers_and_notices_close_over_each_safe_replacement(self):
         commands = self.registry()["commands"]
@@ -313,7 +358,11 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
     def test_compatibility_clock_starts_only_on_independent_publication(self):
         policy = self.registry()["compatibility"]
         self.assertEqual(policy["clockStarts"], "confirmed-non-draft-github-release")
-        self.assertEqual(policy["removalRequires"], "minor-release-with-changelog-notice")
+        self.assertEqual(policy["removalRequires"], {
+            "minimumVersion": {"claude": "3.0.0", "codex": "1.0.0", "pi": "1.0.0"},
+            "decision": "separately-approved-named-removal",
+            "evidence": "fresh-exact-confirmed-non-draft-release",
+        })
         self.assertEqual(
             policy["targets"],
             {

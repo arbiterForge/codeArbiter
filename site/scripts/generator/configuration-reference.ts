@@ -182,7 +182,7 @@ export const CONFIGURATION_ENTRIES: readonly ConfigurationEntry[] = [
     group: "Transcript pruning",
     defaultValue: "`80000`",
     accepted: "positive estimated token count",
-    purpose: "Sets the minimum model-context size before a cold-miss nudge can appear.",
+    purpose: "Sets the minimum estimated model-context tokens a prune would free (`context_bytes_freed` / 4) before a cold-miss nudge can appear; total context size does not count.",
   },
   {
     name: "FARM_API_KEY",

@@ -1,0 +1,21 @@
+{
+  "actual_source_before": "0830b95752a05343563be027e513a2845a6c57df",
+  "actual_source_after": "0830b95752a05343563be027e513a2845a6c57df",
+  "pre_post_captured_inputs": 11,
+  "additional_owning_import": {
+    "path": ".github/scripts/_releaselib.py",
+    "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "capture": "Imported repository-module inventory disclosed this forwarding shim after execution; literal working bytes and immutable fca/0830 Git bytes joined retrospectively. No fabricated pre-run capture."
+  },
+  "loaded_repository_modules": [
+    ".github/scripts/_releaselib.py",
+    ".github/scripts/test_marketplace_git_channels.py",
+    "core/pysrc/_artifactmanifestlib.py",
+    "core/pysrc/_gitexec.py",
+    "core/pysrc/_releaselib.py",
+    "tools/host_descriptors.py",
+    "tools/owned_output.py"
+  ],
+  "source_change_during_run": "Only separate Root metadata/transcript projection commit advanced HEAD; every captured product/test input is identical.",
+  "finite_closure": "Spec-loaded three tools plus registered imported-module inventory, declared hosts registry and main catalog actual fixture read. Shim lazily declares RELEASE_TARGETS; selected semver imports do not access/read release-targets file."
+}

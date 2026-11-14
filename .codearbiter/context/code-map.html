@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Code map · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">CTX-CODE-MAP</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-records">Records</a><a href="#group-notes">Notes</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / knowledge</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Code map</h1><p class="deck">Observed components, interfaces and ownership.</p><div class="meta"><span>CTX-CODE-MAP</span><span>Revision 7 · schema 0.3.2</span><span>60 addressable records</span></div></header><section class="group" id="group-records"><a class="back" href="#main-content">Top</a><h2>Records</h2>
+<!-- CA:BEGIN:COMP-001 -->
+<article class="record" id="COMP-001" data-ca-symbol="COMP-001" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-001">COMP-001</a><h3>core/pysrc</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Canonical stdlib Python hook entry points, host seams, integrity guards, state helpers, and native artifact bridge.</div></article>
+<!-- CA:END:COMP-001 -->
+
+<!-- CA:BEGIN:COMP-002 -->
+<article class="record" id="COMP-002" data-ca-symbol="COMP-002" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-002">COMP-002</a><h3>core/surface</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Canonical commands, routines, agents, includes, and persona instructions; its README defines projection conventions.</div></article>
+<!-- CA:END:COMP-002 -->
+
+<!-- CA:BEGIN:COMP-003 -->
+<article class="record" id="COMP-003" data-ca-symbol="COMP-003" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-003">COMP-003</a><h3>core/hosts.json</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Host capabilities, command forms, tool classes, permission policies, and surface projections for Claude, Codex, and Pi.</div></article>
+<!-- CA:END:COMP-003 -->
+
+<!-- CA:BEGIN:COMP-004 -->
+<article class="record" id="COMP-004" data-ca-symbol="COMP-004" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-004">COMP-004</a><h3>tools/host_descriptors.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Strict loader for immutable host descriptors.</div></article>
+<!-- CA:END:COMP-004 -->
+
+<!-- CA:BEGIN:COMP-005 -->
+<article class="record" id="COMP-005" data-ca-symbol="COMP-005" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-005">COMP-005</a><h3>tools/sync-core.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Byte-identical shared Python projection into governance plugin hooks.</div></article>
+<!-- CA:END:COMP-005 -->
+
+<!-- CA:BEGIN:COMP-006 -->
+<article class="record" id="COMP-006" data-ca-symbol="COMP-006" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-006">COMP-006</a><h3>tools/build-surface.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Host-specific instruction projection and generated catalogs.</div></article>
+<!-- CA:END:COMP-006 -->
+
+<!-- CA:BEGIN:COMP-007 -->
+<article class="record" id="COMP-007" data-ca-symbol="COMP-007" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-007">COMP-007</a><h3>tools/build-host-packages.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Generated root Pi manifest and verified native-payload package cohorts.</div></article>
+<!-- CA:END:COMP-007 -->
+
+<!-- CA:BEGIN:COMP-008 -->
+<article class="record" id="COMP-008" data-ca-symbol="COMP-008" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-008">COMP-008</a><h3>core/artifacts/cmd/ca-artifact</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Native CLI accepting bounded JSON requests and returning protocol envelopes.</div></article>
+<!-- CA:END:COMP-008 -->
+
+<!-- CA:BEGIN:COMP-009 -->
+<article class="record" id="COMP-009" data-ca-symbol="COMP-009" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-009">COMP-009</a><h3>core/artifacts/internal/operations</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle and provider-effect operations.</div></article>
+<!-- CA:END:COMP-009 -->
+
+<!-- CA:BEGIN:COMP-010 -->
+<article class="record" id="COMP-010" data-ca-symbol="COMP-010" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-010">COMP-010</a><h3>core/artifacts/internal/model</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.</div></article>
+<!-- CA:END:COMP-010 -->
+
+<!-- CA:BEGIN:COMP-011 -->
+<article class="record" id="COMP-011" data-ca-symbol="COMP-011" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-011">COMP-011</a><h3>core/artifacts/schemas</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Versioned JSON contracts for typed artifacts and operations.</div></article>
+<!-- CA:END:COMP-011 -->
+
+<!-- CA:BEGIN:COMP-012 -->
+<article class="record" id="COMP-012" data-ca-symbol="COMP-012" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-012">COMP-012</a><h3>core/artifacts/internal/kind</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Closed representation registry for spec/plan, knowledge/decomposition, and work HTML, plus project-context Markdown.</div></article>
+<!-- CA:END:COMP-012 -->
+
+<!-- CA:BEGIN:COMP-013 -->
+<article class="record" id="COMP-013" data-ca-symbol="COMP-013" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-013">COMP-013</a><h3>core/artifacts/internal/read</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.</div></article>
+<!-- CA:END:COMP-013 -->
+
+<!-- CA:BEGIN:COMP-014 -->
+<article class="record" id="COMP-014" data-ca-symbol="COMP-014" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-014">COMP-014</a><h3>core/artifacts/internal/symbol</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Stable symbol references and resolution.</div></article>
+<!-- CA:END:COMP-014 -->
+
+<!-- CA:BEGIN:COMP-015 -->
+<article class="record" id="COMP-015" data-ca-symbol="COMP-015" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-015">COMP-015</a><h3>core/artifacts/internal/evidence</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.</div></article>
+<!-- CA:END:COMP-015 -->
+
+<!-- CA:BEGIN:COMP-016 -->
+<article class="record" id="COMP-016" data-ca-symbol="COMP-016" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-016">COMP-016</a><h3>core/artifacts/internal/render</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Deterministic offline HTML for artifacts and work with stable anchors, safe escaping, and separate progress/evidence labels.</div></article>
+<!-- CA:END:COMP-016 -->
+
+<!-- CA:BEGIN:COMP-017 -->
+<article class="record" id="COMP-017" data-ca-symbol="COMP-017" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-017">COMP-017</a><h3>core/artifacts/internal/store</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.</div></article>
+<!-- CA:END:COMP-017 -->
+
+<!-- CA:BEGIN:COMP-018 -->
+<article class="record" id="COMP-018" data-ca-symbol="COMP-018" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-018">COMP-018</a><h3>core/artifacts/internal/contextdocument</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Five-document Markdown ownership, bounded typed content, preview/apply, provenance contracts, and Markdown-to-HTML knowledge conversion.</div></article>
+<!-- CA:END:COMP-018 -->
+
+<!-- CA:BEGIN:COMP-019 -->
+<article class="record" id="COMP-019" data-ca-symbol="COMP-019" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-019">COMP-019</a><h3>tools/build-artifacts.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Pinned-toolchain native payload build and qualification metadata.</div></article>
+<!-- CA:END:COMP-019 -->
+
+<!-- CA:BEGIN:COMP-020 -->
+<article class="record" id="COMP-020" data-ca-symbol="COMP-020" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-020">COMP-020</a><h3>tools/generate-artifact-types.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Generated schema and typed-view consistency.</div></article>
+<!-- CA:END:COMP-020 -->
+
+<!-- CA:BEGIN:COMP-021 -->
+<article class="record" id="COMP-021" data-ca-symbol="COMP-021" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-021">COMP-021</a><h3>tools/test-artifact-mixed-schema.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Disposable old/current-client compatibility, retained stops, replay, complete-store restore, and forward export.</div></article>
+<!-- CA:END:COMP-021 -->
+
+<!-- CA:BEGIN:COMP-022 -->
+<article class="record" id="COMP-022" data-ca-symbol="COMP-022" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-022">COMP-022</a><h3>core/pysrc/_artifactlib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Installation-pinned native bridge, request bounds, payload validation, and exact-format routing; no runtime PATH lookup or download.</div></article>
+<!-- CA:END:COMP-022 -->
+
+<!-- CA:BEGIN:COMP-023 -->
+<article class="record" id="COMP-023" data-ca-symbol="COMP-023" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-023">COMP-023</a><h3>core/pysrc/_modelib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Per-session arbiter, dangerous, and ops mode state; dangerous suspends persona orchestration, not enforcement.</div></article>
+<!-- CA:END:COMP-023 -->
+
+<!-- CA:BEGIN:COMP-024 -->
+<article class="record" id="COMP-024" data-ca-symbol="COMP-024" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-024">COMP-024</a><h3>core/pysrc/_reconciliationlib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Legacy reconciliation history and captured-reply recovery preserving original observations, operation IDs, and revision bindings.</div></article>
+<!-- CA:END:COMP-024 -->
+
+<!-- CA:BEGIN:COMP-025 -->
+<article class="record" id="COMP-025" data-ca-symbol="COMP-025" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-025">COMP-025</a><h3>core/pysrc/_contextsnapshotlib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Bounded repository-context acquisition and source identity.</div></article>
+<!-- CA:END:COMP-025 -->
+
+<!-- CA:BEGIN:COMP-026 -->
+<article class="record" id="COMP-026" data-ca-symbol="COMP-026" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-026">COMP-026</a><h3>core/pysrc/_provenancelib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Document provenance, source drift, and bounded code-map validation.</div></article>
+<!-- CA:END:COMP-026 -->
+
+<!-- CA:BEGIN:COMP-027 -->
+<article class="record" id="COMP-027" data-ca-symbol="COMP-027" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-027">COMP-027</a><h3>core/pysrc/_taskboardlib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Legacy board schema and counters; taskwrite.py owns its mutations and archival.</div></article>
+<!-- CA:END:COMP-027 -->
+
+<!-- CA:BEGIN:COMP-028 -->
+<article class="record" id="COMP-028" data-ca-symbol="COMP-028" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-028">COMP-028</a><h3>core/artifacts/internal/operations/work_adopt.go</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Journaled selected legacy-board cutover with native writer locking and exact board snapshots.</div></article>
+<!-- CA:END:COMP-028 -->
+
+<!-- CA:BEGIN:COMP-029 -->
+<article class="record" id="COMP-029" data-ca-symbol="COMP-029" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-029">COMP-029</a><h3>core/pysrc/knowledge.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.</div></article>
+<!-- CA:END:COMP-029 -->
+
+<!-- CA:BEGIN:COMP-030 -->
+<article class="record" id="COMP-030" data-ca-symbol="COMP-030" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-030">COMP-030</a><h3>core/pysrc/_releaselib.py</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Declared release targets, preflight, publication helpers, and recovery diagnostics.</div></article>
+<!-- CA:END:COMP-030 -->
+
+<!-- CA:BEGIN:COMP-031 -->
+<article class="record" id="COMP-031" data-ca-symbol="COMP-031" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-031">COMP-031</a><h3>plugins/ca</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Claude manifest, generated governance resources, hooks, and TypeScript farm dispatcher with built farm.js.</div></article>
+<!-- CA:END:COMP-031 -->
+
+<!-- CA:BEGIN:COMP-032 -->
+<article class="record" id="COMP-032" data-ca-symbol="COMP-032" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-032">COMP-032</a><h3>plugins/ca-codex</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Codex manifest, generated entry skills/routines/hooks, and resource charters; no native plugin-agent registration.</div></article>
+<!-- CA:END:COMP-032 -->
+
+<!-- CA:BEGIN:COMP-033 -->
+<article class="record" id="COMP-033" data-ca-symbol="COMP-033" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-033">COMP-033</a><h3>plugins/ca-pi/tools/src</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Trusted-runtime extension, project-trust checks, Python bridge, tool wrapping, isolated child runner, and parent inference broker.</div></article>
+<!-- CA:END:COMP-033 -->
+
+<!-- CA:BEGIN:COMP-034 -->
+<article class="record" id="COMP-034" data-ca-symbol="COMP-034" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-034">COMP-034</a><h3>plugins/ca-pi/extensions</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Built parent and child extensions shipped to Pi.</div></article>
+<!-- CA:END:COMP-034 -->
+
+<!-- CA:BEGIN:COMP-035 -->
+<article class="record" id="COMP-035" data-ca-symbol="COMP-035" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-035">COMP-035</a><h3>plugins/ca-pi/helpers</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Packaged native helpers including the Windows supervisor.</div></article>
+<!-- CA:END:COMP-035 -->
+
+<!-- CA:BEGIN:COMP-036 -->
+<article class="record" id="COMP-036" data-ca-symbol="COMP-036" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-036">COMP-036</a><h3>plugins/ca-sandbox/tools</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Docker lifecycle, mount/network isolation, installed-nixpacks detection, and generated-Dockerfile fallback.</div></article>
+<!-- CA:END:COMP-036 -->
+
+<!-- CA:BEGIN:COMP-037 -->
+<article class="record" id="COMP-037" data-ca-symbol="COMP-037" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-037">COMP-037</a><h3>site/src/curated</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Maintained Astro/Starlight product prose.</div></article>
+<!-- CA:END:COMP-037 -->
+
+<!-- CA:BEGIN:COMP-038 -->
+<article class="record" id="COMP-038" data-ca-symbol="COMP-038" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-038">COMP-038</a><h3>site/scripts</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Site and diagram generation, Academy consumption, link/applicability auditing, and fixture capture.</div></article>
+<!-- CA:END:COMP-038 -->
+
+<!-- CA:BEGIN:COMP-039 -->
+<article class="record" id="COMP-039" data-ca-symbol="COMP-039" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-039">COMP-039</a><h3>site/test</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Site unit, generated-content, browser, and offline artifact-view checks.</div></article>
+<!-- CA:END:COMP-039 -->
+
+<!-- CA:BEGIN:COMP-040 -->
+<article class="record" id="COMP-040" data-ca-symbol="COMP-040" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-040">COMP-040</a><h3>.gitmodules</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Separately owned arbiter-academy source declaration; the gitlink selects its revision, while local population is checkout state.</div></article>
+<!-- CA:END:COMP-040 -->
+
+<!-- CA:BEGIN:COMP-041 -->
+<article class="record" id="COMP-041" data-ca-symbol="COMP-041" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-041">COMP-041</a><h3>.codearbiter</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Five context documents, provenance, specs/plans, native work, open decisions, protected release declarations, legacy task boards, and audit records.</div></article>
+<!-- CA:END:COMP-041 -->
+
+<!-- CA:BEGIN:COMP-042 -->
+<article class="record" id="COMP-042" data-ca-symbol="COMP-042" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-042">COMP-042</a><h3>.codearbiter/open-tasks.md</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Legacy work owner when present; helper-only mutable board with done-tasks.md as append-only archived history.</div></article>
+<!-- CA:END:COMP-042 -->
+
+<!-- CA:BEGIN:COMP-043 -->
+<article class="record" id="COMP-043" data-ca-symbol="COMP-043" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-043">COMP-043</a><h3>.codearbiter/decisions</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043&#39;s assistive contract.</div></article>
+<!-- CA:END:COMP-043 -->
+
+<!-- CA:BEGIN:COMP-044 -->
+<article class="record" id="COMP-044" data-ca-symbol="COMP-044" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-044">COMP-044</a><h3>.codearbiter/release-targets.md</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Four protected executable target declarations with pre-tag/build/generation ownership.</div></article>
+<!-- CA:END:COMP-044 -->
+
+<!-- CA:BEGIN:COMP-045 -->
+<article class="record" id="COMP-045" data-ca-symbol="COMP-045" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-045">COMP-045</a><h3>plugins/ca/hooks/tests</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Shared hook unit tests; tests here are maintained source, not generated hook copies.</div></article>
+<!-- CA:END:COMP-045 -->
+
+<!-- CA:BEGIN:COMP-046 -->
+<article class="record" id="COMP-046" data-ca-symbol="COMP-046" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-046">COMP-046</a><h3>.github/scripts</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Python contracts, lifecycle, packaging, provenance, platform tests, and hosted check helpers.</div></article>
+<!-- CA:END:COMP-046 -->
+
+<!-- CA:BEGIN:COMP-047 -->
+<article class="record" id="COMP-047" data-ca-symbol="COMP-047" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-047">COMP-047</a><h3>.github/workflows/ci.yml</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Impact routing, native/platform matrices, package/cold-install checks, coverage, and merge readiness.</div></article>
+<!-- CA:END:COMP-047 -->
+
+<!-- CA:BEGIN:COMP-048 -->
+<article class="record" id="COMP-048" data-ca-symbol="COMP-048" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-048">COMP-048</a><h3>.github/workflows/release.yml</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Qualified cohort publication and called workflow ownership; publication is separate from ordinary progress.</div></article>
+<!-- CA:END:COMP-048 -->
+
+<!-- CA:BEGIN:COMP-049 -->
+<article class="record" id="COMP-049" data-ca-symbol="COMP-049" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-049">COMP-049</a><h3>.github/workflows/docs.yml</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Site validation and deployment.</div></article>
+<!-- CA:END:COMP-049 -->
+
+<!-- CA:BEGIN:COMP-050 -->
+<article class="record" id="COMP-050" data-ca-symbol="COMP-050" data-ca-kind="records"><div class="record-head"><a class="id" href="#COMP-050">COMP-050</a><h3>.github/RELEASE-PROVENANCE.md</h3><span class="badge">component</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td></td><td><code></code></td></tr></tbody></table></div></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>Original-publication evidence and immutable-tag obligations, including legacy evidence grades.</div></article>
+<!-- CA:END:COMP-050 -->
+
+<!-- CA:BEGIN:FACT-001 -->
+<article class="record" id="FACT-001" data-ca-symbol="FACT-001" data-ca-kind="records"><div class="record-head"><a class="id" href="#FACT-001">FACT-001</a><h3>Code map — codeArbiter</h3><span class="badge">fact</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span># Code map — codeArbiter
+
+Concern-level source orientation. Edit canonical sources and regenerate host
+copies. Read versions and command membership from their owning manifests and
+catalogs; source inspection is not live-host or publication qualification.
+
+</div></article>
+<!-- CA:END:FACT-001 -->
+</section><section class="group" id="group-notes"><a class="back" href="#main-content">Top</a><h2>Notes</h2>
+<!-- CA:BEGIN:NOTE-001 -->
+<article class="record" id="NOTE-001" data-ca-symbol="NOTE-001" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-001">NOTE-001</a><h3>Code map — codeArbiter</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>258</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>0</div></div></div><div class="field"><span class="label">Text</span># Code map — codeArbiter
+
+Concern-level source orientation. Edit canonical sources and regenerate host
+copies. Read versions and command membership from their owning manifests and
+catalogs; source inspection is not live-host or publication qualification.
+
+</div></article>
+<!-- CA:END:NOTE-001 -->
+
+<!-- CA:BEGIN:NOTE-002 -->
+<article class="record" id="NOTE-002" data-ca-symbol="NOTE-002" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-002">NOTE-002</a><h3>Shared source and generation</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>1089</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>258</div></div></div><div class="field"><span class="label">Text</span>## Shared source and generation
+
+- `core/pysrc/` — Canonical stdlib Python hook entry points, host seams, integrity guards, state helpers, and native artifact bridge.
+- `core/surface/` — Canonical commands, routines, agents, includes, and persona instructions; its README defines projection conventions.
+- `core/hosts.json` — Host capabilities, command forms, tool classes, permission policies, and surface projections for Claude, Codex, and Pi.
+- `tools/host_descriptors.py` — Strict loader for immutable host descriptors.
+- `tools/sync-core.py` — Byte-identical shared Python projection into governance plugin hooks.
+- `tools/build-surface.py` — Host-specific instruction projection and generated catalogs.
+- `tools/build-host-packages.py` — Generated root Pi manifest and verified native-payload package cohorts.
+
+</div></article>
+<!-- CA:END:NOTE-002 -->
+
+<!-- CA:BEGIN:NOTE-003 -->
+<article class="record" id="NOTE-003" data-ca-symbol="NOTE-003" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-003">NOTE-003</a><h3>Native artifact engine</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>3059</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>1089</div></div></div><div class="field"><span class="label">Text</span>## Native artifact engine
+
+- `core/artifacts/cmd/ca-artifact/` — Native CLI accepting bounded JSON requests and returning protocol envelopes.
+- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle and provider-effect operations.
+- `core/artifacts/internal/model/` — Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.
+- `core/artifacts/schemas/` — Versioned JSON contracts for typed artifacts and operations.
+- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan, knowledge/decomposition, and work HTML, plus project-context Markdown.
+- `core/artifacts/internal/read/` — Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.
+- `core/artifacts/internal/symbol/` — Stable symbol references and resolution.
+- `core/artifacts/internal/evidence/` — Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.
+- `core/artifacts/internal/render/` — Deterministic offline HTML for artifacts and work with stable anchors, safe escaping, and separate progress/evidence labels.
+- `core/artifacts/internal/store/` — Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.
+- `core/artifacts/internal/contextdocument/` — Five-document Markdown ownership, bounded typed content, preview/apply, provenance contracts, and Markdown-to-HTML knowledge conversion.
+- `tools/build-artifacts.py` — Pinned-toolchain native payload build and qualification metadata.
+- `tools/generate-artifact-types.py` — Generated schema and typed-view consistency.
+- `tools/test-artifact-mixed-schema.py` — Disposable old/current-client compatibility, retained stops, replay, complete-store restore, and forward export.
+
+</div></article>
+<!-- CA:END:NOTE-003 -->
+
+<!-- CA:BEGIN:NOTE-004 -->
+<article class="record" id="NOTE-004" data-ca-symbol="NOTE-004" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-004">NOTE-004</a><h3>Python runtime and compatibility</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>4875</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>3059</div></div></div><div class="field"><span class="label">Text</span>## Python runtime and compatibility
+
+- `core/pysrc/_artifactlib.py` — Installation-pinned native bridge, request bounds, payload validation, and exact-format routing; no runtime PATH lookup or download.
+- `core/pysrc/_modelib.py` — Per-session arbiter, dangerous, and ops mode state; dangerous suspends persona orchestration, not enforcement.
+- `core/pysrc/_reconciliationlib.py` — Legacy reconciliation history and captured-reply recovery preserving original observations, operation IDs, and revision bindings.
+- `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.
+- `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.
+- `core/pysrc/_taskboardlib.py` — Legacy board schema and counters; taskwrite.py owns its mutations and archival.
+- `core/pysrc/_worklib.py`, `_workadopt.py`, `work.py`, and `_workgithub.py` — Selected legacy-board adapter, native work CLI, and fixed GitHub Issues and optional Projects transport; stable work IDs select lifecycle and context operations.
+- `core/artifacts/internal/operations/work_adopt.go` — Journaled selected legacy-board cutover with native writer locking and exact board snapshots.
+- `core/pysrc/knowledge.py` — Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.
+- `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.
+
+Hook coverage is host-specific. Loaded instructions and named tools alone do not
+prove enforcement; the cooperative-agent and MCP boundaries remain documented
+in security-controls.md. Compatibility producers retain historical evidence
+without restoring an extra permission layer for already-authorized work.
+
+</div></article>
+<!-- CA:END:NOTE-004 -->
+
+<!-- CA:BEGIN:NOTE-005 -->
+<article class="record" id="NOTE-005" data-ca-symbol="NOTE-005" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-005">NOTE-005</a><h3>Host and infrastructure adapters</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>5659</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>4875</div></div></div><div class="field"><span class="label">Text</span>## Host and infrastructure adapters
+
+- `plugins/ca/` — Claude manifest, generated governance resources, hooks, and TypeScript farm dispatcher with built farm.js.
+- `plugins/ca-codex/` — Codex manifest, generated entry skills/routines/hooks, and resource charters; no native plugin-agent registration.
+- `plugins/ca-pi/tools/src/` — Trusted-runtime extension, project-trust checks, Python bridge, tool wrapping, isolated child runner, and parent inference broker.
+- `plugins/ca-pi/extensions/` — Built parent and child extensions shipped to Pi.
+- `plugins/ca-pi/helpers/` — Packaged native helpers including the Windows supervisor.
+- `plugins/ca-sandbox/tools/` — Docker lifecycle, mount/network isolation, installed-nixpacks detection, and generated-Dockerfile fallback.
+
+</div></article>
+<!-- CA:END:NOTE-005 -->
+
+<!-- CA:BEGIN:NOTE-006 -->
+<article class="record" id="NOTE-006" data-ca-symbol="NOTE-006" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-006">NOTE-006</a><h3>Documentation and Academy</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>6121</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>5659</div></div></div><div class="field"><span class="label">Text</span>## Documentation and Academy
+
+- `site/src/curated/` — Maintained Astro/Starlight product prose.
+- `site/scripts/` — Site and diagram generation, Academy consumption, link/applicability auditing, and fixture capture.
+- `site/test/` — Site unit, generated-content, browser, and offline artifact-view checks.
+- `.gitmodules` — Separately owned arbiter-academy source declaration; the gitlink selects its revision, while local population is checkout state.
+
+</div></article>
+<!-- CA:END:NOTE-006 -->
+
+<!-- CA:BEGIN:NOTE-007 -->
+<article class="record" id="NOTE-007" data-ca-symbol="NOTE-007" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-007">NOTE-007</a><h3>Project records</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>6906</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>6121</div></div></div><div class="field"><span class="label">Text</span>## Project records
+
+- `.codearbiter/` — Five context documents, provenance, specs/plans, native work, open decisions, protected release declarations, legacy task boards, and audit records.
+- `.codearbiter/work/` and `.codearbiter/work/project.json` — Portable native work items, project identity, and finite provider binding in repositories that select the native owner.
+- `.codearbiter/open-tasks.md` — Legacy work owner when present; helper-only mutable board with done-tasks.md as append-only archived history.
+- `.codearbiter/decisions/` — Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043&#39;s assistive contract.
+- `.codearbiter/release-targets.md` — Four protected executable target declarations with pre-tag/build/generation ownership.
+
+</div></article>
+<!-- CA:END:NOTE-007 -->
+
+<!-- CA:BEGIN:NOTE-008 -->
+<article class="record" id="NOTE-008" data-ca-symbol="NOTE-008" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-008">NOTE-008</a><h3>Tests, CI, and publication</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>7905</div><div class="field"><span class="label">Path</span>.codearbiter/code-map.md</div><div class="field"><span class="label">Start</span>6906</div></div></div><div class="field"><span class="label">Text</span>## Tests, CI, and publication
+
+- `plugins/ca/hooks/tests/` — Shared hook unit tests; tests here are maintained source, not generated hook copies.
+- `.github/scripts/` — Python contracts, lifecycle, packaging, provenance, platform tests, and hosted check helpers.
+- `.github/workflows/ci.yml` — Impact routing, native/platform matrices, package/cold-install checks, coverage, and merge readiness.
+- `.github/workflows/release.yml` — Qualified cohort publication and called workflow ownership; publication is separate from ordinary progress.
+- `.github/workflows/docs.yml` — Site validation and deployment.
+- `.github/RELEASE-PROVENANCE.md` — Original-publication evidence and immutable-tag obligations, including legacy evidence grades.
+
+Go tests live beside their packages. Vitest projects live in the three tool
+packages and site; manifests own runnable commands. Local source checks,
+hosted candidate qualification, published packages, and installed-host behavior
+are separate claims.
+</div></article>
+<!-- CA:END:NOTE-008 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-001 -->
+<article class="record" id="SRC-001" data-ca-symbol="SRC-001" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-001">SRC-001</a><h3>Original Markdown code-map</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/code-map.md at 97e1ecac795138cacb83a9d5e81c39d4c234867a; SHA-256 3e245f898871a1319d9c052dd410d75354e737859f3687ea480ce2bedb140031</div><div class="field"><span class="label">Note</span>Source observed during user-authorized HTML conversion; inherited claims retain original evidence limits.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-001 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>97e1ecac795138cacb83a9d5e81c39d4c234867a</div><div class="field"><span class="label">Observed date</span>2026-11-13</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 71aa774a077b111a40aff83633cbaf41debce2151b059df99b1a24e03f4700aa<br>Model SHA-256: 02187f23844917d2e129ea420651141422fd7af8282ea12b3b48995aa9b83815</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "CTX-CODE-MAP",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "02187f23844917d2e129ea420651141422fd7af8282ea12b3b48995aa9b83815",
+    "normative_sha256": "71aa774a077b111a40aff83633cbaf41debce2151b059df99b1a24e03f4700aa",
+    "symbol_count": 60
+  },
+  "kind": "knowledge",
+  "normative": {
+    "baseline": {
+      "commit": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+      "observed_date": "2026-11-13",
+      "repository": null
+    },
+    "notes": [
+      {
+        "basis": "source-observed",
+        "id": "NOTE-001",
+        "origin": {
+          "end": 258,
+          "path": ".codearbiter/code-map.md",
+          "start": 0
+        },
+        "text": "# Code map — codeArbiter\n\nConcern-level source orientation. Edit canonical sources and regenerate host\ncopies. Read versions and command membership from their owning manifests and\ncatalogs; source inspection is not live-host or publication qualification.\n\n",
+        "title": "Code map — codeArbiter"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-002",
+        "origin": {
+          "end": 1089,
+          "path": ".codearbiter/code-map.md",
+          "start": 258
+        },
+        "text": "## Shared source and generation\n\n- `core/pysrc/` — Canonical stdlib Python hook entry points, host seams, integrity guards, state helpers, and native artifact bridge.\n- `core/surface/` — Canonical commands, routines, agents, includes, and persona instructions; its README defines projection conventions.\n- `core/hosts.json` — Host capabilities, command forms, tool classes, permission policies, and surface projections for Claude, Codex, and Pi.\n- `tools/host_descriptors.py` — Strict loader for immutable host descriptors.\n- `tools/sync-core.py` — Byte-identical shared Python projection into governance plugin hooks.\n- `tools/build-surface.py` — Host-specific instruction projection and generated catalogs.\n- `tools/build-host-packages.py` — Generated root Pi manifest and verified native-payload package cohorts.\n\n",
+        "title": "Shared source and generation"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-003",
+        "origin": {
+          "end": 3059,
+          "path": ".codearbiter/code-map.md",
+          "start": 1089
+        },
+        "text": "## Native artifact engine\n\n- `core/artifacts/cmd/ca-artifact/` — Native CLI accepting bounded JSON requests and returning protocol envelopes.\n- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle and provider-effect operations.\n- `core/artifacts/internal/model/` — Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.\n- `core/artifacts/schemas/` — Versioned JSON contracts for typed artifacts and operations.\n- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan, knowledge/decomposition, and work HTML, plus project-context Markdown.\n- `core/artifacts/internal/read/` — Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.\n- `core/artifacts/internal/symbol/` — Stable symbol references and resolution.\n- `core/artifacts/internal/evidence/` — Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.\n- `core/artifacts/internal/render/` — Deterministic offline HTML for artifacts and work with stable anchors, safe escaping, and separate progress/evidence labels.\n- `core/artifacts/internal/store/` — Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.\n- `core/artifacts/internal/contextdocument/` — Five-document Markdown ownership, bounded typed content, preview/apply, provenance contracts, and Markdown-to-HTML knowledge conversion.\n- `tools/build-artifacts.py` — Pinned-toolchain native payload build and qualification metadata.\n- `tools/generate-artifact-types.py` — Generated schema and typed-view consistency.\n- `tools/test-artifact-mixed-schema.py` — Disposable old/current-client compatibility, retained stops, replay, complete-store restore, and forward export.\n\n",
+        "title": "Native artifact engine"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-004",
+        "origin": {
+          "end": 4875,
+          "path": ".codearbiter/code-map.md",
+          "start": 3059
+        },
+        "text": "## Python runtime and compatibility\n\n- `core/pysrc/_artifactlib.py` — Installation-pinned native bridge, request bounds, payload validation, and exact-format routing; no runtime PATH lookup or download.\n- `core/pysrc/_modelib.py` — Per-session arbiter, dangerous, and ops mode state; dangerous suspends persona orchestration, not enforcement.\n- `core/pysrc/_reconciliationlib.py` — Legacy reconciliation history and captured-reply recovery preserving original observations, operation IDs, and revision bindings.\n- `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.\n- `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.\n- `core/pysrc/_taskboardlib.py` — Legacy board schema and counters; taskwrite.py owns its mutations and archival.\n- `core/pysrc/_worklib.py`, `_workadopt.py`, `work.py`, and `_workgithub.py` — Selected legacy-board adapter, native work CLI, and fixed GitHub Issues and optional Projects transport; stable work IDs select lifecycle and context operations.\n- `core/artifacts/internal/operations/work_adopt.go` — Journaled selected legacy-board cutover with native writer locking and exact board snapshots.\n- `core/pysrc/knowledge.py` — Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.\n- `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.\n\nHook coverage is host-specific. Loaded instructions and named tools alone do not\nprove enforcement; the cooperative-agent and MCP boundaries remain documented\nin security-controls.md. Compatibility producers retain historical evidence\nwithout restoring an extra permission layer for already-authorized work.\n\n",
+        "title": "Python runtime and compatibility"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-005",
+        "origin": {
+          "end": 5659,
+          "path": ".codearbiter/code-map.md",
+          "start": 4875
+        },
+        "text": "## Host and infrastructure adapters\n\n- `plugins/ca/` — Claude manifest, generated governance resources, hooks, and TypeScript farm dispatcher with built farm.js.\n- `plugins/ca-codex/` — Codex manifest, generated entry skills/routines/hooks, and resource charters; no native plugin-agent registration.\n- `plugins/ca-pi/tools/src/` — Trusted-runtime extension, project-trust checks, Python bridge, tool wrapping, isolated child runner, and parent inference broker.\n- `plugins/ca-pi/extensions/` — Built parent and child extensions shipped to Pi.\n- `plugins/ca-pi/helpers/` — Packaged native helpers including the Windows supervisor.\n- `plugins/ca-sandbox/tools/` — Docker lifecycle, mount/network isolation, installed-nixpacks detection, and generated-Dockerfile fallback.\n\n",
+        "title": "Host and infrastructure adapters"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-006",
+        "origin": {
+          "end": 6121,
+          "path": ".codearbiter/code-map.md",
+          "start": 5659
+        },
+        "text": "## Documentation and Academy\n\n- `site/src/curated/` — Maintained Astro/Starlight product prose.\n- `site/scripts/` — Site and diagram generation, Academy consumption, link/applicability auditing, and fixture capture.\n- `site/test/` — Site unit, generated-content, browser, and offline artifact-view checks.\n- `.gitmodules` — Separately owned arbiter-academy source declaration; the gitlink selects its revision, while local population is checkout state.\n\n",
+        "title": "Documentation and Academy"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-007",
+        "origin": {
+          "end": 6906,
+          "path": ".codearbiter/code-map.md",
+          "start": 6121
+        },
+        "text": "## Project records\n\n- `.codearbiter/` — Five context documents, provenance, specs/plans, native work, open decisions, protected release declarations, legacy task boards, and audit records.\n- `.codearbiter/work/` and `.codearbiter/work/project.json` — Portable native work items, project identity, and finite provider binding in repositories that select the native owner.\n- `.codearbiter/open-tasks.md` — Legacy work owner when present; helper-only mutable board with done-tasks.md as append-only archived history.\n- `.codearbiter/decisions/` — Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043's assistive contract.\n- `.codearbiter/release-targets.md` — Four protected executable target declarations with pre-tag/build/generation ownership.\n\n",
+        "title": "Project records"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-008",
+        "origin": {
+          "end": 7905,
+          "path": ".codearbiter/code-map.md",
+          "start": 6906
+        },
+        "text": "## Tests, CI, and publication\n\n- `plugins/ca/hooks/tests/` — Shared hook unit tests; tests here are maintained source, not generated hook copies.\n- `.github/scripts/` — Python contracts, lifecycle, packaging, provenance, platform tests, and hosted check helpers.\n- `.github/workflows/ci.yml` — Impact routing, native/platform matrices, package/cold-install checks, coverage, and merge readiness.\n- `.github/workflows/release.yml` — Qualified cohort publication and called workflow ownership; publication is separate from ordinary progress.\n- `.github/workflows/docs.yml` — Site validation and deployment.\n- `.github/RELEASE-PROVENANCE.md` — Original-publication evidence and immutable-tag obligations, including legacy evidence grades.\n\nGo tests live beside their packages. Vitest projects live in the three tool\npackages and site; manifests own runnable commands. Local source checks,\nhosted candidate qualification, published packages, and installed-host behavior\nare separate claims.\n",
+        "title": "Tests, CI, and publication"
+      }
+    ],
+    "records": [
+      {
+        "basis": "source-observed",
+        "id": "COMP-001",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Canonical stdlib Python hook entry points, host seams, integrity guards, state helpers, and native artifact bridge.",
+        "title": "core/pysrc",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-002",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/surface"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Canonical commands, routines, agents, includes, and persona instructions; its README defines projection conventions.",
+        "title": "core/surface",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-003",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/hosts.json"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Host capabilities, command forms, tool classes, permission policies, and surface projections for Claude, Codex, and Pi.",
+        "title": "core/hosts.json",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-004",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/host_descriptors.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Strict loader for immutable host descriptors.",
+        "title": "tools/host_descriptors.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-005",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Byte-identical shared Python projection into governance plugin hooks.",
+        "title": "tools/sync-core.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-006",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Host-specific instruction projection and generated catalogs.",
+        "title": "tools/build-surface.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-007",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Generated root Pi manifest and verified native-payload package cohorts.",
+        "title": "tools/build-host-packages.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-008",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/cmd/ca-artifact"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Native CLI accepting bounded JSON requests and returning protocol envelopes.",
+        "title": "core/artifacts/cmd/ca-artifact",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-009",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/operations"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, context-document operations, and selected native work lifecycle and provider-effect operations.",
+        "title": "core/artifacts/internal/operations",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-010",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/model"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.",
+        "title": "core/artifacts/internal/model",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-011",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/schemas"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Versioned JSON contracts for typed artifacts and operations.",
+        "title": "core/artifacts/schemas",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-012",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/kind"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Closed representation registry for spec/plan, knowledge/decomposition, and work HTML, plus project-context Markdown.",
+        "title": "core/artifacts/internal/kind",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-013",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/read"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.",
+        "title": "core/artifacts/internal/read",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-014",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/symbol"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Stable symbol references and resolution.",
+        "title": "core/artifacts/internal/symbol",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-015",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/evidence"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.",
+        "title": "core/artifacts/internal/evidence",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-016",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/render"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Deterministic offline HTML for artifacts and work with stable anchors, safe escaping, and separate progress/evidence labels.",
+        "title": "core/artifacts/internal/render",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-017",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/store"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.",
+        "title": "core/artifacts/internal/store",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-018",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/contextdocument"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Five-document Markdown ownership, bounded typed content, preview/apply, provenance contracts, and Markdown-to-HTML knowledge conversion.",
+        "title": "core/artifacts/internal/contextdocument",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-019",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/build-artifacts.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Pinned-toolchain native payload build and qualification metadata.",
+        "title": "tools/build-artifacts.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-020",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/generate-artifact-types.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Generated schema and typed-view consistency.",
+        "title": "tools/generate-artifact-types.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-021",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "tools/test-artifact-mixed-schema.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Disposable old/current-client compatibility, retained stops, replay, complete-store restore, and forward export.",
+        "title": "tools/test-artifact-mixed-schema.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-022",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_artifactlib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Installation-pinned native bridge, request bounds, payload validation, and exact-format routing; no runtime PATH lookup or download.",
+        "title": "core/pysrc/_artifactlib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-023",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_modelib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Per-session arbiter, dangerous, and ops mode state; dangerous suspends persona orchestration, not enforcement.",
+        "title": "core/pysrc/_modelib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-024",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_reconciliationlib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Legacy reconciliation history and captured-reply recovery preserving original observations, operation IDs, and revision bindings.",
+        "title": "core/pysrc/_reconciliationlib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-025",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_contextsnapshotlib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Bounded repository-context acquisition and source identity.",
+        "title": "core/pysrc/_contextsnapshotlib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-026",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_provenancelib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Document provenance, source drift, and bounded code-map validation.",
+        "title": "core/pysrc/_provenancelib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-027",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_taskboardlib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Legacy board schema and counters; taskwrite.py owns its mutations and archival.",
+        "title": "core/pysrc/_taskboardlib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-028",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/artifacts/internal/operations/work_adopt.go"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Journaled selected legacy-board cutover with native writer locking and exact board snapshots.",
+        "title": "core/artifacts/internal/operations/work_adopt.go",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-029",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/knowledge.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Knowledge and decomposition records CLI over the native engine; `_knowledgelib.py` resolves format and paths without it.",
+        "title": "core/pysrc/knowledge.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-030",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "core/pysrc/_releaselib.py"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Declared release targets, preflight, publication helpers, and recovery diagnostics.",
+        "title": "core/pysrc/_releaselib.py",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-031",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Claude manifest, generated governance resources, hooks, and TypeScript farm dispatcher with built farm.js.",
+        "title": "plugins/ca",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-032",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca-codex"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Codex manifest, generated entry skills/routines/hooks, and resource charters; no native plugin-agent registration.",
+        "title": "plugins/ca-codex",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-033",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca-pi/tools/src"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Trusted-runtime extension, project-trust checks, Python bridge, tool wrapping, isolated child runner, and parent inference broker.",
+        "title": "plugins/ca-pi/tools/src",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-034",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca-pi/extensions"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Built parent and child extensions shipped to Pi.",
+        "title": "plugins/ca-pi/extensions",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-035",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca-pi/helpers"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Packaged native helpers including the Windows supervisor.",
+        "title": "plugins/ca-pi/helpers",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-036",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca-sandbox/tools"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Docker lifecycle, mount/network isolation, installed-nixpacks detection, and generated-Dockerfile fallback.",
+        "title": "plugins/ca-sandbox/tools",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-037",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "site/src/curated"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Maintained Astro/Starlight product prose.",
+        "title": "site/src/curated",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-038",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "site/scripts"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Site and diagram generation, Academy consumption, link/applicability auditing, and fixture capture.",
+        "title": "site/scripts",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-039",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "site/test"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Site unit, generated-content, browser, and offline artifact-view checks.",
+        "title": "site/test",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-040",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".gitmodules"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Separately owned arbiter-academy source declaration; the gitlink selects its revision, while local population is checkout state.",
+        "title": ".gitmodules",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-041",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".codearbiter"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Five context documents, provenance, specs/plans, native work, open decisions, protected release declarations, legacy task boards, and audit records.",
+        "title": ".codearbiter",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-042",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".codearbiter/open-tasks.md"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Legacy work owner when present; helper-only mutable board with done-tasks.md as append-only archived history.",
+        "title": ".codearbiter/open-tasks.md",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-043",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".codearbiter/decisions"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043's assistive contract.",
+        "title": ".codearbiter/decisions",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-044",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".codearbiter/release-targets.md"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Four protected executable target declarations with pre-tag/build/generation ownership.",
+        "title": ".codearbiter/release-targets.md",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-045",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            "plugins/ca/hooks/tests"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Shared hook unit tests; tests here are maintained source, not generated hook copies.",
+        "title": "plugins/ca/hooks/tests",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-046",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".github/scripts"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Python contracts, lifecycle, packaging, provenance, platform tests, and hosted check helpers.",
+        "title": ".github/scripts",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-047",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".github/workflows/ci.yml"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Impact routing, native/platform matrices, package/cold-install checks, coverage, and merge readiness.",
+        "title": ".github/workflows/ci.yml",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-048",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".github/workflows/release.yml"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Qualified cohort publication and called workflow ownership; publication is separate from ordinary progress.",
+        "title": ".github/workflows/release.yml",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-049",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".github/workflows/docs.yml"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Site validation and deployment.",
+        "title": ".github/workflows/docs.yml",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "COMP-050",
+        "related_refs": [],
+        "scope": {
+          "paths": [
+            ".github/RELEASE-PROVENANCE.md"
+          ]
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "Original-publication evidence and immutable-tag obligations, including legacy evidence grades.",
+        "title": ".github/RELEASE-PROVENANCE.md",
+        "type": "component"
+      },
+      {
+        "basis": "source-observed",
+        "id": "FACT-001",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "# Code map — codeArbiter\n\nConcern-level source orientation. Edit canonical sources and regenerate host\ncopies. Read versions and command membership from their owning manifests and\ncatalogs; source inspection is not live-host or publication qualification.\n\n",
+        "title": "Code map — codeArbiter",
+        "type": "fact"
+      }
+    ],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [
+      {
+        "id": "SRC-001",
+        "locator": ".codearbiter/code-map.md at 97e1ecac795138cacb83a9d5e81c39d4c234867a; SHA-256 3e245f898871a1319d9c052dd410d75354e737859f3687ea480ce2bedb140031",
+        "note": "Source observed during user-authorized HTML conversion; inherited claims retain original evidence limits.",
+        "title": "Original Markdown code-map",
+        "type": "repository",
+        "url": null
+      }
+    ],
+    "summary": "Observed components, interfaces and ownership.",
+    "title": "Code map"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 7,
+  "schema_version": "0.3.2",
+  "slug": "code-map"
+}
+</script>
+</body></html>

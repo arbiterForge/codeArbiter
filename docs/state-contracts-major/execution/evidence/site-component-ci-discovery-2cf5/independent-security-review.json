@@ -1,0 +1,78 @@
+{
+  "gate_status": "PASS",
+  "findings": [],
+  "severity_counts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "reviewer": "/root/farm_sandbox_program independent Security reviewer for CI/deploy change; not patch author",
+  "created_utc": "2026-11-14T08:22:15.207819+00:00",
+  "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "observed_head": "2cf5fafac374791e6fc7c0c98d0a6f43c275c82c",
+  "candidate": "candidate-v1:dc6ddca2b1b7727dd7e2925dbe6d72e89876dd6788868174171d882640c5686e",
+  "candidate_binding": "Owning full-context SECURITY_DIFF_GIT_ARGS + staged_candidate_binding independently reproduced from actual index; exact3 after-file hashes match index/physical/authoredTemp and preimages match actual2cf5 Git.",
+  "files_sha256": {
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    ".github/workflows/docs.yml": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7",
+    ".github/scripts/test_ci_impact.py": "0b597611fc98becccce93c77580164931db6a9a5321a9b83492de21664203180"
+  },
+  "patch_sha256": "33c5fab8450a8365625a673570271b5e09cdf97211dc22ec9ac9f7da90c4d497",
+  "source_freeze_sha256": "ca45fc71a1df0b1453e0660d547cce2acf31f9e2e45ecb42d179c8942d80495c",
+  "staged_diff_sha256": "dc6ddca2b1b7727dd7e2925dbe6d72e89876dd6788868174171d882640c5686e",
+  "policy": {
+    "format": "html",
+    "path": ".codearbiter/context/security-controls.html",
+    "html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "full_policy_read": "Complete prior32records reused only after actual unchangedHTML SHA confirmation; complete projection SHAaa0d5b702065d74d8b18677be63fb0a798dc813ece2a19b8203394ad5f979981. Current operative scope stub has no additional blocks.",
+    "controls": [
+      "Hosted publication and distribution: actual hosted gate and publication job separate",
+      "Dependency policy: no new/changed dependency acquisition without review",
+      "Network and untrusted execution: browser/source gates do not create new provider or disabled TLS route",
+      "Secret store and access method: no new credentials or privileged environment flow",
+      "Audit trail: no fabricated passing/host/source evidence"
+    ]
+  },
+  "instructions": [
+    "Installed agents/security-reviewer.md read",
+    "Installed includes/reviewer-contract.md read",
+    "Reference-map CI/CD H15 and networking/deployment H16 obligations read"
+  ],
+  "assessment": [
+    "New explicit npm script selects the existing playwright.components.config.ts whose testDir is test/components and channel is installed chrome. All other scripts and dependency/package fields are unchanged; no lockfile or package acquisition change.",
+    "docs.yml differs only by one default-success mandatory run step after google-chrome --version and before Browser publication gate. Existing test:browser command/id, Pages artifact upload and complete prior control flow stay unchanged.",
+    "No job/step continue-on-error or conditional bypass is added. A failed component command makes build fail and blocks subsequent ordinary publication/browser/Pages steps and deploy through existing needs.",
+    "Top-level contents:read, deploy-only pages:write/id-token:write, explicit allowed main events/ref guard, all third-party action pins, trigger filters, concurrency and diagnostics exceptions are byte-identical by exact insertion comparison. No new write scope, secret/env exposure, checkout mode or reusable credential route.",
+    "Existing runnerChrome is consumed through channel chrome; no playwright install/browser download, ffmpeg, apt or additional executable acquisition. Recorded actual Chrome version remains owned by unchanged preceding step; no fixed browser-byte identity claim.",
+    "Cross-file regression binds exact script/config/installedChrome channel, exactly-one component step and success gating. Missing/renamed command, if:false and continue-on-error mutations are rejected using existing complete build-flow contract. Two previous literal command allowlists expand only to admit the exact new owned script/run.",
+    "No authentication, crypto/TLS primitive, user-controlled shell interpolation or new external endpoint is introduced."
+  ],
+  "evidence_review": {
+    "actual_original_missing_script_red": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-discovery-2cf5\\contract-red.stderr.log",
+      "sha256": "6166d19485106327b50d69bafc4e2ef7c84e605977d4aaceef1ccae86c36d792",
+      "observation": "New exact cross-file contract fails None versus explicit component script on originalsource; genuine target assertion, not import/setup error."
+    },
+    "actual_focused_three_green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-discovery-2cf5\\contract-green.stderr.log",
+      "sha256": "d98f3779dd7a480b07588966654a945d3d7a97f931953ee41de0b73f812d9385",
+      "scope": "New component discovery/success gate plus existing publication-diagnostic bypass and no-acquisition contract cases;3PASS in0.019s, not fulltest_ci_impact suite."
+    },
+    "typecheck": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-discovery-2cf5\\typecheck.json",
+      "sha256": "597b388f1d3a9734b18bbc7ec6be22d329125ba949c5edb777c6a103c9e030cf",
+      "exit_code": 0,
+      "seconds": 10.24100136756897,
+      "inputs_before_after_equal": true,
+      "scope": "Original full site tsc --noEmit at2cf5 existingTS/config/manifest inputs; EOL-only physical differences explicit. Proposed changes add package script/workflow/Python contract only; no TypeScript semantic delta or new final-source/browser execution is inferred."
+    },
+    "existing_component_config_sha256": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff"
+  },
+  "limitations": [
+    "This is the required exact-candidate CI security review, not a browser execution, source qualification, full coverage/host union or deployment verdict.",
+    "Actual component browser10/final-source and replacement hosted docs run remain normal owning pipeline obligations; no reruns were performed by reviewer.",
+    "No Gov/source/index/ledger/marker write or extra reviewer dispatch. Root owns marker/commit/push after exact review.",
+    "PASS is bound to candidate dc6ddca2 and3listed file hashes; material staged/source change needs a relevant join."
+  ]
+}

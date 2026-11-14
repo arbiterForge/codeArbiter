@@ -1,0 +1,656 @@
+{
+  "quality_owner_comparison": {
+    "name": "runTask",
+    "prior_commit": "2c62fc67ba7105e26f86f3ee8a87ae968c505854",
+    "prior_sha256": "3375a862655c3b983e545016b67ed835dfd8f72f3bc7690ac5f6bdcb1b36db00",
+    "current_sha256": "3375a862655c3b983e545016b67ed835dfd8f72f3bc7690ac5f6bdcb1b36db00",
+    "literal_declaration_equal": true
+  },
+  "schema": "codearbiter-farm-clause-binding/1",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "current_committed_source": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "declaration_comparisons": [
+    {
+      "name": "callApi",
+      "baseline_sha256": "3aed13977efb27226660153c5064778216c691fb663da37538ec75ab9dcc71f9",
+      "current_sha256": "3aed13977efb27226660153c5064778216c691fb663da37538ec75ab9dcc71f9",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "runWorker",
+      "baseline_sha256": "6855df70a3653c2cc8ba30988b90765345fe1a64449839166b05eda35f1bc133",
+      "current_sha256": "6855df70a3653c2cc8ba30988b90765345fe1a64449839166b05eda35f1bc133",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "httpWorker",
+      "baseline_sha256": "e538619eea31054f972871a5d9323eafff3322460a40655db707e178d5dcf74a",
+      "current_sha256": "e538619eea31054f972871a5d9323eafff3322460a40655db707e178d5dcf74a",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "parseChatCompletion",
+      "baseline_sha256": "fbd2288975324ec36c3e40770ba778dfde14ab0155689e43d7569e84d79173b7",
+      "current_sha256": "fbd2288975324ec36c3e40770ba778dfde14ab0155689e43d7569e84d79173b7",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "reportedUsage",
+      "baseline_sha256": "5852cdeed6b30921c83b2f3aefea4a8bee3c396d47e0630072174c6e1da70bd6",
+      "current_sha256": "5852cdeed6b30921c83b2f3aefea4a8bee3c396d47e0630072174c6e1da70bd6",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "apiRetryDelay",
+      "baseline_sha256": "824235813fdbb113b7979db0be0080c5e44bcb5c0d0a9ccd8652e3ae12d219bb",
+      "current_sha256": "824235813fdbb113b7979db0be0080c5e44bcb5c0d0a9ccd8652e3ae12d219bb",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "httpDateMillis",
+      "baseline_sha256": "ce6c52e88b0f35b72e4c7ee56348dc47bcbd668be7024377aec34525f81e30f2",
+      "current_sha256": "ce6c52e88b0f35b72e4c7ee56348dc47bcbd668be7024377aec34525f81e30f2",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "assertSecureBaseUrl",
+      "baseline_sha256": "311af8552f504aadbeda5f421a037453702ca351488913492cf1b51324c5c7d1",
+      "current_sha256": "311af8552f504aadbeda5f421a037453702ca351488913492cf1b51324c5c7d1",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "buildChatBody",
+      "baseline_sha256": "5a83d6a8e8835be83779a80752ec3a99bd661cb995bd3c1a3c8122157f23dbef",
+      "current_sha256": "5a83d6a8e8835be83779a80752ec3a99bd661cb995bd3c1a3c8122157f23dbef",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "readSampling",
+      "baseline_sha256": "3386bbb88ea3343b49843f65c95fb6cd6b4d58990d0856434cd7d0bfe7af55c2",
+      "current_sha256": "3386bbb88ea3343b49843f65c95fb6cd6b4d58990d0856434cd7d0bfe7af55c2",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "extractFileBlocks",
+      "baseline_sha256": "bf84da582b4aa9354c2c92ec144501aa08fb9a2fc127ea567e42a817ac27c649",
+      "current_sha256": "bf84da582b4aa9354c2c92ec144501aa08fb9a2fc127ea567e42a817ac27c649",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "ENV",
+      "baseline_sha256": "29a849c4eaafb556c2b19687b3f52478328c2285444a4089f0ce5da77ac01f64",
+      "current_sha256": "29a849c4eaafb556c2b19687b3f52478328c2285444a4089f0ce5da77ac01f64",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "atomicWriteFile",
+      "baseline_sha256": "3129dde2a89033be41f28711d3f7ee949e4cf69ed961ef2b41bae6f15eeca591",
+      "current_sha256": "3129dde2a89033be41f28711d3f7ee949e4cf69ed961ef2b41bae6f15eeca591",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "renameWithRetry",
+      "baseline_sha256": "d9efac7922194434c7a999f7d4bd254d4db45694f946032236aacfcece32968e",
+      "current_sha256": "d9efac7922194434c7a999f7d4bd254d4db45694f946032236aacfcece32968e",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "runCanary",
+      "baseline_sha256": "e928586bb5a7f2ee1b9d5fa8b86545117b313af9f74122b0e5605ab714e8aa49",
+      "current_sha256": "e928586bb5a7f2ee1b9d5fa8b86545117b313af9f74122b0e5605ab714e8aa49",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "screenEntitlements",
+      "baseline_sha256": "1af0af9741c13b8e9563d49a12e425875aee04b5fbfbd21c6eeacced44bec6b9",
+      "current_sha256": "1af0af9741c13b8e9563d49a12e425875aee04b5fbfbd21c6eeacced44bec6b9",
+      "same_normalized_declaration": true
+    },
+    {
+      "name": "makeEntitlementProbe",
+      "baseline_sha256": "70badcdbcf9f0d836e29b93c2c81248fd3e977c83d4fdf9b0a200e30097642c7",
+      "current_sha256": "70badcdbcf9f0d836e29b93c2c81248fd3e977c83d4fdf9b0a200e30097642c7",
+      "same_normalized_declaration": true
+    }
+  ],
+  "full_file_comparisons": [
+    {
+      "path": "plugins/ca/tools/mutation.ts",
+      "baseline_sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "current_sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "literal_equal": true
+    },
+    {
+      "path": "plugins/ca/tools/redactor.ts",
+      "baseline_sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "current_sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "literal_equal": true
+    },
+    {
+      "path": "plugins/ca/tools/worktree-fs.ts",
+      "baseline_sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+      "current_sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+      "literal_equal": true
+    }
+  ],
+  "receipt_clauses": [
+    {
+      "clause": "await atomicWriteFile(path.join(runDir, \"farm-report.json\"), json);",
+      "baseline_present": true,
+      "current_present": true,
+      "sha256": "51a6065d4617b000030ded82ad4c044f73ad6e73b5112ed404bd5ffcc667cccc"
+    },
+    {
+      "clause": "await atomicWriteFile(path.join(runDir, \"farm-report.md\"), md);",
+      "baseline_present": true,
+      "current_present": true,
+      "sha256": "b8ad325e53c58ba7f658426b76bca1e6853965b9f7302776332b6fbfb9bc7861"
+    },
+    {
+      "clause": "await atomicWriteFile(dest, data).catch((e) =>\n      noteArtifactError(health.report.latestMirrorErrors, `${dest}: ${msgOf(e)}`),\n    );",
+      "baseline_present": true,
+      "current_present": true,
+      "sha256": "09cdced919ef0397777ea4a28e072b538cbff722ad0d2b0f95884419faf73a2a"
+    },
+    {
+      "clause": "await atomicWriteFile(path.join(latestDiffsDir, `${r.id}.patch`), d.out).catch((e) =>\n      noteArtifactError(health.diffs.latestMirrorErrors, `${r.id}: ${msgOf(e)}`),\n    );",
+      "baseline_present": true,
+      "current_present": true,
+      "sha256": "7d81779243368cebd0393283bdb7e5eaad55935f473e63ef657832f304177e70"
+    }
+  ],
+  "cones": {
+    "cleanup7": {
+      "roots": [
+        "plugins/ca/tools/farm-cleanup-observation.test.ts"
+      ],
+      "explicit_dynamic_inputs": [],
+      "edges": [
+        {
+          "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/artifact-manifest.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/artifact-manifest.ts",
+          "to": "core/artifact-release-manifest.json",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:os",
+        "node:path",
+        "node:perf_hooks",
+        "node:url",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+        "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+        "plugins/ca/tools/farm-cleanup-observation.test.ts": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+        "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+        "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+        "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+        "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+        "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+        "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+        "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+      }
+    },
+    "farm12": {
+      "roots": [
+        "plugins/ca/tools/farm.test.ts",
+        "plugins/ca/tools/state-contracts.test.ts",
+        "plugins/ca/tools/farm.unit.test.ts"
+      ],
+      "explicit_dynamic_inputs": [
+        "plugins/ca/tools/farm.js"
+      ],
+      "edges": [
+        {
+          "from": "plugins/ca/tools/state-contracts.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/artifact-manifest.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/artifact-manifest.ts",
+          "to": "core/artifact-release-manifest.json",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/state-contracts.test.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/state-contracts.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "dynamic"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:http",
+        "node:module",
+        "node:os",
+        "node:path",
+        "node:perf_hooks",
+        "node:url",
+        "node:util",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+        "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+        "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+        "plugins/ca/tools/farm.js": "4f2c53b5fed25aa7d197d3cec9f1c97c552d4bb75a720b06984989b5749daafd",
+        "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+        "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+        "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+        "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+        "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+        "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72",
+        "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+        "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+        "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+      }
+    },
+    "preservation": {
+      "roots": [
+        "plugins/ca/tools/farm.unit.test.ts",
+        "plugins/ca/tools/mutation.test.ts",
+        "plugins/ca/tools/worktree-fs.test.ts",
+        "plugins/ca/tools/farm.test.ts"
+      ],
+      "explicit_dynamic_inputs": [
+        "plugins/ca/tools/farm.js"
+      ],
+      "edges": [
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/farm-recovery.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/artifact-manifest.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/artifact-manifest.ts",
+          "to": "core/artifact-release-manifest.json",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/redactor.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/farm.unit.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "dynamic"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/mutation.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/mutation.test.ts",
+          "to": "plugins/ca/tools/farm.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/worktree-fs.test.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca/tools/worktree-fs.test.ts",
+          "to": "plugins/ca/tools/worktree-fs.ts",
+          "kind": "dynamic"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:http",
+        "node:module",
+        "node:os",
+        "node:path",
+        "node:perf_hooks",
+        "node:url",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+        "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+        "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+        "plugins/ca/tools/farm.js": "4f2c53b5fed25aa7d197d3cec9f1c97c552d4bb75a720b06984989b5749daafd",
+        "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+        "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+        "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+        "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+        "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+        "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+        "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+        "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+        "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+        "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+      }
+    }
+  },
+  "note": "Declaration equality corroborates reviewed source preservation only; no old run on a changed owner file is relabelled current. Fresh actual938-pass run supplies current named observations separately."
+}

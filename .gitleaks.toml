@@ -74,6 +74,18 @@
 
 title = "codeArbiter hosted secret scan"
 
+[[allowlists]]
+description = """
+Public SHA-256 source fingerprint emitted by knowledge.py conversion in
+docs/state-contracts-major/execution/context-conversion/inventory.json at
+685b51f8412690d8b49a8c468455973785a281ac. It is deterministically derived
+from the five original Markdown Git blobs at 97e1ecac, with no secret input
+or access authority. The transient field is removed from current evidence;
+this exact value-only exception covers retained PR history. No path, commit,
+credential pattern, or other digest value is exempted.
+"""
+regexes = ['''\A6ec49a66722c9813c43b9f18feac6d2e637b00de4b34fa34ba0ebc2548c9930a\z''']
+
 [extend]
 # Start from gitleaks' full first-party ruleset. This file only ever SUBTRACTS
 # known-fake fixture literals from it; it never adds a rule of its own.
@@ -205,6 +217,15 @@ regexes = ['''\Ask-proj-ABCDEFGH12345678\z''']
 description = "Public hostapi.py SHA-256 recorded by the statusline documentation fixture (PR #847)"
 regexes = ['\Ac6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be\z']
 
+# Public declaration-file digest retained by the major program's original Pi
+# source observation, not a credential. Verified against pi-api.d.ts at
+# 55509ec54327c61b94f6648aa21ac41452e0d28f. The adjacent API filename triggers
+# generic-api-key. Earlier commits retain this value, so waive only the exact
+# whole digest; every path and every other value remains scanned.
+[[allowlists]]
+description = 'Public plugins/ca-pi/tools/src/pi-api.d.ts SHA-256 retained in docs/state-contracts-major/execution/lanes/pi.json'
+regexes = ['\A12a560b01cb6efc93964f19eadb2c6561e1e2a97f50703803e4d55f26268b9f2\z']
+
 [[allowlists]]
 description = 'PR850 historical preparation: exact verified hostapi Git blob identity, not a credential'
 regexes = [ '''\Aa3a2ea319e044db4d53f5e3cc32f97429ba47dba\z''' ]
@@ -222,3 +243,85 @@ regexes = [
   '''\A\Q-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
       "-----END PRIVATE KEY-----\E\z'''
 ]
+
+# Exact public source SHA-256 values retained by the major qualification packet.
+# Each value matches its named Git blob at94b569fb51ab306ac187f60fe4e61cf0bef6992a.
+# API/auth/secret words in filenames caused generic-api-key false positives.
+# Preserve scans for every other value, path, commit and credential shape.
+[[allowlists]]
+description = "Public core/pysrc/hostapi.py SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4\z']
+
+[[allowlists]]
+description = "Public core/surface/agents/auth-crypto-reviewer.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\Ac8d4aae68642746dc19803bdd9bbe738c540dae33a72baeed39ee0b1ea3b1143\z']
+
+[[allowlists]]
+description = "Public core/surface/skills/tribunal/references/lenses/secrets-supply.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A0de0dd521693c80fba4ce695c290d08df1b73452632f19efb6f332a0f0518a0e\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca/hooks/tests/test_hostapi_loadhost.py at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A5d3c50033f29d6074441b8856df9444b9c06564038d62c6d4b1eb1da9abddcbc\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of .github/scripts/create_codex_distribution_token.py at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca/agents/auth-crypto-reviewer.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A76319a1e9f24e4730fb176272495e4cc4f965049e05087488562f0cf80f8a9dc\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca-pi/agents/auth-crypto-reviewer.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A9786c43e5ed3bb551e3a866fd160b4a6a6e54674313a32706e5f03f3adb6705e\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca/skills/tribunal/references/lenses/secrets-supply.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A9f9aacfb2b2ee2e34cee71c4069fb925780a3a283623458229eb109fe848a536\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca-pi/routines/tribunal/references/lenses/secrets-supply.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\Ac3aaa89a68286cda575886cf71cafc4fb1e0786a58a19a8332008db918be7bfa\z']

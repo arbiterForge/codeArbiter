@@ -725,8 +725,8 @@ class TestPersonaSentinel(unittest.TestCase):
 # ---------------------------------------------------------------------------
 class TestContextDomainVocabulary(unittest.TestCase):
     def _context_text(self):
-        root = pathlib.Path(__file__).resolve().parents[2]
-        return (root / ".codearbiter" / "CONTEXT.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        return context_text("project")
 
     def test_context_defines_the_term_mode(self):
         text = self._context_text()
@@ -1038,6 +1038,127 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
         self.assertEqual(_modelib.flip("s1", "dangerous", root=self.root),
                          _modelib.FLIP_FLIPPED)
         self.assertEqual(self._trail_text().count("MODE: dangerous enter"), 1)
+
+
+# ---------------------------------------------------------------------------
+# HW-02 (HOOK-F02) — the flip reports its actual commit point: requested,
+# raw marker before/after, ledger-backed effective mode, owed audit debt, and
+# the next recovery action. hooks:mode:03/04/05, hooks:mode-audit:01..03.
+# ---------------------------------------------------------------------------
+class TestFlipOutcome(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
+        os.makedirs(os.path.join(self.root, ".codearbiter", ".markers"))
+        self.log = os.path.join(self.root, ".codearbiter", "overrides.log")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _trail(self):
+        try:
+            with open(self.log, encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            return ""
+
+    def _flip(self, mode, session="s1"):
+        return _modelib.flip_outcome(session, mode, root=self.root, host_name="claude")
+
+    def test_clean_flip_outcome_is_fully_settled(self):
+        out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual((out["raw_before"], out["raw_after"]), ("arbiter", "ops"))
+        self.assertEqual((out["effective_before"], out["effective_after"]), ("arbiter", "ops"))
+        self.assertEqual(out["audit"], "settled")
+        self.assertEqual(out["owed_rows"], 0)
+        self.assertIsNone(out["next_action"])
+
+    def test_failure_before_marker_commit_reports_nothing_changed(self):
+        with mock.patch("_modelib.write_text_atomic", side_effect=OSError("disk")):
+            out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertFalse(out["raw_changed"])
+        self.assertEqual(out["raw_after"], "arbiter")
+        self.assertEqual(out["effective_after"], "arbiter")
+        self.assertEqual(out["audit"], "not-attempted")
+        self.assertEqual(self._trail(), "")
+
+    def test_marker_committed_audit_owed_is_raw_ops_effective_arbiter(self):
+        """The audit probe's observed partial: raw ops, effective arbiter."""
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertTrue(out["raw_changed"])
+        self.assertEqual(out["raw_after"], "ops")
+        self.assertEqual(out["effective_after"], "arbiter")
+        self.assertEqual(out["audit"], "owed")
+        self.assertEqual(out["owed_rows"], 1)
+        self.assertIn("mode --ops", out["next_action"])
+        self.assertNotIn("MODE: ops enter", self._trail())
+
+    def test_owed_row_settles_at_restart_without_duplicate_history(self):
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            self._flip("ops")
+        # A later SessionStart (restart/compaction) is a pure replay.
+        self.assertEqual(_modelib._settle_dev_close(self.root), 1)
+        self.assertEqual(_modelib.effective_mode("s1", root=self.root)[0], "ops")
+        again = self._flip("ops")   # the response to the user was lost; exact retry
+        self.assertEqual(again["result"], _modelib.FLIP_NOOP)
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+        self.assertEqual(_modelib.owed_audit_rows(self.root), 0)
+
+    def test_retry_of_same_token_settles_owed_row_once(self):
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            self._flip("ops")
+        out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual((out["raw_before"], out["raw_after"]), ("ops", "ops"))
+        self.assertEqual((out["effective_before"], out["effective_after"]), ("arbiter", "ops"))
+        self.assertEqual(out["audit"], "settled")
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+
+    def test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt(self):
+        older = _modelib._mode_audit_line("exit", "dangerous", host_name="claude",
+                                          now=1735689600, session_id="s0")
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            _modelib._settle_dev_close(self.root, new_line=older)
+            out = self._flip("ops")
+        self.assertEqual(out["audit"], "owed")
+        self.assertEqual(out["owed_rows"], 2)
+        self.assertEqual(self._flip("ops")["result"], _modelib.FLIP_FLIPPED)
+        trail = self._trail()
+        self.assertEqual(trail.count("MODE: dangerous exit"), 1)
+        self.assertEqual(trail.count("MODE: ops enter"), 1)
+        self.assertLess(trail.index("MODE: dangerous exit"), trail.index("MODE: ops enter"))
+
+    def test_return_to_arbiter_with_owed_row_reports_effective_arbiter(self):
+        """The worst lie of the old blanket message: the marker DID change to
+        arbiter and arbiter IS effective, while the row is owed."""
+        self._flip("dangerous")
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            out = self._flip("arbiter")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertEqual((out["raw_before"], out["raw_after"]), ("dangerous", "arbiter"))
+        self.assertEqual(out["effective_after"], "arbiter")
+        self.assertEqual(out["audit"], "owed")
+
+    def test_unbacked_raw_with_no_owed_row_can_still_be_settled(self):
+        """A marker whose enter row is owed nowhere (written directly, or its
+        owed row was discarded by the cap) must not wedge the token: the
+        explicit request stages a fresh enter row exactly once."""
+        _modelib.write_mode("s1", "ops", root=self.root)
+        out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual(out["effective_after"], "ops")
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+        self.assertEqual(self._flip("ops")["result"], _modelib.FLIP_NOOP)
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+
+    def test_flip_wrapper_keeps_the_legacy_sentinels(self):
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root), _modelib.FLIP_FLIPPED)
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root), _modelib.FLIP_NOOP)
 
 
 if __name__ == "__main__":

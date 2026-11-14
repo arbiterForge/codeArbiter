@@ -1,0 +1,22 @@
+{
+  ".github/scripts/_contextverificationlib.py": {
+    "actual_execution_source_CRLF_sha256": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad",
+    "Git_LF_working_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "equivalence": "Exact source bytes after CRLF-to-LF only; full AST including locations and marshaled code objects identical. Actual author executions remain tied to original Temp bytes; no literal-byte-identical execution claim."
+  },
+  ".github/scripts/major_readiness.py": {
+    "actual_execution_source_CRLF_sha256": "0d11ba7cda75b65d4a2ac5e6f7fd13b87be2686ac6f47193c9e33d08aa895450",
+    "Git_LF_working_sha256": "dbf5cdc9357bb2834d5977a39ecc6c55260f3b953615b8f7882dc11234bdfe48",
+    "equivalence": "Exact source bytes after CRLF-to-LF only; full AST including locations and marshaled code objects identical. Actual author executions remain tied to original Temp bytes; no literal-byte-identical execution claim."
+  },
+  ".github/scripts/check_state_contracts_integration.py": {
+    "actual_execution_source_CRLF_sha256": "ffa580b6251bd51e8c1709b1e87b063bdd5d67c3f7665feec9dbfc133bdc18b7",
+    "Git_LF_working_sha256": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+    "equivalence": "Exact source bytes after CRLF-to-LF only; full AST including locations and marshaled code objects identical. Actual author executions remain tied to original Temp bytes; no literal-byte-identical execution claim."
+  },
+  ".github/scripts/test_state_contracts_integration.py": {
+    "actual_execution_source_CRLF_sha256": "1b7b818f3e244220e306150eb617631b8d3e947e8e40cd26f7141408be533e68",
+    "Git_LF_working_sha256": "f7ba0840c01c2bcd04767a0146cc3e428cd85348dc98287763febdc5a4a8e021",
+    "equivalence": "Exact source bytes after CRLF-to-LF only; full AST including locations and marshaled code objects identical. Actual author executions remain tied to original Temp bytes; no literal-byte-identical execution claim."
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "codearbiter.applied-source-observation/1",
+  "Gov_HEAD": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "observation": "Root-applied working bytes read by reviewer; these are not a new executed combined graph.",
+  "current_applied_sha256": {
+    "plugins/ca-pi/tools/src/status.ts": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+    "plugins/ca-pi/tools/test/status.test.ts": "6d7d95a8d25a0e043848d56788eb2376915f6f4e5cf7d739b6277c4883ddadb9",
+    "plugins/ca-pi/tools/test/doctor.test.ts": "f70bdb4e60767aaac544e5739d9874ce7928e1cfdd61e69f1fa2e1522b25c4b4",
+    "plugins/ca-pi/extensions/codearbiter.js": "23a247992039e26523377cda1b113da87c75db6b72f199bb53b9f47167f31621"
+  },
+  "original_execution_cone_differences": {
+    "fix_run": [
+      {
+        "path": "plugins/ca-pi/extensions/codearbiter.js",
+        "actual_run_input_sha256": "efecd4321c882180273d33ff759d85eba24ba05b143b29205e27f4c5aa88ec4b",
+        "current_Gov_WIP_sha256": "23a247992039e26523377cda1b113da87c75db6b72f199bb53b9f47167f31621"
+      },
+      {
+        "path": "plugins/ca-pi/tools/test/doctor.test.ts",
+        "actual_run_input_sha256": "7d73d9a7336710a12dcad6965756d87d93f7630b26d8171be43a386cc5a1e1f0",
+        "current_Gov_WIP_sha256": "f70bdb4e60767aaac544e5739d9874ce7928e1cfdd61e69f1fa2e1522b25c4b4"
+      },
+      {
+        "path": "plugins/ca/tools/farm-interruption.test.ts",
+        "actual_run_input_sha256": "894c07b734fad330b0b178c5a81d027f9441064443384f950ce856f9326b4d11",
+        "current_Gov_WIP_sha256": "b624d890cdf8064a5dfb520a33443f9fe63df4776d746e27177fda1ec1137f36"
+      }
+    ],
+    "doctor_run": [
+      {
+        "path": "plugins/ca-pi/extensions/codearbiter.js",
+        "actual_run_input_sha256": "efecd4321c882180273d33ff759d85eba24ba05b143b29205e27f4c5aa88ec4b",
+        "current_Gov_WIP_sha256": "23a247992039e26523377cda1b113da87c75db6b72f199bb53b9f47167f31621"
+      },
+      {
+        "path": "plugins/ca-pi/tools/src/status.ts",
+        "actual_run_input_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+        "current_Gov_WIP_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+      },
+      {
+        "path": "plugins/ca-pi/tools/test/status.test.ts",
+        "actual_run_input_sha256": "98be82bb6fdb0489cd5f7cf7fd3c3ad4e5ec377f52a097cb1359229d916d0ad6",
+        "current_Gov_WIP_sha256": "6d7d95a8d25a0e043848d56788eb2376915f6f4e5cf7d739b6277c4883ddadb9"
+      },
+      {
+        "path": "plugins/ca/tools/farm-interruption.test.ts",
+        "actual_run_input_sha256": "894c07b734fad330b0b178c5a81d027f9441064443384f950ce856f9326b4d11",
+        "current_Gov_WIP_sha256": "b624d890cdf8064a5dfb520a33443f9fe63df4776d746e27177fda1ec1137f36"
+      }
+    ]
+  },
+  "bundle_source": "Root reports supported Pi tools/build.mjs generated only this parentbundle; generation not rerun by author. Bundle currentSHA observed, no manual generated edit.",
+  "limits": [
+    "Original140-input fix/doctor execution cones retained without hash replacement. Current Root combinedWIP includes separately authored doctor/Farm/bundle changes after those runs, listed explicitly.",
+    "Original41status result is source component acceptance for actual ce3+Temp fix graph, not Root combined/future committed graph or installedPi.",
+    "No whole program/TUI/human consent/new provider qualification."
+  ]
+}

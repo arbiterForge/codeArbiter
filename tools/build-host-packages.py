@@ -22,9 +22,12 @@ import tempfile
 import unicodedata
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from owned_output import assert_complete
 from host_descriptors import HostDescriptor, host_descriptor, load_host_descriptors  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / 'core/pysrc'))
+from _artifactmanifestlib import CONTRACT as MANIFEST_CONTRACT, validate_release_manifest
 
 # Issue #530 AC-3: "advance" must mean ONE thing across all four payload gates.
 # This guard is the one that already had the rule right, so the definition moved
@@ -33,7 +36,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / ".github" / "scripts"))
 from _releaselib import SEMVER, semver_greater, semver_key  # noqa: E402,F401
 
-ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0"
+ARTIFACT_RELEASE_FORMAT = MANIFEST_CONTRACT["format"]
 ARTIFACT_QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 ARTIFACT_PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
 ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.3.0"
@@ -43,8 +46,8 @@ NPM_PACKER_VERSION = "11.19.1"
 NPM_PACKER_INTEGRITY = (
     "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
 )
-ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0"
-ARTIFACT_SCHEMA_VERSION = "0.3.2"
+ARTIFACT_PROTOCOL = MANIFEST_CONTRACT["protocol"]
+ARTIFACT_SCHEMA_VERSION = MANIFEST_CONTRACT["schema_version"]
 ARTIFACT_VERSION = "0.1.0"
 ARTIFACT_NATIVE_TESTS = frozenset({
     "artifact-bridge", "artifact-conformance", "artifact-native", "artifact-package",
@@ -67,9 +70,26 @@ _WINDOWS_RESERVED_MEMBER = re.compile(
 
 def _subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> RuntimeError:
     stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
+    # Decode only the trusted verifier's closed diagnostic schema. Arbitrary
+    # child stderr stays hash-only; diagnostic fields confer no receipt authority.
+    detail = ""
+    verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+    try:
+        spec = importlib.util.spec_from_file_location("cold_failure_diagnostics", verifier)
+        if spec is not None and spec.loader is not None:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            record = module.decode_failure(stderr)
+            if record is not None:
+                keys = ("phase", "step", "error", "code")
+                if record["format"] == module._FAILURE_FORMAT:
+                    keys += ("host", "family", "audit_event", "audit_site", "audit_depth")
+                detail = "; " + "; ".join(f"{key}={record[key]}" for key in keys)
+    except (OSError, ImportError, ValueError, AttributeError):
+        pass
     return RuntimeError(
         f"{label} failed with exit {completed.returncode}; "
-        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}{detail}"
     )
 
 
@@ -577,6 +597,7 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
         release["context_qualification"] = {
             name: context_qualifications[name] for name in sorted(context_qualifications)
         }
+    validate_release_manifest(release)
     release_bytes = (json.dumps(release, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
     hosts = sorted(load_host_descriptors(str(repo)), key=lambda host: host.name)
@@ -637,6 +658,8 @@ def _git_package_output(*args: str, repo: Path, binary: bool = False):
 
 
 def _source_identity(source_repo: Path, source_commit: str) -> str:
+    assert_complete(source_repo, "core")
+    assert_complete(source_repo, "surface")
     source_repo = source_repo.absolute()
     if (source_repo.is_symlink() or not source_repo.is_dir()
             or os.path.normcase(str(source_repo.resolve(strict=True))) !=
@@ -1990,6 +2013,110 @@ def validate_pi_release_advance(
     return None
 
 
+def validate_pi_integration_candidate(
+    *,
+    current_version: str,
+    candidate_version: str | None,
+    root_version: str,
+    changelog: str,
+    baseline_version: str,
+    baseline_changelog: str,
+    main_version: str | None,
+    main_changelog: str | None,
+    root_changed: bool,
+    changelog_changed: bool,
+    tagged: bool,
+) -> str | None:
+    """Integration-branch rule for ca-pi (see .github/scripts/integration_candidate.py).
+
+    Same-candidate evolution across child PRs is allowed: the advance, root
+    metadata change and newly introduced changelog heading are all judged against
+    the recorded MAIN baseline, not the immediate integration base that may
+    already carry the heading. Live main must not have reached the candidate."""
+    if candidate_version is None:
+        return "ca-pi changed payload but declares no integration candidate version"
+    if current_version != candidate_version:
+        return (
+            f"ca-pi changed payload on the integration branch; package.json must carry the "
+            f"declared integration candidate {candidate_version} (got {current_version})"
+        )
+    diagnosis = validate_pi_release_advance(
+        current_version=current_version,
+        base_version=baseline_version,
+        root_version=root_version,
+        changelog=changelog,
+        base_changelog=baseline_changelog,
+        root_changed=root_changed,
+        changelog_changed=changelog_changed,
+    )
+    if diagnosis:
+        return f"{diagnosis} (judged against the recorded integration baseline)"
+    if main_version is not None and not _semver_greater(current_version, main_version):
+        return f"integration candidate ca-pi {current_version} does not advance live main {main_version}"
+    heading = re.compile(rf"^## \[{re.escape(current_version)}\](?: - \d{{4}}-\d{{2}}-\d{{2}})?$", re.MULTILINE)
+    if main_changelog is not None and heading.search(main_changelog) is not None:
+        return f"live main already carries a changelog heading for ca-pi {current_version}"
+    if tagged:
+        return f"ca-pi version {current_version} is already tagged"
+    return None
+
+
+def _integration_candidate_module():
+    path = REPO / ".github" / "scripts" / "integration_candidate.py"
+    spec = importlib.util.spec_from_file_location("integration_candidate", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load integration candidate rule: {path}")
+    module = importlib.util.module_from_spec(spec)
+    # The rule's dataclass resolves postponed annotations through
+    # sys.modules[cls.__module__]; register before executing it.
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def pi_integration_guard(record, main_ref: str) -> int:
+    rules = _integration_candidate_module()
+    problem = rules.baseline_problem(record, main_ref, REPO)
+    if problem:
+        print(problem, file=sys.stderr)
+        return 1
+    baseline = record.baseline
+    scope = ("plugins/ca-pi", ":(exclude)plugins/ca-pi/tools", "package.json")
+    if _git("diff", "--quiet", f"{baseline}...HEAD", "--", *scope, check=False).returncode == 0:
+        print(f"no Pi payload change since integration baseline {baseline[:12]} - candidate version not required")
+        return 0
+    current = json.loads((REPO / "plugins" / "ca-pi" / "package.json").read_text(encoding="utf-8"))["version"]
+    try:
+        _semver_key(current)
+    except ValueError as error:
+        print(error, file=sys.stderr)
+        return 1
+    baseline_manifest = rules.show(REPO, baseline, "plugins/ca-pi/package.json")
+    baseline_changelog = rules.show(REPO, baseline, "plugins/ca-pi/CHANGELOG.md")
+    if baseline_manifest is None or baseline_changelog is None:
+        print("integration baseline lacks ca-pi package.json or CHANGELOG.md", file=sys.stderr)
+        return 1
+    main_manifest = rules.show(REPO, main_ref, "plugins/ca-pi/package.json")
+    diagnosis = validate_pi_integration_candidate(
+        current_version=current,
+        candidate_version=record.versions.get("ca-pi"),
+        root_version=json.loads((REPO / "package.json").read_text(encoding="utf-8"))["version"],
+        changelog=(REPO / "plugins" / "ca-pi" / "CHANGELOG.md").read_text(encoding="utf-8"),
+        baseline_version=json.loads(baseline_manifest)["version"],
+        baseline_changelog=baseline_changelog,
+        main_version=json.loads(main_manifest)["version"] if main_manifest is not None else None,
+        main_changelog=rules.show(REPO, main_ref, "plugins/ca-pi/CHANGELOG.md"),
+        root_changed=_git("diff", "--quiet", f"{baseline}...HEAD", "--", "package.json", check=False).returncode != 0,
+        changelog_changed=_git("diff", "--quiet", f"{baseline}...HEAD", "--", "plugins/ca-pi/CHANGELOG.md", check=False).returncode != 0,
+        tagged=_git("rev-parse", "--verify", "--quiet", f"refs/tags/ca-pi-v{current}", check=False).returncode == 0,
+    )
+    if diagnosis:
+        print(diagnosis, file=sys.stderr)
+        return 1
+    print(f"Pi integration candidate {current}: payload, changelog and root metadata advanced from baseline {baseline[:12]}")
+    return 0
+
+
 def _git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", *args], cwd=REPO, text=True, encoding="utf-8", capture_output=True, check=check
@@ -2059,6 +2186,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--release-guard-base")
+    parser.add_argument("--integration-base-branch")
+    parser.add_argument("--main-ref", default="origin/main")
     parser.add_argument("--artifact-candidate", action="append", type=Path, default=[])
     parser.add_argument("--artifact-qualification", action="append", type=Path, default=[])
     parser.add_argument("--artifact-stage", type=Path)
@@ -2249,6 +2378,14 @@ def main(argv: list[str] | None = None) -> int:
         if not args.release_guard_base:
             return 0
     if args.release_guard_base:
+        rules = _integration_candidate_module()
+        try:
+            record = rules.select(args.integration_base_branch)
+        except rules.IntegrationRecordError as error:
+            print(f"integration candidate record: {error}", file=sys.stderr)
+            return 1
+        if record is not None:
+            return pi_integration_guard(record, args.main_ref)
         return pi_release_guard(args.release_guard_base)
     target.write_bytes(expected)
     print("generated package.json")

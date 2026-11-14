@@ -1,0 +1,358 @@
+{
+  "schema": "codearbiter.workflow-source-clause-inspection/1",
+  "observer": "/root/packaging_site_tools",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+  "scope": "WF16five finite model-guided source clauses only; no executable/model/host/installed acceptance.",
+  "method": "Used equality only to select candidates; read allfive declaredowner bodies and their operative clauses, relevant unchanged sharedguard bodies, changedread/error/scope guards. Bound directinstruction/read-interface dependencies; no claim complete runtime import/Go/host closure.",
+  "source_comparisons": [
+    {
+      "path": "core/surface/agents/decision-challenger.md",
+      "role": "declared_frozen_owner",
+      "baseline_git_blob": "ac158aadd695a759f4e3b9dad616fd50f1e9c7af",
+      "current_git_blob": "ac158aadd695a759f4e3b9dad616fd50f1e9c7af",
+      "baseline_sha256": "b85f3546772fe8556e8152a5a93f03b8ed5c061f4fcdba97e6cfc552ef1495b0",
+      "current_sha256": "b85f3546772fe8556e8152a5a93f03b8ed5c061f4fcdba97e6cfc552ef1495b0",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/agents/grader.md",
+      "role": "declared_frozen_owner",
+      "baseline_git_blob": "9a34eb50d26111ad3e2a961e4ff4926f27b44a5c",
+      "current_git_blob": "9a34eb50d26111ad3e2a961e4ff4926f27b44a5c",
+      "baseline_sha256": "557fd0d4776e28bd618f673adfa90315305fda9da51ea7688f4be67a9444d162",
+      "current_sha256": "557fd0d4776e28bd618f673adfa90315305fda9da51ea7688f4be67a9444d162",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/agents/scout.md",
+      "role": "declared_frozen_owner",
+      "baseline_git_blob": "74f7fd0c5da221ac0e70151ffb24e6dec6b4f472",
+      "current_git_blob": "74f7fd0c5da221ac0e70151ffb24e6dec6b4f472",
+      "baseline_sha256": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605",
+      "current_sha256": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "role": "declared_frozen_owner",
+      "baseline_git_blob": "0d183c9ab24195f5826d4af255b038afa1cbeb46",
+      "current_git_blob": "0d183c9ab24195f5826d4af255b038afa1cbeb46",
+      "baseline_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "current_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/decision-variance/references/analysis.md",
+      "role": "declared_frozen_owner",
+      "baseline_git_blob": "c9a2033c76d8fcfe5354a28f66c6446d41283056",
+      "current_git_blob": "c9a2033c76d8fcfe5354a28f66c6446d41283056",
+      "baseline_sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+      "current_sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/includes/smarts/core.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "8c7fc0bedb52961551ec0a9801f955e93571e327",
+      "current_git_blob": "8c7fc0bedb52961551ec0a9801f955e93571e327",
+      "baseline_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+      "current_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/includes/smarts/lenses.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "ae5395347451b556b71b4d7f76c364464302db2c",
+      "current_git_blob": "ae5395347451b556b71b4d7f76c364464302db2c",
+      "baseline_sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+      "current_sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/includes/smarts/decision-log-format.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "8c03784e7a329c650a7767951d2d13fb7ba7128c",
+      "current_git_blob": "8c03784e7a329c650a7767951d2d13fb7ba7128c",
+      "baseline_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+      "current_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "82b791ba561ad1cf0e267855503f4f05546e7e12",
+      "current_git_blob": "82b791ba561ad1cf0e267855503f4f05546e7e12",
+      "baseline_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+      "current_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "0168b0a574bb8d0b75327ae743b3850da50a88d1",
+      "current_git_blob": "bf02ca2681334ea997177e3eeb003489a4a3da32",
+      "baseline_sha256": "05419cf635d82a4889c2f964654bf2337e0ab878bc6e1fc4786c50d8e7dd31be",
+      "current_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/pysrc/knowledge.py",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "00a42480aad008bd0ecc87f29487c9bde66d98b0",
+      "current_git_blob": "91bd9d4bb5077b5980d0e2559b5fe793718feb65",
+      "baseline_sha256": "522aa2424dd089d1285826fc391a1c916f37365ff1fd3228f08c3ffc68e716f0",
+      "current_sha256": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/pysrc/_knowledgelib.py",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "5248c4c87fdf47d9587a82abab876b60a10f011c",
+      "current_git_blob": "5248c4c87fdf47d9587a82abab876b60a10f011c",
+      "baseline_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+      "current_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/arbiter.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "93e052b93e93984b59cb899473d5264dbea9e42d",
+      "current_git_blob": "93e052b93e93984b59cb899473d5264dbea9e42d",
+      "baseline_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "current_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/includes/safety-core.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "2c42c9a4765accd00a21e13ba753a722f99f15bb",
+      "current_git_blob": "2c42c9a4765accd00a21e13ba753a722f99f15bb",
+      "baseline_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "current_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "whole_file_identical": true
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "ff2b38c3a4d4f77564fcbe7269faf1e95a9b1d8c",
+      "current_git_blob": "bd8d7d03d321724eef0c075c50f28ff825c59fb8",
+      "baseline_sha256": "eb5eea0172f2bb591c3be252bfa3ba66529a412eb3ad0a1448a531213e981d53",
+      "current_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+      "whole_file_identical": false
+    },
+    {
+      "path": "core/surface/commands/conflict.md",
+      "role": "inspected_shared_instruction_or_read_boundary",
+      "baseline_git_blob": "e116d01b74972a939e75fb1f1f43ba9cf4034fd0",
+      "current_git_blob": "96e20f1e79e0412acb37ec7ee626119e45406722",
+      "baseline_sha256": "ea96bc18a20f8096211ffea954456d41593bdbdc139cafd3bf1a8a0bdb8e819b",
+      "current_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+      "whole_file_identical": false
+    }
+  ],
+  "row_specific_mapping": [
+    {
+      "cell": "disposition:transitions:WF-16:01",
+      "event_guard_effect": "Exact scoped sources first; full pass sources must be complete; evidence index classifies exactly five statuses while missing/unreadable inputs remain coverage gaps and same-level conflicts stay separate.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 13,
+          "end": 49
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 61,
+          "end": 68
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 13,
+          "end": 103
+        }
+      ],
+      "conformance_reason": "Preserved original comparison/unknown/source-identity instructions. Changed HTML context reader is an explicitly inspected information supplier, not permission; emptycurrentrecords/revisiondrift/errors refuse narrative instead of stale notes. No missing/unreadable result can be classified silent by these instructions.",
+      "unproved": "No claim an actual model searched completely, reader/native installed runtime is correct, or current project/scaffold/artifacts were observed."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:02",
+      "event_guard_effect": "Qualitative SMARTS/optional challenge produce strength-labeled report-only ready/partial/blocked recommendations; no recommendation creates a decision/file change.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 21,
+          "end": 49
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 94,
+          "end": 121
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 105,
+          "end": 148
+        },
+        {
+          "path": "core/surface/includes/smarts/core.md",
+          "start": 53,
+          "end": 137
+        },
+        {
+          "path": "core/surface/agents/scout.md",
+          "start": 53,
+          "end": 75
+        },
+        {
+          "path": "core/surface/agents/grader.md",
+          "start": 23,
+          "end": 59
+        },
+        {
+          "path": "core/surface/agents/decision-challenger.md",
+          "start": 12,
+          "end": 27
+        }
+      ],
+      "conformance_reason": "Same six lenses, verdict/Unknown semantics, nonnumeric preference/strength and optional read-only actor instructions. SMARTS core explicitly exempts decision-variance/grader/challenger from autonomous recorded-intent routing; recommendations remain information, not user choice/permission.",
+      "unproved": "No runtime/model quality, SMARTS scoring correctness, real actor dispatch, provider call, meaningful decision or actual downstream readiness claim."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:03",
+      "event_guard_effect": "Only specific attributable user choice reaches Phase4; append each decision immediately with exact section hash and implications; never batch implicitchoices.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 51,
+          "end": 86
+        },
+        {
+          "path": "core/surface/includes/smarts/decision-log-format.md",
+          "start": 1,
+          "end": 53
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 62,
+          "end": 77
+        }
+      ],
+      "conformance_reason": "Whole literal user-attribution/append-only/hash format and one-choice-per-entry instructions unchanged, still bounded by unchanged safety-core user-attributed ADR owner and append-only audit rules. Report-only returns before this phase, including all optional children.",
+      "unproved": "No actual user decision, physical consent, logappend/CAS/durability/error handling execution or created ADR is qualified from this source clause."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:04",
+      "event_guard_effect": "Before resume/append readcurrenttail and exact citedsection; uncertain append/advanced writer tail reconciles before retry; oldhistory neveredited and ratification/newsource appends forward Supersedes entry.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 70,
+          "end": 100
+        },
+        {
+          "path": "core/surface/includes/smarts/decision-log-format.md",
+          "start": 7,
+          "end": 13
+        },
+        {
+          "path": "core/surface/includes/smarts/decision-log-format.md",
+          "start": 47,
+          "end": 53
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 62,
+          "end": 77
+        }
+      ],
+      "conformance_reason": "The actual normative resume/idempotent history rule is unchanged, not inferred from file equality alone. Changed scoped conflict routing preserves explicit unresolved choice and forbids recency-only resolution; it only allows independent work, not disputed appends.",
+      "unproved": "No OS process crash, append failure, concurrent writer/race, filesystem persistence, automation or model compliance was executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:05",
+      "event_guard_effect": "An actual user-selected ADR change is forwarded to decision-lifecycle; varianceanalysis itself cannot manufacture accepted ADRs.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 28,
+          "end": 37
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 72,
+          "end": 86
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 102,
+          "end": 121
+        },
+        {
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "start": 7,
+          "end": 31
+        },
+        {
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "start": 96,
+          "end": 116
+        },
+        {
+          "path": "core/surface/includes/safety-core.md",
+          "start": 28,
+          "end": 34
+        }
+      ],
+      "conformance_reason": "Handoff owner/intent/attribution and no-created-authority rule remain exact. ADR authoring reference is explicitly downstream only after selected authorization; this proposal stops at the owner interface and does not qualify that writer.",
+      "unproved": "No ADR authored/accepted/superseded or lifecycle evidence sealed; downstream authoring marker, receipt, native authority or release behavior remain separate."
+    }
+  ],
+  "changed_dependency_assessment": [
+    {
+      "paths": [
+        "core/surface/includes/knowledge.md",
+        "core/pysrc/knowledge.py"
+      ],
+      "inspection": "Read full current include/diff plus imports,_records,current_records,context_text and read dispatch/error path. Active records only; notes/retiredrecords notcurrent; model identity pinned during enumeration/batching; no currentrecords raises; main returnsnonzero on native/read/value failure. Existing read branch contains no apply/update calls. New narrative projection is information, never permission.",
+      "current_witnesses": [
+        {
+          "path": "core/pysrc/knowledge.py",
+          "start": 36,
+          "end": 139
+        },
+        {
+          "path": "core/pysrc/knowledge.py",
+          "start": 205,
+          "end": 243
+        },
+        {
+          "path": "core/surface/includes/knowledge.md",
+          "start": 1,
+          "end": 85
+        }
+      ],
+      "affected_claims": [
+        "source selection/gap handling",
+        "policy provenance",
+        "read-only instruction boundary"
+      ],
+      "excluded_runtime_dependency": "_artifactlib installed binary/capability/manifest/process/Go execution, ArtifactClient/host authority implementations and actual data completeness are not qualified. Their runtime acceptance stays pending; only the supplied instruction and explicit read/error interface is inspected."
+    },
+    {
+      "paths": [
+        "core/surface/includes/routing-table.md",
+        "core/surface/commands/conflict.md"
+      ],
+      "inspection": "Read actual changed conflict rows and full current conflict command. Shared guard now pauses affectedwork/actualdependents while allowing independentauthorized work; explicitglobalstops persist. It still prohibits selecting a governing rule, guessingCONFIRM, recency-only resolution or continuing disputedwork. WF16 baseline alreadykeeps conflicts explicit; no WF16 clause requiresglobalunrelated pause.",
+      "affected_claims": [
+        "unresolvedsame-levelconflict remains visible",
+        "no inferredpermission/userdecision"
+      ],
+      "exclusion": "This is a declared instruction conformance assessment, not qualification of the changed conflict protocol runtime or any other workflow."
+    }
+  ],
+  "external_data": "Actual userintent/decisions, projectcontext/securitypolicy, ADR/artifact/scaffold/log bytes are runtime inputs, not supplied in this sourcecontract proof. Unknown/unreadable/ambiguous remain gaps by the read clauses; no concrete projectclearance.",
+  "tests_run": 0,
+  "source_mutations": false
+}

@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "builder-observation.test.ts",
+    "build.test.ts",
+    "state-contracts.test.ts",
+    "build-pinned-base.test.ts",
+    "native-build-inputs.test.ts",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-builder-admission-w_0306cr\\final-tests.json"
+  ],
+  "exit_code": 0,
+  "seconds": 3.662914276123047,
+  "source_base_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+  "inputs": 72,
+  "input_drift": [],
+  "claim": "Authorcurrentuncommittedclosuretested; no newsourcecommitidentityclaimed untilrootcommit."
+}

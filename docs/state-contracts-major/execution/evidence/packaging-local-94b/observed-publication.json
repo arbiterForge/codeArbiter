@@ -1,0 +1,100 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "packaging_site_tools / actual local Windows amd64 / Python3.14 and Node24.22.1"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SX03:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/site-correct-cwd-results.json",
+      "sha256": "be3f78e52dc101838378fc5410c4f9035fbbb6220b37b1a0c306530cb737826e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/site-correct-cwd.log",
+      "sha256": "29873575ac36c8df1fa06aefc41d7a3b18d48c3616a2214a52cdf1df66879a2c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/observed-publication-input-stability.json",
+      "sha256": "eb67e1bcb44be6213e5f802d3823b798d93eae0af5269062bf9834b8c6b65938"
+    }
+  ],
+  "inputs": {
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/pages/release-applicability.json.ts": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+    "site/test/release-applicability/publication.test.ts": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-admissible-94b-3ov15tt3\\docs\\state-contracts-major\\execution\\evidence\\packaging-local-94b\\raw\\site-correct-cwd-results.json",
+        "scripts/owned-output.test.ts",
+        "scripts/pagefind-build.test.ts",
+        "test/release-applicability/publication.test.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Exact observed tag/source/version/draft identity distinguished from local tag/historical receipt;7actual assertions. No remote publication readback, full rendered endpoint or replay-digest qualification.",
+  "runtime": {
+    "python_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "node_executable_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "node_version": "v24.22.1"
+  },
+  "limits": [
+    "Original local evidence; no hosted PR evidence relabeled.",
+    "Retained proof/raw paths become Git-authenticatable only after parent commits these exact metadata bytes.",
+    "No current production archive/installed/cohort/browser/live provider qualification."
+  ],
+  "original_named_assertions": [
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains exact observed published state",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains exact observed draft state",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains exact observed tag-only state",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state",
+      "status": "passed"
+    }
+  ]
+}

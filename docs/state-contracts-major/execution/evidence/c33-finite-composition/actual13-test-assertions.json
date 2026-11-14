@@ -1,0 +1,113 @@
+{
+  "reference_scope_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "all165_same_at_actual_epochs": [
+    "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "acf1aeeafc44696fbac966cba7eb999e14857514"
+  ],
+  "excerpts": [
+    {
+      "test": "CheckFailureModeTest.test_fresh_document_passes",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 350,
+      "end": 357,
+      "body_sha256": "dda43061de499938d7c26fbdbea6a811ec02be36dbc8f386562c71175067ea05",
+      "text": "def test_fresh_document_passes(self):\n        # The positive path: proof_current true, recorded path a real\n        # rendered payload, recorded hash the REAL live hash of that file.\n        # Proves this guard is not permanently red by construction \u2014 once\n        # a genuine fresh proof is recorded, it reports clean.\n        with tempfile.TemporaryDirectory() as tmp:\n            path = _write_json(tmp, _fresh_document())\n            self.assertEqual(G.check(artifact_path=path), [])"
+    },
+    {
+      "test": "MainCLITest.test_the_cli_passing_path_returns_zero_against_a_current_proof",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 446,
+      "end": 472,
+      "body_sha256": "0988f3b57ac38a8ae6ef2fcfdf9ec9c2b3de95ef5f49522212566986ae692569",
+      "text": "def test_the_cli_passing_path_returns_zero_against_a_current_proof(self):\n        # The other half of the CLI, against a FIXTURE rather than the live\n        # repo. Asserting `G.main()` returns 0 here would couple this test\n        # to release state: the proof is legitimately stale during any batch\n        # of skill edits (it is re-recorded once, after the batch), so a\n        # live-repo assertion would fail for a reason that is not a defect \u2014\n        # the same live-state coupling flagged elsewhere in this review.\n        import io\n        from contextlib import redirect_stdout\n        with tempfile.TemporaryDirectory() as tmp:\n            document = json.loads(REAL_ARTIFACT.read_text(encoding=\"utf-8\"))\n            shipped = REPO_ROOT / \"plugins\" / \"ca\" / \"skills\" / \"release\" / \"SKILL.md\"\n            # Both halves of \"current\" are set here, for the reason spelled out\n            # in the sibling test above: patching only the hash leaves\n            # `proof_current` inherited from live release state, and a False\n            # there fails this test on a day when nothing is wrong.\n            document[\"proof_current\"] = True\n            document[\"exercise\"][\"exercised_skill_sha256\"] = hashlib.sha256(\n                shipped.read_bytes()).hexdigest()\n            artifact = Path(tmp) / \"agent-lane-proof.json\"\n            artifact.write_text(json.dumps(document), encoding=\"utf-8\")\n\n            buffer = io.StringIO()\n            with redirect_stdout(buffer):\n                code = G.main(repo=REPO_ROOT, artifact_path=artifact)\n        self.assertEqual(code, 0, buffer.getvalue())\n        self.assertIn(\"still covers\", buffer.getvalue())"
+    },
+    {
+      "test": "CheckFailureModeTest.test_proof_current_false",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 264,
+      "end": 271,
+      "body_sha256": "55b5ceae18c426e25c623e0cd1998a1c2a84fb802762ad3f727b892319987bd5",
+      "text": "def test_proof_current_false(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            document = _fresh_document()\n            document[\"proof_current\"] = False\n            path = _write_json(tmp, document)\n            errors = G.check(artifact_path=path)\n            self.assertTrue(errors)\n            self.assertIn(\"proof_current\", errors[0])"
+    },
+    {
+      "test": "CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 309,
+      "end": 318,
+      "body_sha256": "3d00aa7e5a4480b29583ea53837ce95da75c130d928092845501024d11a92798",
+      "text": "def test_recorded_path_is_not_a_rendered_payload(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            document = _fresh_document()\n            document[\"exercise\"][\"exercised_skill_path\"] = (\n                \"plugins/ca/skills/does-not-exist/SKILL.md\"\n            )\n            path = _write_json(tmp, document)\n            errors = G.check(artifact_path=path)\n            self.assertTrue(errors)\n            self.assertIn(\"not a full-prose release-skill payload\", errors[0])"
+    },
+    {
+      "test": "CheckFailureModeTest.test_hash_mismatch",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 341,
+      "end": 348,
+      "body_sha256": "68d485abc8d9c82bdd224df780f179de14193fc9c9ed9d8dfcf6fbdac4ab6c6c",
+      "text": "def test_hash_mismatch(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            document = _fresh_document()\n            document[\"exercise\"][\"exercised_skill_sha256\"] = \"0\" * 64\n            path = _write_json(tmp, document)\n            errors = G.check(artifact_path=path)\n            self.assertTrue(errors)\n            self.assertIn(\"has changed since\", errors[0])"
+    },
+    {
+      "test": "MainCLITest.test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 474,
+      "end": 508,
+      "body_sha256": "2f780eae32789594ab0c2735e1629bb4f4f12fc20493db48b9423bc084f6874b",
+      "text": "def test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash(self):\n        # The two live-artifact tests above each pin `proof_current` so they\n        # exercise the HASH branch. That leaves the flag branch itself with no\n        # coverage -- and it is not hypothetical: run 18 (2026-08-01) recorded\n        # `proof_current: false` deliberately, because a destructive\n        # instruction had to be fixed AFTER the exercise that found it, so the\n        # recorded hash was knowingly one commit behind. An operator meeting\n        # that block needs to be told \"the exercise was withdrawn\", not \"the\n        # skill changed\" -- those have different remedies, and folding the\n        # first into the second is the failure this repository has a standing\n        # rule against.\n        import io\n        from contextlib import redirect_stdout\n        with tempfile.TemporaryDirectory() as tmp:\n            document = json.loads(REAL_ARTIFACT.read_text(encoding=\"utf-8\"))\n            shipped = REPO_ROOT / \"plugins\" / \"ca\" / \"skills\" / \"release\" / \"SKILL.md\"\n            # Hash CORRECT, flag false: the only thing under test is the flag.\n            document[\"proof_current\"] = False\n            document[\"exercise\"][\"exercised_skill_sha256\"] = hashlib.sha256(\n                shipped.read_bytes()).hexdigest()\n            artifact = Path(tmp) / \"agent-lane-proof.json\"\n            artifact.write_text(json.dumps(document), encoding=\"utf-8\")\n\n            buffer = io.StringIO()\n            with redirect_stdout(buffer):\n                code = G.main(repo=REPO_ROOT, artifact_path=artifact)\n        printed = buffer.getvalue()\n        self.assertEqual(code, 1, \"a withdrawn proof must block\")\n        self.assertIn(\"::error::\", printed)\n        self.assertIn(\"proof_current\", printed,\n                      \"the operator must be told the flag is what blocked\")\n        self.assertNotIn(\n            \"has changed since\", printed,\n            \"a withdrawn proof must NOT be reported as a changed skill -- the \"\n            \"hash here is correct, and the two states have different remedies\")"
+    },
+    {
+      "test": "CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 177,
+      "end": 199,
+      "body_sha256": "f118955839bbfd6f5670fd32c8fdadc76bbe28564fc929a9cf651222fb39221e",
+      "text": "def test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong(self):\n        # The real document, perturbed in exactly one field. Proves the\n        # guard's hash comparison is load-bearing against the REAL payload\n        # \u2014 not just against a synthetic fixture whose hash never matched\n        # anything in the first place.\n        with open(REAL_ARTIFACT, encoding=\"utf-8\") as fh:\n            document = json.load(fh)\n        # proof_current is checked BEFORE the hash, so it must be true here\n        # or check() short-circuits and never reaches the comparison this\n        # test exists to exercise. (Found when the live artifact went\n        # legitimately stale: the test still \"passed a failure\", but for\n        # the wrong reason.)\n        document[\"proof_current\"] = True\n        document[\"exercise\"][\"exercised_skill_sha256\"] = \"0\" * 64\n        with tempfile.TemporaryDirectory() as tmp:\n            path = Path(tmp) / \"artifact.json\"\n            path.write_text(json.dumps(document), encoding=\"utf-8\")\n            errors = G.check(artifact_path=path)\n        self.assertTrue(errors, \"a wrong recorded hash must fail the guard\")\n        self.assertTrue(\n            any(\"has changed since\" in e for e in errors),\n            f\"expected a hash-drift failure, got: {errors}\",\n        )"
+    },
+    {
+      "test": "PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 79,
+      "end": 85,
+      "body_sha256": "315c18dad0d7656e910071defaa95cf6b0d47f49ec08a2a2bcb5cd2ce77df2f8",
+      "text": "def test_composed_commands_do_not_become_independent_owner_proof(self):\n        # Public commands now compose the full owner, but the recorded exercise\n        # remains bound to a direct owner rendering. Composition/parity and the\n        # five-payload consumer scan do not invent another host's agent proof.\n        payloads = G.full_prose_release_skill_payloads()\n        self.assertNotIn(\"plugins/ca-codex/skills/ca-release/SKILL.md\", payloads)\n        self.assertNotIn(\"plugins/ca-pi/skills/ca-release/SKILL.md\", payloads)"
+    },
+    {
+      "test": "PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 68,
+      "end": 77,
+      "body_sha256": "8f24b022bfcb9f341d9ff95c9f5f009d60bc652cf0c6bc2714df349be39c2f16",
+      "text": "def test_derives_exactly_the_three_full_prose_payloads_on_live_repo(self):\n        payloads = G.full_prose_release_skill_payloads()\n        self.assertEqual(\n            payloads,\n            {\n                \"plugins/ca/skills/release/SKILL.md\": \"claude\",\n                \"plugins/ca-codex/routines/release/SKILL.md\": \"codex\",\n                \"plugins/ca-pi/routines/release/SKILL.md\": \"pi\",\n            },\n        )"
+    },
+    {
+      "test": "CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 117,
+      "end": 124,
+      "body_sha256": "90e6a231cb77f59741592883081b3b0bb501ec6de6c400130ccefb919133243c",
+      "text": "def test_historical_hash_map_is_bound_to_its_own_exercise(self):\n        document = json.loads(REAL_ARTIFACT.read_text(encoding=\"utf-8\"))\n        hashes = document[\"post_remediation_skill_sha256\"]\n        reference = hashes.get(\"exercise_reference\")\n        self.assertIn(reference, document, \"hash metadata must name its exercise\")\n        exercise = document[reference]\n        self.assertEqual(hashes[exercise[\"exercised_skill_path\"]],\n                         exercise[\"exercised_skill_sha256\"])"
+    },
+    {
+      "test": "CheckFailureModeTest.test_missing_artifact_file",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 229,
+      "end": 234,
+      "body_sha256": "bf19fdadc4a59d544bc1425aec396f876ee2f8ee020e208f8d3fa1b7744fb206",
+      "text": "def test_missing_artifact_file(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            missing = Path(tmp) / \"nope.json\"\n            errors = G.check(artifact_path=missing)\n            self.assertTrue(errors)\n            self.assertIn(\"missing proof artifact\", errors[0])"
+    },
+    {
+      "test": "CheckFailureModeTest.test_unparseable_json",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 236,
+      "end": 242,
+      "body_sha256": "f80f967de8f4b16168f689dd17d056f0e55aa848884587d411e11fce838b8a15",
+      "text": "def test_unparseable_json(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            path = Path(tmp) / \"artifact.json\"\n            path.write_text(\"{not json\", encoding=\"utf-8\")\n            errors = G.check(artifact_path=path)\n            self.assertTrue(errors)\n            self.assertIn(\"not parseable JSON\", errors[0])"
+    },
+    {
+      "test": "PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises",
+      "path": ".github/scripts/test_check_skill_proof_fresh.py",
+      "start": 87,
+      "end": 102,
+      "body_sha256": "83ae4a6b6eb159182d7bd8109b39d91c6ddf7f7d732a1168e3e7b8168ec1a773",
+      "text": "def test_a_host_that_no_longer_renders_the_source_raises(self):\n        # A synthetic build_surface stub whose lone descriptor's\n        # `_output_rel` always reports \"no matching rule\" for the release-\n        # skill source \u2014 the shape a host_descriptors change that dropped\n        # the `skills/` rule would produce. The derivation must fail\n        # LOUDLY and name the host, never silently omit it from the map.\n        fake_descriptor = SimpleNamespace(name=\"ghost\", plugin_dir=\"plugins/ghost\")\n        fake_build_surface = SimpleNamespace(\n            load_host_descriptors=lambda repo: (fake_descriptor,),\n            _output_rel=lambda rel, descriptor: (None, None),\n        )\n        with self.assertRaises(G.ProofFreshnessError) as ctx:\n            G.full_prose_release_skill_payloads(\n                repo=\"/does/not/matter\", build_surface=fake_build_surface\n            )\n        self.assertIn(\"ghost\", str(ctx.exception))"
+    }
+  ]
+}

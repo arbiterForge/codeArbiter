@@ -1,0 +1,2756 @@
+[
+  {
+    "path": "plugins/ca/COMMANDS.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "08f465950990fb52e0624d4e177943d18f2eb8e5c777ccb1e51d65d7fc06848a"
+  },
+  {
+    "path": "plugins/ca/SPRINT.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "f60da14735e6d8e14e6ee6a8b67d9400bea378a4bce11f35d844dd195974ff3a"
+  },
+  {
+    "path": "plugins/ca/arbiter.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "009e80eae9db61dce2af12dcb2683146db7bf9c597e817a386872659026e6596"
+  },
+  {
+    "path": "plugins/ca/agents/INDEX.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "9a38703e92660a14c1384052f84f97752f7cbb25b79902c3ade3aa6082fb8bf2"
+  },
+  {
+    "path": "plugins/ca/agents/architecture-drift-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "924430d2435b109988c970c6e1d6662da3c96f9c154a52391d7803d08357a6f5"
+  },
+  {
+    "path": "plugins/ca/agents/auth-crypto-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "76319a1e9f24e4730fb176272495e4cc4f965049e05087488562f0cf80f8a9dc"
+  },
+  {
+    "path": "plugins/ca/agents/authority-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "bc927ef36722ec8a4e3be8d18bb7f2e981950e916626b7e9aae2c12ab2eed4ba"
+  },
+  {
+    "path": "plugins/ca/agents/backend-author.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "92eae8a29b52890b665cf7f658002fb19df1eb52131afacdcb73a024ba548734"
+  },
+  {
+    "path": "plugins/ca/agents/checkpoint-aggregator.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "2034c225f3803e6191615000fd8e0033e0c0d7962ed755751c1e4ee8dfb5fff0"
+  },
+  {
+    "path": "plugins/ca/agents/coverage-auditor.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "b9eac9fa461710cd4db4e668db279c84ac617d28a770f79dc3bf2e9b07043073"
+  },
+  {
+    "path": "plugins/ca/agents/decision-challenger.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c49c763bd27e48de4f13a9dda480ef519002380af3a8d8b028c21c0e8d1c4095"
+  },
+  {
+    "path": "plugins/ca/agents/dependency-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7ef1468ff5bda12404fec8c37912898ea92e1f34f79ac7ba2496d0435c53367e"
+  },
+  {
+    "path": "plugins/ca/agents/design-quality-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "df93b5825817daec5161bd6824fb86fbffc5805fb350a038ad8e9b26ef000db0"
+  },
+  {
+    "path": "plugins/ca/agents/finding-triage.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d9430411e96db09841e882661baabf2fe0f5425b2e1a6eec6034bfbdfb110d7d"
+  },
+  {
+    "path": "plugins/ca/agents/frontend-author.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c26b742f9467ee98686359157629d5c6e798cfc6785e0a7719304260424d22bf"
+  },
+  {
+    "path": "plugins/ca/agents/grader.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "6a70094d003a947553bdf823f0b1c4a73d03a917efd2a6a995e489eaa5c9cdea"
+  },
+  {
+    "path": "plugins/ca/agents/infra-author.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "498c945819ca3ea58da4023d22eda3f5214095dd7ef3beb114ce566f04173c41"
+  },
+  {
+    "path": "plugins/ca/agents/map-deps.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "89831f9cd24c102d1bcdcc07b667b07ddf02c7c5da94f56ef13da86179171503"
+  },
+  {
+    "path": "plugins/ca/agents/map-structure.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d46fec584668bbfc2da33936e1f07f8cf8daa181f5d27ae8ab07dfee0dec88ae"
+  },
+  {
+    "path": "plugins/ca/agents/migration-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "82a523cf63041064da7ec26b627fc5d6587ec9c9cbfa8b5fa031eda8c3da0bee"
+  },
+  {
+    "path": "plugins/ca/agents/scout.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "aab62565527d8674c05f87b885b945dda790c09643b392b46f04fd2d7d6eb9ae"
+  },
+  {
+    "path": "plugins/ca/agents/security-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "a234de93cd87cf2d7a567446bdcf4f53e2b391cac839cf0108e2b92871c2a211"
+  },
+  {
+    "path": "plugins/ca/agents/tribunal-lens-reviewer.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "8fca6e95005580f662e72cde1559c86e5d85b417f6e890f63995c132cc59f2b3"
+  },
+  {
+    "path": "plugins/ca/agents/verdict-aggregator.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "826bcf8b4e3ee54b8a5c0ae1955565b2548d1ca6a6cff0567344cad920757b55"
+  },
+  {
+    "path": "plugins/ca/commands/add-dep.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e1d6140af117fb1c8d8a5d1d27c7b73eecad96b7f996735db9b3214b4b3bf00a"
+  },
+  {
+    "path": "plugins/ca/commands/adr-status.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "95553dde57cfe358cb19d922cc62de1de8d37bb8d9fcfcc39016426aeff67bec"
+  },
+  {
+    "path": "plugins/ca/commands/adr.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "f036fe1173a1374461517e042f990a407d2784f8d4402aceda21ec85d2c38e95"
+  },
+  {
+    "path": "plugins/ca/commands/audit.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "676feb4220fd1b9ffec68d382a909956aadc72889049a55c93dfc05e899063a6"
+  },
+  {
+    "path": "plugins/ca/commands/checkpoint.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c6802db671e2e1e55d6d8f061fe33ddfc58fc7c92ab50cead53e07bb99bb1650"
+  },
+  {
+    "path": "plugins/ca/commands/chore.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "0f74892180b925128ee3edf4b608b2586b3baca53b4a283d872a48b441ceb53e"
+  },
+  {
+    "path": "plugins/ca/commands/cleanup.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "2bb238e87efcefc1c9a321312879e8d3f42d4f47962cc39dc700f5ef0737d03a"
+  },
+  {
+    "path": "plugins/ca/commands/commit.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "17008e129d16f4a01161e5bdf7e389b3f1c0f98626b0bb702c5d8c3d95ed1c48"
+  },
+  {
+    "path": "plugins/ca/commands/conflict.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "ec572558929fe36367e65f42d795a062a0c76600bb2e814b2fb47dedfddc3457"
+  },
+  {
+    "path": "plugins/ca/commands/context-check.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "4f3dc536dfc6ea9bc4c2c80e5aaa348ee57a502bd19d8e15bd7dab4dd7c51d52"
+  },
+  {
+    "path": "plugins/ca/commands/create-context.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "033d33524255069ebfd03a77d6fa943d2eb7cee268d4729c839a07572120c923"
+  },
+  {
+    "path": "plugins/ca/commands/debug.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "ec398786ce4f09c321ce09857a01128c6646c8d9ae01f59682eee2c0b4ca9eb1"
+  },
+  {
+    "path": "plugins/ca/commands/decompose.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5a16231f125ab96e4e01d484d5db030718d6253077ec8afe0d58a88c47e11309"
+  },
+  {
+    "path": "plugins/ca/commands/doctor.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "2baca576387445caf28ae4fe8a2b85c08720f8cc94262865f2c5a9dbfc9ca493"
+  },
+  {
+    "path": "plugins/ca/commands/feature.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c59fd032d384a4912cbe6219a819b9bad290fb758c840d5dc79121ead9291fc2"
+  },
+  {
+    "path": "plugins/ca/commands/fix.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7b18d35ed19621bb8ce0ded1474f7a0f2a38a9945dfc8b9287b4d0625b851020"
+  },
+  {
+    "path": "plugins/ca/commands/init.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "067ad63b46805600d23656a75d207d3d3ede3b23abcf6265d1325b24a9f0f76d"
+  },
+  {
+    "path": "plugins/ca/commands/override.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "0dab74cce36c3031369e6b59508af9eb73be0a90b690766228514bb5f5de6990"
+  },
+  {
+    "path": "plugins/ca/commands/pr.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1c6dde7fa78470723e153349a0f8a3641dc9892c9fa69594e08f80aa8634361d"
+  },
+  {
+    "path": "plugins/ca/commands/prune.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5c0877dc972a7cf7e0f927792d009e03e0a8015a7b7364b74f8c5764d61e7bf5"
+  },
+  {
+    "path": "plugins/ca/commands/reconcile.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "b239c1903926004ce9dabab3e46caee9704061d605b2a1b324ec60f0f82a943e"
+  },
+  {
+    "path": "plugins/ca/commands/refactor.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "fc39e92ff53709686b4a94d79b57b5aa575b041231b9a91b5f6b5b94e7d9caf6"
+  },
+  {
+    "path": "plugins/ca/commands/release.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e5a1cfc4b616cf74d922b00c80d5f560ba441aa797226c288a7320b6247c4fb6"
+  },
+  {
+    "path": "plugins/ca/commands/review.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "77e4d2d516146b39abc6521d9e7e5c89d625bf91dc09b3f235070a1c579841ef"
+  },
+  {
+    "path": "plugins/ca/commands/spike.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "70deccb2cb3ab58fc3c28ebe744c5093e628ee1ef56150a474be42debf9fb4bd"
+  },
+  {
+    "path": "plugins/ca/commands/sprint.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "b403256192fce18786d68dc22e9717dc2f503332b222b38ab5c4b324bcd473e0"
+  },
+  {
+    "path": "plugins/ca/commands/standup.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7db53e9219de92f805198898c91a9ed4b959ed2991c0f59f9b0ec2958e5090ec"
+  },
+  {
+    "path": "plugins/ca/commands/status.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "47ed089a0dd59b8ea00b58fdb81f50381d1abd48d0fa8fd361b9b2a8c149b095"
+  },
+  {
+    "path": "plugins/ca/commands/statusline.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "f3e22e4e375c481138791d41a823ef57b0c3cf08aff85609bf79f8f8a0f07abf"
+  },
+  {
+    "path": "plugins/ca/commands/task.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "61eeb065da49cf854039e772c598e6bcaae2d7a5a4f8cb0e3a8166f87474c156"
+  },
+  {
+    "path": "plugins/ca/commands/threat-model.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "84d53b34671e4a64ec447cf6db1f8bcb27b43c6a6e55bf7b668dd2a948574eda"
+  },
+  {
+    "path": "plugins/ca/commands/tribunal.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d3ba0a3aa3fcda5334014dbbefe2645bcb18f6074b883529749ca8b8a8aa9417"
+  },
+  {
+    "path": "plugins/ca/commands/watch.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c5a6dc659786f0e540fa8fcefd0c28dd907e80c6fe7543505e2100c39b3914b3"
+  },
+  {
+    "path": "plugins/ca/includes/artifacts-attestation.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "ad5471eade61cdcd8acbed05d29a5f53ce0e46962e3d99f26765ef96b4af3b1e"
+  },
+  {
+    "path": "plugins/ca/includes/artifacts.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "fc6f6439934115c00692cf1812021895bfb83abfc720e435a321d3b6e199f31a"
+  },
+  {
+    "path": "plugins/ca/includes/author-tdd-workflow.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "aaae147e0727682eb3525317ac7d34b94d032243fc34033f9077afe60676e232"
+  },
+  {
+    "path": "plugins/ca/includes/command-compatibility.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "0c13e07bf6bad350fe0efc6a2e7b0e7f666e130a6ff18ed8fcc9c588afdc62fa"
+  },
+  {
+    "path": "plugins/ca/includes/compaction-charter.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e4372a7682a9dbfae50ceac9c5acb17001991ee4c755f58265421c6877b9f5c9"
+  },
+  {
+    "path": "plugins/ca/includes/cut-docs.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d7902b2e666954e37edc9b46607628005fd61276d0e1f2c84b836bf5f8a67f19"
+  },
+  {
+    "path": "plugins/ca/includes/dangerous-mode.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1d452202a5ae8178c01da1e54df72e940697e292abe4629e9ddb6467556a6ca2"
+  },
+  {
+    "path": "plugins/ca/includes/farm.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5af1c77fb1349e8e4c74371a2c29bfe457ad6677a81b1e088cea00375f66253b"
+  },
+  {
+    "path": "plugins/ca/includes/fresh-verification.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653"
+  },
+  {
+    "path": "plugins/ca/includes/harvest.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7581c7afad07ce61c2f45811c0f665642113196437eae4869bd6c3a6b8e1c6ba"
+  },
+  {
+    "path": "plugins/ca/includes/helper-invocation.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5dd8b4147504bc88b13048c09ae5dee10352f33f4a7f7be44aa74774ac0a7bf6"
+  },
+  {
+    "path": "plugins/ca/includes/knowledge.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "93016b5511d006fb62920b3f54a82346c0918bb45ab8871078ecd445eca61c99"
+  },
+  {
+    "path": "plugins/ca/includes/maturity-coverage.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "dcbbc3bbcdeb9f3b705ff3d2e576cf43717faaa30560885ce2dd6f0242fd4079"
+  },
+  {
+    "path": "plugins/ca/includes/ops-mode.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "63526057eebb1556472d77663f63529710f564ac4451b6169baf9b51adeb9183"
+  },
+  {
+    "path": "plugins/ca/includes/redirect.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "43364a1138d9846806dbd4fcb41aa5526abc3cae25d9289f357a51c6d717322e"
+  },
+  {
+    "path": "plugins/ca/includes/reference-map.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "6ebd778230215d10ca70f0762eff9184b41c41ba6c7c0a0649abbd6aacf50144"
+  },
+  {
+    "path": "plugins/ca/includes/review-matrix.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a"
+  },
+  {
+    "path": "plugins/ca/includes/reviewer-contract.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "fca7075b0eda4dd6a968fac18beded02b7580389368492cda032067e2e3d918d"
+  },
+  {
+    "path": "plugins/ca/includes/routing-table.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "402c880699288ec37119cc4e92d106c708da14de072e9070a004ba3e3800550a"
+  },
+  {
+    "path": "plugins/ca/includes/safety-core.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "89f5e4219cb5665ab6de38dc59d561ac14320809556a13f8ee1278791545022c"
+  },
+  {
+    "path": "plugins/ca/includes/security-gate-record.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "2e10cb6c76e993ccaafc6e3a6c37a5e7cade33be5bfc98608b04f16c946b05dd"
+  },
+  {
+    "path": "plugins/ca/includes/sprint-authority.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d86bd14753fe47c5525763a7ab1e6e0bebcc76726f8c5bcc6142f64f2916a3dc"
+  },
+  {
+    "path": "plugins/ca/includes/verification-boundary.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/INDEX.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "0be1fee4a885386fa2029685746b2725700ee7b8fadfa40985e41077e8ff7a58"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/color.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "b8f71fd20c6583e51eee1bff6faacf955f94ca12ac0aea5c34ae341eac77e6bc"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/core.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7212c7639dd33bfa454205c24172b4f051e03a378f7fe4089b57784fddd47e00"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/images.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "ff10be43526511c557e22b16821d7893d3bf8a9ee1901b6b564317715fd8b3c1"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/layout.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e04749e7c24f935fac0da84c7acd849f10287bd5732d2ca2b1f08e4c86763d05"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/medium-cli.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "91475407f2c8e6cb9a613248304903abf6fd0be9d345ade25e79dc89532fb21e"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/medium-dataviz.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7dc8cbbbd4c87ec0f67c3155cea2d1d02e734870e454a60cc5bcd4c059bac9b2"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/medium-diagram.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "7a5a29217543f5614e8af2a14a57e0fb367fd44c9dd11951bea674b004d30e47"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/medium-documents.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "9ae58fc327d0c60f1acdc9dc6c81314147665c4feea4d08972be2e4d1f79b748"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/medium-slides.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1bf715f6851e01f0522c448f67465db09614861d5fee0697863cca1472594599"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/medium-web.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "908c40b8786722ceee3042a05185d87d57f782d252dbaa88707ecbf2d2e7a0f1"
+  },
+  {
+    "path": "plugins/ca/includes/anti-slop-design/typography.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "4ca2158d0959faf1ebcb55e789309acc4f7dcf3ffe8318f880489f5664d99205"
+  },
+  {
+    "path": "plugins/ca/includes/smarts/core.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "0c6062c8335150dea8532cf473546510746211eef8b07bd7d57bdc1f045f750b"
+  },
+  {
+    "path": "plugins/ca/includes/smarts/decision-log-format.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "32eac6e66f30ae9e8a899728f245adc06862e96ee9d3ff4c9849bf5929acbeef"
+  },
+  {
+    "path": "plugins/ca/includes/smarts/lenses.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "0817408ae3a39d1fb181623a02c6f1f0f846150b1cc28dab93351a41bca27cb4"
+  },
+  {
+    "path": "plugins/ca/skills/INDEX.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "26d250eeed57ca59a28e207ac2686eacaeebf57bcbe2c2dd7e2bcfbe9f05d370"
+  },
+  {
+    "path": "plugins/ca/skills/brainstorming/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "81b35b2211a52703c57dfe76a29a4b36dc45ce343233f3c00aa66db21adf1ab4"
+  },
+  {
+    "path": "plugins/ca/skills/commit-gate/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1f44d10cb8fddde2308083d3fb37509cdfe1f2f292d239b6e8030db2d7a26918"
+  },
+  {
+    "path": "plugins/ca/skills/context-check/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "a3e2569976fbfb882a55bed01b9ea37212b316deed680ddc41b65743312bef78"
+  },
+  {
+    "path": "plugins/ca/skills/context-creation/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c929a2ace31487ffe375d2d9bd3d5b87a76e887642dc956f8c449e0d23066e40"
+  },
+  {
+    "path": "plugins/ca/skills/context-creation/references/markdown-format.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "996e5185faa092367e23231a4cb4d769778b9bcc2701503b5c038c0f44249150"
+  },
+  {
+    "path": "plugins/ca/skills/crypto-compliance/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "270d4514058070cd05ca348cf768cac63a8e1f0e74938235b6c9602f66897fb2"
+  },
+  {
+    "path": "plugins/ca/skills/debug/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5d7fe368c0988fbf6284fc3fff7f617d84cae8d53e6030f01983d722a45d584f"
+  },
+  {
+    "path": "plugins/ca/skills/debug/references/debug-handoff.schema.json",
+    "host": "claude",
+    "equal": true,
+    "sha256": "9077a16c8b70256ab818971078b77f8fdfd103f4afb30cede9bf296f0083fd82"
+  },
+  {
+    "path": "plugins/ca/skills/debug/references/handoff.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148"
+  },
+  {
+    "path": "plugins/ca/skills/debug/references/minimal-unresolved.json",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e2d9b31d63051d3505a8027bf195ee84bc9923ba7077f1f71e6a81874ee60a17"
+  },
+  {
+    "path": "plugins/ca/skills/debug/references/preparation.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "8e446c9cbde3b658fe8ad4b88a635712b9a8a361993908d6c6f8515ca4c7afc9"
+  },
+  {
+    "path": "plugins/ca/skills/decision-lifecycle/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "c7a7e433c2a2d857c5b2f633f77ca85ccc661583ef2b7bd396de3c856c8c5273"
+  },
+  {
+    "path": "plugins/ca/skills/decision-lifecycle/references/adr-template.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "331ae223572179832b497676da0aead60fb2d64d8d5101a96c7c1af399e4b5e3"
+  },
+  {
+    "path": "plugins/ca/skills/decision-lifecycle/references/authoring.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "34cf35ee80528b13c5511300cb32ce72182220173ab3e35befc0bb81353c7ba6"
+  },
+  {
+    "path": "plugins/ca/skills/decision-variance/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "ca6b55afa86e490b23d4686fbc0ca6691d87480c3726d74207c06713b619299a"
+  },
+  {
+    "path": "plugins/ca/skills/decision-variance/references/analysis.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "60d85ebe21a26e526d5961fe901dd90a9291df3339a34c9dd2a705d26abb0d9a"
+  },
+  {
+    "path": "plugins/ca/skills/decompose/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1e2ee60928595efacd580fb31b1c99bcab2de5c3c3812db12c4df75bf20fff27"
+  },
+  {
+    "path": "plugins/ca/skills/decompose/references/markdown-format.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "11fbd82c8098e88afa39dedb48f8b70638c94a4e7f306d34c13eb1a5f19d11c6"
+  },
+  {
+    "path": "plugins/ca/skills/dispatching-parallel-agents/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "36dd4a03ce6896f768fc6c16ac373cfc5aa431c770b7d8910affadff49a4bf9f"
+  },
+  {
+    "path": "plugins/ca/skills/executing-plans/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d9ec736ecadac064a0ab43b4f7da970af13b78abd410315360f2f6869539ed9a"
+  },
+  {
+    "path": "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "dbbe2eb606e7d26d7833e6689c8d6a76c169ed55b07e928dab23fbd437dd4316"
+  },
+  {
+    "path": "plugins/ca/skills/post-merge-cleanup/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "580fd22d120666df4232df36be3703466a8fe7c2113954cd2c799c2aca918e19"
+  },
+  {
+    "path": "plugins/ca/skills/refactor/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1c52f4d0617f0fd3411d81cdf54c5cf0450b6bd3719f771b4c5e9340d3948f80"
+  },
+  {
+    "path": "plugins/ca/skills/release/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "945fc4ff8f1248766001f50aa314e9fb123a769dc5caffabdaf6811a833d0ffd"
+  },
+  {
+    "path": "plugins/ca/skills/secret-handling/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5d663d7b8da0ada7443ddcf8f99426458a2006cfd1d6c9d5e11c79a779b474f4"
+  },
+  {
+    "path": "plugins/ca/skills/security-architecture/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "78efb90da52d4bd4750717ec632a14de7c929f78b5d5d207f74afcb778d0e3ef"
+  },
+  {
+    "path": "plugins/ca/skills/subagent-driven-development/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "27f4e73679c4f26f89614bc907af12d3fe35674dc35888aa675a9526d7cf5347"
+  },
+  {
+    "path": "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "d90d04dbcb20527fdf39eaf54c32c56acffbddfdef1f4bac3ff8d2ea42a301b4"
+  },
+  {
+    "path": "plugins/ca/skills/tdd/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "70e6b5fe4b2c7dad938be3f01f65a5c7a2cdbe2476e5f35b7d700fad2a9d0830"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "8aee8e38d98cfa01beb659f08e371dd1cecbdd32474b3bdbfb5984ece5ef133c"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/ai-markers.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "1387b3690a41beff487710ef2209bb372ee0aed0fcb7674b40b0fede97e3a20f"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/cost-and-models.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "2c6e58a8db61bf6995eaa14722cf353c00462da8a6040e18873da569ce7e19f7"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/finding-record.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "bc63e9b0592bdfd7315639d1262c29746d34ba84381e39af7ba16af0e4046e32"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/issue-filing.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "4ecd3efb74c06b680aae1f675c110de73cdfd61c83348714fc1f265bfca1cef5"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/report.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "f1532249f76290cc85d248424a3e1d97e3a28b4d9abd40c6616ed34621fc21d7"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/review-risk.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/schemas.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "4493de5835cd62127cba748fef782a1d0b1858f7b895ae64847e001d732a3a54"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/telemetry.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e3523e53484c9e637694901f72173b67827913b0585371b668033c2fc0ebe993"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/triage.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "3fdb4f89831e99b56a22c3c7355053b669804be29b2ac735d4ab4713da184160"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/verification-quality.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "6c78769990f2a11fb2f0dc684259c498be1721c37720a030476abb8b1dc6b7c0"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/appsec.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "97305e24297595c8e20a68e33f32883d527841726d6e067b29559bbee5c9cc5a"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/architecture.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "b1ff7d1e9cf2f2bca8586a95be00e520415e28e5d4bcb1623cc3e2a4ff8985b6"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/change-closure.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "84ab5146e9ae742e239aab77ea04cf7ca688174b712c41901804976e5b00ab1d"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/coverage.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "dcc28d75af636d591dd044d1d4c7fb2021830c28bffdefdd3d457ca89b2f277d"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/infra.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "5d5fe0d10241c6f2d672a138c7655d21160b77129ab0d03d3032a9573120d78a"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/migration.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "6bc55aee77d36ef30b234350e93eb3b51453e19c42bf3a83d8767f7003f7d580"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/observability.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "8759323f87a9d994a1be1733f69d435a0ccef33196cda112e348ebad66807b62"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/performance.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "cc02d582c73afaff4926d4440e359573f614cb83ffc410820b31b614586f9df9"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/reliability.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "8a7e8859ca46b310d9e4ac10c55f6850e8057cc8745f5f456d0652ee7852e4fb"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/secrets-supply.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "9f9aacfb2b2ee2e34cee71c4069fb925780a3a283623458229eb109fe848a536"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/semantic-contract.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "4f19b8655892880d437ca7b9eadc4f07d5c1e09b7db48b3bf36267d6cab11156"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/test-fidelity.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "4b77f03357b616b7e76c731a4e091fdfefdb9b3af22bfd9383dd7d5542091f59"
+  },
+  {
+    "path": "plugins/ca/skills/tribunal/references/lenses/typesafety.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "dcab0acb99a740a27d2d121c3a48614ebc51164e40b80d37f1ae30427733e952"
+  },
+  {
+    "path": "plugins/ca/skills/using-git-worktrees/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "b1119b88114bf14d8552c824a2322d979dbec08b5eb0c4f766d3c6170409d01c"
+  },
+  {
+    "path": "plugins/ca/skills/writing-plans/SKILL.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "e54a9bb23e38c2b3ace32c2f8a483bd1796aadd79e791d4511de77ce8fa16a29"
+  },
+  {
+    "path": "plugins/ca/skills/writing-plans/references/farm-plan.md",
+    "host": "claude",
+    "equal": true,
+    "sha256": "8cb06bfee10f935625f75ad2a045854519804322f28dd2549c92ba101c9bcb67"
+  },
+  {
+    "path": "plugins/ca/generated/command-catalog.json",
+    "host": "claude",
+    "equal": true,
+    "sha256": "47a4fbf9ead5c6f397ca5b2dbf6617d47cc2921000764fa66d67e37721447efe"
+  },
+  {
+    "path": "plugins/ca-codex/COMMANDS.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "6e1eea75bf7872d19a7aa1ff330e6d9fbe23c8426952b50811bc1e51c2f2b48d"
+  },
+  {
+    "path": "plugins/ca-codex/SPRINT.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "5749e4f49bc3dc9d9ecfbdc5e3c74ec4da0620629246e21cbe72d74c6d62a908"
+  },
+  {
+    "path": "plugins/ca-codex/arbiter.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "cfb7298e5200bb63d148b4c8cd180d0a2c07901f332425603ba2fb1238929637"
+  },
+  {
+    "path": "plugins/ca-codex/agents/INDEX.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "78cc19746bfc81f1a951dfa5980edc62fe26538351f7bfce7220a239dbf39110"
+  },
+  {
+    "path": "plugins/ca-codex/agents/architecture-drift-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e9ddab193d2082655be3b6fe53515fb6826316e5e2efa98fe6ef2675d1983f91"
+  },
+  {
+    "path": "plugins/ca-codex/agents/auth-crypto-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "ea491e797261a42487cd9b42ee324c79b9394e6b2b26449eaa856f4b4118d1e2"
+  },
+  {
+    "path": "plugins/ca-codex/agents/backend-author.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "47fb4f2ae1951cf7f0e2178b4bb19f55c0523b4e0186f352119d411266a95192"
+  },
+  {
+    "path": "plugins/ca-codex/agents/checkpoint-aggregator.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "93a3b648ac84680f3d60ed7ba711455de11897fa7995b9047e0660deccfed7ea"
+  },
+  {
+    "path": "plugins/ca-codex/agents/coverage-auditor.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "66f6e9d2560f2ca9f1bad519ea22bfa8c34a90612b8a394cacd75c47a720f61c"
+  },
+  {
+    "path": "plugins/ca-codex/agents/decision-challenger.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "26ac63dcec768d7862cfae756702eff8f9f7bc6aaef3331bd62aad57b1815567"
+  },
+  {
+    "path": "plugins/ca-codex/agents/dependency-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "cb358e45ba7ec59c1ff2c459ce95bc760af572044d72bde9cb9e843a0074be0a"
+  },
+  {
+    "path": "plugins/ca-codex/agents/design-quality-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "8f5407888d68d9c7b8f4b22cfaef80883e39e9f5673b2d874db100f5e3517419"
+  },
+  {
+    "path": "plugins/ca-codex/agents/finding-triage.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "bf9721ac462ebaf581e1cd122c15e0da6badbd70b92f9bf73ea77ac27f65b8a9"
+  },
+  {
+    "path": "plugins/ca-codex/agents/frontend-author.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7a0e5e75adadcee25f841f650aa9a20a61dacbb7620205790fc8cd5430df9b8f"
+  },
+  {
+    "path": "plugins/ca-codex/agents/grader.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "a3461ad762e8f03e92ce4bbe651d24f765b96fc9a046a28181c5f9da900e29d1"
+  },
+  {
+    "path": "plugins/ca-codex/agents/infra-author.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "c708a7d00de1c6cdda4edf8d6c232eeb2d65279aca86c42692832b6c27c5fe65"
+  },
+  {
+    "path": "plugins/ca-codex/agents/map-deps.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "457403cb0cd93f20b5c749cd444b4bb12574e220a3eaf72c63abedcfe44b2869"
+  },
+  {
+    "path": "plugins/ca-codex/agents/map-structure.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "d6e460f609b8e04a190b6ab7a4e9571cbd4fe1b314ebc9884e151bbf006952f5"
+  },
+  {
+    "path": "plugins/ca-codex/agents/migration-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "4d9af8e75df2f13cedf3aca8f08c3ab22a377430f76d714a7ba14858bab28fff"
+  },
+  {
+    "path": "plugins/ca-codex/agents/scout.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "6043c425bca4475eb4b0a5b1665ebd75277a7c8b597b397686b16c74dfe0e0ca"
+  },
+  {
+    "path": "plugins/ca-codex/agents/security-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "880249f66b13418029bb18b914ec2bdeaf49fceb1c830c214414107b2e34424f"
+  },
+  {
+    "path": "plugins/ca-codex/agents/tribunal-lens-reviewer.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "34c1d202e82d9677bf6454bc9a088c7996e5a50ffd657a9168575c12b093f6e6"
+  },
+  {
+    "path": "plugins/ca-codex/agents/verdict-aggregator.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "5576565f6cd69d3d197ab89c9c819e2ecb3532200c7146f2be8df63dc35fa363"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-add-dep/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1ad9519e25bd10c445350665113ecd1d7eadf851c01dc296a152fc0d23465bfe"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-adr-status/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "8b84669654557b06f2b7089f987406c9f889c1a12c98dd0708d9fd0ffd5421af"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-adr/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "2f6a34975ec467a54da5c2e6bbe8fd74749c5fc056ed22e5c881f754c504e343"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-audit/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "557d004c2334c4cbf3c22820b0eed80af349ebd869868c5fe06f0c8373df8b60"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-checkpoint/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b194feccfa4ff9df02f3821e6e433092311bd6cdda3ca5f0ef3df1d3f5ced316"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-chore/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "fcdd71d467d5b3ff2bc2ccf5e2562d0fed0b605ffdc7f60cd8068103ae9e7231"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-cleanup/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "4f05103428e273186216bfed739ff246283059e50e079a437ae10d2d0768daaa"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-commit/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "afd07aefbe175408b3b31eaba63b2cab776dbb37bf69ba2d00d68741ef612379"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-conflict/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "f7944fc6fdacc7be5b61d1b4af6a8597d1138f317a1ab166805b1be0d7b36d64"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-context-check/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "af0224f2461c1073c6e1df42e1d31bb024091930584b52ab68cca16c7459da14"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-create-context/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "aca2fa3fb0b71329b97f6514d69f1864fbd7cce79219f4d56cb0783701ce959c"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-debug/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "64fbe73a1b872acb5e2655b21bb2d814f3aa089ab9ef2a3c63114abeed2649f9"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-decompose/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "fa17e8a9198ff452c507cb3deb00bf5d34da74b20e3ddee07a6a4816a8fbc84f"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-doctor/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "ac01cbd4d5f0636abe34540157b0eacf505e107570008aaa37af4f390a4aa85a"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-feature/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e867b77820d55085603e98764117846b156c8fe73fa4b7fe7325d6d78e31d8d6"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-fix/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7c0c5484de9b41307d87adcdd8e48e1da86515efb860c131385009363f232a5f"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-init/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "10ac7467cda5c1723463226f8d2f618fd2e0143dd6a033318714fb13583201c9"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-override/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "5abdf7942ea57b80b7b448b27d97cd5c2b089870980369fdac56b7840037f2c5"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-pr/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "df021d395e01d7f407150141c7b26d12e7c72049ebf4695b1f27ef9b904ac83c"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-reconcile/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "2f95e03c93f917323c0bee8128ebb8f1e1d65e98c6ef78aa2a36b724509264a6"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-refactor/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "5cc9b0f6def28ef28f4719b1b8eba5fc265c854b1bbad611fda06a6c9cc96172"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-release/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1e4ba6400e7ebcac254d0b32cc1682eea66a0c2e4e6d884e8a3e80da0623bb79"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-review/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "3b9f3349cb2fcd9f352531ba50db0ae593195edcb8a98043160605303e1973d4"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-spike/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "865bf543b221a07da2cccb531ad5e9a71c9b7c7cdf4a51cedaca2f0b92daada7"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-sprint/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b272efe09fe271bf44bd542306eb1cc5819371e3dfd36173dfc6ba3ffc2f1f02"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-standup/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "a6c9ed038af2ca7a06c13b07ba3e970bd6ce3f911b584b32091b4333cc418c29"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-status/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7693d798048ebf7daa0a96d6dba323aff1ce61b15a623ae5504c931711b0cb52"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-task/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "d2debde55290acce9200ee230efc144c1cfb59111a07a5686aa7754dba3e78e2"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-threat-model/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "d6f8ddc50dbbfb0048bb4e56a982bb7286cad37d9ec4ab8bb09ac1222632cdd5"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-tribunal/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b804564e87146ec52e4b4fb3d60445098da81c0d9d61f7a82d0e2346ed075001"
+  },
+  {
+    "path": "plugins/ca-codex/skills/ca-watch/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "211155ba10e36dce8810c44a364a77960a88ca21f17558e54676c7f6c7036db2"
+  },
+  {
+    "path": "plugins/ca-codex/includes/artifacts-attestation.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "87ef47936730de975238e7d58f93f1fa8d9af29960615f457f135b601e4e0a7e"
+  },
+  {
+    "path": "plugins/ca-codex/includes/artifacts.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "eece91a43415fba0e17cce1763a11da9f79b1a9724784b656c8b7c817af14075"
+  },
+  {
+    "path": "plugins/ca-codex/includes/author-tdd-workflow.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "14352d4209afacbbfd0ebdef499167c03d07510992ed98990eb53f73c3e10c70"
+  },
+  {
+    "path": "plugins/ca-codex/includes/codex-host-notes.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "21bc0f71035e88fd5c55317619d2dc9305d5b355ceabfbd310a73ecf0f4ff268"
+  },
+  {
+    "path": "plugins/ca-codex/includes/command-compatibility.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "0c13e07bf6bad350fe0efc6a2e7b0e7f666e130a6ff18ed8fcc9c588afdc62fa"
+  },
+  {
+    "path": "plugins/ca-codex/includes/compaction-charter.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e4372a7682a9dbfae50ceac9c5acb17001991ee4c755f58265421c6877b9f5c9"
+  },
+  {
+    "path": "plugins/ca-codex/includes/cut-docs.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "d7902b2e666954e37edc9b46607628005fd61276d0e1f2c84b836bf5f8a67f19"
+  },
+  {
+    "path": "plugins/ca-codex/includes/dangerous-mode.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "a31e8ae9a1858e9c8b42e4f94aa31c544ffde0cdab3cbf0fd183ae9902da2f0c"
+  },
+  {
+    "path": "plugins/ca-codex/includes/farm.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "43b4a4fae43ecd6d4b5ccab44422973560ed2025cfbb09dc4ed05c055d2ffb83"
+  },
+  {
+    "path": "plugins/ca-codex/includes/fresh-verification.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653"
+  },
+  {
+    "path": "plugins/ca-codex/includes/harvest.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "93d1ef0f02df44af5cdb4c08207c2d48c7a96133016cd9f13d5679ae9b068d8b"
+  },
+  {
+    "path": "plugins/ca-codex/includes/helper-invocation.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "c8ead634dae4841973a64dcdb1848b58594f763d9b8bedd63c25b5bf35a1ecd8"
+  },
+  {
+    "path": "plugins/ca-codex/includes/knowledge.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "79a02ad2984463abbee2d69544aab249c3d4efb6bea2de66045c4ca44a016da2"
+  },
+  {
+    "path": "plugins/ca-codex/includes/maturity-coverage.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "a4285f48d360067cfe4ef3030f2cb18959bf8a4d52a6e70341e13ccec426b789"
+  },
+  {
+    "path": "plugins/ca-codex/includes/ops-mode.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "505dd0b1858edd8b178b91460d5e74878c32b2fed3a605136043ab17cbaf8253"
+  },
+  {
+    "path": "plugins/ca-codex/includes/redirect.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "bcbbcfd2258cdd1b28e65d89442628e083c0ae030ad4773223ca4384c6d87f09"
+  },
+  {
+    "path": "plugins/ca-codex/includes/reference-map.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b974c39c6ba509bfbe2ee010a5277ae395eea0bf82469b8bc7edaaa30f391d8f"
+  },
+  {
+    "path": "plugins/ca-codex/includes/review-matrix.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a"
+  },
+  {
+    "path": "plugins/ca-codex/includes/reviewer-contract.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "3ea358984dbbd9e1f87726dac10088c7071d820da4e456631826cb7cad52ea78"
+  },
+  {
+    "path": "plugins/ca-codex/includes/routing-table.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "3698d2a7f101026cff39fa383ccd9a09fde5c1d805b628a38a748a1dfe12eb69"
+  },
+  {
+    "path": "plugins/ca-codex/includes/safety-core.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "ba46db7f723382b3ebd4e8e568db17c62995729fb1d6e097cdb1df8a5ebe155c"
+  },
+  {
+    "path": "plugins/ca-codex/includes/security-gate-record.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "4386c81b25ffed8fd0865da217111315f2a5370f3ce0e0f95f1aecd381c10962"
+  },
+  {
+    "path": "plugins/ca-codex/includes/sprint-authority.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "13fdc6159140a66422f9185b2f2ac420314e4402504790ff247998d74b6266d8"
+  },
+  {
+    "path": "plugins/ca-codex/includes/verification-boundary.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/INDEX.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "0be1fee4a885386fa2029685746b2725700ee7b8fadfa40985e41077e8ff7a58"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/color.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b8f71fd20c6583e51eee1bff6faacf955f94ca12ac0aea5c34ae341eac77e6bc"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/core.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7212c7639dd33bfa454205c24172b4f051e03a378f7fe4089b57784fddd47e00"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/images.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "ff10be43526511c557e22b16821d7893d3bf8a9ee1901b6b564317715fd8b3c1"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/layout.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e04749e7c24f935fac0da84c7acd849f10287bd5732d2ca2b1f08e4c86763d05"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/medium-cli.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "91475407f2c8e6cb9a613248304903abf6fd0be9d345ade25e79dc89532fb21e"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/medium-dataviz.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7dc8cbbbd4c87ec0f67c3155cea2d1d02e734870e454a60cc5bcd4c059bac9b2"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/medium-diagram.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7a5a29217543f5614e8af2a14a57e0fb367fd44c9dd11951bea674b004d30e47"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/medium-documents.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "9ae58fc327d0c60f1acdc9dc6c81314147665c4feea4d08972be2e4d1f79b748"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/medium-slides.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1bf715f6851e01f0522c448f67465db09614861d5fee0697863cca1472594599"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/medium-web.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "908c40b8786722ceee3042a05185d87d57f782d252dbaa88707ecbf2d2e7a0f1"
+  },
+  {
+    "path": "plugins/ca-codex/includes/anti-slop-design/typography.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "4ca2158d0959faf1ebcb55e789309acc4f7dcf3ffe8318f880489f5664d99205"
+  },
+  {
+    "path": "plugins/ca-codex/includes/smarts/core.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7f9df4abd5c1dca3b6388525482d4036d7fa3b45b6d3ee0a50f6a9a2c8a3c146"
+  },
+  {
+    "path": "plugins/ca-codex/includes/smarts/decision-log-format.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "2265c640a8cd29840f2297265c39cb18e467099c36e392b76db7fed95d1825e1"
+  },
+  {
+    "path": "plugins/ca-codex/includes/smarts/lenses.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "074d4ddeb5e9fffb8d2d1406171649c2850770ffbac68496728d745b0346128d"
+  },
+  {
+    "path": "plugins/ca-codex/routines/INDEX.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e57c691b8ea40139d6a82e1e3eb7e3709470de21c34fa7b8fcfd4df8311d3bef"
+  },
+  {
+    "path": "plugins/ca-codex/routines/brainstorming/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "d7fa872020b2460248c7eeaf603c90f26d4810ec1905267ebc997c347c6a4565"
+  },
+  {
+    "path": "plugins/ca-codex/routines/commit-gate/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "93da6cf47374c06c58c187cfb2d46ce3a8f8aece44cd993616dc9c32524e0f8b"
+  },
+  {
+    "path": "plugins/ca-codex/routines/context-check/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "247fbdaac26e258a8b18994b6e87e6ce8bcf48cd0ed6ae81980447719ad9688f"
+  },
+  {
+    "path": "plugins/ca-codex/routines/context-creation/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e2b297830167a371f52dee84c5de1a6c03fda740091edf82176e8787e71ae263"
+  },
+  {
+    "path": "plugins/ca-codex/routines/context-creation/references/markdown-format.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "6cf8955bf043dbf2baad2dc4fca4255ad4f78e4f664e07d2c8a5797f8562ebda"
+  },
+  {
+    "path": "plugins/ca-codex/routines/crypto-compliance/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "5c11797d9dc092b9df39e600ea600a483e5db2bd43aa8bfae0b1643de879291a"
+  },
+  {
+    "path": "plugins/ca-codex/routines/debug/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "5954eb039585b8de66eeb24b1e2f7ef52f5ce3f10c670632070891c92a291812"
+  },
+  {
+    "path": "plugins/ca-codex/routines/debug/references/debug-handoff.schema.json",
+    "host": "codex",
+    "equal": true,
+    "sha256": "9077a16c8b70256ab818971078b77f8fdfd103f4afb30cede9bf296f0083fd82"
+  },
+  {
+    "path": "plugins/ca-codex/routines/debug/references/handoff.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148"
+  },
+  {
+    "path": "plugins/ca-codex/routines/debug/references/minimal-unresolved.json",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e2d9b31d63051d3505a8027bf195ee84bc9923ba7077f1f71e6a81874ee60a17"
+  },
+  {
+    "path": "plugins/ca-codex/routines/debug/references/preparation.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1289f6f4bf5b7ffe3a20b33c92570de4e983dacf0eb7e6a78d68c53634afe5c2"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decision-lifecycle/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "cb2a8eea1debde26886a411be0cd89682b1b6de88aa96f4e0c741e81b07c6edf"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decision-lifecycle/references/adr-template.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "ba03b887103cc5913bcdf4ad6306dc0a8eb425b072897660c5a1d1b003821617"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decision-lifecycle/references/authoring.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "16eeb284de8fabc3a5a9b4e6d241582ff708c979e655fbe1640479be8fddb8fb"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decision-variance/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "26067b8c9d8700e1ac246f4c742f6591545abce895c32ccc898c80839a470232"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decision-variance/references/analysis.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "15fbfbd9325766d4b9cf73b589f2965ada55bb0521ef0c50b95cd907389ebfb6"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decompose/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "31d08bc2bb4f70117508cbfa246a609069c4f5213d4f85d0250a4e284333604c"
+  },
+  {
+    "path": "plugins/ca-codex/routines/decompose/references/markdown-format.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "0caf046304c6322e83296b331d6cd4575fdafccd455e103b748b2bb174313e6e"
+  },
+  {
+    "path": "plugins/ca-codex/routines/dispatching-parallel-agents/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "de10961ba466b2b86246698035bcb53b8a8c2cce4eee358527b4ccfe0678c1a8"
+  },
+  {
+    "path": "plugins/ca-codex/routines/executing-plans/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e4ba8cf74e9b46171b1900c94f318ea6584221af7e6bd6b7fb7daeee17fb570c"
+  },
+  {
+    "path": "plugins/ca-codex/routines/finishing-a-development-branch/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "418759f3d1d42faf74bb57bb9c8dcfd3980e9928e774701795e4472442a544ca"
+  },
+  {
+    "path": "plugins/ca-codex/routines/post-merge-cleanup/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e77b14fa51b4658e34ebc28a6235b58553ecd3a1743555f6cbc1541c899dd712"
+  },
+  {
+    "path": "plugins/ca-codex/routines/refactor/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "fb5d5e2401216ba92da49230d55335d0739bc81a0fac73a6799bc15bb0f9cf83"
+  },
+  {
+    "path": "plugins/ca-codex/routines/release/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "60622875b8340cc3b31515f1f297ebb403d14d146bd4b27092f33a980143af2d"
+  },
+  {
+    "path": "plugins/ca-codex/routines/secret-handling/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "333d697b7060b2f9cce19f982280e64fbeab57368d1b8678c5e06f53b714e97f"
+  },
+  {
+    "path": "plugins/ca-codex/routines/security-architecture/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "aca3c6c5862d55e494cd6b47c2fe42e3d202706530f6a1941f46354a6bae0b18"
+  },
+  {
+    "path": "plugins/ca-codex/routines/subagent-driven-development/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "bbe4441256d79f37e2b39f8d9d7dd29469c12e18b1b52c4435acfd5a37c9bb77"
+  },
+  {
+    "path": "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "4dee855043bf45631e8faefce7a6435e5dad6eb8ce62235306751548159b137f"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tdd/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "10568618bee648ac06e64ab92b90b98a791943fa30692047f5638fed92f1e267"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "d79284fb8f27e12321feeda99a7e7166f6faeb8781a5a7511b164a77a95bc317"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/ai-markers.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "81bcd70b44e20cdf17e57900691abe3deabe0a7161dbcc7b62f9cb062592ffe8"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/cost-and-models.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "3065a7e78318792d3f466cc427d8fa0cbed89de8a0544f635be2c292f4b7ea5f"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/finding-record.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1ab679de1fae0894f7f5cd0e7ac9d14df4111e0425ce696fe607c063295f1775"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/issue-filing.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "aff11dd6c1a8b4a276ad06cdc187f64778e22ea562d06fc8e8a17f3e237056ff"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/report.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "dc1205704320ce1f645a10c073dd7650830a828b9f7c914eead418c3933b0305"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/review-risk.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/schemas.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "3a158f8144d244df2faa3cd60b90a2041ca36f57a6ffc37c8ec6ce4d5f45c2f5"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/telemetry.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "363f1e4d2555a324270b720c02fb8fc6b8387b4aea8952b915bb87df7721a229"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/triage.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "3f9cc8d521f477424f4c8cdf8ecbd64b92227faa5fd416fb7df3dfbe369d47a9"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/verification-quality.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "6c78769990f2a11fb2f0dc684259c498be1721c37720a030476abb8b1dc6b7c0"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/appsec.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "e6ed8ee0ba02d50d2dfbaa716605bd521ac7071df389d019aeb29e4e4e494078"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/architecture.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "7f96fa5c192f4cf7c261942ecfe5a62b65911d3225b8b22c56384c9caeef03cb"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/change-closure.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "45829b30400c47f9cfeb46e9e21b3c6d7056323088634d38e87354351b46a137"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/coverage.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "8532b9c25a99b26e24def671218e7145784702b1fe16997f6d026884a8221203"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/infra.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "014c5f803b406606cd4bb1233ef4a07f6d0b1919d2f331ff17fc9f6184f1bcaf"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/migration.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "38c62dd49e27d2d7c6b66628cf2145d0e080cedb47b148087cdee00a9b66a06b"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/observability.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "2dc75866c2d71e96cfcb3c159334b2a3858ed06d73ebcdc3d9414e0b6ed53ae2"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/performance.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "f82cd582e50c214e7c27a4bdf29b2ac02a6b0edd444b2c6fc3a43d9ca414aae7"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/reliability.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "04d8856fd26b2ba124f31aba19399a5255fb7e5e70d0d2bca46892a5709b43ff"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/secrets-supply.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b0058695371f6c7dff1ab274283cfc2352fa5ece86aed537f99697af712b400d"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/semantic-contract.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "9f78a452262445a1500197249a39cf612d121be576f4d3745460b5ef3816a592"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/test-fidelity.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "40152c2bbec891017a93613178063c0bc68175a6aa1b4677500de35bcd1c9de2"
+  },
+  {
+    "path": "plugins/ca-codex/routines/tribunal/references/lenses/typesafety.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "9b5e69dee039ceb850a6807550ad306b7f215a90b2ac1fcf31c7d7663eea68cd"
+  },
+  {
+    "path": "plugins/ca-codex/routines/using-git-worktrees/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "b2de76a7e2848bcb165cc37e86ebe9d2083f25225f367de26b7a6582c4241533"
+  },
+  {
+    "path": "plugins/ca-codex/routines/writing-plans/SKILL.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1ea67f71f5a68068e76d4e1ee0ff528d3e8ed02dcd007981af79d68cbfc95ec5"
+  },
+  {
+    "path": "plugins/ca-codex/routines/writing-plans/references/farm-plan.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "9245284b9acb1cffeef3d6ad7e364357d74adb952c423e731120fa1d3a400c36"
+  },
+  {
+    "path": "plugins/ca-codex/skills/INDEX.md",
+    "host": "codex",
+    "equal": true,
+    "sha256": "1bfb83c34ed9f00dc986f992e6ed97bfc45813e5ea50a1b0408f4ecf7d06e85b"
+  },
+  {
+    "path": "plugins/ca-codex/generated/command-catalog.json",
+    "host": "codex",
+    "equal": true,
+    "sha256": "a64dd090149de896bfd63ff3685316575faad6b21f83e5eee2404e7a98428aae"
+  },
+  {
+    "path": "plugins/ca-pi/COMMANDS.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "daf7f2190477bbe4cec62bc0f5ec83d2e34d8c038cb18bcf6c96c8d090f90445"
+  },
+  {
+    "path": "plugins/ca-pi/SPRINT.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "b7e2e78fb67fe52c9a55aace3bd95c25c19c0d3f8133dcb2f43989e867ec9c5d"
+  },
+  {
+    "path": "plugins/ca-pi/arbiter.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9a1360799a096bc9e8a815fd78eb88046eada284f6b9a8a6f3c2d0136bbbb821"
+  },
+  {
+    "path": "plugins/ca-pi/agents/INDEX.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ec86e11266ea5b70146be5b94ec70bf48e5b574d3d834f735604169b4903958c"
+  },
+  {
+    "path": "plugins/ca-pi/agents/architecture-drift-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "b4a8fcd5342f47f3fd2e904413f9139aae5546db88dcf3e2b0049db503a2c272"
+  },
+  {
+    "path": "plugins/ca-pi/agents/auth-crypto-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9786c43e5ed3bb551e3a866fd160b4a6a6e54674313a32706e5f03f3adb6705e"
+  },
+  {
+    "path": "plugins/ca-pi/agents/backend-author.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "996c05563621bc0762de00e9399ae5427fbb21f2e1569ed635345a1d29d1f236"
+  },
+  {
+    "path": "plugins/ca-pi/agents/checkpoint-aggregator.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "3e7ffeff5866bc7bed7bbc1c7110665c5b6f38bce83ee9c7236794a4aab115b0"
+  },
+  {
+    "path": "plugins/ca-pi/agents/coverage-auditor.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5182504d1c43d9cc65d41870e592eaadd02cd64afef7382bb219ebb901eb0fd8"
+  },
+  {
+    "path": "plugins/ca-pi/agents/decision-challenger.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ab1e46d01bb1aa43ee05e770a2bb0d4e720a33278ab383f08552581218f9a6f4"
+  },
+  {
+    "path": "plugins/ca-pi/agents/dependency-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "6e89dd14717765a78d8e5052c9f309e37e6cda9ce8b9788533c851538184e89e"
+  },
+  {
+    "path": "plugins/ca-pi/agents/design-quality-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "73f96f2cf78b3c5353d5ca76ef95c08afdbe09901ebaae4a648d622dfd1d907c"
+  },
+  {
+    "path": "plugins/ca-pi/agents/finding-triage.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "e0543db507de4d03d315f42d1538cffe004cccb4c35f51b750cdc347c0e6e2ca"
+  },
+  {
+    "path": "plugins/ca-pi/agents/frontend-author.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "4a9aa43321dcffbd2ce86dea6bb04d55b4dc2068cbaa1b9ef86f288d8a272ace"
+  },
+  {
+    "path": "plugins/ca-pi/agents/grader.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2819ae8be31934051550390f1c8c1c9236c3deab857ed464133900804331b81c"
+  },
+  {
+    "path": "plugins/ca-pi/agents/infra-author.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "caecd10d5703506f1393b07b1c7c08afc4b384ba0cfbd8a7619a51703c7e602c"
+  },
+  {
+    "path": "plugins/ca-pi/agents/map-deps.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9eba47c86136ba5604aa0a05a80c859d7d9a3e3fd0298c00a494b8b37a5fc0e6"
+  },
+  {
+    "path": "plugins/ca-pi/agents/map-structure.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5d17239693828d679e5f5d4a7e3f695afdd5c9853509be0176fac32fe250c9e4"
+  },
+  {
+    "path": "plugins/ca-pi/agents/migration-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ec515bd5213b148d5561e1417b3a84116b91ef72ab7f32a9e82d5f25dbbcc867"
+  },
+  {
+    "path": "plugins/ca-pi/agents/scout.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605"
+  },
+  {
+    "path": "plugins/ca-pi/agents/security-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "6feea33937c86c78f4028b247708f5c1e06ef7d96199334dbee04c18f55cdb38"
+  },
+  {
+    "path": "plugins/ca-pi/agents/tribunal-lens-reviewer.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "c4b75414fd45379a1cbb4cecef29f7dd2a35757a22d6311bcb0dfb749b35f2f1"
+  },
+  {
+    "path": "plugins/ca-pi/agents/verdict-aggregator.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-add-dep/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "c884faabcadff97ffcf654713c0849ed8e8ab7eb7f41ff33175319a446418f47"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-adr-status/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "e2836057f3f0fcf6062dcbf32a7129b226d5800514d4753e5492aca5762c19c8"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-adr/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "4003787cd95c3aa968314749029a1d2e5bc3911dbe5c92916525c71e02dac40e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-audit/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "271e62f26b8cadd94e246f3e48cc4e3f69d576ba4a9208f60ec3a711cb1fd13e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-checkpoint/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2a73e041448a523c725b3109dabc8366081d25d274cba7e5ccee1a8f77afa730"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-chore/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7c8c59e002f26f98daa218a1322582271880910161250142062a3ae9a6be0e45"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-cleanup/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "49214d017cd31df289e266ef417c97d17b03a90e1ec9783a427833419ff15f36"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-commit/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "72ded7b5b6cb9f2106cd0ba24192920d780090f00ee97cf749a429bd7aafbfc7"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-conflict/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1b993ac0a357dfc7d07b4e6e4b62b46e24ae8aff83c0ecc88772c08585ad79d3"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-context-check/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "cfd37782d8d82374c67892d73a852d1f0e59a986fe232418bb45b37b7db8725b"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-create-context/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "09df48c34393fc2ba6b70ca6883a6f20abd7b36708dfd7c6b5ac1eb4f853af1c"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-debug/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "6241df9238f130e1d13a54ba3888d5238a32d8b34f2f72e61eb22c293d61777e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-decompose/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7ecac43bd9501b93b689c726c37477234df9e493a87fd03e9e609ef653126342"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-doctor/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f7ec4592e11736a95ae7630a5a21df415fb69bd0e4bea071efe527f37bde31bb"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-feature/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "96db4dfc1924c92767b5322d5afe21ee85494a62e952dbf6ed75a7b8f7e7d5c8"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-fix/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7950f5cae7edc55f95fce22169d647b802aa06c99aa6c17b55b474fb942f080e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-init/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "a9e9d4fd792b7cf87bea8d3822f2fbe5984bf6b4fe38a97a303478395a46fcfb"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-override/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "aa550f1e256664d7190f5a81aea178ad3a95d37a809a6532b3f55b6625a7dd3b"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-pr/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "bd8374558b83a7efea862432aa39fe9d18a4f3e3df29fb000515eae3d4d25704"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-prune/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8949caa6008bb305ac8f26a434c5d6585f5d7c1ee111a7709737661772b5a08d"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-reconcile/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9f4712b85ac64e0ed15afdecbb36df05a503b6f041bcb2ac6cccf51eda576c37"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-refactor/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "bf208beed63882eea790fa5096f69e3e9d7f9a1b21166bdc827f0d1c6ed41884"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-release/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5058df0f971c01603d04b9ebe6aaf40358604c3f7e847d5921aa4be44669155e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-review/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1e548c43e8a14cb207990fe984d242f3494761639c2052be686bccdc8533127c"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-spike/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ea5f802a9f1c5cb10f4d2bd4f07ee837bb86d6bed62ac940527dfb9f950240d3"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-sprint/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f681d15894388e9dea7519c2fe06370a5806945e689607faa2677c303b551ef6"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-standup/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "60b65b183eb8f4bd8af72aeb7e63f127a5c8d2ba39f47d17a5d0760b2a47b0c6"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-status/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8c88612e1c6280d63f316d179eccf9a69ac937fbe70112a3d44a41c97016b37e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-task/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "971d8319b250b37e2a613f2f55efeba65ef55533103845c93d77d06ce16ff93e"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-threat-model/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f02207e99b95af8ec6ac3a3a6ee4fe8c99931c124ea91ed8ae2dea693500829d"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-tribunal/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "76c09dde9497c8cc43252a3299f90e696b1c8b6bf8c0557c359d523a8a1cb1d8"
+  },
+  {
+    "path": "plugins/ca-pi/skills/ca-watch/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5a637f81080267fa246434fecdba169af31b58a008bf69ffa8eca113117f74b4"
+  },
+  {
+    "path": "plugins/ca-pi/includes/artifacts-attestation.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "6918702db9cea6c4e147cc4e491461156810544a32459ed70934ead7e3d2873f"
+  },
+  {
+    "path": "plugins/ca-pi/includes/artifacts.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1b8df9a0dd9bfca75934ba26f2493303839c6bc85dbbbca9f3445483b79bbadf"
+  },
+  {
+    "path": "plugins/ca-pi/includes/author-tdd-workflow.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "e11f870adf170565296a838bc54625ed2fe0b75c00acbd2b0b7a81d8867d55af"
+  },
+  {
+    "path": "plugins/ca-pi/includes/command-compatibility.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "0c13e07bf6bad350fe0efc6a2e7b0e7f666e130a6ff18ed8fcc9c588afdc62fa"
+  },
+  {
+    "path": "plugins/ca-pi/includes/compaction-charter.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "e4372a7682a9dbfae50ceac9c5acb17001991ee4c755f58265421c6877b9f5c9"
+  },
+  {
+    "path": "plugins/ca-pi/includes/cut-docs.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "d7902b2e666954e37edc9b46607628005fd61276d0e1f2c84b836bf5f8a67f19"
+  },
+  {
+    "path": "plugins/ca-pi/includes/dangerous-mode.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2b8c918dec81d91ca29f1f5f4626056013dbbcb6aebfb8fe19fd7b66d1aa7e38"
+  },
+  {
+    "path": "plugins/ca-pi/includes/farm.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "231dced3ab1747666d3b3d5e9f4899d180cb05be50e7d17e4fce2d63088671c4"
+  },
+  {
+    "path": "plugins/ca-pi/includes/fresh-verification.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653"
+  },
+  {
+    "path": "plugins/ca-pi/includes/harvest.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ec927caade6690d9672f2d58d02e890bc144528a003ee5fe37a1e90f9c6d281c"
+  },
+  {
+    "path": "plugins/ca-pi/includes/helper-invocation.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2d6f65529cba65845d10899f846f6a4d26ce765c43bd6ba71ba9ce58ee02fe74"
+  },
+  {
+    "path": "plugins/ca-pi/includes/knowledge.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5a4416445898e3d6b15eea376f6b34923f3b041cb9f5927eeeeeb39a844fb7ab"
+  },
+  {
+    "path": "plugins/ca-pi/includes/maturity-coverage.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f12befdc8669932dce49e4c18a706e72a8184e13fa2d7d67d95ad3cb8609decb"
+  },
+  {
+    "path": "plugins/ca-pi/includes/ops-mode.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "fcf6dc60a71632a1286e2f31cd3d0b64e0ba87cffb276f4745a7b4bc3c975dca"
+  },
+  {
+    "path": "plugins/ca-pi/includes/pi-host-notes.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "674574e1fd9be3be199fa9ec0fc76d97571e33c57bbd363a354f00b47d58349d"
+  },
+  {
+    "path": "plugins/ca-pi/includes/redirect.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "03f04bb9b857c15fc45779787eb15656e4e07a41dad28a85bfa18125757c6b30"
+  },
+  {
+    "path": "plugins/ca-pi/includes/reference-map.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "cf74bf2b71b7077d8948c6b9045069dbc6202f0706f9c5eeb683b7a103de1005"
+  },
+  {
+    "path": "plugins/ca-pi/includes/review-matrix.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a"
+  },
+  {
+    "path": "plugins/ca-pi/includes/reviewer-contract.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "12043051e973f0393c7156fc45b3631ff6e30e3bed0e18a3fb090c907a3d9ac6"
+  },
+  {
+    "path": "plugins/ca-pi/includes/routing-table.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f08c146efb37f0c8e895b862ad4b4dea35c1553050e7cec64612f90db8b6de0f"
+  },
+  {
+    "path": "plugins/ca-pi/includes/safety-core.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "92db2f7bb6aba81db11073b85bd6c3fd1d94baccfaedeb4304d9b667109f7024"
+  },
+  {
+    "path": "plugins/ca-pi/includes/security-gate-record.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "b862929e861db5ae946b17cbb1fd393e4f0ba27d0d4bfb2bf4b935503d7f6c13"
+  },
+  {
+    "path": "plugins/ca-pi/includes/sprint-authority.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f096436240dd165632996cb478a2a7d9a1ad00db751393afd58b5696f822a7cd"
+  },
+  {
+    "path": "plugins/ca-pi/includes/verification-boundary.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/INDEX.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "0be1fee4a885386fa2029685746b2725700ee7b8fadfa40985e41077e8ff7a58"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/color.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "b8f71fd20c6583e51eee1bff6faacf955f94ca12ac0aea5c34ae341eac77e6bc"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/core.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7212c7639dd33bfa454205c24172b4f051e03a378f7fe4089b57784fddd47e00"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/images.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ff10be43526511c557e22b16821d7893d3bf8a9ee1901b6b564317715fd8b3c1"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/layout.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "e04749e7c24f935fac0da84c7acd849f10287bd5732d2ca2b1f08e4c86763d05"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/medium-cli.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "91475407f2c8e6cb9a613248304903abf6fd0be9d345ade25e79dc89532fb21e"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/medium-dataviz.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7dc8cbbbd4c87ec0f67c3155cea2d1d02e734870e454a60cc5bcd4c059bac9b2"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/medium-diagram.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7a5a29217543f5614e8af2a14a57e0fb367fd44c9dd11951bea674b004d30e47"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/medium-documents.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9ae58fc327d0c60f1acdc9dc6c81314147665c4feea4d08972be2e4d1f79b748"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/medium-slides.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1bf715f6851e01f0522c448f67465db09614861d5fee0697863cca1472594599"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/medium-web.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "908c40b8786722ceee3042a05185d87d57f782d252dbaa88707ecbf2d2e7a0f1"
+  },
+  {
+    "path": "plugins/ca-pi/includes/anti-slop-design/typography.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "4ca2158d0959faf1ebcb55e789309acc4f7dcf3ffe8318f880489f5664d99205"
+  },
+  {
+    "path": "plugins/ca-pi/includes/smarts/core.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7f9df4abd5c1dca3b6388525482d4036d7fa3b45b6d3ee0a50f6a9a2c8a3c146"
+  },
+  {
+    "path": "plugins/ca-pi/includes/smarts/decision-log-format.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2265c640a8cd29840f2297265c39cb18e467099c36e392b76db7fed95d1825e1"
+  },
+  {
+    "path": "plugins/ca-pi/includes/smarts/lenses.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "074d4ddeb5e9fffb8d2d1406171649c2850770ffbac68496728d745b0346128d"
+  },
+  {
+    "path": "plugins/ca-pi/routines/INDEX.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "3ff819ccb9b29fc7aaef74636ddede857b366d9c925e31bf2a7a59bf6fec52d1"
+  },
+  {
+    "path": "plugins/ca-pi/routines/brainstorming/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "0253e4ec403dc2529d1235c31100f2010bbaff392e0af50922eba790b4141411"
+  },
+  {
+    "path": "plugins/ca-pi/routines/commit-gate/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9c9b516cef65709a036c967ba7e104c153e22545ccf8e8f35f46ca505e53e223"
+  },
+  {
+    "path": "plugins/ca-pi/routines/context-check/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f61163e5e630bbc3376785a1456361f98f4b9755586b3ba08a4f78f2e9274616"
+  },
+  {
+    "path": "plugins/ca-pi/routines/context-creation/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "c21f0b46491cf5e4f0013ce2ccedf647eea8c2efa609b6794461135b78e5e448"
+  },
+  {
+    "path": "plugins/ca-pi/routines/context-creation/references/markdown-format.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "665486eb47877e0b57e35e61184cec260ffde1c71d322fd5786f7bde3d0e06e9"
+  },
+  {
+    "path": "plugins/ca-pi/routines/crypto-compliance/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "58280663ce5e56b71d73deba3e4e0c39329f8e26b41a4322ed126d00db5a6306"
+  },
+  {
+    "path": "plugins/ca-pi/routines/debug/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "538ca801fe6be41c1e120c79684a6b6b91efd7f2897e52597a3c1a1223341101"
+  },
+  {
+    "path": "plugins/ca-pi/routines/debug/references/debug-handoff.schema.json",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9077a16c8b70256ab818971078b77f8fdfd103f4afb30cede9bf296f0083fd82"
+  },
+  {
+    "path": "plugins/ca-pi/routines/debug/references/handoff.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148"
+  },
+  {
+    "path": "plugins/ca-pi/routines/debug/references/minimal-unresolved.json",
+    "host": "pi",
+    "equal": true,
+    "sha256": "e2d9b31d63051d3505a8027bf195ee84bc9923ba7077f1f71e6a81874ee60a17"
+  },
+  {
+    "path": "plugins/ca-pi/routines/debug/references/preparation.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2d5a71db7cf8762c475be99ffe2eda8bf56859a9cd08dd3c04d3c0cc067fc36a"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decision-lifecycle/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "665525eb60b6f315230376e1e80741943fdfa9816e8e0018ee3db2b42aae5878"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decision-lifecycle/references/adr-template.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ba03b887103cc5913bcdf4ad6306dc0a8eb425b072897660c5a1d1b003821617"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decision-lifecycle/references/authoring.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "db1c3f8d0f9ea7fcbe53346175bbaa2c8fa3d083c131b917bf6d5000cdfaeec8"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decision-variance/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9bdb8ea09a28c037e33ff70557b768808b122eeaca8d0a7c50647046db7fbead"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decision-variance/references/analysis.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1b3979c7b462d80c5356cb20496c70d70411569bb1149b2f70f542f937ef2dfb"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decompose/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "764ccc6d34361b066a995dca1890e131f9a67c69039c6855f4a95f6c93ed7114"
+  },
+  {
+    "path": "plugins/ca-pi/routines/decompose/references/markdown-format.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "815d425f0ae3dcb78829ba80dd5987fd9f220db59c6ea9a6aa9eba8118516d12"
+  },
+  {
+    "path": "plugins/ca-pi/routines/dispatching-parallel-agents/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "d8d3901c400cbc2d4b5c3a46cc8763324ba56e45d05c090ac6443b577ef54b53"
+  },
+  {
+    "path": "plugins/ca-pi/routines/executing-plans/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8f12070503bda75152cf8b1a7629004032f9cec2683a009f14ec33f0d1b3d687"
+  },
+  {
+    "path": "plugins/ca-pi/routines/finishing-a-development-branch/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "470090018de7469a7b8f4afed7d9ca3e74d8786699f1df60b5c1db8d0859b0a6"
+  },
+  {
+    "path": "plugins/ca-pi/routines/post-merge-cleanup/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8a060ee5baf9e89fbf83e70cd5bccf8038b723a26178ad9d856df7d1b5ec0c56"
+  },
+  {
+    "path": "plugins/ca-pi/routines/refactor/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "4ec8ca8f46bb82707f8a65b3bd8fffa711162d062afa70dbcc89f321ab623b41"
+  },
+  {
+    "path": "plugins/ca-pi/routines/release/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "622be6a9592d359339a83f5965176c5946bc81bb8493703eaaaaed9e33de30ac"
+  },
+  {
+    "path": "plugins/ca-pi/routines/secret-handling/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "74c43a996a1b8d896fcfec9e050dea9ba975dc241f865deb8916943473ce66f1"
+  },
+  {
+    "path": "plugins/ca-pi/routines/security-architecture/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "929371e65eb6bc27e654a577b3352e1b3b7c62f82b221ae351aab8740b7ba6ef"
+  },
+  {
+    "path": "plugins/ca-pi/routines/subagent-driven-development/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "c64485c7f4846d805eed169d3d41804427e6cae477bbb6e1dd2be9df0eddc2df"
+  },
+  {
+    "path": "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7fa8bde1a7034292451a38e60770be7327db0fb9637ffb27bddb62c896a0e1bf"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tdd/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "4572532916c6c45d4498466a7d9b425508be6696362b802418cd5a81b3cfe71d"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "afc3e8f6a1ccec7260d870f1619c79aeead4c30769fc330711154bbf41ef9b30"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/ai-markers.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8983472f3899f1d2c5425a6ee662369aa7873bbdc041597ea652ab66ec4d29f5"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/cost-and-models.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "2299732d5fccb748e2677324ee4b32c174971e2ba996622e40cf36902efb454a"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/finding-record.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8f401aa4fcf9c99806c49e11ad4baee68c026fca40a33ea61719eb55d08f36cd"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/issue-filing.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "57381504273274b07ef22170a9c194742506e0fc08153cdb902f2c776cb8b46b"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/report.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "f1532249f76290cc85d248424a3e1d97e3a28b4d9abd40c6616ed34621fc21d7"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/review-risk.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "883d2b6c98a8636dd0ec193dd69fb7bd1d290cc2e69a6cbc1f3f99efc674e54f"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/schemas.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "5e36603f7bf1c5605a841f3f780abe5e3c8555b1ccc2de71ace623e05a21b662"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/telemetry.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "10007eb9a6afd5e25447dfc726d56914bdd32be4180f3ad58c6cc8ba24ad6c31"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/triage.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1f61e24f7d8b19e368f3fae2cb6a5e34507b041bd4470a74008870304c8fb913"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/verification-quality.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "6c78769990f2a11fb2f0dc684259c498be1721c37720a030476abb8b1dc6b7c0"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/appsec.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "806b4a79065e889f1f4ddceb35541424efca31933ca04d5a68817ee0d4fbb7c6"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/architecture.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "383b6bd22f1ac6b10c2a8024bd5957deefded57f78b1d90dfcbbf778952f1c96"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/change-closure.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "b7b665ecbd0e96f1bedd820fc3be48728d566dedb6b646a6c95c410d661afe92"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/coverage.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "4e12f61f34aa4301826348e7867cebb07cc9a4ccba6df6dd58b6628c9ddee515"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/infra.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "3fcc9bbc599fe79f26c048911e4484ff50c1e4b2510a3651ef622b1659aec5ee"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/migration.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "157c2d52c086228575173ad50aba7752d8388785d0657ee4132d07deabefad84"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/observability.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "1b4d02a96bf5c27a17eb426e7cb0fbb5e3eb173adb47244e95baf95911528d24"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/performance.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "08cfa4e9b85f33d481f21051c7b6150316b062224c1092ca73937ea8e8db2ad5"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/reliability.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "86088a2b790624d07b1216205030c435e2985810fd8414f65fca8a28112e9f41"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/secrets-supply.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "c3aaa89a68286cda575886cf71cafc4fb1e0786a58a19a8332008db918be7bfa"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/semantic-contract.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "adf4f7b875eeb5b1214a41c6f1754bbe7003449a50cc5db4610def2ac1fff80a"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/test-fidelity.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "7834d7a8402f08511d1649ce098f8d03dc42f843c8d224a8bf4847e72e1982f2"
+  },
+  {
+    "path": "plugins/ca-pi/routines/tribunal/references/lenses/typesafety.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "9ae630a62c8824de1ad7f74e23ce13a2281b9b336579d3f77bf88a54d53c43db"
+  },
+  {
+    "path": "plugins/ca-pi/routines/using-git-worktrees/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "0392e963e54132078544469bf8e46bab180fb9998a9e0eb7b78591453f3112f7"
+  },
+  {
+    "path": "plugins/ca-pi/routines/writing-plans/SKILL.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "044f24f72a72712429406b2f5d49be9e5a64021fdb06bf0d2dc552dcb78236f7"
+  },
+  {
+    "path": "plugins/ca-pi/routines/writing-plans/references/farm-plan.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "d1f1aaef4491ab51835b0820b71fff8e9b472ea77bbaffb861808e379414398f"
+  },
+  {
+    "path": "plugins/ca-pi/SKILLS.md",
+    "host": "pi",
+    "equal": true,
+    "sha256": "ce5c268849d4004e48bd46526cb2e07e0faa33d4b3c8ee176cbfad0628b1a3a4"
+  },
+  {
+    "path": "plugins/ca-pi/generated/command-catalog.json",
+    "host": "pi",
+    "equal": true,
+    "sha256": "8589cd416b255a4c8faa3bdbafb35709ef21678e178d8feb42f91f1916c19e49"
+  },
+  {
+    "path": "plugins/ca-pi/generated/roles.json",
+    "host": "pi",
+    "equal": true,
+    "sha256": "59cd66855d73bea56317367ab1be9694a4daf0f71801cbd79f8ab460b2517dcd"
+  }
+]

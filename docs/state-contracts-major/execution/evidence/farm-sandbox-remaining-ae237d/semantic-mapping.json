@@ -1,0 +1,1600 @@
+[
+  {
+    "cell": "disposition:transitions:S22:01",
+    "frozen_contract_sha256": "4b46f4a9fb4b123c769845b5fb76dc6917df2bb891a4014728aee01ba591ac2c",
+    "event": "classify artifact origin",
+    "guard": "no sibling HTML or artifact binding evidence",
+    "current_contract_review": "Unbound JSON remains legacy input. Minimal schema controls and actual legacy CLI paths corroborate source classification; no typed/native admission is claimed.",
+    "assertion_refs": [
+      "A-0238",
+      "A-0155"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S23:01",
+    "frozen_contract_sha256": "ed79467a59dd3fdc8812c4b0356aea6762cae2b6fb52e19dc2c7185464e6ee66",
+    "event": "start farm",
+    "guard": "closed plan schema; unique IDs; valid dependency DAG; selected provider URL/config",
+    "current_contract_review": "Source-conformance: closed parsePlan/validate, env>plan>default resolution, secure URL admission and exclusive run-ID creation remain ordered before dispatch. Named schema/URL controls corroborate finite branches; no new every-config-combination execution.",
+    "assertion_refs": [
+      "A-0125",
+      "A-0126",
+      "A-0202",
+      "A-0203",
+      "A-0204",
+      "A-0205",
+      "A-0206",
+      "A-0207",
+      "A-0208",
+      "A-0209",
+      "A-0210",
+      "A-0211",
+      "A-0212",
+      "A-0213",
+      "A-0214",
+      "A-0215",
+      "A-0216",
+      "A-0234",
+      "A-0235",
+      "A-0236",
+      "A-0237",
+      "A-0238",
+      "A-0239",
+      "A-0240",
+      "A-0241",
+      "A-0242",
+      "A-0243",
+      "A-0244",
+      "A-0245",
+      "A-0246",
+      "A-0247",
+      "A-0248",
+      "A-0249",
+      "A-0250",
+      "A-0251",
+      "A-0252",
+      "A-0253",
+      "A-0254",
+      "A-0255",
+      "A-0256",
+      "A-0257",
+      "A-0258",
+      "A-0259",
+      "A-0260",
+      "A-0261",
+      "A-0262",
+      "A-0263",
+      "A-0155"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S23:03",
+    "frozen_contract_sha256": "7631f6af661691ff81d5959227398108f68dfed6e09bf2a63317ef4b09f71f4a",
+    "event": "schedule task",
+    "guard": "all dependencies green; no reserved lexical file-scope conflicts; concurrency capacity",
+    "current_contract_review": "DAG-ready and scope-independent tasks reserve lexical scopes under available capacity; shared worker limiting remains in the inspected scheduler/sample path.",
+    "assertion_refs": [
+      "A-0171",
+      "A-0221",
+      "A-0222",
+      "A-0223",
+      "A-0224",
+      "A-0225",
+      "A-0226",
+      "A-0227",
+      "A-0228"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S23:04",
+    "frozen_contract_sha256": "50f309d67ec52c2660d1ffc674b48fbd112c4aceacbaeaf818e3ccfca35ea635",
+    "event": "dependency escalated/blocked",
+    "guard": "dependency cannot become green",
+    "current_contract_review": "An escalated predecessor blocks its dependent without claiming a worker call; independently eligible work is still admitted.",
+    "assertion_refs": [
+      "A-0142",
+      "A-0143",
+      "A-0221",
+      "A-0222",
+      "A-0223",
+      "A-0224",
+      "A-0225",
+      "A-0226",
+      "A-0227",
+      "A-0228"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S23:06",
+    "frozen_contract_sha256": "e416d3762c8d27f319832cc4572c8a76ffbbfddca4a80fba67b866c7a1e83094",
+    "event": "breaker threshold",
+    "guard": "settled tasks ≥ configured minimum (default 3), escalation fraction > configured rate (default 0.5)",
+    "current_contract_review": "Breaker uses settled minimum and escalation fraction, stops admission, drains existing tasks and records unscheduled remainder. Drain is distinct from OS signal cancellation.",
+    "assertion_refs": [
+      "A-0170"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S23:09",
+    "frozen_contract_sha256": "3c54baf9134f5e890c4cf0a67aab9a980f8149aa7505f01dfacb448e07108c46",
+    "event": "tier-one receipts succeed",
+    "guard": "all tasks green and cleanup verified",
+    "current_contract_review": "Actual two-task legacy CLI green execution publishes supported receipts and returns success; cleanup health is an independent success precondition.",
+    "assertion_refs": [
+      "A-0140",
+      "A-0155"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S23:10",
+    "frozen_contract_sha256": "5a6f1363f8c418d607cb560ed57e8db6e1f50ae6a74386aeed351f41ad20d112",
+    "event": "tier-one receipts succeed",
+    "guard": "escalation/block/abort or cleanup degradation",
+    "current_contract_review": "Escalation/blocked or cleanup-degraded outcomes preserve partial results; existing runExitCode separates workload2 from publication3.",
+    "assertion_refs": [
+      "A-0141",
+      "A-0157",
+      "A-0178"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S23:08",
+    "frozen_contract_sha256": "431a85c4d9e8688ad226b5b6c816d987b76b058d564209bff30721a52d5f66c3",
+    "event": "finalization",
+    "guard": "including exceptions",
+    "current_contract_review": "Source-conformance of finally: attempt verified integration cleanup and durable report then Markdown; latest copies remain best effort. Handled publication faults are observed; external process-death/all-exception durability is explicitly not established.",
+    "assertion_refs": [
+      "A-0138",
+      "A-0139",
+      "A-0140",
+      "A-0141",
+      "A-0155",
+      "A-0157",
+      "A-0178"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S24:04",
+    "frozen_contract_sha256": "6a60577780776bc9527a4c08ade0eb1b9c2b6686ee3a1f706ed5f348b397ba7e",
+    "event": "worker returns valid files",
+    "guard": "current request successful",
+    "current_contract_review": "Admitted worker files proceed through safe materialization and patch/evidence capture; real loopback/Git best-of-N/green fixtures and compliant-worker controls support finite paths, without OS adversarial race qualification.",
+    "assertion_refs": [
+      "A-0144",
+      "A-0156",
+      "A-0183",
+      "A-0191",
+      "A-0192",
+      "A-0193",
+      "A-0268",
+      "A-0265",
+      "A-0267",
+      "A-0266",
+      "A-0264",
+      "A-0278",
+      "A-0279",
+      "A-0274",
+      "A-0271",
+      "A-0272",
+      "A-0269",
+      "A-0281",
+      "A-0280",
+      "A-0277",
+      "A-0276",
+      "A-0270",
+      "A-0273",
+      "A-0275",
+      "A-0283",
+      "A-0282"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:05",
+    "frozen_contract_sha256": "f99493d69fa56264267fdf3a7ac53b8ee4968d19583772b7b83f8976e6adeed8",
+    "event": "files written",
+    "guard": "read-only tests unchanged and post-write sweep safe",
+    "current_contract_review": "Protected-test/path sweep precedes drift/gates/heuristic/mutation acceptance. Current source retains the complete order; selected software controls do not imply every optional mutation process outcome ran in this selected group.",
+    "assertion_refs": [
+      "A-0184",
+      "A-0191",
+      "A-0192",
+      "A-0193",
+      "A-0136",
+      "A-0229",
+      "A-0130",
+      "A-0128",
+      "A-0129",
+      "A-0163",
+      "A-0161",
+      "A-0167",
+      "A-0165",
+      "A-0169",
+      "A-0162",
+      "A-0160",
+      "A-0166",
+      "A-0164",
+      "A-0168",
+      "A-0230"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:06",
+    "frozen_contract_sha256": "4e4ca86e16c4e52ec15d6887d1d1d8b52d4dceb95641e14ec87290c9bee73dee",
+    "event": "unsafe file/test mutation",
+    "guard": "path escape, link race, protected initial test changed",
+    "current_contract_review": "Reported out-of-root or protected-test writes refuse the candidate; fatal containment paths do not authorize unsafe retry/reset.",
+    "assertion_refs": [
+      "A-0191",
+      "A-0192",
+      "A-0136",
+      "A-0268",
+      "A-0130",
+      "A-0128",
+      "A-0129",
+      "A-0230",
+      "A-0265",
+      "A-0267",
+      "A-0266",
+      "A-0264",
+      "A-0278",
+      "A-0279",
+      "A-0274",
+      "A-0271",
+      "A-0272",
+      "A-0269",
+      "A-0281",
+      "A-0280",
+      "A-0277",
+      "A-0276",
+      "A-0270",
+      "A-0273",
+      "A-0275",
+      "A-0283",
+      "A-0282"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:07",
+    "frozen_contract_sha256": "06aea10bd30ba2ea9c634f8262d3a157a0ae545769dc8f652cadb2be17905dd8",
+    "event": "drift outside scope",
+    "guard": "first occurrence and retry budget remains",
+    "current_contract_review": "First dirty observation spends an available author retry and names forbidden paths in its next prompt.",
+    "assertion_refs": [
+      "A-0137"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:08",
+    "frozen_contract_sha256": "7d8b104827bfc03b124c1eca21159ab397c981e8c0d5d1118129516fc4b20725",
+    "event": "drift repeats or no budget",
+    "guard": "second drift or exhausted budget",
+    "current_contract_review": "First drift without budget and repeated drift with budget both escalate with retained offending paths; the latch is independent of the numeric retry limit.",
+    "assertion_refs": [
+      "A-0133",
+      "A-0134",
+      "A-0135"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:10",
+    "frozen_contract_sha256": "60eb6d9c796a426a1052b7dc252393317fb167a00969f9b34ab474496f331726",
+    "event": "retryable worker/gate/quality failure",
+    "guard": "budget remains and no fatal containment flag",
+    "current_contract_review": "Ordinary retryable custom-worker failure retains configured retry/reset/setup-cache policy; a transport deferral does not enter that retry path. This is not crash-after-reset atomicity proof.",
+    "assertion_refs": [
+      "A-0233"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:11",
+    "frozen_contract_sha256": "5b2043a22f9e78d8c4ae8761de62ad4c5cb3274fd6881928a62bc0583649f8a7",
+    "event": "nonretryable HTTP cooldown",
+    "guard": "transport retryable=false",
+    "current_contract_review": "Long transport deferral does not start another authoring round immediately, for both single and multiple samples.",
+    "assertion_refs": [
+      "A-0231",
+      "A-0232"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:13",
+    "frozen_contract_sha256": "2ccaf1850e1b35d9bf43e0741a1d88276b23040e134ca5f77fcbfeea1a740500",
+    "event": "all checks pass",
+    "guard": "no fatal mutation/heuristic issue",
+    "current_contract_review": "A compliant qualified candidate advances to commit/integration; unsafe candidates and no-green sampling controls refuse.",
+    "assertion_refs": [
+      "A-0184",
+      "A-0193"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S24:14",
+    "frozen_contract_sha256": "62b10b469441a6fb1cd0a74768c3c767605837b36f6c3f14676357d8289dadd0",
+    "event": "attempts exhausted",
+    "guard": "retry budget exhausted",
+    "current_contract_review": "Exhausted retries escalate with bounded prior-failure detail and retain diagnostic worktree/evidence.",
+    "assertion_refs": [
+      "A-0131",
+      "A-0187"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/worktree-fs.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S25:01",
+    "frozen_contract_sha256": "54b4ebdfe4ec717dde1e9837484d8c7c1e649888eb27270d11c4cd1c5596cc28",
+    "event": "launch samples",
+    "guard": "same frozen base; separate sample worktrees; shared worker capacity",
+    "current_contract_review": "Real and seam best-of-N run independent sample worktrees on the frozen base with shared worker limiting; single-sample path remains the task worktree.",
+    "assertion_refs": [
+      "A-0144",
+      "A-0183",
+      "A-0184"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S26:03",
+    "frozen_contract_sha256": "ba27cfcd6c4251eea26d01527fc29577b90f4b58270fe161011019a62be28298",
+    "event": "integration lock acquired",
+    "guard": "single merge owner",
+    "current_contract_review": "Known qualified task branches merge --no-ff through the single integration merge lock. Actual overlapping-scope CLI fixtures serialize integration.",
+    "assertion_refs": [
+      "A-0155",
+      "A-0171"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S26:02",
+    "frozen_contract_sha256": "01c684c3f86a959ef53fd5f7057fc90e8a359f34a214cf7d853becae5dccfc52",
+    "event": "commit",
+    "guard": "staged intended changes",
+    "current_contract_review": "Source-conformance: commit is issued once and failure returns existing escalation, preserving HEAD for inspection; no blind retry after uncertain commit observation. Negative failure case corroborates the note, not every crash boundary.",
+    "assertion_refs": [
+      "A-0132",
+      "A-0155",
+      "A-0171",
+      "A-0172",
+      "A-0173"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S26:04",
+    "frozen_contract_sha256": "54a72f0201979335e472cbbbe167c48a1f9fdcfd2a0f369504c706dbbaaeb172",
+    "event": "merge exits zero",
+    "guard": "merge command success",
+    "current_contract_review": "Source-conformance of success branch: a successful merge is accepted without a newly executed combined-tree gate. Per-task green is never relabeled as fresh combined-tree test coverage.",
+    "assertion_refs": [
+      "A-0132",
+      "A-0155",
+      "A-0171",
+      "A-0172",
+      "A-0173"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S29:02",
+    "frozen_contract_sha256": "5a9968a5a82349df3acb7ba3672726e0d1eb2c9602ccd42ac8dbf58e7da58b22",
+    "event": "ordinary close",
+    "guard": "no timeout",
+    "current_contract_review": "Ordinary exits/signal-null exit normalization and separated stdout/stderr/out are actually observed. The helper has no fixed accumulated-output cap; no bounded-memory claim is added.",
+    "assertion_refs": [
+      "A-0117",
+      "A-0119",
+      "A-0123"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/exec.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S29:03",
+    "frozen_contract_sha256": "5a0539cbeb15a3e1b10de3a7f171e8dba2255c3e5fe03b06cbdc659741cb35b2",
+    "event": "timeout",
+    "guard": "configured deadline elapsed",
+    "current_contract_review": "Deadline waits for typed tree-kill verification; verified timeout124 and unverified125 remain distinct. Local real descendant probes and controlled kill failure corroborate this finite process contract.",
+    "assertion_refs": [
+      "A-0174",
+      "A-0175",
+      "A-0176",
+      "A-0177",
+      "A-0194",
+      "A-0195",
+      "A-0196",
+      "A-0197",
+      "A-0198"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/exec.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S29:01",
+    "frozen_contract_sha256": "a6799c47f03fc07cf1acdadd0847661bc9278bc87a61cbe0837cc6de663aca11",
+    "event": "run command",
+    "guard": "spawn succeeds",
+    "current_contract_review": "Source-conformance preserves detached POSIX process groups, captured streams and per-command default timeout policy. Local Windows execution does not qualify the POSIX group arm.",
+    "assertion_refs": [
+      "A-0117",
+      "A-0118",
+      "A-0119",
+      "A-0120",
+      "A-0121",
+      "A-0122",
+      "A-0123",
+      "A-0174",
+      "A-0175",
+      "A-0176",
+      "A-0177",
+      "A-0194",
+      "A-0195",
+      "A-0196",
+      "A-0197",
+      "A-0198"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/exec.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S29:06",
+    "frozen_contract_sha256": "9d82813759c98ef1bb72d9220a31d9c2ea89bb6981da8bceb0c5bdba9c2ce3c7",
+    "event": "taskkill/fallback",
+    "guard": "platform-specific verification",
+    "current_contract_review": "Source-conformance of platform arms retains taskkill/fallback/root checks and their limits; root-process death alone cannot establish every descendant is gone. No unexecuted POSIX arm is marked Windows-tested.",
+    "assertion_refs": [
+      "A-0117",
+      "A-0118",
+      "A-0119",
+      "A-0120",
+      "A-0121",
+      "A-0122",
+      "A-0123",
+      "A-0174",
+      "A-0175",
+      "A-0176",
+      "A-0177",
+      "A-0194",
+      "A-0195",
+      "A-0196",
+      "A-0197",
+      "A-0198"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/exec.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S30:03",
+    "frozen_contract_sha256": "4945eb8e73a4658e4c1eea77868663278911b931ea0df7c83b69600ba760d24b",
+    "event": "registry present but disk absent",
+    "guard": "stale registry",
+    "current_contract_review": "Known registered+missing owned worktree authorizes one prune and reobservation; injected unavailable readback then authorizes no additional destructive attempt. Neither readback failure nor lexical mismatch proves registry absence.",
+    "assertion_refs": [
+      "A-0124"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S32:01",
+    "frozen_contract_sha256": "7a6b54bf94e3aba3089af88dac39d1156826de323e5df565510adc9b758ed5ed",
+    "event": "resolve base",
+    "guard": "configured commit exists",
+    "current_contract_review": "Actual source/bundle canary freezes a resolvable base before entitlement callbacks can move its named ref; unresolved base refuses before model requests.",
+    "assertion_refs": [
+      "A-0145",
+      "A-0146",
+      "A-0151",
+      "A-0152"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S32:02",
+    "frozen_contract_sha256": "fd82771469770118af3c8adabe85a1a8945a1db0eb7768630a83d5b411a21e3c",
+    "event": "minimal entitlement probes",
+    "guard": "≤35s bounded per probe",
+    "current_contract_review": "401 exclusion, bounded probe timeout/error and non401/status0 survivor are distinguished. A survivor is only eligible for canary evaluation, never a paid-provider capability claim.",
+    "assertion_refs": [
+      "A-0179",
+      "A-0180",
+      "A-0181",
+      "A-0182",
+      "A-0217",
+      "A-0218",
+      "A-0219",
+      "A-0220"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S32:03",
+    "frozen_contract_sha256": "7f71f041a3639f0c360160a37da83b4b30704e0a7a467ec3658483ebac16115e",
+    "event": "evaluate task",
+    "guard": "fresh mkdtemp + detached worktree",
+    "current_contract_review": "Real source/bundle loopback canaries use detached isolated task/sample worktrees and leave existing refs unchanged; this path does not commit/merge.",
+    "assertion_refs": [
+      "A-0147",
+      "A-0148",
+      "A-0149",
+      "A-0150"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S32:04",
+    "frozen_contract_sha256": "fb7472a5899a2c959e5b4c20827a15c8429f038c025a0c2fccf774fb790c5ce6",
+    "event": "finally",
+    "guard": "candidate settled",
+    "current_contract_review": "Known settled canary candidates clean their own worktree/branch/root namespace independently before recommendation; failure fixtures preserve existing integration refs.",
+    "assertion_refs": [
+      "A-0147",
+      "A-0148",
+      "A-0149",
+      "A-0150",
+      "A-0158",
+      "A-0159"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S32:07",
+    "frozen_contract_sha256": "89949e4b86f35159450c024e46b94b517067bd2fe8f0b159c797181125a6fa26",
+    "event": "green candidate and clean resources",
+    "guard": "report writes succeed",
+    "current_contract_review": "Actual green, clean source/bundle canary writes its bounded recommendation/provenance while preserving existing refs.",
+    "assertion_refs": [
+      "A-0147",
+      "A-0148",
+      "A-0149",
+      "A-0150"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S32:05",
+    "frozen_contract_sha256": "61bebc4f88d292a78ddd1f5995800fd2c944a3290e63b87fb8b4d262ab5a2edb",
+    "event": "rank",
+    "guard": "candidate outcomes known",
+    "current_contract_review": "Source and controlled ranking preserve green-first then attempts/time order; one candidate run is not a statistical success-rate estimate.",
+    "assertion_refs": [
+      "A-0147",
+      "A-0148",
+      "A-0149",
+      "A-0150",
+      "A-0153",
+      "A-0154"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S32:06",
+    "frozen_contract_sha256": "c9b1db6569261ab8b355beead8379df1c405aa75d8025fb8813f2f78a9aaec32",
+    "event": "cleanup degraded or no green",
+    "guard": "any leak or no successful candidate",
+    "current_contract_review": "Source-conformance: no-green or degraded cleanup suppresses recommendation and exits2. The no-green path is observed; this group does not newly execute every canary cleanup-unknown fault.",
+    "assertion_refs": [
+      "A-0145",
+      "A-0146",
+      "A-0147",
+      "A-0148",
+      "A-0149",
+      "A-0150",
+      "A-0151",
+      "A-0152",
+      "A-0153",
+      "A-0154",
+      "A-0158",
+      "A-0159",
+      "A-0179",
+      "A-0180",
+      "A-0181",
+      "A-0182",
+      "A-0217",
+      "A-0218",
+      "A-0219",
+      "A-0220"
+    ],
+    "source_paths": [
+      "plugins/ca/tools/farm.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S47:02",
+    "frozen_contract_sha256": "aefc957081814112c5687664c0d51dac5c67d3c2c7a95232fd63d839968758fb",
+    "event": "Docker call",
+    "guard": "admitted args/environment",
+    "current_contract_review": "Controlled spawn-boundary calls preserve explicit environment, bounded captured output and configured/default deadline. No real Docker availability is inferred from the local16 report.",
+    "assertion_refs": [
+      "A-0096",
+      "A-0097",
+      "A-0098",
+      "A-0099",
+      "A-0100",
+      "A-0101",
+      "A-0102",
+      "A-0103",
+      "A-0104"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/docker.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S47:06",
+    "frozen_contract_sha256": "c9da24513afaa0b62aa5bb058c2f4e1c88c68cfa24957d7d8fedd83a14d0ce8b",
+    "event": "spawn error/normal close",
+    "guard": "no prior failure",
+    "current_contract_review": "Spawn errors, ordinary nonzero close and already-aborted signals retain ordinary failure and settle once; timer/listener cleanup is kept.",
+    "assertion_refs": [
+      "A-0098",
+      "A-0105",
+      "A-0106",
+      "A-0107"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/docker.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S47:07",
+    "frozen_contract_sha256": "a3d7872e2fbe144da4f401171f5a896a9fc9307a2a63310cc38c44fdf74c6fa5",
+    "event": "close",
+    "guard": "reason already chosen",
+    "current_contract_review": "Abort/timeout/overflow first-reason latches remain authoritative across later close; retained output is not overwritten by a secondary terminal event.",
+    "assertion_refs": [
+      "A-0105",
+      "A-0108"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/docker.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S54:06",
+    "frozen_contract_sha256": "2adec11262b071a4240bb085c0615d041d1a4547005824e72073f372e1015fd7",
+    "event": "Docker admission",
+    "guard": "required CI flag + usable Linux Docker",
+    "current_contract_review": "Source-conformance only: required Linux-Docker availability mode throws for unavailable/incompatible daemon, while developer nonrequired mode may skip. Actual required-host runtime belongs to the separately retained hosted producer.",
+    "assertion_refs": [
+      "A-0096",
+      "A-0097",
+      "A-0098",
+      "A-0099",
+      "A-0100",
+      "A-0101",
+      "A-0102",
+      "A-0103",
+      "A-0104",
+      "A-0105",
+      "A-0106",
+      "A-0107",
+      "A-0108"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/cli.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca-sandbox/tools/docker-gate.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S49:02",
+    "frozen_contract_sha256": "d29b3261dff430d23549be3b73545b726802b6d570b623312f84a4ae51103bb3",
+    "event": "choose image tag",
+    "guard": "current host checkout path",
+    "current_contract_review": "REMAPPED SBX-C01: V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched.",
+    "assertion_refs": [
+      "A-0023",
+      "A-0111",
+      "A-0112"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:03",
+    "frozen_contract_sha256": "f6b199dd312ce9eb3ad14039cada6b5c9e8b91a06a27882ffabc8d97619cb3fd",
+    "event": "docker image inspect exits 0",
+    "guard": "tag exists",
+    "current_contract_review": "REMAPPED SBX-C01: tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs.",
+    "assertion_refs": [
+      "A-0024",
+      "A-0109",
+      "A-0112"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:04",
+    "frozen_contract_sha256": "0711c69536d1c7406c0647e974cc46293cafc3a5e6d07ee427a213edc0c072f2",
+    "event": "inspect nonzero",
+    "guard": "missing image OR Docker read failure",
+    "current_contract_review": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning.",
+    "assertion_refs": [
+      "A-0025",
+      "A-0027",
+      "A-0028",
+      "A-0029",
+      "A-0030",
+      "A-0031",
+      "A-0032",
+      "A-0033",
+      "A-0034",
+      "A-0113"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:05",
+    "frozen_contract_sha256": "6bd9127027c24a17cbb3a788aab42e7210d33827d9a99449e73c702cfc5d03fb",
+    "event": "Nixpacks available",
+    "guard": "host/WSL platform routing eligible",
+    "current_contract_review": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition.",
+    "assertion_refs": [
+      "A-0014",
+      "A-0015",
+      "A-0016",
+      "A-0017",
+      "A-0019",
+      "A-0020",
+      "A-0021",
+      "A-0022",
+      "A-0115"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:06",
+    "frozen_contract_sha256": "4412d165ead038d8901cb711ace26807a0065a954ddf232845b34142f5f5c90f",
+    "event": "unsupported/unavailable/failure",
+    "guard": "fallback supported",
+    "current_contract_review": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback.",
+    "assertion_refs": [
+      "A-0116"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:07",
+    "frozen_contract_sha256": "ed7657acdf89fb76b5282841088b707d3f154671fc129cbac75605c232c5ea63",
+    "event": "docker build",
+    "guard": "generated Dockerfile/context ready",
+    "current_contract_review": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build.",
+    "assertion_refs": [
+      "A-0001",
+      "A-0002",
+      "A-0003",
+      "A-0004",
+      "A-0005",
+      "A-0006",
+      "A-0007",
+      "A-0008",
+      "A-0009",
+      "A-0010",
+      "A-0011",
+      "A-0012",
+      "A-0013",
+      "A-0018",
+      "A-0021",
+      "A-0022",
+      "A-0109"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:08",
+    "frozen_contract_sha256": "16c0c449c80bbdc468157de318e88b287a49066ceddbe05413ca378e27e04192",
+    "event": "build success",
+    "guard": "image emitted",
+    "current_contract_review": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success.",
+    "assertion_refs": [
+      "A-0091",
+      "A-0092",
+      "A-0093",
+      "A-0094",
+      "A-0095",
+      "A-0109"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S49:09",
+    "frozen_contract_sha256": "208298c43ed1abdc6a2955b0fcc93d4958bbab85f36966a2f1ce0913b91d05b7",
+    "event": "finally",
+    "guard": "temporary helper exists",
+    "current_contract_review": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions.",
+    "assertion_refs": [
+      "A-0091",
+      "A-0092",
+      "A-0093",
+      "A-0094",
+      "A-0095"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/dephash.ts",
+      "plugins/ca-sandbox/tools/build.ts",
+      "plugins/ca-sandbox/tools/create.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S54:01",
+    "frozen_contract_sha256": "b3b6b8c14b0829584f159b3eaa35a354b00dcc513f5887c1de79c3aad9ff87be",
+    "event": "valid create/shell/exec/cp/destroy/prune",
+    "guard": "command-specific options valid",
+    "current_contract_review": "Valid imported CLI grammar invokes one selected handler, preserves exit codes and separates explicit prune from missing-ID destroy. Direct signal-entry execution is a separate source-only group.",
+    "assertion_refs": [
+      "A-0049",
+      "A-0050",
+      "A-0051",
+      "A-0052",
+      "A-0053",
+      "A-0054",
+      "A-0055",
+      "A-0056",
+      "A-0057",
+      "A-0058",
+      "A-0059",
+      "A-0060",
+      "A-0061",
+      "A-0062",
+      "A-0063",
+      "A-0064",
+      "A-0065",
+      "A-0066",
+      "A-0067",
+      "A-0068",
+      "A-0069",
+      "A-0070",
+      "A-0071",
+      "A-0072",
+      "A-0073",
+      "A-0074",
+      "A-0075",
+      "A-0076",
+      "A-0077",
+      "A-0078",
+      "A-0079",
+      "A-0080",
+      "A-0081",
+      "A-0082",
+      "A-0083",
+      "A-0084"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/cli.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca-sandbox/tools/docker-gate.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S52:06",
+    "frozen_contract_sha256": "4f99ad3f6a578c9d8ae79905959f733acf9f087291e1b323b640b9f35212150b",
+    "event": "copy",
+    "guard": "safe explicit source/destination",
+    "current_contract_review": "Explicit outward copy argv/destination and refusal of reverse bind/invalid sources are software-checked; host output may remain partial on interruption, with no transactional rollback claim.",
+    "assertion_refs": [
+      "A-0050",
+      "A-0076",
+      "A-0078",
+      "A-0085",
+      "A-0086",
+      "A-0087",
+      "A-0088",
+      "A-0089",
+      "A-0090"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/exec.ts",
+      "plugins/ca-sandbox/tools/cp.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S54:02",
+    "frozen_contract_sha256": "8474f2267edba64ccec2750c56c2e7f8cc01c2339ef74b972deb350e0070c4cd",
+    "event": "first SIGINT",
+    "guard": "not already interrupted",
+    "current_contract_review": "Source-only direct-entry first SIGINT aborts the shared controller and requests cooperative cleanup.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/cli.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca-sandbox/tools/docker-gate.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S54:03",
+    "frozen_contract_sha256": "b8e45afd698b754bef1351e955acdef7ebfefe104d45c01af59f0bbbf47ea40d",
+    "event": "second SIGINT",
+    "guard": "already interrupted",
+    "current_contract_review": "Source-only direct-entry second SIGINT exits130 immediately; cleanup may remain incomplete.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/cli.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca-sandbox/tools/docker-gate.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S54:04",
+    "frozen_contract_sha256": "91925419205cd6727640c9f81b03acc0bc313ee7eb8ff8d532946df3f260869f",
+    "event": "promise resolves",
+    "guard": "interrupted flag true",
+    "current_contract_review": "Source-only resolved interrupted promise exits130 rather than the ordinary command code.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/cli.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca-sandbox/tools/docker-gate.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S54:05",
+    "frozen_contract_sha256": "25a4b5edbd17d515bdabeb457a75973ac1c4c7bcdea8d42d96735021605aafe3",
+    "event": "promise throws",
+    "guard": "exception path",
+    "current_contract_review": "Source-only rejected promise still maps to exit1 even after abort; this baseline limitation is not silently normalized.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/cli.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca-sandbox/tools/docker-gate.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:S51:01",
+    "frozen_contract_sha256": "0897edfb68555f57349472d3a0ca2fa4369fcdb6fec47884fe326f3b7d8ffbb2",
+    "event": "launch Claude-inside",
+    "guard": "token from allowed environment; safe config; caller owns home volume",
+    "current_contract_review": "Software construction accepts caller-scoped dummy token/home volume, excludes source co-mount/host auth bind, and keeps reusable token value out of argv. Approved-store choice remains caller guidance, not a mechanically attested origin.",
+    "assertion_refs": [
+      "A-0038",
+      "A-0040",
+      "A-0042",
+      "A-0045",
+      "A-0047"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/claude-inside.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:S51:02",
+    "frozen_contract_sha256": "bf3ed5ef7a19882e9727f5e694ee52d23b55d9498534168aa50ddeee8d26f9b8",
+    "event": "docker run",
+    "guard": "offline or explicit Anthropic policy",
+    "current_contract_review": "Software policy/hardening and scoped Docker-client token environment enforce offline default or explicitly named experimental policy; no authenticated/live provider run is claimed.",
+    "assertion_refs": [
+      "A-0035",
+      "A-0038",
+      "A-0039",
+      "A-0041",
+      "A-0043",
+      "A-0044",
+      "A-0048"
+    ],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/claude-inside.ts",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts"
+    ],
+    "classification": "TESTED_FINITE_SOFTWARE"
+  },
+  {
+    "cell": "disposition:transitions:SW01:01",
+    "frozen_contract_sha256": "a7efafe893e74a0c6ef6bf5b6a390588f7403f4a2597dd9f860f2bbbe8d6cd9a",
+    "event": "load command and lifecycle owner",
+    "guard": "one of five namespaced sandbox commands invoked",
+    "current_contract_review": "Lazy catalog routing to the invoked command/lifecycle owner is preserved. The omitted catalog claims were corrected in exact proposed41273c bytes, later literally committed ae237d; no consumer phase execution is inferred.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/INDEX.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:02",
+    "frozen_contract_sha256": "a69ac7e714a0a6e838e7c94069903a1398622eb25450f2fdfb3e6a1ffbc3d370",
+    "event": "inspect required driver sources",
+    "guard": "mount/run/network source files accessible at plugin root",
+    "current_contract_review": "REMAPPED D04: packaged prerequisites replace mandatory consumer-readable maintainer sources; do not manufacture consumer ADRs or require source checkout. Driver guard definitions remain source-backed.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:03",
+    "frozen_contract_sha256": "33259e92401374cb15c1b3e7012415d5b4451329c57df68e03355577ecc1d04d",
+    "event": "Docker admission",
+    "guard": "docker info returns nonzero",
+    "current_contract_review": "A reachable Docker daemon is an actual prerequisite; unavailable observation is not an empty/available registry.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:04",
+    "frozen_contract_sha256": "d2de3f5393279f1cef5fd5d3b38926e660cb3c7bc2059899f6ab2622f0c4b4c9",
+    "event": "nixpacks prerequisite evaluation",
+    "guard": "nixpacks absent",
+    "current_contract_review": "REMAPPED D01: absent already-installed Nixpacks selects supported Node/Python fallback, with effective builder reported; no runtime installer or unavailable Go/Rust fallback is implied.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:05",
+    "frozen_contract_sha256": "6f5c9bb66ebc3d3eab5045a63f1b65891498651cff6aab1352a82db08fbf35c5",
+    "event": "missing source",
+    "guard": "create request has no URL/local path",
+    "current_contract_review": "Create requires the explicitly supplied network repository URL; current grammar has no URL-guessing/default source. Catalog argument preserves that prerequisite, not an observed dialogue.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:06",
+    "frozen_contract_sha256": "d3aee6b77ddbcb855f30a06ec7c2a3bca0317d1939da1764637cde25d5faca90",
+    "event": "select ordinary policy",
+    "guard": "named source and reachable Docker; no user policy selected",
+    "current_contract_review": "REMAPPED D03: ordinary requested policy names are reported separately from effective offline runtime; clone/build may fetch remotely.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:07",
+    "frozen_contract_sha256": "713eb06be909b887953f3d6c206743bfb73be5b132ab4b1e0eb0a0d425e9b271",
+    "event": "select allowlist",
+    "guard": "explicit selection and user acknowledges experimental status",
+    "current_contract_review": "REMAPPED D03: helper allowlist is experimental and not integrated into ordinary create; no new acknowledgement ceremony can manufacture runtime support.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:08",
+    "frozen_contract_sha256": "ef179e46bda063d0bb52966ea764366435ef1c09d3d7c85b6049bf3c48b31073",
+    "event": "--with-claude requested",
+    "guard": "explicit option; never ordinary default",
+    "current_contract_review": "Historical with-Claude intent routes to separate supported token-only skill/entrypoint; ordinary create has no --with-claude flag and no implicit token launch.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:09",
+    "frozen_contract_sha256": "fa82718a9b6e03dec5d61cc27169248edf8618e59baf7f5d7fc008b27067b44a",
+    "event": "clone/build instruction",
+    "guard": "phase 1 gates passed; no credential path bypass",
+    "current_contract_review": "Source named volume/workspace and out-of-tree deps are prescribed through packaged create/build; host staging lifetime is now explicit, no hand-rolled runtime/mount bypass.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:10",
+    "frozen_contract_sha256": "8d70c32976d1d8c693846a7109ce4b21f26403900b1807b83f94a164cc814d40",
+    "event": "unchanged dependency hash",
+    "guard": "skill presumes stable repo/hash tag and existing image",
+    "current_contract_review": "REMAPPED C01: V2 cache identity is independent of checkout basename and requires builder/platform/material identity, provenance and immutable image observation; equal dependency hash/tag existence alone is insufficient.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:11",
+    "frozen_contract_sha256": "289ca86a761ad9bb8e648799bc93ae9e4704c4cb7ab428ca198d6f21e85ae593",
+    "event": "start isolated run",
+    "guard": "driver runContainer and mount builder used; declared isolation set retained",
+    "current_contract_review": "Named-volume/tmpfs, no host bind/socket/privileged, non-root/read-only/no-new-privileges/resource guards remain machine-enforced; prose is not an independently observed container inspect.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:12",
+    "frozen_contract_sha256": "f5964e2ae856d98725fc900d1e8463d9dc87b4587bd4cf89c3b088b9663792d0",
+    "event": "docker inspect",
+    "guard": "no bind mount/socket and Privileged is false",
+    "current_contract_review": "REMAPPED D03: exact returned IDs and effective policy are reported from the driver; construction/inspection invariants are distinct from a model-guided phase receipt. No new mandatory operator inspection is invented.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:13",
+    "frozen_contract_sha256": "445f3025e635226c8a6b321c551d7440573d84729c71c5711ea844fd16e03f8d",
+    "event": "shell/exec/copy target resolution",
+    "guard": "running ca.sandbox=1 container matching supplied ID exists",
+    "current_contract_review": "Shell instructions require an existing running plugin-labeled target and introduce no creation/mount/privilege.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-shell.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:14",
+    "frozen_contract_sha256": "820dd30ddc644f705314fe9ebb6b017537b2da9bc5f10e8d0a2c5647bb7804a5",
+    "event": "shell",
+    "guard": "non-root interactive shell at /work/repo",
+    "current_contract_review": "Interactive shell retains existing non-root read-only-root posture/workspace. This preservation is instruction conformance, not an executed TTY qualification.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-shell.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:15",
+    "frozen_contract_sha256": "8271b738a1c9900f16be962713c8fe43f07a549317a32daffe61826bbdc138ec",
+    "event": "shell exit under command body",
+    "guard": "normal shell session closes",
+    "current_contract_review": "D02 selects persistent box lifetime: shell exit detaches and leaves container/volume until explicit destroy.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-shell.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:17",
+    "frozen_contract_sha256": "5da4688c6dd32dd83628b6c1525fc37843ba9b9bbb75b38d365e7eb6f432b238",
+    "event": "exec request",
+    "guard": "argv after --; existing running labeled box",
+    "current_contract_review": "Exec preserves real exit, separated output, truncation and independent containment; no nonzero-to-success translation or automatic broad teardown.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-exec.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:18",
+    "frozen_contract_sha256": "e4ac106c988472ad294c8e3ef7ffbf8f6f6178164ed923d083fac6861dbd3f0e",
+    "event": "copy-out request",
+    "guard": "container source and explicit host destination",
+    "current_contract_review": "Copy is host-requested outward to explicit destination with no host-inbound bind/writable host grant; partial output/rollback is not hidden.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-cp.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:19",
+    "frozen_contract_sha256": "e649c2b900a26d5440b67e0be359bfc550b761452ed9019e022d0538c58abdd6",
+    "event": "request elevation, host bind/socket or token/source co-mount",
+    "guard": "request would violate structural boundary",
+    "current_contract_review": "Refuse host bind/socket/privileged/elevation or token/source co-mount rather than weakening structural controls.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:20",
+    "frozen_contract_sha256": "35a773dc21ce09c57d32fe832212ed9559218cac76125453fa190b8b25f6c575",
+    "event": "destroy specific ID",
+    "guard": "explicit single-box request",
+    "current_contract_review": "REMAPPED D02: named destroy targets exact instance only and never follows with automatic prune.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-destroy.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:21",
+    "frozen_contract_sha256": "64e7deeb3ab3f26b47f3dd8ac15ca3bf4ead7c354654d5620463a587f67789c3",
+    "event": "explicit --prune or no-ID invocation",
+    "guard": "sweep operation selected",
+    "current_contract_review": "REMAPPED D02: explicit broad prune takes its initial labeled snapshot; no-ID destroy is an error and newly created/unrelated objects are not adopted.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-destroy.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:22",
+    "frozen_contract_sha256": "0d25953c69cae28480fea064fe91f1e639024e4311bfdff123d683279b5ff1ef",
+    "event": "--keep-volume",
+    "guard": "explicit retention requested",
+    "current_contract_review": "Explicit keep-volume retains selected volume and cached images; unrelated leftovers remain separate.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-destroy.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:23",
+    "frozen_contract_sha256": "a43e1602f827e18707b393f764eb8c9cabf4ab46c70ce670648d8e73c6b05e17",
+    "event": "removal/discovery/final verification failure",
+    "guard": "driver failure/remaining targeted object returned",
+    "current_contract_review": "Failed discovery/removal/verification is incomplete nonzero cleanup with retained identities, independently reported remaining/unknown resources.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/commands/sandbox-destroy.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:24",
+    "frozen_contract_sha256": "cc0305aff846134dabe1cdf1c93c865da9f78847bd0399377bc79340ade471bb",
+    "event": "observed absence and no removal errors",
+    "guard": "scope empty excluding explicit kept volumes/images",
+    "current_contract_review": "REMAPPED D02/D03: absence is selected-scope only; retained cache images/explicit kept volume and unrelated active boxes are not a global-zero violation.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:02",
+    "frozen_contract_sha256": "8e6b3dd297ec1640f20ca783890391a218c57ee71125362c323ae5bd2c40a498",
+    "event": "invoke separate driver",
+    "guard": "operator follows prescribed skill route",
+    "current_contract_review": "Separate supported CLI is preserved for routing; its placement does not mechanically enforce five agent-guided phases or add artifact approval.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:03",
+    "frozen_contract_sha256": "417c2841a9916f44a19d20eadb13a43eb33339f77f5b4ab9eeda372cd1e2b9b5",
+    "event": "choose posture",
+    "guard": "named offline or anthropic-only policy and explicit token-only boundary",
+    "current_contract_review": "Exactly offline default or experimental anthropic-only token posture; never combine untrusted source with token home volume.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:04",
+    "frozen_contract_sha256": "16326fc65c374959349bc912fe692a1519222e6e92b975c8b2b83f79002d35be",
+    "event": "build or reuse image",
+    "guard": "pinned Claude CLI SemVer, DISABLE_AUTOUPDATER=1, reviewed digest-pinned node base",
+    "current_contract_review": "Pinned Claude SemVer, disabled autoupdater and reviewed digest base remain prescribed prerequisites; image is not newly qualified by reading this instruction.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:05",
+    "frozen_contract_sha256": "419af25da25f883f32b51bf27b6cef02ef11a898991230fb0ef8211fa47e2ec5",
+    "event": "change base digest",
+    "guard": "reviewed dependency change selected",
+    "current_contract_review": "Changed image pins retain dependency/requalification ownership; historic spike is not automatic current payload proof.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:06",
+    "frozen_contract_sha256": "47a45fb4c57c9e7334b2dc39fb457e0217a717451c1604c3c002c1fa5f927f45",
+    "event": "source credential",
+    "guard": "approved-store OAuth token available in scoped environment; no argv/bind/log/prompt exposure",
+    "current_contract_review": "Approved-store choice/scoped token input is caller guidance; reusable value must not enter argv/log/prompt/host bind. No real credential or paid provider run is required for this source conformance.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:07",
+    "frozen_contract_sha256": "01b2e4a51aa2e054d8b6421483622bf724410174b605e53f75697f4e716da786",
+    "event": "choose home persistence",
+    "guard": "HOME backed by named volume, not host bind",
+    "current_contract_review": "Named home volume enables state persistence without host bind; persistence is distinct from observed authenticated-session capability.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:08",
+    "frozen_contract_sha256": "e8848e39ca1f92ae732f2dbf7ba48aaa5c144d87818feccc0b36a8b392c7a86f",
+    "event": "launch",
+    "guard": "builder-generated argv; no sourceVolume; named policy and isolation requirements",
+    "current_contract_review": "Use supported token-only argv builder and no-source co-mount guards; accepted policy/hardening are mechanical while phase completion remains agent guidance.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:10",
+    "frozen_contract_sha256": "0ac2c333c32fd198fbdc5dccacf325595f60935a1b8bca7727abef2f9062eacf",
+    "event": "proceed with use",
+    "guard": "all model-guided gates judged satisfied",
+    "current_contract_review": "REMAPPED D04: readiness follows actual supported CLI/token/policy/runtime outcomes; separate executable is not proof of a consumed five-phase completion record.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:11",
+    "frozen_contract_sha256": "41d04f3c732f53e6d0d5c4f6ad1427e958fed646f802b60bdd1949c394ca4dc5",
+    "event": "teardown",
+    "guard": "operation/session ends",
+    "current_contract_review": "Default credential-home teardown is prescribed with caller ownership; never describe failed removal as absence.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:12",
+    "frozen_contract_sha256": "0a56cc0d9fc04bc5015f4b0217adf9a02c6bb76c902a48f3caa361fbc682c4ac",
+    "event": "explicit recorded --keep-volume choice",
+    "guard": "retention deliberately selected and recorded",
+    "current_contract_review": "Credential-home retention needs explicit recorded keep-volume choice; no durable record format is invented by this proof.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:13",
+    "frozen_contract_sha256": "04a3ae8488f3978ab428e826eb89c00026ada9d84eb1f9c461cba891c58300f9",
+    "event": "default cleanup completes",
+    "guard": "container/credential volume absent in selected scope",
+    "current_contract_review": "REMAPPED D02/D04: verify exact targeted container/credential volume absence, preserve unrelated boxes, retain unknown observations rather than global prune.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW02:14",
+    "frozen_contract_sha256": "0c24ce49539f20474568ce10cd8f8f7fa537d26ba5a3b717a27b45c86f31267a",
+    "event": "new token-only container on same volume",
+    "guard": "explicit subsequent run passes posture/image/token gates again",
+    "current_contract_review": "Explicit subsequent use of retained home volume rechecks current posture/image/token guards; retained state is not authenticated-session qualification.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+  },
+  {
+    "cell": "disposition:transitions:SW01:16",
+    "frozen_contract_sha256": "e5d90920edbaf861d2d11f89531fe3ee334a71fad29289866a354b0711d87486",
+    "event": "session close under lifecycle owner",
+    "guard": "close of interactive session treated as exit",
+    "current_contract_review": "Normal shell close is detach; contradictory automatic destruction prescription is explicitly removed.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+    ],
+    "classification": "RETIRED_INSTRUCTION_UNDER_MAINTAINED_TASK"
+  },
+  {
+    "cell": "disposition:transitions:SW02:01",
+    "frozen_contract_sha256": "2fbe9afcdeacfe78cbff749bbeeabb56aef1081028a7d67072c5501f4ed53d67",
+    "event": "preflight references",
+    "guard": "consumer PROJECT_DIR has both named sandbox spike files and ADR 0007",
+    "current_contract_review": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "RETIRED_INSTRUCTION_UNDER_MAINTAINED_TASK"
+  },
+  {
+    "cell": "disposition:transitions:SW02:09",
+    "frozen_contract_sha256": "ff36c780e41d79f6b175afc2e1c85dcf33b3371170069c69a7df39dab2e330b0",
+    "event": "dummy-token qualification",
+    "guard": "instruction requires a real Invalid bearer token 401 before real credential use",
+    "current_contract_review": "Mandatory consumer network401 prerequisite is replaced with optional separately authorized maintainer qualification; offline posture is not widened.",
+    "assertion_refs": [],
+    "source_paths": [
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+    ],
+    "classification": "RETIRED_INSTRUCTION_UNDER_MAINTAINED_TASK"
+  }
+]

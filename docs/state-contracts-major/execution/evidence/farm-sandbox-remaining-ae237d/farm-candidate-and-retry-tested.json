@@ -1,0 +1,321 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual retained named local outcomes with literal whole-file original/current input joins."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm-surface.test.ts": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S24:04",
+    "disposition:transitions:S24:05",
+    "disposition:transitions:S24:06",
+    "disposition:transitions:S24:07",
+    "disposition:transitions:S24:08",
+    "disposition:transitions:S24:10",
+    "disposition:transitions:S24:11",
+    "disposition:transitions:S24:13",
+    "disposition:transitions:S24:14",
+    "disposition:transitions:S25:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S24:04",
+      "frozen_contract_sha256": "6a60577780776bc9527a4c08ade0eb1b9c2b6686ee3a1f706ed5f348b397ba7e",
+      "event": "worker returns valid files",
+      "guard": "current request successful",
+      "current_contract_review": "Admitted worker files proceed through safe materialization and patch/evidence capture; real loopback/Git best-of-N/green fixtures and compliant-worker controls support finite paths, without OS adversarial race qualification.",
+      "assertion_refs": [
+        "A-0144",
+        "A-0156",
+        "A-0183",
+        "A-0191",
+        "A-0192",
+        "A-0193",
+        "A-0268",
+        "A-0265",
+        "A-0267",
+        "A-0266",
+        "A-0264",
+        "A-0278",
+        "A-0279",
+        "A-0274",
+        "A-0271",
+        "A-0272",
+        "A-0269",
+        "A-0281",
+        "A-0280",
+        "A-0277",
+        "A-0276",
+        "A-0270",
+        "A-0273",
+        "A-0275",
+        "A-0283",
+        "A-0282"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:05",
+      "frozen_contract_sha256": "f99493d69fa56264267fdf3a7ac53b8ee4968d19583772b7b83f8976e6adeed8",
+      "event": "files written",
+      "guard": "read-only tests unchanged and post-write sweep safe",
+      "current_contract_review": "Protected-test/path sweep precedes drift/gates/heuristic/mutation acceptance. Current source retains the complete order; selected software controls do not imply every optional mutation process outcome ran in this selected group.",
+      "assertion_refs": [
+        "A-0184",
+        "A-0191",
+        "A-0192",
+        "A-0193",
+        "A-0136",
+        "A-0229",
+        "A-0130",
+        "A-0128",
+        "A-0129",
+        "A-0163",
+        "A-0161",
+        "A-0167",
+        "A-0165",
+        "A-0169",
+        "A-0162",
+        "A-0160",
+        "A-0166",
+        "A-0164",
+        "A-0168",
+        "A-0230"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:06",
+      "frozen_contract_sha256": "4e4ca86e16c4e52ec15d6887d1d1d8b52d4dceb95641e14ec87290c9bee73dee",
+      "event": "unsafe file/test mutation",
+      "guard": "path escape, link race, protected initial test changed",
+      "current_contract_review": "Reported out-of-root or protected-test writes refuse the candidate; fatal containment paths do not authorize unsafe retry/reset.",
+      "assertion_refs": [
+        "A-0191",
+        "A-0192",
+        "A-0136",
+        "A-0268",
+        "A-0130",
+        "A-0128",
+        "A-0129",
+        "A-0230",
+        "A-0265",
+        "A-0267",
+        "A-0266",
+        "A-0264",
+        "A-0278",
+        "A-0279",
+        "A-0274",
+        "A-0271",
+        "A-0272",
+        "A-0269",
+        "A-0281",
+        "A-0280",
+        "A-0277",
+        "A-0276",
+        "A-0270",
+        "A-0273",
+        "A-0275",
+        "A-0283",
+        "A-0282"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:07",
+      "frozen_contract_sha256": "06aea10bd30ba2ea9c634f8262d3a157a0ae545769dc8f652cadb2be17905dd8",
+      "event": "drift outside scope",
+      "guard": "first occurrence and retry budget remains",
+      "current_contract_review": "First dirty observation spends an available author retry and names forbidden paths in its next prompt.",
+      "assertion_refs": [
+        "A-0137"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:08",
+      "frozen_contract_sha256": "7d8b104827bfc03b124c1eca21159ab397c981e8c0d5d1118129516fc4b20725",
+      "event": "drift repeats or no budget",
+      "guard": "second drift or exhausted budget",
+      "current_contract_review": "First drift without budget and repeated drift with budget both escalate with retained offending paths; the latch is independent of the numeric retry limit.",
+      "assertion_refs": [
+        "A-0133",
+        "A-0134",
+        "A-0135"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:10",
+      "frozen_contract_sha256": "60eb6d9c796a426a1052b7dc252393317fb167a00969f9b34ab474496f331726",
+      "event": "retryable worker/gate/quality failure",
+      "guard": "budget remains and no fatal containment flag",
+      "current_contract_review": "Ordinary retryable custom-worker failure retains configured retry/reset/setup-cache policy; a transport deferral does not enter that retry path. This is not crash-after-reset atomicity proof.",
+      "assertion_refs": [
+        "A-0233"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:11",
+      "frozen_contract_sha256": "5b2043a22f9e78d8c4ae8761de62ad4c5cb3274fd6881928a62bc0583649f8a7",
+      "event": "nonretryable HTTP cooldown",
+      "guard": "transport retryable=false",
+      "current_contract_review": "Long transport deferral does not start another authoring round immediately, for both single and multiple samples.",
+      "assertion_refs": [
+        "A-0231",
+        "A-0232"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:13",
+      "frozen_contract_sha256": "2ccaf1850e1b35d9bf43e0741a1d88276b23040e134ca5f77fcbfeea1a740500",
+      "event": "all checks pass",
+      "guard": "no fatal mutation/heuristic issue",
+      "current_contract_review": "A compliant qualified candidate advances to commit/integration; unsafe candidates and no-green sampling controls refuse.",
+      "assertion_refs": [
+        "A-0184",
+        "A-0193"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S24:14",
+      "frozen_contract_sha256": "62b10b469441a6fb1cd0a74768c3c767605837b36f6c3f14676357d8289dadd0",
+      "event": "attempts exhausted",
+      "guard": "retry budget exhausted",
+      "current_contract_review": "Exhausted retries escalate with bounded prior-failure detail and retain diagnostic worktree/evidence.",
+      "assertion_refs": [
+        "A-0131",
+        "A-0187"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/worktree-fs.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    },
+    {
+      "cell": "disposition:transitions:S25:01",
+      "frozen_contract_sha256": "54b4ebdfe4ec717dde1e9837484d8c7c1e649888eb27270d11c4cd1c5596cc28",
+      "event": "launch samples",
+      "guard": "same frozen base; separate sample worktrees; shared worker capacity",
+      "current_contract_review": "Real and seam best-of-N run independent sample worktrees on the frozen base with shared worker limiting; single-sample path remains the task worktree.",
+      "assertion_refs": [
+        "A-0144",
+        "A-0183",
+        "A-0184"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ],
+  "commands": [
+    {
+      "mode": "coverage",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+      "started_utc": "2026-11-14T02:57:42.795034+00:00",
+      "finished_utc": "2026-11-14T03:02:06.211665+00:00",
+      "seconds": 263.4215792999603,
+      "exit_code": 0,
+      "before_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "after_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "full_input_count": 29,
+      "input_changes": [],
+      "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_version": "v24.22.1",
+      "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+    }
+  ],
+  "original_execution_origin": "farm941"
+}

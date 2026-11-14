@@ -21,7 +21,11 @@ on:
     # the same CI gate PRs targeting main get - otherwise the whole codex
     # campaign merges with zero CI. Drop this once the campaign branch is
     # closed out and merged to main.
-    branches: [main, feat/codex-support-m0]
+    # major/state-contracts (program task P-01) integrates every child task PR
+    # of the major state-contract program before ONE promotion PR to main.
+    # Child PRs need the same CI main-targeted PRs get. Publication stays
+    # main-only: release.yml admits only same-repo main push runs.
+    branches: [main, feat/codex-support-m0, major/state-contracts]
   # Issue #383. main's ONLY required context is the `[GATE ] | [REPO] | Merge
   # readiness` aggregate below, and it merges on `strict: false` - so a green
   # aggregate computed against an OLDER base is enough, and two individually
@@ -47,8 +51,14 @@ on:
   merge_group:
     types: [checks_requested]
   push:
-    branches: [main]
+    # The integration branch push is the program's full-qualification run:
+    # the changes job selects every domain for it regardless of diff size.
+    branches: [main, major/state-contracts]
     paths:
+      # Program planning, live execution records and the integration
+      # candidate record; a policy-only program change must still run CI.
+      - "docs/state-contracts-major/**"
+      - ".github/integration-candidate.json"
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
       - "plugins/ca-codex/**"
@@ -75,6 +85,7 @@ on:
       - "tools/go_test_parallel.py"
       - "tools/go-test-timings.json"
       - "tools/test-artifact-mixed-schema.py"
+      - "tools/test-artifact-work-old-client.py"
       - "tools/artifact-coverage.py"
       - "tools/install-artifact-payload.py"
       - "tools/generate-artifact-types.py"
@@ -88,6 +99,8 @@ on:
       # side; without this line a push that ONLY deletes the coverage section
       # starts no run at all, so the guard never evaluates.
       - ".codearbiter/tech-stack.md"
+      - ".codearbiter/context/**"
+      - ".codearbiter/CONTEXT.md"
       # Same defect class, same fix: test_ci_impact.py is the ONLY guard on the
       # secret-scan allowlist (#404) and on docs.yml's site CVE gate (#403), so
       # a change to either must start a run that can execute it.
@@ -144,21 +157,25 @@ jobs:
     name: "[CHECK] | [REPO] | Impact selection"
     runs-on: ubuntu-latest
     outputs:
-      ca: ${{ steps.filter.outputs.ca }}
-      ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
-      ca-codex: ${{ steps.filter.outputs.ca-codex }}
-      ca-pi: ${{ steps.filter.outputs.ca-pi }}
+      ca: ${{ steps.filter.outputs.ca == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      ca-sandbox: ${{ steps.filter.outputs.ca-sandbox == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      ca-codex: ${{ steps.filter.outputs.ca-codex == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      ca-pi: ${{ steps.filter.outputs.ca-pi == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       pi-versions: ${{ steps.pi-policy.outputs.versions }}
       pi-last-verified: ${{ steps.pi-policy.outputs.last-verified }}
-      host-descriptors: ${{ steps.filter.outputs.host-descriptors }}
-      hooks: ${{ steps.filter.outputs.hooks }}
-      impact: ${{ steps.filter.outputs.impact }}
-      manifests: ${{ steps.filter.outputs.manifests }}
-      codex-resources: ${{ steps.filter.outputs.codex-resources }}
+      host-descriptors: ${{ steps.filter.outputs.host-descriptors == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      hooks: ${{ steps.filter.outputs.hooks == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      program_integrity: ${{ steps.filter.outputs.program_integrity == 'true' || steps.filter.outputs.hooks == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      impact: ${{ steps.filter.outputs.impact == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      manifests: ${{ steps.filter.outputs.manifests == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
+      codex-resources: ${{ steps.filter.outputs.codex-resources == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
       # Every main push builds the package cohort: release.yml publishes from
       # the triggering run's artifacts, so a path-filtered skip would leave a
       # version bump with nothing to release (ADR-0040).
-      artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+      # The integration branch push also builds the full cohort so the
+      # program's exact candidate bytes are qualified; it is never a
+      # release source (release.yml requires head_branch == main).
+      artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Resolve supported Pi versions from repository policy
@@ -254,7 +271,19 @@ jobs:
               - 'tools/build-host-packages.py'
               - '.github/scripts/test_host_descriptors.py'
               - '.github/workflows/ci.yml'
+            program_integrity:
+              - 'docs/state-contracts-major/**'
+              - '.github/scripts/check_state_contracts_integration.py'
+              - '.github/scripts/test_state_contracts_integration.py'
+              - '.github/scripts/major_readiness.py'
+              - '.github/scripts/_immutable_git_blobs.py'
+              - '.github/scripts/test_immutable_git_blobs.py'
+              - '.github/workflows/ci.yml'
             hooks:
+              - 'tools/build-artifacts.py'
+              - 'tools/go_test_parallel.py'
+              - '.codearbiter/context/**'
+              - '.codearbiter/CONTEXT.md'
               - '.github/fixtures/context-onboarding/**'
               - '.github/fixtures/debug/**'
               - 'plugins/ca/hooks/**'
@@ -272,6 +301,9 @@ jobs:
               - '.github/workflows/release.yml'
               - '.github/scripts/release_target.py'
               - 'tools/promote-claude-marketplace.py'
+              # R-01: channel readback runs this promoter; its guard is
+              # test_marketplace_git_channels.py in the hooks job.
+              - 'tools/promote-codex-marketplace.py'
               - '.codearbiter/release-targets.md'
               - 'CHANGELOG.md'
               # This job validates the retained historical live-proof record.
@@ -340,6 +372,7 @@ jobs:
               - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
+              - '.github/scripts/project_knowledge.py'
               # The site CVE gate's accepted-advisory judge and its only guard.
               - '.github/scripts/npm_audit_gate.py'
               - '.github/scripts/test_npm_audit_gate.py'
@@ -359,6 +392,11 @@ jobs:
               # the job that checks it.
               - '.github/scripts/payload_version_gate.py'
               - '.github/scripts/test_payload_version_gate.py'
+              # Program task P-01: the integration candidate rule both version
+              # gate owners share, its record, and its only guard.
+              - '.github/scripts/integration_candidate.py'
+              - '.github/scripts/test_integration_candidate.py'
+              - '.github/integration-candidate.json'
               # Issue #507: test_ci_impact.py's GateCommandTest is the only guard
               # that a command a gate READS from tech-stack.md is actually
               # DEFINED there. Its two subjects are the gate prose and the file
@@ -368,6 +406,8 @@ jobs:
               # omission as #384, #403/#404 and #416; listing them here is the
               # established fix, not a new pattern.
               - '.codearbiter/tech-stack.md'
+              - '.codearbiter/context/**'
+              - '.codearbiter/CONTEXT.md'
               - 'plugins/ca/skills/**'
               - 'plugins/ca/agents/**'
               - 'core/surface/skills/**'
@@ -458,6 +498,7 @@ jobs:
               - 'tools/go_test_parallel.py'
               - 'tools/go-test-timings.json'
               - 'tools/test-artifact-mixed-schema.py'
+              - 'tools/test-artifact-work-old-client.py'
               - 'tools/artifact-coverage.py'
               - 'tools/build-host-packages.py'
               - 'tools/install-artifact-payload.py'
@@ -502,6 +543,9 @@ jobs:
               - '.github/workflows/release.yml'
               - '.github/scripts/release_target.py'
               - 'tools/promote-claude-marketplace.py'
+              # R-01: channel readback runs this promoter; its guard is
+              # test_marketplace_git_channels.py in the hooks job.
+              - 'tools/promote-codex-marketplace.py'
               - '.codearbiter/release-targets.md'
               - '.github/workflows/ci.yml'
       - name: Write impact receipt
@@ -634,6 +678,7 @@ jobs:
     # Split native verification; every original check retains its platform budget.
     timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
     permissions:
+      actions: read
       contents: read
     env:
       GOTOOLCHAIN: local
@@ -679,13 +724,22 @@ jobs:
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Build native qualified candidate
-        run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
+        run: >-
+          python tools/build-artifacts.py
+          --output "${{ runner.temp }}/artifact-candidate"
+          --test-observation "${{ runner.temp }}/native-tests.json"
       - name: Bind the module-tested binary, source, host and toolchain
         run: >-
           python .github/scripts/ci20_native_binding.py stamp
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
+      - name: Join original named tests to the tested payload
+        run: >-
+          python .github/scripts/major_qualification_report.py admit-go
+          --observation "${{ runner.temp }}/native-tests.json"
+          --native-binding "${{ runner.temp }}/ci20-native-tested.json"
+          --output "${{ runner.temp }}/native-observation.json"
       - name: Share the real tested candidate with this workflow run
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -693,9 +747,34 @@ jobs:
           path: |
             ${{ runner.temp }}/artifact-candidate
             ${{ runner.temp }}/ci20-native-tested.json
+            ${{ runner.temp }}/native-tests.json
+            ${{ runner.temp }}/native-observation.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
+          overwrite: false
+      - name: Emit named major qualification report
+        id: qualification-report
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.expected_platform == 'windows/amd64' && hashFiles('.github/integration-candidate.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/major_qualification_report.py emit \
+            --job-name "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>" \
+            --observation "native-module=${{ runner.temp }}/native-observation.json" \
+            --payload-root "ci20-native-tested-${{ matrix.os }}=${{ runner.temp }}" \
+            --output "${{ runner.temp }}/qualification.json"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+      - name: Upload major qualification report
+        if: steps.qualification-report.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.qualification-report.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
           overwrite: false
   artifact-native-default:
     name: "[CHECK] | [CORE] | Default native, storage and context checks <${{ matrix.expected_platform }}>"
@@ -981,6 +1060,58 @@ jobs:
           python tools/test-artifact-mixed-schema.py
           --old "${{ runner.temp }}/artifact-legacy"
           --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
+      - name: Check out the schema 0.3.2 integration-base compatibility source
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 33abc347720879bade0494ef0a68ef0d0319236a
+          path: .artifact-base-032
+          sparse-checkout: core/artifacts
+          persist-credentials: false
+      - name: Build the schema 0.3.2 integration-base client
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: .artifact-base-032/core/artifacts
+        env:
+          GOTOOLCHAIN: local
+          GOPROXY: "off"
+          GOSUMDB: "off"
+        run: go build -trimpath -buildvcs=false -o "${{ runner.temp }}/artifact-base-032" ./cmd/ca-artifact
+      - name: Verify 0.3.2 client refuses a typed-retirement 0.3.4 store
+        if: matrix.os == 'ubuntu-24.04'
+        run: >-
+          python tools/test-artifact-mixed-schema.py
+          --old "${{ runner.temp }}/artifact-base-032"
+          --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
+          --old-schema 0.3.2 --candidate-schema 0.3.4
+      - name: Verify 0.3.2 client refuses independent-progress 0.3.4 semantics
+        if: matrix.os == 'ubuntu-24.04'
+        run: >-
+          python tools/test-artifact-mixed-schema.py
+          --old "${{ runner.temp }}/artifact-base-032"
+          --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
+          --old-schema 0.3.2 --candidate-schema 0.3.4 --progress-upgrade
+      - name: Check out the fixed pre-cycle work compatibility source
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: a89d42e67d4eb2e5253233fac85fd6453ccf4e46
+          path: .artifact-work-legacy
+          sparse-checkout: core/artifacts
+          persist-credentials: false
+      - name: Build the pre-cycle work compatibility client
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: .artifact-work-legacy/core/artifacts
+        env:
+          GOTOOLCHAIN: local
+          GOPROXY: "off"
+          GOSUMDB: "off"
+        run: go build -trimpath -buildvcs=false -o "${{ runner.temp }}/artifact-work-legacy" ./cmd/ca-artifact
+      - name: Verify old work client refuses upgraded work and keeps later edits
+        if: matrix.os == 'ubuntu-24.04'
+        run: >-
+          python tools/test-artifact-work-old-client.py
+          --old "${{ runner.temp }}/artifact-work-legacy"
+          --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
       - name: Generate review examples with the native candidate
         run: >-
           python tools/create-artifact-examples.py
@@ -1064,6 +1195,7 @@ jobs:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
           AUTHORITY_SHARD: all
           AUTHORITY_SHARD_COUNT: "4"
+          AUTHORITY_OBSERVATION_DIR: ${{ runner.temp }}/authority-observations
         run: python .github/scripts/run_artifact_authority_shard.py
       - name: Recheck tested candidate after authority coverage
         run: >-
@@ -1071,6 +1203,15 @@ jobs:
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
+      - name: Retain original authority observations
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: authority-observations-${{ matrix.os }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/authority-observations/*.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
   artifact-browser:
     name: "[CHECK] | [CORE] | Structured artifact browser qualification"
     needs: [changes, artifact-engine]
@@ -1411,6 +1552,27 @@ jobs:
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
+      - name: Qualify recovery against the retained exact package cohort
+        id: recovery_cohort
+        run: >-
+          python .github/scripts/qualify_workflow_recovery_cohort.py
+          --cohort "${{ runner.temp }}/artifact-release-packages/artifact-package-cohort.json"
+          --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
+          --trusted-source-commit "${{ github.sha }}"
+          --trusted-workflow ".github/workflows/ci.yml"
+          --trusted-workflow-run "${{ github.run_id }}"
+          --promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
+          --output "${{ runner.temp }}/workflow-recovery-cohort.json"
+      - name: Preserve retained-cohort recovery observations
+        if: ${{ !cancelled() && steps.recovery_cohort.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: workflow-recovery-cohort-${{ matrix.platform_token }}-${{ github.sha }}
+          path: ${{ runner.temp }}/workflow-recovery-cohort.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       # Three hosts share this platform's runner. Each cold execution builds its
       # own isolated home, caches, temp and npm configuration and runs the binary
       # with an empty environment, so sharing the runner does not warm the next.
@@ -1418,7 +1580,7 @@ jobs:
         run: python -c "import os,sys; [os.makedirs(os.path.join(sys.argv[1], 'cold-' + h)) for h in ('claude', 'codex', 'pi')]" "${{ runner.temp }}"
       - name: Cold-execute the complete exact-package claude workflow
         id: cold_claude
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && !(github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '') }}
         run: >-
           python tools/build-host-packages.py
           --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
@@ -1431,12 +1593,61 @@ jobs:
           --trusted-workflow-run "${{ github.run_id }}"
           --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
           --cold-receipt "${{ runner.temp }}/cold-claude/artifact-package-cold.json"
+      - name: Observe the original exact-package claude workflow
+        id: cold_claude_observed
+        if: ${{ !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -I -B .github/scripts/retained_archive_cli_observation.py
+          --repo .
+          --stage "${{ runner.temp }}/artifact-host-payloads"
+          --package-root "${{ runner.temp }}/artifact-release-packages"
+          --host claude
+          --platform "${{ matrix.platform }}"
+          --output "${{ runner.temp }}/cold-claude/observation.json"
       - name: Preserve the exact claude cold-execution receipt
-        if: ${{ !cancelled() && steps.cold_claude.outcome == 'success' }}
+        if: ${{ !cancelled() && (steps.cold_claude.outcome == 'success' || steps.cold_claude_observed.outcome == 'success') }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-package-cold-${{ matrix.platform_token }}-claude-${{ github.sha }}
           path: ${{ runner.temp }}/cold-claude/artifact-package-cold.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve original installed Claude observation
+        if: ${{ !cancelled() && steps.cold_claude_observed.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installed-cold-observation-${{ matrix.platform_token }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cold-claude/*.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit installed Claude qualification report
+        id: cold-qualification
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && matrix.platform == 'linux/amd64' && steps.cold_claude_observed.outcome == 'success' && hashFiles('.github/integration-candidate.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . \
+            --job-name "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>" \
+            --observation "cold=${{ runner.temp }}/cold-claude/observation.json" \
+            --payload-root "artifact-host-payloads-${{ github.sha }}=${{ runner.temp }}/artifact-host-payloads" \
+            --payload-root "artifact-release-packages-${{ github.sha }}=${{ runner.temp }}/artifact-release-packages" \
+            --output "${{ runner.temp }}/qualification.json"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+      - name: Upload major qualification report
+        if: steps.cold-qualification.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.cold-qualification.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -1514,6 +1725,12 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
       - name: Validate strict parallel native qualification and shard coverage
@@ -1536,6 +1753,11 @@ jobs:
         # rule against real throwaway repositories in both directions, including
         # the untagged-but-already-shipped case that produced the issue.
         run: python .github/scripts/test_payload_version_gate.py
+      - name: Validate the integration candidate-version rule
+        # Program task P-01. Same-candidate evolution is admitted only for PRs
+        # whose CI base is major/state-contracts; main and merge_group keep
+        # the strict immediate-base rule above.
+        run: python .github/scripts/test_integration_candidate.py
 
   codex-resource-contract:
     name: "[CHECK] | [CDX ] | Skill resource evidence contract"
@@ -2078,8 +2300,16 @@ jobs:
             echo "::error::The ca-sandbox contract job requires a working Docker daemon. Without one the real isolation, mount, network, lifecycle and teardown suites cannot run, and this job would otherwise report green having exercised none of the container behaviour that contains an untrusted repository (issue #406)."
             exit 1
           fi
+      - name: Acquire reviewed Linux Nixpacks for fixed-plan qualification
+        working-directory: ${{ github.workspace }}
+        run: >-
+          python3 .github/scripts/acquire_nixpacks.py
+          --output "$RUNNER_TEMP/nixpacks-acquisition.json"
+          --github-path
       - name: Test (Docker required - a missing daemon fails the run)
-        run: npm test
+        # Preserve the original console/annotations and retain the same run's
+        # named outcomes; reporters never select or repeat tests.
+        run: npm test -- --reporter=default --reporter=github-actions --reporter=json --outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"
       - name: Assert every real-container layer executed
         # The preflight only proves the daemon answered once. This proves each
         # docker-gated layer actually ran, so a suite that silently stops
@@ -2107,6 +2337,20 @@ jobs:
           done
           [ "$stale" -eq 0 ] || exit 1
           echo "sandbox.js and claude-inside.js are in sync with the TypeScript sources"
+
+      - name: Preserve original Sandbox named test results
+        # Failed reports remain diagnostic; only successful original jobs/runs
+        # can qualify through the existing authenticated evidence reader.
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sandbox-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ca-sandbox-vitest.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
 
   ca-pi-checks:
     name: "[CHECK] | [PI  ] | Host-independent adapter contract"
@@ -2151,6 +2395,12 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Resolve the pinned upstream Pi version from repository policy
         # package.test.ts discovers the live Pi package root from PATH, so this
         # job needs a real Pi installed. The version is READ from the repo's own
@@ -2317,13 +2567,32 @@ jobs:
       # contracts in .github/scripts are textual (stdlib-only, no YAML parser)
       # and read the covered file set straight off a `run: npm test -- ...` line.
       - name: Test the platform-gated adapter suites on this operating system
-        run: npm test -- test/activation.test.ts test/audit-sink.test.ts test/background-jobs.test.ts test/child-env.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts
+        run: npm test -- test/activation.test.ts test/audit-sink.test.ts test/background-jobs.test.ts test/child-env.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts test/delegation-journal.test.ts test/workflow-recovery.test.ts
       - name: Test real package RPC activation and aliases
         working-directory: .
+        env:
+          CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics
         run: python .github/scripts/test_pi_package.py --rpc-commands
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
         working-directory: .
+        env:
+          CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics
         run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
+      - name: Retain sanitized RPC failure phases
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pi-rpc-diagnostics-${{ matrix.os }}-${{ matrix.pi-version }}
+          path: ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-shutdown-*.json
+          if-no-files-found: ignore
+          retention-days: 7
+          overwrite: false
 
   ca-pi-latest:
     name: "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>"
@@ -2375,6 +2644,12 @@ jobs:
           pi --version
           npm test -- test/package.test.ts -t "installed Pi runtime is admitted by the production boundary"
           npm test -- test/package.test.ts
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Run the latest Pi platform contract as a nonblocking canary
         id: platform-contract
         continue-on-error: true
@@ -2454,6 +2729,42 @@ jobs:
       - name: Fail unresolved high-severity findings
         run: python .github/scripts/test_pi_security.py --sarif codeql-results
 
+  # P-02 is Git/Python-only. Keep it outside the nearly full native hook
+  # budget; incomplete recorded work is allowed, publication remains Q-02's.
+  program-integrity:
+    name: "[CHECK] | [REPO] | Program integrity  <os: ${{ matrix.os }}>"
+    needs: changes
+    if: needs.changes.outputs.program_integrity == 'true'
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Check partial-program coverage accounting
+        run: python docs/state-contracts-major/execution/tools/coverage_ledger.py check
+      - name: Test bounded immutable Git object reads
+        run: python .github/scripts/test_immutable_git_blobs.py
+      - name: Authenticate recorded program evidence and report applicability
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # P-02 validates historical integrity; unfinished or stale work is not
+        # publication-ready. Q-02 retains its strict all-current main barrier.
+        run: python .github/scripts/check_state_contracts_integration.py
+      - name: Test partial-program integrity and historical applicability
+        run: python .github/scripts/test_state_contracts_integration.py
+
   hooks:
     name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
     # Windows runs independent command groups on fresh runners. Linux/macOS
@@ -2486,7 +2797,13 @@ jobs:
     # Bounded above the isolation slice's internal 15-minute child timeout so
     # a wedged runner cannot turn one actionable failure into another 30-minute
     # feedback loop.
-    timeout-minutes: 20
+    # Each job qualifies one fresh native reader for process-local test harnesses.
+    # Tests and vet still run; only repeated identical qualifications disappear.
+    # Windows contracts passed in19m47s and then exhausted20m while all prior
+    # steps passed; allow bounded setup/runner variance only for that cell.
+    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}
+    env:
+      ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../hooks-native
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -2509,6 +2826,16 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Qualify one native reader for hook contracts
+        env:
+          ARTIFACT_TEST_INSTALLATION: ""
+        run: python tools/build-artifacts.py --output "${{ github.workspace }}/../hooks-native"
       - name: Validate hook partition coverage
         run: python .github/scripts/test_hook_ci_partition.py
       - name: Validate shared suite observation
@@ -2591,6 +2918,34 @@ jobs:
         # additionalProperties:false with exactly seven keys - a shape borrowed
         # from any other event is rejected outright.
         run: python .github/scripts/test_prompt_submit.py
+      - name: Run durable workflow-recovery contract (HW-10)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # D-RECOVERY. The closed recovery contract and its generated runtime
+        # copy: only registered kinds and bounded fields are admitted, every
+        # transition is complete, no age/validation/CLI-success trigger can
+        # settle an obligation, and Git-common state is never verification input.
+        run: python .github/scripts/test_workflow_recovery_contract.py
+      - name: Test shared native manifest contract
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_artifact_manifest_contract.py
+      - name: Test interrupted output publication
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_generated_output.py
+      - name: Test authenticated major readiness admission and refusal
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_major_readiness.py
+      - name: Test original named-test qualification reports
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_major_qualification_report.py
+      - name: Test retained archive CLI observations
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_retained_archive_cli_observation.py
+      - name: Test retained cold observation pipeline
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_retained_cold_observer_pipeline.py
+      - name: Test reviewed builder acquisition boundaries
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_acquire_nixpacks.py
       - name: Run startup-emitter contract (ADR-0030)
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. SessionStart no longer injects the persona, and the block is
@@ -2726,6 +3081,17 @@ jobs:
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
+      - name: Run typed qualification-outcome contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # R-06: a green exit from the tag, branch-protection, Codex-host and
+        # payload checks can mean skipped/unavailable; required consumers
+        # accept only affirmative observations.
+        run: python .github/scripts/test_verdictlib.py
+      - name: Run bounded verifier-subprocess contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # R-07: Codex host commands and the Pi benchmark readiness wait have
+        # deadlines and an explicit process-tree containment outcome.
+        run: python .github/scripts/test_boundedproc.py
       - name: Run Codex release identity contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_release_identity.py
@@ -2971,6 +3337,50 @@ jobs:
         # enforcement results above it by halting the job early.
         run: python .github/scripts/check_adr_identity.py
 
+  workflow-recovery:
+    name: "[CHECK] | [CORE] | Workflow recovery  <os: ${{ matrix.os }}>"
+    needs: changes
+    if: needs.changes.outputs.hooks == 'true'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../workflow-recovery-native
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The old-install fixture archives a fixed historical source commit.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Qualify one native installation for workflow recovery
+        env:
+          ARTIFACT_TEST_INSTALLATION: ""
+        run: python tools/build-artifacts.py --output "${{ github.workspace }}/../workflow-recovery-native"
+      - name: Test durable runtime and concurrency
+        run: python .github/scripts/test_workflow_recovery.py
+      - name: Test actual installed helper and native effects
+        run: python .github/scripts/test_workflow_recovery_cli.py
+      - name: Test actual host event and readonly notice seams
+        run: python .github/scripts/test_workflow_recovery_hosts.py
+      - name: Test atomic contract generation
+        run: python .github/scripts/test_workflow_recovery_generator.py
+      - name: Test fresh linked review resubmission
+        run: python .github/scripts/test_review_resubmission.py
+
   version-bump:
     name: "[GATE ] | [CA  ] | Payload version"
     # `claude plugin update` is a NO-OP when plugin.json's version string is
@@ -3016,7 +3426,9 @@ jobs:
           # MANIFEST VERSION with no tag involved, so an untagged-but-already-
           # shipped version bought unlimited free payload changes that could
           # reach no installed user. Three merged PRs shipped that way on 2.9.1.
-          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca --base "origin/$BASE"
+          git fetch -q origin main
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca --base "origin/$BASE" \
+            --integration-base-branch "$BASE" --main-ref origin/main
 
   version-bump-sandbox:
     name: "[GATE ] | [SBX ] | Payload version"
@@ -3045,7 +3457,9 @@ jobs:
           # first-introduction case (no plugin.json on base) and the
           # unresolvable-base case both moved into payload_version_gate.py,
           # where they are unit-tested rather than asserted about shell.
-          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-sandbox --base "origin/$BASE"
+          git fetch -q origin main
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-sandbox --base "origin/$BASE" \
+            --integration-base-branch "$BASE" --main-ref origin/main
 
   version-bump-codex:
     name: "[GATE ] | [CDX ] | Payload version"
@@ -3074,7 +3488,9 @@ jobs:
           # wholesale. That is behaviour-neutral today because ca-codex has no
           # tools/ directory and ships no committed .js, and it means the tree
           # is already correct the day it grows one.
-          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-codex --base "origin/$BASE"
+          git fetch -q origin main
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-codex --base "origin/$BASE" \
+            --integration-base-branch "$BASE" --main-ref origin/main
 
   version-bump-pi:
     name: "[GATE ] | [PI  ] | Payload version"
@@ -3095,7 +3511,13 @@ jobs:
           # and this is the exact gate whose stale-base pass was observed on
           # PR #446 after main advanced underneath it.
           BASE_COMMIT: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
-        run: python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"
+          # Branch NAME selects the integration candidate rule (P-01); main and
+          # merge_group bases keep the strict rule.
+          BASE_BRANCH: ${{ github.base_ref || github.event.merge_group.base_ref }}
+        run: |
+          git fetch -q origin main --tags
+          python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT" \
+            --integration-base-branch "${BASE_BRANCH#refs/heads/}" --main-ref origin/main
 
   codex-host-latest:
     # Issue #408 AC-4. The required lane above pins the supported window, so it
@@ -3285,7 +3707,8 @@ jobs:
         # RA-11: exact taxonomy, frozen route inventory, byte-preserved legacy
         # workflows, additive canonical modes, stable first-containing Release
         # declarations, and hermetic release-state classification. Live GitHub
-        # Release observation belongs to release.yml's post-publication audit.
+        # Release observation is release.yml's route-publication-observation
+        # job (R-04), which records and never gates publication.
         run: |
           python3 .github/scripts/check_command_route_release_state.py declarations
           python3 .github/scripts/test_command_route_release_state.py
@@ -3549,6 +3972,12 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Check repository documentation contract
         run: python3 .github/scripts/check_docs_contract.py
 
@@ -3587,6 +4016,12 @@ jobs:
           python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
           --manifest .github/published-tags.json
           --legacy-manifest .github/legacy-published-tags.json
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
       - name: Test the audit's own logic
         # The unit tests are offline and tokenless; they pin the strict,
         # drift, and deletion verdicts without depending on live availability.
@@ -3655,6 +4090,45 @@ jobs:
           python3 .github/scripts/check_auto_release_candidate.py \
             --candidate "$GITHUB_SHA" --run-pre-tag
 
+  # This post-check producer grants no publication effect. It refuses missing
+  # task/disposition/report evidence rather than manufacturing a ready record.
+  # Keeping it after ci-passed avoids a cycle with the original owning jobs.
+  major-readiness-producer:
+    name: major readiness producer
+    needs: [changes, ci-passed]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.artifacts == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Authenticate complete original qualification evidence
+        id: major-readiness
+        if: hashFiles('.github/integration-candidate.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python .github/scripts/major_readiness.py produce
+          --source "${{ github.sha }}" --ci-run-id "${{ github.run_id }}"
+          --output "${{ runner.temp }}/major-readiness.json"
+      - name: Upload major readiness record
+        if: steps.major-readiness.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-readiness-${{ github.sha }}
+          path: ${{ runner.temp }}/major-readiness.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
+
   ci-passed:
     name: "[GATE ] | [REPO] | Merge readiness"
     # REGISTRATION CONTRACT (issue #390): this gate enforces a job through TWO
@@ -3697,6 +4171,8 @@ jobs:
       - coverage-union-pi-merge
       - ca-pi-codeql
       - hooks
+      - program-integrity
+      - workflow-recovery
       - version-bump
       - version-bump-sandbox
       - version-bump-codex
@@ -3716,13 +4192,19 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['program-integrity'].result }} ${{ needs['workflow-recovery'].result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
           artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
           artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
+          program_integrity_required="${{ needs.changes.outputs.program_integrity }}"
+          program_integrity_result="${{ needs['program-integrity'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           release_candidate_result="${{ needs['auto-release-candidate'].result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
+          if [ "$program_integrity_required" = true ] && [ "$program_integrity_result" != success ]; then
+            echo "::error::selected program integrity did not succeed: $program_integrity_result"
+            exit 1
+          fi
           if [ "$artifact_coverage_required" = true ] && [ "$artifact_coverage_result" != success ]; then
             echo "::error::required native statement coverage did not succeed: $artifact_coverage_result"
             exit 1

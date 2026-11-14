@@ -1,0 +1,3 @@
+{"total": {"lines":{"total":133,"covered":126,"skipped":0,"pct":94.73},"statements":{"total":161,"covered":147,"skipped":0,"pct":91.3},"functions":{"total":27,"covered":21,"skipped":0,"pct":77.77},"branches":{"total":101,"covered":92,"skipped":0,"pct":91.08},"branchesTrue":{"total":0,"covered":0,"skipped":0,"pct":"Unknown"}}
+,"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools\\src\\status.ts": {"lines":{"total":133,"covered":126,"skipped":0,"pct":94.73},"functions":{"total":27,"covered":21,"skipped":0,"pct":77.77},"statements":{"total":161,"covered":147,"skipped":0,"pct":91.3},"branches":{"total":101,"covered":92,"skipped":0,"pct":91.08}}
+}

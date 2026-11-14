@@ -22,6 +22,9 @@ import type {
 } from "./contracts.ts";
 import { loadPiRuntime, resolvePiRuntimeIdentity } from "./runtime-resolver.ts";
 import { EnforcementInstaller } from "./tool-guard.ts";
+import { decodeBootstrapEnvelope, MAX_BOOTSTRAP_BYTES } from "./delegation-contract.ts";
+import type { BootstrapEnvelope, DelegationEndpoint } from "./delegation-contract.ts";
+import { createDelegationClient, delegatedToolFactory } from "./delegation-client.ts";
 
 declare const __CODEARBITER_PI_TOOL_CLASSES__: unknown;
 
@@ -44,6 +47,7 @@ export interface ChildDependencies {
   bridge?: BridgePort;
   factories?: BuiltinToolFactories;
   nativeFactories?: BuiltinToolFactories;
+  delegation?: DelegationEndpoint;
 }
 
 function fixedFailure(message: string): Error {
@@ -56,6 +60,8 @@ export function installChild(pi: ChildPiPort, dependencies: ChildDependencies): 
   let consumed = false;
   let activeCwd = dependencies.cwd;
   let wrappersInstalled = false;
+  let handshakeReady = false;
+  const delegation = dependencies.delegation === undefined ? undefined : createDelegationClient(dependencies.delegation);
   enforcement.ensureBootstrap(pi, descriptor);
   enforcement.beginActivation();
   if (dependencies.wrapperSourcePath !== undefined) enforcement.ensureGuard(pi, descriptor, dependencies.wrapperSourcePath);
@@ -74,16 +80,27 @@ export function installChild(pi: ChildPiPort, dependencies: ChildDependencies): 
       // is the consumed nonce plus the operator attestation, not project trust.
       projectTrust: "not-required",
     });
+    if (delegation !== undefined) {
+      // Proxies have no local mutation path. The authenticated parent runs the same final
+      // bridge/policy/trust/lifecycle gate with its real TUI before the owned effect executor.
+      for (const tool of ["write", "edit", "bash"] as const) {
+        if (pi.getActiveTools().includes(tool)) {
+          pi.registerTool(delegatedToolFactory(tool, dependencies.factories[tool], delegation, () => handshakeReady)(cwd));
+        }
+      }
+    }
     wrappersInstalled = true;
     return true;
   };
 
   pi.on("session_start", (_event, context) => {
+    handshakeReady = false;
     activeCwd = context.cwd;
     enforcement.beginBootstrap();
     installWrappers(context.cwd);
   });
   pi.on("session_shutdown", () => {
+    handshakeReady = false;
     enforcement.deactivate();
     consumed = true;
   });
@@ -133,26 +150,31 @@ export function installChild(pi: ChildPiPort, dependencies: ChildDependencies): 
       }
       if (!confirmed) throw fixedFailure("attestation confirmation was rejected");
       enforcement.markReady();
+      handshakeReady = true;
     },
   });
 }
 
-export async function readChildCapability(source: NodeJS.ReadableStream = createReadStream("", { fd: 3, autoClose: true })): Promise<string> {
+export async function readChildBootstrap(source: NodeJS.ReadableStream = createReadStream("", { fd: 3, autoClose: true })): Promise<BootstrapEnvelope> {
   let value = "";
   let bytes = 0;
   try {
     for await (const chunk of source as AsyncIterable<Buffer | string>) {
       const text = typeof chunk === "string" ? chunk : chunk.toString("utf8");
       bytes += Buffer.byteLength(text, "utf8");
-      if (bytes > 32) throw fixedFailure("capability is oversized");
+      if (bytes > MAX_BOOTSTRAP_BYTES) throw fixedFailure("capability is oversized");
       value += text;
     }
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("codeArbiter child handshake")) throw error;
     throw fixedFailure("capability pipe is unavailable");
   }
-  if (!NONCE.test(value)) throw fixedFailure("capability is malformed");
-  return value;
+  try { return decodeBootstrapEnvelope(value); }
+  catch { throw fixedFailure("capability is malformed"); }
+}
+
+export async function readChildCapability(source?: NodeJS.ReadableStream): Promise<string> {
+  return (await readChildBootstrap(source)).nonce;
 }
 
 function loadToolClasses(value: unknown): Readonly<Record<string, ToolCategory>> {
@@ -168,7 +190,8 @@ function loadToolClasses(value: unknown): Readonly<Record<string, ToolCategory>>
 
 export default async function codeArbiterPiChild(pi: ExtensionAPI): Promise<void> {
   if (process.env.CODEARBITER_SUBAGENT !== "1") throw fixedFailure("has no validated subagent marker");
-  const expectedNonce = await readChildCapability();
+  const bootstrap = await readChildBootstrap();
+  const expectedNonce = bootstrap.nonce;
   const runtimeIdentity = await resolvePiRuntimeIdentity();
   const direction = compatibilityDirection({ piVersion: runtimeIdentity.version, nodeVersion: process.versions.node, pythonMajor: 3 });
   if (direction !== null) throw new Error(direction);
@@ -219,5 +242,6 @@ export default async function codeArbiterPiChild(pi: ExtensionAPI): Promise<void
     bridge,
     factories,
     nativeFactories: factories,
+    ...(bootstrap.delegation === undefined ? {} : { delegation: bootstrap.delegation }),
   });
 }

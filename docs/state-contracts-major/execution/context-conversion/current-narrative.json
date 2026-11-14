@@ -1,0 +1,7 @@
+{
+  "artifact_id": "CTX-TECH-STACK",
+  "source_commit": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+  "source_path": ".codearbiter/tech-stack.md",
+  "active_records": ["FACT-001", "FACT-002", "FACT-003", "FACT-004", "FACT-005", "FACT-006"],
+  "meaning": "Six original narrative sections are also active sourced facts. Historical notes remain preserved. Command conformance reads only active command records; retained narrative examples cannot replace withdrawn command declarations."
+}

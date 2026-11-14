@@ -1,0 +1,323 @@
+{
+  "kind": "synthetic-schema-fixtures-not-qualification-evidence",
+  "cases": [
+    {
+      "id": "candidate-five-fields",
+      "valid": true,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        }
+      }
+    },
+    {
+      "id": "qualified-declaration-six-fields",
+      "valid": true,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "unknown-field",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          }
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "unknown-format",
+      "valid": false,
+      "manifest": {
+        "format": "future",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "malformed-context",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": 42
+      }
+    },
+    {
+      "id": "unknown-context-platform",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          },
+          "linux/amd64": {}
+        }
+      }
+    },
+    {
+      "id": "wrong-context-binary",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "unknown-context-field",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ],
+            "extra": true
+          }
+        }
+      }
+    },
+    {
+      "id": "wrong-platform-path",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "../engine.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": true
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "unqualified-context",
+      "valid": false,
+      "manifest": {
+        "format": "codearbiter.artifact-release/0.1.0",
+        "version": "0.1.0",
+        "protocol": "codearbiter.artifact-api/0.1.0",
+        "schema_version": "0.3.2",
+        "binaries": {
+          "windows/amd64": {
+            "file": "ca-artifact-windows-amd64.exe",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "native_tested": false
+          }
+        },
+        "context_qualification": {
+          "windows/amd64": {
+            "source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+            "workflow": ".github/workflows/ci.yml",
+            "run_id": "1",
+            "binary_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "module_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "native_cases": [
+              "TestContextBoundedRender",
+              "TestContextDocumentContract",
+              "TestContextMarkdownPreservation",
+              "TestContextMutationAdmission",
+              "TestContextRecoveryAndPaths",
+              "TestContextRepresentationBoundary"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

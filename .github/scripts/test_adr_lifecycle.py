@@ -21,6 +21,8 @@ from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
+from project_knowledge import context_text
+
 try:
     import adr_lifecycle as al
     import check_adr_lifecycle as cal
@@ -463,7 +465,7 @@ class LifecycleContractTest(unittest.TestCase):
     def test_public_and_shipped_docs_declare_lifecycle_git_prerequisite(self):
         # GIT-3: public install guidance and every generated host route agree.
         repo = os.path.dirname(os.path.dirname(HERE))
-        paths = ["README.md", ".codearbiter/tech-stack.md",
+        paths = ["README.md", "context:tech-stack",
                  "site/src/content/docs/getting-started/compatibility.mdx",
                  "core/surface/skills/finishing-a-development-branch/SKILL.md",
                  "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
@@ -475,8 +477,12 @@ class LifecycleContractTest(unittest.TestCase):
             hook_minimum = re.search(r"requires Git (\d+\.\d+\.\d+)\+ with --no-lazy-fetch", handle.read())
         self.assertIsNotNone(hook_minimum)
         for path in paths:
-            with self.subTest(path=path), open(os.path.join(repo, path), encoding="utf-8") as handle:
-                text = handle.read()
+            with self.subTest(path=path):
+                if path == "context:tech-stack":
+                    text = context_text("tech-stack", root=repo)
+                else:
+                    with open(os.path.join(repo, path), encoding="utf-8") as handle:
+                        text = handle.read()
                 if path.startswith("site/"):
                     text = text.replace("%%fact=git.adrMinimum%%", hook_minimum.group(1))
                 self.assertIn("Git 2.45.0+", text)
@@ -1797,9 +1803,7 @@ class LifecycleContractTest(unittest.TestCase):
 
     def test_security_controls_define_lifecycle_ledger_identity_and_enforcement(self):
         root = os.path.dirname(os.path.dirname(HERE))
-        with open(os.path.join(root, ".codearbiter", "security-controls.md"),
-                  encoding="utf-8") as handle:
-            controls = handle.read()
+        controls = context_text("security-controls", root=root)
         audit = controls.split("## Audit trail", 1)[1].split("\n---", 1)[0]
         self.assertIn(".codearbiter/decisions/adr-lifecycle.jsonl", audit)
         self.assertIn("case-folded", audit)
@@ -1937,9 +1941,26 @@ class LifecycleContractTest(unittest.TestCase):
 
             self._git(root, "commit", "-m", "accept ADR")
             source = self._git(root, "rev-parse", "HEAD")
-            event = al.acceptance_event(
-                "0001-test", ADR, source, packet["obligations"],
-                dt.datetime.now(dt.timezone.utc).isoformat())
+            # Exercise the same owner as the public acceptance CLI. Its reviewer
+            # identity must survive the local second-leg packet check.
+            from _adrlifecyclewrite import append_acceptance
+            event = append_acceptance(
+                root, "0001-test", source, packet["obligations"],
+                "independent-reviewer:test")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 0, stderr)
+            for reviewer in (None, "different-reviewer", ""):
+                with self.subTest(unbound_reviewer=reviewer):
+                    mutant = dict(event)
+                    if reviewer is None:
+                        mutant.pop("reviewed_by")
+                    else:
+                        mutant["reviewed_by"] = reviewer
+                    self._write_ledger(root, [mutant])
+                    self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                    result, _stdout, stderr = self._run_checker(root)
+                    self.assertEqual(result, 1, stderr)
             self._write_ledger(root, [event])
             self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
             result, _stdout, stderr = self._run_checker(root)
@@ -2219,6 +2240,7 @@ class LifecycleContractTest(unittest.TestCase):
             acceptance = self._acceptance()
             acceptance["source_commit"] = self._git(root, "rev-parse", "HEAD")
             acceptance["recorded_at"] = reviewed_at.isoformat()
+            acceptance["reviewed_by"] = "independent-reviewer:test"
 
             self._write_ledger(root, [acceptance])
             result, _stdout, stderr = self._run_checker(root)
@@ -2553,9 +2575,7 @@ class LifecycleContractTest(unittest.TestCase):
 
     def test_security_controls_separate_append_only_enforcement_from_jsonl_validation(self):
         root = os.path.dirname(os.path.dirname(HERE))
-        path = os.path.join(root, ".codearbiter", "security-controls.md")
-        with open(path, encoding="utf-8") as handle:
-            controls = handle.read()
+        controls = context_text("security-controls", root=root)
         flowed = " ".join(controls.split())
         self.assertIn("H-05 enforces append-only write", flowed)
         self.assertIn("lifecycle checker separately validates JSONL syntax", flowed)
@@ -2572,18 +2592,18 @@ class LifecycleContractTest(unittest.TestCase):
         self.assertIn("python .github/scripts/check_destructive_registry.py", workflow)
         push_prefix = workflow.split("permissions:", 1)[0]
         self.assertIn('- ".codearbiter/decisions/**"', push_prefix)
-        with open(os.path.join(root, ".codearbiter", "tech-stack.md"), encoding="utf-8") as handle:
-            tech_stack = handle.read()
+        tech_stack = context_text("tech-stack", root=root)
+        declared_commands = context_text("tech-stack", root=root, commands_only=True)
         self.assertIn("python .github/scripts/test_adr_lifecycle.py", tech_stack)
         self.assertIn(".github/scripts/prepare_adr_acceptance.py", tech_stack)
         self.assertIn("GitHub-event validation remain strict", tech_stack)
         local_command = "python .github/scripts/check_adr_lifecycle.py"
-        self.assertEqual(_tech_checker_commands(tech_stack), [local_command])
+        self.assertEqual(_tech_checker_commands(declared_commands), [local_command])
         self.assertIn("python .github/scripts/check_destructive_registry.py", tech_stack)
 
         for mutated in (
-                tech_stack + "\n" + local_command + "\n",
-                tech_stack.replace(local_command, local_command + " --current-ref HEAD")):
+                declared_commands + "\n" + local_command + "\n",
+                declared_commands.replace(local_command, local_command + " --current-ref HEAD")):
             with self.subTest(context="tech-stack", mutated=mutated[-120:]):
                 self.assertNotEqual(_tech_checker_commands(mutated), [local_command])
         workflow_run = "        run: " + ci_command

@@ -20,6 +20,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 )
@@ -393,7 +394,9 @@ func completionWorkspacesOnce(f *store.FS, bindings []any, normalize, reuse bool
 			return nil, nil, fault.New("WORKSPACE_DRIFT", "command executable identity changed")
 		}
 		launchFiles, ok := binding["launch_files"].([]any)
-		if !ok || len(launchFiles) == 0 || len(launchFiles) > 32 {
+		// The same bound as the qualified binding schema and role validation;
+		// a binding the producer and contract admit must not be refused here.
+		if !ok || len(launchFiles) == 0 || len(launchFiles) > observation.MaxLaunchFiles {
 			return nil, nil, fault.New("WORKSPACE_DRIFT", "command launch file bindings are unavailable")
 		}
 		for _, v := range launchFiles {

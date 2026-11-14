@@ -1,0 +1,54 @@
+{
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "run_R": 43582198115,
+  "original_acquisition_sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c",
+  "cohort_sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01",
+  "pi_package_sha256": "c52dfd6a2022edc6dfc90eab88ce6a8cd433d1fa61bbb8b31fe81166bfecb553",
+  "fixture_owner_source_sha256": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+  "test_name": "PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",
+  "test_count": 1,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "state": "PASSED",
+  "seconds": 18.485945699969307,
+  "routes": [
+    {
+      "route": "bare",
+      "rpc_returned": true,
+      "seconds": 12.756663399981335,
+      "records": 1,
+      "package_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+    },
+    {
+      "route": "alias",
+      "rpc_returned": true,
+      "seconds": 2.6995178000070155,
+      "records": 23,
+      "package_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+    },
+    {
+      "route": "doctor",
+      "rpc_returned": true,
+      "seconds": 2.9266813999274746,
+      "records": 21,
+      "package_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-original-extracted\\package"
+    }
+  ],
+  "retained_fixture_roots": [
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pi-rpc-M46e29-R43582198115\\pi-rpc-owned-r7kskdf4"
+  ],
+  "runtime": {
+    "node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.EXE",
+    "cli": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-supported-1.5.0-msc-20261113\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js",
+    "Pi_version": "1.5.0",
+    "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "limits": [
+    "Original local Windows Pi1.5 CLI/native/hook fixture only; no real external provider, visible parent TUI or physical consent claim.",
+    "Doctor active-dispatch remains honestly DEGRADED; no wrapper-self-test relabeling.",
+    "No installed update/disable/uninstall/rollback, other OS, publication or later-source qualification.",
+    "Private deterministic fixture/provider outputs retained; no user credentials/config copied."
+  ]
+}

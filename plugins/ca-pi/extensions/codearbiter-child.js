@@ -1322,7 +1322,7 @@ function fixedFallbackSessionId() {
 function executionCwd(context, fallback) {
   return context !== null && typeof context === "object" && typeof context.cwd === "string" ? context.cwd : fallback;
 }
-function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, bridge, boundGeneration, activeGeneration, isReady, sessionIdFor, permissionPolicy, getMode, permissionAudit, wrapperSourcePath, projectTrust, onTrustWithdrawn, allowNativeFallback = true, bridgeToolName = toolName) {
+function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, bridge, boundGeneration, activeGeneration, isReady, sessionIdFor, permissionPolicy, getMode, permissionAudit, wrapperSourcePath, projectTrust, onTrustWithdrawn, allowNativeFallback = true, bridgeToolName = toolName, delegatedConfirmation) {
   const original = factory(cwd);
   if (original.name !== toolName || typeof original.execute !== "function") {
     throw new Error(`Pi built-in ${toolName} factory identity is invalid; run /ca-doctor.`);
@@ -1420,7 +1420,7 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
         if (!trustHeld()) return "lifecycle-stale";
         return activeGeneration() === generation && generation === boundGeneration && isReady() ? "current" : "lifecycle-stale";
       };
-      if (policy.decision === "ask") {
+      if (policy.decision === "ask" || delegatedConfirmation !== void 0) {
         const confirmation = confirmationUi(context);
         if (confirmation === void 0) {
           await audit("denied");
@@ -1435,7 +1435,7 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
           confirmed = await confirmation.confirm.call(
             confirmation.ui,
             CONFIRMATION_TITLE,
-            confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence),
+            delegatedConfirmation ?? (policy.decision === "ask" ? confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence) : "Allow this exact governed operation?"),
             { timeout: CONFIRMATION_TIMEOUT_MS, signal }
           ) === true;
         } catch {
@@ -1524,6 +1524,7 @@ var EnforcementInstaller = class {
   fallbackSessionId;
   lifecycleGeneration;
   trustRevoked = false;
+  delegatedBuiltins;
   sessionIdFor(context) {
     const native = nativeSessionId(context);
     if (native !== void 0) return native;
@@ -1577,6 +1578,7 @@ var EnforcementInstaller = class {
     this.trustRevoked = false;
     this.fallbackSessionId = void 0;
     this.lifecycleGeneration = void 0;
+    this.delegatedBuiltins = void 0;
   }
   ensureGuard(pi, descriptor, wrapperSourcePath) {
     if (this.guardInstalled) return;
@@ -1601,6 +1603,73 @@ var EnforcementInstaller = class {
       (context) => this.sessionIdFor(context),
       () => this.revokeForTrustWithdrawal()
     );
+    if (this.lifecycleGeneration !== void 0) {
+      this.delegatedBuiltins = { pi, bridge, options, generation: this.lifecycleGeneration };
+    }
+  }
+  /** Reuse the parent's final gate while substituting only its owned effect executor.
+   * Context is the original parent dispatch context, never child-supplied data. */
+  async executeDelegated(tool, toolCallId, params, signal, context, effect, executionDescription) {
+    const declined = () => ({ admitted: false, result: {
+      isError: true,
+      content: [{ type: "text", text: "Parent permission gate refused the delegated operation." }]
+    } });
+    if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
+      return { ...declined(), reason: "no-parent-ui" };
+    }
+    const saved = this.delegatedBuiltins;
+    if (saved === void 0 || saved.generation !== this.lifecycleGeneration || !this.ready) {
+      return declined();
+    }
+    const { pi, bridge, options, generation } = saved;
+    const policy = options.permissionPolicy ?? compileBuiltinPermissionPolicy(options.descriptor, {});
+    if (policy === void 0) return declined();
+    let admitted = false;
+    const factory = () => ({ name: tool, execute: async (_id, approved) => {
+      admitted = true;
+      return await effect(approved);
+    } });
+    let snapshot;
+    try {
+      snapshot = canonicalSnapshot(params);
+    } catch {
+      return declined();
+    }
+    const exact = JSON.stringify(snapshot);
+    const confirmation = `Delegated ${tool} in ${options.cwd}
+${exact}
+SHA-256: ${createHash4("sha256").update(exact).digest("hex")}
+` + (executionDescription === void 0 ? "" : `${executionDescription}
+`) + "The parent executes this exact request on the trusted host. Approved commands have host filesystem and network access.";
+    const definition = wrappedDefinition(
+      pi,
+      tool,
+      factory,
+      factory,
+      options.descriptor[tool] ?? "OTHER",
+      options.cwd,
+      bridge,
+      generation,
+      () => this.lifecycleGeneration,
+      () => this.ready,
+      (ctx) => this.sessionIdFor(ctx),
+      policy,
+      options.getMode ?? (() => "execute"),
+      options.permissionAudit,
+      options.wrapperSourcePath,
+      options.projectTrust,
+      () => this.revokeForTrustWithdrawal(),
+      false,
+      tool,
+      confirmation
+    );
+    try {
+      const result = await definition.execute(toolCallId, snapshot, signal, void 0, context);
+      return { admitted, result };
+    } catch (error) {
+      if (admitted) throw error;
+      return declined();
+    }
   }
   ensureCustomTool(pi, bridge, options) {
     const boundGeneration = this.lifecycleGeneration ?? STANDALONE_GENERATION;
@@ -1708,6 +1777,260 @@ function bridgeToolResults(pi, bridge, descriptor, activeGeneration = () => STAN
   });
 }
 
+// src/delegation-contract.ts
+import { createHash as createHash5, timingSafeEqual } from "node:crypto";
+import { types as utilTypes3 } from "node:util";
+var DELEGATION_PROFILE = "trusted-host-exact-operation-v1";
+var BOOTSTRAP_ENVELOPE_VERSION = 2;
+var MAX_BOOTSTRAP_BYTES = 512;
+var OPERATION_PROTOCOL_VERSION = 1;
+var MAX_OPERATION_REQUEST_BYTES = 1048576;
+var MAX_OPERATION_RESULT_TEXT_BYTES = 65536;
+var MAX_BASH_COMMAND_BYTES = 131072;
+var MAX_BASH_TIMEOUT_SECONDS = 600;
+var MAX_EDITS_PER_OPERATION = 64;
+var DELEGATED_TOOLS = Object.freeze(["write", "edit", "bash"]);
+var ADMISSION_STATES = Object.freeze(["admitted", "denied", "cancelled", "expired", "revoked", "unavailable"]);
+var EXECUTION_STATES = Object.freeze(["not-started", "executing", "completed", "failed", "outcome-unknown"]);
+var CONTAINMENT_STATES = Object.freeze(["not-applicable", "running", "verified-stopped", "unverified"]);
+var OBSERVATION_STATES = Object.freeze(["exact", "target-state-only", "unavailable", "stale"]);
+var RECOVERY_STATES = Object.freeze(["none", "read-only-reconciliation", "new-operation-required", "dependent-resource-held"]);
+var DELEGATION_REASONS = Object.freeze([
+  "protocol-invalid",
+  "token-invalid",
+  "sequence-invalid",
+  "digest-mismatch",
+  "operation-id-reused",
+  "grant-expired",
+  "grant-revoked",
+  "grant-exhausted",
+  "tool-not-delegated",
+  "target-invalid",
+  "permission-denied",
+  "no-parent-ui",
+  "journal-unavailable",
+  "journal-unknown",
+  "containment-unverified",
+  "executor-failed",
+  "executor-unavailable",
+  "busy"
+]);
+var HEX32 = /^[0-9a-f]{32}$/u;
+var HEX64 = /^[0-9a-f]{64}$/u;
+var REQUEST_ID = /^[A-Za-z0-9_-]{1,64}$/u;
+var ENDPOINT = /^http:\/\/127\.0\.0\.1:([1-9][0-9]{0,4})\/v1\/operation$/u;
+var DelegationContractError = class extends Error {
+  constructor(reason) {
+    super(`codeArbiter delegation refused (${reason}).`);
+    this.reason = reason;
+    this.name = "DelegationContractError";
+  }
+  reason;
+};
+function refuse(reason) {
+  throw new DelegationContractError(reason);
+}
+function plainRecord(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes3.isProxy(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+function exactKeys2(value, required, optional = []) {
+  const keys = Object.keys(value);
+  return required.every((key) => Object.prototype.hasOwnProperty.call(value, key)) && keys.every((key) => required.includes(key) || optional.includes(key)) && Reflect.ownKeys(value).length === keys.length;
+}
+function boundedText(value, maxBytes) {
+  return typeof value === "string" && !value.includes("\0") && Buffer.byteLength(value, "utf8") <= maxBytes;
+}
+function canonicalJson(value, depth = 0) {
+  if (depth > 16) refuse("protocol-invalid");
+  if (value === null || typeof value === "boolean") return JSON.stringify(value);
+  if (typeof value === "number") return Number.isFinite(value) ? JSON.stringify(value) : refuse("protocol-invalid");
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value) && !utilTypes3.isProxy(value)) {
+    return `[${value.map((item) => canonicalJson(item, depth + 1)).join(",")}]`;
+  }
+  if (!plainRecord(value)) refuse("protocol-invalid");
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key], depth + 1)}`).join(",")}}`;
+}
+function parseCanonical(text) {
+  let value;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    refuse("protocol-invalid");
+  }
+  let canonical;
+  try {
+    canonical = canonicalJson(value);
+  } catch {
+    refuse("protocol-invalid");
+  }
+  if (canonical !== text) refuse("protocol-invalid");
+  return value;
+}
+function deepFreeze(value) {
+  if (value !== null && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const key of Object.keys(value)) deepFreeze(value[key]);
+  }
+  return value;
+}
+function operationDigest(tool, params) {
+  return createHash5("sha256").update(canonicalJson({ profile: DELEGATION_PROFILE, tool, params }), "utf8").digest("hex");
+}
+function encodeBootstrapEnvelope(envelope) {
+  if (!HEX32.test(envelope.nonce)) refuse("protocol-invalid");
+  if (envelope.delegation !== void 0 && (!ENDPOINT.test(envelope.delegation.endpoint) || Number(ENDPOINT.exec(envelope.delegation.endpoint)[1]) > 65535 || !HEX64.test(envelope.delegation.token))) refuse("protocol-invalid");
+  const text = canonicalJson({
+    v: BOOTSTRAP_ENVELOPE_VERSION,
+    nonce: envelope.nonce,
+    ...envelope.delegation === void 0 ? {} : {
+      delegation: { endpoint: envelope.delegation.endpoint, token: envelope.delegation.token }
+    }
+  });
+  if (Buffer.byteLength(text, "utf8") > MAX_BOOTSTRAP_BYTES) refuse("protocol-invalid");
+  return text;
+}
+function decodeBootstrapEnvelope(text) {
+  if (typeof text !== "string" || Buffer.byteLength(text, "utf8") > MAX_BOOTSTRAP_BYTES) refuse("protocol-invalid");
+  const value = parseCanonical(text);
+  if (!plainRecord(value) || !exactKeys2(value, ["v", "nonce"], ["delegation"]) || value.v !== BOOTSTRAP_ENVELOPE_VERSION || typeof value.nonce !== "string" || !HEX32.test(value.nonce)) {
+    refuse("protocol-invalid");
+  }
+  if (value.delegation === void 0) return Object.freeze({ nonce: value.nonce });
+  const delegation = value.delegation;
+  if (!plainRecord(delegation) || !exactKeys2(delegation, ["endpoint", "token"]) || typeof delegation.endpoint !== "string" || !ENDPOINT.test(delegation.endpoint) || Number(ENDPOINT.exec(delegation.endpoint)[1]) > 65535 || typeof delegation.token !== "string" || !HEX64.test(delegation.token)) refuse("protocol-invalid");
+  return Object.freeze({
+    nonce: value.nonce,
+    delegation: Object.freeze({ endpoint: delegation.endpoint, token: delegation.token })
+  });
+}
+function validDelegatedParams(tool, params) {
+  if (!plainRecord(params)) return false;
+  if (tool === "write") {
+    return exactKeys2(params, ["path", "content"]) && boundedText(params.path, 4096) && params.path !== "" && boundedText(params.content, MAX_OPERATION_REQUEST_BYTES);
+  }
+  if (tool === "edit") {
+    const edits = params.edits;
+    return exactKeys2(params, ["path", "edits"]) && boundedText(params.path, 4096) && params.path !== "" && Array.isArray(edits) && !utilTypes3.isProxy(edits) && edits.length > 0 && edits.length <= MAX_EDITS_PER_OPERATION && edits.every((edit) => plainRecord(edit) && exactKeys2(edit, ["oldText", "newText"]) && boundedText(edit.oldText, MAX_OPERATION_REQUEST_BYTES) && edit.oldText !== "" && boundedText(edit.newText, MAX_OPERATION_REQUEST_BYTES));
+  }
+  return exactKeys2(params, ["command"], ["timeout"]) && boundedText(params.command, MAX_BASH_COMMAND_BYTES) && params.command.trim() !== "" && (params.timeout === void 0 || typeof params.timeout === "number" && Number.isFinite(params.timeout) && params.timeout > 0 && params.timeout <= MAX_BASH_TIMEOUT_SECONDS);
+}
+function encodeOperationRequest(input) {
+  if (!Number.isSafeInteger(input.seq) || input.seq < 1 || !REQUEST_ID.test(input.requestId) || !DELEGATED_TOOLS.includes(input.tool) || !validDelegatedParams(input.tool, input.params)) refuse("protocol-invalid");
+  const text = canonicalJson({
+    v: OPERATION_PROTOCOL_VERSION,
+    seq: input.seq,
+    requestId: input.requestId,
+    tool: input.tool,
+    params: input.params,
+    digest: operationDigest(input.tool, input.params)
+  });
+  if (Buffer.byteLength(text, "utf8") > MAX_OPERATION_REQUEST_BYTES) refuse("protocol-invalid");
+  return text;
+}
+function validResult(value) {
+  return plainRecord(value) && exactKeys2(value, ["content", "isError"]) && typeof value.isError === "boolean" && Array.isArray(value.content) && value.content.length <= 16 && value.content.every((block) => plainRecord(block) && exactKeys2(block, ["type", "text"]) && block.type === "text" && boundedText(block.text, MAX_OPERATION_RESULT_TEXT_BYTES));
+}
+function consistentAxes(response) {
+  const { admission, execution, result, reason } = response;
+  if (admission !== "admitted") {
+    return execution === "not-started" && result === void 0 && reason !== void 0 && response.containment === "not-applicable";
+  }
+  if (response.observation === "stale" && execution !== "failed") return false;
+  if (execution === "executing") return result === void 0 && response.recovery !== "none";
+  if (response.containment === "running") return false;
+  if (execution === "completed") return result !== void 0 && reason === void 0;
+  if (execution === "outcome-unknown") return result === void 0 && response.recovery !== "none";
+  if (execution === "failed") return reason !== void 0 || result !== void 0;
+  return result === void 0 && reason !== void 0;
+}
+function decodeOperationResponse(text) {
+  if (typeof text !== "string" || Buffer.byteLength(text, "utf8") > 16 * MAX_OPERATION_RESULT_TEXT_BYTES + 4096) refuse("protocol-invalid");
+  const value = parseCanonical(text);
+  if (!plainRecord(value) || !exactKeys2(value, ["v", "requestId", "admission", "execution", "containment", "observation", "recovery"], ["reason", "result"]) || value.v !== OPERATION_PROTOCOL_VERSION || typeof value.requestId !== "string" || !REQUEST_ID.test(value.requestId) || !ADMISSION_STATES.includes(value.admission) || !EXECUTION_STATES.includes(value.execution) || !CONTAINMENT_STATES.includes(value.containment) || !OBSERVATION_STATES.includes(value.observation) || !RECOVERY_STATES.includes(value.recovery) || value.reason !== void 0 && !DELEGATION_REASONS.includes(value.reason) || value.result !== void 0 && !validResult(value.result)) refuse("protocol-invalid");
+  const response = value;
+  if (!consistentAxes(response)) refuse("protocol-invalid");
+  return deepFreeze(response);
+}
+var JOURNAL_PHASES = Object.freeze(["claimed", "started", "observed"]);
+
+// src/delegation-client.ts
+import { randomUUID as randomUUID3 } from "node:crypto";
+import { request as httpRequest } from "node:http";
+var MAX_RESPONSE_BYTES = 11e5;
+function createDelegationClient(endpoint) {
+  decodeBootstrapEnvelope(encodeBootstrapEnvelope({ nonce: "0".repeat(32), delegation: endpoint }));
+  const connection = Object.freeze({ endpoint: endpoint.endpoint, token: endpoint.token });
+  let sequence = 0;
+  let tail = Promise.resolve();
+  return Object.freeze({
+    execute(tool, params, signal) {
+      const text = encodeOperationRequest({ seq: ++sequence, requestId: randomUUID3(), tool, params });
+      const send = () => new Promise((resolve6, reject) => {
+        if (signal?.aborted) {
+          reject(new Error("Delegation cancelled."));
+          return;
+        }
+        const request = httpRequest(
+          connection.endpoint,
+          {
+            method: "POST",
+            signal,
+            headers: { authorization: `Bearer ${connection.token}`, "content-type": "application/json", "content-length": Buffer.byteLength(text) }
+          },
+          (response2) => {
+            if (response2.statusCode !== 200) {
+              response2.resume();
+              reject(new Error("Delegation unavailable."));
+              return;
+            }
+            const chunks = [];
+            let bytes = 0;
+            response2.on("data", (raw) => {
+              bytes += raw.length;
+              if (bytes > MAX_RESPONSE_BYTES) {
+                response2.destroy();
+                reject(new Error("Delegation response exceeded bounds."));
+              } else chunks.push(raw);
+            });
+            response2.on("error", () => reject(new Error("Delegation response unavailable.")));
+            response2.on("end", () => {
+              try {
+                resolve6(decodeOperationResponse(Buffer.concat(chunks).toString("utf8")));
+              } catch {
+                reject(new Error("Delegation response invalid."));
+              }
+            });
+          }
+        );
+        request.setTimeout(61e4, () => request.destroy(new Error("Delegation timed out.")));
+        request.on("error", () => reject(new Error("Delegation transport unavailable; effect outcome is unknown.")));
+        request.end(text);
+      });
+      const response = tail.then(send);
+      tail = response.catch(() => void 0);
+      return response;
+    }
+  });
+}
+function delegatedToolFactory(tool, native, client, ready) {
+  return (cwd) => {
+    const metadata = native(cwd);
+    return { ...metadata, execute: async (_id, params, signal) => {
+      if (!ready()) throw new Error("Delegated child is not ready.");
+      try {
+        const response = await client.execute(tool, params, signal);
+        if (response.result !== void 0) return { ...response.result, details: response };
+        return { content: [{ type: "text", text: JSON.stringify(response) }], isError: true, details: response };
+      } catch {
+        return { content: [{ type: "text", text: "Parent delegation unavailable; effect outcome may be unknown. Observe before any new attempt." }], isError: true };
+      }
+    } };
+  };
+}
+
 // src/child-extension.ts
 var HANDSHAKE_COMMAND = "codearbiter-internal-child-handshake";
 var NONCE = /^[0-9a-f]{32}$/u;
@@ -1722,6 +2045,8 @@ function installChild(pi, dependencies) {
   let consumed = false;
   let activeCwd = dependencies.cwd;
   let wrappersInstalled = false;
+  let handshakeReady = false;
+  const delegation = dependencies.delegation === void 0 ? void 0 : createDelegationClient(dependencies.delegation);
   enforcement.ensureBootstrap(pi, descriptor);
   enforcement.beginActivation();
   if (dependencies.wrapperSourcePath !== void 0) enforcement.ensureGuard(pi, descriptor, dependencies.wrapperSourcePath);
@@ -1739,15 +2064,24 @@ function installChild(pi, dependencies) {
       // is the consumed nonce plus the operator attestation, not project trust.
       projectTrust: "not-required"
     });
+    if (delegation !== void 0) {
+      for (const tool of ["write", "edit", "bash"]) {
+        if (pi.getActiveTools().includes(tool)) {
+          pi.registerTool(delegatedToolFactory(tool, dependencies.factories[tool], delegation, () => handshakeReady)(cwd));
+        }
+      }
+    }
     wrappersInstalled = true;
     return true;
   };
   pi.on("session_start", (_event, context) => {
+    handshakeReady = false;
     activeCwd = context.cwd;
     enforcement.beginBootstrap();
     installWrappers(context.cwd);
   });
   pi.on("session_shutdown", () => {
+    handshakeReady = false;
     enforcement.deactivate();
     consumed = true;
   });
@@ -1794,25 +2128,32 @@ function installChild(pi, dependencies) {
       }
       if (!confirmed) throw fixedFailure("attestation confirmation was rejected");
       enforcement.markReady();
+      handshakeReady = true;
     }
   });
 }
-async function readChildCapability(source = createReadStream("", { fd: 3, autoClose: true })) {
+async function readChildBootstrap(source = createReadStream("", { fd: 3, autoClose: true })) {
   let value = "";
   let bytes = 0;
   try {
     for await (const chunk of source) {
       const text = typeof chunk === "string" ? chunk : chunk.toString("utf8");
       bytes += Buffer.byteLength(text, "utf8");
-      if (bytes > 32) throw fixedFailure("capability is oversized");
+      if (bytes > MAX_BOOTSTRAP_BYTES) throw fixedFailure("capability is oversized");
       value += text;
     }
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("codeArbiter child handshake")) throw error;
     throw fixedFailure("capability pipe is unavailable");
   }
-  if (!NONCE.test(value)) throw fixedFailure("capability is malformed");
-  return value;
+  try {
+    return decodeBootstrapEnvelope(value);
+  } catch {
+    throw fixedFailure("capability is malformed");
+  }
+}
+async function readChildCapability(source) {
+  return (await readChildBootstrap(source)).nonce;
 }
 function loadToolClasses(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) throw fixedFailure("descriptor is unavailable");
@@ -1826,7 +2167,8 @@ function loadToolClasses(value) {
 }
 async function codeArbiterPiChild(pi) {
   if (process.env.CODEARBITER_SUBAGENT !== "1") throw fixedFailure("has no validated subagent marker");
-  const expectedNonce = await readChildCapability();
+  const bootstrap = await readChildBootstrap();
+  const expectedNonce = bootstrap.nonce;
   const runtimeIdentity = await resolvePiRuntimeIdentity();
   const direction = compatibilityDirection({ piVersion: runtimeIdentity.version, nodeVersion: process.versions.node, pythonMajor: 3 });
   if (direction !== null) throw new Error(direction);
@@ -1875,11 +2217,13 @@ async function codeArbiterPiChild(pi) {
     descriptor,
     bridge,
     factories,
-    nativeFactories: factories
+    nativeFactories: factories,
+    ...bootstrap.delegation === void 0 ? {} : { delegation: bootstrap.delegation }
   });
 }
 export {
   codeArbiterPiChild as default,
   installChild,
+  readChildBootstrap,
   readChildCapability
 };

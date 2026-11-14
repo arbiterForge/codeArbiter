@@ -1,0 +1,48 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u",
+    "acf1aeeafc44696fbac966cba7eb999e14857514"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "environment": {
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "SYSTEMDRIVE": "C:",
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "PATH": "C:/Python314;C:/Program Files/Git/cmd;C:/Windows/System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home\\AppData\\Roaming",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home\\AppData\\Local",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home\\.config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home\\.cache",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\fixtures",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\fixtures",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUTF8": "1",
+    "PYTHONPYCACHEPREFIX": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-three-missing-pv2l3d6u\\private-home\\.pycache",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_SYSTEM": "nul",
+    "GIT_CONFIG_GLOBAL": "nul"
+  },
+  "python_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "git_sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364",
+  "observer_sha256": "40b8ccbfaf9f19b0b63c0d6114e8f56e8d3da9e4cb4e3e2ec3cde12c5f3a2e2a",
+  "source_commit": "acf1aeeafc44696fbac966cba7eb999e14857514",
+  "reference_scope_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "scope_all165_equal_at_both_commits": true,
+  "selected_methods": [
+    "CheckFailureModeTest.test_missing_artifact_file",
+    "CheckFailureModeTest.test_unparseable_json",
+    "PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises"
+  ],
+  "started_at": "2026-11-14T10:53:30.463294+00:00",
+  "scope": "Exactly3 newly authorized missing C33 methods once, original10 not rerun. No new tests or product changes."
+}

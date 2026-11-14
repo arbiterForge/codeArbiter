@@ -1,0 +1,686 @@
+{
+  "schema": "codearbiter.pi-activity-projection-review/1",
+  "source_commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "checked_candidate_head": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+  "row_mapping": {
+    "S06:01": {
+      "traces": [
+        "policy-and-data",
+        "parse",
+        "publish",
+        "expiry-and-bound",
+        "session-lifecycle"
+      ],
+      "assertions": [
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry projects bounded active and recent dispatch and job activity",
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry holds sixteen concurrent active entries for the sidebar panel",
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects proxy and accessor events without evaluating hostile fields"
+      ],
+      "guards_effects": "Nondisposed valid event inserts active row; actual default17-event case proves cap16/oldest eviction. Hostile accessor/proxy controls prove no field evaluation and no row."
+    },
+    "S06:02": {
+      "traces": [
+        "policy-and-data",
+        "publish",
+        "sidebar-projection",
+        "footer-projection"
+      ],
+      "assertions": [
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry projects bounded active and recent dispatch and job activity",
+        "vitest:plugins/ca-pi/tools/test/sidebar-data.test.ts:sidebarInputFromFooter (AC-6) subagent rows pass through kind, label, state and age"
+      ],
+      "guards_effects": "Same kind/ID completion deletes active entry and inserts recent completed display entry, capped by configured recent limit. Sidebar copies only approved display fields.",
+      "component_limit": "Test uses recent limit2; default8 established by reviewed constant and bounded constructor, not fresh eight-entry execution."
+    },
+    "S06:03": {
+      "traces": [
+        "publish"
+      ],
+      "assertions": [
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions"
+      ],
+      "guards_effects": "Repeated completion key already in recent returns before replace/callback. No authority/effect action.",
+      "component_limit": "Existing test proves completed key cannot reactivate; exact duplicate-completion return is directly source-conformed, not falsely claimed as separately executed assertion."
+    },
+    "S06:04": {
+      "traces": [
+        "policy-and-data",
+        "snapshot-dispose",
+        "expiry-and-bound"
+      ],
+      "assertions": [
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions"
+      ],
+      "guards_effects": "Snapshot/publish prunes active age>2h/recent age>5m by map deletion only; no process control or grant reference exists in registry.",
+      "component_limit": "Existing deterministic time test exercises recent configured1s expiry at1001ms. Default TTL constants and active expiry branch reviewed; no new two-hour or full default-threshold execution claimed."
+    },
+    "S06:05": {
+      "traces": [
+        "publish",
+        "snapshot-dispose",
+        "session-lifecycle",
+        "shutdown-lifecycle"
+      ],
+      "assertions": [
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions"
+      ],
+      "guards_effects": "Dispose clears active/recent and suppresses later publish/snapshot display; fresh next registry isolated. Production lifecycle calls owner stop independently before display disposal."
+    }
+  },
+  "source_traces": [
+    {
+      "id": "policy-and-data",
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "start_line": 1,
+      "end_line": 15,
+      "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "source_lines": [
+        "import { types as utilTypes } from \"node:util\";",
+        "",
+        "import type { FooterActivity } from \"./footer.ts\";",
+        "",
+        "export const ACTIVITY_POLICY = Object.freeze({",
+        "  // 16 active rows feed the sidebar subagents panel (spec pi-sidebar-panel);",
+        "  // the footer keeps its own tighter display bound.",
+        "  maxActive: 16,",
+        "  maxRecent: 8,",
+        "  activeTtlMs: 2 * 60 * 60 * 1_000,",
+        "  recentTtlMs: 5 * 60 * 1_000,",
+        "  maxLabelCodePoints: 128,",
+        "  maxLabelBytes: 256,",
+        "  maxIdBytes: 256,",
+        "} as const);"
+      ],
+      "reviewed_clause": "Registry imports only runtime node:util; footer import type-only. Constants maxActive16/recent8/TTL2h5m."
+    },
+    {
+      "id": "parse",
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "start_line": 63,
+      "end_line": 143,
+      "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "source_lines": [
+        "function sanitizeLabel(value: unknown): string | undefined {",
+        "  if (typeof value !== \"string\") return undefined;",
+        "  const clean = value.replace(CONTROL_AND_ESCAPE_RE, \"\").trim();",
+        "  if (clean.length === 0) return undefined;",
+        "  const bounded = Array.from(clean).slice(0, ACTIVITY_POLICY.maxLabelCodePoints).join(\"\");",
+        "  if (Buffer.byteLength(bounded, \"utf8\") <= ACTIVITY_POLICY.maxLabelBytes) return bounded;",
+        "  const points = Array.from(bounded);",
+        "  while (points.length > 0 && Buffer.byteLength(points.join(\"\"), \"utf8\") > ACTIVITY_POLICY.maxLabelBytes) {",
+        "    points.pop();",
+        "  }",
+        "  return points.join(\"\") || undefined;",
+        "}",
+        "",
+        "function fixedDataRecord(",
+        "  value: unknown,",
+        "  required: readonly string[],",
+        "  optional: readonly string[] = [],",
+        "): Readonly<Record<string, PropertyDescriptor>> | undefined {",
+        "  if (value === null || typeof value !== \"object\" || Array.isArray(value) || utilTypes.isProxy(value)) return undefined;",
+        "  if (Object.getPrototypeOf(value) !== Object.prototype) return undefined;",
+        "  const descriptors: Record<string, PropertyDescriptor> = {};",
+        "  for (const key of [...required, ...optional]) {",
+        "    const descriptor = Object.getOwnPropertyDescriptor(value, key);",
+        "    if (descriptor === undefined) {",
+        "      if (required.includes(key)) return undefined;",
+        "      continue;",
+        "    }",
+        "    if (!descriptor.enumerable || !(\"value\" in descriptor)) return undefined;",
+        "    descriptors[key] = descriptor;",
+        "  }",
+        "  return Object.freeze(descriptors);",
+        "}",
+        "",
+        "function parseEvent(value: unknown): ActivityEvent | undefined {",
+        "  try {",
+        "    const fields = fixedDataRecord(value, [\"kind\", \"id\", \"label\", \"state\"]);",
+        "    if (fields === undefined) return undefined;",
+        "    const kind = fields.kind!.value as unknown;",
+        "    const state = fields.state!.value as unknown;",
+        "    const id = fields.id!.value as unknown;",
+        "    if ((kind !== \"child\" && kind !== \"job\")",
+        "      || (state !== \"active\" && state !== \"completed\")",
+        "      || typeof id !== \"string\" || id.length === 0",
+        "      || Buffer.byteLength(id, \"utf8\") > ACTIVITY_POLICY.maxIdBytes) return undefined;",
+        "    const label = sanitizeLabel(fields.label!.value);",
+        "    return label === undefined ? undefined : Object.freeze({",
+        "      kind,",
+        "      id,",
+        "      label,",
+        "      state,",
+        "    });",
+        "  } catch {",
+        "    return undefined;",
+        "  }",
+        "}",
+        "",
+        "function parseOptions(value: unknown): ActivityOptions | undefined {",
+        "  try {",
+        "    const fields: Readonly<Record<string, PropertyDescriptor>> | undefined = value === undefined",
+        "      ? Object.freeze({} as Record<string, PropertyDescriptor>)",
+        "      : fixedDataRecord(value, [], [\"now\", \"maxActive\", \"maxRecent\", \"activeTtlMs\", \"recentTtlMs\", \"onChange\"]);",
+        "    if (fields === undefined) return undefined;",
+        "    const now = fields.now?.value ?? Date.now;",
+        "    const maxActive = fields.maxActive?.value ?? ACTIVITY_POLICY.maxActive;",
+        "    const maxRecent = fields.maxRecent?.value ?? ACTIVITY_POLICY.maxRecent;",
+        "    const activeTtlMs = fields.activeTtlMs?.value ?? ACTIVITY_POLICY.activeTtlMs;",
+        "    const recentTtlMs = fields.recentTtlMs?.value ?? ACTIVITY_POLICY.recentTtlMs;",
+        "    const onChange = fields.onChange?.value;",
+        "    if (typeof now !== \"function\"",
+        "      || !positiveSafeInteger(maxActive, ACTIVITY_POLICY.maxActive)",
+        "      || !positiveSafeInteger(maxRecent, ACTIVITY_POLICY.maxRecent)",
+        "      || !positiveSafeInteger(activeTtlMs, ACTIVITY_POLICY.activeTtlMs)",
+        "      || !positiveSafeInteger(recentTtlMs, ACTIVITY_POLICY.recentTtlMs)",
+        "      || (onChange !== undefined && typeof onChange !== \"function\")) return undefined;",
+        "    return Object.freeze({",
+        "      now, maxActive, maxRecent, activeTtlMs, recentTtlMs,",
+        "      ...(onChange === undefined ? {} : { onChange }),",
+        "    });",
+        "  } catch {",
+        "    return undefined;",
+        "  }"
+      ],
+      "reviewed_clause": "Own data, no accessors/proxies; labels/control/byte bounds and only valid clock/config values enter display state."
+    },
+    {
+      "id": "publish",
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "start_line": 146,
+      "end_line": 189,
+      "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "source_lines": [
+        "class SessionActivity implements SessionActivityRegistry {",
+        "  readonly #options: ActivityOptions;",
+        "  readonly #active = new Map<string, StoredActivity>();",
+        "  readonly #recent = new Map<string, StoredActivity>();",
+        "  #sequence = 0;",
+        "  #disposed = false;",
+        "",
+        "  constructor(options: ActivityOptions) {",
+        "    this.#options = options;",
+        "  }",
+        "",
+        "  publish(raw: ActivityEvent): void {",
+        "    if (this.#disposed) return;",
+        "    try {",
+        "      const event = parseEvent(raw);",
+        "      const at = this.#now();",
+        "      if (event === undefined || at === undefined) return;",
+        "      this.#evict(at);",
+        "      const key = `${event.kind}\\0${event.id}`;",
+        "      this.#sequence += 1;",
+        "      const stored = Object.freeze({",
+        "        key,",
+        "        kind: event.kind,",
+        "        label: event.label,",
+        "        state: event.state,",
+        "        at,",
+        "        sequence: this.#sequence,",
+        "      });",
+        "      if (event.state === \"active\") {",
+        "        if (this.#recent.has(key)) return;",
+        "        this.#active.delete(key);",
+        "        this.#active.set(key, stored);",
+        "        this.#bound(this.#active, this.#options.maxActive);",
+        "      } else {",
+        "        if (this.#recent.has(key)) return;",
+        "        this.#active.delete(key);",
+        "        this.#recent.set(key, stored);",
+        "        this.#bound(this.#recent, this.#options.maxRecent);",
+        "      }",
+        "      try { this.#options.onChange?.(); } catch { /* Rendering remains fail-soft. */ }",
+        "    } catch {",
+        "      // Activity is display-only and must never affect its producer.",
+        "    }",
+        "  }"
+      ],
+      "reviewed_clause": "Disposed registry ignores events. Composite kind+ID key prevents cross-kind collision; active bound16/recent bound8. Completion removes same active key; repeated recent key returns without callback or timestamp refresh."
+    },
+    {
+      "id": "snapshot-dispose",
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "start_line": 191,
+      "end_line": 225,
+      "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "source_lines": [
+        "  snapshot(): readonly FooterActivity[] {",
+        "    if (this.#disposed) return Object.freeze([]);",
+        "    try {",
+        "      const now = this.#now();",
+        "      if (now === undefined) return Object.freeze([]);",
+        "      this.#evict(now);",
+        "      const project = (item: StoredActivity): Readonly<FooterActivity> => Object.freeze({",
+        "        kind: item.kind,",
+        "        label: item.label,",
+        "        state: item.state,",
+        "        ageSeconds: Math.max(0, Math.floor((now - item.at) / 1_000)),",
+        "      });",
+        "      return Object.freeze([",
+        "        ...[...this.#active.values()].sort((a, b) => b.sequence - a.sequence).map(project),",
+        "        ...[...this.#recent.values()].sort((a, b) => b.sequence - a.sequence).map(project),",
+        "      ]);",
+        "    } catch {",
+        "      return Object.freeze([]);",
+        "    }",
+        "  }",
+        "",
+        "  dispose(): void {",
+        "    this.#disposed = true;",
+        "    this.#active.clear();",
+        "    this.#recent.clear();",
+        "  }",
+        "",
+        "  #now(): number | undefined {",
+        "    try {",
+        "      const value = this.#options.now();",
+        "      return typeof value === \"number\" && Number.isSafeInteger(value) && value >= 0 ? value : undefined;",
+        "    } catch {",
+        "      return undefined;",
+        "    }",
+        "  }"
+      ],
+      "reviewed_clause": "Immutable data-only projection and sorted age; snapshot prunes, exceptions return empty. dispose clears both maps; future updates ignored."
+    },
+    {
+      "id": "expiry-and-bound",
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "start_line": 227,
+      "end_line": 254,
+      "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "source_lines": [
+        "  #evict(now: number): void {",
+        "    for (const [key, item] of this.#active) {",
+        "      if (now - item.at > this.#options.activeTtlMs) this.#active.delete(key);",
+        "    }",
+        "    for (const [key, item] of this.#recent) {",
+        "      if (now - item.at > this.#options.recentTtlMs) this.#recent.delete(key);",
+        "    }",
+        "  }",
+        "",
+        "  #bound(items: Map<string, StoredActivity>, maximum: number): void {",
+        "    while (items.size > maximum) {",
+        "      const oldest = items.keys().next().value as string | undefined;",
+        "      if (oldest === undefined) return;",
+        "      items.delete(oldest);",
+        "    }",
+        "  }",
+        "}",
+        "",
+        "export function createSessionActivityRegistry(options?: unknown): SessionActivityRegistry | undefined {",
+        "  const parsed = parseOptions(options);",
+        "  return parsed === undefined ? undefined : new SessionActivity(parsed);",
+        "}",
+        "",
+        "/** Display reporting is explicitly fail-soft at every producer boundary. */",
+        "export function publishActivity(publisher: ActivityPublisher | undefined, event: ActivityEvent): void {",
+        "  if (publisher === undefined) return;",
+        "  try { publisher.publish(event); } catch { /* Producer behavior is authoritative. */ }",
+        "}"
+      ],
+      "reviewed_clause": "Age strictly greater than configured TTL removes only entries from display maps. Cap eviction deletes oldest insertion; no cancellation/revocation/effect call. Public publisher catches producer callback failures."
+    },
+    {
+      "id": "sidebar-projection",
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "start_line": 34,
+      "end_line": 56,
+      "sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+      "source_lines": [
+        "/** Map the footer's display facts onto sidebar panels. Panels whose source is",
+        " * absent are omitted entirely so the renderer drops them. */",
+        "export function sidebarInputFromFooter(footer: FooterInput | undefined): SidebarInput {",
+        "  if (footer === undefined) return {};",
+        "  const session = sessionFromFooter(footer);",
+        "  const subagents = footer.activity !== undefined && footer.activity.length > 0",
+        "    ? footer.activity.map((item) => ({",
+        "      kind: item.kind,",
+        "      label: item.label,",
+        "      state: item.state,",
+        "      ...(item.ageSeconds === undefined ? {} : { ageSeconds: item.ageSeconds }),",
+        "    }))",
+        "    : undefined;",
+        "  const workspace = footer.git === undefined ? undefined : {",
+        "    cwd: footer.folder,",
+        "    ...(footer.git.repository === undefined ? {} : { repository: footer.git.repository }),",
+        "    ...(footer.git.dirty === undefined ? {} : { dirty: footer.git.dirty }),",
+        "  };",
+        "  return {",
+        "    ...(session === undefined ? {} : { session }),",
+        "    ...(subagents === undefined ? {} : { subagents }),",
+        "    ...(workspace === undefined ? {} : { workspace }),",
+        "  };"
+      ],
+      "reviewed_clause": "Pure mapping to kind/label/state/age; no added bridge or operational authority."
+    },
+    {
+      "id": "footer-projection",
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "start_line": 152,
+      "end_line": 179,
+      "sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+      "source_lines": [
+        "function normalizeActivity(source: ActivitySnapshotSource | undefined): readonly FooterActivity[] | undefined {",
+        "  if (source === undefined) return undefined;",
+        "  try {",
+        "    const raw = source.snapshot();",
+        "    if (!Array.isArray(raw)) return undefined;",
+        "    const result: FooterActivity[] = [];",
+        "    for (const value of raw.slice(0, 16)) {",
+        "      const item = object(value);",
+        "      const label = text(item?.label, 128);",
+        "      if ((item?.kind !== \"child\" && item?.kind !== \"job\")",
+        "        || (item?.state !== \"active\" && item?.state !== \"completed\")",
+        "        || label === undefined) continue;",
+        "      const ageSeconds = typeof item.ageSeconds === \"number\" && Number.isFinite(item.ageSeconds)",
+        "        ? Math.floor(finite(item.ageSeconds, MAX_AGE_SECONDS))",
+        "        : undefined;",
+        "      result.push(Object.freeze({",
+        "        kind: item.kind,",
+        "        label,",
+        "        state: item.state,",
+        "        ...(ageSeconds === undefined ? {} : { ageSeconds }),",
+        "      }));",
+        "    }",
+        "    return result.length === 0 ? undefined : Object.freeze(result);",
+        "  } catch {",
+        "    return undefined;",
+        "  }",
+        "}",
+        ""
+      ],
+      "reviewed_clause": "Real footer consumer invokes snapshot and admits bounded data-only rows; failure only omits display activity."
+    },
+    {
+      "id": "current-call-site",
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "start_line": 506,
+      "end_line": 519,
+      "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "source_lines": [
+        "    dependencies.collectGitFacts ?? collectGitFacts,",
+        "  );",
+        "  const sidebar = createSidebarManager({",
+        "    pi,",
+        "    currentTui: () => footer.currentTui(),",
+        "    terminal: () => process.stdout,",
+        "    ...(loadFooterMetrics === undefined ? {} : { loadMetrics: loadFooterMetrics }),",
+        "    dataSource: () => {",
+        "      const input = sidebarInputFromFooter(footer.lastRenderedInput());",
+        "      const todos = sidebarTodosFromPlan(plan?.status());",
+        "      return todos === undefined ? input : { ...input, todos };",
+        "    },",
+        "    writeOut: (text) => { process.stdout.write(text); },",
+        "    noColor: () => Object.prototype.hasOwnProperty.call(process.env, \"NO_COLOR\"),"
+      ],
+      "reviewed_clause": "Actual sidebar consumes footer rendered input; no activity entry promoted to operation authority."
+    },
+    {
+      "id": "session-lifecycle",
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "start_line": 641,
+      "end_line": 655,
+      "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "source_lines": [
+        "  pi.on(\"session_start\", async (_event, context) => {",
+        "    activeLifecycle = undefined;",
+        "    readyLifecycle = undefined;",
+        "    if (background !== undefined) await background.stop(\"session-switch\");",
+        "    sidebar.dispose();",
+        "    activity?.dispose();",
+        "    activity = undefined;",
+        "    dependencies.enforcementReadiness?.deactivate();",
+        "    dependencies.enforcementReadiness?.beginActivation();",
+        "    dependencies.resetBridge?.();",
+        "    if (statusPublished) publishStatus(context, undefined);",
+        "    resetSessionState();",
+        "    activity = createSessionActivityRegistry({ onChange: () => footer.requestActivityRender() });",
+        "    const lifecycle = Object.freeze({ sequence: ++lifecycleSequence });",
+        "    activeLifecycle = lifecycle;"
+      ],
+      "reviewed_clause": "Actual session_start stops previous background owner, disposes sidebar/activity and resets session; new registry has render-only onChange callback."
+    },
+    {
+      "id": "shutdown-lifecycle",
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "start_line": 811,
+      "end_line": 821,
+      "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "source_lines": [
+        "  const stopSession = async (reason: \"session-switch\" | \"shutdown\" | \"unload\" | \"fatal\", context: ExtensionContextPort) => {",
+        "    readyLifecycle = undefined;",
+        "    activeLifecycle = undefined;",
+        "    await background?.stop(reason);",
+        "    sidebar.dispose();",
+        "    activity?.dispose();",
+        "    activity = undefined;",
+        "    footer.dispose();",
+        "    if (statusPublished) publishStatus(context, undefined);",
+        "    resetSessionState();",
+        "    dependencies.enforcementReadiness?.deactivate();"
+      ],
+      "reviewed_clause": "Actual retirement stops runtime before disposing registry; map erasure does not replace containment settlement."
+    }
+  ],
+  "assertions": [
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry projects bounded active and recent dispatch and job activity",
+      "line": 10,
+      "body_sha256_lf": "1073ad6b2d8740c0be48d5010adbb501ecb93f5a65aa5c2fba6ae435bfbc055a",
+      "body": "() => {\n    let now = 1_000;\n    const activity = createSessionActivityRegistry({\n      now: () => now,\n      maxActive: 2,\n      maxRecent: 2,\n      activeTtlMs: 10_000,\n      recentTtlMs: 5_000,\n    })!;\n\n    activity.publish({ kind: \"child\", id: \"dispatch-1\", label: \"reviewer\", state: \"active\" });\n    now += 1_000;\n    activity.publish({ kind: \"job\", id: \"job-1\", label: \"tests\", state: \"active\" });\n    now += 1_000;\n    activity.publish({ kind: \"child\", id: \"dispatch-2\", label: \"author\", state: \"active\" });\n\n    expect(activity.snapshot()).toEqual([\n      { kind: \"child\", label: \"author\", state: \"active\", ageSeconds: 0 },\n      { kind: \"job\", label: \"tests\", state: \"active\", ageSeconds: 1 },\n    ]);\n\n    now += 1_000;\n    activity.publish({ kind: \"job\", id: \"job-1\", label: \"tests\", state: \"completed\" });\n    now += 1_000;\n    activity.publish({ kind: \"child\", id: \"dispatch-2\", label: \"author\", state: \"completed\" });\n    now += 1_000;\n    activity.publish({ kind: \"job\", id: \"job-2\", label: \"lint\", state: \"completed\" });\n\n    expect(activity.snapshot()).toEqual([\n      { kind: \"job\", label: \"lint\", state: \"completed\", ageSeconds: 0 },\n      { kind: \"child\", label: \"author\", state: \"completed\", ageSeconds: 1 },\n    ]);\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry projects bounded active and recent dispatch and job activity",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > projects bounded active and recent dispatch and job activity",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 2.642109000000005
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry projects bounded active and recent dispatch and job activity",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > projects bounded active and recent dispatch and job activity",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 2.7047000000000025
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions",
+      "line": 44,
+      "body_sha256_lf": "45aaf1d69fd79b6e1c505acf0855f6996ae31154af3a357589e8e460cf0a2ded",
+      "body": "() => {\n    let now = 5_000;\n    const first = createSessionActivityRegistry({\n      now: () => now,\n      activeTtlMs: 2_000,\n      recentTtlMs: 1_000,\n    })!;\n    first.publish({ kind: \"child\", id: \"same\", label: \"review\", state: \"active\" });\n    first.publish({ kind: \"child\", id: \"same\", label: \"review\", state: \"completed\" });\n    expect(first.snapshot()).toHaveLength(1);\n    first.publish({ kind: \"child\", id: \"same\", label: \"stale reactivation\", state: \"active\" });\n    expect(first.snapshot()).toEqual([\n      { kind: \"child\", label: \"review\", state: \"completed\", ageSeconds: 0 },\n    ]);\n\n    now += 1_001;\n    expect(first.snapshot()).toEqual([]);\n    first.dispose();\n    first.publish({ kind: \"job\", id: \"late\", label: \"late\", state: \"active\" });\n    expect(first.snapshot()).toEqual([]);\n\n    const second = createSessionActivityRegistry({ now: () => now })!;\n    expect(second.snapshot()).toEqual([]);\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > evicts stale events, treats completion as a transition, and isolates disposed sessions",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.992007000000001
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > evicts stale events, treats completion as a transition, and isolates disposed sessions",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.9990999999999985
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry sanitizes control text and never projects commands, environments, or output",
+      "line": 69,
+      "body_sha256_lf": "ee6a34ad5cefbc5c0f1bb6c3bc5909d5003c26d7127b554ab85f2d6f018e780c",
+      "body": "() => {\n    const activity = createSessionActivityRegistry()!;\n    activity.publish({\n      kind: \"job\",\n      id: \"job-1\",\n      label: \"\\u001b[31mrun\\nsecret\\u202esecret\",\n      state: \"active\",\n      command: \"never\",\n      env: { TOKEN: \"never\" },\n      output: \"never\",\n    } as never);\n\n    const snapshot = activity.snapshot();\n    expect(snapshot).toEqual([{ kind: \"job\", label: \"runsecretsecret\", state: \"active\", ageSeconds: 0 }]);\n    expect(JSON.stringify(snapshot)).not.toMatch(/TOKEN|never/u);\n    expect(JSON.stringify(snapshot)).not.toMatch(/[\\u0000-\\u001f\\u007f-\\u009f\\u202a-\\u202e]/u);\n    expect(ACTIVITY_POLICY.maxLabelCodePoints).toBeLessThanOrEqual(128);\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry sanitizes control text and never projects commands, environments, or output",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > sanitizes control text and never projects commands, environments, or output",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.5398390000000006
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry sanitizes control text and never projects commands, environments, or output",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > sanitizes control text and never projects commands, environments, or output",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.5284000000000049
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects proxy and accessor events without evaluating hostile fields",
+      "line": 88,
+      "body_sha256_lf": "e699c94d4c564c67e123b0dbb79beeee7750ee10301f9d9250a08ba4790d76bd",
+      "body": "() => {\n    const activity = createSessionActivityRegistry()!;\n    let idReads = 0;\n    const accessor = {\n      kind: \"job\",\n      label: \"hidden\",\n      state: \"active\",\n    } as Record<string, unknown>;\n    Object.defineProperty(accessor, \"id\", {\n      enumerable: true,\n      get: () => { idReads += 1; return idReads < 4 ? \"ok\" : \"x\".repeat(1_000_000); },\n    });\n\n    activity.publish(accessor as never);\n    activity.publish(new Proxy({ kind: \"job\", id: \"proxy\", label: \"hidden\", state: \"active\" }, {}) as never);\n\n    expect(idReads).toBe(0);\n    expect(activity.snapshot()).toEqual([]);\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects proxy and accessor events without evaluating hostile fields",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > rejects proxy and accessor events without evaluating hostile fields",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.268226999999996
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects proxy and accessor events without evaluating hostile fields",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > rejects proxy and accessor events without evaluating hostile fields",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.2242999999999995
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry holds sixteen concurrent active entries for the sidebar panel",
+      "line": 108,
+      "body_sha256_lf": "4f408e22bc1f1004de10252f2a0f3405ff20fb9f4cf5c767127ab5efcddb43dc",
+      "body": "() => {\n    expect(ACTIVITY_POLICY.maxActive).toBe(16);\n    let now = 1_000;\n    const activity = createSessionActivityRegistry({ now: () => now })!;\n    for (let index = 0; index < 17; index += 1) {\n      activity.publish({ kind: \"child\", id: `dispatch-${index}`, label: `agent-${index}`, state: \"active\" });\n      now += 10;\n    }\n    const active = activity.snapshot().filter((item) => item.state === \"active\");\n    expect(active.length).toBe(16);\n    expect(active.map((item) => item.label)).not.toContain(\"agent-0\");\n    activity.dispose();\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry holds sixteen concurrent active entries for the sidebar panel",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > holds sixteen concurrent active entries for the sidebar panel",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.5465090000000004
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry holds sixteen concurrent active entries for the sidebar panel",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > holds sixteen concurrent active entries for the sidebar panel",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.5100000000000193
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects invalid construction and contains hostile publishers",
+      "line": 122,
+      "body_sha256_lf": "33ee47d2e87ae259b7b604c92320da3e95799ab099c367dcbc673d4aaff36179",
+      "body": "() => {\n    expect(createSessionActivityRegistry({ maxActive: 0 })).toBeUndefined();\n    expect(createSessionActivityRegistry({ maxRecent: Number.POSITIVE_INFINITY })).toBeUndefined();\n    const hostile = { publish: vi.fn(() => { throw new Error(\"activity unavailable\"); }) };\n    expect(() => publishActivity(hostile, {\n      kind: \"child\", id: \"dispatch-1\", label: \"review\", state: \"active\",\n    })).not.toThrow();\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects invalid construction and contains hostile publishers",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > rejects invalid construction and contains hostile publishers",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.2377310000000108
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry rejects invalid construction and contains hostile publishers",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > rejects invalid construction and contains hostile publishers",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.2727999999999895
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry requests a render on transitions without allowing render failure to escape",
+      "line": 131,
+      "body_sha256_lf": "31a428d4ea0b7edea223e083f08a7b3e221435733b8f2497b7b1d3c45cf28ed5",
+      "body": "() => {\n    const onChange = vi.fn(() => { throw new Error(\"render unavailable\"); });\n    const activity = createSessionActivityRegistry({ onChange })!;\n    expect(() => activity.publish({ kind: \"job\", id: \"1\", label: \"tests\", state: \"active\" })).not.toThrow();\n    expect(() => activity.publish({ kind: \"job\", id: \"1\", label: \"tests\", state: \"completed\" })).not.toThrow();\n    expect(onChange).toHaveBeenCalledTimes(2);\n    expect(activity.snapshot()).toMatchObject([{ state: \"completed\" }]);\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry requests a render on transitions without allowing render failure to escape",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > requests a render on transitions without allowing render failure to escape",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.9276330000000002
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry requests a render on transitions without allowing render failure to escape",
+          "path": "plugins/ca-pi/tools/test/activity.test.ts",
+          "fullTestName": "Pi session activity registry > requests a render on transitions without allowing render failure to escape",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.8884999999999934
+        }
+      }
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/sidebar-data.test.ts:sidebarInputFromFooter (AC-6) subagent rows pass through kind, label, state and age",
+      "line": 49,
+      "body_sha256_lf": "49ad2b405d88de3228d13ec7e2622a101daba3de0080b0db235a314fe921698c",
+      "body": "() => {\n    const input = sidebarInputFromFooter(fullFooter);\n    expect(input.subagents).toEqual([\n      { kind: \"child\", label: \"backend-author\", state: \"active\", ageSeconds: 12 },\n      { kind: \"job\", label: \"test-run\", state: \"completed\", ageSeconds: 90 },\n    ]);\n  }",
+      "original_component_observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/sidebar-data.test.ts:sidebarInputFromFooter (AC-6) subagent rows pass through kind, label, state and age",
+          "path": "plugins/ca-pi/tools/test/sidebar-data.test.ts",
+          "fullTestName": "sidebarInputFromFooter (AC-6) > subagent rows pass through kind, label, state and age",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.1447339999999997
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/sidebar-data.test.ts:sidebarInputFromFooter (AC-6) subagent rows pass through kind, label, state and age",
+          "path": "plugins/ca-pi/tools/test/sidebar-data.test.ts",
+          "fullTestName": "sidebarInputFromFooter (AC-6) > subagent rows pass through kind, label, state and age",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 0.13599999999999568
+        }
+      }
+    }
+  ],
+  "changed_generic_guard_review": "Current extension lifecycle wiring inspected: actual session/shutdown owner stops and display disposal remain separate. Activity and sidebar-data have no runtime imported custom guard (imports are type-only). Changed sidebar renderer/lifecycle is not claimed byte-preserved or installed-qualified.",
+  "limits": [
+    "Source-clause PRESERVED only for five S06 transition rows; no whole-machine/task/finding/scenario closure.",
+    "Eight exact actual assertion bodies joined to original successful Ubuntu/Windows jobs at source3688. They remain component observations, not final hosted push-gate or installed UI qualification.",
+    "Parameterized34 selectors remain unmapped elsewhere. This packet uses nonparameterized bodies only.",
+    "Registry TTL/bounds/dispose are display-only; no cancellation, token retirement, permission or containment proof inferred.",
+    "Source-only branches and partial test support are called out per row; suite totals do not supply missing assertions.",
+    "Original installed3688 cold/RPC and old09038 TUI diagnostic remain separate scopes; neither is used to close these transition clauses."
+  ]
+}

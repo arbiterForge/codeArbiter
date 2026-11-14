@@ -1,0 +1,27 @@
+{
+  "schema": "codearbiter-source-conformance-revalidation/1",
+  "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "original_inspection_source": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+  "original_proposal_sha256": "55109cc4ccde5bbd58e1b3665aad6c140662ff0ca7ae22dca756c639772cd30c",
+  "only_changed_input": "core/surface/includes/helper-invocation.md",
+  "inspected_change": "Only the already-implemented workflow-recovery.py leaf and bounded recovery scope sentence are added. Existing literal debug/work/board leaves, selected interpreter/installed package/root/host bindings, failure behavior and authority exclusions are unchanged.",
+  "method": "Root reviewed the exact canonical and three generated diffs, verified frozen proposal hashes and normal generation/check. Every other pinned source byte equals the original inspection input and selected current Git blob. Original row-specific inspections remain unchanged.",
+  "scope": "Revalidate the unchanged source clauses only; added recovery step remains excluded. No runtime, actor choice, write, installed or task/machine acceptance inferred.",
+  "original_raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/raw/source-inspection.json",
+      "sha256": "c9ce85bbc26f742ae195cec0681e179d7fdaccd5e0a75adb8135686fac3bd191"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:WF-21:01",
+    "disposition:transitions:WF-21:02",
+    "disposition:transitions:WF-21:03",
+    "disposition:transitions:WF-21:04",
+    "disposition:transitions:WF-21:05",
+    "disposition:transitions:WF-22:01",
+    "disposition:transitions:WF-22:02",
+    "disposition:transitions:WF-22:03",
+    "disposition:transitions:WF-22:04"
+  ]
+}

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ast
 import base64
+import builtins
 import contextlib
 import hashlib
 import importlib.util
@@ -19,10 +20,11 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
 
 
 _BRIDGE_IMPORTS = frozenset({
-    "_gitexec",
+    "_gitexec", "_artifactmanifestlib",
     "__future__", "ctypes", "hashlib", "json", "msvcrt", "os", "pathlib",
     "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
 })
@@ -141,6 +143,38 @@ def assert_offline_bridge(source: bytes) -> None:
         raise AssertionError("installed bridge retains an unconstrained native-library handle")
 
 
+def assert_offline_manifest_helper(source: bytes) -> None:
+    """The shared decoder is pure JSON/schema validation, with no I/O capability."""
+    tree = ast.parse(source.decode("utf-8", "strict"))
+    functions = {node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
+    calls = functions | {"isinstance", "len", "set", "any", "type", "ValueError"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            if any(alias.name not in {"json", "re"} or alias.asname for alias in node.names):
+                raise AssertionError("manifest decoder imports an unreviewed capability")
+        if isinstance(node, ast.ImportFrom):
+            raise AssertionError("manifest decoder imports an unreviewed capability")
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id in calls:
+                continue
+            if isinstance(node.func, ast.Attribute) and node.func.attr in {"items", "strip", "encode", "replace", "startswith"}:
+                continue
+            if (isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+                    and (node.func.value.id, node.func.attr) in {("json", "loads"), ("re", "fullmatch")}):
+                continue
+            raise AssertionError("manifest decoder permits an unreviewed call")
+
+
+def assert_offline_installed_bridge(plugin_root: Path) -> None:
+    source = (plugin_root / "hooks/_artifactlib.py").read_bytes()
+    assert_offline_bridge(source)
+    if b"_artifactmanifestlib" in source:
+        helper = plugin_root / "hooks/_artifactmanifestlib.py"
+        if helper.is_symlink() or not helper.is_file() or helper.stat().st_size > 65536:
+            raise AssertionError("installed manifest decoder must be a bounded regular file")
+        assert_offline_manifest_helper(helper.read_bytes())
+
+
 def canonical_hash(value: object) -> str:
     raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("ascii")
     return hashlib.sha256(raw).hexdigest()
@@ -151,12 +185,237 @@ def canonical_bytes(value: object) -> bytes:
                       separators=(",", ":")).encode("ascii")
 
 
+_FAILURE_V1_FORMAT = "codearbiter.installed-host-failure/0.1.0"
+_FAILURE_FORMAT = "codearbiter.installed-host-failure/0.2.0"
+_FAILURE_PHASE = "bootstrap"
+_FAILURE_HOST = "unclassified"
+_FAILURE_HOSTS = frozenset({"unclassified", "claude", "codex", "pi"})
+_FAILURE_AUDIT_LOCAL = threading.local()
+_FAILURE_ARTIFACT_TYPES: set[type[Exception]] = set()
+_FAILURE_PHASES = frozenset({
+    "bootstrap", "assistive-progress", "assistive-readback", "author-dispatch",
+    "reconcile-review", "accept", "commit-proof", "finalization-proof",
+    "context-create", "context-update", "context-recover",
+})
+_FAILURE_STEPS = frozenset({
+    "entrypoint", "main", "expected_binary", "install_runtime_guard", "enforce_runtime_event",
+    "assert_offline_bridge", "assert_packaged_consumers", "load_bridge", "phase_run", "child",
+    "orchestrate", "orchestrate_context", "approve", "satisfy_prerequisite", "mutate", "ticket",
+    "accept", "review", "stage_policy_event", "assistive_phase", "context_phase",
+})
+_FAILURE_ERRORS = frozenset({
+    "unclassified", "AssertionError", "ArtifactError", "RuntimeError", "ValueError",
+    "TypeError", "KeyError", "OSError", "FileNotFoundError", "PermissionError",
+    "TimeoutExpired", "JSONDecodeError", "UnicodeDecodeError", "ImportError", "ModuleNotFoundError",
+})
+_BUILTIN_FAILURE_FAMILIES = {
+    **dict.fromkeys(("OSError", "BlockingIOError", "BrokenPipeError", "ChildProcessError",
+        "ConnectionError", "ConnectionAbortedError", "ConnectionRefusedError", "ConnectionResetError",
+        "FileExistsError", "FileNotFoundError", "InterruptedError", "IsADirectoryError",
+        "NotADirectoryError", "PermissionError", "ProcessLookupError", "TimeoutError"), "filesystem"),
+    **dict.fromkeys(("RuntimeError", "NotImplementedError"), "runtime"),
+    **dict.fromkeys(("UnicodeError", "UnicodeDecodeError", "UnicodeEncodeError", "UnicodeTranslateError"), "unicode"),
+    **dict.fromkeys(("ImportError", "ModuleNotFoundError"), "import"),
+    **dict.fromkeys(("LookupError", "IndexError", "KeyError"), "lookup"),
+    **dict.fromkeys(("ArithmeticError", "OverflowError", "ZeroDivisionError", "FloatingPointError"), "arithmetic"),
+    **dict.fromkeys(("Exception", "ExceptionGroup", "AttributeError", "BufferError", "EOFError",
+        "IndentationError", "NameError", "ReferenceError", "StopAsyncIteration", "StopIteration",
+        "SyntaxError", "SystemError", "TabError", "UnboundLocalError", "Warning", "UserWarning",
+        "DeprecationWarning", "PendingDeprecationWarning", "SyntaxWarning", "RuntimeWarning",
+        "FutureWarning", "ImportWarning", "UnicodeWarning", "BytesWarning", "ResourceWarning",
+        "EncodingWarning"), "other-builtin"),
+    "RecursionError": "recursion", "MemoryError": "memory", "AssertionError": "assertion",
+    "TypeError": "type", "ValueError": "value",
+}
+# Bind real interpreter classes before loading an installed bridge. A custom
+# exception with a builtin-looking name is not that builtin exception.
+_BUILTIN_FAILURE_TYPES = {getattr(builtins, name): (name, family)
+    for name, family in _BUILTIN_FAILURE_FAMILIES.items()
+    if isinstance(getattr(builtins, name, None), type)}
+_FAILURE_ERROR_FAMILIES = {**_BUILTIN_FAILURE_FAMILIES,
+    "unclassified": "unclassified", "ArtifactError": "artifact",
+    "TimeoutExpired": "timeout", "JSONDecodeError": "json"}
+_FAILURE_AUDIT_EVENTS = frozenset({"none", "open", "listdir", "scandir", "network",
+    "process-escape", "native-library", "subprocess", "other"})
+_FAILURE_AUDIT_SITE_EVENTS = {
+    "path-guard": {"open", "listdir", "scandir"}, "network-guard": {"network"},
+    "process-guard": {"process-escape"}, "library-guard": {"native-library"},
+    "process-probe": {"subprocess"}, "binary-guard": {"subprocess"},
+    "verifier-guard": {"subprocess"}, "launch-guard": {"subprocess"},
+    "event-entry": _FAILURE_AUDIT_EVENTS - {"none"},
+}
+
+
+def _closed_audit_context(value: object) -> dict[str, str] | None:
+    if (not isinstance(value, dict) or set(value) != {"event", "site", "depth"}
+            or any(not isinstance(item, str) for item in value.values())):
+        return None
+    if value == {"event": "none", "site": "none", "depth": "none"}:
+        return value
+    if (value["event"] not in _FAILURE_AUDIT_SITE_EVENTS.get(value["site"], ())
+            or value["depth"] not in {"outer", "nested", "deep"}):
+        return None
+    return value
+# Fixed source-defined API codes only. Never echo arbitrary error text or paths.
+_FAILURE_CODES = frozenset({
+    "unclassified",
+    'ACCEPTANCE_REQUIRED', 'ACTIVE_WORK', 'ALREADY_CONVERTED', 'ALREADY_EXISTS', 'ALREADY_INITIALIZED',
+    'AMBIGUOUS_ARTIFACT', 'AMBIGUOUS_EVIDENCE', 'ARTIFACT_NOT_FOUND', 'AUTHORITY_MISMATCH', 'AUTHORITY_REQUIRED',
+    'AUTHORITY_UNVERIFIED', 'CAPABILITY_MISSING', 'CHECK_MISMATCH', 'COMPLETION_REQUIRED', 'CONCURRENT_CHANGE',
+    'CONTEXT_WORKFLOW_UNAVAILABLE', 'COORDINATION_TOO_LARGE', 'COORDINATION_WAITING', 'CORRUPT_CONTEXT_TOKEN', 'CORRUPT_JOURNAL',
+    'DANGLING_REFERENCE', 'DECISION_SOURCE_REQUIRED', 'DELEGATION_REQUIRED', 'DELEGATION_SCOPE', 'DEPENDENCY_NOT_ACCEPTED',
+    'DEPENDENCY_UNSATISFIED', 'DIGEST_MISMATCH', 'DRAFT_BINDING', 'DUPLICATE_ID', 'EFFECT_PAUSED',
+    'FAILED_VERIFICATION', 'FARM_BINDING_MISSING', 'FARM_SEAL_MISSING', 'FARM_UNSUPPORTED', 'FILE_TOO_LARGE',
+    'HEADER_MISMATCH', 'ID_UNAVAILABLE', 'IMMUTABLE_ID', 'IMMUTABLE_TOMBSTONE', 'INCOMPLETE_ADOPTION',
+    'INCOMPLETE_CONTEXT', 'INCOMPLETE_REVIEW', 'INCOMPLETE_VERIFICATION', 'INITIAL_APPROVAL_ONLY', 'INPUT_MEMBERSHIP_UNAVAILABLE',
+    'INVALID_ADOPTION', 'INVALID_BINDING', 'INVALID_BRAND', 'INVALID_BUDGET', 'INVALID_CHANGE',
+    'INVALID_CHECK', 'INVALID_COLLECTION', 'INVALID_COMMAND', 'INVALID_COMPLETION_SELECTION', 'INVALID_CONTAINER',
+    'INVALID_CONTEXT_AUTHORITY', 'INVALID_CONTEXT_FINALIZATION', 'INVALID_CONTEXT_MUTATION', 'INVALID_CONTEXT_OUTPUT', 'INVALID_CONTEXT_PREVIEW',
+    'INVALID_CONTEXT_REQUEST', 'INVALID_CURSOR', 'INVALID_CUTOVER', 'INVALID_DELIVERY_OBSERVATION', 'INVALID_ENGINE_TIMEOUT',
+    'INVALID_EVENT', 'INVALID_EVIDENCE', 'INVALID_FARM_ENRICHMENT', 'INVALID_FARM_PROJECTION', 'INVALID_FIELD',
+    'INVALID_ID', 'INVALID_INPUT_POLICY', 'INVALID_INSTALLATION', 'INVALID_JSON', 'INVALID_LANE',
+    'INVALID_LEGACY', 'INVALID_LEGACY_BOARD', 'INVALID_LEGACY_OFFSET', 'INVALID_LEGACY_SOURCE', 'INVALID_LIMIT',
+    'INVALID_LINE_MAPPING', 'INVALID_LOCATION', 'INVALID_MERGE', 'INVALID_NUMBER', 'INVALID_OBSERVATION',
+    'INVALID_OFFSET', 'INVALID_OPERATION_ID', 'INVALID_OUTPUT', 'INVALID_PATH', 'INVALID_PERMUTATION',
+    'INVALID_PROJECT_OBSERVATION', 'INVALID_RECEIPT', 'INVALID_RECOVERY', 'INVALID_REFERENCE', 'INVALID_REQUEST',
+    'INVALID_RESPONSE', 'INVALID_ROUTE', 'INVALID_SCOPE_BLOCK', 'INVALID_SLUG', 'INVALID_SMARTS',
+    'INVALID_TRANSACTION', 'INVALID_TRANSITION', 'INVALID_UNICODE', 'INVALID_VIEW', 'INVALID_WORKFLOW',
+    'INVALID_WORK_TRANSITION', 'INVALID_WORK_UPDATE', 'LEGACY_CONFLICT', 'LEGACY_LOCK_FAILED', 'LEGACY_LOCK_TIMEOUT',
+    'LOCK_FAILED', 'LOCK_TIMEOUT', 'MAPPED_INTENT_CHANGED', 'MAX_ARTIFACTS', 'MAX_BYTES',
+    'MAX_DEPTH', 'MAX_ENTRIES', 'MAX_INPUTS', 'MAX_SYMBOLS', 'MISSING_TEST',
+    'NOT_FOUND', 'NOT_INITIALIZED', 'NOT_PENDING', 'NO_LOCAL_STORE', 'NO_MAPPED_INTENT',
+    'NO_TESTS_DECLARED', 'OBSERVATION_REQUIRED', 'OBSERVATION_UNVERIFIED', 'OPERATION_ID_REUSE', 'OPERATION_ROLLED_BACK',
+    'ORIGIN_CONFLICT', 'ORPHAN_PLAN', 'OVERLAPPING_MAPPING', 'OWNERSHIP_REQUIRED', 'PACKAGE_INTEGRITY',
+    'PAIR_APPROVAL_REQUIRED', 'PAIR_MISMATCH', 'PAIR_REQUIRED', 'PREREQUISITE_KIND_REQUIRED', 'PREREQUISITE_UNSATISFIED',
+    'PROVENANCE_CONFLICT', 'REASON_REQUIRED', 'RECORD_TOO_LARGE', 'RECOVERY_CONFLICT', 'RECOVERY_REQUIRED',
+    'RENDER_DRIFT', 'REQUEST_TOO_LARGE', 'REQUIRED_RECORD', 'RESERVED_MIGRATION_ID', 'RESPONSE_TOO_LARGE',
+    'RETIREMENT_REASON_REQUIRED', 'REVISION_CONFLICT', 'SCOPE_EMPTY', 'SCOPE_NOT_READY', 'SCOPE_RECONCILIATION_REQUIRED',
+    'SCOPE_UNFINISHED', 'SECTION_PAGE_TOO_LARGE', 'SMARTS_PRODUCER_REQUIRED', 'SOURCE_EVIDENCE_CONFLICT', 'SOURCE_EVIDENCE_UNKNOWN',
+    'SOURCE_EVIDENCE_UNSUPPORTED', 'SOURCE_INVALID', 'SPEC_NOT_FOUND', 'SPEC_REQUIRED', 'STALE_CONTEXT',
+    'STALE_CURSOR', 'STALE_EVIDENCE', 'STALE_PREVIEW', 'STALE_ROUTE', 'STYLE_MISMATCH',
+    'SUBPROCESS_FAILED', 'SYMBOL_NOT_FOUND', 'TIMEOUT', 'TOO_MANY_SECTIONS', 'UNADDRESSED_CONTEXT_GAP',
+    'UNCHANGED_DECISION', 'UNCOVERED_SECTION', 'UNKNOWN_CHECK', 'UNKNOWN_OPERATION', 'UNKNOWN_PREREQUISITE',
+    'UNKNOWN_SCHEMA', 'UNKNOWN_SCOPE', 'UNKNOWN_SUBJECT', 'UNKNOWN_TASK', 'UNMAPPED_LEGACY',
+    'UNQUALIFIED_COMPLETION_VERIFICATION', 'UNRECOGNIZED_OUTPUT', 'UNRESOLVED_CONTEXT', 'UNSAFE_ARTIFACT_PATH', 'UNSAFE_COMPLETION_MATERIAL',
+    'UNSAFE_PATH', 'UNSAFE_ROOT', 'UNSUPPORTED_PLATFORM', 'UNSUPPORTED_RENDERER', 'UNSUPPORTED_REPRESENTATION',
+    'UNSUPPORTED_VALUE', 'UNSUPPORTED_VERSION', 'UNVERIFIED_PLATFORM', 'WORKSPACE_DRIFT', 'WORK_SCAN_LIMIT',
+    'WRONG_FORMAT', 'WRONG_KIND',
+})
+
+
+def decode_failure(raw: bytes) -> dict[str, str] | None:
+    """Diagnostic data only, never an admission/qualification receipt."""
+    if not isinstance(raw, bytes) or len(raw) > 4096:
+        return None
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate failure field")
+            result[key] = value
+        return result
+    try:
+        value = json.loads(raw, object_pairs_hook=pairs)
+    except (ValueError, UnicodeError, RecursionError):
+        return None
+    if not isinstance(value, dict):
+        return None
+    legacy = value.get("format") == _FAILURE_V1_FORMAT
+    fields = {"format", "phase", "step", "error", "code"}
+    if not legacy:
+        fields |= {"host", "family", "audit_event", "audit_site", "audit_depth"}
+    if (set(value) != fields
+            or any(not isinstance(item, str) for item in value.values())
+            or value["format"] not in {_FAILURE_V1_FORMAT, _FAILURE_FORMAT}
+            or value["phase"] not in _FAILURE_PHASES
+            or value["step"] not in _FAILURE_STEPS
+            or value["error"] not in (_FAILURE_ERRORS if legacy else _FAILURE_ERROR_FAMILIES)
+            or value["code"] not in _FAILURE_CODES):
+        return None
+    if not legacy and (value["host"] not in _FAILURE_HOSTS
+            or value["family"] != _FAILURE_ERROR_FAMILIES[value["error"]]
+            or _closed_audit_context({"event": value["audit_event"], "site": value["audit_site"],
+                                     "depth": value["audit_depth"]}) is None):
+        return None
+    return value
+
+
+def _project_failure_record(error: Exception, *, phase: str) -> dict[str, str]:
+    """Keep only bounded symbols from the actual failure and owning frames."""
+    nested = getattr(error, "failure_record", None)
+    if isinstance(nested, dict):
+        try:
+            retained = decode_failure(json.dumps(nested).encode())
+        except (TypeError, ValueError, RecursionError):
+            retained = None
+        if retained is not None:
+            return retained
+    name, family = _BUILTIN_FAILURE_TYPES.get(type(error), ("unclassified", "unclassified"))
+    if type(error) is subprocess.TimeoutExpired:
+        name, family = "TimeoutExpired", "timeout"
+    elif type(error) is json.JSONDecodeError:
+        name, family = "JSONDecodeError", "json"
+    elif (type(error) in _FAILURE_ARTIFACT_TYPES and isinstance(getattr(error, "code", None), str)
+          and error.code in _FAILURE_CODES):
+        name, family = "ArtifactError", "artifact"
+    code = "unclassified"
+    cause = error
+    for _ in range(8):
+        candidate = getattr(cause, "code", None)
+        if isinstance(candidate, str) and candidate in _FAILURE_CODES:
+            code = candidate
+            break
+        cause = cause.__cause__ or cause.__context__
+        if cause is None:
+            break
+    step = "entrypoint"
+    frame = error.__traceback__
+    while frame is not None:
+        if (frame.tb_frame.f_code.co_filename == __file__
+                and frame.tb_frame.f_code.co_name in _FAILURE_STEPS):
+            step = frame.tb_frame.f_code.co_name
+        frame = frame.tb_next
+    try:
+        context = _closed_audit_context(getattr(error, "_cold_audit_failure", None))
+    except Exception:
+        context = None  # Unknown error properties/diagnostics never become output.
+    context = context or {"event": "none", "site": "none", "depth": "none"}
+    return {"format": _FAILURE_FORMAT,
+            "phase": phase if phase in _FAILURE_PHASES else "bootstrap",
+            "step": step, "error": name, "code": code, "family": family,
+            "host": _FAILURE_HOST if _FAILURE_HOST in _FAILURE_HOSTS else "unclassified",
+            "audit_event": context["event"], "audit_site": context["site"], "audit_depth": context["depth"]}
+
+
+def failure_record(error: Exception, *, phase: str) -> dict[str, str]:
+    """A broken/custom exception projection must never escape closed output."""
+    try:
+        return _project_failure_record(error, phase=phase)
+    except Exception:
+        # Do not read any property of the failed exception on this fallback.
+        # Its cause and arbitrary metadata are unknown; the proof still fails.
+        return {"format": _FAILURE_FORMAT,
+                "phase": phase if type(phase) is str and phase in _FAILURE_PHASES else "bootstrap",
+                "step": "entrypoint", "error": "unclassified", "code": "unclassified",
+                "host": _FAILURE_HOST if type(_FAILURE_HOST) is str and _FAILURE_HOST in _FAILURE_HOSTS else "unclassified",
+                "family": "unclassified", "audit_event": "none", "audit_site": "none", "audit_depth": "none"}
+
+
 def subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> AssertionError:
     stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
-    return AssertionError(
+    record = decode_failure(stderr)
+    keys = ("phase", "step", "error", "code")
+    if record is not None and record["format"] == _FAILURE_FORMAT:
+        keys += ("host", "family", "audit_event", "audit_site", "audit_depth")
+    detail = ("; " + "; ".join(f"{key}={record[key]}" for key in keys)
+              if record is not None else "")
+    error = AssertionError(
         f"{label} failed with exit {completed.returncode}; "
-        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}{detail}"
     )
+    if record is not None:
+        error.failure_record = record
+    return error
 
 
 def expected_binary(installation: Path, expected_sha256: str) -> Path:
@@ -259,7 +518,9 @@ def enforce_runtime_event(
     permit_verifier_children: bool,
 ) -> None:
     """Audit-hook policy: no network and only the pinned expected processes."""
+    _audit_site = "event-entry"
     if event in {"open", "os.listdir", "os.scandir"} and details:
+        _audit_site = "path-guard"
         requested = details[0]
         if isinstance(requested, (str, bytes, os.PathLike)):
             if isinstance(requested, bytes):
@@ -269,17 +530,21 @@ def enforce_runtime_event(
             if path.is_relative_to(checkout) and path != Path(__file__).resolve(strict=True):
                 raise RuntimeError("installed-host verification forbids development checkout access")
     if event in _NETWORK_AUDIT_EVENTS:
+        _audit_site = "network-guard"
         raise RuntimeError("installed-host verification forbids network access")
     if event in {
         "os.system", "os.exec", "os.fork", "os.forkpty", "os.posix_spawn", "os.spawn",
     }:
+        _audit_site = "process-guard"
         raise RuntimeError("installed-host verification forbids process escape")
     if event == "ctypes.dlopen":
+        _audit_site = "library-guard"
         library = str(details[0]).casefold() if details else ""
         if library not in {"kernel32", "kernel32.dll"}:
             raise RuntimeError("installed-host verification forbids native-library escape")
     if event != "subprocess.Popen":
         return
+    _audit_site = "process-probe"
     executable, argv, _cwd, environment = details
     if native_git_probe_allowed(executable, argv, _cwd, environment):
         return
@@ -289,12 +554,14 @@ def enforce_runtime_event(
         binary_prefix = subprocess.list2cmdline([str(binary)])
         python_prefix = subprocess.list2cmdline([str(python)])
         if argv == binary_prefix or argv.startswith(binary_prefix + " "):
+            _audit_site = "binary-guard"
             if not native_environment_allowed(environment):
                 raise RuntimeError("native binary launch escaped its bounded host Git environment")
             return
         if permit_verifier_children and (
             argv == python_prefix or argv.startswith(python_prefix + " ")
         ):
+            _audit_site = "verifier-guard"
             verifier_token = subprocess.list2cmdline([str(verifier)])
             if (
                 verifier_token not in argv
@@ -304,14 +571,17 @@ def enforce_runtime_event(
             ):
                 raise RuntimeError("verifier child launch escaped its constrained environment")
             return
+        _audit_site = "launch-guard"
         raise RuntimeError("installed-host verification blocked an unreviewed process")
     launched = Path(executable).resolve(strict=True)
     arguments = [str(value) for value in argv]
     if launched == binary:
+        _audit_site = "binary-guard"
         if not arguments or Path(arguments[0]).resolve(strict=True) != binary or not native_environment_allowed(environment):
             raise RuntimeError("native binary launch escaped its bounded host Git environment")
         return
     if platform.system() == "Darwin" and native_environment_allowed(environment):
+        _audit_site = "binary-guard"
         requested = Path(executable).absolute()
         info = requested.lstat()
         temp_root = Path(tempfile.gettempdir()).resolve(strict=True)
@@ -328,6 +598,7 @@ def enforce_runtime_event(
         ):
             return
     if permit_verifier_children and launched == python:
+        _audit_site = "verifier-guard"
         if (
             len(arguments) < 4
             or arguments[1:3] != ["-I", "-B"]
@@ -338,6 +609,7 @@ def enforce_runtime_event(
         ):
             raise RuntimeError("verifier child launch escaped its constrained environment")
         return
+    _audit_site = "launch-guard"
     raise RuntimeError("installed-host verification blocked an unreviewed process")
 
 
@@ -345,13 +617,43 @@ def install_runtime_guard(
     binary: Path, *, binary_sha256: str, permit_verifier_children: bool
 ) -> None:
     def audit(event: str, details: tuple) -> None:
-        enforce_runtime_event(
-            event,
-            details,
-            binary=binary,
-            binary_sha256=binary_sha256,
-            permit_verifier_children=permit_verifier_children,
-        )
+        depth = getattr(_FAILURE_AUDIT_LOCAL, "depth", 0)
+        _FAILURE_AUDIT_LOCAL.depth = depth + 1
+        try:
+            enforce_runtime_event(
+                event, details, binary=binary, binary_sha256=binary_sha256,
+                permit_verifier_children=permit_verifier_children,
+            )
+        except Exception as error:
+            # Preserve the first/deepest closed context while the same error
+            # unwinds nested audit callbacks. Never retain details/payloads.
+            try:
+                prior = _closed_audit_context(getattr(error, "_cold_audit_failure", None))
+                if prior is None or prior["event"] == "none":
+                    category = {"open": "open", "os.listdir": "listdir", "os.scandir": "scandir",
+                        "subprocess.Popen": "subprocess", "ctypes.dlopen": "native-library"}.get(event, "other")
+                    if event in _NETWORK_AUDIT_EVENTS:
+                        category = "network"
+                    elif event in {"os.system", "os.exec", "os.fork", "os.forkpty", "os.posix_spawn", "os.spawn"}:
+                        category = "process-escape"
+                    site = "event-entry"
+                    frame = error.__traceback__
+                    for _ in range(64):
+                        if frame is None:
+                            break
+                        if (frame.tb_frame.f_code is enforce_runtime_event.__code__
+                                and frame.tb_frame.f_locals.get("_audit_site") in _FAILURE_AUDIT_SITE_EVENTS):
+                            site = frame.tb_frame.f_locals["_audit_site"]
+                        frame = frame.tb_next
+                    context = {"event": category, "site": site,
+                               "depth": "outer" if depth == 0 else "nested" if depth == 1 else "deep"}
+                    if _closed_audit_context(context) is not None:
+                        error._cold_audit_failure = context
+            except Exception:
+                pass  # Diagnostic collection cannot replace a guard failure.
+            raise
+        finally:
+            _FAILURE_AUDIT_LOCAL.depth = depth
 
     sys.addaudithook(audit)
 
@@ -398,7 +700,7 @@ def plan_normative(spec_hash: str) -> dict:
 
 def load_bridge(plugin_root: Path):
     bridge_path = plugin_root / "hooks" / "_artifactlib.py"
-    assert_offline_bridge(bridge_path.read_bytes())
+    assert_offline_installed_bridge(plugin_root)
     spec = importlib.util.spec_from_file_location("cold_installed_artifact_bridge", bridge_path)
     if spec is None or spec.loader is None:
         raise AssertionError("installed host bridge cannot be loaded")
@@ -406,6 +708,9 @@ def load_bridge(plugin_root: Path):
     spec.loader.exec_module(module)
     if not Path(module.__file__).resolve(strict=True).is_relative_to(plugin_root):
         raise AssertionError("artifact bridge escaped the extracted package root")
+    artifact_error = getattr(module, "ArtifactError", None)
+    if isinstance(artifact_error, type) and issubclass(artifact_error, Exception):
+        _FAILURE_ARTIFACT_TYPES.add(artifact_error)
     return module
 
 
@@ -973,12 +1278,33 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
             raise AssertionError("interrupted state was not preserved across process recreation")
         task = workflow.client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"})["record"]
         snapshot = workflow.client.call("snapshot", {"artifact_id": "PLAN-FLOW"})
+        before_reconcile = workflow.client.call("identity", {"artifact_id": "PLAN-FLOW"})
         receipt = workflow.stage_policy_event("PLAN-FLOW", "T-001", "reconciliation", "user_workflow", "reconciled", {"input_sha256": snapshot["sha256"], "task_sha256": canonical_hash(task), "target_state": "PENDING", "assessment": "Synthetic interrupted-process reconciliation."})
         workflow.mutate("task-reconcile", "PLAN-FLOW", task="T-001", receipt=receipt, state="PENDING", reason="Verifier process ended before completion was established.")
+        reconciled = workflow.client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        approval_refreshed = reconciled["normative_sha256"] != before_reconcile["normative_sha256"]
+        if approval_refreshed:
+            # The progress-preservation epoch is part of normative identity.
+            # The old exact approval must not authorize strict evidence for the
+            # upgraded plan, even though ordinary task-start remains available.
+            try:
+                workflow.client.call("evidence-context", {
+                    "artifact_id": "PLAN-FLOW", "record_id": "T-001",
+                    "activity": "verification",
+                })
+            except bridge.ArtifactError as error:
+                if error.code != "AUTHORITY_UNVERIFIED":
+                    raise
+            else:
+                raise AssertionError("old plan approval authorized the new reconciliation epoch")
+            workflow.approve("PLAN-FLOW")
+            workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
         ticket = workflow.ticket()
         workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket)
         workflow.review()
-        return {"ticket": ticket, "state": "REVIEW"}
+        return {"ticket": ticket, "state": "REVIEW",
+                "plan_sha256": reconciled["normative_sha256"],
+                "approval_refreshed": approval_refreshed}
     if args.phase == "accept":
         if workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["tasks"][0]["state"] != "REVIEW":
             raise AssertionError("review state was not preserved across process recreation")
@@ -1084,8 +1410,13 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
     finalization = child(args, "finalization-proof")
     if not accepted["accepted"] or not commit["proof"] or not finalization["proof"]:
         raise AssertionError("installed workflow did not reach current atomic acceptance")
-    if commit["plan_sha256"] != first["plan_sha256"] or finalization["plan_sha256"] != first["plan_sha256"]:
-        raise AssertionError("installed workflow changed normative plan identity")
+    # Reconciliation can introduce a versioned semantic epoch. Strict proof
+    # must bind its freshly approved identity rather than reuse the old hash.
+    current_plan_sha = resumed["plan_sha256"]
+    if (current_plan_sha != first["plan_sha256"] and not resumed["approval_refreshed"]
+            or commit["plan_sha256"] != current_plan_sha
+            or finalization["plan_sha256"] != current_plan_sha):
+        raise AssertionError("installed workflow reused stale or changed normative plan identity")
     markdown_shadows = [
         path
         for directory in (state / "specs", state / "plans")
@@ -1094,7 +1425,7 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
     ]
     if markdown_shadows:
         raise AssertionError("installed HTML workflow created a Markdown shadow")
-    return {"format": "codearbiter.installed-host-workflow/0.2.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": first["plan_sha256"], "approval_evidence_mode": first["approval_evidence_mode"], "prerequisite_evidence_mode": first["prerequisite_evidence_mode"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
+    return {"format": "codearbiter.installed-host-workflow/0.2.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": current_plan_sha, "approval_evidence_mode": first["approval_evidence_mode"], "prerequisite_evidence_mode": first["prerequisite_evidence_mode"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
 
 
 def orchestrate_context(args, installation: Path) -> dict[str, object]:
@@ -1154,6 +1485,7 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
 
 
 def main() -> int:
+    global _FAILURE_PHASE, _FAILURE_HOST
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", choices=("claude", "codex", "pi"), required=True)
     parser.add_argument("--plugin-root", type=Path, required=True)
@@ -1166,6 +1498,8 @@ def main() -> int:
     parser.add_argument("--candidate-manifest-sha256")
     parser.add_argument("--phase", choices=("assistive-progress", "assistive-readback", "author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
     args = parser.parse_args()
+    _FAILURE_PHASE = args.phase or "bootstrap"
+    _FAILURE_HOST = args.host
     args.plugin_root = args.plugin_root.resolve(strict=True)
     args.repository = args.repository.resolve(strict=True)
     if args.context_kind:
@@ -1201,7 +1535,7 @@ def main() -> int:
             bridge = load_bridge(args.plugin_root)
             result = phase_run(args, bridge, installation)
         else:
-            assert_offline_bridge((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes())
+            assert_offline_installed_bridge(args.plugin_root)
             result = orchestrate_context(args, installation) if args.context_kind else orchestrate(args, installation)
     finally:
         sys.path.remove(hooks)
@@ -1210,5 +1544,17 @@ def main() -> int:
     return 0
 
 
+def run_cli() -> int:
+    try:
+        return main()
+    except Exception as error:
+        # The raw traceback may contain provider data, paths or credentials.
+        # Emit only closed diagnostic symbols; failed proof remains failed.
+        json.dump(failure_record(error, phase=_FAILURE_PHASE), sys.stderr,
+                  sort_keys=True, separators=(",", ":"))
+        sys.stderr.write("\n")
+        return 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_cli())

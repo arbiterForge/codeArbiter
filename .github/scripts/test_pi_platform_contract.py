@@ -166,6 +166,27 @@ class PlatformContractFixtures(unittest.TestCase):
                     self.assertEqual(report["timeoutSeconds"], 180)
                     self.assertIn("\ufffdlast test diagnostic", errors.getvalue())
 
+    def test_native_reader_preparation_precedes_and_is_shared_by_bounded_children(self):
+        order = []
+        payload = ROOT / "test-owned-native-reader"
+        commands = [[sys.executable, "first.py"], [sys.executable, "second.py"]]
+        def prepare():
+            order.append("prepare")
+            return payload
+        def execute(command, **kwargs):
+            order.append(command[-1])
+            self.assertEqual(kwargs["env"]["ARTIFACT_TEST_INSTALLATION"], str(payload))
+            self.assertEqual(kwargs["timeout"], PLATFORM_COMMAND_TIMEOUT_SECONDS)
+            return subprocess.CompletedProcess(command, 0, "", "")
+        with (mock.patch.object(sys.modules[__name__], "prepare_context_reader", side_effect=prepare),
+              mock.patch.object(sys.modules[__name__], "fixture_commands", return_value=commands),
+              mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER",
+                                mock.Mock(is_file=mock.Mock(return_value=True))),
+              mock.patch.object(subprocess, "run", side_effect=execute),
+              mock.patch("sys.stdout", new_callable=io.StringIO)):
+            self.assertEqual(run_contract(None, False, prepare_reader=True), 0)
+        self.assertEqual(order, ["prepare", "first.py", "second.py"])
+
     def test_platform_aggregate_executes_each_required_command_once(self):
         for fixtures_only in (True, False):
             planned = fixture_commands(fixtures_only)
@@ -234,7 +255,8 @@ class PlatformContractFixtures(unittest.TestCase):
         })
 
     def test_tech_stack_declares_the_pi_tools_install_an_aggregate_prerequisite(self):
-        tech_stack = (ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack")
         self.assertIn(
             "The Pi tools install is an aggregate prerequisite: "
             "`npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.",
@@ -348,7 +370,23 @@ class PlatformContractFixtures(unittest.TestCase):
         self.assertLess(budget_ms, PLATFORM_COMMAND_TIMEOUT_SECONDS * 1_000)
 
 
-def run_contract(pi_version, fixtures_only):
+def prepare_context_reader():
+    """Build/verify the native reader once, outside bounded command partitions.
+
+    This is a repository-test prerequisite, not installed Pi qualification.
+    Each child still verifies its copied payload through the native client.
+    """
+    import test_artifact_authoring
+    import _knowledgelib
+    if _knowledgelib.context_format(str(ROOT)) != "html":
+        return None
+    from project_knowledge import _installation
+    installation = _installation()
+    test_artifact_authoring.ArtifactClient(ROOT, installation).call("capabilities")
+    return installation
+
+
+def run_contract(pi_version, fixtures_only, *, prepare_reader=False):
     policy = None if pi_version is None else version_policy(pi_version)
     if policy is not None:
         pi = resolve_executable("pi")
@@ -371,6 +409,10 @@ def run_contract(pi_version, fixtures_only):
 
     environment = os.environ.copy()
     environment.update({"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"})
+    if prepare_reader:
+        installation = prepare_context_reader()
+        if installation is not None:
+            environment["ARTIFACT_TEST_INSTALLATION"] = str(installation)
     for index, command in enumerate(fixture_commands(fixtures_only), start=1):
         label = pathlib.Path(command[1] if len(command) > 1 else command[0]).name
         if len(command) == 4 and command[2] == "--platform-partition":
@@ -422,7 +464,7 @@ def main():
     if not result.wasSuccessful():
         return 1
     if args.fixtures_only or args.pi_version is not None:
-        return run_contract(args.pi_version, args.fixtures_only)
+        return run_contract(args.pi_version, args.fixtures_only, prepare_reader=True)
     return 0
 
 

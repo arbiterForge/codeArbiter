@@ -1,0 +1,21 @@
+test_channel_carries_the_native_payload_under_the_git_subdir_path (test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path) ... ok
+test_channel_refuses_to_roll_back (test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back) ... ok
+test_newer_version_advances_as_a_descendant (test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant) ... ok
+test_package_without_native_payload_is_refused (test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused) ... ok
+test_push_response_loss_recovers_only_by_readback_without_repush (test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush) ... ok
+test_readback_finds_the_promotion_after_the_channel_moved_on (test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on) ... ok
+test_readback_never_pushes (test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes) ... ok
+test_rerun_with_identical_inputs_is_a_no_op (test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op) ... ok
+test_same_version_with_different_bytes_is_refused (test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused) ... ok
+test_unknown_current_channel_version_cannot_advance (test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance) ... ok
+test_version_must_match_the_qualified_manifest (test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest) ... ok
+test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag (test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag) ... ok
+test_git_mode_needs_no_npm_package (test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package) ... ok
+test_readback_finds_the_channel_promotion_after_a_newer_release (test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release) ... ok
+test_readback_refuses_a_distribution_tag_the_channel_never_promoted (test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted) ... ok
+test_conflicting_or_unobservable_readback_never_retries (test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 22.264s
+
+OK

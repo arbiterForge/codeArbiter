@@ -1,0 +1,13 @@
+
+> ca-farm@0.1.0 coverage
+> npx vitest run --coverage --reporter=json --outputFile=C:\Users\brenn\AppData\Local\Temp\ca-farm-cleanup-observation-e5bfabb3/coverage-tests.json
+
+JSON report written to C:/Users/brenn/AppData/Local/Temp/ca-farm-cleanup-observation-e5bfabb3/coverage-tests.json
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 72.26% ( 1608/2225 )
+Branches     : 72.89% ( 1350/1852 )
+Functions    : 66.55% ( 207/311 )
+Lines        : 73.89% ( 1370/1854 )
+================================================================================

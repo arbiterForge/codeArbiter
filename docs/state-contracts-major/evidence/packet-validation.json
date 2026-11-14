@@ -1,0 +1,29 @@
+{
+  "kind": "HANDOFF_STRUCTURE_VALIDATION_ONLY",
+  "result": "PASSED",
+  "counts": {
+    "tasks": 82,
+    "findings": 70,
+    "machines": 287,
+    "transitions": 1748,
+    "composed_scenarios": 31
+  },
+  "task_graph": "ACYCLIC",
+  "all_findings_and_baseline_rows_mapped": true,
+  "baseline_rows_unchanged": true,
+  "audit_hashes_unchanged": true,
+  "prepublication_predicate": "NONCIRCULAR",
+  "source_paths_checked": 252,
+  "html": {
+    "present": true,
+    "tasks": 82,
+    "machines": 287,
+    "transitions": 1748,
+    "tables": 316,
+    "links": 3866
+  },
+  "manifest_files_checked": 0,
+  "initial_unexecuted_status_checks": true,
+  "product_runtime_or_release_qualification": false,
+  "phase": "Structural validation before final manifest sealing; run tools/validate_packet.py again to verify the sealed file population and digests."
+}

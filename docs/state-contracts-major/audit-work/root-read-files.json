@@ -1,0 +1,837 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "method": "Full files read in bounded chunks. Core workflow Markdown includes complete owner bodies and linked local reference/lens files. Runtime comments were treated as claims and compared with branches. ADR status is not implementation proof.",
+  "files": [
+    {
+      "path": ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md",
+      "read": "full",
+      "lines": 192
+    },
+    {
+      "path": ".codearbiter/decisions/0036-bounded-authorization-cleanup-direction.md",
+      "read": "full",
+      "lines": 37
+    },
+    {
+      "path": ".codearbiter/decisions/0037-extensible-structured-artifact-engine.md",
+      "read": "full",
+      "lines": 54
+    },
+    {
+      "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+      "read": "full",
+      "lines": 62
+    },
+    {
+      "path": ".github/scripts/check_codex_skill_resources.py",
+      "read": "full",
+      "lines": 3421
+    },
+    {
+      "path": "README.md",
+      "read": "full",
+      "lines": 529
+    },
+    {
+      "path": "core/pysrc/_boxlib.py",
+      "read": "full",
+      "lines": 131
+    },
+    {
+      "path": "core/pysrc/_colorlib.py",
+      "read": "full",
+      "lines": 304
+    },
+    {
+      "path": "core/pysrc/_fmtlib.py",
+      "read": "full",
+      "lines": 161
+    },
+    {
+      "path": "core/pysrc/_segmentslib.py",
+      "read": "full",
+      "lines": 338
+    },
+    {
+      "path": "core/pysrc/_usagelib.py",
+      "read": "full",
+      "lines": 484
+    },
+    {
+      "path": "core/pysrc/statusline.py",
+      "read": "full",
+      "lines": 770
+    },
+    {
+      "path": "core/surface/COMMANDS.md",
+      "read": "full",
+      "lines": 137
+    },
+    {
+      "path": "core/surface/README.md",
+      "read": "full",
+      "lines": 136
+    },
+    {
+      "path": "core/surface/SPRINT.md",
+      "read": "full",
+      "lines": 88
+    },
+    {
+      "path": "core/surface/agents/INDEX.md",
+      "read": "full",
+      "lines": 35
+    },
+    {
+      "path": "core/surface/agents/architecture-drift-reviewer.md",
+      "read": "full",
+      "lines": 86
+    },
+    {
+      "path": "core/surface/agents/auth-crypto-reviewer.md",
+      "read": "full",
+      "lines": 68
+    },
+    {
+      "path": "core/surface/agents/authority-reviewer.md",
+      "read": "full",
+      "lines": 51
+    },
+    {
+      "path": "core/surface/agents/backend-author.md",
+      "read": "full",
+      "lines": 71
+    },
+    {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "read": "full",
+      "lines": 119
+    },
+    {
+      "path": "core/surface/agents/coverage-auditor.md",
+      "read": "full",
+      "lines": 89
+    },
+    {
+      "path": "core/surface/agents/decision-challenger.md",
+      "read": "full",
+      "lines": 116
+    },
+    {
+      "path": "core/surface/agents/dependency-reviewer.md",
+      "read": "full",
+      "lines": 90
+    },
+    {
+      "path": "core/surface/agents/design-quality-reviewer.md",
+      "read": "full",
+      "lines": 80
+    },
+    {
+      "path": "core/surface/agents/finding-triage.md",
+      "read": "full",
+      "lines": 103
+    },
+    {
+      "path": "core/surface/agents/frontend-author.md",
+      "read": "full",
+      "lines": 75
+    },
+    {
+      "path": "core/surface/agents/grader.md",
+      "read": "full",
+      "lines": 174
+    },
+    {
+      "path": "core/surface/agents/infra-author.md",
+      "read": "full",
+      "lines": 80
+    },
+    {
+      "path": "core/surface/agents/map-deps.md",
+      "read": "full",
+      "lines": 35
+    },
+    {
+      "path": "core/surface/agents/map-structure.md",
+      "read": "full",
+      "lines": 36
+    },
+    {
+      "path": "core/surface/agents/migration-reviewer.md",
+      "read": "full",
+      "lines": 76
+    },
+    {
+      "path": "core/surface/agents/scout.md",
+      "read": "full",
+      "lines": 160
+    },
+    {
+      "path": "core/surface/agents/security-reviewer.md",
+      "read": "full",
+      "lines": 79
+    },
+    {
+      "path": "core/surface/agents/tribunal-lens-reviewer.md",
+      "read": "full",
+      "lines": 96
+    },
+    {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "read": "full",
+      "lines": 64
+    },
+    {
+      "path": "core/surface/arbiter.md",
+      "read": "full",
+      "lines": 153
+    },
+    {
+      "path": "core/surface/command-routes.json",
+      "read": "full",
+      "lines": 258
+    },
+    {
+      "path": "core/surface/commands/add-dep.md",
+      "read": "full",
+      "lines": 95
+    },
+    {
+      "path": "core/surface/commands/adr-status.md",
+      "read": "full",
+      "lines": 14
+    },
+    {
+      "path": "core/surface/commands/adr.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/audit.md",
+      "read": "full",
+      "lines": 50
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "read": "full",
+      "lines": 50
+    },
+    {
+      "path": "core/surface/commands/chore.md",
+      "read": "full",
+      "lines": 61
+    },
+    {
+      "path": "core/surface/commands/cleanup.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/commit.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/conflict.md",
+      "read": "full",
+      "lines": 60
+    },
+    {
+      "path": "core/surface/commands/context-check.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/create-context.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/debug.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/decompose.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/doctor.md",
+      "read": "full",
+      "lines": 94
+    },
+    {
+      "path": "core/surface/commands/feature.md",
+      "read": "full",
+      "lines": 170
+    },
+    {
+      "path": "core/surface/commands/fix.md",
+      "read": "full",
+      "lines": 112
+    },
+    {
+      "path": "core/surface/commands/init.md",
+      "read": "full",
+      "lines": 121
+    },
+    {
+      "path": "core/surface/commands/override.md",
+      "read": "full",
+      "lines": 128
+    },
+    {
+      "path": "core/surface/commands/pr.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/prune.md",
+      "read": "full",
+      "lines": 99
+    },
+    {
+      "path": "core/surface/commands/reconcile.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/refactor.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/release.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/review.md",
+      "read": "full",
+      "lines": 94
+    },
+    {
+      "path": "core/surface/commands/spike.md",
+      "read": "full",
+      "lines": 47
+    },
+    {
+      "path": "core/surface/commands/sprint.md",
+      "read": "full",
+      "lines": 48
+    },
+    {
+      "path": "core/surface/commands/standup.md",
+      "read": "full",
+      "lines": 174
+    },
+    {
+      "path": "core/surface/commands/status.md",
+      "read": "full",
+      "lines": 101
+    },
+    {
+      "path": "core/surface/commands/statusline.md",
+      "read": "full",
+      "lines": 93
+    },
+    {
+      "path": "core/surface/commands/task.md",
+      "read": "full",
+      "lines": 114
+    },
+    {
+      "path": "core/surface/commands/threat-model.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/tribunal.md",
+      "read": "full",
+      "lines": 1
+    },
+    {
+      "path": "core/surface/commands/watch.md",
+      "read": "full",
+      "lines": 83
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/INDEX.md",
+      "read": "full",
+      "lines": 55
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/color.md",
+      "read": "full",
+      "lines": 43
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/core.md",
+      "read": "full",
+      "lines": 244
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/images.md",
+      "read": "full",
+      "lines": 32
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/layout.md",
+      "read": "full",
+      "lines": 45
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/medium-cli.md",
+      "read": "full",
+      "lines": 39
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/medium-dataviz.md",
+      "read": "full",
+      "lines": 43
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/medium-diagram.md",
+      "read": "full",
+      "lines": 35
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/medium-documents.md",
+      "read": "full",
+      "lines": 70
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/medium-slides.md",
+      "read": "full",
+      "lines": 30
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/medium-web.md",
+      "read": "full",
+      "lines": 39
+    },
+    {
+      "path": "core/surface/includes/anti-slop-design/typography.md",
+      "read": "full",
+      "lines": 51
+    },
+    {
+      "path": "core/surface/includes/artifacts-attestation.md",
+      "read": "full",
+      "lines": 524
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "read": "full",
+      "lines": 146
+    },
+    {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "read": "full",
+      "lines": 38
+    },
+    {
+      "path": "core/surface/includes/codex-host-notes.md",
+      "read": "full",
+      "lines": 97
+    },
+    {
+      "path": "core/surface/includes/command-compatibility.md",
+      "read": "full",
+      "lines": 47
+    },
+    {
+      "path": "core/surface/includes/compaction-charter.md",
+      "read": "full",
+      "lines": 16
+    },
+    {
+      "path": "core/surface/includes/cut-docs.md",
+      "read": "full",
+      "lines": 16
+    },
+    {
+      "path": "core/surface/includes/dangerous-mode.md",
+      "read": "full",
+      "lines": 57
+    },
+    {
+      "path": "core/surface/includes/farm.md",
+      "read": "full",
+      "lines": 423
+    },
+    {
+      "path": "core/surface/includes/fresh-verification.md",
+      "read": "full",
+      "lines": 18
+    },
+    {
+      "path": "core/surface/includes/harvest.md",
+      "read": "full",
+      "lines": 88
+    },
+    {
+      "path": "core/surface/includes/helper-invocation.md",
+      "read": "full",
+      "lines": 222
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "read": "full",
+      "lines": 133
+    },
+    {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "read": "full",
+      "lines": 142
+    },
+    {
+      "path": "core/surface/includes/ops-mode.md",
+      "read": "full",
+      "lines": 99
+    },
+    {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "read": "full",
+      "lines": 93
+    },
+    {
+      "path": "core/surface/includes/redirect.md",
+      "read": "full",
+      "lines": 49
+    },
+    {
+      "path": "core/surface/includes/reference-map.md",
+      "read": "full",
+      "lines": 29
+    },
+    {
+      "path": "core/surface/includes/review-matrix.md",
+      "read": "full",
+      "lines": 14
+    },
+    {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "read": "full",
+      "lines": 60
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "read": "full",
+      "lines": 59
+    },
+    {
+      "path": "core/surface/includes/safety-core.md",
+      "read": "full",
+      "lines": 96
+    },
+    {
+      "path": "core/surface/includes/security-gate-record.md",
+      "read": "full",
+      "lines": 32
+    },
+    {
+      "path": "core/surface/includes/smarts/core.md",
+      "read": "full",
+      "lines": 168
+    },
+    {
+      "path": "core/surface/includes/smarts/decision-log-format.md",
+      "read": "full",
+      "lines": 56
+    },
+    {
+      "path": "core/surface/includes/smarts/lenses.md",
+      "read": "full",
+      "lines": 115
+    },
+    {
+      "path": "core/surface/includes/sprint-authority.md",
+      "read": "full",
+      "lines": 76
+    },
+    {
+      "path": "core/surface/includes/verification-boundary.md",
+      "read": "full",
+      "lines": 36
+    },
+    {
+      "path": "core/surface/skills/INDEX.md",
+      "read": "full",
+      "lines": 36
+    },
+    {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "read": "full",
+      "lines": 84
+    },
+    {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "read": "full",
+      "lines": 304
+    },
+    {
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "read": "full",
+      "lines": 256
+    },
+    {
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "read": "full",
+      "lines": 282
+    },
+    {
+      "path": "core/surface/skills/context-creation/references/markdown-format.md",
+      "read": "full",
+      "lines": 300
+    },
+    {
+      "path": "core/surface/skills/crypto-compliance/SKILL.md",
+      "read": "full",
+      "lines": 42
+    },
+    {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "read": "full",
+      "lines": 380
+    },
+    {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "read": "full",
+      "lines": 155
+    },
+    {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "read": "full",
+      "lines": 41
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+      "read": "full",
+      "lines": 115
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/references/adr-template.md",
+      "read": "full",
+      "lines": 82
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+      "read": "full",
+      "lines": 152
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "read": "full",
+      "lines": 121
+    },
+    {
+      "path": "core/surface/skills/decision-variance/references/analysis.md",
+      "read": "full",
+      "lines": 148
+    },
+    {
+      "path": "core/surface/skills/decompose/SKILL.md",
+      "read": "full",
+      "lines": 178
+    },
+    {
+      "path": "core/surface/skills/decompose/references/markdown-format.md",
+      "read": "full",
+      "lines": 183
+    },
+    {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "read": "full",
+      "lines": 77
+    },
+    {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "read": "full",
+      "lines": 62
+    },
+    {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "read": "full",
+      "lines": 281
+    },
+    {
+      "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+      "read": "full",
+      "lines": 250
+    },
+    {
+      "path": "core/surface/skills/refactor/SKILL.md",
+      "read": "full",
+      "lines": 137
+    },
+    {
+      "path": "core/surface/skills/release/SKILL.md",
+      "read": "full",
+      "lines": 635
+    },
+    {
+      "path": "core/surface/skills/secret-handling/SKILL.md",
+      "read": "full",
+      "lines": 69
+    },
+    {
+      "path": "core/surface/skills/security-architecture/SKILL.md",
+      "read": "full",
+      "lines": 81
+    },
+    {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "read": "full",
+      "lines": 121
+    },
+    {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "read": "full",
+      "lines": 168
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "read": "full",
+      "lines": 130
+    },
+    {
+      "path": "core/surface/skills/tribunal/SKILL.md",
+      "read": "full",
+      "lines": 230
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/ai-markers.md",
+      "read": "full",
+      "lines": 8
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/cost-and-models.md",
+      "read": "full",
+      "lines": 85
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/finding-record.md",
+      "read": "full",
+      "lines": 83
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/issue-filing.md",
+      "read": "full",
+      "lines": 65
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/appsec.md",
+      "read": "full",
+      "lines": 72
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/architecture.md",
+      "read": "full",
+      "lines": 61
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/change-closure.md",
+      "read": "full",
+      "lines": 65
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/coverage.md",
+      "read": "full",
+      "lines": 61
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/infra.md",
+      "read": "full",
+      "lines": 71
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/migration.md",
+      "read": "full",
+      "lines": 69
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/observability.md",
+      "read": "full",
+      "lines": 62
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/performance.md",
+      "read": "full",
+      "lines": 62
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/reliability.md",
+      "read": "full",
+      "lines": 63
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/secrets-supply.md",
+      "read": "full",
+      "lines": 72
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/semantic-contract.md",
+      "read": "full",
+      "lines": 62
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/test-fidelity.md",
+      "read": "full",
+      "lines": 59
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/typesafety.md",
+      "read": "full",
+      "lines": 62
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/report.md",
+      "read": "full",
+      "lines": 45
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/review-risk.md",
+      "read": "full",
+      "lines": 78
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/schemas.md",
+      "read": "full",
+      "lines": 208
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/telemetry.md",
+      "read": "full",
+      "lines": 65
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/triage.md",
+      "read": "full",
+      "lines": 101
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/verification-quality.md",
+      "read": "full",
+      "lines": 61
+    },
+    {
+      "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+      "read": "full",
+      "lines": 111
+    },
+    {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "read": "full",
+      "lines": 124
+    },
+    {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "read": "full",
+      "lines": 71
+    }
+  ],
+  "additional_targeted_reads": "Selected native and hook source branches, registry metadata, source probes and historical Project Sources; those are not counted as additional full-file reads."
+}

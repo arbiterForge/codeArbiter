@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-W",
+    "always::ResourceWarning",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "plugins/ca/hooks/tests",
+    "-p",
+    "test_crypto_context.py",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0,
+  "seconds": 74.68989649997093,
+  "home_unchanged": true,
+  "before_HEAD": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+  "after_HEAD": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+  "input_count": 202,
+  "input_changes": [],
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "hosted3_15_qualification": "PENDING actual existing hosted Windows isolation job; no local3.15 install/test or timeout increase"
+}
