@@ -12,6 +12,7 @@ import json
 import math
 import os
 from pathlib import Path
+import stat
 import sys
 import time
 import unittest
@@ -182,6 +183,131 @@ def coverage_problems(codes: list[int], reports: list[dict[str, Any] | None],
     return problems
 
 
+def retention_directory(count: int, indexes: list[int]) -> Path | None:
+    """Opt in to one exclusive, bounded runner-temp data directory."""
+    value = os.environ.get("AUTHORITY_OBSERVATION_DIR")
+    if value is None:
+        return None
+    root = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
+    target = Path(value)
+    info = root.lstat()
+    if (count != 4 or indexes != list(range(4)) or not target.is_absolute()
+            or target.parent.resolve(strict=True) != root or target.name in ("", ".", "..")
+            or not stat.S_ISDIR(info.st_mode) or root.is_symlink()
+            or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT):
+        raise ValueError("authority observations require four complete shards and a direct runner-temp child")
+    # mkdir refuses existing files, directories and dangling links alike.
+    target.mkdir()
+    return target
+
+
+def retention_context() -> dict[str, Any]:
+    """Read the existing native-consumer binding, never create a new stamp."""
+    import ci20_native_binding as binding
+    import major_qualification_report as observer
+    repo = HERE.parents[1]
+    source = observer.source_identity(repo)
+    metadata = Path(os.environ["RUNNER_TEMP"]) / "ci20-native-tested.json"
+    raw = binding.read_regular(metadata, 65536)
+    record = json.loads(raw, object_pairs_hook=binding.unique_object)
+    candidate = Path(os.environ["ARTIFACT_TEST_INSTALLATION"])
+    verified = binding.verify(candidate, metadata, record["platform"])
+    if (not source["clean"] or source["source_commit"] != verified["source_commit"]
+            or binding.read_regular(metadata, 65536) != raw):
+        raise ValueError("authority source or original candidate metadata changed")
+    return {"source": source, "run_id": int(verified["run_id"]),
+            "execution_run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+            "native_binding": verified,
+            "candidate_identity": {k: verified[k] for k in ("manifest_sha256", "binary_sha256")},
+            "native_metadata_path": str(metadata),
+            "native_metadata_sha256": hashlib.sha256(raw).hexdigest()}
+
+
+def observation_problems(reports: list[dict[str, Any] | None],
+                         observations: list[dict[str, Any] | None],
+                         before: dict[str, Any], after: dict[str, Any],
+                         expected_argv: list[str]) -> list[str]:
+    """Join actual original TestResult events to their original timing rows."""
+    if before != after or not before["source"].get("clean"):
+        return ["authority source or candidate changed across original shards"]
+    problems = []
+    outcomes = {"pass": "passed", "skip": "skipped", "failure": "failed", "error": "failed",
+                "expected_failure": "expected-failure", "unexpected_success": "failed"}
+    discovered = sum(len(r["selected_ids"]) for r in reports
+                     if isinstance(r, dict) and isinstance(r.get("selected_ids"), list))
+    for index, (report, observed) in enumerate(zip(reports, observations)):
+        try:
+            if (not isinstance(report, dict) or report.get("format") != "codearbiter.authority-shard-observation/1"
+                    or type(report.get("shard")) is not int or report["shard"] != index
+                    or type(report.get("shard_count")) is not int or report["shard_count"] != 4
+                    or type(report.get("discovered_count")) is not int or report["discovered_count"] != discovered
+                    or not isinstance(observed, dict)
+                    or observed.get("format") != "codearbiter.major-test-observation/1"
+                    or observed.get("producer") != "python-test-result-observer"
+                    or observed.get("proof_kind") != "source-test"
+                    or observed.get("source_commit") != before["source"]["source_commit"]
+                    or observed.get("source_tree") != before["source"]["source_tree"]
+                    or observed.get("clean") is not True or observed.get("source_stable") is not True
+                    or type(observed.get("ci_run_id")) is not int or observed["ci_run_id"] != before["run_id"]
+                    or type(observed.get("exit_code")) is not int or observed["exit_code"] != 0
+                    or observed.get("argv") != expected_argv):
+                raise ValueError
+            selected, timings, tests = report["selected_ids"], report["observations"], observed["tests"]
+            if (not isinstance(selected, list) or not isinstance(timings, list) or not isinstance(tests, list)
+                    or not 0 < len(selected) <= 32768
+                    or type(report["tests_run"]) is not int or report["tests_run"] != len(selected)
+                    or len(timings) != len(selected) or len(tests) != len(selected)):
+                raise ValueError
+            actual = {}
+            for row in timings:
+                if (not isinstance(row, dict) or row["id"] in actual or row["outcome"] not in outcomes
+                        or type(row["seconds"]) not in (int, float)
+                        or not math.isfinite(row["seconds"]) or row["seconds"] < 0):
+                    raise ValueError
+                actual[row["id"]] = outcomes[row["outcome"]]
+            if len(set(selected)) != len(selected) or set(actual) != set(selected):
+                raise ValueError
+            named = {}
+            for row in tests:
+                if not isinstance(row, dict) or set(row) != {"id", "result"} or row["id"] in named:
+                    raise ValueError
+                named[row["id"]] = row["result"]
+            expected = {"python:.github/scripts/run_artifact_authority_shard.py:" + name: result
+                        for name, result in actual.items()}
+            if named != expected:
+                raise ValueError
+        except (KeyError, TypeError, ValueError):
+            problems.append("authority original named observation differs from its shard/source/candidate")
+    if len(reports) != 4 or len(observations) != 4:
+        problems.append("authority original observation population is not four shards")
+    return problems
+
+
+def retain_observations(target: Path, indexes: list[int], timing_raw: list[bytes],
+                        observation_raw: list[bytes], context: dict[str, Any], plan: str) -> None:
+    """Retain original JSON bytes; write the passing bundle descriptor last."""
+    from ci20_native_binding import read_regular
+    files = {}
+    for index, timing, observed in zip(indexes, timing_raw, observation_raw):
+        for kind, raw in (("timing", timing), ("observation", observed)):
+            name = f"shard-{index}-{kind}.json"
+            with (target / name).open("xb") as stream:
+                stream.write(raw)
+            files[name] = hashlib.sha256(raw).hexdigest()
+    raw = read_regular(Path(context["native_metadata_path"]), 65536)
+    if hashlib.sha256(raw).hexdigest() != context["native_metadata_sha256"]:
+        raise ValueError("authority original candidate metadata changed before retention")
+    with (target / "native-binding.json").open("xb") as stream:
+        stream.write(raw)
+    files["native-binding.json"] = hashlib.sha256(raw).hexdigest()
+    with (target / "bundle.json").open("x", encoding="utf-8", newline="\n") as stream:
+        json.dump({"format": "codearbiter.authority-retained-observations/1",
+                   "state": "VALIDATED_ORIGINAL_SHARDS", "context": context,
+                   "partition_indexes": indexes, "plan_sha256": plan, "files": files},
+                  stream, indent=2, sort_keys=True)
+        stream.write("\n")
+
+
 def run_all(count: int, expected: list[str], indexes: list[int] | None = None,
             plan_sha256: str | None = None) -> bool:
     """Run every shard as a concurrent child on this host and prove complete coverage.
@@ -194,17 +320,28 @@ def run_all(count: int, expected: list[str], indexes: list[int] | None = None,
     only its own indexes against the same plan.
     """
     indexes = list(range(count)) if indexes is None else indexes
+    retained = retention_directory(count, indexes)
+    if retained is not None and (not isinstance(plan_sha256, str) or len(plan_sha256) != 64
+                                 or set(plan_sha256) - set("0123456789abcdef")):
+        raise ValueError("authority retention requires the exact discovered partition digest")
+    context_before = retention_context() if retained is not None else None
     import subprocess
     import tempfile
     with tempfile.TemporaryDirectory(prefix="authority-shards-") as raw:
         reports = [Path(raw) / f"shard-{index}.json" for index in indexes]
+        observations = [Path(raw) / f"shard-{index}-observation.json" for index in indexes]
         logs = [Path(raw) / f"shard-{index}.log" for index in indexes]
         children = []
         for slot, index in enumerate(indexes):
             env = dict(os.environ, AUTHORITY_SHARD=str(index), AUTHORITY_SHARD_COUNT=str(count),
                        AUTHORITY_TIMING_OUTPUT=str(reports[slot]))
             with logs[slot].open("wb") as log:
-                children.append(subprocess.Popen([sys.executable, str(Path(__file__).resolve())],
+                argv = [sys.executable, str(Path(__file__).resolve())]
+                if retained is not None:
+                    argv = [sys.executable, str(HERE / "major_qualification_report.py"), "observe-python",
+                            "--repo", str(HERE.parents[1]), "--output", str(observations[slot]),
+                            ".github/scripts/run_artifact_authority_shard.py"]
+                children.append(subprocess.Popen(argv,
                                                  env=env, stdout=log, stderr=subprocess.STDOUT))
         # Bound each child below the job timeout so a hung shard still yields
         # every partition's log instead of the runner discarding them all.
@@ -220,15 +357,33 @@ def run_all(count: int, expected: list[str], indexes: list[int] | None = None,
                     log.write(b"\nauthority shard timed out and was terminated\n")
                 codes.append(-1)
         loaded: list[dict[str, Any] | None] = []
+        observed_loaded: list[dict[str, Any] | None] = []
+        timing_raw, observation_raw = [], []
         for slot, index in enumerate(indexes):
             print(f"::group::authority shard {index}/{count} (exit {codes[slot]})", flush=True)
             print(logs[slot].read_text(encoding="utf-8", errors="replace"), flush=True)
             print("::endgroup::", flush=True)
             try:
-                loaded.append(json.loads(reports[slot].read_text(encoding="utf-8")))
+                if retained is not None:
+                    from ci20_native_binding import read_regular, unique_object
+                    timing = read_regular(reports[slot], 16 * 1024 * 1024)
+                    observed = read_regular(observations[slot], 16 * 1024 * 1024)
+                    timing_value = json.loads(timing, object_pairs_hook=unique_object)
+                    observation_value = json.loads(observed, object_pairs_hook=unique_object)
+                    loaded.append(timing_value)
+                    observed_loaded.append(observation_value)
+                    timing_raw.append(timing); observation_raw.append(observed)
+                else:
+                    loaded.append(json.loads(reports[slot].read_text(encoding="utf-8")))
             except (OSError, ValueError):
                 loaded.append(None)
+                observed_loaded.append(None)
     problems = coverage_problems(codes, loaded, expected, plan_sha256)
+    if retained is not None:
+        problems += observation_problems(loaded, observed_loaded, context_before, retention_context(),
+                                         [sys.executable, str(Path(__file__).resolve())])
+        if not problems:
+            retain_observations(retained, indexes, timing_raw, observation_raw, context_before, plan_sha256)
     present = [report for report in loaded if report is not None]
     slowest = sorted((o for report in present for o in report["observations"]), key=lambda o: -o["seconds"])[:10]
     print("slowest authority cases: " + ", ".join(f"{o['id'].rsplit('.', 1)[-1]} {o['seconds']:.1f}s" for o in slowest),

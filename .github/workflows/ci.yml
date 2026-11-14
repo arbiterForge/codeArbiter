@@ -1193,6 +1193,7 @@ jobs:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
           AUTHORITY_SHARD: all
           AUTHORITY_SHARD_COUNT: "4"
+          AUTHORITY_OBSERVATION_DIR: ${{ runner.temp }}/authority-observations
         run: python .github/scripts/run_artifact_authority_shard.py
       - name: Recheck tested candidate after authority coverage
         run: >-
@@ -1200,6 +1201,15 @@ jobs:
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
+      - name: Retain original authority observations
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: authority-observations-${{ matrix.os }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/authority-observations/*.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
   artifact-browser:
     name: "[CHECK] | [CORE] | Structured artifact browser qualification"
     needs: [changes, artifact-engine]
