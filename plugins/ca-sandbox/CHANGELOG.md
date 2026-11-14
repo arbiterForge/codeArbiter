@@ -23,6 +23,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Fixed
 
+- Compare complete container identities when checking cleanup ownership in shipped CLI qualification.
 - Refuse failed manifest, daemon and resource observations instead of treating them as absence. Failed or cancelled creation retains exact resource references when independent cleanup cannot confirm removal.
 - Use bounded, cancellable process paths for clone and host staging, and report uncertain helper or staging cleanup.
 

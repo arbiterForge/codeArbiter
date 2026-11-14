@@ -96,7 +96,7 @@ function scopedObjects(fixture: Fixture) {
     "--filter", "label=ca.sandbox.id=" + fixture.id,
     "--filter", "label=ca.sandbox.qualification=" + fixture.id];
   return {
-    containers: docker(["ps", "-aq", ...filters]).stdout.trim().split(/\s+/).filter(Boolean),
+    containers: docker(["ps", "-aq", "--no-trunc", ...filters]).stdout.trim().split(/\s+/).filter(Boolean),
     volumes: docker(["volume", "ls", "-q", ...filters]).stdout.trim().split(/\s+/).filter(Boolean),
   };
 }
