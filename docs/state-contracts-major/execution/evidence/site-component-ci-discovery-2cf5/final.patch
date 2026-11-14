@@ -1,0 +1,86 @@
+diff --git a/site/package.json b/site/package.json
+--- a/site/package.json
++++ b/site/package.json
+@@ -22,6 +22,7 @@
+     "test:release-applicability-rendered": "astro build && tsx test/release-applicability/rendered.ts",
+     "test:academy-source": "vitest run scripts/academy-source.test.ts",
+     "test:browser": "playwright test",
++    "test:components": "playwright test --config=playwright.components.config.ts",
+     "test:watch": "vitest",
+     "typecheck": "tsc --noEmit",
+     "link-audit": "tsx scripts/link-audit.ts",
+diff --git a/.github/workflows/docs.yml b/.github/workflows/docs.yml
+--- a/.github/workflows/docs.yml
++++ b/.github/workflows/docs.yml
+@@ -240,6 +240,8 @@
+         # The npm lockfile does not authenticate browser bytes.
+         # No exact hosted Chrome version is claimed; this log records the observed one.
+         run: google-chrome --version
++      - name: Browser component acceptance
++        run: npm run test:components
+       - name: Browser publication gate
+         id: browser-gate
+         run: npm run test:browser
+diff --git a/.github/scripts/test_ci_impact.py b/.github/scripts/test_ci_impact.py
+--- a/.github/scripts/test_ci_impact.py
++++ b/.github/scripts/test_ci_impact.py
+@@ -3632,6 +3632,41 @@
+                     if step.startswith("      - name: Browser publication gate\n"))
+         self.assertRegex(gate, r"(?m)^        id: browser-gate$")
+ 
++    def test_component_suite_is_discovered_and_success_gates_pages_upload(self):
++        scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
++        self.assertEqual(scripts.get("test:components"),
++                         "playwright test --config=playwright.components.config.ts",
++                         "component specs are outside the production browser testDir")
++        config = (REPO_ROOT / "site/playwright.components.config.ts").read_text(encoding="utf-8")
++        self.assertRegex(config, r"testDir:\s*['\"]\./test/components['\"]")
++        self.assertRegex(config, r"channel:\s*['\"]chrome['\"]")
++        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
++            DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
++
++        def assert_lane(candidate):
++            self._assert_build_control_flow(candidate)
++            steps = re.split(r"(?m)(?=^      - )", candidate)[1:]
++            selected = [step for step in steps
++                        if re.search(r"(?m)^        run: npm run test:components$", step)]
++            self.assertEqual(len(selected), 1, "component suite must execute exactly once")
++            self.assertLess(candidate.index("run: google-chrome --version"),
++                            candidate.index("run: npm run test:components"))
++            self.assertLess(candidate.index("run: npm run test:components"),
++                            candidate.index("uses: actions/upload-pages-artifact@"))
++
++        assert_lane(build)
++        for mutation in (
++            build.replace("run: npm run test:components", "run: npm run test:browser", 1),
++            build.replace("        run: npm run test:components",
++                          "        if: false\n        run: npm run test:components", 1),
++            build.replace("        run: npm run test:components",
++                          "        continue-on-error: true\n        run: npm run test:components", 1),
++        ):
++            with self.subTest(mutation=mutation):
++                self.assertNotEqual(mutation, build)
++                with self.assertRaises(AssertionError):
++                    assert_lane(mutation)
++
+     def test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads(self):
+         """Mutations must not turn evidence retention into publication authorization."""
+         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
+@@ -3706,7 +3741,7 @@
+         self.assertNotIn("continue-on-error:", deploy)
+         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
+         for name, command in scripts.items():
+-            if name != "test:browser":
++            if name not in {"test:browser", "test:components"}:
+                 self.assertNotRegex(command, r"playwright|test:browser", name)
+         from project_knowledge import context_text
+         self.assertNotRegex(context_text("tech-stack"), r"playwright install|run test:browser")
+@@ -3719,7 +3754,7 @@
+         self.assertNotRegex(build, r"(?i)\b(?:curl|wget)\b|install-(?:browser|deps)")
+         self.assertEqual(re.findall(r"(?m)^        run: (.+)$", build), [
+             "npm ci", "npm run build", "npm run link-audit",
+-            "google-chrome --version", "npm run test:browser",
++            "google-chrome --version", "npm run test:components", "npm run test:browser",
+         ], "browser validation must consume the runner image without executable downloads")
+ 
+     def test_playwright_configuration_is_inside_the_typecheck_scope(self):

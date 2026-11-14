@@ -1,0 +1,139 @@
+{
+  "result": "PASSED",
+  "owner": "Actual major_readiness.evidence_paths frozen row dependency checks",
+  "rows": [
+    {
+      "section": "machines",
+      "id": "S65",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:01",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:02",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:03",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:04",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:07",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:05",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:06",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "S65:08",
+      "owning_paths": [
+        "site/astro.config.mjs",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "SX03:01",
+      "owning_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/pages/release-applicability.json.ts",
+        "site/src/release-applicability-presentation.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "SX03:03",
+      "owning_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/pages/release-applicability.json.ts",
+        "site/src/release-applicability-presentation.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "SX03:04",
+      "owning_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/pages/release-applicability.json.ts",
+        "site/src/release-applicability-presentation.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "SX03:05",
+      "owning_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/pages/release-applicability.json.ts",
+        "site/src/release-applicability-presentation.ts"
+      ],
+      "missing": []
+    },
+    {
+      "section": "transitions",
+      "id": "SX03:02",
+      "owning_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/pages/release-applicability.json.ts",
+        "site/src/release-applicability-presentation.ts"
+      ],
+      "missing": []
+    }
+  ],
+  "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "input_count": 15
+}

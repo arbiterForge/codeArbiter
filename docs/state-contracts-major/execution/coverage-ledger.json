@@ -629,9 +629,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
      "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
-     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -689,9 +698,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
      "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
-     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -3696,9 +3714,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-remaining.json",
+     "sha256": "24734dde8d0e23ff73ba2de911cf895b9a15da8da84aeef04db26523c96df472"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/pagefind-remaining.json",
-     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9"
+     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -23793,8 +23820,15 @@
     "SITE-U01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ]
   },
   "S55:04": {
    "owner": "site",
@@ -23803,8 +23837,15 @@
     "SITE-U01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ]
   },
   "S55:05": {
    "owner": "site",
@@ -23837,9 +23878,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
      "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
-     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -23864,9 +23914,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
      "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
-     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -23887,8 +23946,15 @@
     "SITE-U01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ]
   },
   "S56:01": {
    "owner": "site",
@@ -24310,9 +24376,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/component-tested.json",
+     "sha256": "5a3be0563ccc582d28a15fcea593d848d088b4a23c92942261ec76425d91be53"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
      "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
-     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24422,9 +24497,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-remaining.json",
+     "sha256": "24734dde8d0e23ff73ba2de911cf895b9a15da8da84aeef04db26523c96df472"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/pagefind-remaining.json",
-     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9"
+     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24439,9 +24523,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-remaining.json",
+     "sha256": "24734dde8d0e23ff73ba2de911cf895b9a15da8da84aeef04db26523c96df472"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/pagefind-remaining.json",
-     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9"
+     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24456,9 +24549,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-remaining.json",
+     "sha256": "24734dde8d0e23ff73ba2de911cf895b9a15da8da84aeef04db26523c96df472"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/pagefind-remaining.json",
-     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9"
+     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24473,9 +24575,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-remaining.json",
+     "sha256": "24734dde8d0e23ff73ba2de911cf895b9a15da8da84aeef04db26523c96df472"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/pagefind-remaining.json",
-     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9"
+     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24490,9 +24601,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-publication.json",
+     "sha256": "dfe69c614530d63b389cec41d619371bcd86bc1058f634a18a28a13cf65e1937"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pagefind-publication.json",
-     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c"
+     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24507,9 +24627,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-publication.json",
+     "sha256": "dfe69c614530d63b389cec41d619371bcd86bc1058f634a18a28a13cf65e1937"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pagefind-publication.json",
-     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c"
+     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24524,9 +24653,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-remaining.json",
+     "sha256": "24734dde8d0e23ff73ba2de911cf895b9a15da8da84aeef04db26523c96df472"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/pagefind-remaining.json",
-     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9"
+     "sha256": "19da240bac0a3497286d94da46e08223e7e4588b411083a7be9a71ed15bfeee9",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -24541,9 +24679,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/pagefind-publication.json",
+     "sha256": "dfe69c614530d63b389cec41d619371bcd86bc1058f634a18a28a13cf65e1937"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pagefind-publication.json",
-     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c"
+     "sha256": "4dbffedbf0118649e9be8351a7645905f168b63063030c75e391718a8245490c",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -27909,9 +28056,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/release-derivation-tested.json",
+     "sha256": "d0b465656ab2f1b7b6c77a096e86de9ce0840132d614da8fdaacd1eac15a2fb1"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
-     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -27926,9 +28082,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/observed-publication.json",
+     "sha256": "4efb27f7d3591c9cc8e2161ed82e1caf3ddf63b6a0b5e3cba9e28ae42e5cd6f4"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/observed-publication.json",
-     "sha256": "71a75ed7ee4d76547a3b301fd0b8b6c0b39e052d195e58380b33cf62b98b2275"
+     "sha256": "71a75ed7ee4d76547a3b301fd0b8b6c0b39e052d195e58380b33cf62b98b2275",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -27943,9 +28108,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/release-derivation-tested.json",
+     "sha256": "d0b465656ab2f1b7b6c77a096e86de9ce0840132d614da8fdaacd1eac15a2fb1"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
-     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -27960,9 +28134,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/release-derivation-tested.json",
+     "sha256": "d0b465656ab2f1b7b6c77a096e86de9ce0840132d614da8fdaacd1eac15a2fb1"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
-     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
@@ -27977,9 +28160,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+     "ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/release-derivation-tested.json",
+     "sha256": "d0b465656ab2f1b7b6c77a096e86de9ce0840132d614da8fdaacd1eac15a2fb1"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "0830b95752a05343563be027e513a2845a6c57df",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/release-derivation-tested.json",
-     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809"
+     "sha256": "f3100b6cb03927a0f81cac0591292047d16ba1a6ba15b458277b8fea5424e809",
+     "ref_commit": "38bf279799fa8e7ab72148dce9cee85177664947"
     }
    ]
   },
