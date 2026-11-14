@@ -14,12 +14,13 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import subprocess
 import sys
 import zipfile
 from _boundedproc import start, terminate_tree
+from _contextverificationlib import hash_go_module_entries, VerificationError
 
 REPOSITORY = "arbiterForge/codeArbiter"
 PROGRAM = "codearbiter-major-state-contracts"
@@ -121,6 +122,158 @@ def open_decisions(raw):
     return sorted(found)
 
 
+
+def _scope_path(value):
+    path = PurePosixPath(value) if isinstance(value, str) else PurePosixPath('..')
+    require(isinstance(value, str) and 0 < len(value.encode('utf-8')) <= 4096
+            and str(path) == value and not path.is_absolute()
+            and '..' not in path.parts and ':' not in value and '\\' not in value
+            and not any(ord(c) < 32 or ord(c) == 127 for c in value)
+            and value not in ('.', ''), 'invalid scoped input path')
+    return value
+
+
+def _scope_declarations(record):
+    scopes, absent = record.get('input_membership', []), record.get('absent_inputs', [])
+    require(isinstance(scopes, list) and len(scopes) <= 16
+            and isinstance(absent, list) and len(absent) <= 32,
+            'invalid input membership/absence declarations')
+    roots = set()
+    for scope in scopes:
+        require(isinstance(scope, dict) and set(scope) == {'profile', 'root', 'path_order', 'sha256'}
+                and scope.get('profile') == 'go-module-v1'
+                and scope.get('path_order') in ('posix', 'windows')
+                and isinstance(scope.get('sha256'), str) and DIGEST.fullmatch(scope['sha256']),
+                'unsupported input membership declaration')
+        root = _scope_path(scope['root'])
+        require(root not in roots and root + '/go.mod' in record['inputs'],
+                'input membership lacks unique owning go.mod')
+        roots.add(root)
+    seen = set()
+    for path in absent:
+        _scope_path(path)
+        owner = str(PurePosixPath(path).with_name('hostapi.py'))
+        require(PurePosixPath(path).name == '_host.py' and owner in record['inputs']
+                and path not in record['inputs'] and path not in seen,
+                'absence lacks explicit owning host lookup')
+        seen.add(path)
+    return scopes, absent
+
+
+def _tree_entries(repo, source, root, recursive=False):
+    # A failed read is never a negative lookup. A successful tree inventory is
+    # the only way absence is established; literal object paths avoid pathspecs.
+    tree = source + (':' + root if root else '^{tree}')
+    argv = ['git', '--no-lazy-fetch', 'ls-tree', '-z', '-l']
+    if recursive:
+        argv.append('-r')
+    raw = command(argv + [tree], repo)
+    require(len(raw) <= 2 * 1024 * 1024, 'input inventory exceeds bound')
+    rows = raw.split(b'\0')
+    require(rows[-1] == b'' and len(rows) <= 4097, 'input inventory exceeds entry bound')
+    entries = {}
+    for row in rows[:-1]:
+        try:
+            header, name = row.split(b'\t', 1)
+            mode, kind, oid, size = header.decode('ascii').split()
+            name = name.decode('utf-8')
+            _scope_path(name)
+            require(name not in entries and re.fullmatch(r'(?:[0-9a-f]{40}|[0-9a-f]{64})', oid),
+                    'malformed input inventory')
+            entries[name] = (mode, kind, int(size) if size != '-' else None)
+        except (ValueError, UnicodeError) as error:
+            raise ReadinessError('malformed input inventory') from error
+    return entries
+
+
+def _module_membership(repo, source, scope, load, cache):
+    key = ('module-membership', source, scope['root'], scope['path_order'])
+    if key not in cache:
+        rows = _tree_entries(repo, source, scope['root'], recursive=True)
+        require('go.mod' in rows, 'input membership lacks go.mod')
+        order = PureWindowsPath if scope['path_order'] == 'windows' else PurePosixPath
+        entries, total = [], 0
+        for name in sorted(rows, key=order):
+            mode, kind, size = rows[name]
+            require(kind == 'blob' and mode in ('100644', '100755') and size is not None,
+                    'unsupported input membership object')
+            total += size
+            require(total <= 64 * 1024 * 1024, 'input membership exceeds byte bound')
+            content = load(source, scope['root'] + '/' + name)
+            require(len(content) == size, 'input membership blob size differs')
+            entries.append((name, size, digest(content)))
+        try:
+            cache[key] = hash_go_module_entries(entries)
+        except VerificationError as error:
+            raise ReadinessError('invalid input membership') from error
+    return cache[key]
+
+
+def _lookup_present(repo, source, path, cache):
+    parts = PurePosixPath(path).parts
+    root = ''
+    for index, name in enumerate(parts):
+        key = ('lookup-tree', source, root)
+        if key not in cache:
+            cache[key] = _tree_entries(repo, source, root)
+        entries = cache[key]
+        if name not in entries:
+            return False
+        if index == len(parts) - 1:
+            return True
+        mode, kind, _ = entries[name]
+        require(kind == 'tree' and mode == '040000', 'unsupported absence ancestor object')
+        root = '/'.join(parts[:index + 1])
+    return True
+
+
+def _authenticate_scope_evidence(repo, source, record, load, cache):
+    scopes, absent = _scope_declarations(record)
+    for scope in scopes:
+        require(_module_membership(repo, source, scope, load, cache) == scope['sha256'],
+                'original input membership differs')
+    for path in absent:
+        require(not _lookup_present(repo, source, path, cache), 'original declared absence is present')
+
+
+def disposition_input_applicability(repo, source, record, load, cache):
+    """Compare only declared inputs/scopes; history was authenticated separately."""
+    scopes, absent = _scope_declarations(record)
+    changed, unavailable = set(), set()
+    for path, expected in record['inputs'].items():
+        try:
+            if digest(load(source, path)) != expected:
+                changed.add(path)
+        except ReadinessError:
+            unavailable.add(path)
+    if (record['kind'] in ('test', 'sequence-test', 'installed-run', 'hosted-run')
+            and any(p.startswith('core/artifacts/') for p in record['inputs'])
+            and not any(s['root'] == 'core/artifacts' for s in scopes)):
+        # Positive-only legacy runtime evidence remains authentic history, but
+        # does not establish complete compiler/read membership at a candidate.
+        unavailable.add('membership:core/artifacts')
+    if record['kind'] in ('test', 'sequence-test', 'installed-run', 'hosted-run'):
+        for path in record['inputs']:
+            if PurePosixPath(path).name == 'hostapi.py':
+                lookup = str(PurePosixPath(path).with_name('_host.py'))
+                if lookup not in record['inputs'] and lookup not in absent:
+                    unavailable.add('host-lookup:' + lookup)
+    for scope in scopes:
+        label = 'membership:' + scope['root']
+        try:
+            if _module_membership(repo, source, scope, load, cache) != scope['sha256']:
+                changed.add(label)
+        except ReadinessError:
+            unavailable.add(label)
+    for path in absent:
+        try:
+            if _lookup_present(repo, source, path, cache):
+                changed.add('absence:' + path)
+        except ReadinessError:
+            unavailable.add('absence:' + path)
+    return changed, unavailable
+
+
 def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, cache):
     """Authenticate recorded proof at its original identities.
 
@@ -199,6 +352,7 @@ def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, c
             require(isinstance(inputs, dict) and inputs, 'disposition proof lacks checked inputs')
             for path, expected in inputs.items():
                 path_value(tested, path, expected)
+            _authenticate_scope_evidence(repo, tested, record, load, cache)
             cache[key] = record
         record = cache[key]
         require(record.get('source_commit') == tested and record.get('kind') == item.get('kind'),
@@ -238,9 +392,9 @@ def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
         key = ('proof', retained, item.get('ref'), item.get('sha256'))
         current_key = ('current-proof', candidate, key)
         if current_key not in cache:
-            for path, expected in cache[key]['inputs'].items():
-                require(digest(load(candidate, path)) == expected,
-                        'retained evidence bytes differ: ' + path)
+            changed, unavailable = disposition_input_applicability(repo, candidate, cache[key], load, cache)
+            require(not unavailable, 'retained evidence inputs unavailable: ' + ', '.join(sorted(unavailable)))
+            require(not changed, 'retained evidence bytes differ: ' + ', '.join(sorted(changed)))
             cache[current_key] = True
     return bound
 

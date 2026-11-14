@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 import check_state_contracts_integration as owner
 
@@ -221,6 +222,166 @@ class IntegrationIntegrityTest(unittest.TestCase):
         self.replace_ledger(ledger)
         with self.assertRaisesRegex(owner.readiness.ReadinessError, "population differs"):
             self.check()
+
+
+    def membership_case(self, *, membership=True, absence=False, wrong_original=False, present_host=False, host_input=False):
+        # Synthetic admission fixture, never a product observation/proof.
+        module = "core/artifacts"
+        self.git("rm", "-rf", "--ignore-unmatch", "core/artifacts", "core/pysrc/_host.py", "core/pysrc/hostapi.py")
+        files = {self.input: self.load(self.tested, self.input),
+                 module + "/go.mod": b"module fixture.invalid/native\n\ngo 1.24\n",
+                 module + "/main.go": b"package main\nfunc main() {}\n"}
+        if absence or host_input:
+            files["core/pysrc/hostapi.py"] = b"# explicit lookup owner fixture, not executed\n"
+        if present_host:
+            files["core/pysrc/_host.py"] = b"# existing fixture lookup, never executed\n"
+        for path, value in files.items(): self.put(path, value)
+        self.git("add", "."); self.git("commit", "-qm", "Original membership fixture", "--allow-empty")
+        tested = self.git("rev-parse", "HEAD")
+        proof = copy.deepcopy(self.proof)
+        proof["source_commit"] = tested
+        proof["inputs"] = {p: hashlib.sha256(v).hexdigest() for p, v in files.items() if not p.endswith(("/main.go", "/_host.py"))}
+        if membership:
+            h = hashlib.sha256()
+            for p, data in sorted((p[len(module)+1:], v) for p, v in files.items() if p.startswith(module + "/")):
+                name = p.encode(); h.update(len(name).to_bytes(4,"big")); h.update(name)
+                h.update(len(data).to_bytes(8,"big")); h.update(hashlib.sha256(data).digest())
+            proof["input_membership"] = [{"profile":"go-module-v1", "root":module,
+                                          "path_order":"posix", "sha256":"0"*64 if wrong_original else h.hexdigest()}]
+        if absence:
+            proof["absent_inputs"] = ["core/pysrc/_host.py"]
+        encoded = json.dumps(proof).encode(); self.put(self.proof_path, encoded)
+        ledger = copy.deepcopy(self.ledger)
+        row = ledger["transitions"][self.identity]
+        row.update(status="TESTED", evidence=[{"kind":"test", "commit":tested, "ref":self.proof_path,
+                                               "sha256":hashlib.sha256(encoded).hexdigest()}])
+        self.put(C + "execution/coverage-ledger.json", ledger)
+        self.git("add", ".");self.git("commit", "-qm", "Retain declared membership proof")
+        return self.git("rev-parse", "HEAD"), row
+
+    def test_added_and_removed_native_members_are_stale_not_relabelled(self):
+        for removal in (False, True):
+            with self.subTest(removal=removal):
+                current, row = self.membership_case()
+                if removal: self.git("rm", "-q", "core/artifacts/main.go")
+                else: self.put("core/artifacts/added.go", b"package main\nfunc init() {}\n")
+                self.git("add", "."); self.git("commit", "-qm", "Change membership without positive-byte drift")
+                candidate = self.git("rev-parse", "HEAD")
+                report = owner.validate(self.repo, candidate)
+                self.assertEqual(report["current_applicability"][self.cell]["status"], "STALE")
+                self.assertFalse(report["recorded_statuses_changed"])
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+                owner.readiness.authenticate_recorded_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+
+    def test_explicit_owned_absence_becoming_present_is_stale(self):
+        current, row = self.membership_case(absence=True)
+        self.put("core/pysrc/_host.py", b"# not executed\n")
+        self.git("add", "."); self.git("commit", "-qm", "Formerly absent owned lookup appears")
+        candidate=self.git("rev-parse", "HEAD")
+        self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "STALE")
+        with self.assertRaises(owner.readiness.ReadinessError):
+            owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+
+    def test_forged_original_module_scope_refuses_historical_authentication(self):
+        current, row = self.membership_case(wrong_original=True)
+        with self.assertRaisesRegex(owner.readiness.ReadinessError, "membership"):
+            owner.validate(self.repo,current)
+
+    def test_legacy_runtime_native_positive_scope_is_unknown_not_complete(self):
+        current, row = self.membership_case(membership=False)
+        self.assertEqual(owner.validate(self.repo,current)["current_applicability"][self.cell]["status"], "UNKNOWN")
+        with self.assertRaises(owner.readiness.ReadinessError):
+            owner.readiness.authenticate_disposition(self.repo,current,self.cell,row,{self.input},self.load,{})
+        owner.readiness.authenticate_recorded_disposition(self.repo,current,self.cell,row,{self.input},self.load,{})
+
+    def test_valid_declared_scope_and_absence_are_applicable(self):
+        current,row=self.membership_case(absence=True)
+        self.assertEqual(owner.validate(self.repo,current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+        owner.readiness.authenticate_disposition(self.repo,current,self.cell,row,{self.input},self.load,{})
+
+
+    def test_failed_candidate_inventory_is_unknown_not_absent(self):
+        current,row=self.membership_case(absence=True)
+        self.git("commit", "--allow-empty", "-qm", "Candidate read failure scope")
+        candidate=self.git("rev-parse", "HEAD")
+        real=owner.readiness.command
+        def read(argv, cwd=None):
+            if "ls-tree" in argv and any(x.startswith(candidate) for x in argv):
+                raise owner.readiness.ReadinessError("controlled inventory read failure")
+            return real(argv,cwd)
+        with mock.patch.object(owner.readiness,"command",side_effect=read):
+            self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "UNKNOWN")
+            with self.assertRaises(owner.readiness.ReadinessError):
+                owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+
+    def test_declared_absence_already_present_at_original_refuses(self):
+        current,row=self.membership_case(absence=True,present_host=True)
+        with self.assertRaisesRegex(owner.readiness.ReadinessError,"absence"):
+            owner.validate(self.repo,current)
+
+
+    def test_unsupported_git_membership_objects_are_unknown(self):
+        for mode in ("120000", "160000"):
+            with self.subTest(mode=mode):
+                current,row=self.membership_case()
+                oid = (subprocess.run(["git","hash-object","-w","--stdin"],cwd=self.repo,
+                       input=b"outside",capture_output=True,check=True).stdout.decode().strip()
+                       if mode == "120000" else current)
+                self.git("update-index","--add","--cacheinfo",mode+","+oid+",core/artifacts/linked")
+                self.git("commit","-qm","Unsupported immutable Git member")
+                candidate=self.git("rev-parse","HEAD")
+                self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "UNKNOWN")
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+
+    def test_unrelated_host_addition_does_not_invalidate_native_membership(self):
+        current,row=self.membership_case()
+        self.put("unrelated/_host.py",b"# unrelated lookup, never imported\n")
+        self.git("add",".");self.git("commit","-qm","Unrelated host file is outside scope")
+        candidate=self.git("rev-parse","HEAD")
+        self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "APPLICABLE")
+
+    def test_source_conformance_remains_declared_positive_scope(self):
+        current,row=self.membership_case(membership=False)
+        proof=json.loads(self.load(current,self.proof_path))
+        proof.update(kind="conformance-check",result="PRESERVED",producer={"class":"source-conformance","identity":"Instruction fixture only"})
+        encoded=json.dumps(proof).encode();self.overrides[current,self.proof_path]=encoded
+        ledger=copy.deepcopy(self.ledger);row=ledger["transitions"][self.identity]
+        row.update(status="PRESERVED",evidence=[{"kind":"conformance-check","commit":proof["source_commit"],
+                   "ref":self.proof_path,"sha256":hashlib.sha256(encoded).hexdigest()}])
+        self.overrides[current,C+"execution/coverage-ledger.json"]=json.dumps(ledger).encode()
+        self.assertEqual(self.check(current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+
+    def test_unsupported_or_unowned_scope_declarations_refuse(self):
+        current,row=self.membership_case()
+        baseline=json.loads(self.load(current,self.proof_path))
+        for change in ("profile", "path", "extra", "absence", "duplicate"):
+            with self.subTest(change=change):
+                proof=copy.deepcopy(baseline)
+                if change=="profile":proof["input_membership"][0]["profile"]="unknown"
+                if change=="path":proof["input_membership"][0]["root"]="../outside"
+                if change=="extra":proof["input_membership"][0]["optional"]="unsupported"
+                if change=="absence":proof["absent_inputs"]=["unrelated/_host.py"]
+                if change=="duplicate":proof["input_membership"]*=2
+                encoded=json.dumps(proof).encode();self.overrides[current,self.proof_path]=encoded
+                ledger=copy.deepcopy(self.ledger);claim=copy.deepcopy(row)
+                claim["evidence"][0]["sha256"]=hashlib.sha256(encoded).hexdigest()
+                ledger["transitions"][self.identity]=claim
+                self.overrides[current,C+"execution/coverage-ledger.json"]=json.dumps(ledger).encode()
+                with self.assertRaises(owner.readiness.ReadinessError):self.check(current)
+
+
+    def test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown(self):
+        current,row=self.membership_case(host_input=True)
+        self.assertEqual(owner.validate(self.repo,current)["current_applicability"][self.cell]["status"], "UNKNOWN")
+        self.put("core/pysrc/_host.py",b"# formerly unbound host lookup, never imported\n")
+        self.git("add",".");self.git("commit","-qm","Unbound host lookup appears")
+        candidate=self.git("rev-parse","HEAD")
+        self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "UNKNOWN")
+        with self.assertRaises(owner.readiness.ReadinessError):
+            owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+        owner.readiness.authenticate_recorded_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
 
 
 class IntegrationWorkflowWiringTest(unittest.TestCase):

@@ -64,23 +64,42 @@ def hash_go_module(module_root: Path) -> str:
         raise VerificationError("Go module is absent") from error
     if not root.is_dir() or not (root / "go.mod").is_file():
         raise VerificationError("Go module lacks go.mod")
-    digest = hashlib.sha256()
-    total = 0
-    count = 0
+    entries, total = [], 0
     for path in sorted(root.rglob("*")):
         if path.is_symlink():
             raise VerificationError("Go module contains a symlink")
-        if not path.is_file():
-            continue
-        count += 1
-        total += path.stat().st_size
-        if count > 4096 or total > 64 * 1024 * 1024:
+        if path.is_file():
+            size = path.stat().st_size
+            total += size
+            if len(entries) >= 4096 or total > 64 * 1024 * 1024:
+                raise VerificationError("Go module exceeds source manifest bound")
+            entries.append((path.relative_to(root).as_posix(), size, _sha256(path)))
+    return hash_go_module_entries(entries)
+
+
+def hash_go_module_entries(entries):
+    """Existing module framing, in the observer's declared path order.
+
+    Both filesystem observations and immutable Git inventories use these same
+    name/size/content-digest frames. The caller owns order and object admission.
+    """
+    digest = hashlib.sha256()
+    total = 0
+    seen = set()
+    for name, size, content_sha256 in entries:
+        if (not isinstance(name, str) or not name or name in seen
+                or type(size) is not int or size < 0
+                or not isinstance(content_sha256, str) or not HEX_SHA256.fullmatch(content_sha256)):
+            raise VerificationError("Go module entry is malformed")
+        seen.add(name)
+        total += size
+        if len(seen) > 4096 or total > 64 * 1024 * 1024:
             raise VerificationError("Go module exceeds source manifest bound")
-        name = path.relative_to(root).as_posix().encode("utf-8")
-        digest.update(len(name).to_bytes(4, "big"))
-        digest.update(name)
-        digest.update(path.stat().st_size.to_bytes(8, "big"))
-        digest.update(bytes.fromhex(_sha256(path)))
+        encoded = name.encode("utf-8")
+        digest.update(len(encoded).to_bytes(4, "big"))
+        digest.update(encoded)
+        digest.update(size.to_bytes(8, "big"))
+        digest.update(bytes.fromhex(content_sha256))
     return digest.hexdigest()
 
 

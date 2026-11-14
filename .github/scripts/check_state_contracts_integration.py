@@ -135,12 +135,10 @@ def validate(repo, source, load=None):
             changed, unavailable = set(), set()
             for item in row["evidence"]:
                 record = authenticated[("proof", item.get("ref_commit", source), item["ref"], item["sha256"])]
-                for path, expected in record["inputs"].items():
-                    try:
-                        if readiness.digest(original(source, path)) != expected:
-                            changed.add(path)
-                    except readiness.ReadinessError:
-                        unavailable.add(path)
+                different, unknown = readiness.disposition_input_applicability(
+                    repo, source, record, original, authenticated)
+                changed.update(different)
+                unavailable.update(unknown)
             applicability[cell] = {"status": "UNKNOWN" if unavailable else "STALE" if changed else "APPLICABLE",
                                    "changed_inputs": sorted(changed), "unavailable_inputs": sorted(unavailable)}
     return {"schema": "codearbiter-integration-integrity/1", "source_commit": source,
