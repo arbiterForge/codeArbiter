@@ -249,7 +249,7 @@ class IntegrationIntegrityTest(unittest.TestCase):
             proof["input_membership"] = [{"profile":"go-module-v1", "root":module,
                                           "path_order":"posix", "sha256":"0"*64 if wrong_original else h.hexdigest()}]
         if absence:
-            proof["absent_inputs"] = ["core/pysrc/_host.py"]
+            proof["absent_inputs"] = [{"path":"core/pysrc/_host.py", "path_style":"windows"}]
         encoded = json.dumps(proof).encode(); self.put(self.proof_path, encoded)
         ledger = copy.deepcopy(self.ledger)
         row = ledger["transitions"][self.identity]
@@ -382,6 +382,72 @@ class IntegrationIntegrityTest(unittest.TestCase):
         with self.assertRaises(owner.readiness.ReadinessError):
             owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
         owner.readiness.authenticate_recorded_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+
+
+    def test_windows_case_variant_host_lookup_is_not_absent(self):
+        current,row=self.membership_case(absence=True)
+        self.put("core/pysrc/_HOST.py",b"# inert actual Windows lookup, never imported\n")
+        self.git("add",".");self.git("commit","-qm","Case variant optional host lookup appears")
+        candidate=self.git("rev-parse","HEAD")
+        # On Windows this exact lowercase lookup opens _HOST.py.
+        if os.name == "nt":self.assertTrue((self.repo/"core/pysrc/_host.py").is_file())
+        self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "STALE")
+        with self.assertRaises(owner.readiness.ReadinessError):
+            owner.readiness.authenticate_disposition(self.repo,candidate,self.cell,row,{self.input},self.load,{})
+
+
+    def inert_lookup_commit(self, paths):
+        # Git-only trees let Windows test both case-distinct names safely.
+        blob = subprocess.run(["git","hash-object","-w","--stdin"],cwd=self.repo,
+                              input=b"# inert lookup, never imported\n",capture_output=True,check=True).stdout.decode().strip()
+        tree = {}
+        for path in paths:
+            node=tree
+            for name in path.split("/")[:-1]:node=node.setdefault(name,{})
+            node[path.split("/")[-1]]=blob
+        def write(node):
+            rows=[]
+            for name,value in node.items():
+                is_tree=isinstance(value,dict)
+                oid=write(value) if is_tree else value
+                rows.append((("040000 tree " if is_tree else "100644 blob ")+oid+"\t"+name).encode("utf8")+b"\0")
+            return subprocess.run(["git","mktree","-z"],cwd=self.repo,input=b"".join(rows),
+                                  capture_output=True,check=True).stdout.decode().strip()
+        return self.git("commit-tree",write(tree),"-p",self.current,"-m","Inert case lookup inventory")
+
+    def test_windows_lookup_resolves_each_actual_ancestor_name(self):
+        commit=self.inert_lookup_commit(["Core/PySrc/_HOST.py"])
+        lookup={"path":"core/pysrc/_host.py","path_style":"windows"}
+        self.assertTrue(owner.readiness._lookup_present(self.repo,commit,lookup,{}))
+        self.assertFalse(owner.readiness._lookup_present(self.repo,commit,dict(lookup,path_style="posix"),{}))
+        self.assertTrue(owner.readiness._lookup_present(self.repo,commit,{"path":"Core/PySrc/_HOST.py","path_style":"posix"},{}))
+
+    def test_windows_ambiguous_ancestor_lookup_refuses(self):
+        commit=self.inert_lookup_commit(["core/pysrc/one.py","CORE/pysrc/two.py"])
+        with self.assertRaisesRegex(owner.readiness.ReadinessError,"ambiguous"):
+            owner.readiness._lookup_present(self.repo,commit,{"path":"core/pysrc/_host.py","path_style":"windows"},{})
+        self.assertFalse(owner.readiness._lookup_present(self.repo,commit,{"path":"core/pysrc/_host.py","path_style":"posix"},{}))
+
+    def test_windows_non_ascii_comparison_refuses_but_posix_is_literal(self):
+        commit=self.inert_lookup_commit(["core/pysrc/Khost.py"])
+        with self.assertRaisesRegex(owner.readiness.ReadinessError,"unsupported Windows"):
+            owner.readiness._lookup_present(self.repo,commit,{"path":"core/pysrc/_host.py","path_style":"windows"},{})
+        self.assertTrue(owner.readiness._lookup_present(self.repo,commit,{"path":"core/pysrc/Khost.py","path_style":"posix"},{}))
+
+    def test_absence_lookup_descriptor_requires_closed_supported_style(self):
+        current,row=self.membership_case(absence=True)
+        baseline=json.loads(self.load(current,self.proof_path))
+        for lookup in ("core/pysrc/_host.py",{"path":"core/pysrc/_host.py","path_style":"other"},
+                       {"path":"core/pysrc/_host.py","path_style":"windows","extra":True},
+                       {"path":"cöre/pysrc/_host.py","path_style":"windows"}):
+            with self.subTest(lookup=lookup):
+                proof=copy.deepcopy(baseline);proof["absent_inputs"]=[lookup]
+                encoded=json.dumps(proof).encode();self.overrides[current,self.proof_path]=encoded
+                ledger=copy.deepcopy(self.ledger);claim=copy.deepcopy(row)
+                claim["evidence"][0]["sha256"]=hashlib.sha256(encoded).hexdigest()
+                ledger["transitions"][self.identity]=claim
+                self.overrides[current,C+"execution/coverage-ledger.json"]=json.dumps(ledger).encode()
+                with self.assertRaises(owner.readiness.ReadinessError):self.check(current)
 
 
 class IntegrationWorkflowWiringTest(unittest.TestCase):

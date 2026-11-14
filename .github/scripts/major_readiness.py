@@ -150,8 +150,13 @@ def _scope_declarations(record):
                 'input membership lacks unique owning go.mod')
         roots.add(root)
     seen = set()
-    for path in absent:
-        _scope_path(path)
+    for lookup in absent:
+        require(isinstance(lookup, dict) and set(lookup) == {'path', 'path_style'}
+                and lookup.get('path_style') in ('posix', 'windows'),
+                'unsupported absence lookup declaration')
+        path = _scope_path(lookup['path'])
+        require(lookup['path_style'] != 'windows' or path.isascii(),
+                'unsupported Windows absence lookup path')
         owner = str(PurePosixPath(path).with_name('hostapi.py'))
         require(PurePosixPath(path).name == '_host.py' and owner in record['inputs']
                 and path not in record['inputs'] and path not in seen,
@@ -209,21 +214,34 @@ def _module_membership(repo, source, scope, load, cache):
     return cache[key]
 
 
-def _lookup_present(repo, source, path, cache):
-    parts = PurePosixPath(path).parts
+def _lookup_present(repo, source, lookup, cache):
+    parts = PurePosixPath(lookup['path']).parts
+    windows = lookup['path_style'] == 'windows'
     root = ''
+    resolved = []
     for index, name in enumerate(parts):
         key = ('lookup-tree', source, root)
         if key not in cache:
             cache[key] = _tree_entries(repo, source, root)
         entries = cache[key]
-        if name not in entries:
+        if windows:
+            # This profile covers ASCII Windows-owned paths only. Unicode
+            # casefold is not an NTFS ordinal-ignore-case implementation.
+            require(name.isascii() and all(entry.isascii() for entry in entries),
+                    'unsupported Windows absence inventory comparison')
+            matches = [entry for entry in entries if entry.lower() == name.lower()]
+            require(len(matches) <= 1, 'ambiguous Windows absence lookup')
+        else:
+            matches = [name] if name in entries else []
+        if not matches:
             return False
+        actual = matches[0]
         if index == len(parts) - 1:
             return True
-        mode, kind, _ = entries[name]
+        mode, kind, _ = entries[actual]
         require(kind == 'tree' and mode == '040000', 'unsupported absence ancestor object')
-        root = '/'.join(parts[:index + 1])
+        resolved.append(actual)
+        root = '/'.join(resolved)
     return True
 
 
@@ -232,8 +250,8 @@ def _authenticate_scope_evidence(repo, source, record, load, cache):
     for scope in scopes:
         require(_module_membership(repo, source, scope, load, cache) == scope['sha256'],
                 'original input membership differs')
-    for path in absent:
-        require(not _lookup_present(repo, source, path, cache), 'original declared absence is present')
+    for lookup in absent:
+        require(not _lookup_present(repo, source, lookup, cache), 'original declared absence is present')
 
 
 def disposition_input_applicability(repo, source, record, load, cache):
@@ -252,11 +270,12 @@ def disposition_input_applicability(repo, source, record, load, cache):
         # Positive-only legacy runtime evidence remains authentic history, but
         # does not establish complete compiler/read membership at a candidate.
         unavailable.add('membership:core/artifacts')
+    absent_paths = {lookup['path'] for lookup in absent}
     if record['kind'] in ('test', 'sequence-test', 'installed-run', 'hosted-run'):
         for path in record['inputs']:
             if PurePosixPath(path).name == 'hostapi.py':
                 lookup = str(PurePosixPath(path).with_name('_host.py'))
-                if lookup not in record['inputs'] and lookup not in absent:
+                if lookup not in record['inputs'] and lookup not in absent_paths:
                     unavailable.add('host-lookup:' + lookup)
     for scope in scopes:
         label = 'membership:' + scope['root']
@@ -265,9 +284,10 @@ def disposition_input_applicability(repo, source, record, load, cache):
                 changed.add(label)
         except ReadinessError:
             unavailable.add(label)
-    for path in absent:
+    for lookup in absent:
+        path = lookup['path']
         try:
-            if _lookup_present(repo, source, path, cache):
+            if _lookup_present(repo, source, lookup, cache):
                 changed.add('absence:' + path)
         except ReadinessError:
             unavailable.add('absence:' + path)
